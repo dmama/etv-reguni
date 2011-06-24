@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.tiers3.CompteBancaire;
+import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
+import ch.vd.unireg.webservices.tiers3.BankAccount;
 import ch.vd.unireg.webservices.tiers3.Date;
-import ch.vd.unireg.webservices.tiers3.FormatNumeroCompte;
-import ch.vd.unireg.webservices.tiers3.TiersWebService;
-import ch.vd.unireg.webservices.tiers3.TiersWebServiceFactory;
+import ch.vd.unireg.webservices.tiers3.PartyWebService;
+import ch.vd.unireg.webservices.tiers3.PartyWebServiceFactory;
 import ch.vd.uniregctb.common.WebitTest;
 
 import static junit.framework.Assert.assertEquals;
@@ -25,7 +25,7 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractTiersServiceWebTest.class);
 
-	protected static TiersWebService service;
+	protected static PartyWebService service;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -34,8 +34,8 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 		if (service == null) {
 			LOGGER.info("Connecting to: " + tiers3Url + " with user = " + username);
 
-			URL wsdlUrl = ResourceUtils.getURL("classpath:TiersService3.wsdl");
-			TiersWebServiceFactory s = new TiersWebServiceFactory(wsdlUrl);
+			URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService3.wsdl");
+			PartyWebServiceFactory s = new PartyWebServiceFactory(wsdlUrl);
 			service = s.getService();
 
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
@@ -95,10 +95,10 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 		return sameDay;
 	}
 
-	protected static void assertCompte(String titulaire, String numero, FormatNumeroCompte format, CompteBancaire compte) {
+	protected static void assertCompte(String titulaire, String numero, AccountNumberFormat format, BankAccount compte) {
 		assertNotNull(compte);
-		assertEquals(titulaire, compte.getTitulaire());
-		assertEquals(numero, compte.getNumero());
+		assertEquals(titulaire, compte.getOwnerName());
+		assertEquals(numero, compte.getAccountNumber());
 		assertEquals(format, compte.getFormat());
 	}
 

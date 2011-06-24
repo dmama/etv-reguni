@@ -2,15 +2,15 @@ package ch.vd.uniregctb.webservice.tiers3;
 
 import org.junit.Test;
 
+import ch.vd.unireg.webservices.tiers3.CommonHousehold;
 import ch.vd.unireg.webservices.tiers3.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.MailAddress;
-import ch.vd.unireg.webservices.tiers3.MailAddressOtherTiers;
-import ch.vd.unireg.webservices.tiers3.MenageCommun;
-import ch.vd.unireg.webservices.tiers3.Tiers;
-import ch.vd.unireg.webservices.tiers3.TiersPart;
-import ch.vd.unireg.webservices.tiers3.TypeAdressePoursuiteAutreTiers;
-import ch.vd.unireg.webservices.tiers3.TypeAffranchissement;
+import ch.vd.unireg.webservices.tiers3.MailAddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.OtherPartyAddressType;
+import ch.vd.unireg.webservices.tiers3.Party;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.tiers3.TariffZone;
 import ch.vd.unireg.webservices.tiers3.UserLogin;
 
 import static org.junit.Assert.assertEquals;
@@ -50,24 +50,24 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 44018108;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+		final MailAddress domicile = tiers.getFormattedResidenceAddress();
 		final FormattedAddress formattee = domicile.getFormattedAddress();
 		assertFormattedAddress(formattee, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
-		assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-		assertAdresseEquals(formattee, tiers.getAdresseCourrierFormattee().getFormattedAddress());
-		assertAdresseEquals(formattee, tiers.getAdressePoursuiteFormattee().getFormattedAddress());
-		assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
+		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+		assertAdresseEquals(formattee, tiers.getFormattedMailAddress().getFormattedAddress());
+		assertAdresseEquals(formattee, tiers.getFormattedDebtProsecutionAddress().getFormattedAddress());
+		assertNull(tiers.getFormattedDebtProsecutionAddressOfOtherParty());
 	}
 
 	@Test
@@ -79,61 +79,61 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// détermination des composants du ménage
 		{
-			final GetTiersRequest params = new GetTiersRequest();
+			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setTiersNumber(noTiersMenage);
-			params.getParts().add(TiersPart.COMPOSANTS_MENAGE);
+			params.setPartyNumber(noTiersMenage);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
 
-			final MenageCommun tiers = (MenageCommun) service.getTiers(params);
+			final CommonHousehold tiers = (CommonHousehold) service.getParty(params);
 			assertNotNull(tiers);
-			assertEquals(noTiersMenage, tiers.getNumero());
+			assertEquals(noTiersMenage, tiers.getNumber());
 
-			noTiersPrincipal = tiers.getContribuablePrincipal().getNumero();
-			noTiersConjoint = tiers.getContribuableSecondaire().getNumero();
+			noTiersPrincipal = tiers.getMainTaxpayer().getNumber();
+			noTiersConjoint = tiers.getSecondaryTaxpayer().getNumber();
 		}
 
 		// récupération des adresses de poursuite du principal
 		{
-			final GetTiersRequest params = new GetTiersRequest();
+			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setTiersNumber(noTiersPrincipal);
-			params.getParts().add(TiersPart.ADRESSES);
-			params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+			params.setPartyNumber(noTiersPrincipal);
+			params.getParts().add(PartyPart.ADDRESSES);
+			params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-			final Tiers tiers = service.getTiers(params);
+			final Party tiers = service.getParty(params);
 			assertNotNull(tiers);
-			assertEquals(noTiersPrincipal, tiers.getNumero());
+			assertEquals(noTiersPrincipal, tiers.getNumber());
 
 			// Teste les adresses formattées
-			final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+			final MailAddress domicile = tiers.getFormattedResidenceAddress();
 			final FormattedAddress formattee = domicile.getFormattedAddress();
 			assertFormattedAddress(formattee, "Monsieur", "Thierry Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
-			assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-			assertFormattedAddress(tiers.getAdresseCourrierFormattee().getFormattedAddress(), "Monsieur", "Thierry Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
-			assertAdresseEquals(formattee, tiers.getAdressePoursuiteFormattee().getFormattedAddress());
-			assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
+			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+			assertFormattedAddress(tiers.getFormattedMailAddress().getFormattedAddress(), "Monsieur", "Thierry Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
+			assertAdresseEquals(formattee, tiers.getFormattedDebtProsecutionAddress().getFormattedAddress());
+			assertNull(tiers.getFormattedDebtProsecutionAddressOfOtherParty());
 		}
 
 		// récupération des adresses de poursuite du conjoint
 		{
-			final GetTiersRequest params = new GetTiersRequest();
+			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setTiersNumber(noTiersConjoint);
-			params.getParts().add(TiersPart.ADRESSES);
-			params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+			params.setPartyNumber(noTiersConjoint);
+			params.getParts().add(PartyPart.ADDRESSES);
+			params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-			final Tiers tiers = service.getTiers(params);
+			final Party tiers = service.getParty(params);
 			assertNotNull(tiers);
-			assertEquals(noTiersConjoint, tiers.getNumero());
+			assertEquals(noTiersConjoint, tiers.getNumber());
 
 			// Teste les adresses formattées
-			final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+			final MailAddress domicile = tiers.getFormattedResidenceAddress();
 			assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
-			assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-			final MailAddress courrier = tiers.getAdresseCourrierFormattee();
+			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+			final MailAddress courrier = tiers.getFormattedMailAddress();
 			assertFormattedAddress(courrier.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
-			assertAdresseEquals(domicile.getFormattedAddress(), tiers.getAdressePoursuiteFormattee().getFormattedAddress());
-			assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
+			assertAdresseEquals(domicile.getFormattedAddress(), tiers.getFormattedDebtProsecutionAddress().getFormattedAddress());
+			assertNull(tiers.getFormattedDebtProsecutionAddressOfOtherParty());
 
 		}
 	}
@@ -143,24 +143,24 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 89016804;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+		final MailAddress domicile = tiers.getFormattedResidenceAddress();
 		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marc Stäheli", "Chemin des Peupliers 1", "1008 Prilly");
-		assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-		assertFormattedAddress(tiers.getAdresseCourrierFormattee().getFormattedAddress(), "Monsieur", "Marc Stäheli", "p.a. Alain Bally", "Place Saint-François", "1003 Lausanne");
-		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getAdressePoursuiteFormattee().getFormattedAddress());
-		assertEquals(TypeAdressePoursuiteAutreTiers.CURATELLE, tiers.getAdressePoursuiteAutreTiersFormattee().getType());
-		assertFormattedAddress(tiers.getAdressePoursuiteAutreTiersFormattee().getFormattedAddress(), "Monsieur", "Alain Bally", "Place Saint-François", "1003 Lausanne");
+		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+		assertFormattedAddress(tiers.getFormattedMailAddress().getFormattedAddress(), "Monsieur", "Marc Stäheli", "p.a. Alain Bally", "Place Saint-François", "1003 Lausanne");
+		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getFormattedDebtProsecutionAddress().getFormattedAddress());
+		assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiers.getFormattedDebtProsecutionAddressOfOtherParty().getType());
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddressOfOtherParty().getFormattedAddress(), "Monsieur", "Alain Bally", "Place Saint-François", "1003 Lausanne");
 	}
 
 	@Test
@@ -168,28 +168,28 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 60510843;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+		final MailAddress domicile = tiers.getFormattedResidenceAddress();
 		assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Anabela Lopes", "Avenue Kiener 69", "1400 Yverdon-les-Bains");
-		assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-		assertFormattedAddress(tiers.getAdresseCourrierFormattee().getFormattedAddress(), "Madame", "Anabela Lopes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+		assertFormattedAddress(tiers.getFormattedMailAddress().getFormattedAddress(), "Madame", "Anabela Lopes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertFormattedAddress(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
-		assertFormattedAddress(tiers.getAdressePoursuiteFormattee().getFormattedAddress(), "Monsieur le Juge de Paix de Belmont/Conc", "ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac",
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddress().getFormattedAddress(), "Monsieur le Juge de Paix de Belmont/Conc", "ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac",
 				"1400 Yverdon-les-Bains");
 
-		assertEquals(TypeAdressePoursuiteAutreTiers.TUTELLE, tiers.getAdressePoursuiteAutreTiersFormattee().getType());
-		assertFormattedAddress(tiers.getAdressePoursuiteAutreTiersFormattee().getFormattedAddress(), "Office du tuteur général", "du Canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertEquals(OtherPartyAddressType.GUARDIAN, tiers.getFormattedDebtProsecutionAddressOfOtherParty().getType());
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddressOfOtherParty().getFormattedAddress(), "Office du tuteur général", "du Canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 	}
 
 	@Test
@@ -197,23 +197,23 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 10536395;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		assertFormattedAddress(tiers.getAdresseDomicileFormattee().getFormattedAddress(), "Monsieur", "Claude-Alain Proz", "Izmir", "Turquie");
-		assertFormattedAddress(tiers.getAdresseCourrierFormattee().getFormattedAddress(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach",
+		assertFormattedAddress(tiers.getFormattedResidenceAddress().getFormattedAddress(), "Monsieur", "Claude-Alain Proz", "Izmir", "Turquie");
+		assertFormattedAddress(tiers.getFormattedMailAddress().getFormattedAddress(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach",
 				"8026 Zürich");
-		assertFormattedAddress(tiers.getAdressePoursuiteFormattee().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
-		assertEquals(TypeAdressePoursuiteAutreTiers.MANDATAIRE, tiers.getAdressePoursuiteAutreTiersFormattee().getType());
-		assertFormattedAddress(tiers.getAdressePoursuiteAutreTiersFormattee().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddress().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
+		assertEquals(OtherPartyAddressType.REPRESENTATIVE, tiers.getFormattedDebtProsecutionAddressOfOtherParty().getType());
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddressOfOtherParty().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
 	}
 
 	@Test
@@ -221,23 +221,23 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 10033975;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+		final MailAddress domicile = tiers.getFormattedResidenceAddress();
 		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marcello Pesci", "Ch. de Réchoz 17", "1027 Lonay");
-		assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-		assertFormattedAddress(tiers.getAdresseCourrierFormattee().getFormattedAddress(), "Monsieur", "Marcello Pesci", "p.a. Curia Treuhand AG", "Postfach 132", "7000 Chur");
-		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getAdressePoursuiteFormattee().getFormattedAddress());
-		assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
+		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+		assertFormattedAddress(tiers.getFormattedMailAddress().getFormattedAddress(), "Monsieur", "Marcello Pesci", "p.a. Curia Treuhand AG", "Postfach 132", "7000 Chur");
+		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getFormattedDebtProsecutionAddress().getFormattedAddress());
+		assertNull(tiers.getFormattedDebtProsecutionAddressOfOtherParty());
 	}
 
 	@Test
@@ -245,25 +245,25 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final long noTiers = 44018109;
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(noTiers);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(noTiers);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertEquals(noTiers, tiers.getNumero());
+		assertEquals(noTiers, tiers.getNumber());
 
 		// Teste les adresses formattées
-		final MailAddress domicile = tiers.getAdresseDomicileFormattee();
+		final MailAddress domicile = tiers.getFormattedResidenceAddress();
 		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
-		assertEquals(TypeAffranchissement.SUISSE, domicile.getAddressInformation().getTypeAffranchissement());
-		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getAdresseCourrierFormattee().getFormattedAddress());
+		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
+		assertAdresseEquals(domicile.getFormattedAddress(), tiers.getFormattedMailAddress().getFormattedAddress());
 
-		assertFormattedAddress(tiers.getAdressePoursuiteFormattee().getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
-		final MailAddressOtherTiers poursuiteAutreTiers = tiers.getAdressePoursuiteAutreTiersFormattee();
-		assertEquals(TypeAdressePoursuiteAutreTiers.SPECIFIQUE, poursuiteAutreTiers.getType());
+		assertFormattedAddress(tiers.getFormattedDebtProsecutionAddress().getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
+		final MailAddressOtherParty poursuiteAutreTiers = tiers.getFormattedDebtProsecutionAddressOfOtherParty();
+		assertEquals(OtherPartyAddressType.SPECIFIC, poursuiteAutreTiers.getType());
 		assertFormattedAddress(poursuiteAutreTiers.getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
 	}
 

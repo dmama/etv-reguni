@@ -2,17 +2,17 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 
 public abstract class CacheKey {
 
-	public final long tiersNumber;
+	public final long partyNumber;
 
-	public CacheKey(long tiersNumber) {
-		this.tiersNumber = tiersNumber;
+	public CacheKey(long partyNumber) {
+		this.partyNumber = partyNumber;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (tiersNumber ^ (tiersNumber >>> 32));
+		result = prime * result + (int) (partyNumber ^ (partyNumber >>> 32));
 		return result;
 	}
 
@@ -25,7 +25,7 @@ public abstract class CacheKey {
 		if (getClass() != obj.getClass())
 			return false;
 		CacheKey other = (CacheKey) obj;
-		if (tiersNumber != other.tiersNumber)
+		if (partyNumber != other.partyNumber)
 			return false;
 		return true;
 	}

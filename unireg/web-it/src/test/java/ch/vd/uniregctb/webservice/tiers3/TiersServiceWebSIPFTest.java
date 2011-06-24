@@ -5,32 +5,32 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
+import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.AddressInformation;
-import ch.vd.unireg.webservices.tiers3.Adresse;
+import ch.vd.unireg.webservices.tiers3.BankAccount;
 import ch.vd.unireg.webservices.tiers3.Capital;
-import ch.vd.unireg.webservices.tiers3.CompteBancaire;
-import ch.vd.unireg.webservices.tiers3.EtatPM;
-import ch.vd.unireg.webservices.tiers3.EvenementPM;
-import ch.vd.unireg.webservices.tiers3.ForFiscal;
-import ch.vd.unireg.webservices.tiers3.FormatNumeroCompte;
+import ch.vd.unireg.webservices.tiers3.Corporation;
+import ch.vd.unireg.webservices.tiers3.CorporationEvent;
+import ch.vd.unireg.webservices.tiers3.CorporationStatus;
 import ch.vd.unireg.webservices.tiers3.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.FormeJuridique;
-import ch.vd.unireg.webservices.tiers3.GenreImpot;
-import ch.vd.unireg.webservices.tiers3.GetTiersRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
+import ch.vd.unireg.webservices.tiers3.LegalForm;
+import ch.vd.unireg.webservices.tiers3.LegalSeat;
+import ch.vd.unireg.webservices.tiers3.LegalSeatType;
 import ch.vd.unireg.webservices.tiers3.MailAddress;
-import ch.vd.unireg.webservices.tiers3.MotifRattachement;
 import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.PeriodeAssujettissement;
-import ch.vd.unireg.webservices.tiers3.PersonneMorale;
-import ch.vd.unireg.webservices.tiers3.RegimeFiscal;
-import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMRequest;
-import ch.vd.unireg.webservices.tiers3.SearchEvenementsPMResponse;
-import ch.vd.unireg.webservices.tiers3.Siege;
-import ch.vd.unireg.webservices.tiers3.TiersPart;
-import ch.vd.unireg.webservices.tiers3.TypeAffranchissement;
-import ch.vd.unireg.webservices.tiers3.TypeAutoriteFiscale;
-import ch.vd.unireg.webservices.tiers3.TypePeriodeAssujettissement;
-import ch.vd.unireg.webservices.tiers3.TypeSiege;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
+import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiability;
+import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiabilityType;
+import ch.vd.unireg.webservices.tiers3.TariffZone;
+import ch.vd.unireg.webservices.tiers3.TaxLiabilityReason;
+import ch.vd.unireg.webservices.tiers3.TaxResidence;
+import ch.vd.unireg.webservices.tiers3.TaxSystem;
+import ch.vd.unireg.webservices.tiers3.TaxType;
+import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
 import ch.vd.unireg.webservices.tiers3.UserLogin;
 
 import static org.junit.Assert.assertEquals;
@@ -77,103 +77,103 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirForsPM() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.FORS_FISCAUX);
-		params.getParts().add(TiersPart.REGIMES_FISCAUX);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
+		params.getParts().add(PartyPart.TAX_SYSTEMS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(222L, pm.getNumber());
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
+		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Récupération des informations des fors fiscaux
 
-		final List<ForFiscal> forPrincipaux = pm.getForsFiscauxPrincipaux();
+		final List<TaxResidence> forPrincipaux = pm.getMainTaxResidences();
 		assertNotNull(forPrincipaux);
 		assertEquals(1, forPrincipaux.size());
 
-		final ForFiscal ffp0 = forPrincipaux.get(0);
+		final TaxResidence ffp0 = forPrincipaux.get(0);
 		assertNotNull(ffp0);
 		// Note : les communes hors-canton et les pays hors-Suisse sont aussi retourné. C'est à l'appelant de faire le tri si nécessaire.
-		assertSameDay(newDate(1979, 8, 7), ffp0.getDateDebut());
-		assertNull(ffp0.getDateFin());
-		assertEquals(5413, ffp0.getNoOfsAutoriteFiscale());
-		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp0.getTypeAutoriteFiscale());
-		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp0.getGenreImpot());
-		assertEquals(MotifRattachement.DOMICILE, ffp0.getMotifRattachement());
+		assertSameDay(newDate(1979, 8, 7), ffp0.getDateFrom());
+		assertNull(ffp0.getDateTo());
+		assertEquals(5413, ffp0.getTaxationAuthorityFSOId());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp0.getTaxationAuthorityType());
+		assertEquals(TaxType.PROFITS_CAPITAL, ffp0.getTaxType());
+		assertEquals(TaxLiabilityReason.RESIDENCE, ffp0.getTaxLiabilityReason());
 
-		final List<ForFiscal> forSecondaires = pm.getAutresForsFiscaux();
+		final List<TaxResidence> forSecondaires = pm.getOtherTaxResidences();
 		assertNotNull(forSecondaires);
 		assertEquals(1, forSecondaires.size());
 
-		final ForFiscal ffs0 = forSecondaires.get(0);
+		final TaxResidence ffs0 = forSecondaires.get(0);
 		assertNotNull(ffs0);
-		assertSameDay(newDate(1988, 7, 22), ffs0.getDateDebut());
-		assertSameDay(newDate(2001, 9, 6), ffs0.getDateFin());
-		assertEquals(5413, ffs0.getNoOfsAutoriteFiscale());
-		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs0.getTypeAutoriteFiscale());
-		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs0.getGenreImpot());
-		assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs0.getMotifRattachement());
+		assertSameDay(newDate(1988, 7, 22), ffs0.getDateFrom());
+		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
+		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
+		assertEquals(TaxType.PROFITS_CAPITAL, ffs0.getTaxType());
+		assertEquals(TaxLiabilityReason.STABLE_ESTABLISHMENT, ffs0.getTaxLiabilityReason());
 
 		// etc...
 
 		// Récupération des informations des régimes fiscaux
 
-		final List<RegimeFiscal> regimesICC = pm.getRegimesFiscauxICC();
+		final List<TaxSystem> regimesICC = pm.getTaxSystemsVD();
 		assertNotNull(regimesICC);
 		assertEquals(1, regimesICC.size());
 
-		final RegimeFiscal icc0 = regimesICC.get(0);
+		final TaxSystem icc0 = regimesICC.get(0);
 		assertNotNull(icc0);
 		assertEquals("01", icc0.getCode()); // selon table TY_REGIME_FISCAL
-		assertSameDay(newDate(1993, 1, 1), icc0.getDateDebut());
-		assertNull(icc0.getDateFin());
+		assertSameDay(newDate(1993, 1, 1), icc0.getDateFrom());
+		assertNull(icc0.getDateTo());
 		// note : la catégorie de PM se déduit du code
 
-		final List<RegimeFiscal> regimesIFD = pm.getRegimesFiscauxIFD();
+		final List<TaxSystem> regimesIFD = pm.getTaxSystemsCH();
 		assertNotNull(regimesIFD);
 		assertEquals(1, regimesIFD.size());
 
-		final RegimeFiscal ifd0 = regimesIFD.get(0);
+		final TaxSystem ifd0 = regimesIFD.get(0);
 		assertNotNull(ifd0);
 		assertEquals("01", ifd0.getCode()); // selon table TY_REGIME_FISCAL
-		assertSameDay(newDate(1993, 1, 1), ifd0.getDateDebut());
-		assertNull(ifd0.getDateFin());
+		assertSameDay(newDate(1993, 1, 1), ifd0.getDateFrom());
+		assertNull(ifd0.getDateTo());
 	}
 
 	@Test
 	public void testFournirCapital() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.CAPITAUX);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.CAPITALS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(222L, pm.getNumber());
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
+		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Récupération du capital
 
-		final List<Capital> capitaux = pm.getCapitaux();
+		final List<Capital> capitaux = pm.getCapitals();
 		assertNotNull(capitaux);
 		assertEquals(1, capitaux.size());
 
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
-		assertEquals(150000, capital.getCapitalLibere());
-		assertEquals(150000, capital.getCapitalAction());
+		assertEquals(150000, capital.getPaidInCapital());
+		assertEquals(150000, capital.getShareCapital());
 
 		// note : il est de la responsabilité de l'appelant de déterminer si l'abscence ou non du capital libéré est normale ou non. Pour
 		// rappel, cette abscence justifiée ou non se déduit de la catégorie de PM (= normal pour une APM, d'après le document d'Eric Wyss).
@@ -183,140 +183,140 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirEvenementsPMParNumero() throws Exception {
 
-		final SearchEvenementsPMRequest params = new SearchEvenementsPMRequest();
+		final SearchCorporationEventsRequest params = new SearchCorporationEventsRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222L);
+		params.setCorporationNumber(222L);
 
-		final SearchEvenementsPMResponse array = service.searchEvenementsPM(params);
+		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
 
-		final List<EvenementPM> events = array.getItem();
+		final List<CorporationEvent> events = array.getEvents();
 		assertNotNull(events);
 		assertEquals(16, events.size());
 
-		final EvenementPM ev0 = events.get(0);
+		final CorporationEvent ev0 = events.get(0);
 		assertNotNull(ev0);
-		assertSameDay(newDate(1979, 10, 30), ev0.getDateEvenement());
-		assertEquals("007", ev0.getCodeEvenement()); // selon table EVENEMENT du host
-		assertEquals(Long.valueOf(222), ev0.getTiersNumber());
+		assertSameDay(newDate(1979, 10, 30), ev0.getDate());
+		assertEquals("007", ev0.getCode()); // selon table EVENEMENT du host
+		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
 
-		final EvenementPM ev1 = events.get(1);
+		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
-		assertSameDay(newDate(1979, 10, 30), ev1.getDateEvenement());
-		assertEquals("026", ev1.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev1.getTiersNumber());
+		assertSameDay(newDate(1979, 10, 30), ev1.getDate());
+		assertEquals("026", ev1.getCode());
+		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
 
-		final EvenementPM ev2 = events.get(2);
+		final CorporationEvent ev2 = events.get(2);
 		assertNotNull(ev2);
-		assertSameDay(newDate(1992, 1, 1), ev2.getDateEvenement());
-		assertEquals("001", ev2.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev2.getTiersNumber());
+		assertSameDay(newDate(1992, 1, 1), ev2.getDate());
+		assertEquals("001", ev2.getCode());
+		assertEquals(Long.valueOf(222), ev2.getPartyNumber());
 
-		final EvenementPM ev3 = events.get(3);
+		final CorporationEvent ev3 = events.get(3);
 		assertNotNull(ev3);
-		assertSameDay(newDate(1992, 1, 1), ev3.getDateEvenement());
-		assertEquals("001", ev3.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev3.getTiersNumber());
+		assertSameDay(newDate(1992, 1, 1), ev3.getDate());
+		assertEquals("001", ev3.getCode());
+		assertEquals(Long.valueOf(222), ev3.getPartyNumber());
 
-		final EvenementPM ev4 = events.get(4);
+		final CorporationEvent ev4 = events.get(4);
 		assertNotNull(ev4);
-		assertSameDay(newDate(1992, 11, 6), ev4.getDateEvenement());
-		assertEquals("021", ev4.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev4.getTiersNumber());
+		assertSameDay(newDate(1992, 11, 6), ev4.getDate());
+		assertEquals("021", ev4.getCode());
+		assertEquals(Long.valueOf(222), ev4.getPartyNumber());
 
-		final EvenementPM ev5 = events.get(5);
+		final CorporationEvent ev5 = events.get(5);
 		assertNotNull(ev5);
-		assertSameDay(newDate(1996, 10, 24), ev5.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev5.getTiersNumber());
-		assertEquals("020", ev5.getCodeEvenement());
+		assertSameDay(newDate(1996, 10, 24), ev5.getDate());
+		assertEquals(Long.valueOf(222), ev5.getPartyNumber());
+		assertEquals("020", ev5.getCode());
 
-		final EvenementPM ev6 = events.get(6);
+		final CorporationEvent ev6 = events.get(6);
 		assertNotNull(ev6);
-		assertSameDay(newDate(1997, 7, 10), ev6.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev6.getTiersNumber());
-		assertEquals("008", ev6.getCodeEvenement());
+		assertSameDay(newDate(1997, 7, 10), ev6.getDate());
+		assertEquals(Long.valueOf(222), ev6.getPartyNumber());
+		assertEquals("008", ev6.getCode());
 
-		final EvenementPM ev7 = events.get(7);
+		final CorporationEvent ev7 = events.get(7);
 		assertNotNull(ev7);
-		assertSameDay(newDate(1997, 12, 1), ev7.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev7.getTiersNumber());
-		assertEquals("020", ev7.getCodeEvenement());
+		assertSameDay(newDate(1997, 12, 1), ev7.getDate());
+		assertEquals(Long.valueOf(222), ev7.getPartyNumber());
+		assertEquals("020", ev7.getCode());
 
-		final EvenementPM ev8 = events.get(8);
+		final CorporationEvent ev8 = events.get(8);
 		assertNotNull(ev8);
-		assertSameDay(newDate(2000, 1, 1), ev8.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev8.getTiersNumber());
-		assertEquals("020", ev8.getCodeEvenement());
+		assertSameDay(newDate(2000, 1, 1), ev8.getDate());
+		assertEquals(Long.valueOf(222), ev8.getPartyNumber());
+		assertEquals("020", ev8.getCode());
 
-		final EvenementPM ev9 = events.get(9);
+		final CorporationEvent ev9 = events.get(9);
 		assertNotNull(ev9);
-		assertSameDay(newDate(2001, 9, 6), ev9.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev9.getTiersNumber());
-		assertEquals("037", ev9.getCodeEvenement());
+		assertSameDay(newDate(2001, 9, 6), ev9.getDate());
+		assertEquals(Long.valueOf(222), ev9.getPartyNumber());
+		assertEquals("037", ev9.getCode());
 
-		final EvenementPM ev10 = events.get(10);
+		final CorporationEvent ev10 = events.get(10);
 		assertNotNull(ev10);
-		assertSameDay(newDate(2003, 4, 3), ev10.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev10.getTiersNumber());
-		assertEquals("003", ev10.getCodeEvenement());
+		assertSameDay(newDate(2003, 4, 3), ev10.getDate());
+		assertEquals(Long.valueOf(222), ev10.getPartyNumber());
+		assertEquals("003", ev10.getCode());
 
-		final EvenementPM ev11 = events.get(11);
+		final CorporationEvent ev11 = events.get(11);
 		assertNotNull(ev11);
-		assertSameDay(newDate(2003, 4, 3), ev11.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev11.getTiersNumber());
-		assertEquals("003", ev11.getCodeEvenement());
+		assertSameDay(newDate(2003, 4, 3), ev11.getDate());
+		assertEquals(Long.valueOf(222), ev11.getPartyNumber());
+		assertEquals("003", ev11.getCode());
 
-		final EvenementPM ev12 = events.get(12);
+		final CorporationEvent ev12 = events.get(12);
 		assertNotNull(ev12);
-		assertSameDay(newDate(2003, 4, 3), ev12.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev12.getTiersNumber());
-		assertEquals("016", ev12.getCodeEvenement());
+		assertSameDay(newDate(2003, 4, 3), ev12.getDate());
+		assertEquals(Long.valueOf(222), ev12.getPartyNumber());
+		assertEquals("016", ev12.getCode());
 
-		final EvenementPM ev13 = events.get(13);
+		final CorporationEvent ev13 = events.get(13);
 		assertNotNull(ev13);
-		assertSameDay(newDate(2003, 4, 3), ev13.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev13.getTiersNumber());
-		assertEquals("023", ev13.getCodeEvenement());
+		assertSameDay(newDate(2003, 4, 3), ev13.getDate());
+		assertEquals(Long.valueOf(222), ev13.getPartyNumber());
+		assertEquals("023", ev13.getCode());
 
-		final EvenementPM ev14 = events.get(14);
+		final CorporationEvent ev14 = events.get(14);
 		assertNotNull(ev14);
-		assertSameDay(newDate(2003, 11, 6), ev14.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev14.getTiersNumber());
-		assertEquals("002", ev14.getCodeEvenement());
+		assertSameDay(newDate(2003, 11, 6), ev14.getDate());
+		assertEquals(Long.valueOf(222), ev14.getPartyNumber());
+		assertEquals("002", ev14.getCode());
 
-		final EvenementPM ev15 = events.get(15);
+		final CorporationEvent ev15 = events.get(15);
 		assertNotNull(ev15);
-		assertSameDay(newDate(2003, 11, 6), ev15.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev15.getTiersNumber());
-		assertEquals("002", ev15.getCodeEvenement());
+		assertSameDay(newDate(2003, 11, 6), ev15.getDate());
+		assertEquals(Long.valueOf(222), ev15.getPartyNumber());
+		assertEquals("002", ev15.getCode());
 	}
 
 	@Test
 	public void testFournirEvenementsPMParCode() throws Exception {
 
-		final SearchEvenementsPMRequest params = new SearchEvenementsPMRequest();
+		final SearchCorporationEventsRequest params = new SearchCorporationEventsRequest();
 		params.setLogin(login);
-		params.setCodeEvenement("001");
-		params.setTiersNumber(222L); // pas obligatoire, juste pour limiter le nombre de résultats
+		params.setEventCode("001");
+		params.setCorporationNumber(222L); // pas obligatoire, juste pour limiter le nombre de résultats
 
-		final SearchEvenementsPMResponse array = service.searchEvenementsPM(params);
+		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
 
-		final List<EvenementPM> events = array.getItem();
+		final List<CorporationEvent> events = array.getEvents();
 		assertNotNull(events);
 		assertEquals(2, events.size());
 
-		final EvenementPM ev0 = events.get(1);
+		final CorporationEvent ev0 = events.get(1);
 		assertNotNull(ev0);
-		assertSameDay(newDate(1992, 1, 1), ev0.getDateEvenement());
-		assertEquals("001", ev0.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev0.getTiersNumber());
+		assertSameDay(newDate(1992, 1, 1), ev0.getDate());
+		assertEquals("001", ev0.getCode());
+		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
 
-		final EvenementPM ev1 = events.get(1);
+		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
-		assertSameDay(newDate(1992, 1, 1), ev1.getDateEvenement());
-		assertEquals("001", ev1.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev1.getTiersNumber());
+		assertSameDay(newDate(1992, 1, 1), ev1.getDate());
+		assertEquals("001", ev1.getCode());
+		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
 	}
 
 	/**
@@ -325,125 +325,125 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirEvenementsPMDateMiniMaxi() throws Exception {
 
-		final SearchEvenementsPMRequest params = new SearchEvenementsPMRequest();
+		final SearchCorporationEventsRequest params = new SearchCorporationEventsRequest();
 		params.setLogin(login);
-		params.setDateMinimale(newDate(2000, 1, 1));
-		params.setDateMaximale(newDate(2003, 7, 1));
-		params.setTiersNumber(222L);
+		params.setStartDate(newDate(2000, 1, 1));
+		params.setEndDate(newDate(2003, 7, 1));
+		params.setCorporationNumber(222L);
 
-		final SearchEvenementsPMResponse array = service.searchEvenementsPM(params);
+		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
 
-		final List<EvenementPM> events = array.getItem();
+		final List<CorporationEvent> events = array.getEvents();
 		assertNotNull(events);
 		assertEquals(6, events.size());
 
-		final EvenementPM ev0 = events.get(0);
+		final CorporationEvent ev0 = events.get(0);
 		assertNotNull(ev0);
-		assertSameDay(newDate(2000, 1, 1), ev0.getDateEvenement());
-		assertEquals("020", ev0.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev0.getTiersNumber());
+		assertSameDay(newDate(2000, 1, 1), ev0.getDate());
+		assertEquals("020", ev0.getCode());
+		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
 
-		final EvenementPM ev1 = events.get(1);
+		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
-		assertSameDay(newDate(2001, 9, 6), ev1.getDateEvenement());
-		assertEquals("037", ev1.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev1.getTiersNumber());
+		assertSameDay(newDate(2001, 9, 6), ev1.getDate());
+		assertEquals("037", ev1.getCode());
+		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
 
-		final EvenementPM ev2 = events.get(2);
+		final CorporationEvent ev2 = events.get(2);
 		assertNotNull(ev2);
-		assertSameDay(newDate(2003, 4, 3), ev2.getDateEvenement());
-		assertEquals("003", ev2.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev2.getTiersNumber());
+		assertSameDay(newDate(2003, 4, 3), ev2.getDate());
+		assertEquals("003", ev2.getCode());
+		assertEquals(Long.valueOf(222), ev2.getPartyNumber());
 
-		final EvenementPM ev3 = events.get(3);
+		final CorporationEvent ev3 = events.get(3);
 		assertNotNull(ev3);
-		assertSameDay(newDate(2003, 4, 3), ev3.getDateEvenement());
-		assertEquals("003", ev3.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev3.getTiersNumber());
+		assertSameDay(newDate(2003, 4, 3), ev3.getDate());
+		assertEquals("003", ev3.getCode());
+		assertEquals(Long.valueOf(222), ev3.getPartyNumber());
 
-		final EvenementPM ev4 = events.get(4);
+		final CorporationEvent ev4 = events.get(4);
 		assertNotNull(ev4);
-		assertSameDay(newDate(2003, 4, 3), ev4.getDateEvenement());
-		assertEquals("016", ev4.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev4.getTiersNumber());
+		assertSameDay(newDate(2003, 4, 3), ev4.getDate());
+		assertEquals("016", ev4.getCode());
+		assertEquals(Long.valueOf(222), ev4.getPartyNumber());
 
-		final EvenementPM ev5 = events.get(5);
+		final CorporationEvent ev5 = events.get(5);
 		assertNotNull(ev5);
-		assertSameDay(newDate(2003, 4, 3), ev5.getDateEvenement());
-		assertEquals("023", ev5.getCodeEvenement());
-		assertEquals(Long.valueOf(222), ev5.getTiersNumber());
+		assertSameDay(newDate(2003, 4, 3), ev5.getDate());
+		assertEquals("023", ev5.getCode());
+		assertEquals(Long.valueOf(222), ev5.getPartyNumber());
 	}
 
 	@Test
 	public void testFournirCoordonneesFinancieres() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
+		assertEquals(222L, pm.getNumber());
 
-		final List<CompteBancaire> comptes = pm.getComptesBancaires();
+		final List<BankAccount> comptes = pm.getBankAccounts();
 		assertNotNull(comptes);
 		assertEquals(1, comptes.size());
 
 		// Récupération du compte bancaire de la PM
 
-		final CompteBancaire comptePM = comptes.get(0);
+		final BankAccount comptePM = comptes.get(0);
 		assertNotNull(comptePM);
-		assertEquals("18-25277-7", comptePM.getNumero());
+		assertEquals("18-25277-7", comptePM.getAccountNumber());
 		assertNull(comptePM.getClearing());
-		assertNull(comptePM.getAdresseBicSwift());
-		assertEquals(FormatNumeroCompte.SPECIFIQUE_CH, comptePM.getFormat());
-		assertNull(comptePM.getTitulaire());
-		assertEquals("La Poste Suisse", comptePM.getNomInstitution());
+		assertNull(comptePM.getBicAddress());
+		assertEquals(AccountNumberFormat.SWISS_SPECIFIC, comptePM.getFormat());
+		assertNull(comptePM.getOwnerName());
+		assertEquals("La Poste Suisse", comptePM.getBankName());
 	}
 
 	@Ignore // exemple fictif
 	@Test
 	public void testFournirCoordonneesFinancieresAvecMandataire() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(123456);
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(123456);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(123456L, pm.getNumero());
+		assertEquals(123456L, pm.getNumber());
 
-		final List<CompteBancaire> comptes = pm.getComptesBancaires();
+		final List<BankAccount> comptes = pm.getBankAccounts();
 		assertNotNull(comptes);
 		assertEquals(2, comptes.size());
 
-		final CompteBancaire compte0 = comptes.get(0);
-		final CompteBancaire compte1 = comptes.get(0);
+		final BankAccount compte0 = comptes.get(0);
+		final BankAccount compte1 = comptes.get(0);
 
 		// Récupération du compte bancaire de la PM
 
-		final CompteBancaire comptePM = (compte0.getNumeroTiersTitulaire() == pm.getNumero() ? compte0 : compte1);
+		final BankAccount comptePM = (compte0.getOwnerPartyId() == pm.getNumber() ? compte0 : compte1);
 		assertNotNull(comptePM);
-		assertEquals("<un numéro IBAN>", comptePM.getNumero());
+		assertEquals("<un numéro IBAN>", comptePM.getAccountNumber());
 		assertEquals("<un numéro de clearing>", comptePM.getClearing());
-		assertNull(comptePM.getAdresseBicSwift());
-		assertEquals(FormatNumeroCompte.IBAN, comptePM.getFormat());
-		assertEquals("Ma petite entreprise", comptePM.getTitulaire());
-		assertEquals("Banque de la place", comptePM.getNomInstitution());
+		assertNull(comptePM.getBicAddress());
+		assertEquals(AccountNumberFormat.IBAN, comptePM.getFormat());
+		assertEquals("Ma petite entreprise", comptePM.getOwnerName());
+		assertEquals("Banque de la place", comptePM.getBankName());
 
 		// Récupération du compte bancaire du mandataire
 
-		final CompteBancaire compteMandataire = (compte0.getNumeroTiersTitulaire() == pm.getNumero() ? compte1 : compte0);
+		final BankAccount compteMandataire = (compte0.getOwnerPartyId() == pm.getNumber() ? compte1 : compte0);
 		assertNotNull(compteMandataire);
-		assertEquals("<un numéro IBAN>", compteMandataire.getNumero());
+		assertEquals("<un numéro IBAN>", compteMandataire.getAccountNumber());
 		assertEquals("<un numéro de clearing>", compteMandataire.getClearing());
-		assertNull(compteMandataire.getAdresseBicSwift());
-		assertEquals(FormatNumeroCompte.IBAN, compteMandataire.getFormat());
-		assertEquals("Maître George-Edouard Dubeauchapeau", compteMandataire.getTitulaire());
-		assertEquals("Banque privée Piquet S.A.", compteMandataire.getNomInstitution());
+		assertNull(compteMandataire.getBicAddress());
+		assertEquals(AccountNumberFormat.IBAN, compteMandataire.getFormat());
+		assertEquals("Maître George-Edouard Dubeauchapeau", compteMandataire.getOwnerName());
+		assertEquals("Banque privée Piquet S.A.", compteMandataire.getBankName());
 	}
 
 	/**
@@ -452,71 +452,71 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirCoordonneesFinancieresAvecMandatairePM() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(32592);
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(32592);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(32592L, pm.getNumero());
+		assertEquals(32592L, pm.getNumber());
 
-		final List<CompteBancaire> comptes = pm.getComptesBancaires();
+		final List<BankAccount> comptes = pm.getBankAccounts();
 		assertNotNull(comptes);
 		assertEquals(1, comptes.size());
 
-		final CompteBancaire compteMandataire = comptes.get(0);
+		final BankAccount compteMandataire = comptes.get(0);
 		assertNotNull(compteMandataire);
-		assertEquals(426, compteMandataire.getNumeroTiersTitulaire());
-		assertEquals("230-575.013.03", compteMandataire.getNumero());
+		assertEquals(426, compteMandataire.getOwnerPartyId());
+		assertEquals("230-575.013.03", compteMandataire.getAccountNumber());
 		assertNull(compteMandataire.getClearing());
-		assertNull(compteMandataire.getAdresseBicSwift());
-		assertEquals(FormatNumeroCompte.SPECIFIQUE_CH, compteMandataire.getFormat());
-		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getTitulaire()));
-		assertEquals("UBS AG", trimValiPattern(compteMandataire.getNomInstitution()));
+		assertNull(compteMandataire.getBicAddress());
+		assertEquals(AccountNumberFormat.SWISS_SPECIFIC, compteMandataire.getFormat());
+		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getOwnerName()));
+		assertEquals("UBS AG", trimValiPattern(compteMandataire.getBankName()));
 	}
 
 	@Test
 	public void testFournirAdresseCourrier() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(222L, pm.getNumber());
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
+		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
-		final List<Adresse> adressesCourrier = pm.getAdressesCourrier();
+		final List<Address> adressesCourrier = pm.getMailAddresses();
 		assertNotNull(adressesCourrier);
 		assertEquals(1, adressesCourrier.size());
 
-		final Adresse adresseCourrier = adressesCourrier.get(0);
-		assertNotNull(adresseCourrier);
-		assertSameDay(newDate(2003, 4, 3), adresseCourrier.getDateDebut());
-		assertNull(adresseCourrier.getDateFin());
-		assertEquals("p.a. Office des faillites", adresseCourrier.getTitre());
-		assertNull(adresseCourrier.getCasePostale());
-		assertNull(adresseCourrier.getNumeroAppartement());
-		assertNull(adresseCourrier.getRue());
-		assertNull(adresseCourrier.getNumeroRue());
-		assertEquals("1860", adresseCourrier.getNumeroPostal());
-		assertEquals("Aigle", adresseCourrier.getLocalite());
-		assertNull(adresseCourrier.getPays());
-		assertEquals(1100, adresseCourrier.getNoOrdrePostal());
-		assertNull(adresseCourrier.getNoRue());
+		final Address addressCourrier = adressesCourrier.get(0);
+		assertNotNull(addressCourrier);
+		assertSameDay(newDate(2003, 4, 3), addressCourrier.getDateFrom());
+		assertNull(addressCourrier.getDateTo());
+		assertEquals("p.a. Office des faillites", addressCourrier.getTitle());
+		assertNull(addressCourrier.getPostOfficeBox());
+		assertNull(addressCourrier.getDwellingNumber());
+		assertNull(addressCourrier.getStreet());
+		assertNull(addressCourrier.getHouseNumber());
+		assertEquals("1860", addressCourrier.getZipCode());
+		assertEquals("Aigle", addressCourrier.getTown());
+		assertNull(addressCourrier.getCountry());
+		assertEquals(1100, addressCourrier.getSwissZipCodeId());
+		assertNull(addressCourrier.getStreetId());
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getAdresseCourrierFormattee().getFormattedAddress();
+		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLine2()));
@@ -524,7 +524,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
-		assertEquals(TypeAffranchissement.SUISSE, pm.getAdresseCourrierFormattee().getAddressInformation().getTypeAffranchissement());
+		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
 	}
 
 	/**
@@ -533,44 +533,44 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirAdresseCourrierLocaliteAbregee() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(1314);
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(1314);
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(1314L, pm.getNumero());
-		assertEquals("R. Borgo", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("JAL HOLDING", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Jal holding S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(1314L, pm.getNumber());
+		assertEquals("R. Borgo", trimValiPattern(pm.getContactPerson()));
+		assertEquals("JAL HOLDING", trimValiPattern(pm.getShortName()));
+		assertEquals("Jal holding S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
-		final List<Adresse> adressesCourrier = pm.getAdressesCourrier();
+		final List<Address> adressesCourrier = pm.getMailAddresses();
 		assertNotNull(adressesCourrier);
 		assertEquals(1, adressesCourrier.size());
 
-		final Adresse adresseCourrier = adressesCourrier.get(0);
-		assertNotNull(adresseCourrier);
-		assertSameDay(newDate(2007, 6, 11), adresseCourrier.getDateDebut());
-		assertNull(adresseCourrier.getDateFin());
-		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getTitre());
-		assertNull(adresseCourrier.getCasePostale());
-		assertNull(adresseCourrier.getNumeroAppartement());
-		assertEquals("Avenue de la Gare", adresseCourrier.getRue());
-		assertEquals("10", adresseCourrier.getNumeroRue());
-		assertEquals("1003", adresseCourrier.getNumeroPostal());
-		assertEquals("Lausanne", adresseCourrier.getLocalite());
-		assertNull(adresseCourrier.getPays());
-		assertEquals(150, adresseCourrier.getNoOrdrePostal());
-		assertEquals(Integer.valueOf(30317), adresseCourrier.getNoRue());
+		final Address addressCourrier = adressesCourrier.get(0);
+		assertNotNull(addressCourrier);
+		assertSameDay(newDate(2007, 6, 11), addressCourrier.getDateFrom());
+		assertNull(addressCourrier.getDateTo());
+		assertEquals("pa Fidu. Commerce & Industrie", addressCourrier.getTitle());
+		assertNull(addressCourrier.getPostOfficeBox());
+		assertNull(addressCourrier.getDwellingNumber());
+		assertEquals("Avenue de la Gare", addressCourrier.getStreet());
+		assertEquals("10", addressCourrier.getHouseNumber());
+		assertEquals("1003", addressCourrier.getZipCode());
+		assertEquals("Lausanne", addressCourrier.getTown());
+		assertNull(addressCourrier.getCountry());
+		assertEquals(150, addressCourrier.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(30317), addressCourrier.getStreetId());
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getAdresseCourrierFormattee().getFormattedAddress();
+		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLine2()));
@@ -578,7 +578,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLine5()));
 		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLine6()));
-		assertEquals(TypeAffranchissement.SUISSE, pm.getAdresseCourrierFormattee().getAddressInformation().getTypeAffranchissement());
+		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
 	}
 
 	/**
@@ -587,18 +587,18 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirAdresseEnvoi() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(25000);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(25000);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getAdresseCourrierFormattee().getFormattedAddress();
+		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLine2()));
@@ -606,49 +606,49 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
-		assertEquals(TypeAffranchissement.SUISSE, pm.getAdresseCourrierFormattee().getAddressInformation().getTypeAffranchissement());
+		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
 	}
 
 	@Test
 	public void testFournirAdresseContentieuxPM() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(37); // passé de la PM 222 à la PM 37 parce quelqu'un s'est amusé à entrer des valeurs bidon en développement...
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(37); // passé de la PM 222 à la PM 37 parce quelqu'un s'est amusé à entrer des valeurs bidon en développement...
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(37L, pm.getNumero());
-		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(37L, pm.getNumber());
+		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getContactPerson()));
+		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getShortName()));
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Récupération des adresses de domicile (pour le contentieux)
 
-		final List<Adresse> adressesDomicile = pm.getAdressesDomicile();
+		final List<Address> adressesDomicile = pm.getResidenceAddresses();
 		assertNotNull(adressesDomicile);
 		assertEquals(1, adressesDomicile.size());
 
-		final Adresse adresseDomicile = adressesDomicile.get(0);
-		assertNotNull(adresseDomicile);
-		assertSameDay(newDate(1996, 4, 11), adresseDomicile.getDateDebut());
-		assertNull(adresseDomicile.getDateFin());
-		assertNull(adresseDomicile.getTitre());
-		assertNull(adresseDomicile.getCasePostale());
-		assertNull(adresseDomicile.getNumeroAppartement());
-		assertEquals("Quai du Seujet", adresseDomicile.getRue());
-		assertEquals("28A", adresseDomicile.getNumeroRue());
-		assertEquals("1201", adresseDomicile.getNumeroPostal());
-		assertEquals("Genève", adresseDomicile.getLocalite());
-		assertNull(adresseDomicile.getPays());
-		assertEquals(367, adresseDomicile.getNoOrdrePostal());
-		assertEquals(Integer.valueOf(46421), adresseDomicile.getNoRue());
+		final Address addressDomicile = adressesDomicile.get(0);
+		assertNotNull(addressDomicile);
+		assertSameDay(newDate(1996, 4, 11), addressDomicile.getDateFrom());
+		assertNull(addressDomicile.getDateTo());
+		assertNull(addressDomicile.getTitle());
+		assertNull(addressDomicile.getPostOfficeBox());
+		assertNull(addressDomicile.getDwellingNumber());
+		assertEquals("Quai du Seujet", addressDomicile.getStreet());
+		assertEquals("28A", addressDomicile.getHouseNumber());
+		assertEquals("1201", addressDomicile.getZipCode());
+		assertEquals("Genève", addressDomicile.getTown());
+		assertNull(addressDomicile.getCountry());
+		assertEquals(367, addressDomicile.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(46421), addressDomicile.getStreetId());
 
-		final FormattedAddress adresseDomicileFormattee = pm.getAdresseDomicileFormattee().getFormattedAddress();
+		final FormattedAddress adresseDomicileFormattee = pm.getFormattedResidenceAddress().getFormattedAddress();
 		assertNotNull(adresseDomicileFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLine1()));
 		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLine2()));
@@ -656,30 +656,30 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine4()));
 		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine5()));
 		assertNull(adresseDomicileFormattee.getLine6());
-		assertEquals(TypeAffranchissement.SUISSE, pm.getAdresseDomicileFormattee().getAddressInformation().getTypeAffranchissement());
+		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedResidenceAddress().getAddressInformation().getTariffZone());
 
 		// Récupération des adresses de poursuite
 
-		final List<Adresse> adressesPoursuite = pm.getAdressesPoursuite();
+		final List<Address> adressesPoursuite = pm.getDebtProsecutionAddresses();
 		assertNotNull(adressesPoursuite);
 		assertEquals(1, adressesPoursuite.size());
 
-		final Adresse adressePoursuite = adressesPoursuite.get(0);
-		assertNotNull(adressePoursuite);
-		assertSameDay(newDate(1996, 4, 11), adressePoursuite.getDateDebut());
-		assertNull(adressePoursuite.getDateFin());
-		assertNull(adressePoursuite.getTitre());
-		assertNull(adressePoursuite.getCasePostale());
-		assertNull(adressePoursuite.getNumeroAppartement());
-		assertEquals("Quai du Seujet", adressePoursuite.getRue());
-		assertEquals("28A", adressePoursuite.getNumeroRue());
-		assertEquals("1201", adressePoursuite.getNumeroPostal());
-		assertEquals("Genève", adressePoursuite.getLocalite());
-		assertNull(adressePoursuite.getPays());
-		assertEquals(367, adressePoursuite.getNoOrdrePostal());
-		assertEquals(Integer.valueOf(46421), adressePoursuite.getNoRue());
+		final Address addressPoursuite = adressesPoursuite.get(0);
+		assertNotNull(addressPoursuite);
+		assertSameDay(newDate(1996, 4, 11), addressPoursuite.getDateFrom());
+		assertNull(addressPoursuite.getDateTo());
+		assertNull(addressPoursuite.getTitle());
+		assertNull(addressPoursuite.getPostOfficeBox());
+		assertNull(addressPoursuite.getDwellingNumber());
+		assertEquals("Quai du Seujet", addressPoursuite.getStreet());
+		assertEquals("28A", addressPoursuite.getHouseNumber());
+		assertEquals("1201", addressPoursuite.getZipCode());
+		assertEquals("Genève", addressPoursuite.getTown());
+		assertNull(addressPoursuite.getCountry());
+		assertEquals(367, addressPoursuite.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(46421), addressPoursuite.getStreetId());
 
-		final FormattedAddress adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee().getFormattedAddress();
+		final FormattedAddress adressePoursuiteFormattee = pm.getFormattedDebtProsecutionAddress().getFormattedAddress();
 		assertNotNull(adressePoursuiteFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLine1()));
 		assertEquals("", trimValiPattern(adressePoursuiteFormattee.getLine2()));
@@ -687,7 +687,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLine4()));
 		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLine5()));
 		assertNull(adressePoursuiteFormattee.getLine6());
-		assertEquals(TypeAffranchissement.SUISSE, pm.getAdressePoursuiteFormattee().getAddressInformation().getTypeAffranchissement());
+		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedDebtProsecutionAddress().getAddressInformation().getTariffZone());
 
 		// Unireg n'est pas en mesure de déterminer l'adresse de l'OP. Ce travail est de la responsabilité du service infastructure.
 
@@ -697,192 +697,192 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testFournirInformationDeConsultation() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.SIEGES);
-		params.getParts().add(TiersPart.FORS_FISCAUX);
-		params.getParts().add(TiersPart.FORMES_JURIDIQUES);
-		params.getParts().add(TiersPart.REGIMES_FISCAUX);
-		params.getParts().add(TiersPart.PERIODES_ASSUJETTISSEMENT);
-		params.getParts().add(TiersPart.ETATS_PM);
-		params.getParts().add(TiersPart.CAPITAUX);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.LEGAL_SEATS);
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
+		params.getParts().add(PartyPart.LEGAL_FORMS);
+		params.getParts().add(PartyPart.TAX_SYSTEMS);
+		params.getParts().add(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
+		params.getParts().add(PartyPart.CORPORATION_STATUSES);
+		params.getParts().add(PartyPart.CAPITALS);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(222L, pm.getNumber());
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
+		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Sièges
-		final List<Siege> sieges = pm.getSieges();
+		final List<LegalSeat> sieges = pm.getLegalSeats();
 		assertNotNull(sieges);
 		assertEquals(1, sieges.size());
 
-		final Siege siege = sieges.get(0);
+		final LegalSeat siege = sieges.get(0);
 		assertNotNull(siege);
-		assertSameDay(newDate(1979, 8, 7), siege.getDateDebut());
-		assertNull(siege.getDateFin());
-		assertEquals(TypeSiege.COMMUNE_CH, siege.getTypeSiege());
-		assertEquals(5413, siege.getNoOfsSiege());
+		assertSameDay(newDate(1979, 8, 7), siege.getDateFrom());
+		assertNull(siege.getDateTo());
+		assertEquals(LegalSeatType.SWISS_MUNICIPALITY, siege.getType());
+		assertEquals(5413, siege.getFsoId());
 
 		// For principal actif
-		final List<ForFiscal> forsFiscauxPrincipaux = pm.getForsFiscauxPrincipaux();
+		final List<TaxResidence> forsFiscauxPrincipaux = pm.getMainTaxResidences();
 		assertNotNull(forsFiscauxPrincipaux);
 		assertEquals(1, forsFiscauxPrincipaux.size());
 
-		final ForFiscal ffp = forsFiscauxPrincipaux.get(0);
-		assertNull(ffp.getDateFin());
-		assertEquals(5413, ffp.getNoOfsAutoriteFiscale());
-		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
-		assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+		final TaxResidence ffp = forsFiscauxPrincipaux.get(0);
+		assertNull(ffp.getDateTo());
+		assertEquals(5413, ffp.getTaxationAuthorityFSOId());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp.getTaxationAuthorityType());
+		assertEquals(TaxType.PROFITS_CAPITAL, ffp.getTaxType());
+		assertEquals(TaxLiabilityReason.RESIDENCE, ffp.getTaxLiabilityReason());
 		// note : le nom de la commune/pays doit être demandé au service infrastructure
 
 		// Fors secondaires actifs
-		final List<ForFiscal> forSecondaires = pm.getAutresForsFiscaux();
+		final List<TaxResidence> forSecondaires = pm.getOtherTaxResidences();
 		assertNotNull(forSecondaires);
 		assertEquals(1, forSecondaires.size());
 
-		final ForFiscal ffs0 = forSecondaires.get(0);
+		final TaxResidence ffs0 = forSecondaires.get(0);
 		assertNotNull(ffs0);
-		assertSameDay(newDate(1988, 7, 22), ffs0.getDateDebut());
-		assertSameDay(newDate(2001, 9, 6), ffs0.getDateFin());
-		assertEquals(5413, ffs0.getNoOfsAutoriteFiscale());
-		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs0.getTypeAutoriteFiscale());
-		assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs0.getGenreImpot());
-		assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs0.getMotifRattachement());
+		assertSameDay(newDate(1988, 7, 22), ffs0.getDateFrom());
+		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
+		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
+		assertEquals(TaxType.PROFITS_CAPITAL, ffs0.getTaxType());
+		assertEquals(TaxLiabilityReason.STABLE_ESTABLISHMENT, ffs0.getTaxLiabilityReason());
 		// note : le nom de la commune doit être demandé au service infrastructure
 
 		// Forme juridique
-		final List<FormeJuridique> formesJuridiques = pm.getFormesJuridiques();
+		final List<LegalForm> formesJuridiques = pm.getLegalForms();
 		assertNotNull(formesJuridiques);
 		assertEquals(1, formesJuridiques.size());
 
-		final FormeJuridique formeJuridique = formesJuridiques.get(0);
-		assertNotNull(formeJuridique);
-		assertSameDay(newDate(1979, 8, 7), formeJuridique.getDateDebut());
-		assertNull(formeJuridique.getDateFin());
-		assertEquals("S.A.", formeJuridique.getCode()); // code selon table FORME_JURIDIQ_ACI
+		final LegalForm legalForm = formesJuridiques.get(0);
+		assertNotNull(legalForm);
+		assertSameDay(newDate(1979, 8, 7), legalForm.getDateFrom());
+		assertNull(legalForm.getDateTo());
+		assertEquals("S.A.", legalForm.getCode()); // code selon table FORME_JURIDIQ_ACI
 
 		// Régime fiscal ICC
-		final List<RegimeFiscal> regimesFiscauxICC = pm.getRegimesFiscauxICC();
+		final List<TaxSystem> regimesFiscauxICC = pm.getTaxSystemsVD();
 		assertNotNull(regimesFiscauxICC);
 		assertEquals(1, regimesFiscauxICC.size());
 
-		final RegimeFiscal regimeICC = regimesFiscauxICC.get(0);
+		final TaxSystem regimeICC = regimesFiscauxICC.get(0);
 		assertNotNull(regimeICC);
-		assertSameDay(newDate(1993, 1, 1), regimeICC.getDateDebut());
-		assertNull(regimeICC.getDateFin());
+		assertSameDay(newDate(1993, 1, 1), regimeICC.getDateFrom());
+		assertNull(regimeICC.getDateTo());
 		assertEquals("01", regimeICC.getCode()); // selon table TY_REGIME_FISCAL
 
 		// Date de fin du dernier exercice commercial
-		assertNull(pm.getDateFinDernierExerciceCommercial());
+		assertNull(pm.getEndDateOfLastBusinessYear());
 
 		// Date de bouclement future
-		assertSameDay(newDate(2003, 12, 31), pm.getDateBouclementFutur());
+		assertSameDay(newDate(2003, 12, 31), pm.getEndDateOfNextBusinessYear());
 
 		// Dates de début et de fin de l'assujettissement LIC
-		final List<PeriodeAssujettissement> periodesAssujettissementLIC = pm.getPeriodesAssujettissementLIC();
+		final List<SimplifiedTaxLiability> periodesAssujettissementLIC = pm.getSimplifiedTaxLiabilityVD();
 		assertNotNull(periodesAssujettissementLIC);
 		assertEquals(1, periodesAssujettissementLIC.size());
 
-		final PeriodeAssujettissement assujettissementLIC = periodesAssujettissementLIC.get(0);
+		final SimplifiedTaxLiability assujettissementLIC = periodesAssujettissementLIC.get(0);
 		assertNotNull(assujettissementLIC);
-		assertEquals(newDate(1992, 12, 31), assujettissementLIC.getDateDebut());
-		assertEquals(newDate(2003, 12, 31), assujettissementLIC.getDateFin());
-		assertEquals(TypePeriodeAssujettissement.ILLIMITE, assujettissementLIC.getType());
+		assertEquals(newDate(1992, 12, 31), assujettissementLIC.getDateFrom());
+		assertEquals(newDate(2003, 12, 31), assujettissementLIC.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIC.getType());
 
 		// Dates de début et de fin de l'assujettissement LIFD
-		final List<PeriodeAssujettissement> periodesAssujettissementLIFD = pm.getPeriodesAssujettissementLIFD();
+		final List<SimplifiedTaxLiability> periodesAssujettissementLIFD = pm.getSimplifiedTaxLiabilityCH();
 		assertNotNull(periodesAssujettissementLIFD);
 		assertEquals(1, periodesAssujettissementLIFD.size());
 
-		final PeriodeAssujettissement assujettissementLIFD = periodesAssujettissementLIFD.get(0);
+		final SimplifiedTaxLiability assujettissementLIFD = periodesAssujettissementLIFD.get(0);
 		assertNotNull(assujettissementLIFD);
-		assertEquals(newDate(1992, 12, 31), assujettissementLIFD.getDateDebut());
-		assertEquals(newDate(2003, 12, 31), assujettissementLIFD.getDateFin());
-		assertEquals(TypePeriodeAssujettissement.ILLIMITE, assujettissementLIFD.getType());
+		assertEquals(newDate(1992, 12, 31), assujettissementLIFD.getDateFrom());
+		assertEquals(newDate(2003, 12, 31), assujettissementLIFD.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIFD.getType());
 
 		// Numéro IPMRO
-		assertEquals("01880", pm.getNumeroIPMRO());
+		assertEquals("01880", pm.getIpmroNumber());
 
 		// Code blocage remboursement automatique
-		assertTrue(pm.isBlocageRemboursementAutomatique());
+		assertTrue(pm.isAutomaticReimbursementBlocked());
 
 		// Date de validite et code de l'état de la PM
-		final List<EtatPM> etats = pm.getEtats();
+		final List<CorporationStatus> etats = pm.getStatuses();
 		assertNotNull(etats);
 		assertEquals(3, etats.size());
 
-		final EtatPM etat0 = etats.get(0);
+		final CorporationStatus etat0 = etats.get(0);
 		assertNotNull(etat0);
-		assertSameDay(newDate(1979, 8, 7), etat0.getDateDebut());
-		assertSameDay(newDate(2003, 4, 2), etat0.getDateFin());
+		assertSameDay(newDate(1979, 8, 7), etat0.getDateFrom());
+		assertSameDay(newDate(2003, 4, 2), etat0.getDateTo());
 		assertEquals("01", etat0.getCode()); // selon table ETAT du host
 
-		final EtatPM etat1 = etats.get(1);
+		final CorporationStatus etat1 = etats.get(1);
 		assertNotNull(etat1);
-		assertSameDay(newDate(2003, 4, 3), etat1.getDateDebut());
-		assertSameDay(newDate(2003, 11, 5), etat1.getDateFin());
+		assertSameDay(newDate(2003, 4, 3), etat1.getDateFrom());
+		assertSameDay(newDate(2003, 11, 5), etat1.getDateTo());
 		assertEquals("04", etat1.getCode()); // selon table ETAT du host
 
-		final EtatPM etat2 = etats.get(2);
+		final CorporationStatus etat2 = etats.get(2);
 		assertNotNull(etat2);
-		assertSameDay(newDate(2003, 11, 6), etat2.getDateDebut());
-		assertNull(etat2.getDateFin());
+		assertSameDay(newDate(2003, 11, 6), etat2.getDateFrom());
+		assertNull(etat2.getDateTo());
 		assertEquals("06", etat2.getCode()); // selon table ETAT du host
 		// note : le libellé des états doit être demandé au service infrastructure
 
 		// Capital libéré + absence normale ou non
-		final List<Capital> capitaux = pm.getCapitaux();
+		final List<Capital> capitaux = pm.getCapitals();
 		assertNotNull(capitaux);
 		assertEquals(1, capitaux.size());
 
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
-		assertEquals(150000, capital.getCapitalAction());
-		assertEquals(150000, capital.getCapitalLibere());
-		assertFalse(capital.isAbsenceCapitalLibereNormale());
+		assertEquals(150000, capital.getShareCapital());
+		assertEquals(150000, capital.getPaidInCapital());
+		assertFalse(capital.isAbsentPaidInCapitalNormal());
 	}
 
 	@Test
 	public void testFournirAssujettissements() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(222);
-		params.getParts().add(TiersPart.PERIODES_ASSUJETTISSEMENT);
+		params.setPartyNumber(222);
+		params.getParts().add(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
-		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+		assertEquals(222L, pm.getNumber());
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
+		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("", trimValiPattern(pm.getName2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
-		final List<PeriodeAssujettissement> lic = pm.getPeriodesAssujettissementLIC();
+		final List<SimplifiedTaxLiability> lic = pm.getSimplifiedTaxLiabilityVD();
 		assertEquals(1, lic.size());
 
-		final PeriodeAssujettissement lic0 = lic.get(0);
+		final SimplifiedTaxLiability lic0 = lic.get(0);
 		assertNotNull(lic0);
-		assertSameDay(newDate(1992, 12, 31), lic0.getDateDebut());
-		assertSameDay(newDate(2003, 12, 31), lic0.getDateFin());
-		assertEquals(TypePeriodeAssujettissement.ILLIMITE, lic0.getType());
+		assertSameDay(newDate(1992, 12, 31), lic0.getDateFrom());
+		assertSameDay(newDate(2003, 12, 31), lic0.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, lic0.getType());
 
-		final List<PeriodeAssujettissement> lifd = pm.getPeriodesAssujettissementLIFD();
+		final List<SimplifiedTaxLiability> lifd = pm.getSimplifiedTaxLiabilityCH();
 		assertEquals(1, lifd.size());
 
-		final PeriodeAssujettissement lifd0 = lifd.get(0);
+		final SimplifiedTaxLiability lifd0 = lifd.get(0);
 		assertNotNull(lifd0);
-		assertSameDay(newDate(1992, 12, 31), lifd0.getDateDebut());
-		assertSameDay(newDate(2003, 12, 31), lifd0.getDateFin());
-		assertEquals(TypePeriodeAssujettissement.ILLIMITE, lifd0.getType());
+		assertSameDay(newDate(1992, 12, 31), lifd0.getDateFrom());
+		assertSameDay(newDate(2003, 12, 31), lifd0.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, lifd0.getType());
 	}
 
 	/**
@@ -891,17 +891,17 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdresseEnvoiPM() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(1314); // Jal Holding
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(1314); // Jal Holding
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
-		assertEquals(1314L, pm.getNumero());
+		assertEquals(1314L, pm.getNumber());
 
 		{
-			final MailAddress adresse = pm.getAdresseCourrierFormattee();
+			final MailAddress adresse = pm.getFormattedMailAddress();
 			final FormattedAddress adresseFormatteee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormatteee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormatteee.getLine1())); // <-- raison sociale ligne 1
@@ -919,9 +919,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
 
 			final AddressInformation destination = adresse.getAddressInformation();
-			assertEquals(TypeAffranchissement.SUISSE, destination.getTypeAffranchissement());
-			assertEquals("pa Fidu. Commerce & Industrie", destination.getComplement());
-			assertNull(destination.getPourAdresse());
+			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());
+			assertEquals("pa Fidu. Commerce & Industrie", destination.getComplementaryInformation());
+			assertNull(destination.getCareOf());
 			assertEquals("Avenue de la Gare", destination.getStreet());
 			assertEquals("10", destination.getHouseNumber());
 			assertNull(destination.getPostOfficeBoxNumber());
@@ -930,7 +930,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		}
 
 		{
-			final MailAddress adresse = pm.getAdresseDomicileFormattee();
+			final MailAddress adresse = pm.getFormattedResidenceAddress();
 			final FormattedAddress adresseFormattee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormattee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormattee.getLine1())); // <-- raison sociale ligne 1
@@ -948,9 +948,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
 
 			final AddressInformation destination = adresse.getAddressInformation();
-			assertEquals(TypeAffranchissement.SUISSE, destination.getTypeAffranchissement());
-			assertEquals("Fid.Commerce & Industrie S.A.", destination.getComplement());
-			assertNull(destination.getPourAdresse());
+			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());
+			assertEquals("Fid.Commerce & Industrie S.A.", destination.getComplementaryInformation());
+			assertNull(destination.getCareOf());
 			assertEquals("Chemin Messidor", destination.getStreet());
 			assertEquals("5", destination.getHouseNumber());
 			assertNull(destination.getPostOfficeBoxNumber());

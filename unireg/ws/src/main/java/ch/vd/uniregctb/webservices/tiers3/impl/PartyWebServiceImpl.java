@@ -1,0 +1,697 @@
+package ch.vd.uniregctb.webservices.tiers3.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
+
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.webservices.tiers3.BatchParty;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.BusinessExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.DebtorInfo;
+import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
+import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.tiers3.Party;
+import ch.vd.unireg.webservices.tiers3.PartyInfo;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.tiers3.PartyType;
+import ch.vd.unireg.webservices.tiers3.PartyWebService;
+import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
+import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
+import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
+import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
+import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
+import ch.vd.unireg.webservices.tiers3.TechnicalExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.webservices.tiers3.data.BatchPartyBuilder;
+import ch.vd.uniregctb.webservices.tiers3.data.DebtorInfoBuilder;
+import ch.vd.uniregctb.webservices.tiers3.data.PartyBuilder;
+import ch.vd.uniregctb.webservices.tiers3.data.TaxDeclarationReturnBuilder;
+import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError;
+
+public class PartyWebServiceImpl implements PartyWebService {
+
+	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceImpl.class);
+
+	private static final int MAX_BATCH_SIZE = 500;
+	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+
+	private final Context context = new Context();
+
+	private GlobalTiersSearcher tiersSearcher;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		context.tiersDAO = tiersDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTiersService(TiersService tiersService) {
+		context.tiersService = tiersService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setSituationService(SituationFamilleService situationService) {
+		context.situationService = situationService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAdresseService(AdresseService adresseService) {
+		context.adresseService = adresseService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		context.infraService = infraService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		context.ibanValidator = ibanValidator;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setParametreService(ParametreAppService parametreService) {
+		context.parametreService = parametreService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
+		this.tiersSearcher = tiersSearcher;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceCivil(ServiceCivilService service) {
+		context.serviceCivilService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setHibernateTemplate(HibernateTemplate template) {
+		context.hibernateTemplate = template;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTransactionManager(PlatformTransactionManager manager) {
+		context.transactionManager = manager;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setLrService(ListeRecapService service) {
+		context.lrService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDiService(DeclarationImpotService service) {
+		context.diService = service;
+	}
+
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
+
+		try {
+			Set<PartyInfo> set = new HashSet<PartyInfo>();
+
+			final List<TiersCriteria> criteria = DataHelper.webToCore(params);
+			for (TiersCriteria criterion : criteria) {
+				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
+				for (TiersIndexedData value : values) {
+					final PartyInfo info = DataHelper.coreToWeb(value);
+					set.add(info);
+				}
+			}
+
+			SearchPartyResponse array = new SearchPartyResponse();
+			array.getItems().addAll(set);
+			return array;
+		}
+		catch (TooManyResultsIndexerException e) {
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER_TOO_MANY_RESULTS);
+		}
+		catch (EmptySearchCriteriaException e) {
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER_EMPTY_CRITERIA);
+		}
+		catch (IndexerException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public Party getParty(GetPartyRequest params) throws WebServiceException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			if (tiers == null) {
+				return null;
+			}
+
+			final Party data;
+			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				data = PartyBuilder.newNaturalPerson(personne, DataHelper.toSet(params.getParts()), context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				data = PartyBuilder.newCommonHousehold(menage, DataHelper.toSet(params.getParts()), context);
+			}
+			else if (tiers instanceof DebiteurPrestationImposable) {
+				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+				data = PartyBuilder.newDebtor(debiteur, DataHelper.toSet(params.getParts()), context);
+			}
+			else {
+				data = null;
+			}
+
+			return data;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BatchParty getBatchParty(final GetBatchPartyRequest params) throws WebServiceException {
+		try {
+			if (params.getPartyNumbers() == null || params.getPartyNumbers().isEmpty()) {
+				return new BatchParty();
+			}
+
+			if (params.getPartyNumbers().size() > MAX_BATCH_SIZE) {
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				LOGGER.error(message);
+				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INVALID_REQUEST);
+			}
+
+			final Map<Long, Object> results = mapParties(new HashSet<Long>(params.getPartyNumbers()), null, DataHelper.toSet(params.getParts()), new MapCallback() {
+				@Override
+				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<PartyPart> parts, RegDate date, Context context) {
+					try {
+						final Party t;
+						if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+							final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+							t = PartyBuilder.newNaturalPerson(personne, parts, context);
+						}
+						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+							t = PartyBuilder.newCommonHousehold(menage, parts, context);
+						}
+						else if (tiers instanceof DebiteurPrestationImposable) {
+							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+							t = PartyBuilder.newDebtor(debiteur, parts, context);
+						}
+						else {
+							t = null;
+						}
+						return t;
+					}
+					catch (WebServiceException e) {
+						return e;
+					}
+					catch (RuntimeException e) {
+						LOGGER.error(e, e);
+						return ExceptionHelper.newTechnicalException(e);
+					}
+				}
+			});
+
+			return BatchPartyBuilder.newBatchParty(results);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	/**
+	 * Cette méthode charge les tiers à partir de la base de données Unireg et les converti au format des Tiers du web-service.
+	 *
+	 * @param partyNumbers les numéros de tiers à extraire.
+	 * @param date         la date de validité des tiers (<b>null</b> pour la date courante)
+	 * @param parts        les parties à renseigner sur les tiers
+	 * @param callback     la méthode de callback qui va convertir chacuns des tiers de la base de données en tiers du web-service.
+	 * @return une map contenant les tiers extraits, indexés par leurs numéros. Lorsqu'un tiers n'existe pas, la valeur associée à son id est nulle. En cas d'exception, la valeur associée à l'id est
+	 *         l'exception elle-même.
+	 */
+	@SuppressWarnings({"unchecked"})
+	private Map<Long, Object> mapParties(Set<Long> partyNumbers, @Nullable RegDate date, Set<PartyPart> parts, MapCallback callback) {
+
+		final Set<Long> allIds = trim(partyNumbers);
+
+		// on travaille en utilisant plusieurs threads
+		final int nbThreads = Math.max(1, Math.min(5, allIds.size() / 25)); // un thread pour chaque multiple de 25 tiers. Au minimum 1 thread, au maximum 5 threads
+		final List<Set<Long>> list = split(allIds, nbThreads);
+
+		// démarrage des threads
+		final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
+		for (Set<Long> ids : list) {
+			MappingThread t = new MappingThread(ids, date, parts, context, callback);
+			threads.add(t);
+			t.start();
+		}
+
+		final Map<Long, Object> results = new HashMap<Long, Object>();
+
+		long loadTiersTime = 0;
+		long warmIndividusTime = 0;
+		long mapTiersTime = 0;
+
+		// attente de la fin des threads
+		for (MappingThread t : threads) {
+			try {
+				t.join();
+			}
+			catch (InterruptedException e) {
+				// thread interrompu: il ne tourne plus, rien de spécial à faire en fait.
+				LOGGER.warn("Le thread " + t.getId() + " a été interrompu", e);
+			}
+			results.putAll(t.getResults());
+
+			loadTiersTime += t.loadTiersTime;
+			warmIndividusTime += t.warmIndividusTime;
+			mapTiersTime += t.mapTiersTime;
+		}
+		long totalTime = loadTiersTime + warmIndividusTime + mapTiersTime;
+
+		if (totalTime > 0 && LOGGER.isDebugEnabled()) {
+			LOGGER.debug(String.format("temps d'exécution: chargement des tiers=%d%%, préchargement des individus=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime,
+					warmIndividusTime * 100 / totalTime, mapTiersTime * 100 / totalTime));
+		}
+
+		if (results.isEmpty()) {
+			// aucun résultat, pas la peine d'aller plus loin.
+			return null;
+		}
+
+		// ajoute les tiers non trouvés dans la base
+		for (Long id : partyNumbers) {
+			if (!results.containsKey(id)) {
+				results.put(id, null);
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Découpe le set d'ids en <i>n</i> sous-sets de tailles à peu près égales.
+	 *
+	 * @param allIds le set d'ids à découper
+	 * @param n      le nombre de sous-sets voulu
+	 * @return une liste de sous-sets
+	 */
+	private static List<Set<Long>> split(Set<Long> allIds, int n) {
+
+		Iterator<Long> iter = allIds.iterator();
+		int count = allIds.size() / n;
+
+		List<Set<Long>> list = new ArrayList<Set<Long>>();
+
+		for (int i = 0; i < n; i++) {
+			Set<Long> ids = new HashSet<Long>();
+			for (int j = 0; j < count && iter.hasNext(); j++) {
+				ids.add(iter.next());
+			}
+			if (i == n - 1) { // le dernier prends tout ce qui reste
+				while (iter.hasNext()) {
+					ids.add(iter.next());
+				}
+			}
+			list.add(ids);
+		}
+		return list;
+	}
+
+	/**
+	 * @param input un set d'entrée
+	 * @return une copie du set d'entrée avec toutes les valeurs nulles supprimées; ou le set d'entrée lui-même s'il ne contient pas de valeur nulle.
+	 */
+	private static Set<Long> trim(Set<Long> input) {
+		if (input.contains(null)) {
+			HashSet<Long> trimmed = new HashSet<Long>(input);
+			trimmed.remove(null);
+			return trimmed;
+		}
+		return input;
+	}
+
+	/**
+	 * Converti les <i>parties</i> du web-service en <i>parties</i> de la couche business, en y ajoutant la partie des fors fiscaux.
+	 *
+	 * @param parts les parties du web-service
+	 * @return les parties de la couche business.
+	 */
+	protected static Set<Parts> webToCoreWithForsFiscaux(Set<PartyPart> parts) {
+		Set<Parts> coreParts = DataHelper.webToCore(parts);
+		if (coreParts == null) {
+			coreParts = new HashSet<Parts>();
+		}
+		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
+		coreParts.add(Parts.FORS_FISCAUX);
+// msi (30.09.2010) : en fait, cela pénalise trop fortement les tiers autre que débiteurs.
+//		// les adresses et les rapports-entre-tiers sont nécessaires pour calculer les raisons sociales des débiteurs
+//		coreParts.add(Parts.ADRESSES);
+//		coreParts.add(Parts.RAPPORTS_ENTRE_TIERS);
+
+		return coreParts;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			if (tiers == null) {
+				return null;
+			}
+
+			final PartyType type = DataHelper.getPartyType(tiers);
+			if (type == null) {
+				Assert.fail("TypeTiers de tiers inconnu = [" + tiers.getClass().getSimpleName());
+			}
+
+			return type;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void setAutomaticReimbursementBlocking(final SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			if (tiers == null) {
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getPartyNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY);
+			}
+
+			tiers.setBlocageRemboursementAutomatique(params.isBlocked());
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
+		throw ExceptionHelper.newTechnicalException("Fonctionnalité pas encore implémentée.");
+	}
+
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getDebtorNumber());
+			if (tiers == null) {
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getDebtorNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY);
+			}
+			if (!(tiers instanceof DebiteurPrestationImposable)) {
+				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getDebtorNumber() + " n'est pas un débiteur.", BusinessExceptionCode.INVALID_PARTY_TYPE);
+			}
+
+			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+
+			// [UNIREG-2110] Détermine les LRs émises et celles manquantes
+			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsForPeriode(params.getTaxPeriod());
+			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(debiteur, RegDate.get(params.getTaxPeriod(), 12, 31), new ArrayList<DateRange>());
+
+			return DebtorInfoBuilder.newDebtorInfo(params, lrEmises, lrManquantes);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	/**
+	 * Classe interne au quittancement des déclarations d'impôt
+	 */
+	private static class TaxDeclarationReturnResults implements BatchResults<TaxDeclarationReturnRequest, TaxDeclarationReturnResults> {
+
+		private final ReturnTaxDeclarationsResponse reponses = new ReturnTaxDeclarationsResponse();
+
+		@Override
+		public void addErrorException(TaxDeclarationReturnRequest element, Exception e) {
+			if (e instanceof ValidationException) {
+				reponses.getResponses()
+						.add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name())));
+			}
+			else if (e instanceof RuntimeException) {
+				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
+			}
+			else {
+				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
+			}
+		}
+
+		@Override
+		public void addAll(TaxDeclarationReturnResults right) {
+			this.reponses.getResponses().addAll(right.getReponses().getResponses());
+		}
+
+		public void addReponse(TaxDeclarationReturnResponse reponse) {
+			this.reponses.getResponses().add(reponse);
+		}
+
+		public ReturnTaxDeclarationsResponse getReponses() {
+			return reponses;
+		}
+	}
+
+	@Override
+	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
+
+		try {
+			final List<TaxDeclarationReturnRequest> requests = params.getRequests();
+			final BatchTransactionTemplate<TaxDeclarationReturnRequest, TaxDeclarationReturnResults> template =
+					new BatchTransactionTemplate<TaxDeclarationReturnRequest, TaxDeclarationReturnResults>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+							context.transactionManager, null, context.hibernateTemplate);
+			final TaxDeclarationReturnResults finalReport = new TaxDeclarationReturnResults();
+			template.execute(finalReport, new BatchTransactionTemplate.BatchCallback<TaxDeclarationReturnRequest, TaxDeclarationReturnResults>() {
+
+				@Override
+				public TaxDeclarationReturnResults createSubRapport() {
+					return new TaxDeclarationReturnResults();
+				}
+
+				@Override
+				public boolean doInTransaction(List<TaxDeclarationReturnRequest> batch, TaxDeclarationReturnResults rapport) throws Exception {
+					for (TaxDeclarationReturnRequest demande : batch) {
+						final TaxDeclarationReturnResponse r = quittancerDeclaration(demande);
+						rapport.addReponse(r);
+					}
+					return true;
+				}
+			});
+			return finalReport.getReponses();
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	@Override
+	public void ping() {
+		// rien à faire
+	}
+
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+
+		try {
+			final Date searchBeginDate = XmlUtils.xmlcal2date(params.getSearchBeginDate());
+			final Date searchEndDate = XmlUtils.xmlcal2date(params.getSearchEndDate());
+			if (DateHelper.isAfter(searchBeginDate, searchEndDate)) {
+				throw ExceptionHelper.newBusinessException("La date de début de recherche " + searchBeginDate.toString() + " est après la date de fin " + searchEndDate,
+						BusinessExceptionCode.INVALID_REQUEST);
+			}
+			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(searchBeginDate, searchEndDate);
+			return listCtb.toArray(new Long[listCtb.size()]);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	private TaxDeclarationReturnResponse quittancerDeclaration(TaxDeclarationReturnRequest demande) {
+		TaxDeclarationReturnResponse r;
+		try {
+			r = handleRequest(demande);
+		}
+		catch (TaxDeclarationReturnError e) {
+			r = TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), e);
+		}
+		catch (ValidationException e) {
+			LOGGER.error(e, e);
+			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), "VALIDATION"));
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage()));
+		}
+		return r;
+	}
+
+	/**
+	 * Traite une demande de quittancement de déclaration,
+	 *
+	 * @param demande la demande de quittancement à traiter
+	 * @return la réponse de la demande de quittancement en cas de traitement effectué.
+	 * @throws ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError une erreur explicite en cas d'impossibilité d'effectuer le traitement.
+	 */
+	private TaxDeclarationReturnResponse handleRequest(TaxDeclarationReturnRequest demande) throws TaxDeclarationReturnError {
+
+		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get(demande.getKey().getTaxpayerNumber());
+		if (ctb == null) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
+		}
+
+		if (ctb.getDernierForFiscalPrincipal() == null) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_TAX_LIABILITY, "Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
+		}
+
+		if (ctb.isDebiteurInactif()) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_INACTIVE_DEBTOR, "Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
+		}
+
+		final DeclarationImpotOrdinaire declaration = findDeclaration(ctb, demande.getKey().getTaxPeriod(), demande.getKey().getSequenceNumber());
+		if (declaration == null) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAX_DECLARATION, "La déclaration n'existe pas.");
+		}
+
+		if (declaration.isAnnule()) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
+		}
+
+		final RegDate dateRetour = DataHelper.webToCore(demande.getReturnDate());
+		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
+			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_INVALID_RETURN_DATE,
+					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
+		}
+
+		// La déclaration est correcte, on la quittance
+		context.diService.retourDI(ctb, declaration, dateRetour);
+		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
+
+		return TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.OK);
+	}
+
+	/**
+	 * Recherche la declaration pour une année et un numéro de déclaration dans l'année
+	 *
+	 * @param contribuable     un contribuable
+	 * @param annee            une période fiscale complète (ex. 2010)
+	 * @param numeroSequenceDI le numéro de séquence de la déclaration pour le contribuable et la période considérés
+	 * @return une déclaration d'impôt ordinaire, ou <b>null</b> si aucune déclaration correspondant aux critère n'est trouvée.
+	 */
+	private static DeclarationImpotOrdinaire findDeclaration(final ch.vd.uniregctb.tiers.Contribuable contribuable, final int annee, int numeroSequenceDI) {
+
+		// [SIFISC-1227] Nous avons des cas où le numéro de séquence a été ré-utilisé après annulation d'une DI précédente
+		// -> on essaie toujours de renvoyer la déclaration non-annulée qui correspond et, s'il n'y en a pas, de renvoyer
+		// la dernière déclaration annulée trouvée
+
+		DeclarationImpotOrdinaire declaration = null;
+		DeclarationImpotOrdinaire declarationAnnuleeTrouvee = null;
+		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
+		if (declarations != null && !declarations.isEmpty()) {
+			for (Declaration d : declarations) {
+				if (d.getPeriode().getAnnee() != annee) {
+					continue;
+				}
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+				if (numeroSequenceDI == 0) {
+					// Dans le cas où le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
+					declaration = di;
+				}
+				else if (di.getNumero() == numeroSequenceDI) {
+					if (di.isAnnule()) {
+						declarationAnnuleeTrouvee = di;
+					}
+					else {
+						declaration = di;
+						break;
+					}
+				}
+			}
+		}
+
+		return declaration != null ? declaration : declarationAnnuleeTrouvee;
+	}
+
+}

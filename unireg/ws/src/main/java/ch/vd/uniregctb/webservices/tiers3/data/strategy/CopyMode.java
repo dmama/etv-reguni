@@ -7,9 +7,9 @@ public enum CopyMode {
 	/**
 	 * Dans ce mode, les données copiées sont ajoutées aux données présentes
 	 */
-	ADDITIF,
+	ADDITIVE,
 	/**
 	 * Dans ce mode, les données copiées remplacent les données présentes
 	 */
-	EXCLUSIF
+	EXCLUSIVE
 }

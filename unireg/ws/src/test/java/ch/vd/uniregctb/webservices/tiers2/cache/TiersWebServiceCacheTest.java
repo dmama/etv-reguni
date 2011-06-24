@@ -770,7 +770,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	/**
-	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchTiers sont correctement gérées au niveau du cache.
+	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchParty sont correctement gérées au niveau du cache.
 	 */
 	@Test
 	public void testGetBatchTiersAvecExceptionSurUnTiers() throws Exception {

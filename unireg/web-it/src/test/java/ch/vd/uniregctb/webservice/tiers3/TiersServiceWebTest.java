@@ -66,35 +66,35 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetType() throws Exception {
 
-		final GetTiersTypeRequest params = new GetTiersTypeRequest();
+		final GetPartyTypeRequest params = new GetPartyTypeRequest();
 		params.setLogin(login);
 
-		params.setTiersNumber(12100003); // Habitant
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, service.getTiersType(params));
+		params.setPartyNumber(12100003); // Habitant
+		assertEquals(PartyType.NATURAL_PERSON, service.getPartyType(params));
 
-		params.setTiersNumber(34777810); // Habitant
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, service.getTiersType(params));
+		params.setPartyNumber(34777810); // Habitant
+		assertEquals(PartyType.NATURAL_PERSON, service.getPartyType(params));
 
-		params.setTiersNumber(12100001); // Habitant
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, service.getTiersType(params));
+		params.setPartyNumber(12100001); // Habitant
+		assertEquals(PartyType.NATURAL_PERSON, service.getPartyType(params));
 
-		params.setTiersNumber(12100002); // Habitant
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, service.getTiersType(params));
+		params.setPartyNumber(12100002); // Habitant
+		assertEquals(PartyType.NATURAL_PERSON, service.getPartyType(params));
 
-		params.setTiersNumber(86116202); // Menage Commun
-		assertEquals(TypeTiers.MENAGE_COMMUN, service.getTiersType(params));
+		params.setPartyNumber(86116202); // Menage Commun
+		assertEquals(PartyType.HOUSEHOLD, service.getPartyType(params));
 
-		params.setTiersNumber(12500001); // DebiteurPrestationImposable
-		assertEquals(TypeTiers.DEBITEUR, service.getTiersType(params));
+		params.setPartyNumber(12500001); // DebiteurPrestationImposable
+		assertEquals(PartyType.DEBTOR, service.getPartyType(params));
 
-		params.setTiersNumber(12700101); // Entreprise
-		assertEquals(TypeTiers.PERSONNE_MORALE, service.getTiersType(params));
+		params.setPartyNumber(12700101); // Entreprise
+		assertEquals(PartyType.CORPORATION, service.getPartyType(params));
 
-		params.setTiersNumber(12600101); // NonHabitant
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, service.getTiersType(params));
+		params.setPartyNumber(12600101); // NonHabitant
+		assertEquals(PartyType.NATURAL_PERSON, service.getPartyType(params));
 
-		params.setTiersNumber(12800101); // AutreCommunaute
-		assertEquals(TypeTiers.PERSONNE_MORALE, service.getTiersType(params));
+		params.setPartyNumber(12800101); // AutreCommunaute
+		assertEquals(PartyType.CORPORATION, service.getPartyType(params));
 	}
 
 	@Test
@@ -109,216 +109,216 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertActivite(newDate(1980, 1, 1), newDate(1987, 1, 31), 12100002, service);
 	}
 
-	private void assertActivite(@Nullable Date debut, @Nullable Date fin, int numero, TiersWebService service) throws Exception {
-		final GetTiersRequest params = new GetTiersRequest();
+	private void assertActivite(@Nullable Date debut, @Nullable Date fin, int numero, PartyWebService service) throws Exception {
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(numero);
-		params.getParts().add(TiersPart.FORS_FISCAUX);
+		params.setPartyNumber(numero);
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
-		final Tiers tiers = service.getTiers(params);
+		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
-		assertSameDay(debut, tiers.getDateDebutActivite());
-		assertSameDay(fin, tiers.getDateFinActivite());
+		assertSameDay(debut, tiers.getActivityStartDate());
+		assertSameDay(fin, tiers.getActivityEndate());
 	}
 
 	@Test
 	public void testGetDebiteur() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12500001);
-		params.getParts().add(TiersPart.PERIODICITES);
+		params.setPartyNumber(12500001);
+		params.getParts().add(PartyPart.DEBTOR_PERIODICITIES);
 
-		final Debiteur debiteur = (Debiteur) service.getTiers(params);
+		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
-		assertEquals(Long.valueOf(12100002L), debiteur.getContribuableAssocieId());
-		assertEquals("Employeur personnel menage", debiteur.getComplementNom());
-		assertEquals(CategorieDebiteur.ADMINISTRATEURS, debiteur.getCategorie());
-		assertEquals(ModeCommunication.PAPIER, debiteur.getModeCommunication());
-		assertTrue(debiteur.isSansRappel());
-		assertTrue(debiteur.isSansListeRecapitulative());
-		assertEmpty(debiteur.getAdressesCourrier());
-		assertEmpty(debiteur.getAdressesRepresentation());
-		assertEmpty(debiteur.getAdressesPoursuite());
-		assertEmpty(debiteur.getRapportsEntreTiers());
-		assertEmpty(debiteur.getDeclarations());
+		assertEquals(Long.valueOf(12100002L), debiteur.getAssociatedTaxpayerNumber());
+		assertEquals("Employeur personnel menage", debiteur.getComplementaryName());
+		assertEquals(DebtorCategory.ADMINISTRATORS, debiteur.getCategory());
+		assertEquals(CommunicationMode.PAPER, debiteur.getCommunicationMode());
+		assertTrue(debiteur.isWithoutReminder());
+		assertTrue(debiteur.isWithoutWithholdingTaxDeclaration());
+		assertEmpty(debiteur.getMailAddresses());
+		assertEmpty(debiteur.getRepresentationAddresses());
+		assertEmpty(debiteur.getDebtProsecutionAddresses());
+		assertEmpty(debiteur.getRelationsBetweenParties());
+		assertEmpty(debiteur.getTaxDeclarations());
 
-		final List<Periodicite> periodicites = debiteur.getPeriodicites();
+		final List<DebtorPeriodicity> periodicites = debiteur.getPeriodicities();
 		assertEquals(1, periodicites.size());
 
-		final Periodicite periodicite0 = periodicites.get(0);
+		final DebtorPeriodicity periodicite0 = periodicites.get(0);
 		assertNotNull(periodicite0);
-		assertEquals(PeriodiciteDecompte.MENSUEL, periodicite0.getPeriodiciteDecompte());
-		assertNull(periodicite0.getPeriodeDecompte());
+		assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicite0.getPeriodicity());
+		assertNull(periodicite0.getSpecificPeriod());
 	}
 
 	@Test
 	public void testGetDebiteurAvecAdresses() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12500001);
-		params.getParts().add(TiersPart.ADRESSES);
+		params.setPartyNumber(12500001);
+		params.getParts().add(PartyPart.ADDRESSES);
 
-		final Debiteur debiteur = (Debiteur) service.getTiers(params);
+		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
 
-		final List<Adresse> adressesCourrier = debiteur.getAdressesCourrier();
+		final List<Address> adressesCourrier = debiteur.getMailAddresses();
 		assertNotNull(adressesCourrier);
 		assertEquals(2, adressesCourrier.size());
 
-		final Adresse courrier0 = adressesCourrier.get(0);
+		final Address courrier0 = adressesCourrier.get(0);
 		assertNotNull(courrier0);
-		assertNull(courrier0.getDateDebut());
-		assertSameDay(newDate(2004, 1, 28), courrier0.getDateFin());
-		assertEquals(new Integer(0), courrier0.getNoRue());
-		assertNull(courrier0.getNumeroRue());
-		assertEquals(283, courrier0.getNoOrdrePostal());
-		assertEquals("Villars-sous-Yens", courrier0.getLocalite());
+		assertNull(courrier0.getDateFrom());
+		assertSameDay(newDate(2004, 1, 28), courrier0.getDateTo());
+		assertEquals(new Integer(0), courrier0.getStreetId());
+		assertNull(courrier0.getHouseNumber());
+		assertEquals(283, courrier0.getSwissZipCodeId());
+		assertEquals("Villars-sous-Yens", courrier0.getTown());
 
-		final Adresse courrier1 = adressesCourrier.get(1);
+		final Address courrier1 = adressesCourrier.get(1);
 		assertNotNull(courrier1);
-		assertSameDay(newDate(2004, 1, 29), courrier1.getDateDebut());
-		assertNull(courrier1.getDateFin());
-		assertEquals(new Integer(141554), courrier1.getNoRue());
-		assertEquals("12", courrier1.getNumeroRue());
-		assertEquals(1000, courrier1.getNoOrdrePostal());
-		assertEquals("Matran", courrier1.getLocalite());
+		assertSameDay(newDate(2004, 1, 29), courrier1.getDateFrom());
+		assertNull(courrier1.getDateTo());
+		assertEquals(new Integer(141554), courrier1.getStreetId());
+		assertEquals("12", courrier1.getHouseNumber());
+		assertEquals(1000, courrier1.getSwissZipCodeId());
+		assertEquals("Matran", courrier1.getTown());
 
-		final List<Adresse> adressesRepresentation = debiteur.getAdressesRepresentation();
+		final List<Address> adressesRepresentation = debiteur.getRepresentationAddresses();
 		assertNotNull(adressesRepresentation);
 		assertEquals(2, adressesRepresentation.size());
 
-		final Adresse repres0 = adressesRepresentation.get(0);
+		final Address repres0 = adressesRepresentation.get(0);
 		assertNotNull(repres0);
-		assertNull(repres0.getDateDebut());
-		assertSameDay(newDate(2004, 1, 28), repres0.getDateFin());
-		assertEquals(new Integer(0), repres0.getNoRue());
-		assertNull(repres0.getNumeroRue());
-		assertEquals(283, repres0.getNoOrdrePostal());
-		assertEquals("La Tuilière", repres0.getRue());
-		assertEquals("Villars-sous-Yens", repres0.getLocalite());
+		assertNull(repres0.getDateFrom());
+		assertSameDay(newDate(2004, 1, 28), repres0.getDateTo());
+		assertEquals(new Integer(0), repres0.getStreetId());
+		assertNull(repres0.getHouseNumber());
+		assertEquals(283, repres0.getSwissZipCodeId());
+		assertEquals("La Tuilière", repres0.getStreet());
+		assertEquals("Villars-sous-Yens", repres0.getTown());
 
-		final Adresse repres1 = adressesRepresentation.get(1);
+		final Address repres1 = adressesRepresentation.get(1);
 		assertNotNull(repres1);
-		assertSameDay(newDate(2004, 1, 29), repres1.getDateDebut());
-		assertNull(repres1.getDateFin());
-		assertEquals(new Integer(32296), repres1.getNoRue());
-		assertEquals("1", repres1.getNumeroRue());
-		assertEquals(528, repres1.getNoOrdrePostal());
-		assertEquals("Avenue du Funiculaire", repres1.getRue());
-		assertEquals("Cossonay-Ville", repres1.getLocalite());
+		assertSameDay(newDate(2004, 1, 29), repres1.getDateFrom());
+		assertNull(repres1.getDateTo());
+		assertEquals(new Integer(32296), repres1.getStreetId());
+		assertEquals("1", repres1.getHouseNumber());
+		assertEquals(528, repres1.getSwissZipCodeId());
+		assertEquals("Avenue du Funiculaire", repres1.getStreet());
+		assertEquals("Cossonay-Ville", repres1.getTown());
 	}
 
 	@Test
 	public void testGetDebiteurAvecDeclarations() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12500001);
-		params.getParts().add(TiersPart.DECLARATIONS);
+		params.setPartyNumber(12500001);
+		params.getParts().add(PartyPart.TAX_DECLARATIONS);
 
-		final Debiteur debiteur = (Debiteur) service.getTiers(params);
+		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
 
-		assertEmpty(debiteur.getAdressesCourrier());
-		assertEmpty(debiteur.getAdressesRepresentation());
-		assertEmpty(debiteur.getAdressesPoursuite());
+		assertEmpty(debiteur.getMailAddresses());
+		assertEmpty(debiteur.getRepresentationAddresses());
+		assertEmpty(debiteur.getDebtProsecutionAddresses());
 
-		final List<Declaration> declarations = debiteur.getDeclarations();
+		final List<TaxDeclaration> declarations = debiteur.getTaxDeclarations();
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
-		final Declaration declaration = declarations.get(0);
+		final TaxDeclaration declaration = declarations.get(0);
 		assertNotNull(declaration);
-		assertTrue(declaration instanceof DeclarationImpotSource);
+		assertTrue(declaration instanceof WithholdingTaxDeclaration);
 
-		final DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
-		assertSameDay(newDate(2008, 1, 1), lr.getDateDebut());
-		assertSameDay(newDate(2008, 1, 31), lr.getDateFin());
-		assertEquals(PeriodiciteDecompte.MENSUEL, lr.getPeriodicite());
-		assertEquals(ModeCommunication.PAPIER, lr.getModeCommunication());
-		assertNull(lr.getDateAnnulation());
+		final WithholdingTaxDeclaration lr = (WithholdingTaxDeclaration) declaration;
+		assertSameDay(newDate(2008, 1, 1), lr.getDateFrom());
+		assertSameDay(newDate(2008, 1, 31), lr.getDateTo());
+		assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, lr.getPeriodicity());
+		assertEquals(CommunicationMode.PAPER, lr.getCommunicationMode());
+		assertNull(lr.getCancellationDate());
 	}
 
 	@Test
 	public void testGetDebiteurComptesBancaires() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12500001);
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(12500001);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final Debiteur debiteur = (Debiteur) service.getTiers(params);
+		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
 
-		final List<CompteBancaire> comptes = debiteur.getComptesBancaires();
+		final List<BankAccount> comptes = debiteur.getBankAccounts();
 		assertEquals(1, comptes.size());
 
-		final CompteBancaire compte = comptes.get(0);
-		assertCompte("PME Duchemolle", "CH1900767000U01234567", FormatNumeroCompte.IBAN, compte);
+		final BankAccount compte = comptes.get(0);
+		assertCompte("PME Duchemolle", "CH1900767000U01234567", AccountNumberFormat.IBAN, compte);
 	}
 
 	@Test
 	public void testGetPersonnePhysique() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12100003);
+		params.setPartyNumber(12100003);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
-		assertEquals(12100003L, personne.getNumero());
+		assertEquals(12100003L, personne.getNumber());
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueAvecDeclarations() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12100003);
-		params.getParts().add(TiersPart.DECLARATIONS);
+		params.setPartyNumber(12100003);
+		params.getParts().add(PartyPart.TAX_DECLARATIONS);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
 
-		assertEmpty(personne.getAdressesCourrier());
-		assertEmpty(personne.getAdressesRepresentation());
-		assertEmpty(personne.getAdressesPoursuite());
+		assertEmpty(personne.getMailAddresses());
+		assertEmpty(personne.getRepresentationAddresses());
+		assertEmpty(personne.getDebtProsecutionAddresses());
 
-		final List<Declaration> declarations = personne.getDeclarations();
+		final List<TaxDeclaration> declarations = personne.getTaxDeclarations();
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
-		final Declaration declaration = declarations.get(0);
+		final TaxDeclaration declaration = declarations.get(0);
 		assertNotNull(declaration);
-		assertTrue(declaration instanceof DeclarationImpotOrdinaire);
+		assertTrue(declaration instanceof OrdinaryTaxDeclaration);
 
-		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
-		assertSameDay(newDate(2008, 1, 1), di.getDateDebut());
-		assertSameDay(newDate(2008, 3, 31), di.getDateFin());
-		assertNull(di.getDateAnnulation());
-		assertEquals(6789L, di.getNumero());
-		assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, di.getTypeDocument());
-		assertEquals(5646L, di.getNumeroOfsForGestion());
+		final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) declaration;
+		assertSameDay(newDate(2008, 1, 1), di.getDateFrom());
+		assertSameDay(newDate(2008, 3, 31), di.getDateTo());
+		assertNull(di.getCancellationDate());
+		assertEquals(6789L, di.getSequenceNumber());
+		assertEquals(DocumentType.VAUDTAX_TAX_DECLARATION, di.getDocumentType());
+		assertEquals(5646L, di.getManagingMunicipalityFSOId());
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueAvecAdresseEnvoi() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12100003);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(12100003);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 		assertNotNull(pp);
 
-		assertEmpty(pp.getAdressesCourrier());
-		assertEmpty(pp.getAdressesRepresentation());
-		assertEmpty(pp.getAdressesPoursuite());
+		assertEmpty(pp.getMailAddresses());
+		assertEmpty(pp.getRepresentationAddresses());
+		assertEmpty(pp.getDebtProsecutionAddresses());
 
-		final MailAddress courrier = pp.getAdresseCourrierFormattee();
+		final MailAddress courrier = pp.getFormattedMailAddress();
 		assertNotNull(courrier);
 
 		final FormattedAddress adresse = courrier.getFormattedAddress();
@@ -339,9 +339,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("Emery", trimValiPattern(person.getLastName()));
 
 		final AddressInformation info = courrier.getAddressInformation();
-		assertEquals(TypeAffranchissement.SUISSE, info.getTypeAffranchissement());
-		assertNull(info.getComplement());
-		assertNull(info.getPourAdresse());
+		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+		assertNull(info.getComplementaryInformation());
+		assertNull(info.getCareOf());
 		assertEquals("Chemin du Riau 2A", info.getStreet());
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals("1162 St-Prex", info.getTown());
@@ -351,19 +351,19 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetPersonnePhysiqueDecedeeAvecAdresseEnvoi() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(20602603); // Delano Boschung
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(20602603); // Delano Boschung
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
-		assertSameDay(newDate(2008, 5, 1), personne.getDateDeces());
-		assertEmpty(personne.getAdressesCourrier());
-		assertEmpty(personne.getAdressesRepresentation());
-		assertEmpty(personne.getAdressesPoursuite());
+		assertSameDay(newDate(2008, 5, 1), personne.getDateOfDeath());
+		assertEmpty(personne.getMailAddresses());
+		assertEmpty(personne.getRepresentationAddresses());
+		assertEmpty(personne.getDebtProsecutionAddresses());
 
-		final MailAddress courrier = personne.getAdresseCourrierFormattee();
+		final MailAddress courrier = personne.getFormattedMailAddress();
 		assertNotNull(courrier);
 
 		final FormattedAddress adresse = courrier.getFormattedAddress();
@@ -385,9 +385,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final AddressInformation info = courrier.getAddressInformation();
 		assertNotNull(info);
-		assertEquals(TypeAffranchissement.SUISSE, info.getTypeAffranchissement());
-		assertNull(info.getComplement());
-		assertNull(info.getPourAdresse());
+		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+		assertNull(info.getComplementaryInformation());
+		assertNull(info.getCareOf());
 		assertEquals("Ch. du Devin", info.getStreet());
 		assertEquals("81", info.getHouseNumber());
 		assertNull(info.getPostOfficeBoxNumber());
@@ -398,130 +398,130 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetPersonnePhysiqueAvecForFiscaux() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12600101); // Andrea Conchita
-		params.getParts().add(TiersPart.FORS_FISCAUX);
+		params.setPartyNumber(12600101); // Andrea Conchita
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
 
-		final List<ForFiscal> forsFiscauxPrincipaux = personne.getForsFiscauxPrincipaux();
+		final List<TaxResidence> forsFiscauxPrincipaux = personne.getMainTaxResidences();
 		assertNotNull(forsFiscauxPrincipaux);
 		assertEquals(1, forsFiscauxPrincipaux.size());
 
-		final ForFiscal forPrincipal = forsFiscauxPrincipaux.get(0);
+		final TaxResidence forPrincipal = forsFiscauxPrincipaux.get(0);
 		assertNotNull(forPrincipal);
-		assertEquals(GenreImpot.REVENU_FORTUNE, forPrincipal.getGenreImpot());
-		assertEquals(MotifRattachement.DOMICILE, forPrincipal.getMotifRattachement());
-		assertEquals(ModeImposition.SOURCE, forPrincipal.getModeImposition());
-		assertSameDay(newDate(2006, 9, 1), forPrincipal.getDateDebut());
-		assertNull(forPrincipal.getDateFin());
-		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forPrincipal.getTypeAutoriteFiscale());
-		assertEquals(5586L, forPrincipal.getNoOfsAutoriteFiscale());
+		assertEquals(TaxType.INCOME_WEALTH, forPrincipal.getTaxType());
+		assertEquals(TaxLiabilityReason.RESIDENCE, forPrincipal.getTaxLiabilityReason());
+		assertEquals(TaxationMethod.WITHHOLDING, forPrincipal.getTaxationMethod());
+		assertSameDay(newDate(2006, 9, 1), forPrincipal.getDateFrom());
+		assertNull(forPrincipal.getDateTo());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, forPrincipal.getTaxationAuthorityType());
+		assertEquals(5586L, forPrincipal.getTaxationAuthorityFSOId());
 
-		assertEmpty(personne.getAutresForsFiscaux());
+		assertEmpty(personne.getOtherTaxResidences());
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueSituationFamillePersonneSeule() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12100003); // EMERY Lyah
-		params.getParts().add(TiersPart.SITUATIONS_FAMILLE);
+		params.setPartyNumber(12100003); // EMERY Lyah
+		params.getParts().add(PartyPart.FAMILY_STATUSES);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
 
-		final List<SituationFamille> situationsFamille = personne.getSituationsFamille();
+		final List<FamilyStatus> situationsFamille = personne.getFamilyStatuses();
 		assertNotNull(situationsFamille);
 		assertEquals(1, situationsFamille.size());
 
-		final SituationFamille situation = situationsFamille.get(0);
+		final FamilyStatus situation = situationsFamille.get(0);
 		assertNotNull(situation);
-		assertSameDay(newDate(1990, 2, 12), situation.getDateDebut());
-		assertNull(situation.getDateFin());
-		assertEquals(new Integer(0), situation.getNombreEnfants());
-		assertNull(situation.getTarifApplicable()); // seulement renseigné sur un couple
-		assertNull(situation.getNumeroContribuablePrincipal()); // seulement renseigné sur un couple
+		assertSameDay(newDate(1990, 2, 12), situation.getDateFrom());
+		assertNull(situation.getDateTo());
+		assertEquals(new Integer(0), situation.getNumberOfChildren());
+		assertNull(situation.getApplicableTariff()); // seulement renseigné sur un couple
+		assertNull(situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueAvecComptesBancaires() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(12100003); // EMERY Lyah
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(12100003); // EMERY Lyah
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
 
-		final List<CompteBancaire> comptes = personne.getComptesBancaires();
+		final List<BankAccount> comptes = personne.getBankAccounts();
 		assertEquals(1, comptes.size());
 
-		final CompteBancaire compte = comptes.get(0);
-		assertCompte("Emery Lyah", "CH1900767000U01234567", FormatNumeroCompte.IBAN, compte);
+		final BankAccount compte = comptes.get(0);
+		assertCompte("Emery Lyah", "CH1900767000U01234567", AccountNumberFormat.IBAN, compte);
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueSansComptesBancaires() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(34777810); // DESCLOUX Pascaline
-		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+		params.setPartyNumber(34777810); // DESCLOUX Pascaline
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
 
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
-		assertEmpty(personne.getComptesBancaires());
+		assertEmpty(personne.getBankAccounts());
 	}
 
 	@Test
 	public void testGetPersonnePhysiqueSituationFamilleCouple() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(86116202); // Les Schmidt
-		params.getParts().add(TiersPart.SITUATIONS_FAMILLE);
+		params.setPartyNumber(86116202); // Les Schmidt
+		params.getParts().add(PartyPart.FAMILY_STATUSES);
 
-		final MenageCommun menage = (MenageCommun) service.getTiers(params);
+		final CommonHousehold menage = (CommonHousehold) service.getParty(params);
 		assertNotNull(menage);
 
-		final List<SituationFamille> situationsFamille = menage.getSituationsFamille();
+		final List<FamilyStatus> situationsFamille = menage.getFamilyStatuses();
 		assertNotNull(situationsFamille);
 		assertEquals(1, situationsFamille.size());
 
-		final SituationFamille situation = situationsFamille.get(0);
+		final FamilyStatus situation = situationsFamille.get(0);
 		assertNotNull(situation);
-		assertSameDay(newDate(1990, 2, 12), situation.getDateDebut());
-		assertNull(situation.getDateFin());
-		assertEquals(new Integer(0), situation.getNombreEnfants());
-		assertEquals(TarifImpotSource.NORMAL, situation.getTarifApplicable()); // seulement renseigné sur un couple
-		assertEquals(Long.valueOf(12100002L), situation.getNumeroContribuablePrincipal()); // seulement renseigné sur un couple
+		assertSameDay(newDate(1990, 2, 12), situation.getDateFrom());
+		assertNull(situation.getDateTo());
+		assertEquals(new Integer(0), situation.getNumberOfChildren());
+		assertEquals(WithholdingTaxTariff.NORMAL, situation.getApplicableTariff()); // seulement renseigné sur un couple
+		assertEquals(Long.valueOf(12100002L), situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
 	}
 
 	@Test
 	public void testGetMenageCommun() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(86116202);
-		params.getParts().add(TiersPart.RAPPORTS_ENTRE_TIERS);
+		params.setPartyNumber(86116202);
+		params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
 
-		final MenageCommun menage = (MenageCommun) service.getTiers(params);
+		final CommonHousehold menage = (CommonHousehold) service.getParty(params);
 		assertNotNull(menage);
-		assertEquals(86116202L, menage.getNumero());
+		assertEquals(86116202L, menage.getNumber());
 
-		final List<RapportEntreTiers> rapports = menage.getRapportsEntreTiers();
+		final List<RelationBetweenParties> rapports = menage.getRelationsBetweenParties();
 		assertEquals(2, rapports.size()); // 2 rapports appartenance ménages
 
 		/* Extrait les différents type de rapports */
-		List<RapportEntreTiers> rapportsMenage = new ArrayList<RapportEntreTiers>();
-		for (RapportEntreTiers rapport : rapports) {
+		List<RelationBetweenParties> rapportsMenage = new ArrayList<RelationBetweenParties>();
+		for (RelationBetweenParties rapport : rapports) {
 			assertNotNull(rapport);
-			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
+			if (RelationBetweenPartiesType.HOUSEHOLD_MEMBER == rapport.getType()) {
 				assertTrue("Trouvé plus de 2 rapports de type appartenance ménage", rapportsMenage.size() < 2);
 				rapportsMenage.add(rapport);
 			}
@@ -531,81 +531,81 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		}
 
 		/* Trie la collection de rapports appartenance ménage par ordre croissant de numéro de l'autre tiers */
-		Collections.sort(rapportsMenage, new Comparator<RapportEntreTiers>() {
+		Collections.sort(rapportsMenage, new Comparator<RelationBetweenParties>() {
 			@Override
-			public int compare(RapportEntreTiers r1, RapportEntreTiers r2) {
-				return (int) (r1.getAutreTiersNumero() - r2.getAutreTiersNumero());
+			public int compare(RelationBetweenParties r1, RelationBetweenParties r2) {
+				return (int) (r1.getOtherPartyNumber() - r2.getOtherPartyNumber());
 			}
 		});
 		assertEquals(2, rapportsMenage.size());
 
-		final RapportEntreTiers rapportMenage0 = rapportsMenage.get(0);
-		assertEquals(12100001L, rapportMenage0.getAutreTiersNumero());
-		assertSameDay(newDate(1987, 2, 1), rapportMenage0.getDateDebut());
-		assertNull(rapportMenage0.getDateFin());
+		final RelationBetweenParties rapportMenage0 = rapportsMenage.get(0);
+		assertEquals(12100001L, rapportMenage0.getOtherPartyNumber());
+		assertSameDay(newDate(1987, 2, 1), rapportMenage0.getDateFrom());
+		assertNull(rapportMenage0.getDateTo());
 
-		final RapportEntreTiers rapportMenage1 = rapportsMenage.get(1);
-		assertEquals(12100002L, rapportMenage1.getAutreTiersNumero());
-		assertSameDay(newDate(1987, 2, 1), rapportMenage1.getDateDebut());
-		assertNull(rapportMenage1.getDateFin());
+		final RelationBetweenParties rapportMenage1 = rapportsMenage.get(1);
+		assertEquals(12100002L, rapportMenage1.getOtherPartyNumber());
+		assertSameDay(newDate(1987, 2, 1), rapportMenage1.getDateFrom());
+		assertNull(rapportMenage1.getDateTo());
 	}
 
 	@Test
 	public void testSearchTiersParNumeroZeroResultat() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNumero("1239876");
+		params.setNumber("1239876");
 
-		final SearchTiersResponse response = service.searchTiers(params);
+		final SearchPartyResponse response = service.searchParty(params);
 		assertNotNull(response);
-		assertEquals(0, response.getItem().size());
+		assertEquals(0, response.getItems().size());
 	}
 
 	@Test
 	public void testSearchTiersParNumeroUnResultat() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNumero("12100003");
+		params.setNumber("12100003");
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(1, list.getItem().size());
+		assertEquals(1, list.getItems().size());
 
-		final TiersInfo info = list.getItem().get(0);
-		assertEquals(12100003L, info.getNumero());
-		assertEquals("Lyah Emery", trimValiPattern(info.getNom1()));
-		assertEquals("", info.getNom2());
-		assertEquals(newDate(2005, 8, 29), info.getDateNaissance());
-		assertEquals("1162", info.getNpa());
-		assertEquals("St-Prex", info.getLocalite());
-		assertEquals("Suisse", info.getPays());
-		assertEquals("Chemin du Riau 2A", info.getRue());
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+		final PartyInfo info = list.getItems().get(0);
+		assertEquals(12100003L, info.getNumber());
+		assertEquals("Lyah Emery", trimValiPattern(info.getName1()));
+		assertEquals("", info.getName2());
+		assertEquals(newDate(2005, 8, 29), info.getDateOfBirth());
+		assertEquals("1162", info.getSwissZipCode());
+		assertEquals("St-Prex", info.getTown());
+		assertEquals("Suisse", info.getCountry());
+		assertEquals("Chemin du Riau 2A", info.getStreet());
+		assertEquals(PartyType.NATURAL_PERSON, info.getType());
 	}
 
 	@Test
 	public void testSearchTiersParNumeroPlusieursResultats() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNumero("12100001 + 12100002"); // Les Schmidt
+		params.setNumber("12100001 + 12100002"); // Les Schmidt
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(2, list.getItem().size());
+		assertEquals(2, list.getItems().size());
 
 		// on retrouve les schmidt (couple + 2 tiers)
 		int nbFound = 0;
-		for (int i = 0; i < list.getItem().size(); i++) {
-			TiersInfo info = list.getItem().get(i);
-			if (12100001L == info.getNumero()) { // Madame
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+		for (int i = 0; i < list.getItems().size(); i++) {
+			PartyInfo info = list.getItems().get(i);
+			if (12100001L == info.getNumber()) { // Madame
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
-			if (12100002L == info.getNumero()) { // Monsieur
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+			if (12100002L == info.getNumber()) { // Monsieur
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
 		}
@@ -615,74 +615,74 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testSearchTiersZeroResultat() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNomCourrier("GENGIS KHAN");
-		params.setTypeRecherche(TypeRecherche.CONTIENT);
+		params.setContactName("GENGIS KHAN");
+		params.setSearchMode(SearchMode.CONTAINS);
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(0, list.getItem().size());
+		assertEquals(0, list.getItems().size());
 	}
 
 	@Test
 	public void testSearchTiersUnResultat() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNomCourrier("EMERY");
-		params.setTypeRecherche(TypeRecherche.CONTIENT);
+		params.setContactName("EMERY");
+		params.setSearchMode(SearchMode.CONTAINS);
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(1, list.getItem().size());
+		assertEquals(1, list.getItems().size());
 
-		final TiersInfo info = list.getItem().get(0);
-		assertEquals(12100003L, info.getNumero());
-		assertEquals("Lyah Emery", trimValiPattern(info.getNom1()));
-		assertEquals("", info.getNom2());
-		assertEquals(newDate(2005, 8, 29), info.getDateNaissance());
-		assertEquals("1162", info.getNpa());
-		assertEquals("St-Prex", info.getLocalite());
-		assertEquals("Suisse", info.getPays());
-		assertEquals("Chemin du Riau 2A", info.getRue());
-		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+		final PartyInfo info = list.getItems().get(0);
+		assertEquals(12100003L, info.getNumber());
+		assertEquals("Lyah Emery", trimValiPattern(info.getName1()));
+		assertEquals("", info.getName2());
+		assertEquals(newDate(2005, 8, 29), info.getDateOfBirth());
+		assertEquals("1162", info.getSwissZipCode());
+		assertEquals("St-Prex", info.getTown());
+		assertEquals("Suisse", info.getCountry());
+		assertEquals("Chemin du Riau 2A", info.getStreet());
+		assertEquals(PartyType.NATURAL_PERSON, info.getType());
 	}
 
 	@Test
 	public void testSearchTiersPlusieursResultats() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setLocaliteOuPays("Yens");
-		params.setTypeRecherche(TypeRecherche.CONTIENT);
+		params.setTownOrCountry("Yens");
+		params.setSearchMode(SearchMode.CONTAINS);
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(5, list.getItem().size());
+		assertEquals(5, list.getItems().size());
 
 		// on retrouve les schmidt (couple + 2 tiers), pascaline descloux et un débiteur associé
 		int nbFound = 0;
-		for (int i = 0; i < list.getItem().size(); i++) {
-			TiersInfo info = list.getItem().get(i);
-			if (34777810L == info.getNumero()) {
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+		for (int i = 0; i < list.getItems().size(); i++) {
+			PartyInfo info = list.getItems().get(i);
+			if (34777810L == info.getNumber()) {
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
-			if (12100001L == info.getNumero()) {
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+			if (12100001L == info.getNumber()) {
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
-			if (12100002L == info.getNumero()) {
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+			if (12100002L == info.getNumber()) {
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
-			if (86116202L == info.getNumero()) {
-				assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
+			if (86116202L == info.getNumber()) {
+				assertEquals(PartyType.HOUSEHOLD, info.getType());
 				nbFound++;
 			}
-			if (12500001L == info.getNumero()) {
-				assertEquals(TypeTiers.DEBITEUR, info.getType());
+			if (12500001L == info.getNumber()) {
+				assertEquals(PartyType.DEBTOR, info.getType());
 				nbFound++;
 			}
 		}
@@ -692,25 +692,25 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testSearchTiersSurNoOfsFor() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNoOfsFor(5652);
+		params.setTaxResidenceFSOId(5652);
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(2, list.getItem().size());
+		assertEquals(2, list.getItems().size());
 
 		// on retrouve les schmidt (couple + un composant du ménage)
 		int nbFound = 0;
-		for (int i = 0; i < list.getItem().size(); i++) {
-			TiersInfo info = list.getItem().get(i);
-			long numero = info.getNumero();
+		for (int i = 0; i < list.getItems().size(); i++) {
+			PartyInfo info = list.getItems().get(i);
+			long numero = info.getNumber();
 			if (86116202L == numero) {
-				assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
+				assertEquals(PartyType.HOUSEHOLD, info.getType());
 				nbFound++;
 			}
 			if (12100002L == numero) {
-				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
 				nbFound++;
 			}
 		}
@@ -720,18 +720,18 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testSearchTiersSurNoOfsForActif() throws Exception {
 
-		final SearchTiersRequest params = new SearchTiersRequest();
+		final SearchPartyRequest params = new SearchPartyRequest();
 		params.setLogin(login);
-		params.setNoOfsFor(5652);
-		params.setForPrincipalActif(true);
+		params.setTaxResidenceFSOId(5652);
+		params.setActiveMainTaxResidence(true);
 
-		final SearchTiersResponse list = service.searchTiers(params);
+		final SearchPartyResponse list = service.searchParty(params);
 		assertNotNull(list);
-		assertEquals(1, list.getItem().size());
+		assertEquals(1, list.getItems().size());
 
-		TiersInfo info = list.getItem().get(0);
-		assertEquals(86116202L, info.getNumero());
-		assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
+		PartyInfo info = list.getItems().get(0);
+		assertEquals(86116202L, info.getNumber());
+		assertEquals(PartyType.HOUSEHOLD, info.getType());
 	}
 
 	@Test
@@ -742,13 +742,13 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		 */
 
 		{
-			final GetTiersRequest params = new GetTiersRequest();
+			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setTiersNumber(12100003); // EMERY Lyah
+			params.setPartyNumber(12100003); // EMERY Lyah
 
-			final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+			final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 			assertNotNull(personne);
-			assertFalse(personne.isBlocageRemboursementAutomatique());
+			assertFalse(personne.isAutomaticReimbursementBlocked());
 		}
 
 		/*
@@ -756,12 +756,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		 */
 
 		{
-			final SetTiersBlocRembAutoRequest params = new SetTiersBlocRembAutoRequest();
+			final SetAutomaticReimbursementBlockingRequest params = new SetAutomaticReimbursementBlockingRequest();
 			params.setLogin(login);
-			params.setTiersNumber(12100003); // EMERY Lyah
-			params.setBlocage(true);
+			params.setPartyNumber(12100003); // EMERY Lyah
+			params.setBlocked(true);
 
-			service.setTiersBlocRembAuto(params);
+			service.setAutomaticReimbursementBlocking(params);
 		}
 
 		/*
@@ -769,51 +769,51 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		 */
 
 		{
-			final GetTiersRequest params = new GetTiersRequest();
+			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setTiersNumber(12100003); // EMERY Lyah
+			params.setPartyNumber(12100003); // EMERY Lyah
 
-			final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+			final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 			assertNotNull(personne);
-			assertTrue(personne.isBlocageRemboursementAutomatique());
+			assertTrue(personne.isAutomaticReimbursementBlocked());
 		}
 	}
 
 	@Test
 	public void testAnnulationFlag() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(77714803); // RAMONI Jean
-		params.getParts().add(TiersPart.RAPPORTS_ENTRE_TIERS);
-		params.getParts().add(TiersPart.DECLARATIONS);
-		params.getParts().add(TiersPart.ETATS_DECLARATIONS);
-		params.getParts().add(TiersPart.SITUATIONS_FAMILLE);
-		params.getParts().add(TiersPart.FORS_FISCAUX);
+		params.setPartyNumber(77714803); // RAMONI Jean
+		params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		params.getParts().add(PartyPart.TAX_DECLARATIONS);
+		params.getParts().add(PartyPart.TAX_DECLARATIONS_STATUSES);
+		params.getParts().add(PartyPart.FAMILY_STATUSES);
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		// Personne annulée
-		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
-		assertSameDay(newDate(2009, 3, 4), personne.getDateAnnulation());
+		assertSameDay(newDate(2009, 3, 4), personne.getCancellationDate());
 
 		// Rapport entre tiers annulé
-		final List<RapportEntreTiers> rapports = personne.getRapportsEntreTiers();
+		final List<RelationBetweenParties> rapports = personne.getRelationsBetweenParties();
 		assertNotNull(rapports);
 		assertEquals(1, rapports.size());
 
-		final RapportEntreTiers tutelle = rapports.get(0);
+		final RelationBetweenParties tutelle = rapports.get(0);
 		assertNotNull(tutelle);
-		assertEquals(TypeRapportEntreTiers.TUTELLE, tutelle.getType());
-		assertSameDay(newDate(2009, 3, 4), tutelle.getDateAnnulation());
+		assertEquals(RelationBetweenPartiesType.GUARDIAN, tutelle.getType());
+		assertSameDay(newDate(2009, 3, 4), tutelle.getCancellationDate());
 
 		// Déclaration annulée
-		final List<Declaration> declarations = personne.getDeclarations();
+		final List<TaxDeclaration> declarations = personne.getTaxDeclarations();
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
-		final Declaration decl = declarations.get(0);
+		final TaxDeclaration decl = declarations.get(0);
 		assertNotNull(decl);
-		assertSameDay(newDate(2009, 3, 4), decl.getDateAnnulation());
+		assertSameDay(newDate(2009, 3, 4), decl.getCancellationDate());
 
 		// Délai déclaration annulé
 		// final List<DelaiDeclaration> delais = decl.getDelais();
@@ -825,31 +825,31 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		// assertSameDay(newDate(2009, 3, 4), delai.getDateAnnulation());
 
 		// Etat déclaration annulé
-		final List<EtatDeclaration> etats = decl.getEtats();
+		final List<TaxDeclarationStatus> etats = decl.getStatus();
 		assertNotNull(etats);
 		assertEquals(1, etats.size());
 
-		final EtatDeclaration etat = etats.get(0);
+		final TaxDeclarationStatus etat = etats.get(0);
 		assertNotNull(etat);
-		assertSameDay(newDate(2009, 3, 4), etat.getDateAnnulation());
+		assertSameDay(newDate(2009, 3, 4), etat.getCancellationDate());
 
 		// Situation de famille annulée
-		final List<SituationFamille> situations = personne.getSituationsFamille();
+		final List<FamilyStatus> situations = personne.getFamilyStatuses();
 		assertNotNull(situations);
 		assertEquals(1, situations.size());
 
-		final SituationFamille situ = situations.get(0);
+		final FamilyStatus situ = situations.get(0);
 		assertNotNull(situ);
-		assertSameDay(newDate(2009, 3, 4), situ.getDateAnnulation());
+		assertSameDay(newDate(2009, 3, 4), situ.getCancellationDate());
 
 		// For fiscal annulé
-		final List<ForFiscal> fors = personne.getForsFiscauxPrincipaux();
+		final List<TaxResidence> fors = personne.getMainTaxResidences();
 		assertNotNull(fors);
 		assertEquals(1, fors.size());
 
-		final ForFiscal f = fors.get(0);
+		final TaxResidence f = fors.get(0);
 		assertNotNull(f);
-		assertSameDay(newDate(2009, 3, 4), f.getDateAnnulation());
+		assertSameDay(newDate(2009, 3, 4), f.getCancellationDate());
 	}
 
 	/**
@@ -858,11 +858,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetTiersTypeInconnu() throws Exception {
 
-		final GetTiersTypeRequest params = new GetTiersTypeRequest();
+		final GetPartyTypeRequest params = new GetPartyTypeRequest();
 		params.setLogin(login);
-		params.setTiersNumber(32323232L); // inconnu
+		params.setPartyNumber(32323232L); // inconnu
 
-		assertNull(service.getTiersType(params));
+		assertNull(service.getPartyType(params));
 	}
 
 	/**
@@ -871,11 +871,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetTiersInconnu() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(32323232L); // inconnu
+		params.setPartyNumber(32323232L); // inconnu
 
-		assertNull(service.getTiers(params));
+		assertNull(service.getParty(params));
 	}
 
 	/**
@@ -886,15 +886,15 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final int anneeCourante = RegDate.get().year();
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(34777810); // DESCLOUX Pascaline
-		params.getParts().add(TiersPart.PERIODES_IMPOSITION);
+		params.setPartyNumber(34777810); // DESCLOUX Pascaline
+		params.getParts().add(PartyPart.TAXATION_PERIODS);
 
 		// récupération des périodes d'imposition
-		final Contribuable ctb = (Contribuable) service.getTiers(params);
+		final Taxpayer ctb = (Taxpayer) service.getParty(params);
 		assertNotNull(ctb);
-		final List<PeriodeImposition> periodes = ctb.getPeriodesImposition();
+		final List<TaxationPeriod> periodes = ctb.getTaxationPeriods();
 		assertNotNull(periodes);
 
 		final int size = periodes.size();
@@ -902,17 +902,17 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		// année 2002 à année courante - 1
 		for (int i = 0; i < size - 1; ++i) {
-			final PeriodeImposition p = periodes.get(i);
+			final TaxationPeriod p = periodes.get(i);
 			assertNotNull(p);
-			assertSameDay(newDate(i + PREMIERE_ANNEE_FISCALE, 1, 1), p.getDateDebut());
-			assertSameDay(newDate(i + PREMIERE_ANNEE_FISCALE, 12, 31), p.getDateFin());
+			assertSameDay(newDate(i + PREMIERE_ANNEE_FISCALE, 1, 1), p.getDateFrom());
+			assertSameDay(newDate(i + PREMIERE_ANNEE_FISCALE, 12, 31), p.getDateTo());
 		}
 
 		// année courante
-		final PeriodeImposition derniere = periodes.get(size - 1);
+		final TaxationPeriod derniere = periodes.get(size - 1);
 		assertNotNull(derniere);
-		assertSameDay(newDate(anneeCourante, 1, 1), derniere.getDateDebut());
-		assertNull(derniere.getDateFin());
+		assertSameDay(newDate(anneeCourante, 1, 1), derniere.getDateFrom());
+		assertNull(derniere.getDateTo());
 	}
 
 	/**
@@ -921,16 +921,16 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetTiersAdresseHorsSuisse() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(10035633); // Tummers-De Wit Wouter
-		params.getParts().add(TiersPart.ADRESSES);
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(10035633); // Tummers-De Wit Wouter
+		params.getParts().add(PartyPart.ADDRESSES);
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final Contribuable ctb = (Contribuable) service.getTiers(params);
+		final Taxpayer ctb = (Taxpayer) service.getParty(params);
 		assertNotNull(ctb);
 
-		final MailAddress courrier = ctb.getAdresseCourrierFormattee();
+		final MailAddress courrier = ctb.getFormattedMailAddress();
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Madame, Monsieur", adresseEnvoi.getLine1());
@@ -950,31 +950,31 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final AddressInformation info = courrier.getAddressInformation();
 		assertNotNull(info);
-		assertEquals(TypeAffranchissement.EUROPE, info.getTypeAffranchissement());
-		assertEquals("De Wit Tummers Elisabeth", info.getComplement());
-		assertNull(info.getPourAdresse());
+		assertEquals(TariffZone.EUROPE, info.getTariffZone());
+		assertEquals("De Wit Tummers Elisabeth", info.getComplementaryInformation());
+		assertNull(info.getCareOf());
 		assertEquals("Olympialaan 17", info.getStreet());
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals("4624 Aa Bergem Op Zoom", info.getTown());
 		assertEquals("Pays-Bas", info.getCountry());
 
-		final List<Adresse> adressesCourrier = ctb.getAdressesCourrier();
+		final List<Address> adressesCourrier = ctb.getMailAddresses();
 		assertNotNull(adressesCourrier);
 		assertEquals(1, adressesCourrier.size());
 
-		final Adresse adresseCourrier = adressesCourrier.get(0);
-		assertNotNull(adresseCourrier);
-		assertNull(adresseCourrier.getCasePostale());
-		assertSameDay(newDate(2009, 6, 25), adresseCourrier.getDateDebut());
-		assertNull(adresseCourrier.getDateFin());
-		assertEquals("4624 Aa Bergem Op Zoom", adresseCourrier.getLocalite());
-		assertEquals(0, adresseCourrier.getNoOrdrePostal());
-		assertNull(adresseCourrier.getNoRue());
-		assertEquals("Olympialaan 17", adresseCourrier.getRue());
-		assertNull(adresseCourrier.getNumeroAppartement());
-		assertEquals("", adresseCourrier.getNumeroPostal());
-		assertEquals("Pays-Bas", adresseCourrier.getPays());
-		assertEquals("De Wit Tummers Elisabeth", adresseCourrier.getTitre());
+		final Address addressCourrier = adressesCourrier.get(0);
+		assertNotNull(addressCourrier);
+		assertNull(addressCourrier.getPostOfficeBox());
+		assertSameDay(newDate(2009, 6, 25), addressCourrier.getDateFrom());
+		assertNull(addressCourrier.getDateTo());
+		assertEquals("4624 Aa Bergem Op Zoom", addressCourrier.getTown());
+		assertEquals(0, addressCourrier.getSwissZipCodeId());
+		assertNull(addressCourrier.getStreetId());
+		assertEquals("Olympialaan 17", addressCourrier.getStreet());
+		assertNull(addressCourrier.getDwellingNumber());
+		assertEquals("", addressCourrier.getZipCode());
+		assertEquals("Pays-Bas", addressCourrier.getCountry());
+		assertEquals("De Wit Tummers Elisabeth", addressCourrier.getTitle());
 	}
 
 	/**
@@ -983,10 +983,10 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetBatchTiersEmptyList() throws Exception {
 
-		final GetBatchTiersRequest params = new GetBatchTiersRequest();
+		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
 
-		final BatchTiers batch = service.getBatchTiers(params);
+		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEmpty(batch.getEntries());
 	}
@@ -997,11 +997,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetBatchTiersSurTiersInconnu() throws Exception {
 
-		final GetBatchTiersRequest params = new GetBatchTiersRequest();
+		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getTiersNumbers().add(32323232L); // inconnu
+		params.getPartyNumbers().add(32323232L); // inconnu
 
-		final BatchTiers batch = service.getBatchTiers(params);
+		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEmpty(batch.getEntries());
 	}
@@ -1012,21 +1012,21 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetBatchTiersUnTiers() throws Exception {
 
-		final GetBatchTiersRequest params = new GetBatchTiersRequest();
+		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getTiersNumbers().add(12100003L);
+		params.getPartyNumbers().add(12100003L);
 
-		final BatchTiers batch = service.getBatchTiers(params);
+		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEquals(1, batch.getEntries().size());
 
-		final BatchTiersEntry entry = batch.getEntries().get(0);
+		final BatchPartyEntry entry = batch.getEntries().get(0);
 		assertNotNull(entry);
 		assertNull(entry.getExceptionInfo());
 
-		final Tiers tiers = entry.getTiers();
+		final Party tiers = entry.getParty();
 		assertNotNull(tiers);
-		assertEquals(12100003L, tiers.getNumero());
+		assertEquals(12100003L, tiers.getNumber());
 	}
 
 	/**
@@ -1035,27 +1035,27 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetBatchTiersHistoPlusieursTiers() throws Exception {
 
-		final GetBatchTiersRequest params = new GetBatchTiersRequest();
+		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getTiersNumbers().add(77714803L);
-		params.getTiersNumbers().add(12100003L);
-		params.getTiersNumbers().add(34777810L);
-		params.getTiersNumbers().add(12100001L);
-		params.getTiersNumbers().add(12100002L);
-		params.getTiersNumbers().add(86116202L);
-		params.getTiersNumbers().add(12500001L);
-		params.getTiersNumbers().add(12600101L);
-		params.getTiersNumbers().add(10035633L);
-		final int size = params.getTiersNumbers().size();
+		params.getPartyNumbers().add(77714803L);
+		params.getPartyNumbers().add(12100003L);
+		params.getPartyNumbers().add(34777810L);
+		params.getPartyNumbers().add(12100001L);
+		params.getPartyNumbers().add(12100002L);
+		params.getPartyNumbers().add(86116202L);
+		params.getPartyNumbers().add(12500001L);
+		params.getPartyNumbers().add(12600101L);
+		params.getPartyNumbers().add(10035633L);
+		final int size = params.getPartyNumbers().size();
 
-		final BatchTiers batch = service.getBatchTiers(params);
+		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEquals(size, batch.getEntries().size());
 
 		final Set<Long> ids = new HashSet<Long>();
-		for (BatchTiersEntry entry : batch.getEntries()) {
+		for (BatchPartyEntry entry : batch.getEntries()) {
 			ids.add(entry.getNumber());
-			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getTiers());
+			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getParty());
 			assertNull(entry.getExceptionInfo());
 		}
 		assertEquals(size, ids.size());
@@ -1076,17 +1076,17 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetBatchTiersHistoSurTiersNonAutorise() throws Exception {
 
-		final GetBatchTiersRequest params = new GetBatchTiersRequest();
+		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(zciddo); // Daniel Di Lallo
-		params.getTiersNumbers().add(10149508L); // Pascal Broulis
+		params.getPartyNumbers().add(10149508L); // Pascal Broulis
 
-		final BatchTiers batch = service.getBatchTiers(params);
+		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEquals(1, batch.getEntries().size());
 
-		final BatchTiersEntry entry = batch.getEntries().get(0);
+		final BatchPartyEntry entry = batch.getEntries().get(0);
 		assertNotNull(entry);
-		assertNull(entry.getTiers()); // autorisation exclusive pour Francis Perroset
+		assertNull(entry.getParty()); // autorisation exclusive pour Francis Perroset
 
 		final WebServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
 		assertTrue(exceptionInfo instanceof AccessDeniedExceptionInfo);
@@ -1099,21 +1099,21 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetTiersCategorie() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 
 		{ // catégorie inconnue
-			params.setTiersNumber(10035633); // Tummers-De Wit Wouter
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+			params.setPartyNumber(10035633); // Tummers-De Wit Wouter
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
-			assertNull(pp.getCategorie());
+			assertNull(pp.getCategory());
 		}
 
 		{ // permis B
-			params.setTiersNumber(10174192); // Eudina Mara Alencar Casal
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+			params.setPartyNumber(10174192); // Eudina Mara Alencar Casal
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
-			assertEquals(CategoriePersonnePhysique.C_02_PERMIS_SEJOUR_B, pp.getCategorie());
+			assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());
 		}
 	}
 
@@ -1123,52 +1123,52 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetTiersForVirtuels() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.getParts().add(TiersPart.FORS_FISCAUX);
-		params.setTiersNumber(12100002); // Laurent Schmidt
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
+		params.setPartyNumber(12100002); // Laurent Schmidt
 
 		//
 		// sans les fors virtuels
 		//
 
 		{
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
 
-			final List<ForFiscal> fors = pp.getForsFiscauxPrincipaux();
+			final List<TaxResidence> fors = pp.getMainTaxResidences();
 			assertNotNull(fors);
 			assertEquals(1, fors.size());
 
-			final ForFiscal fp = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp.getDateDebut());
-			assertSameDay(newDate(1987, 1, 31), fp.getDateFin());
-			assertFalse(fp.isVirtuel());
+			final TaxResidence fp = fors.get(0);
+			assertSameDay(newDate(1980, 1, 1), fp.getDateFrom());
+			assertSameDay(newDate(1987, 1, 31), fp.getDateTo());
+			assertFalse(fp.isVirtual());
 		}
 
 		//
 		// avec les fors virtuels
 		//
 
-		params.getParts().add(TiersPart.FORS_FISCAUX_VIRTUELS);
+		params.getParts().add(PartyPart.VIRTUAL_TAX_RESIDENCES);
 
 		{
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
 
-			final List<ForFiscal> fors = pp.getForsFiscauxPrincipaux();
+			final List<TaxResidence> fors = pp.getMainTaxResidences();
 			assertNotNull(fors);
 			assertEquals(2, fors.size());
 
-			final ForFiscal fp0 = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp0.getDateDebut());
-			assertSameDay(newDate(1987, 1, 31), fp0.getDateFin());
-			assertFalse(fp0.isVirtuel());
+			final TaxResidence fp0 = fors.get(0);
+			assertSameDay(newDate(1980, 1, 1), fp0.getDateFrom());
+			assertSameDay(newDate(1987, 1, 31), fp0.getDateTo());
+			assertFalse(fp0.isVirtual());
 
-			final ForFiscal fp1 = fors.get(1);
-			assertSameDay(newDate(1987, 2, 1), fp1.getDateDebut());
-			assertNull(fp1.getDateFin());
-			assertTrue(fp1.isVirtuel());
+			final TaxResidence fp1 = fors.get(1);
+			assertSameDay(newDate(1987, 2, 1), fp1.getDateFrom());
+			assertNull(fp1.getDateTo());
+			assertTrue(fp1.isVirtual());
 		}
 
 		//
@@ -1176,20 +1176,20 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		// pas demandés)
 		//
 
-		params.getParts().remove(TiersPart.FORS_FISCAUX_VIRTUELS);
+		params.getParts().remove(PartyPart.VIRTUAL_TAX_RESIDENCES);
 
 		{
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
 
-			final List<ForFiscal> fors = pp.getForsFiscauxPrincipaux();
+			final List<TaxResidence> fors = pp.getMainTaxResidences();
 			assertNotNull(fors);
 			assertEquals(1, fors.size());
 
-			final ForFiscal fp = fors.get(0);
-			assertSameDay(newDate(1980, 1, 1), fp.getDateDebut());
-			assertSameDay(newDate(1987, 1, 31), fp.getDateFin());
-			assertFalse(fp.isVirtuel());
+			final TaxResidence fp = fors.get(0);
+			assertSameDay(newDate(1980, 1, 1), fp.getDateFrom());
+			assertSameDay(newDate(1987, 1, 31), fp.getDateTo());
+			assertFalse(fp.isVirtual());
 		}
 	}
 
@@ -1199,54 +1199,54 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void getTiersHistoPeriodesAssujettissement() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(87654321); // Alfred Dupneu
-		params.getParts().add(TiersPart.PERIODES_ASSUJETTISSEMENT);
+		params.setPartyNumber(87654321); // Alfred Dupneu
+		params.getParts().add(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
 
-		final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 		assertNotNull(pp);
 
-		final List<PeriodeAssujettissement> lic = pp.getPeriodesAssujettissementLIC();
+		final List<SimplifiedTaxLiability> lic = pp.getSimplifiedTaxLiabilityVD();
 		assertEquals(2, lic.size());
 
 		{ // assujettissement passé
 
-			final PeriodeAssujettissement a = lic.get(0);
+			final SimplifiedTaxLiability a = lic.get(0);
 			assertNotNull(a);
-			assertSameDay(newDate(1985, 9, 1), a.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), a.getDateFin());
-			assertEquals(TypePeriodeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
+			assertSameDay(newDate(1985, 9, 1), a.getDateFrom());
+			assertSameDay(newDate(1990, 2, 15), a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
 		}
 
 		{ // assujettissement courant
 
-			final PeriodeAssujettissement a = lic.get(1);
+			final SimplifiedTaxLiability a = lic.get(1);
 			assertNotNull(a);
-			assertSameDay(newDate(2003, 7, 12), a.getDateDebut());
-			assertNull(a.getDateFin());
-			assertEquals(TypePeriodeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
+			assertSameDay(newDate(2003, 7, 12), a.getDateFrom());
+			assertNull(a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
 		}
 
-		final List<PeriodeAssujettissement> lifd = pp.getPeriodesAssujettissementLIFD();
+		final List<SimplifiedTaxLiability> lifd = pp.getSimplifiedTaxLiabilityCH();
 		assertEquals(2, lifd.size());
 
 		{ // assujettissement passé
 
-			final PeriodeAssujettissement a = lifd.get(0);
+			final SimplifiedTaxLiability a = lifd.get(0);
 			assertNotNull(a);
-			assertSameDay(newDate(1985, 9, 1), a.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), a.getDateFin());
-			assertEquals(TypePeriodeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
+			assertSameDay(newDate(1985, 9, 1), a.getDateFrom());
+			assertSameDay(newDate(1990, 2, 15), a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
 		}
 
 		{ // assujettissement courant
 
-			final PeriodeAssujettissement a = lifd.get(1);
+			final SimplifiedTaxLiability a = lifd.get(1);
 			assertNotNull(a);
-			assertSameDay(newDate(2003, 7, 12), a.getDateDebut());
-			assertNull(a.getDateFin());
-			assertEquals(TypePeriodeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
+			assertSameDay(newDate(2003, 7, 12), a.getDateFrom());
+			assertNull(a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
 		}
 	}
 
@@ -1256,15 +1256,15 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void getTiersPMAdresseEnvoi() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(312); // PLACE CENTRALE, La Sarraz
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(312); // PLACE CENTRALE, La Sarraz
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
-		final FormattedAddress adresse = pm.getAdresseCourrierFormattee().getFormattedAddress();
+		final FormattedAddress adresse = pm.getFormattedMailAddress().getFormattedAddress();
 		assertNotNull(adresse);
 		assertEquals("Société immobilière de", trimValiPattern(adresse.getLine1()));
 		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLine2()));
@@ -1280,15 +1280,15 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void getTiersPMAdresseEnvoiNomRue() throws Exception {
 
-		final GetTiersRequest params = new GetTiersRequest();
+		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setTiersNumber(1314); // JAL HOLDING
-		params.getParts().add(TiersPart.ADRESSES_FORMATTEES);
+		params.setPartyNumber(1314); // JAL HOLDING
+		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
-		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
-		final FormattedAddress adresse = pm.getAdresseCourrierFormattee().getFormattedAddress();
+		final FormattedAddress adresse = pm.getFormattedMailAddress().getFormattedAddress();
 		assertNotNull(adresse);
 
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLine1()));

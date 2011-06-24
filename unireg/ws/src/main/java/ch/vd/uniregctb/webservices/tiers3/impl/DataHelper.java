@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.ech.xmlns.ech_0044._2.DatePartiallyKnown;
-import ch.ech.xmlns.ech_0044._2.NamedPersonId;
+import ch.ech.ech0044.DatePartiallyKnown;
+import ch.ech.ech0044.NamedPersonId;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -23,15 +23,15 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.webservices.tiers3.Adresse;
-import ch.vd.unireg.webservices.tiers3.AdresseAutreTiers;
+import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.Date;
 import ch.vd.unireg.webservices.tiers3.MailAddress;
-import ch.vd.unireg.webservices.tiers3.MailAddressOtherTiers;
-import ch.vd.unireg.webservices.tiers3.SearchTiersRequest;
-import ch.vd.unireg.webservices.tiers3.TiersInfo;
-import ch.vd.unireg.webservices.tiers3.TiersPart;
-import ch.vd.unireg.webservices.tiers3.TypeTiers;
+import ch.vd.unireg.webservices.tiers3.MailAddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.OtherPartyAddress;
+import ch.vd.unireg.webservices.tiers3.PartyInfo;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.tiers3.PartyType;
+import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -53,7 +53,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.webservices.tiers3.data.AdresseBuilder;
+import ch.vd.uniregctb.webservices.tiers3.data.AddressBuilder;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'web'.
@@ -107,81 +107,81 @@ public class DataHelper {
 		}
 	}
 
-	public static List<Adresse> coreToWeb(List<AdresseGenerique> adresses,
+	public static List<Address> coreToWeb(List<AdresseGenerique> adresses,
 	                                      @org.jetbrains.annotations.Nullable DateRangeHelper.Range range,
 	                                      ServiceInfrastructureService serviceInfra) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
-		List<Adresse> list = new ArrayList<Adresse>();
+		List<Address> list = new ArrayList<Address>();
 		for (AdresseGenerique a : adresses) {
 			if (a.isAnnule()) {
 				continue;
 			}
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AdresseBuilder.newAdresse(a, serviceInfra));
+				list.add(AddressBuilder.newAddress(a, serviceInfra));
 			}
 		}
 
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<AdresseAutreTiers> coreToWebAT(List<AdresseGenerique> adresses,
+	public static List<OtherPartyAddress> coreToWebAT(List<AdresseGenerique> adresses,
 	                                                  @Nullable DateRangeHelper.Range range,
 	                                                  ServiceInfrastructureService serviceInfra) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
-		List<AdresseAutreTiers> list = new ArrayList<AdresseAutreTiers>();
+		List<OtherPartyAddress> list = new ArrayList<OtherPartyAddress>();
 		for (AdresseGenerique a : adresses) {
 			if (a.isAnnule()) {
 				continue;
 			}
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AdresseBuilder.newAdresseAutreTiers(a, serviceInfra));
+				list.add(AddressBuilder.newOtherPartyAddress(a, serviceInfra));
 			}
 		}
 
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<TiersCriteria> webToCore(SearchTiersRequest criteria) {
+	public static List<TiersCriteria> webToCore(SearchPartyRequest criteria) {
 		if (criteria == null) {
 			return null;
 		}
 
 		final List<TiersCriteria> list = new ArrayList<TiersCriteria>();
 
-		if (criteria.getNumero() == null || criteria.getNumero().length() == 0) {
+		if (criteria.getNumber() == null || criteria.getNumber().length() == 0) {
 			/*
 			 * Si le numéro est nul, on fait une recherche normale
 			 */
 			final TiersCriteria coreCriteria = new TiersCriteria();
 			coreCriteria.setNumero(null);
 
-			final TiersCriteria.TypeRecherche type = EnumHelper.webToCore(criteria.getTypeRecherche());
+			final TiersCriteria.TypeRecherche type = EnumHelper.webToCore(criteria.getSearchMode());
 			coreCriteria.setTypeRechercheDuNom(type == null ? TiersCriteria.TypeRecherche.CONTIENT : type);
 
-			coreCriteria.setLocaliteOuPays(criteria.getLocaliteOuPays());
-			coreCriteria.setNomRaison(criteria.getNomCourrier());
-			coreCriteria.setNumeroAVS(criteria.getNumeroAVS());
-			coreCriteria.setDateNaissance(DataHelper.webToCore(criteria.getDateNaissance()));
-			if (criteria.getNoOfsFor() != null) {
-				coreCriteria.setNoOfsFor(criteria.getNoOfsFor().toString());
+			coreCriteria.setLocaliteOuPays(criteria.getTownOrCountry());
+			coreCriteria.setNomRaison(criteria.getContactName());
+			coreCriteria.setNumeroAVS(criteria.getVn());
+			coreCriteria.setDateNaissance(DataHelper.webToCore(criteria.getDateOfBirth()));
+			if (criteria.getTaxResidenceFSOId() != null) {
+				coreCriteria.setNoOfsFor(criteria.getTaxResidenceFSOId().toString());
 			}
-			if (criteria.isForPrincipalActif() != null) {
-				coreCriteria.setForPrincipalActif(criteria.isForPrincipalActif());
+			if (criteria.isActiveMainTaxResidence() != null) {
+				coreCriteria.setForPrincipalActif(criteria.isActiveMainTaxResidence());
 			}
-			if (criteria.getTypeTiers() != null) {
-				coreCriteria.setTypesTiers(webToCore(criteria.getTypeTiers()));
+			if (criteria.getPartyTypes() != null) {
+				coreCriteria.setTypesTiers(webToCore(criteria.getPartyTypes()));
 			}
-			if (criteria.getCategorieDebiteur() != null) {
-				coreCriteria.setCategorieDebiteurIs(CategorieImpotSource.valueOf(criteria.getCategorieDebiteur().name()));
+			if (criteria.getDebtorCategory() != null) {
+				coreCriteria.setCategorieDebiteurIs(CategorieImpotSource.valueOf(criteria.getDebtorCategory().name()));
 			}
 
-			coreCriteria.setTiersActif(criteria.isTiersActif());
+			coreCriteria.setTiersActif(criteria.isActiveParty());
 
 			list.add(coreCriteria);
 		}
@@ -189,7 +189,7 @@ public class DataHelper {
 			/*
 			 * Dans le cas d'une recherche sur le numéro, on accepte plusieurs numéros séparés par des "+"
 			 */
-			final String[] numeros = criteria.getNumero().split("\\+");
+			final String[] numeros = criteria.getNumber().split("\\+");
 			for (String numero : numeros) {
 
 				final Long no;
@@ -213,20 +213,20 @@ public class DataHelper {
 		return list;
 	}
 
-	public static Set<TiersCriteria.TypeTiers> webToCore(List<TypeTiers> typeTiers) {
+	public static Set<TiersCriteria.TypeTiers> webToCore(List<PartyType> typeTiers) {
 		Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
-		for (TypeTiers t : typeTiers) {
+		for (PartyType t : typeTiers) {
 			switch (t) {
-			case DEBITEUR:
+			case DEBTOR:
 				set.add(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
 				break;
-			case MENAGE_COMMUN:
+			case HOUSEHOLD:
 				set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
 				break;
-			case PERSONNE_MORALE:
+			case CORPORATION:
 				set.add(TiersCriteria.TypeTiers.ENTREPRISE);
 				break;
-			case PERSONNE_PHYSIQUE:
+			case NATURAL_PERSON:
 				set.add(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 				break;
 			default:
@@ -236,21 +236,21 @@ public class DataHelper {
 		return set;
 	}
 
-	public static TiersInfo coreToWeb(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static PartyInfo coreToWeb(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
 
-		final TiersInfo i = new TiersInfo();
-		i.setNumero(value.getNumero());
-		i.setNom1(value.getNom1());
-		i.setNom2(value.getNom2());
-		i.setRue(value.getRue());
-		i.setNpa(value.getNpa());
-		i.setLocalite(value.getLocalite());
-		i.setPays(value.getPays());
-		i.setDateNaissance(DataHelper.coreToWeb(value.getRegDateNaissance()));
-		i.setType(DataHelper.getTypeTiers(value));
+		final PartyInfo i = new PartyInfo();
+		i.setNumber(value.getNumero());
+		i.setName1(value.getNom1());
+		i.setName2(value.getNom2());
+		i.setStreet(value.getRue());
+		i.setSwissZipCode(value.getNpa());
+		i.setTown(value.getLocalite());
+		i.setCountry(value.getPays());
+		i.setDateOfBirth(DataHelper.coreToWeb(value.getRegDateNaissance()));
+		i.setType(DataHelper.getPartyType(value));
 		return i;
 	}
 
@@ -293,21 +293,21 @@ public class DataHelper {
 	 * @param tiers l'instance concrète du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static TypeTiers getType(final ch.vd.uniregctb.tiers.Tiers tiers) {
-		final TypeTiers type;
+	public static PartyType getPartyType(final ch.vd.uniregctb.tiers.Tiers tiers) {
+		final PartyType type;
 		if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
-			type = TypeTiers.PERSONNE_PHYSIQUE;
+			type = PartyType.NATURAL_PERSON;
 		}
 		else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
-			type = TypeTiers.MENAGE_COMMUN;
+			type = PartyType.HOUSEHOLD;
 		}
 		else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
-			type = TypeTiers.DEBITEUR;
+			type = PartyType.DEBTOR;
 		}
 		else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise || tiers instanceof ch.vd.uniregctb.tiers.Etablissement
 				|| tiers instanceof ch.vd.uniregctb.tiers.AutreCommunaute
 				|| tiers instanceof ch.vd.uniregctb.tiers.CollectiviteAdministrative) {
-			type = TypeTiers.PERSONNE_MORALE;
+			type = PartyType.CORPORATION;
 		}
 		else {
 			type = null;
@@ -315,17 +315,17 @@ public class DataHelper {
 		return type;
 	}
 
-	private static final Map<String, TypeTiers> indexedData2Type = new HashMap<String, TypeTiers>() {
+	private static final Map<String, PartyType> indexedData2Type = new HashMap<String, PartyType>() {
 		private static final long serialVersionUID = -6977238534201838137L;
 
 		{
-			put(HabitantIndexable.SUB_TYPE, TypeTiers.PERSONNE_PHYSIQUE);
-			put(NonHabitantIndexable.SUB_TYPE, TypeTiers.PERSONNE_PHYSIQUE);
-			put(EntrepriseIndexable.SUB_TYPE, TypeTiers.PERSONNE_MORALE);
-			put(MenageCommunIndexable.SUB_TYPE, TypeTiers.MENAGE_COMMUN);
-			put(AutreCommunauteIndexable.SUB_TYPE, TypeTiers.PERSONNE_MORALE);
-			put(EntrepriseIndexable.SUB_TYPE, TypeTiers.PERSONNE_MORALE);
-			put(DebiteurPrestationImposableIndexable.SUB_TYPE, TypeTiers.DEBITEUR);
+			put(HabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, PartyType.CORPORATION);
+			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, PartyType.DEBTOR);
 		}
 	};
 
@@ -335,7 +335,7 @@ public class DataHelper {
 	 * @param tiers les données indexés du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static TypeTiers getTypeTiers(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static PartyType getPartyType(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -346,48 +346,48 @@ public class DataHelper {
 		return indexedData2Type.get(typeAsString);
 	}
 
-	public static Set<Parts> webToCore(Set<TiersPart> parts) {
+	public static Set<Parts> webToCore(Set<PartyPart> parts) {
 
 		if (parts == null) {
 			return null;
 		}
 
 		final Set<Parts> results = new HashSet<Parts>(parts.size());
-		for (TiersPart p : parts) {
+		for (PartyPart p : parts) {
 			switch (p) {
-			case ADRESSES:
-			case ADRESSES_FORMATTEES:
+			case ADDRESSES:
+			case FORMATTED_ADDRESSES:
 				results.add(Parts.ADRESSES);
 				results.add(Parts.RAPPORTS_ENTRE_TIERS);
 				break;
-			case DECLARATIONS:
-			case ETATS_DECLARATIONS:
+			case TAX_DECLARATIONS:
+			case TAX_DECLARATIONS_STATUSES:
 				results.add(Parts.DECLARATIONS);
 				break;
-			case FORS_FISCAUX:
-			case FORS_FISCAUX_VIRTUELS:
-			case FORS_GESTION:
-			case ASSUJETTISSEMENTS_ROLE:
-			case PERIODES_ASSUJETTISSEMENT:
-			case PERIODES_IMPOSITION:
+			case TAX_RESIDENCES:
+			case VIRTUAL_TAX_RESIDENCES:
+			case MANAGING_TAX_RESIDENCES:
+			case ORDINARY_TAX_LIABILITIES:
+			case SIMPLIFIED_TAX_LIABILITIES:
+			case TAXATION_PERIODS:
 				results.add(Parts.FORS_FISCAUX);
 				break;
-			case RAPPORTS_ENTRE_TIERS:
-			case COMPOSANTS_MENAGE:
+			case RELATIONS_BETWEEN_PARTIES:
+			case HOUSEHOLD_MEMBERS:
 				results.add(Parts.RAPPORTS_ENTRE_TIERS);
 				break;
-			case SITUATIONS_FAMILLE:
+			case FAMILY_STATUSES:
 				results.add(Parts.SITUATIONS_FAMILLE);
 				break;
-			case PERIODICITES:
+			case DEBTOR_PERIODICITIES:
 				results.add(Parts.PERIODICITES);
 				break;
-			case COMPTES_BANCAIRES:
-			case CAPITAUX:
-			case ETATS_PM:
-			case FORMES_JURIDIQUES:
-			case REGIMES_FISCAUX:
-			case SIEGES:
+			case BANK_ACCOUNTS:
+			case CAPITALS:
+			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
+			case LEGAL_SEATS:
 				// rien à faire
 				break;
 			default:
@@ -454,19 +454,19 @@ public class DataHelper {
 		if (adresse == null) {
 			return null;
 		}
-		return AdresseBuilder.newMailAddress(adresse);
+		return AddressBuilder.newMailAddress(adresse);
 	}
 
-	public static MailAddressOtherTiers createMailAddressOtherTiers(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static MailAddressOtherParty createMailAddressOtherTiers(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
 		}
-		return AdresseBuilder.newMailAddressOtherTiers(adressePoursuite);
+		return AddressBuilder.newMailAddressOtherTiers(adressePoursuite);
 	}
 
-	public static Set<TiersPart> toSet(List<TiersPart> parts) {
-		return new HashSet<TiersPart>(parts);
+	public static Set<PartyPart> toSet(List<PartyPart> parts) {
+		return new HashSet<PartyPart>(parts);
 	}
 
 	public static String salutations2MrMrs(String salutations) {

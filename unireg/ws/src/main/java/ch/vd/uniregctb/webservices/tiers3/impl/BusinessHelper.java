@@ -14,7 +14,7 @@ public class BusinessHelper {
 	/**
 	 * @return retourne la raison sociale du débiteur spécifié.
 	 */
-	public static String getRaisonSociale(final DebiteurPrestationImposable debiteur, @Nullable RegDate date, AdresseService service) {
+	public static String getDebtorName(final DebiteurPrestationImposable debiteur, @Nullable RegDate date, AdresseService service) {
 
 		if (date == null) {
 			date = RegDate.get();

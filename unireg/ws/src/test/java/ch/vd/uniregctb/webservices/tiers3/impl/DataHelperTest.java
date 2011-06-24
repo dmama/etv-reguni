@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
 public class DataHelperTest extends WithoutSpringTest {
@@ -16,8 +16,8 @@ public class DataHelperTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testPartsConversion() {
-		final Set<TiersPart> set = new HashSet<TiersPart>();
-		set.addAll(Arrays.asList(TiersPart.values()));
+		final Set<PartyPart> set = new HashSet<PartyPart>();
+		set.addAll(Arrays.asList(PartyPart.values()));
 		DataHelper.webToCore(set);
 	}
 }

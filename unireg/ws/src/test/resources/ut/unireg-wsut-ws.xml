@@ -45,11 +45,11 @@
 
 	<!-- Beans du web-service Tiers v3 mais sans le end-point jaxws -->
 
-	<bean id="tiersService3EndPoint" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceEndPoint">
+	<bean id="tiersService3EndPoint" class="ch.vd.uniregctb.webservices.tiers3.impl.PartyWebServiceEndPoint">
 		<property name="service" ref="tiersService3Cache" />
 	</bean>
 
-	<bean id="tiersService3Impl" class="ch.vd.uniregctb.webservices.tiers3.impl.TiersWebServiceImpl">
+	<bean id="tiersService3Impl" class="ch.vd.uniregctb.webservices.tiers3.impl.PartyWebServiceImpl">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -65,14 +65,14 @@
 		<property name="diService" ref="diService" />
 	</bean>
 
-	<bean id="tiersService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.TiersWebServiceCache">
+	<bean id="tiersService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCache">
 		<property name="target" ref="tiersService3Impl" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webServiceTiers3" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 
-	<bean id="tiersService3CacheManager" class="ch.vd.uniregctb.webservices.tiers3.cache.TiersWebServiceCacheManager">
+	<bean id="tiersService3CacheManager" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCacheManager">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="cache" ref="tiersService3Cache" />
 		<property name="tiersDAO" ref="tiersDAO" />

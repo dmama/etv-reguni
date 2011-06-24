@@ -16,7 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.TiersPart;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -30,7 +30,7 @@ public class MappingThread extends Thread {
 
 	private final Set<Long> ids;
 	private final RegDate date;
-	private final Set<TiersPart> parts;
+	private final Set<PartyPart> parts;
 	private final Context context;
 	private final MapCallback callback;
 
@@ -40,7 +40,7 @@ public class MappingThread extends Thread {
 	public long warmIndividusTime;
 	public long mapTiersTime;
 
-	public MappingThread(Set<Long> ids, RegDate date, Set<TiersPart> parts, Context context, MapCallback callback) {
+	public MappingThread(Set<Long> ids, RegDate date, Set<PartyPart> parts, Context context, MapCallback callback) {
 		this.ids = ids;
 		this.date = date;
 		this.parts = parts;
@@ -62,7 +62,7 @@ public class MappingThread extends Thread {
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
-						mapTiers();
+						mapParties();
 						return null;
 					}
 				});
@@ -70,13 +70,13 @@ public class MappingThread extends Thread {
 		});
 	}
 
-	private void mapTiers() {
+	private void mapParties() {
 
 		LOGGER.trace("Chargement des tiers - start");
 		long start = System.nanoTime();
 
 		// charge les tiers
-		final Set<TiersDAO.Parts> coreParts = TiersWebServiceImpl.webToCoreWithForsFiscaux(parts);
+		final Set<TiersDAO.Parts> coreParts = PartyWebServiceImpl.webToCoreWithForsFiscaux(parts);
 		final List<Tiers> list = context.tiersDAO.getBatch(ids, coreParts);
 		if (list == null || list.isEmpty()) {
 			return;
@@ -95,7 +95,7 @@ public class MappingThread extends Thread {
 			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 				try {
 					final AttributeIndividu[] attributs;
-					if (parts != null && (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_FORMATTEES))) {
+					if (parts != null && (parts.contains(PartyPart.ADDRESSES) || parts.contains(PartyPart.FORMATTED_ADDRESSES))) {
 						attributs = new AttributeIndividu[]{AttributeIndividu.ADRESSES, AttributeIndividu.PERMIS};
 					}
 					else {

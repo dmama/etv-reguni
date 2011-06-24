@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.webservices.tiers3.ForFiscal;
+import ch.vd.unireg.webservices.tiers3.TaxResidence;
 
 /**
  * Comparateur qui permet de trier des fors fiscaux web dans l'ordre croissant.
@@ -16,16 +16,16 @@ import ch.vd.unireg.webservices.tiers3.ForFiscal;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public final class ForFiscalComparator implements Comparator<ForFiscal> {
+public final class ForFiscalComparator implements Comparator<TaxResidence> {
 
 	private final class ForFiscalWrapper implements DateRange {
 
 		private final RegDate dateDebut;
 		private final RegDate dateFin;
 
-		public ForFiscalWrapper(ForFiscal f) {
-			this.dateDebut = DataHelper.webToCore(f.getDateDebut());
-			this.dateFin = DataHelper.webToCore(f.getDateFin());
+		public ForFiscalWrapper(TaxResidence f) {
+			this.dateDebut = DataHelper.webToCore(f.getDateFrom());
+			this.dateFin = DataHelper.webToCore(f.getDateTo());
 		}
 
 		@Override
@@ -45,7 +45,7 @@ public final class ForFiscalComparator implements Comparator<ForFiscal> {
 	}
 
 	@Override
-	public int compare(ForFiscal o1, ForFiscal o2) {
+	public int compare(TaxResidence o1, TaxResidence o2) {
 		return DateRangeComparator.compareRanges(new ForFiscalWrapper(o1), new ForFiscalWrapper(o2));
 	}
 }
