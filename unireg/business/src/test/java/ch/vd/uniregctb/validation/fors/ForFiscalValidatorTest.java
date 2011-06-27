@@ -47,14 +47,14 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
-			Assert.assertEquals(1, vr.warningsCount());
-			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(1, vr.errorsCount());
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
 			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
 										ffp, commune.getNomMinuscule(), commune.getNoOFSEtendu(), debutValiditeCommune, finValiditeCommune);
-			Assert.assertEquals(expectedMsg, vr.getWarnings().get(0));
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), RegDate.get(2008, 12, 31), commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -93,14 +93,14 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
-			Assert.assertEquals(1, vr.warningsCount());
-			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+			Assert.assertEquals(1, vr.errorsCount());
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
 			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
 										ffp, commune.getNomMinuscule(), commune.getNoOFSEtendu(), debutValiditeCommune, finValiditeCommune);
-			Assert.assertEquals(expectedMsg, vr.getWarnings().get(0));
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2009, 1, 1), null, commune.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);

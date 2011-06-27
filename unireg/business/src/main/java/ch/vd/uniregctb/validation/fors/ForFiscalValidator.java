@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.validation.fors;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -22,6 +24,56 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
+	}
+
+	/**
+	 * Interface utilisée pour faire en sorte que la validation d'un for fiscal soit faite
+	 * en supposant une date du jour spécifique (pour les tests)
+	 */
+	private static interface ReferenceDateAccessor {
+		RegDate getReferenceDate();
+	}
+
+	private static final ReferenceDateAccessor CURRENT_DATE_ACCESSOR = new ReferenceDateAccessor() {
+		@Override
+		public RegDate getReferenceDate() {
+			return RegDate.get();
+		}
+	};
+
+	private static ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>();
+
+	/**
+	 * Méthode utilisable dans les tests et qui fait en sorte que la date de "début du futur" soit la date donnée
+	 * @param date date qui devra dorénavant être considérée comme la date du jour pour ce qui concerne la validation des fors
+	 */
+	public static void setFutureBeginDate(@Nullable final RegDate date) {
+		if (date == null) {
+			futureBeginDateAccessors.set(null);
+		}
+		else {
+			futureBeginDateAccessors.set(new ReferenceDateAccessor() {
+				@Override
+				public RegDate getReferenceDate() {
+					return date;
+				}
+			});
+		}
+	}
+
+	private static ReferenceDateAccessor getFutureBeginDateAccessor() {
+		final ReferenceDateAccessor registered = futureBeginDateAccessors.get();
+		if (registered == null) {
+			return CURRENT_DATE_ACCESSOR;
+		}
+		else {
+			return registered;
+		}
+	}
+
+	private static RegDate getFutureBeginDate() {
+		final ReferenceDateAccessor accessor = getFutureBeginDateAccessor();
+		return accessor.getReferenceDate();
 	}
 
 	@Override
@@ -66,11 +118,11 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 					else if (!commune.isPrincipale()) {
 						// vérification que la commune est bien valide sur toute la période
 						final DateRange validiteCommune = new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite());
-						final DateRange validiteFor = new DateRangeHelper.Range(ff.getDateDebut(), ff.getDateFin() == null ? RegDate.get() : ff.getDateFin());      // on ne considère que la période passée des fors encore actifs
+						final DateRange validiteFor = new DateRangeHelper.Range(ff.getDateDebut(), ff.getDateFin() == null ? getFutureBeginDate() : ff.getDateFin());      // on ne considère que la période passée des fors encore actifs
 						if (!DateRangeHelper.within(validiteFor, validiteCommune)) {
 							final String debutValiditeCommune = validiteCommune.getDateDebut() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateDebut());
 							final String finValiditeCommune = validiteCommune.getDateFin() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateFin());
-							results.addWarning(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
+							results.addError(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
 									ff, commune.getNomMinuscule(), commune.getNoOFSEtendu(), debutValiditeCommune, finValiditeCommune));
 						}
 					}

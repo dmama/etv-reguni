@@ -12,7 +12,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -49,6 +50,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -498,26 +500,34 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		org.junit.Assert.assertNotNull(interne);
 		assertInstanceOf(Arrivee.class, interne);
 
-		final Arrivee arrivee = (Arrivee) interne;
+		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
+		// encore active fiscalement (un mois avant la fin)
+		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
+		try {
+			final Arrivee arrivee = (Arrivee) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
+			arrivee.checkCompleteness(erreurs, warnings);
+			arrivee.validate(erreurs, warnings);
+			arrivee.handle(warnings);
 
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (!erreurs.isEmpty()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			}
+
+			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+			assertNotNull(fors);
+			assertEquals(2, fors.size());
+			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 		}
-
-		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-		assertNotNull(fors);
-		assertEquals(2, fors.size());
-		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 	}
 
 	/**
@@ -554,26 +564,34 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		org.junit.Assert.assertNotNull(interne);
 		assertInstanceOf(Arrivee.class, interne);
 
-		final Arrivee arrivee = (Arrivee) interne;
+		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
+		// encore active fiscalement (un mois avant la fin)
+		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
+		try {
+			final Arrivee arrivee = (Arrivee) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
+			arrivee.checkCompleteness(erreurs, warnings);
+			arrivee.validate(erreurs, warnings);
+			arrivee.handle(warnings);
 
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (!erreurs.isEmpty()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			}
+
+			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+			assertNotNull(fors);
+			assertEquals(2, fors.size());
+			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 		}
-
-		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-		assertNotNull(fors);
-		assertEquals(2, fors.size());
-		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 	}
 
 	/**
@@ -617,16 +635,17 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+		try {
+			arrivee.handle(warnings);
+			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for sur Bourg-en-Lavaux");
 		}
+		catch (ValidationException e) {
+			assertEquals(1, e.getErrors().size());
 
-		final ValidationResults results = validationService.validate(pp);
-		assertEquals(1, results.warningsCount());
-		assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
-				"la période de validité de la commune Bourg-en-Lavaux (5613) à laquelle il est assigné (31.12.2010 - ?)", results.getWarnings().get(0));
+			final ValidationMessage erreur = e.getErrors().get(0);
+			assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
+					"la période de validité de la commune Bourg-en-Lavaux (5613) à laquelle il est assigné (31.12.2010 - ?)", erreur.getMessage());
+		}
 	}
 
 	/**
@@ -705,40 +724,48 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final PersonnePhysique pp = addHabitant(noInd);
-		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
+		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
+		// encore active fiscalement (un mois avant la fin)
+		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
+		try {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
 
-		// Simule un événement de déménagement de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+			// Simule un événement de déménagement de la part de la commune fusionnée
+			final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+					MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
-		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
-		// parce que - du point de vue fiscal - les communes n'ont pas encore fusionné.
-		final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
-		org.junit.Assert.assertNotNull(interne);
-		assertInstanceOf(Arrivee.class, interne);
+			// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
+			// parce que - du point de vue fiscal - les communes n'ont pas encore fusionné.
+			final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
+			org.junit.Assert.assertNotNull(interne);
+			assertInstanceOf(Arrivee.class, interne);
 
-		final Arrivee arrivee = (Arrivee) interne;
+			final Arrivee arrivee = (Arrivee) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
+			arrivee.checkCompleteness(erreurs, warnings);
+			arrivee.validate(erreurs, warnings);
+			arrivee.handle(warnings);
 
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (!erreurs.isEmpty()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			}
+
+			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+			assertNotNull(fors);
+			assertEquals(2, fors.size());
+			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					MockCommune.Villette.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+
+			assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
 		}
-
-		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-		assertNotNull(fors);
-		assertEquals(2, fors.size());
-		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Villette.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
-
-		assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 	}
 }

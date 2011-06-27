@@ -29,6 +29,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -507,7 +508,16 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
 		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+
+		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Gressy est
+		// encore active fiscalement (un mois avant la fin)
+		ForFiscalValidator.setFutureBeginDate(MockCommune.Gressy.getDateFinValidite().addMonths(-1));
+		try {
+			processor.traiteHabitant(h.getNumero(), dateTraitement);
+		}
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
