@@ -455,7 +455,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
 			assertEquals(new Date(2003, 12, 31), di.getDateTo());
 
-			final List<TaxDeclarationStatus> etats = di.getStatus();
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
 			assertNotNull(etats);
 			assertEquals(1, etats.size());
 
@@ -478,7 +478,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
 			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
 			assertEquals(new Date(2003, 12, 31), di.getDateTo());
-			assertEmpty(di.getStatus());
+			assertEmpty(di.getStatuses());
 		}
 
 		// 3. on demande de nouveau les déclarations avec leurs états => le résultat doit être identique à la demande du point 1.
@@ -496,7 +496,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
 			assertEquals(new Date(2003, 12, 31), di.getDateTo());
 
-			final List<TaxDeclarationStatus> etats = di.getStatus();
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
 			assertNotNull(etats);
 			assertEquals(1, etats.size());
 

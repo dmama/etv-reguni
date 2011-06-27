@@ -208,8 +208,8 @@ public abstract class PartyStrategy<T extends Party> {
 					if (from.getTaxDeclarations() != null && !from.getTaxDeclarations().isEmpty()) {
 						deepCopyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 						for (TaxDeclaration d : to.getTaxDeclarations()) {
-							if (d.getStatus() != null) {
-								d.getStatus().clear();
+							if (d.getStatuses() != null) {
+								d.getStatuses().clear();
 							}
 						}
 					}
@@ -313,7 +313,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
 		tiers.setActivityStartDate(DataHelper.coreToWeb(right.getDateDebutActivite()));
-		tiers.setActivityEndate(DataHelper.coreToWeb(right.getDateFinActivite()));
+		tiers.setActivityEndDate(DataHelper.coreToWeb(right.getDateFinActivite()));
 
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
 			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal

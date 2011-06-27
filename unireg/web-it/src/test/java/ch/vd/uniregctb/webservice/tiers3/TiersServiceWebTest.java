@@ -118,7 +118,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final Party tiers = service.getParty(params);
 		assertNotNull(tiers);
 		assertSameDay(debut, tiers.getActivityStartDate());
-		assertSameDay(fin, tiers.getActivityEndate());
+		assertSameDay(fin, tiers.getActivityEndDate());
 	}
 
 	@Test
@@ -825,7 +825,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		// assertSameDay(newDate(2009, 3, 4), delai.getDateAnnulation());
 
 		// Etat déclaration annulé
-		final List<TaxDeclarationStatus> etats = decl.getStatus();
+		final List<TaxDeclarationStatus> etats = decl.getStatuses();
 		assertNotNull(etats);
 		assertEquals(1, etats.size());
 

@@ -284,7 +284,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		corp.setName2(hostCorp.getRaisonSociale2());
 		corp.setName3(hostCorp.getRaisonSociale3());
 		corp.setActivityStartDate(DataHelper.coreToWeb(hostCorp.getDateConstitution()));
-		corp.setActivityEndate(DataHelper.coreToWeb(hostCorp.getDateFinActivite()));
+		corp.setActivityEndDate(DataHelper.coreToWeb(hostCorp.getDateFinActivite()));
 		corp.setEndDateOfNextBusinessYear(DataHelper.coreToWeb(hostCorp.getDateBouclementFuture()));
 		corp.setIpmroNumber(hostCorp.getNumeroIPMRO());
 

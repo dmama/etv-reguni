@@ -166,7 +166,7 @@ public class DataHelper {
 
 			coreCriteria.setLocaliteOuPays(criteria.getTownOrCountry());
 			coreCriteria.setNomRaison(criteria.getContactName());
-			coreCriteria.setNumeroAVS(criteria.getVn());
+			coreCriteria.setNumeroAVS(criteria.getSocialInsuranceNumber());
 			coreCriteria.setDateNaissance(DataHelper.webToCore(criteria.getDateOfBirth()));
 			if (criteria.getTaxResidenceFSOId() != null) {
 				coreCriteria.setNoOfsFor(criteria.getTaxResidenceFSOId().toString());

@@ -56,7 +56,7 @@ public class TaxDeclarationBuilder {
 	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
 			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtats()) {
-				d.getStatus().add(newTaxDeclarationStatus(etat));
+				d.getStatuses().add(newTaxDeclarationStatus(etat));
 			}
 		}
 	}
@@ -91,7 +91,7 @@ public class TaxDeclarationBuilder {
 		if (d == null) {
 			return null;
 		}
-		final ArrayList<TaxDeclarationStatus> clonedEtats = cloneStatuses(d.getStatus());
+		final ArrayList<TaxDeclarationStatus> clonedEtats = cloneStatuses(d.getStatuses());
 		if (d instanceof OrdinaryTaxDeclaration) {
 			return new OrdinaryTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((OrdinaryTaxDeclaration) d).getSequenceNumber(),
 					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId());

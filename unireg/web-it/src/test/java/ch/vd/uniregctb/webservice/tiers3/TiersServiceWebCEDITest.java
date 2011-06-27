@@ -351,7 +351,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 			}
 		}
 		assertNotNull(declaration);
-		final List<TaxDeclarationStatus> etats = declaration.getStatus();
+		final List<TaxDeclarationStatus> etats = declaration.getStatuses();
 		assertNotNull(etats);
 
 		TaxDeclarationStatus etat = null;
