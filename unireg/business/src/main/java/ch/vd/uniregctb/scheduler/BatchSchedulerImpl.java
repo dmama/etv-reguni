@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -107,7 +108,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
 	@Override
-	public void registerCron(JobDefinition job, Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException {
+	public void registerCron(JobDefinition job, @Nullable Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException {
 
 		AuthenticationHelper.pushPrincipal("[cron]");
 		try {

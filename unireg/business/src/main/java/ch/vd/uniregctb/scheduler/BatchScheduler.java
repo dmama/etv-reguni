@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 /**
@@ -43,7 +44,7 @@ public interface BatchScheduler {
 	 * @throws SchedulerException en cas d'exception dans le scheduler
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
-	void registerCron(JobDefinition job, Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException;
+	void registerCron(JobDefinition job, @Nullable Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException;
 
 	/**
 	 * Démarre l'exécution d'un job avec les paramètres spécifiés.
