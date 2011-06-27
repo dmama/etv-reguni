@@ -68,14 +68,14 @@ public class FidorClientImpl implements FidorClient {
 		return service.getCommuneParNoTechnique(noTechnique);
 	}
 
-	public List<CommuneFiscale> getCommunesHistoParNoOFS(int ofsId) throws FidorBusinessException_Exception {
+	public List<CommuneFiscale> getCommunesParNoOFS(int ofsId) throws FidorBusinessException_Exception {
 		init();
-		return service.getCommunesHistoParNoOFS(ofsId);
+		return service.getCommunesParNoOFS(ofsId);
 	}
 
-	public List<CommuneFiscale> getCommunesHistoParNoTechnique(int noTechnique) throws FidorBusinessException_Exception {
+	public List<CommuneFiscale> getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception {
 		init();
-		return service.getCommunesHistoParNoTechnique(noTechnique);
+		return service.getCommunesParFusion(ofsId, dateFusion);
 	}
 
 	public List<CommuneFiscale> getCommunesValides(FidorDate date) throws FidorBusinessException_Exception {

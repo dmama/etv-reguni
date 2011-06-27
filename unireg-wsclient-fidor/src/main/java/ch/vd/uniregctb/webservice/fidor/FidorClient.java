@@ -36,25 +36,26 @@ public interface FidorClient {
 	CommuneFiscale getCommuneParNoTechnique(int noTechnique) throws FidorBusinessException_Exception;
 
 	/**
-	 * Retourne l'historique complet (notamment en cas de fusion, changement de nom, ..) d'une commune à partir de son numéro Ofs. Les communes retournées peuvent donc avoir des numéros Ofs différents de
-	 * celui spécifié, dans la mesure où elles représentent d'anciennes communes fusionnées.
+	 * Retourne toutes les communes qui possèdent le numéro Ofs spécifié. Dans l'immense majorité des cas, cette méthode ne retourne qu'une seule commune. Seuls quelques cas retourneront deux communes
+	 * (lorsque l'OFS s'est trompé et a réattribué un numéro Ofs à une autre commune).
 	 *
 	 * @param ofsId un numéro Ofs de commune
-	 * @return l'historique de la commune avec le numéro Ofs spécifié.
+	 * @return les communes avec le numéro Ofs spécifié.
 	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
 	 *          en cas d'erreur métier
 	 */
-	List<CommuneFiscale> getCommunesHistoParNoOFS(int ofsId) throws FidorBusinessException_Exception;
+	List<CommuneFiscale> getCommunesParNoOFS(int ofsId) throws FidorBusinessException_Exception;
 
 	/**
-	 * Retourne l'historique complet (notamment en cas de fusion, changement de nom, ..) d'une commune à partir de son numéro technique.
+	 * Retourne la liste des communes participant à une fusion.
 	 *
-	 * @param noTechnique un numéro Ofs de commune
-	 * @return l'historique de la commune avec le numéro Ofs spécifié.
+	 * @param ofsId      le numéro Ofs d'une commune participant à une fusion (en tant qu'ancienne commune ou nouvelle commune fusionnée)
+	 * @param dateFusion la date précise de la fusion (= début de validité de la nouvelle commune résultant de la fusion)
+	 * @return la liste des communes ayant participé à la fusion (incluant les anciennes communes et la nouvelle commune).
 	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
 	 *          en cas d'erreur métier
 	 */
-	List<CommuneFiscale> getCommunesHistoParNoTechnique(int noTechnique) throws FidorBusinessException_Exception;
+	List<CommuneFiscale> getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception;
 
 	/**
 	 * @param date une date ou <b>null</b> pour obtenir l'historique complet.
