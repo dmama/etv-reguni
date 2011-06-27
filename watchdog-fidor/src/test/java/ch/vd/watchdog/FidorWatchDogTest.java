@@ -51,8 +51,8 @@ public abstract class FidorWatchDogTest {
 	}
 
 	@Test
-	public void testGetCommuneHistoParNoOFS() throws Exception {
-		final List<CommuneFiscale> communes = fidorClient.getCommunesHistoParNoOFS(5586);
+	public void testGetCommunesParNoOFS() throws Exception {
+		final List<CommuneFiscale> communes = fidorClient.getCommunesParNoOFS(5586);
 		assertEquals(1, communes.size());
 
 		final CommuneFiscale commune = communes.get(0);
