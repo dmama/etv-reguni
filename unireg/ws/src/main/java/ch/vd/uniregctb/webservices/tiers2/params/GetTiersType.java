@@ -7,14 +7,24 @@ import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>getPartyTypeRequestType</i> (xml) / <i>GetPartyTypeRequest</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetTiersType")
 public class GetTiersType {
 
-	/** Les informations de login de l'utilisateur de l'application */
+	/**
+	 * Les informations de login de l'utilisateur de l'application
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>login</i>.
+	 */
 	@XmlElement(required = true)
 	public UserLogin login;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>partyNumber</i>.
+	 */
 	@XmlElement(required = true)
 	public long tiersNumber;
 

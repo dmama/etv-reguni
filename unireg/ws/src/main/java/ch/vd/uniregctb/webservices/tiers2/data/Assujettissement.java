@@ -12,9 +12,11 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
 /**
  * Cette classe contient les détails de l'assujettissement <b>au rôle ordinaire</b> d'un contribuable.
- * <p>
- * <b>Note:</b> un assujettissement n'est pas limité par une année fiscale: il peut être plus court, égale ou plus long. Les dates de début
- * et de fin correspondent donc aux dates réelles de changement du status fiscal du contribuable.
+ * <p/>
+ * <b>Note:</b> un assujettissement n'est pas limité par une année fiscale: il peut être plus court, égale ou plus long. Les dates de début et de fin correspondent donc aux dates réelles de changement
+ * du status fiscal du contribuable.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityType</i> (xml) / <i>SimplifiedTaxLiability</i> (client java)
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Assujettissement", propOrder = {
@@ -22,12 +24,19 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 })
 public class Assujettissement implements Range {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityTypeType</i> (xml) / <i>SimplifiedTaxLiabilityType</i> (client java)
+	 */
 	@XmlType(name = "TypeAssujettissement")
 	@XmlEnum(String.class)
 	public static enum TypeAssujettissement {
-		/** Le contribuable est assujetti à raison de fors secondaires uniquement. */
+		/**
+		 * Le contribuable est assujetti à raison de fors secondaires uniquement.
+		 */
 		LIMITE,
-		/** Le contribuable est assujetti à raison de un ou plusieurs fors principaux */
+		/**
+		 * Le contribuable est assujetti à raison de un ou plusieurs fors principaux
+		 */
 		ILLIMITE;
 
 		public static TypeAssujettissement fromValue(String v) {
@@ -37,17 +46,25 @@ public class Assujettissement implements Range {
 
 	/**
 	 * La date de début effective de l'assujettissement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
 	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
 	/**
 	 * La date de fin effective de l'assujettissement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
 	 */
 	@XmlElement(required = true)
 	public Date dateFin;
 
-	/** Le type d'assujettissement */
+	/**
+	 * Le type d'assujettissement
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>type</i>.
+	 */
 	@XmlElement(required = true)
 	public TypeAssujettissement type;
 

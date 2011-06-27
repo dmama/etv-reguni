@@ -10,6 +10,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.exception.QuittancementErreur;
 
 /**
  * Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationReturnResponseType</i> (xml) / <i>TaxDeclarationReturnResponse</i> (client java)
  *
  * @see ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration
  */
@@ -19,24 +21,32 @@ public class ReponseQuittancementDeclaration {
 
 	/**
 	 * La clé qui permet d'identifier la déclaration concernée
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>key</i>.
 	 */
 	@XmlElement(required = true)
 	public DeclarationImpotOrdinaireKey key;
 
 	/**
 	 * Le code de retour du quittancement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>code</i>.
 	 */
 	@XmlElement(required = true)
 	public CodeQuittancement code;
 
 	/**
-	 * * Le message de l'erreur ou de l'exception levée si code != OK
+	 * Le message de l'erreur ou de l'exception levée si code != OK
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>exceptionInfo</i>.
 	 */
 	@XmlElement(required = false)
 	public String exceptionMessage;
 
 	/**
 	 * Le type de l'erreur ou de l'exception levée si code != OK
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>exceptionInfo</i>.
 	 */
 	@XmlElement(required = false)
 	public WebServiceExceptionType exceptionType;

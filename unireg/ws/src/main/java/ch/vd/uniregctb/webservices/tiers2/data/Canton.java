@@ -3,6 +3,9 @@ package ch.vd.uniregctb.webservices.tiers2.data;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> supprimé (jamais utilisé dans la version 2 non plus).
+ */
 @XmlType(name="Canton")
 @XmlEnum(String.class)
 public enum Canton {

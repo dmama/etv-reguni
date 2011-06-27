@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * Classe contenant tous les résultats retournés par un appel à la méthode {@link ch.vd.uniregctb.webservices.tiers2.TiersWebService#getBatchTiersHisto(ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto)}.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>batchPartyType</i> (xml) / <i>BatchParty</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -19,6 +21,9 @@ import java.util.Map;
 })
 public class BatchTiersHisto {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>entries</i>
+	 */
 	@XmlElement(required = true)
 	public final List<BatchTiersHistoEntry> entries = new ArrayList<BatchTiersHistoEntry>();
 

@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
-import ch.vd.uniregctb.webservices.tiers2.impl.Context;
-import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
-import org.apache.log4j.Logger;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,6 +7,17 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
+import ch.vd.uniregctb.webservices.tiers2.impl.Context;
+import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
+
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>taxpayerType</i> (xml) / <i>Taxpayer</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Contribuable", propOrder = {
 		"situationFamille", "assujettissementLIC", "assujettissementLIFD", "periodeImposition"
@@ -22,6 +26,9 @@ public abstract class Contribuable extends Tiers {
 
 	private static final Logger LOGGER = Logger.getLogger(Contribuable.class);
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>familyStatuses</i>.
+	 */
 	@XmlElement(required = false)
 	public SituationFamille situationFamille;
 
@@ -30,6 +37,8 @@ public abstract class Contribuable extends Tiers {
 	 * <p>
 	 * <b>Note:</b> les dates de début et de fin ne sont pas limitée à l'année fiscale courante. Voir la classe {@link Assujettissement}
 	 * pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityVD</i>.
 	 */
 	@XmlElement(required = false)
 	public Assujettissement assujettissementLIC = null;
@@ -39,6 +48,8 @@ public abstract class Contribuable extends Tiers {
 	 * <p>
 	 * <b>Note:</b> les dates de début et de fin ne sont pas limitée à l'année fiscale courante. Voir la classe {@link Assujettissement}
 	 * pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityCH</i>.
 	 */
 	@XmlElement(required = false)
 	public Assujettissement assujettissementLIFD = null;
@@ -48,6 +59,8 @@ public abstract class Contribuable extends Tiers {
 	 * <p>
 	 * <b>Note:</b> les dates de début et de fin sont garanties appartenir à la période fiscale courante. Voir la classe
 	 * {@link PeriodeImposition} pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxationPeriods</i>.
 	 */
 	@XmlElement(required = false)
 	public PeriodeImposition periodeImposition = null;

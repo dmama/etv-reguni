@@ -1,30 +1,47 @@
 package ch.vd.uniregctb.webservices.tiers2.params;
 
-import java.util.Arrays;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Arrays;
+import java.util.Set;
 
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>getPartyRequestType</i> (xml) / <i>GetPartyRequest</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetTiersPeriode", propOrder = {
 		"login", "tiersNumber", "periode", "parts"
 })
 public class GetTiersPeriode {
 
-	/** Les informations de login de l'utilisateur de l'application */
+	/**
+	 * Les informations de login de l'utilisateur de l'application
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>login</i>.
+	 */
 	@XmlElement(required = true)
 	public UserLogin login;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>partyNumber</i>.
+	 */
 	@XmlElement(required = true)
 	public long tiersNumber;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> supprimé.
+	 */
 	@XmlElement(required = true)
 	public int periode;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>parts</i>.
+	 */
 	@XmlElement(required = false)
 	public Set<TiersPart> parts;
 

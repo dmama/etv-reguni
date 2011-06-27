@@ -9,6 +9,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 /**
  * Contient les informations relative à une liste récapitulative (= LR) émise sur un débiteur.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>withholdingTaxDeclarationType</i> (xml) / <i>WithholdingTaxDeclaration</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -18,9 +20,15 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 })
 public class DeclarationImpotSource extends Declaration {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>periodicity</i>.
+	 */
 	@XmlElement(required = true)
 	public PeriodiciteDecompte periodicite;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>communicationMode</i>.
+	 */
 	@XmlElement(required = true)
 	public ModeCommunication modeCommunication;
 

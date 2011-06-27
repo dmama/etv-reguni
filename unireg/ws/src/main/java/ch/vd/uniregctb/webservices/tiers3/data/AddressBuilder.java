@@ -168,7 +168,7 @@ public class AddressBuilder {
 			info.setPostOfficeBoxNumber(casePostale.getNumero() == null ? null : casePostale.getNumero().longValue());
 		}
 		info.setTown(adresse.getNpaEtLocalite());
-		info.setCountry(adresse.getPays());
+		info.setCountry(adresse.getPays()); // FIXME (msi) il faut renseigner le code ISO sur 2 positions du pays, et pas son nom complet !
 		info.setTariffZone(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));
 
 		a.setAddressInformation(info);

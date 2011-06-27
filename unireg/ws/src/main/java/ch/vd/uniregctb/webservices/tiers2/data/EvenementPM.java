@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Evénement d'une personne morale.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>corporationEventType</i> (xml) / <i>CorporationEvent</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -14,15 +16,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class EvenementPM {
 
-	/** La date de l'événement. */
+	/**
+	 * La date de l'événement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>date</i>.
+	 */
 	@XmlElement(required = true)
 	public Date dateEvenement;
 
-	/** Le numéro de personne morale associée à l'événement. */
+	/**
+	 * Le numéro de personne morale associée à l'événement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>partyNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public Long tiersNumber;
 
-	/** Le code de l'événement à retourner */
+	/**
+	 * Le code de l'événement à retourner
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>code</i>.
+	 */
 	@XmlElement(required = false)
 	public String codeEvenement;
 }

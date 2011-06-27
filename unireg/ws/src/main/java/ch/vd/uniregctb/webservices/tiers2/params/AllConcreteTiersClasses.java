@@ -15,6 +15,9 @@ import ch.vd.uniregctb.webservices.tiers2.data.PersonneMoraleHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> supprimé.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AllConcreteTiersClasses")
 public class AllConcreteTiersClasses {

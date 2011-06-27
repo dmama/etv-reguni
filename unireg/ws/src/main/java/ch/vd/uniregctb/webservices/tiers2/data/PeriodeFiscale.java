@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Une période fiscale couvre la période du 1er janvier au 31 décembre (compris) de l'année considérée.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>taxPeriodType</i> (xml) / <i>TaxPeriod</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -16,6 +18,9 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class PeriodeFiscale {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>year</i>.
+	 */
 	@XmlElement(required = true)
 	public int annee;
 

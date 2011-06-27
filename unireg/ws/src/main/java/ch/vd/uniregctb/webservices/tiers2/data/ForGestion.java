@@ -9,38 +9,55 @@ import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
 /**
- * Le for de gestion permet de retrouver l’office d’impôt compétent <i>ratione loci</i> du contribuable. Il ne s’agit pas à proprement parler d’une
- * notion fiscale, mais uniquement d’une notion propre à l’organisation de l’ACI
+ * Le for de gestion permet de retrouver l’office d’impôt compétent <i>ratione loci</i> du contribuable. Il ne s’agit pas à proprement parler d’une notion fiscale, mais uniquement d’une notion propre
+ * à l’organisation de l’ACI
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>managingTaxResidenceType</i> (xml) / <i>ManagingTaxResidence</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ForGestion", propOrder = {
-		"dateDebut", "dateFin", "noOfsCommune","nomCommune"
+		"dateDebut", "dateFin", "noOfsCommune", "nomCommune"
 })
 public class ForGestion implements Range {
 
 	/**
 	 * La date de début de validité du for de gestion.
-	 * <p>
-	 * <b>Note:</b> fondamentalement, tout for de gestion possède un début de validité; mais pour des raisons de performance, cette valeur
-	 * n'est renseignée que sur les fors rattachés à la classe TiersHisto.
+	 * <p/>
+	 * <b>Note:</b> fondamentalement, tout for de gestion possède un début de validité; mais pour des raisons de performance, cette valeur n'est renseignée que sur les fors rattachés à la classe
+	 * TiersHisto.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
 	 */
 	@XmlElement(required = false)
 	public Date dateDebut;
 
-	/** La date de fin de validité du for de gestion. Si le for est toujours actif, cette date n'est pas renseignée. */
+	/**
+	 * La date de fin de validité du for de gestion. Si le for est toujours actif, cette date n'est pas renseignée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent) */
+	/**
+	 * Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>municipalityFSOId</i>.
+	 */
 	@XmlElement(required = true)
 	public int noOfsCommune;
-	/**Nom de la commune correspondant au numéro de l'autorité fiscal*/
+
+	/**
+	 * Nom de la commune correspondant au numéro de l'autorité fiscal
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> supprimé. Cette information doit être demandée au service d'infrastructure.
+	 */
 	@XmlElement(required = true)
 	public String nomCommune;
 
-	public ForGestion(){
+	public ForGestion() {
 	}
 
 	public ForGestion(int noOfsCommune, Context context) {

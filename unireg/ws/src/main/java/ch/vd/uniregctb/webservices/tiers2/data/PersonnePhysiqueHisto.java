@@ -15,6 +15,9 @@ import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>naturalPersonType</i> (xml) / <i>NaturalPerson</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PersonnePhysiqueHisto", propOrder = {
 		"nom", "prenom", "dateNaissance", "sexe", "dateDeces", "ancienNumeroAssureSocial", "nouveauNumeroAssureSocial", "dateArrivee", "categorie"
@@ -23,46 +26,75 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 
 	private static final Logger LOGGER = Logger.getLogger(PersonnePhysiqueHisto.class);
 
-	/** Nom de famille de la personne. */
+	/**
+	 * Nom de famille de la personne.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> champ <i>officialName</i> de la structure <i>personIdentificationType</i>.
+	 */
 	@XmlElement(required = true)
 	public String nom;
 
-	/** Prénom de la personne. */
+	/**
+	 * Prénom de la personne.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> champ <i>firstName</i> de la structure <i>personIdentificationType</i>.
+	 */
 	@XmlElement(required = false)
 	public String prenom;
 
 	/**
-	 * La date de naissance de la personne physique. Cette date peut être partielle, c'est-à-dire que les informations de jour et/ou de mois
-	 * peuvent valoir 0.
+	 * La date de naissance de la personne physique. Cette date peut être partielle, c'est-à-dire que les informations de jour et/ou de mois peuvent valoir 0.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateOfBirth</i>.
 	 */
 	@XmlElement(required = false)
 	public Date dateNaissance;
 
 	/**
 	 * Le sexe de la personne (qui peut ne pas être connu dans certains cas).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> champ <i>sex</i> de la structure <i>personIdentificationType</i>.
 	 */
 	@XmlElement(required = false)
 	public Sexe sexe;
 
 	/**
 	 * La date de décès de la personne
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateOfDeath</i>.
 	 */
 	@XmlElement(required = false)
 	public Date dateDeces;
 
-	/** L'ancien  numéro de sécurité sociale (ancien format sur 11 positions). */
+	/**
+	 * L'ancien  numéro de sécurité sociale (ancien format sur 11 positions).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> entrée avec la clé <i>CH_AHV_AVS</i> de la collection <i>otherPersonId</i> de la structure <i>personIdentificationType</i>.
+	 */
 	@XmlElement(required = false)
 	public String ancienNumeroAssureSocial;
 
-	/** Le nouveau numéro de sécurité sociale (nouveau format sur 13 positions). */
+	/**
+	 * Le nouveau numéro de sécurité sociale (nouveau format sur 13 positions).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> champ <i>vn</i> de la structure <i>personIdentificationType</i>.
+	 */
 	@XmlElement(required = false)
 	public String nouveauNumeroAssureSocial;
 
-	/** Date d'arrivée dans le canton. Nulle si cette information n'est pas connue. */
+	/**
+	 * Date d'arrivée dans le canton. Nulle si cette information n'est pas connue.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>arrivalDate</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateArrivee;
 
-	/** Catégorie de personne physique */
+	/**
+	 * Catégorie de personne physique
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>category</i>.
+	 */
 	@XmlElement(required = true)
 	public Categorie categorie;
 
@@ -124,8 +156,9 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			if (personne.getDateDeces() != null) {
-				this.dateDeces =  DataHelper.coreToWeb(personne.getDateDeces());
-			} else {
+				this.dateDeces = DataHelper.coreToWeb(personne.getDateDeces());
+			}
+			else {
 				this.dateDeces = DataHelper.coreToWeb(individu.getDateDeces());
 			}
 

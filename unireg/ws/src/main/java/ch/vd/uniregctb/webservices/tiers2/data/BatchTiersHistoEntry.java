@@ -1,18 +1,21 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
-import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
-import org.springframework.util.Assert;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.Assert;
+
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
+
 /**
  * Classe regroupant un numéro de tiers et le tiers lui-même.
  * <p>
  * Cette classe est instanciée par la méthode {@link ch.vd.uniregctb.webservices.tiers2.TiersWebService#getBatchTiersHisto(ch.vd.uniregctb.webservices.tiers.params.GetBatchTiersHisto)}.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>batchPartyEntryType</i> (xml) / <i>BatchPartyEntry</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -24,6 +27,8 @@ public class BatchTiersHistoEntry {
 
 	/**
 	 * Le numéro de tiers demandé.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>number</i>.
 	 */
 	@XmlElement(required = true)
 	public Long number;
@@ -37,18 +42,24 @@ public class BatchTiersHistoEntry {
 	 * <li>{@link #exceptionMessage} est différent de <b>null</b>: le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas,
 	 * la raison est stockée dans {@link #exceptionMessage}.</li>
 	 * </ul>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>party</i>.
 	 */
 	@XmlElement(required = false)
 	public TiersHisto tiers;
 
 	/**
 	 * Le message de l'exception levée si le tiers n'a pas pu être retourné.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>exceptionInfo</i>.
 	 */
 	@XmlElement(required = false)
 	public String exceptionMessage;
 
 	/**
 	 * Le type de l'exception levée si le tiers n'a pas pu être retourné.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>exceptionInfo</i>.
 	 */
 	@XmlElement(required = false)
 	public WebServiceExceptionType exceptionType;

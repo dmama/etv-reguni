@@ -10,6 +10,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
  * Information disponibles sur un tiers retournées lors du recherche.
  * <p/>
  * Les informations détaillées des tiers (fors fiscaux, adresses, ...) sont disponibles au travers des méthodes getTiers.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>partyInfoType</i> (xml) / <i>PartyInfo</i> (client java)
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TiersInfo", propOrder = {
@@ -17,24 +19,55 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 })
 public class TiersInfo {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>number</i>.
+	 */
 	public long numero;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>name1</i>.
+	 */
 	public String nom1;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>name2</i>.
+	 */
 	public String nom2;
 
 	/**
 	 * La date de naissance avec le format YYYYMMDD.
 	 * <p/>
 	 * <b>Attention:</b> cette date peut être partielle au niveau du jour et du mois (ex: "197311" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateOfBirth</i>.
 	 */
 	public String dateNaissance;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>street</i>.
+	 */
 	public String rue;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>swissZipCode</i>.
+	 */
 	public String npa;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>town</i>.
+	 */
 	public String localite;
 
 	/**
 	 * Contient le nom en toutes lettres (Suisse, Albanie, Japon, ...) du pays de l'adresse.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>country</i>.
 	 */
 	public String pays;
+
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>type</i>.
+	 */
 	public Tiers.Type type;
 
 	public TiersInfo() {

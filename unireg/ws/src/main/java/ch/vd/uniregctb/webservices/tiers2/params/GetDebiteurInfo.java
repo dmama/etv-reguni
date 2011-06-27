@@ -7,22 +7,33 @@ import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>getDebtorInfoRequestType</i> (xml) / <i>GetDebtorInfoRequest</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetDebiteurInfo")
 public class GetDebiteurInfo {
 
-	/** Les informations de login de l'utilisateur de l'application */
+	/**
+	 * Les informations de login de l'utilisateur de l'application
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>login</i>.
+	 */
 	@XmlElement(required = true)
 	public UserLogin login;
-	
+
 	/**
 	 * Le numéro de tiers du débiteur de prestations imposables.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>debtorNumber</i>.
 	 */
 	@XmlElement(required = true)
 	public long numeroDebiteur;
 
 	/**
 	 * La période fiscale considérée (1er janvier au 31 décembre).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxPeriod</i>.
 	 */
 	@XmlElement(required = true)
 	public int periodeFiscale;

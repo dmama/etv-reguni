@@ -12,6 +12,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
  * <p>
  * <b>Note:</b> une période d'imposition est toujours incluse dans une année fiscale (du 1er janvier au 31 décembre). Elle peut être plus
  * courte ou égale, mais pas plus grande.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>taxationPeriodType</i> (xml) / <i>TaxationPeriod</i> (client java)
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PeriodeImposition", propOrder = {
@@ -20,18 +22,24 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 public class PeriodeImposition implements Range {
 	/**
 	 * La date de début effective de la période d'imposition.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
 	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
 	/**
 	 * La date de fin effective de la période d'imposition.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
 	 */
 	@XmlElement(required = true)
 	public Date dateFin;
 
 	/**
 	 * L'id de la déclaration d'impôt associée à la période; ou <b>null</b> si la déclaration n'a pas été émise ou a été annulée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationId</i>.
 	 */
 	@XmlElement(required = false)
 	public Long idDI = null;

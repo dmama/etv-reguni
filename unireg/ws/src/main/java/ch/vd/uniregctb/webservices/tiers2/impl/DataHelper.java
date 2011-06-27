@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -440,7 +441,7 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
@@ -448,7 +449,7 @@ public class DataHelper {
 		return new AdresseEnvoi(adressePoursuite);
 	}
 
-	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;

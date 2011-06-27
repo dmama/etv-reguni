@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Informations sur l'état d'une personne morale.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>corporationStatusType</i> (xml) / <i>CorporationStatus</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -14,15 +16,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class EtatPM implements Range {
 
-	/** La date de début de validité de l'état de la PM. */
+	/**
+	 * La date de début de validité de l'état de la PM.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
+	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
-	/** La date de fin de validité de l'état de la PM; ou <i>null</i> s'il est toujours valide. */
+	/**
+	 * La date de fin de validité de l'état de la PM; ou <i>null</i> s'il est toujours valide.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Le code de l'état de la PM, tel que défini dans le table ETAT du Host. */
+	/**
+	 * Le code de l'état de la PM, tel que défini dans le table ETAT du Host.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>code</i>.
+	 */
 	public String code;
 
 	@Override

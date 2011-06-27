@@ -14,6 +14,9 @@ import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>debtorType</i> (xml) / <i>Debtor</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Debiteur", propOrder = {
 		"raisonSociale", "categorie", "periodiciteDecompte", "periodeDecompte", "modeCommunication", "sansRappel",
@@ -21,38 +24,66 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 })
 public class Debiteur extends Tiers {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>name</i>
+	 */
 	@XmlElement(required = true)
 	public String raisonSociale;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>category</i>
+	 */
 	@XmlElement(required = true)
 	public CategorieDebiteur categorie;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> supprimé. Se déduit de la collection <i>periodicities</i> en prenant le dernier élément.
+	 */
 	@XmlElement(required = true)
 	public PeriodiciteDecompte periodiciteDecompte;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> supprimé. Se déduit de la collection <i>periodicities</i> en prenant le dernier élément.
+	 */
 	@XmlElement(required = false)
 	public PeriodeDecompte periodeDecompte;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>communicationMode</i>
+	 */
 	@XmlElement(required = true)
 	public ModeCommunication modeCommunication;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>withoutReminder</i>
+	 */
 	@XmlElement(required = true)
 	public boolean sansRappel;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>withoutWithholdingTaxDeclaration</i>
+	 */
 	@XmlElement(required = true)
 	public boolean sansListRecapitulative;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>softwareId</i>
+	 */
 	@XmlElement(required = false)
 	public Long logicielId;
 
 	/**
 	 * Le numéro du contribuable associé à ce débiteur; ou <b>null</b> si le débiteur n'est pas lié à un contribuable.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>associatedTaxpayerNumber</i>
 	 */
 	@XmlElement(required = false)
 	public Long contribuableAssocie;
 
 	/**
 	 * Liste des périodicités
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>periodicities</i>
 	 */
 	@XmlElement(required = false)
 	public List<Periodicite> periodicites = null;

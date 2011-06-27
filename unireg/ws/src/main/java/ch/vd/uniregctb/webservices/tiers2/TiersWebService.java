@@ -35,6 +35,8 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 /**
  * Interface du web-service <i>tiers</i> <b>version 2</b> du registre fiscal Unireg.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>PartyWebService</i>.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -45,6 +47,8 @@ public interface TiersWebService {
 
 	/**
 	 * Recherche un ou plusieurs tiers en fonction de paramètres.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>searchParty</i>.
 	 *
 	 * @param params les paramètres de recherche.
 	 * @return une liste contenant 0 ou n informations sur les tiers correspondants aux critères de recherche.
@@ -61,6 +65,8 @@ public interface TiersWebService {
 
 	/**
 	 * Retourne le type d'un tiers en fonction de son numéro de tiers.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getPartyType</i>.
 	 *
 	 * @param tiersNumber le numéro de tiers
 	 * @return le type de tiers, ou null si le tiers n'existe pas
@@ -77,6 +83,8 @@ public interface TiersWebService {
 
 	/**
 	 * Retourne les informations du tiers correspondant au numéro de contribuable spécifié.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getParty</i>.
 	 *
 	 * @param tiersNumber le numéro de contribuable du tiers.
 	 * @param date        la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
@@ -95,6 +103,8 @@ public interface TiersWebService {
 
 	/**
 	 * Retourne les informations du tiers correspondant au numéro de contribuable spécifié pour la période spécifiée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getParty</i>.
 	 *
 	 * @param tiersNumber le numéro de contribuable du tiers.
 	 * @param periode     la période fiscale des informations à retourner, ou null pour obtenir la période courante.
@@ -113,6 +123,8 @@ public interface TiersWebService {
 
 	/**
 	 * Retourne l'historique des informations du tiers correspondant au numéro de contribuable spécifié.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getParty</i>.
 	 *
 	 * @param tiersNumber le numéro de contribuable du tiers.
 	 * @param parts       la liste des parties à renseigner.
@@ -132,6 +144,8 @@ public interface TiersWebService {
 	 * Retourne les tiers correspondant aux numéros de tiers spécifiés.
 	 * <p/>
 	 * <b>Attention !</b> Le nombre maximal d'ids supporté est de 500.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getBatchParty</i>.
 	 *
 	 * @param tiersNumbers les numéros des tiers.
 	 * @param date         la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
@@ -152,6 +166,8 @@ public interface TiersWebService {
 	 * Retourne les tiers historiques correspondant aux numéros de tiers spécifiés.
 	 * <p/>
 	 * <b>Attention !</b> Le nombre maximal d'ids supporté est de 500.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getBatchParty</i>.
 	 *
 	 * @param tiersNumbers les numéros des tiers.
 	 * @param parts        la liste des parties à renseigner.
@@ -169,6 +185,8 @@ public interface TiersWebService {
 
 	/**
 	 * Change le code de blocage du remboursement automatique sur le tiers spécifié.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>setAutomaticReimbursementBlocking</i>.
 	 *
 	 * @param params les paramètres permettant d'identifier l'utilisateur, le tiers et le code blocage.
 	 * @throws BusinessException     en cas d'erreur métier
@@ -184,6 +202,8 @@ public interface TiersWebService {
 
 	/**
 	 * Recherche un ou plusieurs événements PM en fonction de certains critères.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>searchCorporationEvents</i>.
 	 *
 	 * @param params les critères de sélection des événements
 	 * @return une liste contenant 0 ou plusieurs événements
@@ -200,6 +220,8 @@ public interface TiersWebService {
 
 	/**
 	 * Calcule et retourne des informations métier supplémentaires (notamment sur les déclarations impôt source (LRs)) d'un débiteur de prestations imposables.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getDebtorInfo</i>.
 	 *
 	 * @param params le numéro du débiteur et la période fiscale considérée
 	 * @return le nombre de déclarations théoriques et réellement émises.
@@ -216,6 +238,8 @@ public interface TiersWebService {
 
 	/**
 	 * Cette méthode permet de quittancer les déclarations d'impôt ordinaires aux dates spécifiées.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>returnTaxDeclarations</i>.
 	 *
 	 * @param params les demandes de quittancement
 	 * @return le résultat détaillé du processing des quittancements
@@ -232,7 +256,8 @@ public interface TiersWebService {
 
 	/**
 	 * Cette méthode permet de retourner les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre
-	 *
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>getModifiedTaxpayers</i>.
 	 *
 	 * @param params les dates de début et de fin de recherche
 	 * @return  la liste des ids des contribuables modifies
@@ -249,6 +274,8 @@ public interface TiersWebService {
 
 	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>ping</i>.
 	 *
 	 * @param dummy paramètre bidon.
 	 */

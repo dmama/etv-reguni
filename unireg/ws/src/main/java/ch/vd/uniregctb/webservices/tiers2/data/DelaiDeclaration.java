@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> supprimé.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DelaiDeclaration", propOrder = {
 		"dateDemande", "dateTraitement", "dateAnnulation", "delaiAccordeAu", "confirmationEcrite"

@@ -12,6 +12,8 @@ import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 
 /**
  * Classe contenant tous les résultats retournés par un appel à la méthode {@link TiersWebService#getBatchTiers(ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers)}.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>batchPartyType</i> (xml) / <i>BatchParty</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -21,6 +23,9 @@ import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 })
 public class BatchTiers {
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>entries</i>
+	 */
 	@XmlElement(required = true)
 	public final List<BatchTiersEntry> entries = new ArrayList<BatchTiersEntry>();
 

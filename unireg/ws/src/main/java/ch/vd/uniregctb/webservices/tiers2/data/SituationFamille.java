@@ -10,6 +10,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 /**
  * Contient la situation familliale d'un contribuable <b>d'un point de vue fiscal</b>.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>familyStatusType</i> (xml) / <i>FamilyStatus</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -19,52 +21,66 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 })
 public class SituationFamille {
 
-	/** L'id technique (= clé primaire) */
+	/**
+	 * L'id technique (= clé primaire)
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> supprimé.
+	 */
 	@XmlElement(required = true)
 	public Long id;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
+	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Date à laquelle la situation de famille a été annulée, ou <b>null</b> si elle n'est pas annulée. */
+	/**
+	 * Date à laquelle la situation de famille a été annulée, ou <b>null</b> si elle n'est pas annulée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>cancellationDate</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateAnnulation;
 
 	/**
 	 * Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>maritalStatus</i>.
 	 */
 	@XmlElement(required = true)
 	public EtatCivil etatCivil;
 
-	/** Le nombre d'enfants à charge du contribuable, ou <b>null</b> si cette information n'est pas connue ou inapplicable. */
+	/**
+	 * Le nombre d'enfants à charge du contribuable, ou <b>null</b> si cette information n'est pas connue ou inapplicable.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>numberOfChildren</i>.
+	 */
 	@XmlElement(required = false)
 	public Integer nombreEnfants;
 
 	/**
 	 * Tarif impôt source applicable.
-	 * <p>
-	 * Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
-	 * <ul>
-	 * <li>un ménage commun</li>
-	 * <li>composé uniquement de sourciers</li>
-	 * </ul>
-	 * Il est null dans tous les autres cas.
+	 * <p/>
+	 * Ce champ est renseigné uniquement dans le cas où le contribuable associé est: <ul> <li>un ménage commun</li> <li>composé uniquement de sourciers</li> </ul> Il est null dans tous les autres cas.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>applicableTariff</i>.
 	 */
 	@XmlElement(required = false)
 	public TarifImpotSource tarifApplicable;
 
 	/**
 	 * Numéro du contribuable principal d'un couple sourcier.
-	 * <p>
-	 * Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
-	 * <ul>
-	 * <li>un ménage commun</li>
-	 * <li>composé uniquement de sourciers</li>
-	 * </ul>
-	 * Il est null dans tous les autres cas.
+	 * <p/>
+	 * Ce champ est renseigné uniquement dans le cas où le contribuable associé est: <ul> <li>un ménage commun</li> <li>composé uniquement de sourciers</li> </ul> Il est null dans tous les autres cas.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>mainTaxpayerNumber</i>.
 	 */
 	@XmlElement(required = false)
 	public Long numeroContribuablePrincipal;

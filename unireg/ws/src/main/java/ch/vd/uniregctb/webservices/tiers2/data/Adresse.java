@@ -13,6 +13,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
 /**
  * Contient les données métier caractérisant une adresse fiscale d'un tiers.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>addressType</i> (xml) / <i>Address</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -25,55 +27,107 @@ public class Adresse implements Range {
 
 	private static final Logger LOGGER = Logger.getLogger(Adresse.class);
 
-	/** La date de début de validité de l'adresse. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée. */
+	/**
+	 * La date de début de validité de l'adresse. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>
+	 */
 	@XmlElement(required = false)
 	public Date dateDebut;
 
-	/** La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée. */
+	/**
+	 * La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Titre de l'adresse. Exemple : "chez" ou "c/o" */
+	/**
+	 * Titre de l'adresse. Exemple : "chez" ou "c/o"
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>title</i>
+	 */
 	@XmlElement(required = false)
 	public String titre;
 
-	/** Numéro de l'appartement */
+	/**
+	 * Numéro de l'appartement
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dwellingNumber</i>
+	 */
 	@XmlElement(required = false)
 	public String numeroAppartement;
 
-	/** Rue */
+	/**
+	 * Rue
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>street</i>
+	 */
 	@XmlElement(required = false)
 	public String rue;
 
-	/** Numéro du bâtiment dans la rue */
+	/**
+	 * Numéro du bâtiment dans la rue
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>houseNumber</i>
+	 */
 	@XmlElement(required = false)
 	public String numeroRue;
 
-	/** Case postale + numéro */
+	/**
+	 * Case postale + numéro
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>postOfficeBox</i>
+	 */
 	@XmlElement(required = false)
 	public String casePostale;
 
-	/** La localité. Exemple : "Lausanne" */
+	/**
+	 * La localité. Exemple : "Lausanne"
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>town</i>
+	 */
 	@XmlElement(required = true)
 	public String localite;
 
-	/** Le numéro postal de la localité. Exemple : "1001" pour "1001 Lausanne" */
+	/**
+	 * Le numéro postal de la localité. Exemple : "1001" pour "1001 Lausanne"
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>zipCode</i>
+	 */
 	@XmlElement(required = true)
 	public String numeroPostal;
 
-	/** Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon". */
+	/**
+	 * Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>country</i>
+	 */
 	@XmlElement(required = false)
 	public String pays;
 
-	/** [Technique] numéro d'ordre postal de l'adresse */
+	/**
+	 * [Technique] numéro d'ordre postal de l'adresse
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>swissZipCodeId</i>
+	 */
 	@XmlElement(required = true)
 	public int noOrdrePostal;
 
-	/** [Technique] numéro technique de la rue */
+	/**
+	 * [Technique] numéro technique de la rue
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>streetId</i>
+	 */
 	@XmlElement(required = false)
 	public Integer noRue;
 
-	/** [Technique] numéro OFS du pays */
+	/**
+	 * [Technique] numéro OFS du pays
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>countryId</i>
+	 */
 	@XmlElement(required = false)
 	public Integer noPays;
 

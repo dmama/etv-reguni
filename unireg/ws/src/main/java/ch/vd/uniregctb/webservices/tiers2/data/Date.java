@@ -10,6 +10,8 @@ import java.util.GregorianCalendar;
 /**
  * Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite à celle du canton de Vaud, et le calendrier est
  * grégorien.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>dateType</i> (xml) / <i>Date</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -21,18 +23,24 @@ public class Date implements Comparable<Date> {
 
 	/**
 	 * Year on four digits (e.g. 1337, 2001, 2400, ...).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>year</i>.
 	 */
 	@XmlElement(required = true)
 	public final int year;
 
 	/**
 	 * Month (1..12). In case of partial date, the value may be 0.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>month</i>.
 	 */
 	@XmlElement(required = true)
 	public final int month;
 
 	/**
 	 * Day of the month (1..31). In case of partial date, the value is 0.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>day</i>.
 	 */
 	@XmlElement(required = true)
 	public final int day;

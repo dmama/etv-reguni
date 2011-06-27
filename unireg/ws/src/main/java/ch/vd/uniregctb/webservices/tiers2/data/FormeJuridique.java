@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Informations sur la forme juridique d'une personne morale.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>legalFormType</i> (xml) / <i>LegalForm</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -14,15 +16,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class FormeJuridique implements Range {
 
-	/** La date de début de validité de la forme juridique. */
+	/**
+	 * La date de début de validité de la forme juridique.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
+	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
-	/** La date de fin de validité de la forme juridique; ou <i>null</i> si elle est toujours valide. */
+	/**
+	 * La date de fin de validité de la forme juridique; ou <i>null</i> si elle est toujours valide.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Le code de la forme juridique, tel que défini dans le table FORME_JURIDIQ_ACI du Host. */
+	/**
+	 * Le code de la forme juridique, tel que défini dans le table FORME_JURIDIQ_ACI du Host.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>code</i>.
+	 */
 	public String code;
 
 	@Override

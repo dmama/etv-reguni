@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Set;
 
 /**
  * Informations associées à une personne morale pour une date donnée.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>corporationType</i> (xml) / <i>Corporation</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -16,55 +17,107 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class PersonneMorale extends Contribuable {
 
-	/** Désignation abrégée de la PM. */
+	/**
+	 * Désignation abrégée de la PM.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>shortName</i>.
+	 */
 	@XmlElement(required = true)
 	public String designationAbregee;
 
-	/** Première ligne de la raison sociale. */
+	/**
+	 * Première ligne de la raison sociale.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>name1</i>.
+	 */
 	@XmlElement(required = true)
 	public String raisonSociale1;
 
-	/** Deuxième ligne de la raison sociale. */
+	/**
+	 * Deuxième ligne de la raison sociale.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>name2</i>.
+	 */
 	@XmlElement(required = false)
 	public String raisonSociale2;
 
-	/** Troisième ligne de la raison sociale. */
+	/**
+	 * Troisième ligne de la raison sociale.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>name3</i>.
+	 */
 	@XmlElement(required = false)
 	public String raisonSociale3;
 
-	/** Date de fin du dernier exercice commercial. */
+	/**
+	 * Date de fin du dernier exercice commercial.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>endDateOfLastBusinessYear</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFinDernierExerciceCommercial;
 
-	/** Date de bouclement futur de la PM. */
+	/**
+	 * Date de bouclement futur de la PM.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>endDateOfNextBusinessYear</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateBouclementFutur;
 
-	/** Numéro IPMRO (n'existe pas sur toutes les PMs). */
+	/**
+	 * Numéro IPMRO (n'existe pas sur toutes les PMs).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>ipmroNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public String numeroIPMRO;
 
-	/** Le siège valide à la date demandée. */
+	/**
+	 * Le siège valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>legalSeats</i>.
+	 */
 	@XmlElement(required = false)
 	public Siege siege;
 
-	/** La forme juridique valide à la date demandée. */
+	/**
+	 * La forme juridique valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>legalForms</i>.
+	 */
 	@XmlElement(required = false)
 	public FormeJuridique formeJuridique;
 
-	/** Le capital valide à la date demandée. */
+	/**
+	 * Le capital valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>capitals</i>.
+	 */
 	@XmlElement(required = false)
 	public Capital capital;
 
-	/** Le régime fiscal ICC (Impôt Canton-Commune) valide à la date demandée. */
+	/**
+	 * Le régime fiscal ICC (Impôt Canton-Commune) valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxSystemsVD</i>.
+	 */
 	@XmlElement(required = false)
 	public RegimeFiscal regimeFiscalICC;
 
-	/** Le régime fiscal IFD (Impôt Fédéral Direct) valide à la date demandée. */
+	/**
+	 * Le régime fiscal IFD (Impôt Fédéral Direct) valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxSystemsCH</i>.
+	 */
 	@XmlElement(required = false)
 	public RegimeFiscal regimeFiscalIFD;
 
-	/** L'état de la PM valide à la date demandée. */
+	/**
+	 * L'état de la PM valide à la date demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>statuses</i>.
+	 */
 	@XmlElement(required = false)
 	public EtatPM etat;
 

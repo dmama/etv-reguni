@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Demande de quittancement (= enregistrement du retour) d'une déclaration d'impôt ordinaire
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationReturnRequestType</i> (xml) / <i>TaxDeclarationReturnRequest</i> (client java)
  *
  * @see ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration
  */
@@ -16,12 +18,16 @@ public class DemandeQuittancementDeclaration {
 
 	/**
 	 * La clé qui permet d'identification la déclaration
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>key</i>.
 	 */
 	@XmlElement(required = true)
 	public DeclarationImpotOrdinaireKey key;
 
 	/**
 	 * La date de retour (= date de quittancement) de la déclaration
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>returnDate</i>.
 	 */
 	@XmlElement(required = true)
 	public Date dateRetour;

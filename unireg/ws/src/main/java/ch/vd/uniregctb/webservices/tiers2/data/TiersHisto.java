@@ -1,24 +1,23 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-
-import org.apache.log4j.Logger;
-
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.CopyMode;
@@ -27,6 +26,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.ForFiscalComparator;
 
 /**
  * Contient les données historique d'un tiers. Ces données peuvent être complètes ou limitées à une période fiscale.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>partyType</i> (xml) / <i>Party</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -41,143 +42,236 @@ public abstract class TiersHisto {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersHisto.class);
 
-	/** Numéro de contribuable. */
+	/**
+	 * Numéro de contribuable.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>number</i>.
+	 */
 	@XmlElement(required = true)
 	public Long numero;
 
-	/** Complément du nom utilisé lors de l'adressage */
+	/**
+	 * Complément du nom utilisé lors de l'adressage
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>complementaryName</i>.
+	 */
 	@XmlElement(required = false)
 	public String complementNom;
 
-	/** Date à laquelle l'activité du tiers a débuté. Si le tiers n'a jamais été assujetti, cette date est nulle */
+	/**
+	 * Date à laquelle l'activité du tiers a débuté. Si le tiers n'a jamais été assujetti, cette date est nulle
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>activityStartDate</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateDebutActivite;
 
-	/** Date à laquelle l'activité du tiers a pris fin. Si le tiers est toujours actif, la date n'est pas renseignée */
+	/**
+	 * Date à laquelle l'activité du tiers a pris fin. Si le tiers est toujours actif, la date n'est pas renseignée
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>activityEndDate</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFinActivite;
 
 	/**
 	 * Date à laquelle le tiers a été annulé, ou <b>null</b> si le tiers n'est pas annulé.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>cancellationDate</i>.
 	 */
 	@XmlElement(required = false)
 	public Date dateAnnulation;
 
-	/** Coordonnées de la personne de contact chez le débiteur, ou null si le débiteur est associé avec une personne physique */
+	/**
+	 * Coordonnées de la personne de contact chez le débiteur, ou null si le débiteur est associé avec une personne physique
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>contactPerson</i>.
+	 */
 	@XmlElement(required = false)
 	public String personneContact;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>privatePhoneNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public String numeroTelPrive;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>businessPhoneNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public String numeroTelProf;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>mobilePhoneNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public String numeroTelPortable;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>faxNumber</i>.
+	 */
 	@XmlElement(required = false)
 	public String numeroTelecopie;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>emailAddress</i>.
+	 */
 	@XmlElement(required = false)
 	public String adresseCourrierElectronique;
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>automaticReimbursementBlocked</i>.
+	 */
 	@XmlElement(required = false)
 	public boolean blocageRemboursementAutomatique = true; // [UNIREG-1266] Blocage des remboursements automatiques sur tous les nouveaux tiers
 
-	/** true si débiteur non fiscal - I107 */
+	/**
+	 * true si débiteur non fiscal - I107
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>inactiveDebtor</i>.
+	 */
 	@XmlElement(required = true)
 	public boolean isDebiteurInactif;
 
-	/** Historique des adresses courrier du tiers (de la plus ancienne à la plus récente). */
+	/**
+	 * Historique des adresses courrier du tiers (de la plus ancienne à la plus récente).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>mailAddresses</i>.
+	 */
 	@XmlElement(required = false)
 	public List<Adresse> adressesCourrier = null;
 
-	/** Historique des adresses représentation du tiers (de la plus ancienne à la plus récente). */
+	/**
+	 * Historique des adresses représentation du tiers (de la plus ancienne à la plus récente).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>representationAddresses</i>.
+	 */
 	@XmlElement(required = false)
 	public List<Adresse> adressesRepresentation = null;
 
-	/** Historique des adresses domicile du tiers (de la plus ancienne à la plus récente). */
+	/**
+	 * Historique des adresses domicile du tiers (de la plus ancienne à la plus récente).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>residenceAddresses</i>.
+	 */
 	@XmlElement(required = false)
 	public List<Adresse> adressesDomicile = null;
 
-	/** Historique des adresses poursuite du tiers (de la plus ancienne à la plus récente). Les adresses de poursuites permettent de déterminer l'historique des fors de poursuite */
+	/**
+	 * Historique des adresses poursuite du tiers (de la plus ancienne à la plus récente). Les adresses de poursuites permettent de déterminer l'historique des fors de poursuite
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddresses</i>.
+	 */
 	@XmlElement(required = false)
 	public List<Adresse> adressesPoursuite = null;
 
 	/**
 	 * Historique des adresses poursuite <i>autre tiers</i> du tiers (de la plus ancienne à la plus récente).
 	 * <p/>
-	 * Ces adresses sont renseignées lorsque le tiers possède des <i>autres tiers</i> (tuteurs, curateurs, ...) qui doivent
-	 * être notifiés des poursuites en plus (ou à la place) du tiers. Dans tous les autres cas, ces adresses sont nulle.
+	 * Ces adresses sont renseignées lorsque le tiers possède des <i>autres tiers</i> (tuteurs, curateurs, ...) qui doivent être notifiés des poursuites en plus (ou à la place) du tiers. Dans tous les
+	 * autres cas, ces adresses sont nulle.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddressesOfOtherParty</i>.
 	 */
 	@XmlElement(required = false)
 	public List<AdresseAutreTiers> adressesPoursuiteAutreTiers = null;
 
 	/**
 	 * Adresse <b>courrier</b> formattée pour l'envoi (six lignes)
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>formattedMailAddress</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi = null;
 
 	/**
 	 * Adresse de représentation formattée pour l'envoi (six lignes)
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>formattedRepresentationAddress</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseRepresentationFormattee;
 
 	/**
 	 * Adresse de poursuite formattée pour l'envoi (six lignes)
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddress</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adressePoursuiteFormattee;
 
 	/**
 	 * Adresse de poursuite <i>autre tiers </i> formattée pour l'envoi (six lignes)
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddressOfOtherParty</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoiAutreTiers adressePoursuiteAutreTiersFormattee;
-	
+
 	/**
 	 * Adresse de domicile formattée pour l'envoi (six lignes)
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>formattedResidenceAddress</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseDomicileFormattee;
 
-	/** Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent). */
+	/**
+	 * Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>relationsBetweenParties</i>.
+	 */
 	@XmlElement(required = false)
 	public List<RapportEntreTiers> rapportsEntreTiers = null;
 
-	/** Historique des fors fiscaux principaux existants sur la personne physique ou sur le débiteur (du plus ancien au plus récent). */
+	/**
+	 * Historique des fors fiscaux principaux existants sur la personne physique ou sur le débiteur (du plus ancien au plus récent).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>mainTaxResidences</i>.
+	 */
 	@XmlElement(required = false)
 	public List<ForFiscal> forsFiscauxPrincipaux = null;
 
 	/**
-	 * Historique des autres fors fiscaux (secondaires, ...) existants sur la personne physique (du plus ancien au plus récent). Toujours
-	 * vide dans le cas d'un débiteur.
+	 * Historique des autres fors fiscaux (secondaires, ...) existants sur la personne physique (du plus ancien au plus récent). Toujours vide dans le cas d'un débiteur.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>otherTaxResidences</i>.
 	 */
 	@XmlElement(required = false)
 	public List<ForFiscal> autresForsFiscaux = null;
 
-	/** Historique des fors de gestion (du plus ancien au plus récent). Cette liste peut-être vide si le tiers n'a jamais été assujetti. */
+	/**
+	 * Historique des fors de gestion (du plus ancien au plus récent). Cette liste peut-être vide si le tiers n'a jamais été assujetti.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>managingTaxResidences</i>.
+	 */
 	@XmlElement(required = false)
 	public List<ForGestion> forsGestions = null;
 
-	/** Les coordonnées financières du tiers. */
+	/**
+	 * Les coordonnées financières du tiers.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>bankAccounts</i>.
+	 */
 	@XmlElement(required = false)
 	public List<CompteBancaire> comptesBancaires;
 
-	/** Historique des déclarations pour le tiers. Ou null, si aucune déclaration n'est ouverte. */
+	/**
+	 * Historique des déclarations pour le tiers. Ou null, si aucune déclaration n'est ouverte.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxDeclarations</i>.
+	 */
 	@XmlElement(required = false)
 	public List<Declaration> declarations = null;
 
@@ -216,10 +310,8 @@ public abstract class TiersHisto {
 	/**
 	 * Complète le tiers courant avec les parts spécifiées du tiers spécifié.
 	 *
-	 * @param tiers
-	 *            le tiers possèdant les parts à copier
-	 * @param parts
-	 *            les parts à copier
+	 * @param tiers le tiers possèdant les parts à copier
+	 * @param parts les parts à copier
 	 */
 	public void copyPartsFrom(TiersHisto tiers, Set<TiersPart> parts) {
 		copyParts(tiers, parts, CopyMode.ADDITIF);
@@ -247,7 +339,7 @@ public abstract class TiersHisto {
 		this.isDebiteurInactif = tiers.isDebiteurInactif();
 	}
 
-	private void initParts(Context context, ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, final Range range)
+	private void initParts(Context context, ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, @Nullable final Range range)
 			throws BusinessException {
 
 		if (parts != null && parts.contains(TiersPart.COMPTES_BANCAIRES)) {

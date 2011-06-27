@@ -10,6 +10,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 /**
  * Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>mailAddressType</i> (xml) / <i>MailAddress</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -22,40 +24,58 @@ public class AdresseEnvoi {
 
 	/**
 	 * La première ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line1</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = true)
 	public String ligne1;
 
 	/**
 	 * La deuxième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line2</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = true)
 	public String ligne2;
 
 	/**
 	 * La troisième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line3</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = true)
 	public String ligne3;
 
 	/**
 	 * La quatrième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line4</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = true)
 	public String ligne4;
 
 	/**
 	 * La cinquième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line5</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = false)
 	public String ligne5;
 
 	/**
 	 * La sixième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>line6</i> de la structure <i>formattedAddressType</i>.
 	 */
 	@XmlElement(required = false)
 	public String ligne6;
 
+	/**
+	 * <b>vrai</b> si l'adresse est une localité en Suisse; <b>faux</b> autrement.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> supprimé. Cette valeur peut cependant se déduire du champ <i>tariffZone</i> de la structure <i>addressInformationType</i> (xml) /
+	 * <i>AddressInformation</i> (client java).
+	 */
 	@XmlElement(required = true)
 	public boolean isSuisse;
 
@@ -64,6 +84,9 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>salutation</i> des structures <i>personMailAddressInfoType</i>, <i>coupleMailAddressInfoType</i> ou
+	 * <i>organisationMailAddressInfoType</i> (en fonction du type de tiers).
 	 */
 	@XmlElement(required = false)
 	public String salutations;
@@ -74,6 +97,9 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>formalGreeting</i> des structures <i>personMailAddressInfoType</i>, <i>coupleMailAddressInfoType</i> ou
+	 * <i>organisationMailAddressInfoType</i> (en fonction du type de tiers).
 	 */
 	@XmlElement(required = false)
 	public String formuleAppel;
@@ -83,6 +109,10 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>firstName</i> et <i>lastName</i> de la structure <i>personMailAddressInfoType</i> dans le cas d'une personne physique; ou dans le
+	 * champ <i>names</i> de la structure <i>coupleMailAddressInfoType</i> dans le cas d'un ménage commun; ou dans les champs <i>organisationName</i>, <i>organisationNameAddOn1</i> et
+	 * <i>organisationNameAddOn2</i> dans le cas d'une personne morale.
 	 */
 	@XmlElement(required = false)
 	public List<String> nomsPrenoms;
@@ -92,6 +122,8 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>complementaryInformation</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String complement;
@@ -101,6 +133,8 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>careOf</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String pourAdresse;
@@ -110,6 +144,8 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans les champs <i>street</i> et <i>houseNumber</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String rueNumero;
@@ -119,6 +155,8 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans les champs <i>postOfficeBoxText</i> et <i>postOfficeBoxNumber</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String casePostale;
@@ -128,6 +166,8 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans les champs <i>swissZipCode</i> et <i>town</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String npaLocalite;
@@ -137,12 +177,17 @@ public class AdresseEnvoi {
 	 * <p/>
 	 * <b>Attention !</b> Cette donnée est exposée pour permettre un affichage spécialisée dans les applications fiscales. <b>Elle ne doit pas être utilisé pour reconstruire une adresse qui serait
 	 * utilisée pour envoyer du courrier par le poste !</b>
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>country</i> de la structure <i>addressInformationType</i>. <b>Attention !</b> le champ <i>country</i> contient le code ISO sur 2
+	 * caractères du pays, et non plus le nom du pays en toutes lettres.
 	 */
 	@XmlElement(required = false)
 	public String pays;
 
 	/**
 	 * Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>tariffZone</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = true)
 	public TypeAffranchissement typeAffranchissement;

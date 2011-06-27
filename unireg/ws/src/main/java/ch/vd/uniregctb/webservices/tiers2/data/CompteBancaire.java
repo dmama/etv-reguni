@@ -13,6 +13,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 
 /**
  * Contient les coordonnées financière d'un compte auprès d'un organisme financier (CCP ou compte bancaire, suisse ou étranger).
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>bankAccountType</i> (xml) / <i>BankAccount</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -24,6 +26,8 @@ public class CompteBancaire {
 
 	/**
 	 * Formats permettant d'interpréter le numéro d'un compte.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>accountNumberFormatType</i> (xml) / <i>AccountNumberFormat</i> (client java)
 	 */
 	@XmlType(name = "FormatNumeroCompte")
 	@XmlEnum(String.class)
@@ -36,6 +40,8 @@ public class CompteBancaire {
 		 * <li>La Poste: 10-3848-4</li>
 		 * <li>...</li>
 		 * </ul>
+		 * <p/>
+		 * <b>Dans la version 3 du web-service :</b> <i>SWISS_SPECIFIC</i>.
 		 */
 		SPECIFIQUE_CH,
 		/**
@@ -46,6 +52,8 @@ public class CompteBancaire {
 		 * <li>Swiss IBAN: CH51 0868 6001 2565 1500 1</li>
 		 * <li>...</li>
 		 * </ul>
+		 * <p/>
+		 * <b>Dans la version 3 du web-service :</b> <i>IBAN</i>.
 		 */
 		IBAN;
 
@@ -60,42 +68,56 @@ public class CompteBancaire {
 	 * Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un
 	 * tiers personne morale, ce numéro est égal au numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément,
 	 * lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui du mandataire.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>ownerPartyId</i>.
 	 */
 	@XmlElement(required = true)
 	public Long numeroTiersTitulaire;
 
 	/**
 	 * Le titulaire du compte.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>ownerName</i>.
 	 */
 	@XmlElement(required = false)
 	public String titulaire;
 
 	/**
 	 * Le numéro du compte
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>accountNumber</i>.
 	 */
 	@XmlElement(required = true)
 	public String numero;
 
 	/**
 	 * Le format du numéro
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>format</i>.
 	 */
 	@XmlElement(required = true)
 	public Format format;
 
 	/**
 	 * Le clearing bancaire (uniquement renseigné sur les comptes bancaires suisses)
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>clearing</i>.
 	 */
 	@XmlElement(required = false)
 	public String clearing;
 
 	/**
 	 * Le numéro BIC SWIFT (uniquement renseigné sur les comptes bancaires étrangers).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>bicAddress</i>.
 	 */
 	@XmlElement(required = false)
 	public String adresseBicSwift;
 
 	/**
 	 * Le nom de l'institution financière (lorsque cette information est connnue).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>bankName</i>.
 	 */
 	@XmlElement(required = false)
 	public String nomInstitution;

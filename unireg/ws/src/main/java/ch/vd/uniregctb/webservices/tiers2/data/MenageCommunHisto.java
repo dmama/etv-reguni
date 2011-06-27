@@ -1,16 +1,18 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Set;
 
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>commonHouseholdType</i> (xml) / <i>CommonHousehold</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MenageCommunHisto", propOrder = {
 		"contribuablePrincipal", "contribuableSecondaire"
@@ -18,15 +20,18 @@ import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 public class MenageCommunHisto extends ContribuableHisto {
 
 	/**
-	 * information de base du contribuable principal composant le ménage (raccourci pour éviter une requête supplémentaire). La présence du
-	 * contribuable principal ne garanti pas de l'activité du couple
+	 * information de base du contribuable principal composant le ménage (raccourci pour éviter une requête supplémentaire). La présence du contribuable principal ne garanti pas de l'activité du couple
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>mainTaxpayer</i>.
 	 */
 	@XmlElement(required = false)
 	public PersonnePhysiqueHisto contribuablePrincipal;
 
 	/**
-	 * information de base du contribuable secondaire composant le ménage (raccourci pour éviter une requête supplémentaire). Peut être null
-	 * en cas de marié seul. La présence du contribuable secondaire ne garanti pas de l'activité du couple
+	 * information de base du contribuable secondaire composant le ménage (raccourci pour éviter une requête supplémentaire). Peut être null en cas de marié seul. La présence du contribuable secondaire
+	 * ne garanti pas de l'activité du couple
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>secondaryTaxpayer</i>.
 	 */
 	@XmlElement(required = false)
 	public PersonnePhysiqueHisto contribuableSecondaire;
@@ -56,7 +61,7 @@ public class MenageCommunHisto extends ContribuableHisto {
 	@Override
 	public void copyPartsFrom(TiersHisto tiers, Set<TiersPart> parts) {
 		super.copyPartsFrom(tiers, parts);
-		copyParts((MenageCommunHisto)tiers, parts);
+		copyParts((MenageCommunHisto) tiers, parts);
 	}
 
 	/**

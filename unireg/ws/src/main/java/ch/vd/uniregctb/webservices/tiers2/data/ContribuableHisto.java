@@ -1,24 +1,26 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
+/**
+ * <b>Dans la version 3 du web-service :</b> <i>taxpayerType</i> (xml) / <i>Taxpayer</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ContribuableHisto", propOrder = {
 		"situationsFamille", "assujettissementsLIC", "assujettissementsLIFD", "periodesImposition"
@@ -27,6 +29,9 @@ public abstract class ContribuableHisto extends TiersHisto {
 
 	private static final Logger LOGGER = Logger.getLogger(ContribuableHisto.class);
 
+	/**
+	 * <b>Dans la version 3 du web-service :</b> <i>familyStatuses</i>.
+	 */
 	@XmlElement(required = false)
 	public List<SituationFamille> situationsFamille = null;
 
@@ -34,6 +39,8 @@ public abstract class ContribuableHisto extends TiersHisto {
 	 * La liste des assujettissements LIC existant durant la période demandée. Cette liste peut être vide si le tiers n'est pas assujetti.
 	 * <p/>
 	 * <b>Note:</b> les dates de début et de fin des assujettissements ne sont pas limitées à l'année fiscale courante. Voir la classe {@link Assujettissement} pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityVD</i>.
 	 */
 	@XmlElement(required = false)
 	public List<Assujettissement> assujettissementsLIC = null;
@@ -42,6 +49,8 @@ public abstract class ContribuableHisto extends TiersHisto {
 	 * La liste des assujettissements LIFD existant durant la période demandée. Cette liste peut être vide si le tiers n'est pas assujetti.
 	 * <p/>
 	 * <b>Note:</b> les dates de début et de fin des assujettissements ne sont pas limitées à l'année fiscale courante. Voir la classe {@link Assujettissement} pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>simplifiedTaxLiabilityCH</i>.
 	 */
 	@XmlElement(required = false)
 	public List<Assujettissement> assujettissementsLIFD = null;
@@ -50,6 +59,8 @@ public abstract class ContribuableHisto extends TiersHisto {
 	 * La liste des périodes d'imposition à la date demandée. Cette liste peut être vide si le tiers n'est pas assujetti.
 	 * <p/>
 	 * <b>Note:</b> les dates de début et de fin sont garanties appartenir à une période fiscale. Voir la classe {@link PeriodeImposition} pour plus d'information.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>taxationPeriods</i>.
 	 */
 	@XmlElement(required = false)
 	public List<PeriodeImposition> periodesImposition = null;

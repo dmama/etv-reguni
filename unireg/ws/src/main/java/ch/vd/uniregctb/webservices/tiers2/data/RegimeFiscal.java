@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Informations sur un régime fiscal d'une personne morale.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>taxSystemType</i> (xml) / <i>TaxSystem</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -14,15 +16,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class RegimeFiscal implements Range {
 
-	/** La date de début de validité du régime fiscal. */
+	/**
+	 * La date de début de validité du régime fiscal.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateFrom</i>.
+	 */
 	@XmlElement(required = true)
 	public Date dateDebut;
 
-	/** La date de fin de validité du régime fiscal; ou <i>null</i> s'il est toujours valide. */
+	/**
+	 * La date de fin de validité du régime fiscal; ou <i>null</i> s'il est toujours valide.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>dateTo</i>.
+	 */
 	@XmlElement(required = false)
 	public Date dateFin;
 
-	/** Le code du régime fiscal, tel que défini dans le table TY_REGIME_FISCAL du Host. */
+	/**
+	 * Le code du régime fiscal, tel que défini dans le table TY_REGIME_FISCAL du Host.
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>code</i>.
+	 */
 	public String code;
 
 	@Override

@@ -10,13 +10,22 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
+/**
+ * Adresse spécialisée utilisée dans la cas de poursuite pour signifier qu'un autre tiers doit recevoir la réquisition.
+ * <p/>
+ * <b>Dans la version 3 du web-service :</b> <i>otherPartyAddressType</i> (xml) / <i>OtherPartyAddress</i> (client java)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AdresseAutreTiers", propOrder = {
 		"type"
 })
 public class AdresseAutreTiers extends Adresse {
 
-	/** le type de l'adresse */
+	/**
+	 * le type de l'adresse
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> <i>type</i>
+	 */
 	@XmlElement(required = true)
 	public TypeAdresseAutreTiers type;
 
