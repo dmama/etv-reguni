@@ -41,7 +41,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 		}
 	};
 
-	private static ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>();
+	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>();
 
 	/**
 	 * Méthode utilisable dans les tests et qui fait en sorte que la date de "début du futur" soit la date donnée
