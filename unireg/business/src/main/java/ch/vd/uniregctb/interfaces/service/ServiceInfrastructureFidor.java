@@ -195,11 +195,9 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
 		try {
 			final List<Commune> list = new ArrayList<Commune>();
-			final List<CommuneFiscale> l = fidorClient.getCommunesHistoParNoOFS(noOfsCommune);
+			final List<CommuneFiscale> l = fidorClient.getCommunesParNoOFS(noOfsCommune);
 			for (CommuneFiscale c : l) {
-				if (c.getNoOfs() == noOfsCommune) { // dans le cas d'une commune issue d'une fusion, on reçoit aussi les commmunes avant fusion, mais on ne les veut pas
-					list.add(CommuneImpl.get(c));
-				}
+				list.add(CommuneImpl.get(c));
 			}
 			return list;
 		}
