@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0n-SNAPSHOT -->
+<!-- version 3.0o-SNAPSHOT -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
@@ -22,7 +22,7 @@
 			<xs:include schemaLocation="messages/returntaxdeclarations.xsd" />
 			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
 			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
-			<xs:element name="searchPartyRequest" nillable="true" type="unireg:SearchPartyRequestType" />
+			<xs:element name="searchPartyRequest" nillable="true" type="unireg:searchPartyRequestType" />
 			<xs:element name="searchPartyResponse" nillable="true" type="unireg:searchPartyResponseType" />
 			<xs:element name="searchCorporationEventsRequest" nillable="true" type="unireg:searchCorporationEventsRequestType" />
 			<xs:element name="searchCorporationEventsResponse" nillable="true" type="unireg:searchCorporationEventsResponseType" />

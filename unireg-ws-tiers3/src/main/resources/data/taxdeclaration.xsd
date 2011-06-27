@@ -33,7 +33,7 @@
 					<xs:documentation>La période fiscale à laquelle la déclaration est rattachée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" name="status" type="unireg:taxDeclarationStatusType">
+			<xs:element maxOccurs="unbounded" name="statuses" type="unireg:taxDeclarationStatusType">
 				<xs:annotation>
 					<xs:documentation>Les états de la déclaration.
 					Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS_STATUSES est demandée.</xs:documentation>

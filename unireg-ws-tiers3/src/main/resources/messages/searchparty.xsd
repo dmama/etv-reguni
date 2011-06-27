@@ -3,7 +3,7 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
 	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/party.xsd" />
-	<xs:complexType name="SearchPartyRequestType">
+	<xs:complexType name="searchPartyRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête de recherche de tiers en fonction de divers critères.</xs:documentation>
 		</xs:annotation>
@@ -34,7 +34,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="vn" type="xs:string">
+					<xs:element minOccurs="0" name="socialInsuranceNumber" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Critère sur le numéro AVS (11 ou 13).</xs:documentation>
 						</xs:annotation>

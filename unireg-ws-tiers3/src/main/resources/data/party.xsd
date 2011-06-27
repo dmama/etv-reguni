@@ -30,7 +30,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="activityEndate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="activityEndDate" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle l'activité du tiers a pris fin. Si le tiers est toujours actif, la date n'est pas renseignée.
 						Attention ! Cette date n'est renseignée que si la part TAX_RESIDENCES est demandée.
