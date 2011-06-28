@@ -339,7 +339,7 @@ public class ForFiscal implements Range {
 	/**
 	 * Date à laquelle le for fiscal a été annulé, ou <b>null</b> s'il n'est pas annulé.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>CANCELLATION</i>
+	 * <b>Dans la version 3 du web-service :</b> <i>cancellationDate</i>
 	 */
 	@XmlElement(required = false)
 	public Date dateAnnulation;
