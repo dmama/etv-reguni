@@ -85,10 +85,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			sentMessages.add(message);
 		}
 
-		@Override
-		public void setDemandeHandler(DemandeHandler handler) {
-		}
-
 		public List<IdentificationContribuable> getSentMessages() {
 			return sentMessages;
 		}

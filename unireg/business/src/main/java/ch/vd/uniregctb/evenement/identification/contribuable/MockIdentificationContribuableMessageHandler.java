@@ -10,8 +10,4 @@ public class MockIdentificationContribuableMessageHandler implements Identificat
 	@Override
 	public void sendReponse(IdentificationContribuable message) throws Exception {
 	}
-
-	@Override
-	public void setDemandeHandler(DemandeHandler handler) {
-	}
 }

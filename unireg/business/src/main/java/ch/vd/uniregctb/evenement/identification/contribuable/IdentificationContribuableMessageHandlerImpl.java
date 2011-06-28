@@ -56,9 +56,11 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Défini le handler qui sera appelé lors de la réception d'une demande d'identification de contribuable. Le handler est responsable
+	 * d'entreprendre toutes les actions <i>métier</i> nécessaires au traitement correct du message.
+	 *
+	 * @param handler le handler <i>métier</i> de demande d'identification de contribuable
 	 */
-	@Override
 	public void setDemandeHandler(DemandeHandler handler) {
 		this.demandeHandler = handler;
 	}
