@@ -3,6 +3,8 @@ package ch.vd.uniregctb.adresse;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -157,7 +159,7 @@ public class AdresseMixer {
 	 * @param defaultSurcharge valeur de surcharge pour les adresses surchargées, ou <b>null</b> pour garder le défaut des adresses originelles.
 	 * @return la liste des adresses combinées.
 	 */
-	public static List<AdresseGenerique> override(List<AdresseGenerique> adresses, List<AdresseGenerique> surcharges, final Source sourceSurcharge, final Boolean defaultSurcharge) {
+	public static List<AdresseGenerique> override(List<AdresseGenerique> adresses, List<AdresseGenerique> surcharges, @Nullable final Source sourceSurcharge, @Nullable final Boolean defaultSurcharge) {
 
 		final boolean annulee = hasAdresseAnnulee(adresses) || hasAdresseAnnulee(surcharges);
 

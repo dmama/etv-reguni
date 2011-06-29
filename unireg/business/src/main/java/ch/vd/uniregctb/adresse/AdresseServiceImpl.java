@@ -2,12 +2,14 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -24,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -37,7 +40,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -126,14 +128,8 @@ public class AdresseServiceImpl implements AdresseService {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
-		Assert.notNull(tiers);
+	private AdresseEnvoiDetaillee createAdresseEnvoi(Tiers tiers, @Nullable AdresseGenerique adresseDestination, TypeAdresseFiscale type, @Nullable RegDate date) throws AdresseException {
 
-		final AdresseGenerique adresseDestination = getAdresseFiscale(tiers, type, date, strict);
 		if (adresseDestination == null && type == TypeAdresseFiscale.POURSUITE_AUTRE_TIERS) {
 			// [UNIREG-1808] l'adresse de poursuite autre tiers n'est renseignée que dans des cas bien précis, dans les autres cas elle est nulle
 			return null;
@@ -142,13 +138,172 @@ public class AdresseServiceImpl implements AdresseService {
 		// Détermine les informations de l'adresse d'envoi
 		final EnvoiInfo envoi = determineEnvoiInfo(tiers, type, adresseDestination);
 		final Tiers tiersPourAdresse = (envoi.avecPourAdresse ? envoi.destination : null);
+		final RegDate dateDebut = (adresseDestination == null ? null : adresseDestination.getDateDebut());
+		final RegDate dateFin = (adresseDestination == null ? null : adresseDestination.getDateFin());
 
 		// Remplis l'adresse d'envoi
-		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType);
+		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin);
 		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
 		fillDestination(adresseEnvoi, adresseDestination);
 
 		return adresseEnvoi;
+	}
+
+	@Override
+	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
+		Assert.notNull(tiers);
+
+		final AdresseGenerique adresseDestination = getAdresseFiscale(tiers, type, date, strict);
+		return createAdresseEnvoi(tiers, adresseDestination, type, date);
+	}
+
+	@Override
+	public AdressesEnvoiHisto getAdressesEnvoiHisto(Tiers tiers, boolean strict) throws AdresseException {
+		Assert.notNull(tiers);
+
+		final AdressesFiscalesHisto adressesFiscales = getAdressesFiscalHisto(tiers, strict);
+		if (adressesFiscales == null) {
+			return null;
+		}
+
+		final AdressesEnvoiHisto results = new AdressesEnvoiHisto();
+
+		final Set<RegDate> splitDates = getSplitDatesForAdressesEnvoi(tiers);
+
+		// on crée les historique des adresses d'envoi pour tous les types d'adresses
+		for (TypeAdresseFiscale type : TypeAdresseFiscale.values()) {
+			final List<AdresseGenerique> adressesDestination = adressesFiscales.ofType(type);
+			if (adressesDestination != null && !adressesDestination.isEmpty()) {
+				// on splitte les adresses lors des dates de décès, car les salutations et les formules de politesse changent à ce moment-là
+				final List<AdresseGenerique> splittedAdresses = splitAt(adressesDestination, splitDates);
+				for (AdresseGenerique adresseDestination : splittedAdresses) {
+					// l'adresse d'envoi est constante pendant toute la période, on peut donc théoriquement choisir n'importe des dates comprises dans l'intervalle. Avec les exceptions suivantes :
+					//  - en cas de décès, l'individu civil est considéré décédé le jour même, mais le for fiscal reste valide jusqu'au soir. La date de fin ne convient donc pas.
+					//  - si la date début est nulle (= l'aube des temps), dans ce contexte elle sera interprétée comme la fin des temps. Une date de début nulle ne convient donc pas.
+					// En conséquence, on prend la date de début quand elle est différent de nulle, autrement on prend le jour précédent la date de fin.
+					final RegDate dateValeur;
+					if (adresseDestination.getDateDebut() != null) {
+						dateValeur = adresseDestination.getDateDebut();
+					}
+					else if (adresseDestination.getDateFin() != null) {
+						dateValeur = adresseDestination.getDateFin().getOneDayBefore();
+					}
+					else {
+						dateValeur = null;
+					}
+					final AdresseEnvoiDetaillee adresseEnvoi = createAdresseEnvoi(tiers, adresseDestination, type, dateValeur);
+					if (adresseEnvoi != null) {
+						results.add(type, adresseEnvoi);
+					}
+				}
+			}
+			else if (type != TypeAdresseFiscale.POURSUITE_AUTRE_TIERS) {
+				// on crée une adresse d'envoi minimale
+				results.add(type, createAdresseEnvoi(tiers, null, type, null));
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Découpe les adresses spécifiées aux dates spécifiées.
+	 * TODO (msi) déplacer cette méthode dans l'AdresseMixer
+	 *
+	 * @param adresses une liste d'adresses
+	 * @param dates une liste de dates
+	 * @return la liste d'adresses découpées; ou la liste spécifiée en entrée si aucun découpage n'a eu lieu.
+	 */
+	private static List<AdresseGenerique> splitAt(List<AdresseGenerique> adresses, Set<RegDate> dates) {
+
+		if (dates == null || dates.isEmpty()) {
+			return adresses;
+		}
+
+		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses);
+		int count = 0;
+		while (splitOnceAt(list, dates)) {
+			if (++count > 1000) {
+				throw new ProgrammingException();
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Découpe en deux la <b>première</b> des adresses spécifiées qui peut l'être à une des dates données et retourne immédiatement. Cette méthode ne découpe pas plus d'une adresse à la fois.
+	 *
+	 * @param adresses une liste d'adresses
+	 * @param dates    une liste de dates
+	 * @return <b>vrai</b> si une des adresses a été découpées; <b>faux</b> si aucune adresse n'a pu être découpée.
+	 */
+	private static boolean splitOnceAt(List<AdresseGenerique> adresses, Set<RegDate> dates) {
+		for (int i = 0, adressesSize = adresses.size(); i < adressesSize; i++) {
+			final AdresseGenerique a = adresses.get(i);
+			for (RegDate date : dates) {
+				if (a.isValidAt(date) && a.getDateDebut() != date) {
+					// on remplace l'adresse par les deux adresses splittées
+					adresses.remove(i);
+					adresses.add(i, new AdresseGeneriqueAdapter(a, a.getDateDebut(), date.getOneDayBefore(), null));
+					adresses.add(i + 1, new AdresseGeneriqueAdapter(a, date, a.getDateFin(), null));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Détermine et retourne les dates auxquelles les adresses d'envoi doivent être artificiellement splittées (généralement pour cause de décès d'une personne physique qui va provoquer une changement
+	 * dans les salutations ou la formule d'appel)
+	 *
+	 * @param tiers un tiers
+	 * @return les dates auxquelles les adresses d'envoi doivent être splittées
+	 */
+	@NotNull
+	private Set<RegDate> getSplitDatesForAdressesEnvoi(Tiers tiers) {
+
+		final Set<RegDate> set;
+
+		if (tiers instanceof PersonnePhysique) {
+			final RegDate dateDeces = tiersService.getDateDeces((PersonnePhysique) tiers);
+			if (dateDeces != null) {
+				set = new HashSet<RegDate>();
+				set.add(dateDeces.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+			}
+			else {
+				set = Collections.emptySet();
+			}
+
+		}
+		else if (tiers instanceof MenageCommun) {
+			// dans le cas d'un ménage, on retourne la première date de décès d'un des deux composants, car le décès va
+			// provoquer la fermeture du ménage. C'est donc uniquement le premier décès qui compte.
+			final MenageCommun menage = (MenageCommun) tiers;
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
+			final RegDate dateDecesPrincipal = tiersService.getDateDeces(ensemble.getPrincipal());
+			final RegDate dateDecesConjoint = tiersService.getDateDeces(ensemble.getConjoint());
+
+			if (dateDecesPrincipal != null || dateDecesConjoint != null) {
+				set = new HashSet<RegDate>();
+				if (dateDecesPrincipal != null) {
+					set.add(dateDecesPrincipal.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+				}
+				if (dateDecesConjoint != null) {
+					set.add(dateDecesConjoint.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+				}
+			}
+			else {
+				set = Collections.emptySet();
+			}
+		}
+		else {
+			// dans tous les autres cas : pas de date de décès
+			set = Collections.emptySet();
+		}
+
+		return set;
 	}
 
 	/**
@@ -286,7 +441,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date                 la date de validité de l'adresse
 	 * @param fillFormulePolitesse s'il faut remplir la formule de politesse ou non
 	 */
-	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, Tiers tiersPourAdresse, RegDate date, boolean fillFormulePolitesse) {
+	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, @Nullable Tiers tiersPourAdresse, @Nullable RegDate date, boolean fillFormulePolitesse) {
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
@@ -374,9 +529,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return une adresse d'envoi détaillée
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
+	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, @Nullable RegDate date, boolean strict) throws AdresseException {
 
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE);
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE, date, date);
 		adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 		adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
@@ -386,7 +541,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
 			if (adresseCourrier != null) {
-				fillAdresseEnvoi(adresse, new AdresseCivileAdapter(adresseCourrier, (Tiers)null, false, serviceInfra));
+				fillAdresseEnvoi(adresse, new AdresseCivileAdapter(adresseCourrier, (Tiers) null, false, serviceInfra));
 			}
 		}
 		catch (DonneesCivilesException e) {
@@ -424,7 +579,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage d'une personne physique
 	 */
-	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne, RegDate date) {
+	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne, @Nullable RegDate date) {
 
 		FormulePolitesse salutations;
 
@@ -1071,7 +1226,7 @@ public class AdresseServiceImpl implements AdresseService {
 				final List<DateRange> periodesTutellesPrincipal = DateRangeHelper.collateRange(adressesTuteur);
 
 				// On détermine les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle du principal
-				final List<AdresseGenerique> adressesConjointSansTutelle = getAdresseCourrierConjointPourRepresentationMenage(menage, conjoint, periodesTutellesPrincipal, callDepth, strict);
+				final List<AdresseGenerique> adressesConjointSansTutelle = getAdresseCourrierConjointPourRepresentationMenage(conjoint, periodesTutellesPrincipal, callDepth, strict);
 				adresses = AdresseMixer.override(adressesTuteur, adressesConjointSansTutelle, null, null);
 			}
 		}
@@ -1081,25 +1236,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return adresses;
-	}
-
-	/**
-	 * Retourne la liste des périodes durant lesquelles une personne physique appartient à un ménage commun.
-	 *
-	 * @param menage    un ménage commun
-	 * @param principal une personne physique
-	 * @return une liste de périodes, qui peut être vide.
-	 */
-	private static List<DateRange> getPeriodesAppartenanceMenage(MenageCommun menage, PersonnePhysique principal) {
-		final List<DateRange> list = new ArrayList<DateRange>();
-
-		for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
-			if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage && rapport.getSujetId().equals(principal.getId())) {
-				list.add(rapport);
-			}
-		}
-
-		return list;
 	}
 
 	/**
@@ -1123,7 +1259,6 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Cette méthode permet de déterminer les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle/curatelle du principal.
 	 *
-	 * @param menage                   le ménage considéré
 	 * @param conjoint                 le conjoint
 	 * @param periodesTutellePrincipal les périodes pendant lesquelles le principal est sous tutelle/curatelle
 	 * @param callDepth                paramètre technique pour éviter les récursions infinies
@@ -1131,8 +1266,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return une liste d'adresses à utiliser comme adresses courrier du ménage dont fait partie le conjoint
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(MenageCommun menage, PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth,
-	                                                                                  boolean strict) throws AdresseException {
+	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth, boolean strict) throws
+			AdresseException {
 
 		// [UNIREG-2644] [UNIREG-3279] il est nécessaire de limiter la validité des adresses aux périodes d'appartenance ménage (notamment en cas de décès ou de séparation)
 		// [SIFISC-1292] en fait non, on a finalement décidé que la base de validité des adresses s'étend à toute la période de vie du conjoint.
@@ -1622,13 +1757,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Tutelle         (non-mappée)
 	 * </pre>
 	 *
-	 * @param tiers le tiers qui possède les adresses civiles
+	 * @param tiers                  le tiers qui possède les adresses civiles
 	 * @param adressesCiviles        les adresses civiles de base
 	 * @param adressesCivilesDefault les adresses civiles par défaut utilisées pour boucher les trous dans les adresses civiles de base
 	 * @param strict                 si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses génériques qui représentent les adresses civiles.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
+	@SuppressWarnings({"unchecked"})
 	private List<AdresseGenerique> initAdressesCivilesHisto(Tiers tiers, List<Adresse> adressesCiviles, List<Adresse> adressesCivilesDefault, boolean strict) throws AdresseException {
 
 		// Adapte la liste des adresses civiles
@@ -1679,11 +1815,12 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Facturation     (non-mappée)
 	 * </pre>
 	 *
-	 * @param entreprise l'entreprise qui possède les adresses PM
+	 * @param entreprise        l'entreprise qui possède les adresses PM
 	 * @param adressesPM        les adresses PM de base
 	 * @param adressesPMDefault les adresses PM par défaut utilisées pour boucher les trous dans les adresses PM de base
 	 * @return les adresses génériques qui représentent les adresses PM.
 	 */
+	@SuppressWarnings({"unchecked"})
 	private List<AdresseGenerique> initAdressesPMHisto(Entreprise entreprise, List<AdresseEntreprise> adressesPM, List<AdresseEntreprise> adressesPMDefault) {
 
 		// Adapte la liste des adresses civiles
@@ -1723,8 +1860,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict              si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void ajouteCoucheAdressesTiers(Tiers tiers, AdresseSandwich adresses, AdresseCouche nomCouche, List<AdresseTiers> adressesSurchargees, AdresseGenerique.Source sourceSurcharge,
-	                                       Boolean defaultSurcharge, int callDepth, boolean strict) throws AdresseException {
+	private void ajouteCoucheAdressesTiers(Tiers tiers, AdresseSandwich adresses, AdresseCouche nomCouche, List<AdresseTiers> adressesSurchargees, @Nullable AdresseGenerique.Source sourceSurcharge,
+	                                       @Nullable Boolean defaultSurcharge, int callDepth, boolean strict) throws AdresseException {
 
 		if (adressesSurchargees == null || adressesSurchargees.size() == 0) {
 			return;
@@ -1806,7 +1943,7 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date);
 		fillDestinataire(adresse, tiers, null, date, false);
 
 		List<String> list = adresse.getNomsPrenomsOuRaisonsSociales();
@@ -1892,7 +2029,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return adressesFiscalesHisto;
 	}
 
-	private static int oneLevelDeeper(int callDepth, Tiers tiers, Tiers autreTiers, AdresseTiers adresseSurchargee) throws AdressesResolutionException {
+	private static int oneLevelDeeper(int callDepth, Tiers tiers, Tiers autreTiers, @Nullable AdresseTiers adresseSurchargee) throws AdressesResolutionException {
 
 		if (callDepth >= MAX_CALL_DEPTH) {
 			AdressesResolutionException exception = new AdressesResolutionException(

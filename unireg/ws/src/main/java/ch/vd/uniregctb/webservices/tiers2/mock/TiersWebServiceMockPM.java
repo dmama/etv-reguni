@@ -15,6 +15,7 @@ import java.util.Set;
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ResourceUtils;
 
@@ -511,7 +512,12 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.PM);
+
+		final Adresse adresseFiscale = getAt(adresses, null);
+		final RegDate dateDebut = adresseFiscale == null ? null : DataHelper.webToCore(adresseFiscale.getDateDebut());
+		final RegDate dateFin = adresseFiscale == null ? null : DataHelper.webToCore(adresseFiscale.getDateFin());
+
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.PM, dateDebut, dateFin);
 
 		if (pm.designationAbregee != null) {
 			adresse.addRaisonSociale(pm.designationAbregee);
@@ -525,7 +531,6 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			adresse.addComplement(pm.complementNom);
 		}
 
-		final Adresse adresseFiscale = getAt(adresses, null);
 		if (adresseFiscale != null) {
 
 			if (adresseFiscale.titre != null) {
@@ -1234,7 +1239,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return pm;
 	}
 
-	private static <T extends Range> T getAt(List<T> ranges, Date date) {
+	private static <T extends Range> T getAt(List<T> ranges, @Nullable Date date) {
 		final RegDate d = DataHelper.webToCore(date);
 		T range = null;
 		if (ranges != null) {

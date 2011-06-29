@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
 import ch.vd.unireg.webservices.tiers3.Address;
@@ -807,7 +808,12 @@ public class PartyWebServiceWithPM implements PartyWebService {
 	}
 
 	private MailAddress calculateMailAddress(ch.vd.uniregctb.tiers.Tiers destinataire, Corporation pm, List<Address> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM);
+
+		final Address addressFiscale = DateHelper.getAt(adresses, null);
+		final RegDate dateDebut = addressFiscale == null ? null : DataHelper.webToCore(addressFiscale.getDateFrom());
+		final RegDate dateFin = addressFiscale == null ? null : DataHelper.webToCore(addressFiscale.getDateTo());
+
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM, dateDebut, dateFin);
 
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
@@ -830,7 +836,6 @@ public class PartyWebServiceWithPM implements PartyWebService {
 //			adresse.addPourAdresse(pm.personneContact);
 //		}
 
-		final Address addressFiscale = DateHelper.getAt(adresses, null);
 		if (addressFiscale != null) {
 
 			if (addressFiscale.getTitle() != null) {

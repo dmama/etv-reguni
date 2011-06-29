@@ -44,4 +44,32 @@ public class NomPrenom {
 		}
 		return resultat;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final NomPrenom nomPrenom = (NomPrenom) o;
+
+		if (nom != null ? !nom.equals(nomPrenom.nom) : nomPrenom.nom != null) return false;
+		if (prenom != null ? !prenom.equals(nomPrenom.prenom) : nomPrenom.prenom != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = nom != null ? nom.hashCode() : 0;
+		result = 31 * result + (prenom != null ? prenom.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "NomPrenom{" +
+				"nom='" + nom + '\'' +
+				", prenom='" + prenom + '\'' +
+				'}';
+	}
 }

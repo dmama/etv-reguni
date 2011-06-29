@@ -7,8 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -911,7 +913,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers destinataire, PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM);
+
+		final Adresse adresseFiscale = getAt(adresses, null);
+		final RegDate dateDebut = adresseFiscale == null ? null : DataHelper.webToCore(adresseFiscale.getDateDebut());
+		final RegDate dateFin = adresseFiscale == null ? null : DataHelper.webToCore(adresseFiscale.getDateFin());
+
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM, dateDebut, dateFin);
 
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
@@ -934,7 +941,6 @@ public class TiersWebServiceWithPM implements TiersWebService {
 //			adresse.addPourAdresse(pm.personneContact);
 //		}
 
-		final Adresse adresseFiscale = getAt(adresses, null);
 		if (adresseFiscale != null) {
 
 			if (adresseFiscale.titre != null) {
@@ -1073,7 +1079,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return pm;
 	}
 
-	private static <T extends Range> T getAt(List<T> ranges, Date date) {
+	private static <T extends Range> T getAt(List<T> ranges, @Nullable Date date) {
 		T range = null;
 		if (ranges != null) {
 			for (T r : ranges) {

@@ -38,7 +38,7 @@ public interface AdresseService {
 	 * @return les adresses fiscales du tiers à la date donnée.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdressesFiscales getAdressesFiscales(@Nullable Tiers tiers, @Nullable RegDate date, boolean strict) throws AdresseException;
+	public AdressesFiscales getAdressesFiscales(@Nullable Tiers tiers, @Nullable RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait l'adresse fiscale (= adresse civile + adresse tiers) définie pour une date et un type d'adresse donné. Les adresses annulées sont ignorées et ne sont pas retournées.
@@ -51,7 +51,7 @@ public interface AdresseService {
 	 * @return l'adresse fiscale du tiers pour le type et la date spécifiés.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseGenerique getAdresseFiscale(@Nullable Tiers tiers, TypeAdresseFiscale type, @Nullable RegDate date, boolean strict) throws AdresseException;
+	public AdresseGenerique getAdresseFiscale(@Nullable Tiers tiers, TypeAdresseFiscale type, @Nullable RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait l'historique des adresses fiscales (= adresses civils + adresse tiers) pour le tiers spécifié.
@@ -64,7 +64,7 @@ public interface AdresseService {
 	 * @return l'historique des adresses fiscales du tiers
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException;
+	public AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
 	 * Calcul et retourne l'historique des adresses fiscales avec le détail complet des couches qui le composent.
@@ -75,7 +75,7 @@ public interface AdresseService {
 	 * @return l'historique des adresses fiscales sous forme de sandwich de couches d'adresses.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean strict) throws AdresseException;
+	public AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
 	 * Retourne l'historique des adresses civiles du tiers spécifié. Ou <b>null</b> si le tiers n'en possède pas.
@@ -111,7 +111,18 @@ public interface AdresseService {
 	 * @return l'adresse d'envoi déjà formattée.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
+	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
+
+	/**
+	 * Crée et retourne l'historique complet des adresses d'envoi formattée (six lignes) pour un tiers donné.
+	 *
+	 * @param tiers  le tiers dont on recherche l'adresse.
+	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
+	 *               (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @return l'adresse d'envoi déjà formattée.
+	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
+	 */
+	public AdressesEnvoiHisto getAdressesEnvoiHisto(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
 	 * Crée et retourne l'adresse d'envoi pour un individu donné.
@@ -123,7 +134,7 @@ public interface AdresseService {
 	 * @return l'adresse d'envoi déjà formattée
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseEnvoi getAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException;
+	public AdresseEnvoi getAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Créé et retourne l'adresse de courrier à fournir au registre foncier

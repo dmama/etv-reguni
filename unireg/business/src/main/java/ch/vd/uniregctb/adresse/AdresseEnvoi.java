@@ -161,4 +161,11 @@ public class AdresseEnvoi implements Serializable {
 	public int hashCode() {
 		return Arrays.hashCode(lignes);
 	}
+
+	@Override
+	public String toString() {
+		return "AdresseEnvoi{" +
+				"lignes=" + (lignes == null ? null : Arrays.asList(lignes)) +
+				'}';
+	}
 }

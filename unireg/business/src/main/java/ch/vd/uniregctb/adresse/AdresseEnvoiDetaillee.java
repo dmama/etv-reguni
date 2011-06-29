@@ -6,6 +6,10 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.RueEtNumero;
@@ -16,9 +20,12 @@ import ch.vd.uniregctb.type.FormulePolitesse;
 /**
  * Adresse d'envoi du courrier avec détail des valeurs.
  */
-public class AdresseEnvoiDetaillee extends AdresseEnvoi {
+public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 	private static final long serialVersionUID = 8557039282754715615L;
+
+	private RegDate dateDebut;
+	private RegDate dateFin;
 	private final Tiers destinataire;
 	private String salutations;
 	private String formuleAppel;
@@ -33,9 +40,34 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private final AdresseGenerique.SourceType source;
 
-	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source) {
+	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin) {
 		this.source = source;
 		this.destinataire = destinataire;
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	@Override
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return dateFin;
 	}
 
 	public Tiers getDestinataire() {
@@ -231,5 +263,74 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	 */
 	public boolean isSuisse() {
 		return typeAffranchissement == TypeAffranchissement.SUISSE;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+
+		final AdresseEnvoiDetaillee that = (AdresseEnvoiDetaillee) o;
+
+		if (casePostale != null ? !casePostale.equals(that.casePostale) : that.casePostale != null) return false;
+		if (complement != null ? !complement.equals(that.complement) : that.complement != null) return false;
+		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
+		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
+		if (destinataire != null ? !destinataire.equals(that.destinataire) : that.destinataire != null) return false;
+		if (formuleAppel != null ? !formuleAppel.equals(that.formuleAppel) : that.formuleAppel != null) return false;
+		if (nomsPrenoms != null ? !nomsPrenoms.equals(that.nomsPrenoms) : that.nomsPrenoms != null) return false;
+		if (npaEtLocalite != null ? !npaEtLocalite.equals(that.npaEtLocalite) : that.npaEtLocalite != null) return false;
+		if (pays != null ? !pays.equals(that.pays) : that.pays != null) return false;
+		if (pourAdresse != null ? !pourAdresse.equals(that.pourAdresse) : that.pourAdresse != null) return false;
+		if (raisonsSociales != null ? !raisonsSociales.equals(that.raisonsSociales) : that.raisonsSociales != null) return false;
+		if (rueEtNumero != null ? !rueEtNumero.equals(that.rueEtNumero) : that.rueEtNumero != null) return false;
+		if (salutations != null ? !salutations.equals(that.salutations) : that.salutations != null) return false;
+		if (source != that.source) return false;
+		if (typeAffranchissement != that.typeAffranchissement) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (dateDebut != null ? dateDebut.hashCode() : 0);
+		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
+		result = 31 * result + (destinataire != null ? destinataire.hashCode() : 0);
+		result = 31 * result + (salutations != null ? salutations.hashCode() : 0);
+		result = 31 * result + (formuleAppel != null ? formuleAppel.hashCode() : 0);
+		result = 31 * result + (nomsPrenoms != null ? nomsPrenoms.hashCode() : 0);
+		result = 31 * result + (raisonsSociales != null ? raisonsSociales.hashCode() : 0);
+		result = 31 * result + (complement != null ? complement.hashCode() : 0);
+		result = 31 * result + (pourAdresse != null ? pourAdresse.hashCode() : 0);
+		result = 31 * result + (rueEtNumero != null ? rueEtNumero.hashCode() : 0);
+		result = 31 * result + (casePostale != null ? casePostale.hashCode() : 0);
+		result = 31 * result + (npaEtLocalite != null ? npaEtLocalite.hashCode() : 0);
+		result = 31 * result + (pays != null ? pays.hashCode() : 0);
+		result = 31 * result + (typeAffranchissement != null ? typeAffranchissement.hashCode() : 0);
+		result = 31 * result + (source != null ? source.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "AdresseEnvoiDetaillee{" +
+				"dateDebut=" + dateDebut +
+				", dateFin=" + dateFin +
+				", destinataire=" + destinataire +
+				", salutations='" + salutations + '\'' +
+				", formuleAppel='" + formuleAppel + '\'' +
+				", nomsPrenoms=" + nomsPrenoms +
+				", raisonsSociales=" + raisonsSociales +
+				", complement='" + complement + '\'' +
+				", pourAdresse='" + pourAdresse + '\'' +
+				", rueEtNumero=" + rueEtNumero +
+				", casePostale=" + casePostale +
+				", npaEtLocalite='" + npaEtLocalite + '\'' +
+				", pays='" + pays + '\'' +
+				", typeAffranchissement=" + typeAffranchissement +
+				", source=" + source +
+				"} " + super.toString();
 	}
 }

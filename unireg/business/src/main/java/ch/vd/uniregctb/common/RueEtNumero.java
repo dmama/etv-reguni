@@ -41,4 +41,32 @@ public class RueEtNumero {
 		}
 		return resultat;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final RueEtNumero that = (RueEtNumero) o;
+
+		if (numero != null ? !numero.equals(that.numero) : that.numero != null) return false;
+		if (rue != null ? !rue.equals(that.rue) : that.rue != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = rue != null ? rue.hashCode() : 0;
+		result = 31 * result + (numero != null ? numero.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "RueEtNumero{" +
+				"rue='" + rue + '\'' +
+				", numero='" + numero + '\'' +
+				'}';
+	}
 }

@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Classe qui stocke les adresses sous formes de couches superposées et qui permet d'en obtenir une vue simple (= fusionnée) ou complexe (= le détail des couches) au choix.
  */
@@ -60,7 +62,7 @@ public class AdresseSandwich {
 	 * @param sourceSurcharge  la source à utiliser lors de la surcharge
 	 * @param defaultSurcharge le flag défaut à utiliser lors de la surcharge
 	 */
-	public void addCouche(AdresseCouche nom, List<AdresseGenerique> adresses, AdresseGenerique.Source sourceSurcharge, Boolean defaultSurcharge) {
+	public void addCouche(AdresseCouche nom, List<AdresseGenerique> adresses, @Nullable AdresseGenerique.Source sourceSurcharge, @Nullable Boolean defaultSurcharge) {
 		if (types.contains(nom)) {
 			throw new IllegalArgumentException("La couche '" + nom + "' existe déjà !");
 		}
