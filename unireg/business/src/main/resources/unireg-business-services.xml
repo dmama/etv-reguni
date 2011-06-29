@@ -157,6 +157,7 @@
 		<property name="messageHandler" ref="identCtbMessageHandler" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+		<property name="identificationContribuableHelper" ref="identificationContribuableHelper" />
 		<aop:scoped-proxy/>
 	</bean>
 
@@ -221,6 +222,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>
+	<bean id="identificationContribuableHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableHelper"/>
 
 	<bean id="activationService" class="ch.vd.uniregctb.activation.ActivationServiceImpl">
 		<property name="tiersService" ref="tiersService" />

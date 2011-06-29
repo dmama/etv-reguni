@@ -31,6 +31,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -57,7 +58,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@SuppressWarnings( {
+@SuppressWarnings({
 		"FieldCanBeLocal", "JavaDoc"
 })
 public class IdentificationContribuableServiceTest extends BusinessTest {
@@ -110,6 +111,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	private IdentificationContribuableServiceImpl service;
 	private TestMessageHandler messageHandler;
+	private IdentificationContribuableHelper helper;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -121,6 +123,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
+		helper = getBean(IdentificationContribuableHelper.class, "identificationContribuableHelper");
 
 		service = new IdentificationContribuableServiceImpl();
 		service.setSearcher(searcher);
@@ -132,6 +135,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
+		service.setIdentificationContribuableHelper(helper);
 	}
 
 	@Test
@@ -337,7 +341,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		{
 			final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
-			assertEquals(alberto.getNumeroAssureSocial(),"123654798123");
+			assertEquals(alberto.getNumeroAssureSocial(), "123654798123");
 			/*assertEquals(alberto.getNom(),"Fujimori");
 			assertEquals(alberto.getDateNaissance(),date(1953, 12, 3));
 			assertEquals(alberto.getSexe(),Sexe.MASCULIN);
@@ -352,10 +356,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 
-
 	@Test
 	public void testContribuableSurNPA() throws Exception {
-		final long noIndividuClaude = 151658 ;
+		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -432,7 +435,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
 		assertEquals(ic.getId(), sent.getId());
 
-	// création et traitement du message d'identification
+		// création et traitement du message d'identification
 		CriteresPersonne criteress = new CriteresPersonne();
 		criteres.setPrenoms("Jean-Pierre");
 		criteres.setNom("ZANOLARI");
@@ -444,7 +447,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testContribuableSurNAVS11Habitant() throws Exception {
-		final long noIndividuClaude = 151658 ;
+		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -485,8 +488,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setNAVS11("97750420110");
 
 
-
-
 		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 		doInTransaction(new TxCallback<Object>() {
@@ -517,14 +518,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(ic.getId(), sent.getId());
 
 
-
 	}
 
 	@Test
 	public void testContribuableSurNAVS11NonHabitant() throws Exception {
-		final long noIndividuClaude = 151658 ;
+		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
-
 
 
 		class Ids {
@@ -557,8 +556,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setNAVS11("97750420110");
 
 
-
-
 		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 		doInTransaction(new TxCallback<Object>() {
@@ -588,12 +585,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
 		assertEquals(ic.getId(), sent.getId());
 
-		  // création et traitement du message d'identification
-			CriteresPersonne criteress = new CriteresPersonne();
-			criteres.setPrenoms("Jean-Pierre");
-			criteres.setNom("ZANOLARI");
-			criteres.setNAVS11("97750420110");
-			criteres.setDateNaissance(date(1954, 1, 1));
+		// création et traitement du message d'identification
+		CriteresPersonne criteress = new CriteresPersonne();
+		criteres.setPrenoms("Jean-Pierre");
+		criteres.setNom("ZANOLARI");
+		criteres.setNAVS11("97750420110");
+		criteres.setDateNaissance(date(1954, 1, 1));
 
 	}
 
@@ -663,7 +660,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		{
 			final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
-			assertEquals(alberto.getNumeroAssureSocial(),"123654798123");
+			assertEquals(alberto.getNumeroAssureSocial(), "123654798123");
 			/*assertEquals(alberto.getNom(),"Fujimori");
 			assertEquals(alberto.getDateNaissance(),date(1953, 12, 3));
 			assertEquals(alberto.getSexe(),Sexe.MASCULIN);
@@ -802,7 +799,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final PersonnePhysique anne = addHabitant(noIndividuAnne);
 				ids.anne = anne.getNumero();
 
-				for(int i=0;i<150;i++){
+				for (int i = 0; i < 150; i++) {
 					addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
 				}
 
@@ -823,38 +820,37 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 
 
-
 	}
 
 	@Test
-	public void testGetNomCantonFromMessage() throws Exception{
+	public void testGetNomCantonFromMessage() throws Exception {
 
-				CriteresAdresse adresse = new CriteresAdresse();
+		CriteresAdresse adresse = new CriteresAdresse();
 
-				adresse.setNpaSuisse(3018);
-				adresse.setLieu("Bümpliz");
-				adresse.setLigneAdresse1("Alberto el tiburon");
-				adresse.setLigneAdresse2("et son épouse");
-				adresse.setNoAppartement("12");
-				adresse.setNoPolice("36B");
-				adresse.setRue("Chemin de la strasse verte");
-				adresse.setTypeAdresse(TypeAdresse.SUISSE);
-				CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setPrenoms("Alberto");
-				criteres.setNom("Fujimori");
-				criteres.setNAVS13("123654798123");
-				criteres.setDateNaissance(date(1953, 12, 3));
-				criteres.setAdresse(adresse);
-				criteres.setSexe(Sexe.MASCULIN);
-				IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
-				message.setLogCreationDate(RegDate.get().asJavaDate());
+		adresse.setNpaSuisse(3018);
+		adresse.setLieu("Bümpliz");
+		adresse.setLigneAdresse1("Alberto el tiburon");
+		adresse.setLigneAdresse2("et son épouse");
+		adresse.setNoAppartement("12");
+		adresse.setNoPolice("36B");
+		adresse.setRue("Chemin de la strasse verte");
+		adresse.setTypeAdresse(TypeAdresse.SUISSE);
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Alberto");
+		criteres.setNom("Fujimori");
+		criteres.setNAVS13("123654798123");
+		criteres.setDateNaissance(date(1953, 12, 3));
+		criteres.setAdresse(adresse);
+		criteres.setSexe(Sexe.MASCULIN);
+		IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
 
-				String nomCanton =service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
-				assertEquals("Berne",nomCanton);
+		String nomCanton = service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
+		assertEquals("Berne", nomCanton);
 
-				message = createDemandeFromCanton(criteres, "2-SS-5");
-				nomCanton =service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
-				assertEquals("2-SS-5",nomCanton);
+		message = createDemandeFromCanton(criteres, "2-SS-5");
+		nomCanton = service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
+		assertEquals("2-SS-5", nomCanton);
 
 
 	}
@@ -984,7 +980,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 
 
-
 		// Michel
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
@@ -1077,7 +1072,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 				// Pas de réponse automatique
 				assertEmpty(messageHandler.getSentMessages());
-				
+
 				return null;
 			}
 		});
@@ -1113,7 +1108,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				
+
 				// Zora doit avoir été trouvée, et traitée automatiquement
 				final List<IdentificationContribuable> list = identCtbDAO.getAll();
 				assertEquals(1, list.size());
@@ -1157,7 +1152,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.SANS_MANUEL);
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.SANS_MANUEL);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1213,7 +1208,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1270,7 +1265,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1295,12 +1290,13 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final Reponse reponse = ic.getReponse();
 				assertNull(reponse);
 				// Pas de réponse automatique
-				assertEmpty(messageHandler.getSentMessages());				
+				assertEmpty(messageHandler.getSentMessages());
 				return null;
 			}
 		});
 
 	}
+
 	@NotTransactional
 	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
@@ -1332,7 +1328,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				
+
 				// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
 				final List<IdentificationContribuable> list = identCtbDAO.getAll();
 				assertEquals(1, list.size());
@@ -1416,11 +1412,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1636] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres
-	 * critères si le numéro AVS n'est pas connu dans le registre.
+	 * [UNIREG-1636] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres critères si le numéro AVS n'est pas connu dans le registre.
 	 *
-	 * @throws Exception
-	 *             en cas d'erreur
+	 * @throws Exception en cas d'erreur
 	 */
 	@NotTransactional
 	@Test
@@ -1468,18 +1462,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertEquals(1, messageHandler.getSentMessages().size());
 				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
 				assertEquals(ic.getId(), sent.getId());
-				
+
 				return null;
 			}
 		});
 	}
 
 	/**
-	 * [UNIREG-1630] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres
-	 * critères pour vérifier que tous les critères correspondent.
+	 * [UNIREG-1630] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres critères pour vérifier que tous les critères correspondent.
 	 *
-	 * @throws Exception
-	 *             en cas d'erreur
+	 * @throws Exception en cas d'erreur
 	 */
 	@NotTransactional
 	@Test
@@ -1581,7 +1573,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				
+
 				// Zora doit avoir été trouvée, et traitée automatiquement
 				final List<IdentificationContribuable> list = identCtbDAO.getAll();
 				assertEquals(1, list.size());
@@ -1607,9 +1599,316 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 	}
 
+	@Test
+	public void testIdentifieUE() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Müller", "Maya", true);
+				addFieldsIndividu(indMaya, "", "67142770412", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("MUELLER");
+			criteres.setPrenoms("Maya");
+			criteres.setNAVS11("67142770412");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+
+	@Test
+	public void testIdentifieAE() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indAlex = addIndividu(noIndividu, date(1953, 4, 3), "OHLENSCHLÄGER", "Alex", true);
+				addFieldsIndividu(indAlex, "", "69447258153", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique alex = addHabitant(noIndividu);
+				return alex.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("OHLENSCHLAEGER");
+			criteres.setPrenoms("Alex");
+			criteres.setNAVS11("69447258153");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+	@Test
+	public void testIdentifieOE() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
+				addFieldsIndividu(indMaya, "", "83143380117", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("Schoenenberg");
+			criteres.setPrenoms("Peter");
+			criteres.setNAVS11("83143380117");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+	@Test
+	public void testIdentifieSansDernierPrenom() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "STEVENSON", "Hugh", true);
+				addFieldsIndividu(indMaya, "", "85948265155", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("STEVENSON");
+			criteres.setPrenoms("Hugh-Clark");
+			criteres.setNAVS11("85948265155");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+	@Test
+	public void testIdentifieSansDernierNom() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "RICHOZ", "Jean-Pierre", true);
+				addFieldsIndividu(indMaya, "", "74150388116", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("RICHOZ-VINCENT");
+			criteres.setPrenoms("Jean-Pierre");
+			criteres.setNAVS11("74150388116");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+	@Test
+	public void testIdentifieOESansDernierPrenom() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
+				addFieldsIndividu(indMaya, "", "83143380117", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("Schoenenberg");
+			criteres.setPrenoms("Peter-Hanz");
+			criteres.setNAVS11("83143380117");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+	@Test
+	public void testIdentifieOESansDernierNom() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Peter", true);
+				addFieldsIndividu(indMaya, "", "83143380117", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("Schoenenberg-Mueller");
+			criteres.setPrenoms("Peter");
+			criteres.setNAVS11("83143380117");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+
+	@Test
+	public void testIdentifieSansE_NomPrenom() throws Exception {
+
+		final long noIndividu = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indMaya = addIndividu(noIndividu, date(1953, 4, 3), "Schönenberg", "Ülrich", true);
+				addFieldsIndividu(indMaya, "", "83143380117", "");
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique maya = addHabitant(noIndividu);
+				return maya.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("Schoenenberg-Mueller");
+			criteres.setPrenoms("Ülrich");
+			criteres.setNAVS11("83143380117");
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final PersonnePhysique pp = list.get(0);
+			assertEquals(id, pp.getNumero());
+		}
+
+	}
+
+
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom) {
 
-		return createDemande(prenoms,nom,Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		return createDemande(prenoms, nom, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 	}
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
@@ -1618,7 +1917,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 
-		return createDemande(personne,mode);
+		return createDemande(personne, mode);
 	}
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom, final String noAVS13) {
@@ -1631,7 +1930,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return createDemande(personne);
 	}
 
-	
+
 	private static IdentificationContribuable createDemandeFromCanton(CriteresPersonne personne, String emetteurId) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
@@ -1657,7 +1956,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	private static IdentificationContribuable createDemande(CriteresPersonne personne) {
-		return createDemande(personne,Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		return createDemande(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 	}
 
 	private static IdentificationContribuable createDemande(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
