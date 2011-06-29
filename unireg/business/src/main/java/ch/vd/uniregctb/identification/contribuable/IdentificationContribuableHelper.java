@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import com.sun.istack.internal.FinalArrayList;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
