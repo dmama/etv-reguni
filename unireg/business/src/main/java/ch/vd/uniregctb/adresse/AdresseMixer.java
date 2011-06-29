@@ -2,12 +2,14 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ProgrammingException;
 
 import static ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 
@@ -300,4 +302,51 @@ public class AdresseMixer {
 		});
 	}
 
+	/**
+	 * Découpe les adresses spécifiées aux dates spécifiées. Chacune des dates spécifiées va splitter une adresse en deux de telle manière que la premier adresse s'arrête le jour précédent et que la
+	 * seconde adresse commence le jour de la date considérée.
+	 *
+	 * @param adresses une liste d'adresses
+	 * @param dates    une liste de dates
+	 * @return la liste d'adresses découpées; ou la liste spécifiée en entrée si aucun découpage n'a eu lieu.
+	 */
+	public static List<AdresseGenerique> splitAt(@Nullable List<AdresseGenerique> adresses, @Nullable Set<RegDate> dates) {
+
+		if (adresses == null || adresses.isEmpty() || dates == null || dates.isEmpty()) {
+			return adresses;
+		}
+
+		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses);
+		int count = 0;
+		while (splitOnceAt(list, dates)) {
+			if (++count > 1000) {
+				throw new ProgrammingException();
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Découpe en deux la <b>première</b> des adresses spécifiées qui peut l'être à une des dates données et retourne immédiatement. Cette méthode ne découpe pas plus d'une adresse à la fois.
+	 *
+	 * @param adresses une liste d'adresses
+	 * @param dates    une liste de dates
+	 * @return <b>vrai</b> si une des adresses a été découpées; <b>faux</b> si aucune adresse n'a pu être découpée.
+	 */
+	private static boolean splitOnceAt(List<AdresseGenerique> adresses, Set<RegDate> dates) {
+		for (int i = 0, adressesSize = adresses.size(); i < adressesSize; i++) {
+			final AdresseGenerique a = adresses.get(i);
+			for (RegDate date : dates) {
+				if (a.isValidAt(date) && a.getDateDebut() != date) {
+					// on remplace l'adresse par les deux adresses splittées
+					adresses.remove(i);
+					adresses.add(i, new AdresseGeneriqueAdapter(a, a.getDateDebut(), date.getOneDayBefore(), null));
+					adresses.add(i + 1, new AdresseGeneriqueAdapter(a, date, a.getDateFin(), null));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

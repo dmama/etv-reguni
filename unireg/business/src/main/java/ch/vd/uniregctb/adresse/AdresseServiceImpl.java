@@ -26,7 +26,6 @@ import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -175,7 +174,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final List<AdresseGenerique> adressesDestination = adressesFiscales.ofType(type);
 			if (adressesDestination != null && !adressesDestination.isEmpty()) {
 				// on splitte les adresses lors des dates de décès, car les salutations et les formules de politesse changent à ce moment-là
-				final List<AdresseGenerique> splittedAdresses = splitAt(adressesDestination, splitDates);
+				final List<AdresseGenerique> splittedAdresses = AdresseMixer.splitAt(adressesDestination, splitDates);
 				for (AdresseGenerique adresseDestination : splittedAdresses) {
 					// l'adresse d'envoi est constante pendant toute la période, on peut donc théoriquement choisir n'importe des dates comprises dans l'intervalle. Avec les exceptions suivantes :
 					//  - en cas de décès, l'individu civil est considéré décédé le jour même, mais le for fiscal reste valide jusqu'au soir. La date de fin ne convient donc pas.
@@ -204,54 +203,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return results;
-	}
-
-	/**
-	 * Découpe les adresses spécifiées aux dates spécifiées.
-	 * TODO (msi) déplacer cette méthode dans l'AdresseMixer
-	 *
-	 * @param adresses une liste d'adresses
-	 * @param dates une liste de dates
-	 * @return la liste d'adresses découpées; ou la liste spécifiée en entrée si aucun découpage n'a eu lieu.
-	 */
-	private static List<AdresseGenerique> splitAt(List<AdresseGenerique> adresses, Set<RegDate> dates) {
-
-		if (dates == null || dates.isEmpty()) {
-			return adresses;
-		}
-
-		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses);
-		int count = 0;
-		while (splitOnceAt(list, dates)) {
-			if (++count > 1000) {
-				throw new ProgrammingException();
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Découpe en deux la <b>première</b> des adresses spécifiées qui peut l'être à une des dates données et retourne immédiatement. Cette méthode ne découpe pas plus d'une adresse à la fois.
-	 *
-	 * @param adresses une liste d'adresses
-	 * @param dates    une liste de dates
-	 * @return <b>vrai</b> si une des adresses a été découpées; <b>faux</b> si aucune adresse n'a pu être découpée.
-	 */
-	private static boolean splitOnceAt(List<AdresseGenerique> adresses, Set<RegDate> dates) {
-		for (int i = 0, adressesSize = adresses.size(); i < adressesSize; i++) {
-			final AdresseGenerique a = adresses.get(i);
-			for (RegDate date : dates) {
-				if (a.isValidAt(date) && a.getDateDebut() != date) {
-					// on remplace l'adresse par les deux adresses splittées
-					adresses.remove(i);
-					adresses.add(i, new AdresseGeneriqueAdapter(a, a.getDateDebut(), date.getOneDayBefore(), null));
-					adresses.add(i + 1, new AdresseGeneriqueAdapter(a, date, a.getDateFin(), null));
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**
