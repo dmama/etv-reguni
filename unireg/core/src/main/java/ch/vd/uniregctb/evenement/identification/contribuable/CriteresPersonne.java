@@ -120,4 +120,10 @@ public class CriteresPersonne {
 	public void setAdresse(CriteresAdresse adresse) {
 		this.adresse = adresse;
 	}
+	@Override
+	public String toString(){
+	return String.format("Nom: %s, Prenom: %s, NAVS11: %s, NAVS13: %s, Sexe: %s, Date de Naissance: %s,"
+			,nom,prenoms,NAVS11,NAVS13,(sexe==null ? null:sexe.toString()),(dateNaissance==null ? null:dateNaissance.toString()));
+	}
+
 }

@@ -54,9 +54,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
@@ -178,6 +175,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_DERNIER_PRENOM_SANS_E,
 
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -202,16 +200,38 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				if (isIdentificationOK(listResultat)) {
 					break;
 				}
+				else {
+					loggerNonIdentification(listResultat, criteres);
+				}
 
 			}
 
 		}
 
-		if(listResultat!=null){
+		if (listResultat != null) {
 			return listResultat;
 		}
 		return Collections.emptyList();
 
+	}
+
+	private void loggerNonIdentification(List<PersonnePhysique> listResultat, CriteresPersonne criteres) {
+		if (listResultat != null) {
+			final int nombrePersonnes = listResultat.size();
+			if (nombrePersonnes == 0) {
+				LOGGER.info("Aucun contribuable ne correspond aux critères suivants: " + criteres.toString());
+
+			}
+			else if (nombrePersonnes > 1) {
+				LOGGER.info("Plusieurs contribuables correspondent aux critères suivants: " + criteres.toString());
+				final List<Long> ids = new ArrayList<Long>(listResultat.size());
+				for (PersonnePhysique pp : listResultat) {
+					ids.add(pp.getNumero());
+				}
+				final String message = "Nombre de contribuable(s) trouvé(s) = " + listResultat.size() + " (" + ArrayUtils.toString(ids.toArray()) + ")";
+				LOGGER.info(message);
+			}
+		}
 	}
 
 	private List<PersonnePhysique>
