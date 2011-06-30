@@ -55,11 +55,6 @@
 					<xs:documentation>Les adresses du tiers</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="FORMATTED_ADDRESSES">
-				<xs:annotation>
-					<xs:documentation>Les adresses formattées du tiers</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 			<xs:enumeration value="TAX_RESIDENCES">
 				<xs:annotation>
 					<xs:documentation>Les fors fiscaux du tiers.</xs:documentation>

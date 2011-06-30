@@ -26,10 +26,10 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="addressType">
-		<!-- TODO (msi) utiliser une adresse eCH -->
 		<xs:annotation>
-			<xs:documentation>Représente une adresse fiscale d'un tiers dans Unireg valide pendant une période déterminée. Généralement, un tiers possède plusieurs adresses en fonction de ses
-				changements d'adresses. C'est pourquoi, cette adresse ne contient pas les données du destinataire (= la personne) mais uniquement les données de destination (= le lieu).
+			<xs:documentation>Contient les informations d'une adresse d'un tiers dans Unireg valide pendant une période déterminée.
+				Cette adresse est décomposé en trois parties : le destinataire, la destination et l'adresse complète formattée pour
+				six lignes (selon les recommandations de la poste suisse est disponible).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -43,105 +43,34 @@
 					<xs:documentation>La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="title" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Titre de l'adresse. Exemple : "chez" ou "c/o"</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="dwellingNumber" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Numéro de l'appartement</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="street" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le nom de la rue (pas le numéro)</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="houseNumber" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Numéro du bâtiment dans la rue</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="postOfficeBox" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Case postale + numéro</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="town" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>La localité. Exemple : "Lausanne"</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="zipCode" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le numéro postal de la localité. Exemple : "1001" pour "1001 Lausanne"</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="country" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="swissZipCodeId" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>[Technique] numéro d'ordre postal de l'adresse</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="streetId" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>[Technique] numéro technique de la rue</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="countryId" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>[Technique] numéro OFS du pays</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="otherPartyAddressType">
-		<xs:annotation>
-			<xs:documentation>Spécialisation de l'adresse fiscale pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
-				poursuites).
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="unireg:addressType">
-				<xs:sequence>
-					<xs:element name="type" type="unireg:otherPartyAddressTypeType">
-						<xs:annotation>
-							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="mailAddressType">
-		<xs:annotation>
-			<xs:documentation>Représente une adresse pour l'envoi d'un lettre ou d'un colis par la poste. Cette adresse est décomposé en deux parties : le destinataire et la destination. De plus, une
-				troisième partie qui représente les 6 lignes d'adresses formattées selon les recommandations de la poste suisse est disponible.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
 			<xs:choice>
+				<xs:annotation>
+					<xs:documentation>Les informations détaillées sur le destinataire de l'adresse.</xs:documentation>
+				</xs:annotation>
 				<xs:element name="organisation" type="unireg:organisationMailAddressInfoType" />
 				<xs:element name="person" type="unireg:personMailAddressInfoType" />
 				<xs:element name="couple" type="unireg:coupleMailAddressInfoType" />
 			</xs:choice>
-			<xs:element name="addressInformation" type="unireg:addressInformationType" minOccurs="0" />
-			<xs:element name="formattedAddress" type="unireg:formattedAddressType" />
+			<xs:element name="addressInformation" type="unireg:addressInformationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Les informations détaillées sur la destination de l'adresse.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="formattedAddress" type="unireg:formattedAddressType">
+				<xs:annotation>
+					<xs:documentation>L'adresse formattée sur six lignes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="mailAddressOtherPartyType">
+	<xs:complexType name="addressOtherPartyType">
 		<xs:annotation>
 			<xs:documentation>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas des
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:mailAddressType">
+			<xs:extension base="unireg:addressType">
 				<xs:sequence>
 					<xs:element name="type" type="unireg:otherPartyAddressTypeType">
 						<xs:annotation>
@@ -160,8 +89,7 @@
 						<xs:annotation>
 							<xs:documentation>Le complément d'adresse. Par exemple : "chez Huguette Bolomey" ou "c/o Famille Bertholey".
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
-								qui
-								serait utilisée pour envoyer du courrier par le poste !
+								qui serait utilisée pour envoyer du courrier par le poste !
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
@@ -169,8 +97,31 @@
 						<xs:annotation>
 							<xs:documentation>Le 'pour adresse'.
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
-								qui
-								serait utilisée pour envoyer du courrier par le poste !
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="countryName" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="streetId" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>[Technique] numéro technique de la rue.
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="countryId" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>[Technique] numéro OFS du pays.
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
@@ -178,8 +129,7 @@
 						<xs:annotation>
 							<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
-								qui
-								serait utilisée pour envoyer du courrier par le poste !
+								qui serait utilisée pour envoyer du courrier par le poste !
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
