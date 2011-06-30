@@ -12,8 +12,8 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.AciComException_Exception;
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.ContenuMessage;
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.DocumentNotFoundException_Exception;
-import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationServiceImpl;
-import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationServiceImplPortType;
+import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationService;
+import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationServiceImplService;
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.RecupererContenuMessage;
 
 
@@ -22,7 +22,7 @@ public class AciComClientImpl implements AciComClient {
 
 	private static final Logger LOGGER = Logger.getLogger(AciComClientImpl.class);
 
-	private MeldewesenConsultationServiceImplPortType service;
+	private MeldewesenConsultationService service;
 
 	private String serviceUrl;
 
@@ -81,7 +81,7 @@ public class AciComClientImpl implements AciComClient {
 			catch (FileNotFoundException e) {
 				throw new RuntimeException(e);
 			}
-			MeldewesenConsultationServiceImpl MeldewesenService = new MeldewesenConsultationServiceImpl(wsdlUrl);
+			MeldewesenConsultationServiceImplService MeldewesenService = new MeldewesenConsultationServiceImplService(wsdlUrl);
 			this.service = MeldewesenService.getMeldewesenConsultationServiceImplPort();
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
 			if (StringUtils.isNotBlank(this.username)) {

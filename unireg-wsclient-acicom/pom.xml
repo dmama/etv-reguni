@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-acicom</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 
 	<name>Unireg - Client WS acicom</name>
 	<description>UniregCTB - Projet de base pour les classes client du WebService Meldewesen offert par ACICOM </description>
