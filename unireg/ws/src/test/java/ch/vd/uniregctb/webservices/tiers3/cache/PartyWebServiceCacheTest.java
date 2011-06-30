@@ -14,6 +14,7 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
 import ch.vd.unireg.webservices.tiers3.CommonHousehold;
@@ -283,13 +284,14 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
 		params.setPartyNumber(ids.menage);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(params);
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
-		final FormattedAddress adressesAvant = menageAvant.getFormattedMailAddress().getFormattedAddress();
+		final List<Address> mailAddressesAvant = menageAvant.getMailAddresses();
+		final FormattedAddress adressesAvant = mailAddressesAvant.get(mailAddressesAvant.size() - 1).getFormattedAddress();
 		assertEquals("Monsieur et Madame", adressesAvant.getLine1());
 		assertEquals("Eric Bolomey", adressesAvant.getLine2());
 		assertEquals("Monique Bolomey", adressesAvant.getLine3());
@@ -331,7 +333,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
-		final FormattedAddress adressesApres = menageApres.getFormattedMailAddress().getFormattedAddress();
+		final List<Address> mailAddressesApres = menageApres.getMailAddresses();
+		final FormattedAddress adressesApres = mailAddressesApres.get(mailAddressesApres.size() - 1).getFormattedAddress();
 		assertEquals("Monsieur et Madame", adressesApres.getLine1());
 		assertEquals("Eric Bolomey", adressesApres.getLine2());
 		assertEquals("Gudrun Bolomey", adressesApres.getLine3());
@@ -677,7 +680,6 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	private static void assertOnlyPart(PartyPart p, Party tiers) {
 
 		boolean checkAddresses = PartyPart.ADDRESSES == p;
-		boolean checkFormattedAdresses = PartyPart.FORMATTED_ADDRESSES == p;
 		boolean checkTaxLiabilities = PartyPart.ORDINARY_TAX_LIABILITIES == p;
 		boolean checkSimplifiedTaxLiabilities = PartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
 		boolean checkHouseholdMembers = PartyPart.HOUSEHOLD_MEMBERS == p;
@@ -696,7 +698,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkTaxSystems = PartyPart.TAX_SYSTEMS == p;
 		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
 		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
-		Assert.isTrue(checkAddresses || checkFormattedAdresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses ||
+		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses ||
 				checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals || checkCorporationStatuses ||
 				checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities, "La partie [" + p + "] est inconnue");
 
@@ -704,10 +706,6 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getDebtProsecutionAddresses(), "debtProsecutionAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getRepresentationAddresses(), "representationAddresses");
-		assertNullOrNotNull(checkFormattedAdresses, tiers.getFormattedMailAddress(), "formattedMailAddress");
-		assertNullOrNotNull(checkFormattedAdresses, tiers.getFormattedResidenceAddress(), "formattedResidenceAddress");
-		assertNullOrNotNull(checkFormattedAdresses, tiers.getFormattedRepresentationAddress(), "formattedRepresentationAddress");
-		assertNullOrNotNull(checkFormattedAdresses, tiers.getFormattedDebtProsecutionAddress(), "formattedDebtProsecutionAddress");
 		assertNullOrNotNull(checkBankAccounts, tiers.getBankAccounts(), "bankAccounts");
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences");
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences");

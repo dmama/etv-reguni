@@ -225,7 +225,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
 		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, dateArrivee, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseEnvoi.getNpaEtLocalite().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
+		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menage.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {
@@ -258,7 +258,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		assertEquals(paysArrivee.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for n'est pas dans le bon pays");
 
 		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menageCommun, dateArrivee, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseEnvoi.getNpaEtLocalite().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
+		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menageCommun.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {

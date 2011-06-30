@@ -37,8 +37,8 @@ public class DroitAccesUtilisateurView implements Annulable {
 		this.numeroCTB = pp.getNumero();
 
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, false);
-		if (adresse != null) {
-			this.localite = adresse.getNpaEtLocalite();
+		if (adresse != null && adresse.getNpaEtLocalite() != null) {
+			this.localite = adresse.getNpaEtLocalite().toString();
 		}
 		else {
 			this.localite = null;

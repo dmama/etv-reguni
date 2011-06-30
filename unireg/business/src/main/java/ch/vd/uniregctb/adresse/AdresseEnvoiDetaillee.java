@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -33,11 +34,15 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private final List<String> raisonsSociales = new ArrayList<String>();
 	private String complement;
 	private String pourAdresse;
+	private String numeroAppartement;
 	private RueEtNumero rueEtNumero;
 	private CasePostale casePostale;
-	private String npaEtLocalite;
+	private NpaEtLocalite npaEtLocalite;
 	private String pays;
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
+	private Integer numeroOrdrePostal;
+	private Integer numeroTechniqueRue;
+	private Integer noOfsPays;
 	private final AdresseGenerique.SourceType source;
 
 	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin) {
@@ -150,14 +155,14 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		addLine(ligne.toString(), optionalite);
 	}
 
-	public void addNpaEtLocalite(String ligne) {
+	public void addNpaEtLocalite(NpaEtLocalite ligne) {
 		this.npaEtLocalite = ligne;
-		addLine(ligne);
+		addLine(ligne.toString());
 	}
 
-	public void addNpaEtLocalite(String ligne, int optionalite) {
+	public void addNpaEtLocalite(NpaEtLocalite ligne, int optionalite) {
 		this.npaEtLocalite = ligne;
-		addLine(ligne, optionalite);
+		addLine(ligne.toString(), optionalite);
 	}
 
 	public void addPays(String ligne, TypeAffranchissement typeAffranchissement) {
@@ -170,6 +175,22 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.pays = ligne;
 		this.typeAffranchissement = typeAffranchissement;
 		addLine(ligne, optionalite);
+	}
+
+	public void setNumeroAppartement(String numeroAppartement) {
+		this.numeroAppartement = numeroAppartement;
+	}
+
+	public void setNumeroOrdrePostal(Integer numeroOrdrePostal) {
+		this.numeroOrdrePostal = numeroOrdrePostal;
+	}
+
+	public void setNumeroTechniqueRue(Integer numeroTechniqueRue) {
+		this.numeroTechniqueRue = numeroTechniqueRue;
+	}
+
+	public void setNoOfsPays(Integer noOfsPays) {
+		this.noOfsPays = noOfsPays;
 	}
 
 	public AdresseGenerique.SourceType getSource() {
@@ -238,6 +259,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return pourAdresse;
 	}
 
+	public String getNumeroAppartement() {
+		return numeroAppartement;
+	}
+
 	public RueEtNumero getRueEtNumero() {
 		return rueEtNumero;
 	}
@@ -246,7 +271,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return casePostale;
 	}
 
-	public String getNpaEtLocalite() {
+	public NpaEtLocalite getNpaEtLocalite() {
 		return npaEtLocalite;
 	}
 
@@ -265,6 +290,18 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return typeAffranchissement == TypeAffranchissement.SUISSE;
 	}
 
+	public Integer getNumeroOrdrePostal() {
+		return numeroOrdrePostal;
+	}
+
+	public Integer getNumeroTechniqueRue() {
+		return numeroTechniqueRue;
+	}
+
+	public Integer getNoOfsPays() {
+		return noOfsPays;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -279,8 +316,12 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
 		if (destinataire != null ? !destinataire.equals(that.destinataire) : that.destinataire != null) return false;
 		if (formuleAppel != null ? !formuleAppel.equals(that.formuleAppel) : that.formuleAppel != null) return false;
+		if (noOfsPays != null ? !noOfsPays.equals(that.noOfsPays) : that.noOfsPays != null) return false;
 		if (nomsPrenoms != null ? !nomsPrenoms.equals(that.nomsPrenoms) : that.nomsPrenoms != null) return false;
 		if (npaEtLocalite != null ? !npaEtLocalite.equals(that.npaEtLocalite) : that.npaEtLocalite != null) return false;
+		if (numeroAppartement != null ? !numeroAppartement.equals(that.numeroAppartement) : that.numeroAppartement != null) return false;
+		if (numeroOrdrePostal != null ? !numeroOrdrePostal.equals(that.numeroOrdrePostal) : that.numeroOrdrePostal != null) return false;
+		if (numeroTechniqueRue != null ? !numeroTechniqueRue.equals(that.numeroTechniqueRue) : that.numeroTechniqueRue != null) return false;
 		if (pays != null ? !pays.equals(that.pays) : that.pays != null) return false;
 		if (pourAdresse != null ? !pourAdresse.equals(that.pourAdresse) : that.pourAdresse != null) return false;
 		if (raisonsSociales != null ? !raisonsSociales.equals(that.raisonsSociales) : that.raisonsSociales != null) return false;
@@ -304,11 +345,15 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (raisonsSociales != null ? raisonsSociales.hashCode() : 0);
 		result = 31 * result + (complement != null ? complement.hashCode() : 0);
 		result = 31 * result + (pourAdresse != null ? pourAdresse.hashCode() : 0);
+		result = 31 * result + (numeroAppartement != null ? numeroAppartement.hashCode() : 0);
 		result = 31 * result + (rueEtNumero != null ? rueEtNumero.hashCode() : 0);
 		result = 31 * result + (casePostale != null ? casePostale.hashCode() : 0);
 		result = 31 * result + (npaEtLocalite != null ? npaEtLocalite.hashCode() : 0);
 		result = 31 * result + (pays != null ? pays.hashCode() : 0);
 		result = 31 * result + (typeAffranchissement != null ? typeAffranchissement.hashCode() : 0);
+		result = 31 * result + (numeroOrdrePostal != null ? numeroOrdrePostal.hashCode() : 0);
+		result = 31 * result + (numeroTechniqueRue != null ? numeroTechniqueRue.hashCode() : 0);
+		result = 31 * result + (noOfsPays != null ? noOfsPays.hashCode() : 0);
 		result = 31 * result + (source != null ? source.hashCode() : 0);
 		return result;
 	}

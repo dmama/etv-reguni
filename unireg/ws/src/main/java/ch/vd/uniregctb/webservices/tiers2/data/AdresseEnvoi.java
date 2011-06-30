@@ -11,7 +11,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 /**
  * Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse.
  * <p/>
- * <b>Dans la version 3 du web-service :</b> <i>mailAddressType</i> (xml) / <i>MailAddress</i> (client java)
+ * <b>Dans la version 3 du web-service :</b> <i>addressType</i> (xml) / <i>Address</i> (client java)
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -210,7 +210,7 @@ public class AdresseEnvoi {
 		this.pourAdresse = adresse.getPourAdresse();
 		this.rueNumero = adresse.getRueEtNumero() == null ? null : adresse.getRueEtNumero().getRueEtNumero();
 		this.casePostale = adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString();
-		this.npaLocalite = adresse.getNpaEtLocalite();
+		this.npaLocalite = adresse.getNpaEtLocalite() == null ? null : adresse.getNpaEtLocalite().toString();
 		this.pays = adresse.getPays();
 		this.typeAffranchissement = EnumHelper.coreToWeb(adresse.getTypeAffranchissement());
 	}

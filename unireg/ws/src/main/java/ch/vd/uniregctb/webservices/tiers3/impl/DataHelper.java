@@ -24,19 +24,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.webservices.tiers3.Address;
+import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
 import ch.vd.unireg.webservices.tiers3.Date;
-import ch.vd.unireg.webservices.tiers3.MailAddress;
-import ch.vd.unireg.webservices.tiers3.MailAddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddress;
 import ch.vd.unireg.webservices.tiers3.PartyInfo;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyType;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
@@ -44,7 +39,6 @@ import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -107,40 +101,32 @@ public class DataHelper {
 		}
 	}
 
-	public static List<Address> coreToWeb(List<AdresseGenerique> adresses,
-	                                      @org.jetbrains.annotations.Nullable DateRangeHelper.Range range,
-	                                      ServiceInfrastructureService serviceInfra) throws WebServiceException {
+	public static List<Address> coreToWeb(List<AdresseEnvoiDetaillee> adresses,
+	                                      @Nullable DateRangeHelper.Range range) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
 		List<Address> list = new ArrayList<Address>();
-		for (AdresseGenerique a : adresses) {
-			if (a.isAnnule()) {
-				continue;
-			}
+		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newAddress(a, serviceInfra));
+				list.add(AddressBuilder.newAddress(a));
 			}
 		}
 
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<OtherPartyAddress> coreToWebAT(List<AdresseGenerique> adresses,
-	                                                  @Nullable DateRangeHelper.Range range,
-	                                                  ServiceInfrastructureService serviceInfra) throws WebServiceException {
+	public static List<AddressOtherParty> coreToWebAT(List<AdresseEnvoiDetaillee> adresses,
+	                                                  @Nullable DateRangeHelper.Range range) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
-		List<OtherPartyAddress> list = new ArrayList<OtherPartyAddress>();
-		for (AdresseGenerique a : adresses) {
-			if (a.isAnnule()) {
-				continue;
-			}
+		List<AddressOtherParty> list = new ArrayList<AddressOtherParty>();
+		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newOtherPartyAddress(a, serviceInfra));
+				list.add(AddressBuilder.newOtherPartyAddress(a));
 			}
 		}
 
@@ -246,7 +232,7 @@ public class DataHelper {
 		i.setName1(value.getNom1());
 		i.setName2(value.getNom2());
 		i.setStreet(value.getRue());
-		i.setSwissZipCode(value.getNpa());
+		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
 		i.setDateOfBirth(DataHelper.coreToWeb(value.getRegDateNaissance()));
@@ -356,7 +342,6 @@ public class DataHelper {
 		for (PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
-			case FORMATTED_ADDRESSES:
 				results.add(Parts.ADRESSES);
 				results.add(Parts.RAPPORTS_ENTRE_TIERS);
 				break;
@@ -447,22 +432,6 @@ public class DataHelper {
 
 	public static Date coreToWeb(String s) {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
-	}
-
-	public static MailAddress createMailAddress(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
-		final AdresseEnvoiDetaillee adresse = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
-		if (adresse == null) {
-			return null;
-		}
-		return AddressBuilder.newMailAddress(adresse);
-	}
-
-	public static MailAddressOtherParty createMailAddressOtherTiers(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
-		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
-		if (adressePoursuite == null) {
-			return null;
-		}
-		return AddressBuilder.newMailAddressOtherTiers(adressePoursuite);
 	}
 
 	public static Set<PartyPart> toSet(List<PartyPart> parts) {

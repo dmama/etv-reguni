@@ -171,19 +171,27 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(courrier0);
 		assertNull(courrier0.getDateFrom());
 		assertSameDay(newDate(2004, 1, 28), courrier0.getDateTo());
-		assertEquals(new Integer(0), courrier0.getStreetId());
-		assertNull(courrier0.getHouseNumber());
-		assertEquals(283, courrier0.getSwissZipCodeId());
-		assertEquals("Villars-sous-Yens", courrier0.getTown());
+
+		final AddressInformation courrierInfo0 = courrier0.getAddressInformation();
+		assertNotNull(courrierInfo0);
+		assertEquals(new Integer(0), courrierInfo0.getStreetId());
+		assertNull(courrierInfo0.getHouseNumber());
+		assertEquals(Integer.valueOf(283), courrierInfo0.getSwissZipCodeId());
+		assertEquals(Long.valueOf(1168), courrierInfo0.getSwissZipCode());
+		assertEquals("Villars-sous-Yens", courrierInfo0.getTown());
 
 		final Address courrier1 = adressesCourrier.get(1);
 		assertNotNull(courrier1);
 		assertSameDay(newDate(2004, 1, 29), courrier1.getDateFrom());
 		assertNull(courrier1.getDateTo());
-		assertEquals(new Integer(141554), courrier1.getStreetId());
-		assertEquals("12", courrier1.getHouseNumber());
-		assertEquals(1000, courrier1.getSwissZipCodeId());
-		assertEquals("Matran", courrier1.getTown());
+
+		final AddressInformation courrierInfo1 = courrier1.getAddressInformation();
+		assertNotNull(courrierInfo1);
+		assertEquals(new Integer(141554), courrierInfo1.getStreetId());
+		assertEquals("12", courrierInfo1.getHouseNumber());
+		assertEquals(Integer.valueOf(1000), courrierInfo1.getSwissZipCodeId());
+		assertEquals(Long.valueOf(1753), courrierInfo1.getSwissZipCode());
+		assertEquals("Matran", courrierInfo1.getTown());
 
 		final List<Address> adressesRepresentation = debiteur.getRepresentationAddresses();
 		assertNotNull(adressesRepresentation);
@@ -193,21 +201,29 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(repres0);
 		assertNull(repres0.getDateFrom());
 		assertSameDay(newDate(2004, 1, 28), repres0.getDateTo());
-		assertEquals(new Integer(0), repres0.getStreetId());
-		assertNull(repres0.getHouseNumber());
-		assertEquals(283, repres0.getSwissZipCodeId());
-		assertEquals("La Tuilière", repres0.getStreet());
-		assertEquals("Villars-sous-Yens", repres0.getTown());
+
+		final AddressInformation represInfo0 = repres0.getAddressInformation();
+		assertNotNull(represInfo0);
+		assertEquals(new Integer(0), represInfo0.getStreetId());
+		assertNull(represInfo0.getHouseNumber());
+		assertEquals(Integer.valueOf(283), represInfo0.getSwissZipCodeId());
+		assertEquals("La Tuilière", represInfo0.getStreet());
+		assertEquals(Long.valueOf(1168), represInfo0.getSwissZipCode());
+		assertEquals("Villars-sous-Yens", represInfo0.getTown());
 
 		final Address repres1 = adressesRepresentation.get(1);
 		assertNotNull(repres1);
 		assertSameDay(newDate(2004, 1, 29), repres1.getDateFrom());
 		assertNull(repres1.getDateTo());
-		assertEquals(new Integer(32296), repres1.getStreetId());
-		assertEquals("1", repres1.getHouseNumber());
-		assertEquals(528, repres1.getSwissZipCodeId());
-		assertEquals("Avenue du Funiculaire", repres1.getStreet());
-		assertEquals("Cossonay-Ville", repres1.getTown());
+
+		final AddressInformation represInfo1 = repres1.getAddressInformation();
+		assertNotNull(represInfo1);
+		assertEquals(new Integer(32296), represInfo1.getStreetId());
+		assertEquals("1", represInfo1.getHouseNumber());
+		assertEquals(Integer.valueOf(528), represInfo1.getSwissZipCodeId());
+		assertEquals("Avenue du Funiculaire", represInfo1.getStreet());
+		assertEquals(Long.valueOf(1304), represInfo1.getSwissZipCode());
+		assertEquals("Cossonay-Ville", represInfo1.getTown());
 	}
 
 	@Test
@@ -309,16 +325,13 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(12100003);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 		assertNotNull(pp);
 
-		assertEmpty(pp.getMailAddresses());
-		assertEmpty(pp.getRepresentationAddresses());
-		assertEmpty(pp.getDebtProsecutionAddresses());
-
-		final MailAddress courrier = pp.getFormattedMailAddress();
+		final List<Address> courriers = pp.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size() - 1);
 		assertNotNull(courrier);
 
 		final FormattedAddress adresse = courrier.getFormattedAddress();
@@ -344,7 +357,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getCareOf());
 		assertEquals("Chemin du Riau 2A", info.getStreet());
 		assertNull(info.getPostOfficeBoxNumber());
-		assertEquals("1162 St-Prex", info.getTown());
+		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
+		assertEquals("St-Prex", info.getTown());
 		assertNull(info.getCountry());
 	}
 
@@ -354,16 +368,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(20602603); // Delano Boschung
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
 		assertSameDay(newDate(2008, 5, 1), personne.getDateOfDeath());
-		assertEmpty(personne.getMailAddresses());
-		assertEmpty(personne.getRepresentationAddresses());
-		assertEmpty(personne.getDebtProsecutionAddresses());
 
-		final MailAddress courrier = personne.getFormattedMailAddress();
+		final List<Address> courriers = personne.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size() - 1);
 		assertNotNull(courrier);
 
 		final FormattedAddress adresse = courrier.getFormattedAddress();
@@ -391,7 +403,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("Ch. du Devin", info.getStreet());
 		assertEquals("81", info.getHouseNumber());
 		assertNull(info.getPostOfficeBoxNumber());
-		assertEquals("1012 Lausanne", info.getTown());
+		assertEquals(Long.valueOf(1012), info.getSwissZipCode());
+		assertEquals("Lausanne", info.getTown());
 		assertNull(info.getCountry());
 	}
 
@@ -578,7 +591,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("Lyah Emery", trimValiPattern(info.getName1()));
 		assertEquals("", info.getName2());
 		assertEquals(newDate(2005, 8, 29), info.getDateOfBirth());
-		assertEquals("1162", info.getSwissZipCode());
+		assertEquals("1162", info.getZipCode());
 		assertEquals("St-Prex", info.getTown());
 		assertEquals("Suisse", info.getCountry());
 		assertEquals("Chemin du Riau 2A", info.getStreet());
@@ -642,7 +655,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("Lyah Emery", trimValiPattern(info.getName1()));
 		assertEquals("", info.getName2());
 		assertEquals(newDate(2005, 8, 29), info.getDateOfBirth());
-		assertEquals("1162", info.getSwissZipCode());
+		assertEquals("1162", info.getZipCode());
 		assertEquals("St-Prex", info.getTown());
 		assertEquals("Suisse", info.getCountry());
 		assertEquals("Chemin du Riau 2A", info.getStreet());
@@ -925,12 +938,16 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setPartyNumber(10035633); // Tummers-De Wit Wouter
 		params.getParts().add(PartyPart.ADDRESSES);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 		final Taxpayer ctb = (Taxpayer) service.getParty(params);
 		assertNotNull(ctb);
 
-		final MailAddress courrier = ctb.getFormattedMailAddress();
+		final List<Address> courriers = ctb.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size() - 1);
+		assertNotNull(courrier);
+		assertSameDay(newDate(2009, 6, 25), courrier.getDateFrom());
+		assertNull(courrier.getDateTo());
+
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Madame, Monsieur", adresseEnvoi.getLine1());
@@ -955,26 +972,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getCareOf());
 		assertEquals("Olympialaan 17", info.getStreet());
 		assertNull(info.getPostOfficeBoxNumber());
+		assertNull(info.getSwissZipCode());
+		assertNull(info.getForeignZipCode());
 		assertEquals("4624 Aa Bergem Op Zoom", info.getTown());
 		assertEquals("Pays-Bas", info.getCountry());
-
-		final List<Address> adressesCourrier = ctb.getMailAddresses();
-		assertNotNull(adressesCourrier);
-		assertEquals(1, adressesCourrier.size());
-
-		final Address addressCourrier = adressesCourrier.get(0);
-		assertNotNull(addressCourrier);
-		assertNull(addressCourrier.getPostOfficeBox());
-		assertSameDay(newDate(2009, 6, 25), addressCourrier.getDateFrom());
-		assertNull(addressCourrier.getDateTo());
-		assertEquals("4624 Aa Bergem Op Zoom", addressCourrier.getTown());
-		assertEquals(0, addressCourrier.getSwissZipCodeId());
-		assertNull(addressCourrier.getStreetId());
-		assertEquals("Olympialaan 17", addressCourrier.getStreet());
-		assertNull(addressCourrier.getDwellingNumber());
-		assertEquals("", addressCourrier.getZipCode());
-		assertEquals("Pays-Bas", addressCourrier.getCountry());
-		assertEquals("De Wit Tummers Elisabeth", addressCourrier.getTitle());
+		assertEquals("Pays-Bas", info.getCountryName());
+		assertNull(info.getSwissZipCodeId());
+		assertNull(info.getStreetId());
+		assertNull(info.getDwellingNumber());
 	}
 
 	/**
@@ -1259,12 +1264,13 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(312); // PLACE CENTRALE, La Sarraz
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
-		final FormattedAddress adresse = pm.getFormattedMailAddress().getFormattedAddress();
+		final List<Address> adresses = pm.getMailAddresses();
+		final FormattedAddress adresse = adresses.get(adresses.size() - 1).getFormattedAddress();
 		assertNotNull(adresse);
 		assertEquals("Société immobilière de", trimValiPattern(adresse.getLine1()));
 		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLine2()));
@@ -1283,14 +1289,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(1314); // JAL HOLDING
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
-		final FormattedAddress adresse = pm.getFormattedMailAddress().getFormattedAddress();
+		final List<Address> adresses = pm.getMailAddresses();
+		final FormattedAddress adresse = adresses.get(adresses.size() - 1).getFormattedAddress();
 		assertNotNull(adresse);
-
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLine1()));
 		assertEquals("", trimValiPattern(adresse.getLine2()));
 		assertEquals("en liquidation", trimValiPattern(adresse.getLine3()));

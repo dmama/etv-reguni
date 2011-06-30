@@ -182,7 +182,7 @@ public abstract class TiersHisto {
 	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedMailAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>mailAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi = null;
@@ -192,7 +192,7 @@ public abstract class TiersHisto {
 	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedRepresentationAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>representationAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseRepresentationFormattee;
@@ -202,7 +202,7 @@ public abstract class TiersHisto {
 	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adressePoursuiteFormattee;
@@ -212,7 +212,7 @@ public abstract class TiersHisto {
 	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddressOfOtherParty</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddressesOfOtherParty</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoiAutreTiers adressePoursuiteAutreTiersFormattee;
@@ -222,7 +222,7 @@ public abstract class TiersHisto {
 	 * <p/>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedResidenceAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>residenceAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseDomicileFormattee;

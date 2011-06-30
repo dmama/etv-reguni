@@ -104,10 +104,10 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 		assertNotNull(antoine, "On ne retrouve plus Antoine!");
 
 		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(antoine, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseCourrier.getNpaEtLocalite().contains("Vallorbe"), "L'adresse courrier devrait être à Vallorbe");
+		assertTrue(adresseCourrier.getNpaEtLocalite().toString().contains("Vallorbe"), "L'adresse courrier devrait être à Vallorbe");
 
 		final AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(antoine, null, TypeAdresseFiscale.DOMICILE, true);
-		assertTrue(adresseDomicile.getNpaEtLocalite().contains("Bex"), "L'adresse domicile devrait être à Bex");
+		assertTrue(adresseDomicile.getNpaEtLocalite().toString().contains("Bex"), "L'adresse domicile devrait être à Bex");
 	}
 
 	@Etape(id = 2, descr = "Arrivée principale vaudoise = correction dans l'adresse civile")

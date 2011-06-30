@@ -127,7 +127,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
 		params.getPartyNumbers().addAll(Arrays.asList(ids.paul, ids.janine));
-		params.getParts().addAll(Arrays.asList(PartyPart.TAX_RESIDENCES, PartyPart.VIRTUAL_TAX_RESIDENCES, PartyPart.FORMATTED_ADDRESSES));
+		params.getParts().addAll(Arrays.asList(PartyPart.TAX_RESIDENCES, PartyPart.VIRTUAL_TAX_RESIDENCES, PartyPart.ADDRESSES));
 
 		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
@@ -208,7 +208,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber(ids.menage);
-			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES, PartyPart.FORMATTED_ADDRESSES));
+			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES, PartyPart.ADDRESSES));
 
 			final CommonHousehold menage = (CommonHousehold) service.getParty(params);
 			assertNotNull(menage);
@@ -274,7 +274,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber(ids.menage);
-			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES, PartyPart.FORMATTED_ADDRESSES));
+			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
 
 			final CommonHousehold menage = (CommonHousehold) service.getParty(params);
 			assertNotNull(menage);
@@ -352,7 +352,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber(ids.tiia);
-			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES, PartyPart.FORMATTED_ADDRESSES));
+			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
 
 			final NaturalPerson tiia = (NaturalPerson) service.getParty(params);
 			assertNotNull(tiia);
@@ -773,12 +773,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(virtuel, forFiscal.isVirtual());
 	}
 
-	private static void assertAddress(@Nullable Date dateDebut, @Nullable Date dateFin, String rue, String localite, Address address) {
+	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, String street, String town, Address address) {
 		assertNotNull(address);
-		assertEquals(dateDebut, address.getDateFrom());
-		assertEquals(dateFin, address.getDateTo());
-		assertEquals(rue, address.getStreet());
-		assertEquals(localite, address.getTown());
+		assertEquals(dateFrom, address.getDateFrom());
+		assertEquals(dateTo, address.getDateTo());
+		assertEquals(street, address.getAddressInformation().getStreet());
+		assertEquals(town, address.getAddressInformation().getTown());
 	}
 
 	private Date newDate(int year, int month, int day) {

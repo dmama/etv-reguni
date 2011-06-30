@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -20,7 +21,6 @@ import ch.vd.unireg.webservices.tiers3.Capital;
 import ch.vd.unireg.webservices.tiers3.Corporation;
 import ch.vd.unireg.webservices.tiers3.CorporationEvent;
 import ch.vd.unireg.webservices.tiers3.CorporationStatus;
-import ch.vd.unireg.webservices.tiers3.DateHelper;
 import ch.vd.unireg.webservices.tiers3.DebtorInfo;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
@@ -30,7 +30,6 @@ import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.LegalForm;
 import ch.vd.unireg.webservices.tiers3.LegalSeat;
 import ch.vd.unireg.webservices.tiers3.LegalSeatType;
-import ch.vd.unireg.webservices.tiers3.MailAddress;
 import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyType;
@@ -53,6 +52,7 @@ import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
@@ -60,6 +60,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.PartPM;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -298,15 +299,15 @@ public class PartyWebServiceWithPM implements PartyWebService {
 			corp.setAutomaticReimbursementBlocked(true); // [UNIREG-1266] Blocage des remboursements automatiques sur tous les nouveaux tiers
 		}
 
-		if (parts.contains(PartyPart.ADDRESSES) || parts.contains(PartyPart.FORMATTED_ADDRESSES)) {
+		if (parts.contains(PartyPart.ADDRESSES)) {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = hostCorp.getAdresses();
-			if (adresses != null) {
+			if (adresses != null && !adresses.isEmpty()) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
 					if (a.getType() == TypeAdressePM.COURRIER) {
-						corp.getMailAddresses().add(address2web(a));
+						corp.getMailAddresses().add(address2web(tiers, corp, a));
 					}
 					else if (a.getType() == TypeAdressePM.SIEGE) {
-						corp.getResidenceAddresses().add(address2web(a));
+						corp.getResidenceAddresses().add(address2web(tiers, corp, a));
 					}
 					else if (a.getType() == TypeAdressePM.FACTURATION) {
 						// ces adresses sont ignorées
@@ -316,16 +317,14 @@ public class PartyWebServiceWithPM implements PartyWebService {
 					}
 				}
 			}
+			else {
+				// par défaut, on renseigne une adresse partiellement vide (= sans la destination)
+				corp.getMailAddresses().add(address2web(tiers, corp, null));
+				corp.getResidenceAddresses().add(address2web(tiers, corp, null));
+			}
 			corp.getRepresentationAddresses().addAll(corp.getMailAddresses());
 			// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
 			corp.getDebtProsecutionAddresses().addAll(corp.getResidenceAddresses());
-		}
-
-		if (parts.contains(PartyPart.FORMATTED_ADDRESSES)) {
-			corp.setFormattedMailAddress(calculateMailAddress(tiers, corp, corp.getMailAddresses()));
-			corp.setFormattedResidenceAddress(calculateMailAddress(tiers, corp, corp.getResidenceAddresses()));
-			corp.setFormattedRepresentationAddress(calculateMailAddress(tiers, corp, corp.getRepresentationAddresses()));
-			corp.setFormattedDebtProsecutionAddress(calculateMailAddress(tiers, corp, corp.getDebtProsecutionAddresses()));
 		}
 
 		if (parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
@@ -746,29 +745,6 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		return assujet;
 	}
 
-	private static Address address2web(ch.vd.uniregctb.interfaces.model.AdresseEntreprise a) {
-		Assert.notNull(a);
-		Address address = new Address();
-		address.setDateFrom(DataHelper.coreToWeb(a.getDateDebutValidite()));
-		address.setDateTo(DataHelper.coreToWeb(a.getDateFinValidite()));
-		address.setTitle(a.getComplement());
-		address.setStreet(a.getRue());
-		address.setStreetId(a.getNumeroTechniqueRue());
-		address.setHouseNumber(a.getNumeroMaison());
-		address.setZipCode(a.getNumeroPostal());
-		address.setTown(a.getLocaliteAbregeMinuscule());
-		address.setSwissZipCodeId(a.getNumeroOrdrePostal());
-		if (a.getPays() == null) {
-			address.setCountry(null);
-			address.setCountryId(ServiceInfrastructureService.noOfsSuisse);
-		}
-		else {
-			address.setCountry(a.getPays().getNomMinuscule());
-			address.setCountryId(a.getPays().getNoOFS());
-		}
-		return address;
-	}
-
 	private PartPM[] web2business(Set<PartyPart> parts) {
 
 		if (parts == null || parts.isEmpty()) {
@@ -776,7 +752,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		}
 
 		final Set<PartPM> set = new HashSet<PartPM>();
-		if (parts.contains(PartyPart.ADDRESSES) || parts.contains(PartyPart.FORMATTED_ADDRESSES)) {
+		if (parts.contains(PartyPart.ADDRESSES)) {
 			set.add(PartPM.ADRESSES);
 		}
 		if (parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
@@ -807,13 +783,12 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private MailAddress calculateMailAddress(ch.vd.uniregctb.tiers.Tiers destinataire, Corporation pm, List<Address> adresses) {
+	private Address address2web(ch.vd.uniregctb.tiers.Tiers destinataire, Corporation pm, @Nullable ch.vd.uniregctb.interfaces.model.AdresseEntreprise a) {
 
-		final Address addressFiscale = DateHelper.getAt(adresses, null);
-		final RegDate dateDebut = addressFiscale == null ? null : DataHelper.webToCore(addressFiscale.getDateFrom());
-		final RegDate dateFin = addressFiscale == null ? null : DataHelper.webToCore(addressFiscale.getDateTo());
+		final RegDate dateDebut = (a == null ? null : a.getDateDebutValidite());
+		final RegDate dateFin = (a == null ? null : a.getDateFinValidite());
 
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM, dateDebut, dateFin);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(destinataire, AdresseGenerique.SourceType.PM, dateDebut, dateFin);
 
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
@@ -836,32 +811,35 @@ public class PartyWebServiceWithPM implements PartyWebService {
 //			adresse.addPourAdresse(pm.personneContact);
 //		}
 
-		if (addressFiscale != null) {
+		if (a != null) {
 
-			if (addressFiscale.getTitle() != null) {
+			if (a.getComplement() != null) {
 				// [UNIREG-1974] Le complément est optionnel
-				adresse.addComplement(addressFiscale.getTitle(), OPTIONALITE_COMPLEMENT);
+				adresse.addComplement(a.getComplement(), OPTIONALITE_COMPLEMENT);
 			}
 
-			if (addressFiscale.getStreet() != null) {
-				adresse.addRueEtNumero(new RueEtNumero(addressFiscale.getStreet(), addressFiscale.getHouseNumber()));
+			if (a.getRue() != null) {
+				adresse.addRueEtNumero(new RueEtNumero(a.getRue(), a.getNumeroMaison()));
 			}
 
-			final String npaLocalite;
-			if (addressFiscale.getZipCode() != null) {
-				npaLocalite = addressFiscale.getZipCode() + " " + addressFiscale.getTown();
+			if (a.getNumeroPostal() != null || a.getLocaliteAbregeMinuscule() != null) {
+				adresse.addNpaEtLocalite(new NpaEtLocalite(a.getNumeroPostal(), a.getLocaliteAbregeMinuscule()));
+			}
+
+			final Pays pays = a.getPays();
+			if (pays != null) {
+				final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(pays.getNoOFS());
+				adresse.addPays(pays.getNomMinuscule(), typeAffranchissement);
+				adresse.setNoOfsPays(pays.getNoOFS());
 			}
 			else {
-				npaLocalite = addressFiscale.getTown();
+				adresse.setNoOfsPays(ServiceInfrastructureService.noOfsSuisse);
 			}
-			adresse.addNpaEtLocalite(npaLocalite);
 
-			if (addressFiscale.getCountry() != null) {
-				final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(addressFiscale.getCountryId());
-				adresse.addPays(addressFiscale.getCountry(), typeAffranchissement);
-			}
+			adresse.setNumeroTechniqueRue(a.getNumeroTechniqueRue());
+			adresse.setNumeroOrdrePostal(a.getNumeroOrdrePostal() == 0 ? null : a.getNumeroOrdrePostal());
 		}
 
-		return AddressBuilder.newMailAddress(adresse);
+		return AddressBuilder.newAddress(adresse);
 	}
 }

@@ -221,10 +221,10 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 	private void assertAdresses(final MenageCommun menage, final String nomCommune) throws AdresseException {
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
 		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseMenage.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du ménage devrait être à %s", nomCommune));
+		assertTrue(adresseMenage.getNpaEtLocalite().toString().contains(nomCommune), String.format("L'adresse d'envoi du ménage devrait être à %s", nomCommune));
 		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseAntoine.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du principal devrait être à %s", nomCommune));
+		assertTrue(adresseAntoine.getNpaEtLocalite().toString().contains(nomCommune), String.format("L'adresse d'envoi du principal devrait être à %s", nomCommune));
 		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseCleo.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du conjoint devrait être à %s", nomCommune));
+		assertTrue(adresseCleo.getNpaEtLocalite().toString().contains(nomCommune), String.format("L'adresse d'envoi du conjoint devrait être à %s", nomCommune));
 	}
 }

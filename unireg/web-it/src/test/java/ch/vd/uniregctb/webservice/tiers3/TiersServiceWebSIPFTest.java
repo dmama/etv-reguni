@@ -18,7 +18,6 @@ import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.LegalForm;
 import ch.vd.unireg.webservices.tiers3.LegalSeat;
 import ch.vd.unireg.webservices.tiers3.LegalSeatType;
-import ch.vd.unireg.webservices.tiers3.MailAddress;
 import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
@@ -483,7 +482,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setPartyNumber(222);
 		params.getParts().add(PartyPart.ADDRESSES);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 
 		final Corporation pm = (Corporation) service.getParty(params);
@@ -503,20 +501,25 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(addressCourrier);
 		assertSameDay(newDate(2003, 4, 3), addressCourrier.getDateFrom());
 		assertNull(addressCourrier.getDateTo());
-		assertEquals("p.a. Office des faillites", addressCourrier.getTitle());
-		assertNull(addressCourrier.getPostOfficeBox());
-		assertNull(addressCourrier.getDwellingNumber());
-		assertNull(addressCourrier.getStreet());
-		assertNull(addressCourrier.getHouseNumber());
-		assertEquals("1860", addressCourrier.getZipCode());
-		assertEquals("Aigle", addressCourrier.getTown());
-		assertNull(addressCourrier.getCountry());
-		assertEquals(1100, addressCourrier.getSwissZipCodeId());
-		assertNull(addressCourrier.getStreetId());
+
+		final AddressInformation info = addressCourrier.getAddressInformation();
+		assertNotNull(info);
+		assertEquals("p.a. Office des faillites", info.getComplementaryInformation());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertNull(info.getPostOfficeBoxText());
+		assertNull(info.getDwellingNumber());
+		assertNull(info.getStreet());
+		assertNull(info.getHouseNumber());
+		assertEquals(Long.valueOf(1860), info.getSwissZipCode());
+		assertEquals("Aigle", info.getTown());
+		assertNull(info.getCountry());
+		assertEquals(Integer.valueOf(1100), info.getSwissZipCodeId());
+		assertNull(info.getStreetId());
+		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
+		final FormattedAddress adresseEnvoi = addressCourrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLine2()));
@@ -524,7 +527,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
-		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
 	}
 
 	/**
@@ -537,7 +539,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setPartyNumber(1314);
 		params.getParts().add(PartyPart.ADDRESSES);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 
 		final Corporation pm = (Corporation) service.getParty(params);
@@ -557,20 +558,25 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(addressCourrier);
 		assertSameDay(newDate(2007, 6, 11), addressCourrier.getDateFrom());
 		assertNull(addressCourrier.getDateTo());
-		assertEquals("pa Fidu. Commerce & Industrie", addressCourrier.getTitle());
-		assertNull(addressCourrier.getPostOfficeBox());
-		assertNull(addressCourrier.getDwellingNumber());
-		assertEquals("Avenue de la Gare", addressCourrier.getStreet());
-		assertEquals("10", addressCourrier.getHouseNumber());
-		assertEquals("1003", addressCourrier.getZipCode());
-		assertEquals("Lausanne", addressCourrier.getTown());
-		assertNull(addressCourrier.getCountry());
-		assertEquals(150, addressCourrier.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(30317), addressCourrier.getStreetId());
+
+		final AddressInformation info = addressCourrier.getAddressInformation();
+		assertNotNull(info);
+		assertEquals("pa Fidu. Commerce & Industrie", info.getComplementaryInformation());
+		assertNull(info.getPostOfficeBoxNumber());
+		assertNull(info.getPostOfficeBoxText());
+		assertNull(info.getDwellingNumber());
+		assertEquals("Avenue de la Gare", info.getStreet());
+		assertEquals("10", info.getHouseNumber());
+		assertEquals(Long.valueOf(1003), info.getSwissZipCode());
+		assertEquals("Lausanne", info.getTown());
+		assertNull(info.getCountry());
+		assertEquals(Integer.valueOf(150), info.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(30317), info.getStreetId());
+		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
+		final FormattedAddress adresseEnvoi = addressCourrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("", trimValiPattern(adresseEnvoi.getLine2()));
@@ -578,7 +584,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLine5()));
 		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLine6()));
-		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
 	}
 
 	/**
@@ -590,7 +595,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(25000);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 
 		final Corporation pm = (Corporation) service.getParty(params);
@@ -598,7 +603,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération de l'adresse d'envoi de la PM
 
-		final FormattedAddress adresseEnvoi = pm.getFormattedMailAddress().getFormattedAddress();
+		final List<Address> courriers = pm.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size() - 1);
+		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLine2()));
@@ -606,7 +613,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
-		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedMailAddress().getAddressInformation().getTariffZone());
+		assertEquals(TariffZone.SWITZERLAND, courrier.getAddressInformation().getTariffZone());
 	}
 
 	@Test
@@ -616,7 +623,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setPartyNumber(37); // passé de la PM 222 à la PM 37 parce quelqu'un s'est amusé à entrer des valeurs bidon en développement...
 		params.getParts().add(PartyPart.ADDRESSES);
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
 
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
@@ -637,18 +643,23 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(addressDomicile);
 		assertSameDay(newDate(1996, 4, 11), addressDomicile.getDateFrom());
 		assertNull(addressDomicile.getDateTo());
-		assertNull(addressDomicile.getTitle());
-		assertNull(addressDomicile.getPostOfficeBox());
-		assertNull(addressDomicile.getDwellingNumber());
-		assertEquals("Quai du Seujet", addressDomicile.getStreet());
-		assertEquals("28A", addressDomicile.getHouseNumber());
-		assertEquals("1201", addressDomicile.getZipCode());
-		assertEquals("Genève", addressDomicile.getTown());
-		assertNull(addressDomicile.getCountry());
-		assertEquals(367, addressDomicile.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(46421), addressDomicile.getStreetId());
 
-		final FormattedAddress adresseDomicileFormattee = pm.getFormattedResidenceAddress().getFormattedAddress();
+		final AddressInformation infoDomicile = addressDomicile.getAddressInformation();
+		assertNotNull(infoDomicile);
+		assertNull(infoDomicile.getComplementaryInformation());
+		assertNull(infoDomicile.getPostOfficeBoxNumber());
+		assertNull(infoDomicile.getPostOfficeBoxText());
+		assertNull(infoDomicile.getDwellingNumber());
+		assertEquals("Quai du Seujet", infoDomicile.getStreet());
+		assertEquals("28A", infoDomicile.getHouseNumber());
+		assertEquals(Long.valueOf(1201), infoDomicile.getSwissZipCode());
+		assertEquals("Genève", infoDomicile.getTown());
+		assertNull(infoDomicile.getCountry());
+		assertEquals(Integer.valueOf(367), infoDomicile.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(46421), infoDomicile.getStreetId());
+		assertEquals(TariffZone.SWITZERLAND, infoDomicile.getTariffZone());
+
+		final FormattedAddress adresseDomicileFormattee = addressDomicile.getFormattedAddress();
 		assertNotNull(adresseDomicileFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLine1()));
 		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLine2()));
@@ -656,7 +667,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine4()));
 		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine5()));
 		assertNull(adresseDomicileFormattee.getLine6());
-		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedResidenceAddress().getAddressInformation().getTariffZone());
 
 		// Récupération des adresses de poursuite
 
@@ -668,18 +678,23 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(addressPoursuite);
 		assertSameDay(newDate(1996, 4, 11), addressPoursuite.getDateFrom());
 		assertNull(addressPoursuite.getDateTo());
-		assertNull(addressPoursuite.getTitle());
-		assertNull(addressPoursuite.getPostOfficeBox());
-		assertNull(addressPoursuite.getDwellingNumber());
-		assertEquals("Quai du Seujet", addressPoursuite.getStreet());
-		assertEquals("28A", addressPoursuite.getHouseNumber());
-		assertEquals("1201", addressPoursuite.getZipCode());
-		assertEquals("Genève", addressPoursuite.getTown());
-		assertNull(addressPoursuite.getCountry());
-		assertEquals(367, addressPoursuite.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(46421), addressPoursuite.getStreetId());
+		
+		final AddressInformation infoPoursuite = addressPoursuite.getAddressInformation();
+		assertNotNull(infoPoursuite);
+		assertNull(infoPoursuite.getComplementaryInformation());
+		assertNull(infoPoursuite.getPostOfficeBoxText());
+		assertNull(infoPoursuite.getPostOfficeBoxNumber());
+		assertNull(infoPoursuite.getDwellingNumber());
+		assertEquals("Quai du Seujet", infoPoursuite.getStreet());
+		assertEquals("28A", infoPoursuite.getHouseNumber());
+		assertEquals(Long.valueOf(1201), infoPoursuite.getSwissZipCode());
+		assertEquals("Genève", infoPoursuite.getTown());
+		assertNull(infoPoursuite.getCountry());
+		assertEquals(Integer.valueOf(367), infoPoursuite.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(46421), infoPoursuite.getStreetId());
+		assertEquals(TariffZone.SWITZERLAND, infoPoursuite.getTariffZone());
 
-		final FormattedAddress adressePoursuiteFormattee = pm.getFormattedDebtProsecutionAddress().getFormattedAddress();
+		final FormattedAddress adressePoursuiteFormattee = addressPoursuite.getFormattedAddress();
 		assertNotNull(adressePoursuiteFormattee);
 		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLine1()));
 		assertEquals("", trimValiPattern(adressePoursuiteFormattee.getLine2()));
@@ -687,7 +702,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLine4()));
 		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLine5()));
 		assertNull(adressePoursuiteFormattee.getLine6());
-		assertEquals(TariffZone.SWITZERLAND, pm.getFormattedDebtProsecutionAddress().getAddressInformation().getTariffZone());
 
 		// Unireg n'est pas en mesure de déterminer l'adresse de l'OP. Ce travail est de la responsabilité du service infastructure.
 
@@ -894,14 +908,15 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(1314); // Jal Holding
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 		assertEquals(1314L, pm.getNumber());
 
 		{
-			final MailAddress adresse = pm.getFormattedMailAddress();
+			final List<Address> adresses = pm.getMailAddresses();
+			final Address adresse = adresses.get(adresses.size() - 1);
 			final FormattedAddress adresseFormatteee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormatteee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormatteee.getLine1())); // <-- raison sociale ligne 1
@@ -925,12 +940,14 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 			assertEquals("Avenue de la Gare", destination.getStreet());
 			assertEquals("10", destination.getHouseNumber());
 			assertNull(destination.getPostOfficeBoxNumber());
-			assertEquals("1003 Lausanne", destination.getTown());
+			assertEquals(Long.valueOf(1003), destination.getSwissZipCode());
+			assertEquals("Lausanne", destination.getTown());
 			assertNull(destination.getCountry());
 		}
 
 		{
-			final MailAddress adresse = pm.getFormattedResidenceAddress();
+			final List<Address> adresses = pm.getResidenceAddresses();
+			final Address adresse = adresses.get(adresses.size() - 1);
 			final FormattedAddress adresseFormattee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormattee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormattee.getLine1())); // <-- raison sociale ligne 1
@@ -954,7 +971,8 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 			assertEquals("Chemin Messidor", destination.getStreet());
 			assertEquals("5", destination.getHouseNumber());
 			assertNull(destination.getPostOfficeBoxNumber());
-			assertEquals("1006 Lausanne", destination.getTown());
+			assertEquals(Long.valueOf(1006), destination.getSwissZipCode());
+			assertEquals("Lausanne", destination.getTown());
 			assertNull(destination.getCountry());
 		}
 	}

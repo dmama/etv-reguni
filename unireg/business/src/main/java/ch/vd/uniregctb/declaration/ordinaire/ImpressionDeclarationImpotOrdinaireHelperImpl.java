@@ -56,7 +56,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper {
 
@@ -561,7 +560,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 
 		AdresseSuite adresseSuite = di.addNewAdresseSuite();
-		final String npaLocalite = adresseEnvoi.getNpaEtLocalite();
+		final String npaLocalite = adresseEnvoi.getNpaEtLocalite() == null ? null : adresseEnvoi.getNpaEtLocalite().toString();
 		final List<String> nomPrenom = adresseEnvoi.getNomsPrenomsOuRaisonsSociales();
 		switch (nomPrenom.size()) {
 		case 0:

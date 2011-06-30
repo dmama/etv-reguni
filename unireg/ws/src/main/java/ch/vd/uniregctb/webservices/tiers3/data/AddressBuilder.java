@@ -2,83 +2,55 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.AddressInformation;
-import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
 import ch.vd.unireg.webservices.tiers3.CoupleMailAddressInfo;
 import ch.vd.unireg.webservices.tiers3.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.MailAddress;
-import ch.vd.unireg.webservices.tiers3.MailAddressOtherParty;
 import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddress;
 import ch.vd.unireg.webservices.tiers3.OtherPartyAddressType;
 import ch.vd.unireg.webservices.tiers3.PersonMailAddressInfo;
 import ch.vd.unireg.webservices.tiers3.PersonName;
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
-import ch.vd.uniregctb.webservices.tiers3.impl.ExceptionHelper;
 
 public class AddressBuilder {
 
-	private static final Logger LOGGER = Logger.getLogger(AddressBuilder.class);
+//	private static final Logger LOGGER = Logger.getLogger(AddressBuilder.class);
 
-	public static Address newAddress(AdresseGenerique adresse, ServiceInfrastructureService serviceInfra) throws WebServiceException {
+	public static Address newAddress(AdresseEnvoiDetaillee adresse) {
 		final Address a = new Address();
-		fillAddress(adresse, serviceInfra, a);
+		fillAddress(adresse, a);
 		return a;
 	}
 
-	public static void fillAddress(AdresseGenerique adresse, ServiceInfrastructureService serviceInfra, Address a) throws WebServiceException {
+	public static AddressOtherParty newOtherPartyAddress(AdresseEnvoiDetaillee adresse) {
+		final AddressOtherParty a = new AddressOtherParty();
+		fillAddress(adresse, a);
+		a.setType(source2type(adresse.getSource()));
+		return a;
+	}
+
+	private static void fillAddress(AdresseEnvoiDetaillee adresse, Address a) {
 		a.setDateFrom(DataHelper.coreToWeb(adresse.getDateDebut()));
 		a.setDateTo(DataHelper.coreToWeb(adresse.getDateFin()));
-		a.setTitle(adresse.getComplement());
-		a.setDwellingNumber(adresse.getNumeroAppartement());
-		a.setStreet(adresse.getRue());
-		a.setHouseNumber(adresse.getNumero());
-		a.setPostOfficeBox(adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString());
-		a.setTown(adresse.getLocalite());
-		a.setZipCode(adresse.getNumeroPostal());
 
-		final Integer noOfsPays = adresse.getNoOfsPays();
-		if (noOfsPays != null) {
-			ch.vd.uniregctb.interfaces.model.Pays p;
-			try {
-				p = serviceInfra.getPays(noOfsPays);
-			}
-			catch (ServiceInfrastructureException e) {
-				LOGGER.error(e, e);
-				throw ExceptionHelper.newBusinessException(e.getMessage(), BusinessExceptionCode.INFRASTRUCTURE);
-			}
-			if (p != null && !p.isSuisse()) {
-				a.setCountry(p.getNomMinuscule());
-			}
-		}
-
-		a.setSwissZipCodeId(adresse.getNumeroOrdrePostal());
-		a.setStreetId(adresse.getNumeroRue()); // TODO (msi) retourner null si le numéro est égal à 0
-		a.setCountryId(noOfsPays);
+		fillRecipient(a, adresse);
+		fillDestination(a, adresse);
+		fillFormattedAddress(a, adresse);
 	}
 
-	public static OtherPartyAddress newOtherPartyAddress(AdresseGenerique adresse, ServiceInfrastructureService serviceInfra) throws WebServiceException {
-		final OtherPartyAddress a = new OtherPartyAddress();
-		fillAddress(adresse, serviceInfra, a);
-		a.setType(source2type(adresse.getSource().getType()));
-		return a;
-	}
-
-	public static OtherPartyAddressType source2type(AdresseGenerique.SourceType source) {
+	private static OtherPartyAddressType source2type(AdresseGenerique.SourceType source) {
 
 		if (source == null) {
 			return null;
@@ -101,15 +73,7 @@ public class AddressBuilder {
 
 	}
 
-	public static MailAddress newMailAddress(AdresseEnvoiDetaillee adresse) {
-		final MailAddress a = new MailAddress();
-		fillRecipient(a, adresse);
-		fillDestination(a, adresse);
-		fillFormattedAddress(a, adresse);
-		return a;
-	}
-
-	private static void fillRecipient(MailAddress a, AdresseEnvoiDetaillee adresse) {
+	private static void fillRecipient(Address a, AdresseEnvoiDetaillee adresse) {
 
 		if (adresse.getDestinataire() instanceof PersonnePhysique) {
 			final PersonMailAddressInfo personInfo = new PersonMailAddressInfo();
@@ -152,29 +116,49 @@ public class AddressBuilder {
 		}
 	}
 
-	private static void fillDestination(MailAddress a, AdresseEnvoiDetaillee adresse) {
+	private static void fillDestination(Address to, AdresseEnvoiDetaillee from) {
 		final AddressInformation info = new AddressInformation();
 
-		info.setComplementaryInformation(adresse.getComplement());
-		info.setCareOf(adresse.getPourAdresse());
-		final RueEtNumero rueEtNumero = adresse.getRueEtNumero();
+		info.setComplementaryInformation(from.getComplement());
+		info.setCareOf(from.getPourAdresse());
+		info.setDwellingNumber(from.getNumeroAppartement());
+
+		final RueEtNumero rueEtNumero = from.getRueEtNumero();
 		if (rueEtNumero != null) {
 			info.setStreet(rueEtNumero.getRue());
 			info.setHouseNumber(rueEtNumero.getNumero());
 		}
-		final CasePostale casePostale = adresse.getCasePostale();
+
+		final CasePostale casePostale = from.getCasePostale();
 		if (casePostale != null) {
 			info.setPostOfficeBoxText(casePostale.getType().format());
 			info.setPostOfficeBoxNumber(casePostale.getNumero() == null ? null : casePostale.getNumero().longValue());
 		}
-		info.setTown(adresse.getNpaEtLocalite());
-		info.setCountry(adresse.getPays()); // FIXME (msi) il faut renseigner le code ISO sur 2 positions du pays, et pas son nom complet !
-		info.setTariffZone(EnumHelper.coreToWeb(adresse.getTypeAffranchissement()));
 
-		a.setAddressInformation(info);
+		final NpaEtLocalite npaEtLocalite = from.getNpaEtLocalite();
+		if (npaEtLocalite != null) {
+			if (from.isSuisse()) {
+				if (StringUtils.isNotBlank(npaEtLocalite.getNpa())) {
+					info.setSwissZipCode(Long.valueOf(npaEtLocalite.getNpa()));
+				}
+			}
+			else {
+				info.setForeignZipCode(npaEtLocalite.getNpa());
+			}
+			info.setTown(npaEtLocalite.getLocalite());
+		}
+
+		info.setCountry(from.getPays()); // FIXME (msi) il faut renseigner le code ISO sur 2 positions du pays, et pas son nom complet !
+		info.setCountryName(from.getPays());
+		info.setSwissZipCodeId(from.getNumeroOrdrePostal());
+		info.setStreetId(from.getNumeroTechniqueRue());
+		info.setCountryId(from.getNoOfsPays());
+		info.setTariffZone(EnumHelper.coreToWeb(from.getTypeAffranchissement()));
+
+		to.setAddressInformation(info);
 	}
 
-	public static void fillFormattedAddress(MailAddress a, AdresseEnvoiDetaillee adresse) {
+	private static void fillFormattedAddress(Address a, AdresseEnvoiDetaillee adresse) {
 		final FormattedAddress formattedAdresse = new FormattedAddress();
 		formattedAdresse.setLine1(adresse.getLigne1());
 		formattedAdresse.setLine2(adresse.getLigne2());
@@ -183,13 +167,5 @@ public class AddressBuilder {
 		formattedAdresse.setLine5(adresse.getLigne5());
 		formattedAdresse.setLine6(adresse.getLigne6());
 		a.setFormattedAddress(formattedAdresse);
-
-	}
-
-	public static MailAddressOtherParty newMailAddressOtherTiers(AdresseEnvoiDetaillee adresse) {
-		final MailAddressOtherParty a = new MailAddressOtherParty();
-		fillFormattedAddress(a, adresse);
-		a.setType(source2type(adresse.getSource()));
-		return a;
 	}
 }

@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -822,22 +823,15 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	public static String buildNpaEtLocalite(AdresseGenerique adresse) {
-		final String localiteEtNumero;
-		final String localite = adresse.getLocalite();
-		if (notEmpty(localite)) {
-			final String numeroPostal = adresse.getNumeroPostal();
-			if (notEmpty(numeroPostal)) {
-				localiteEtNumero = numeroPostal + " " + localite;
-			}
-			else {
-				localiteEtNumero = localite;
-			}
+	public static NpaEtLocalite buildNpaEtLocalite(AdresseGenerique adresse) {
+		final String npa = StringUtils.trimToNull(adresse.getNumeroPostal());
+		final String localite = StringUtils.trimToNull(adresse.getLocalite());
+		if (npa == null && localite == null) {
+			return null;
 		}
 		else {
-			localiteEtNumero = null;
+			return new NpaEtLocalite(npa, localite);
 		}
-		return localiteEtNumero;
 	}
 
 	private String buildPays(AdresseGenerique adresse, boolean aussiSuisse) {
@@ -877,8 +871,10 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseEnvoi.addCasePostale(casePostale, OPTIONALITE_CASE_POSTALE);
 		}
 
-		final String npaEtlocalite = buildNpaEtLocalite(adresse);
-		if (notEmpty(npaEtlocalite)) {
+		adresseEnvoi.setNumeroAppartement(adresse.getNumeroAppartement());
+
+		final NpaEtLocalite npaEtlocalite = buildNpaEtLocalite(adresse);
+		if (npaEtlocalite != null) {
 			adresseEnvoi.addNpaEtLocalite(npaEtlocalite);
 		}
 
@@ -887,6 +883,10 @@ public class AdresseServiceImpl implements AdresseService {
 			final TypeAffranchissement typeAffranchissement = getTypeAffranchissement(adresse);
 			adresseEnvoi.addPays(nomPays, typeAffranchissement);
 		}
+
+		adresseEnvoi.setNumeroTechniqueRue(adresse.getNumeroRue());
+		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal() == 0 ? null : adresse.getNumeroOrdrePostal());
+		adresseEnvoi.setNoOfsPays(adresse.getNoOfsPays());
 	}
 
 	/**

@@ -46,7 +46,7 @@ public class Adresse implements Range {
 	/**
 	 * Titre de l'adresse. Exemple : "chez" ou "c/o"
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>title</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>complementaryInformation</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String titre;
@@ -54,7 +54,7 @@ public class Adresse implements Range {
 	/**
 	 * Numéro de l'appartement
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>dwellingNumber</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>dwellingNumber</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String numeroAppartement;
@@ -62,7 +62,7 @@ public class Adresse implements Range {
 	/**
 	 * Rue
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>street</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>street</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String rue;
@@ -70,7 +70,7 @@ public class Adresse implements Range {
 	/**
 	 * Numéro du bâtiment dans la rue
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>houseNumber</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>houseNumber</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String numeroRue;
@@ -78,7 +78,7 @@ public class Adresse implements Range {
 	/**
 	 * Case postale + numéro
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>postOfficeBox</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans les champs <i>postOfficeBoxText</i> et <i>postOfficeBoxNumber</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String casePostale;
@@ -86,7 +86,7 @@ public class Adresse implements Range {
 	/**
 	 * La localité. Exemple : "Lausanne"
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>town</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>town</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = true)
 	public String localite;
@@ -94,7 +94,7 @@ public class Adresse implements Range {
 	/**
 	 * Le numéro postal de la localité. Exemple : "1001" pour "1001 Lausanne"
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>zipCode</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>swissZipCode</i> ou <i>foreignZipCode</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = true)
 	public String numeroPostal;
@@ -102,7 +102,7 @@ public class Adresse implements Range {
 	/**
 	 * Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>country</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>countryName</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public String pays;
@@ -110,7 +110,7 @@ public class Adresse implements Range {
 	/**
 	 * [Technique] numéro d'ordre postal de l'adresse
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>swissZipCodeId</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>swissZipCodeId</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = true)
 	public int noOrdrePostal;
@@ -118,7 +118,7 @@ public class Adresse implements Range {
 	/**
 	 * [Technique] numéro technique de la rue
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>streetId</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>streetId</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public Integer noRue;
@@ -126,7 +126,7 @@ public class Adresse implements Range {
 	/**
 	 * [Technique] numéro OFS du pays
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>countryId</i>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>countryId</i> de la structure <i>addressInformationType</i>.
 	 */
 	@XmlElement(required = false)
 	public Integer noPays;

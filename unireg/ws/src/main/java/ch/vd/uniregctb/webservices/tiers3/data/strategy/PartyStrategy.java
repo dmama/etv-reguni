@@ -9,15 +9,13 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.tiers3.Address;
+import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
 import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddress;
 import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.TaxDeclaration;
 import ch.vd.unireg.webservices.tiers3.TaxResidence;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.webservices.tiers3.data.BankAccountBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.ManagingTaxResidenceBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.RelationBetweenPartiesBuilder;
@@ -102,10 +100,6 @@ public abstract class PartyStrategy<T extends Party> {
 			initAddresses(left, tiers, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.FORMATTED_ADDRESSES)) {
-			initFormattedAddresses(left, tiers, context);
-		}
-
 		if (parts != null && parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
 			initRelationsBetweenParties(left, tiers);
 		}
@@ -135,14 +129,6 @@ public abstract class PartyStrategy<T extends Party> {
 			copyColl(to.getResidenceAddresses(), from.getResidenceAddresses());
 			copyColl(to.getDebtProsecutionAddresses(), from.getDebtProsecutionAddresses());
 			copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
-		}
-
-		if (parts != null && parts.contains(PartyPart.FORMATTED_ADDRESSES)) {
-			to.setFormattedMailAddress(from.getFormattedMailAddress());
-			to.setFormattedRepresentationAddress(from.getFormattedRepresentationAddress());
-			to.setFormattedResidenceAddress(from.getFormattedResidenceAddress());
-			to.setFormattedDebtProsecutionAddress(from.getFormattedDebtProsecutionAddress());
-			to.setFormattedDebtProsecutionAddressOfOtherParty(from.getFormattedDebtProsecutionAddressOfOtherParty());
 		}
 
 		if (parts != null && parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
@@ -239,9 +225,9 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initAddresses(Party tiers, ch.vd.uniregctb.tiers.Tiers right, final Context context) throws WebServiceException {
-		ch.vd.uniregctb.adresse.AdressesFiscalesHisto adresses;
+		ch.vd.uniregctb.adresse.AdressesEnvoiHisto adresses;
 		try {
-			adresses = context.adresseService.getAdressesFiscalHisto(right, false);
+			adresses = context.adresseService.getAdressesEnvoiHisto(right, false);
 		}
 		catch (ch.vd.uniregctb.adresse.AdresseException e) {
 			LOGGER.error(e, e);
@@ -249,44 +235,30 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (adresses != null) {
-			final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, context.infraService);
+			final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null);
 			if (adressesCourrier != null) {
 				tiers.getMailAddresses().addAll(adressesCourrier);
 			}
 
-			final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, context.infraService);
+			final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null);
 			if (adressesRepresentation != null) {
 				tiers.getRepresentationAddresses().addAll(adressesRepresentation);
 			}
 
-			final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, context.infraService);
+			final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null);
 			if (adressesDomicile != null) {
 				tiers.getResidenceAddresses().addAll(adressesDomicile);
 			}
 
-			final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, context.infraService);
+			final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null);
 			if (adressesPoursuite != null) {
 				tiers.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 			}
 
-			final List<OtherPartyAddress> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, context.infraService);
+			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null);
 			if (adresseAutreTiers != null) {
 				tiers.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 			}
-		}
-	}
-
-	private static void initFormattedAddresses(Party left, ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws WebServiceException {
-		try {
-			left.setFormattedMailAddress(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.COURRIER));
-			left.setFormattedRepresentationAddress(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.REPRESENTATION));
-			left.setFormattedResidenceAddress(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.DOMICILE));
-			left.setFormattedDebtProsecutionAddress(DataHelper.createMailAddress(tiers, null, context, TypeAdresseFiscale.POURSUITE));
-			left.setFormattedDebtProsecutionAddressOfOtherParty(DataHelper.createMailAddressOtherTiers(tiers, null, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS));
-		}
-		catch (AdresseException e) {
-			LOGGER.error(e, e);
-			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
 		}
 	}
 

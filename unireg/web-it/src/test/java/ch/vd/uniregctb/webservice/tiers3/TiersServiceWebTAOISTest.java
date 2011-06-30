@@ -28,7 +28,6 @@ import ch.vd.unireg.webservices.tiers3.FormattedAddress;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.MailAddress;
 import ch.vd.unireg.webservices.tiers3.MaritalStatus;
 import ch.vd.unireg.webservices.tiers3.NaturalPerson;
 import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
@@ -614,7 +613,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(1678432); // Café du Commerce
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
@@ -628,7 +627,8 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		 * 1004 Lausanne Secteur de dist.
 		 * </pre>
 		 */
-		final MailAddress courrier = debiteur.getFormattedMailAddress();
+		final List<Address> courriers = debiteur.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size()-1);
 		final FormattedAddress formattee = courrier.getFormattedAddress();
 		assertNotNull(formattee);
 		assertEquals("Sabri Inanç Ertem", formattee.getLine1());
@@ -666,27 +666,35 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNotNull(addressCourrier0);
 		assertNull(addressCourrier0.getDateFrom());
 		assertEquals(newDate(2002, 6, 30), addressCourrier0.getDateTo());
-		assertEquals("Rue de Lausanne 59", addressCourrier0.getStreet());
-		assertNull(addressCourrier0.getHouseNumber());
-		assertEquals("1028", addressCourrier0.getZipCode());
-		assertEquals("Préverenges", addressCourrier0.getTown());
-		assertNull(addressCourrier0.getPostOfficeBox());
-		assertNull(addressCourrier0.getDwellingNumber());
-		assertEquals(Integer.valueOf(0), addressCourrier0.getStreetId());
-		assertEquals(175, addressCourrier0.getSwissZipCodeId());
+
+		final AddressInformation info0 = addressCourrier0.getAddressInformation();
+		assertNotNull(info0);
+		assertEquals("Rue de Lausanne 59", info0.getStreet());
+		assertNull(info0.getHouseNumber());
+		assertEquals(Long.valueOf(1028), info0.getSwissZipCode());
+		assertEquals("Préverenges", info0.getTown());
+		assertNull(info0.getPostOfficeBoxNumber());
+		assertNull(info0.getPostOfficeBoxText());
+		assertNull(info0.getDwellingNumber());
+		assertEquals(Integer.valueOf(0), info0.getStreetId());
+		assertEquals(Integer.valueOf(175), info0.getSwissZipCodeId());
 
 		final Address addressCourrier1 = adressesCourrier.get(1);
 		assertNotNull(addressCourrier1);
 		assertEquals(newDate(2002, 7, 1), addressCourrier1.getDateFrom());
 		assertNull(addressCourrier1.getDateTo());
-		assertEquals("Avenue de Beaulieu", addressCourrier1.getStreet());
-		assertEquals("12", addressCourrier1.getHouseNumber());
-		assertEquals("1004", addressCourrier1.getZipCode());
-		assertEquals("Lausanne", addressCourrier1.getTown());
-		assertNull(addressCourrier1.getPostOfficeBox());
-		assertNull(addressCourrier1.getDwellingNumber());
-		assertEquals(Integer.valueOf(30387), addressCourrier1.getStreetId());
-		assertEquals(151, addressCourrier1.getSwissZipCodeId());
+
+		final AddressInformation info1 = addressCourrier1.getAddressInformation();
+		assertNotNull(info1);
+		assertEquals("Avenue de Beaulieu", info1.getStreet());
+		assertEquals("12", info1.getHouseNumber());
+		assertEquals(Long.valueOf(1004), info1.getSwissZipCode());
+		assertEquals("Lausanne", info1.getTown());
+		assertNull(info1.getPostOfficeBoxNumber());
+		assertNull(info1.getPostOfficeBoxText());
+		assertNull(info1.getDwellingNumber());
+		assertEquals(Integer.valueOf(30387), info1.getStreetId());
+		assertEquals(Integer.valueOf(151), info1.getSwissZipCodeId());
 
 		// ... aussi disponibles :
 		final List<Address> addressDomicile = debiteur.getResidenceAddresses();
@@ -956,12 +964,13 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(20222); // la BCV
-		params.getParts().add(PartyPart.FORMATTED_ADDRESSES);
+		params.getParts().add(PartyPart.ADDRESSES);
 
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
-		final MailAddress courrier = pm.getFormattedMailAddress();
+		final List<Address> courriers = pm.getMailAddresses();
+		final Address courrier = courriers.get(courriers.size() - 1);
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Banque Cantonale Vaudo", trimValiPattern(adresseEnvoi.getLine1()));
@@ -984,7 +993,8 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getCareOf());
 		assertEquals("M. Daniel Küffer / CP 300", info.getStreet());
 		assertNull(info.getPostOfficeBoxNumber());
-		assertEquals("1001 Lausanne", info.getTown());
+		assertEquals(Long.valueOf(1001), info.getSwissZipCode());
+		assertEquals("Lausanne", info.getTown());
 		assertNull(info.getCountry());
 	}
 

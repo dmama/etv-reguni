@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -541,14 +542,9 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 				adresse.addRueEtNumero(new RueEtNumero(adresseFiscale.rue, adresseFiscale.numeroRue));
 			}
 
-			final String npaLocalite;
-			if (adresseFiscale.numeroPostal != null) {
-				npaLocalite = adresseFiscale.numeroPostal + " " + adresseFiscale.localite;
+			if (adresseFiscale.numeroPostal != null || adresseFiscale.localite != null) {
+				adresse.addNpaEtLocalite(new NpaEtLocalite(adresseFiscale.numeroPostal, adresseFiscale.localite));
 			}
-			else {
-				npaLocalite = adresseFiscale.localite;
-			}
-			adresse.addNpaEtLocalite(npaLocalite);
 
 			if (adresseFiscale.pays != null) {
 				final Integer noOfsPays = (adresseFiscale.noPays == null ? ServiceInfrastructureService.noOfsSuisse : adresseFiscale.noPays);

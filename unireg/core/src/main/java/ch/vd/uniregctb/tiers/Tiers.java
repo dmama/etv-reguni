@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -1096,7 +1097,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return le for principal correspondant, ou nulle si aucun for ne correspond aux critères.
 	 */
 	@Transient
-	public ForFiscalPrincipal getForFiscalPrincipalAt(RegDate date) {
+	public ForFiscalPrincipal getForFiscalPrincipalAt(@Nullable RegDate date) {
 
 		if (forsFiscaux == null) {
 			return null;

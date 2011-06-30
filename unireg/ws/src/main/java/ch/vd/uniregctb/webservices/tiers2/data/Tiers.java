@@ -204,7 +204,7 @@ public abstract class Tiers {
 	/**
 	 * Adresse <b>courrier</b> formattée pour l'envoi (six lignes)
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedMailAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>mailAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi;
@@ -212,7 +212,7 @@ public abstract class Tiers {
 	/**
 	 * Adresse de représentation formattée pour l'envoi (six lignes)
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedRepresentationAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>representationAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseRepresentationFormattee;
@@ -220,7 +220,7 @@ public abstract class Tiers {
 	/**
 	 * Adresse de domicile formattée pour l'envoi (six lignes)
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedResidenceAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>residenceAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseDomicileFormattee;
@@ -228,7 +228,7 @@ public abstract class Tiers {
 	/**
 	 * Adresse de poursuite formattée pour l'envoi (six lignes)
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddress</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddresses</i>.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adressePoursuiteFormattee;
@@ -236,7 +236,7 @@ public abstract class Tiers {
 	/**
 	 * Adresse de poursuite <i>autre tiers </i> formattée pour l'envoi (six lignes)
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>formattedDebtProsecutionAddressOfOtherParty</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>debtProsecutionAddressesOfOtherParty</i>.
 	 */
 	public AdresseEnvoiAutreTiers adressePoursuiteAutreTiersFormattee;
 

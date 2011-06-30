@@ -131,11 +131,11 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		assertNotNull(cleo, "On ne retrouve plus Cléo!");
 
 		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseMenage.getNpaEtLocalite().contains("Vallorbe"), "L'adresse d'envoi du ménage devrait être à Vallorbe");
+		assertTrue(adresseMenage.getNpaEtLocalite().toString().contains("Vallorbe"), "L'adresse d'envoi du ménage devrait être à Vallorbe");
 		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(antoine, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseAntoine.getNpaEtLocalite().contains("Vallorbe"), "L'adresse d'envoi d'Antoine devrait être à Vallorbe");
+		assertTrue(adresseAntoine.getNpaEtLocalite().toString().contains("Vallorbe"), "L'adresse d'envoi d'Antoine devrait être à Vallorbe");
 		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(cleo, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseCleo.getNpaEtLocalite().contains("Bex"), "L'adresse d'envoi de Cléo devrait être à Bex");
+		assertTrue(adresseCleo.getNpaEtLocalite().toString().contains("Bex"), "L'adresse d'envoi de Cléo devrait être à Bex");
 	}
 
 	@Etape(id = 2, descr = "Arrivée principale vaudoise = correction dans l'adresse civile")
@@ -181,10 +181,10 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		assertNotNull(ensemble.getConjoint(), "Pas de conjoint sur le couple!");
 
 		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseMenage.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du ménage devrait être à Lausanne");
+		assertTrue(adresseMenage.getNpaEtLocalite().toString().contains("Lausanne"), "L'adresse d'envoi du ménage devrait être à Lausanne");
 		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseAntoine.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du principal devrait être à Lausanne");
+		assertTrue(adresseAntoine.getNpaEtLocalite().toString().contains("Lausanne"), "L'adresse d'envoi du principal devrait être à Lausanne");
 		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseCleo.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du conjoint devrait être à Lausanne");
+		assertTrue(adresseCleo.getNpaEtLocalite().toString().contains("Lausanne"), "L'adresse d'envoi du conjoint devrait être à Lausanne");
 	}
 }
