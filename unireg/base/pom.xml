@@ -195,21 +195,21 @@
 			<artifactId>ati-utils</artifactId>
 			<version>1.1</version>
 		</dependency>
-        <dependency>
-            <groupId>ch.vd.registre</groupId>
-            <artifactId>shared-date</artifactId>
-			<version>1.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>shared-date</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		<dependency>
             <groupId>ch.vd.registre</groupId>
             <artifactId>shared-base</artifactId>
 			<version>${shared-base.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ch.vd.registre</groupId>
-            <artifactId>shared-hibernate</artifactId>
-			<version>1.0-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>shared-hibernate</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
