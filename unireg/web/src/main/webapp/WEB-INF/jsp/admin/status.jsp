@@ -44,8 +44,9 @@
 		<fieldset class="info">
 			<legend><span><fmt:message key="title.info.data" /></span></legend>
 			<table>
-				<tr><td><fmt:message key="label.info.db.nombre.tiers"/></td><td><span class="value"><c:out value="${tiersCount}"/></span></td></tr>
-				<tr><td><fmt:message key="label.info.indexer.nombre.docs"/></td><td><span class="value"><c:out value="${indexCount}"/></span></td></tr>
+				<unireg:nextRowClass reset="1"/>
+				<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.db.nombre.tiers"/></td><td><span class="value"><c:out value="${tiersCount}"/></span></td></tr>
+				<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.indexer.nombre.docs"/></td><td><span class="value"><c:out value="${indexCount}"/></span></td></tr>
 			</table>
 		</fieldset>
 
@@ -58,23 +59,24 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
+					<unireg:nextRowClass reset="1"/>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.civil"/></td>
 						<td id="serviceCivilStatus"><c:out value="${serviceCivilStatus}" escapeXml="false"/></td>
 					</tr>
-					<tr>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.host.infra"/></td>
 						<td id="serviceInfraStatus"><c:out value="${serviceInfraStatus}" escapeXml="false"/></td>
 					</tr>
-					<tr>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.fifor"/></td>
 						<td id="serviceFidorStatus"><c:out value="${serviceFidorStatus}" escapeXml="false"/></td>
 					</tr>
-					<tr>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.securite"/></td>
 						<td id="serviceSecuriteStatus"><c:out value="${serviceSecuriteStatus}" escapeXml="false"/></td>
 					</tr>
-					<tr>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.brvplus"/></td>
 						<td id="bvrPlusStatus"><c:out value="${bvrPlusStatus}" escapeXml="false"/></td>
 					</tr>
