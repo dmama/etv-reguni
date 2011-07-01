@@ -7,15 +7,15 @@ import javax.persistence.Entity;
  * Méta-information sur le rapport d'exécution du batch d'extraction des listes AFC
  */
 @Entity
-@DiscriminatorValue("ExtractionAfcRapport")
-public class ExtractionAfcRapport extends Document {
+@DiscriminatorValue("ExtractionAfcRapport")         // nom historique...
+public class ExtractionDonneesRptRapport extends Document {
 
 	private static final long serialVersionUID = 451574987594516913L;
 
-	public ExtractionAfcRapport() {
+	public ExtractionDonneesRptRapport() {
 	}
 
-	public ExtractionAfcRapport(String nom, String fileExtension, String description, String fileName, String subPath, long fileSize) {
+	public ExtractionDonneesRptRapport(String nom, String fileExtension, String description, String fileName, String subPath, long fileSize) {
 		super(nom, fileExtension, description, fileName, subPath, fileSize);
 	}
 }

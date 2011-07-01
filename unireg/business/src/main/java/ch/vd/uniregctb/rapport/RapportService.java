@@ -33,7 +33,7 @@ import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.uniregctb.document.ExtractionAfcRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
@@ -57,7 +57,7 @@ import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
-import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
+import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -229,11 +229,11 @@ public interface RapportService {
 	AcomptesRapport generateRapport(AcomptesResults results, StatusManager statusManager);
 
 	/**
-	 * Genère le rapport (PDF) pour les extractions AFC
+	 * Genère le rapport (PDF) pour les extractions des données de référence RPT
 	 * @param results le résultat de l'exécution du job
 	 * @return le rapport
 	 */
-	ExtractionAfcRapport generateRapport(ExtractionAfcResults results, StatusManager statusManager);
+	ExtractionDonneesRptRapport generateRapport(ExtractionDonneesRptResults results, StatusManager statusManager);
 
 	/**
 	 * Genère le rapport (PDF) pour les déclarations ayant été passées à l'état échues.

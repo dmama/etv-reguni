@@ -42,7 +42,7 @@ import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.uniregctb.document.ExtractionAfcRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
@@ -67,7 +67,7 @@ import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
+import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -457,20 +457,20 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	/**
-	 * Genère le rapport (PDF) pour les extractions AFC
+	 * Genère le rapport (PDF) pour les extractions des données de référence RPT
 	 * @param results le résultat de l'exécution du job
 	 * @return le rapport
 	 */
 	@Override
-	public ExtractionAfcRapport generateRapport(final ExtractionAfcResults results, final StatusManager statusManager) {
-		final String nom = "RapportExtractionAfc" + results.getDateTraitement().index();
-		final String description = String.format("Rapport de l'extraction de la liste AFC au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+	public ExtractionDonneesRptRapport generateRapport(final ExtractionDonneesRptResults results, final StatusManager statusManager) {
+		final String nom = "RapportExtractionDonneesRpt" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'extraction des données de référence RPT au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(ExtractionAfcRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionAfcRapport>() {
+			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionDonneesRptRapport>() {
 				@Override
-				public void writeDoc(ExtractionAfcRapport doc, OutputStream os) throws Exception {
-					final PdfExtractionAfcRapport document = new PdfExtractionAfcRapport();
+				public void writeDoc(ExtractionDonneesRptRapport doc, OutputStream os) throws Exception {
+					final PdfExtractionDonneesRptRapport document = new PdfExtractionDonneesRptRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 				}
 			});

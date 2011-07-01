@@ -265,10 +265,10 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-	<bean id="extractionAfcJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.afc.ExtractionAfcJob">
+	<bean id="extractionDonneesRptJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.afc.ExtractionDonneesRptJob">
 		<constructor-arg value="606"/>
-		<constructor-arg value="Extraire les listes AFC"/>
-		<property name="service" ref="extractionAfcService"/>
+		<constructor-arg value="Extraire les données de référence RPT"/>
+		<property name="service" ref="extractionDonneesRptService"/>
 		<property name="rapportService" ref="rapportService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>

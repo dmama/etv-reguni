@@ -93,7 +93,7 @@
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 	</bean>
 
-	<bean id="extractionAfcService" class="ch.vd.uniregctb.listes.afc.ExtractionAfcServiceImpl">
+	<bean id="extractionDonneesRptService" class="ch.vd.uniregctb.listes.afc.ExtractionDonneesRptServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>

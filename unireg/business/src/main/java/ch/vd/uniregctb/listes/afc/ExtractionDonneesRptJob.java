@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.ExtractionAfcRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -21,9 +21,9 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 /**
  * Job d'extraction des listes de contribuables pour l'AFC (administration fédérale des contributions)
  */
-public class ExtractionAfcJob extends JobDefinition {
+public class ExtractionDonneesRptJob extends JobDefinition {
 
-	public static final String NAME = "ExtractionAfcJob";
+	public static final String NAME = "ExtractionDonneesRptJob";
 
 	private static final String CATEGORIE = "Stats";
 
@@ -35,9 +35,9 @@ public class ExtractionAfcJob extends JobDefinition {
 
 	private PlatformTransactionManager transactionManager;
 
-	private ExtractionAfcService service;
+	private ExtractionDonneesRptService service;
 
-	public ExtractionAfcJob(int order, String description) {
+	public ExtractionDonneesRptJob(int order, String description) {
 		super(NAME, CATEGORIE, order, description);
 
 		{
@@ -54,8 +54,8 @@ public class ExtractionAfcJob extends JobDefinition {
 			param.setDescription("Mode");
 			param.setName(MODE);
 			param.setMandatory(true);
-			param.setType(new JobParamEnum(TypeExtractionAfc.class));
-			addParameterDefinition(param, TypeExtractionAfc.REVENU);
+			param.setType(new JobParamEnum(TypeExtractionDonneesRpt.class));
+			addParameterDefinition(param, TypeExtractionDonneesRpt.REVENU_ORDINAIRE);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -75,7 +75,7 @@ public class ExtractionAfcJob extends JobDefinition {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setService(ExtractionAfcService service) {
+	public void setService(ExtractionDonneesRptService service) {
 		this.service = service;
 	}
 
@@ -87,22 +87,22 @@ public class ExtractionAfcJob extends JobDefinition {
 		// récupère les paramètres
 		final int nbThreads = getStrictlyPositiveIntegerValue(params,  NB_THREADS);
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
-		final TypeExtractionAfc mode = getEnumValue(params, MODE, TypeExtractionAfc.class);
+		final TypeExtractionDonneesRpt mode = getEnumValue(params, MODE, TypeExtractionDonneesRpt.class);
 
 		// on fait le boulot !
-		final ExtractionAfcResults results = service.produireExtraction(dateTraitement, pf, mode, nbThreads, statusManager);
+		final ExtractionDonneesRptResults results = service.produireExtraction(dateTraitement, pf, mode, nbThreads, statusManager);
 
 		// on génère un rapport
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ExtractionAfcRapport rapport = template.execute(new TransactionCallback<ExtractionAfcRapport>() {
+		final ExtractionDonneesRptRapport rapport = template.execute(new TransactionCallback<ExtractionDonneesRptRapport>() {
 			@Override
-			public ExtractionAfcRapport doInTransaction(TransactionStatus status) {
+			public ExtractionDonneesRptRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});
 
 		setLastRunReport(rapport);
-		Audit.success(String.format("L'extraction AFC (%s %d) en date du %s est terminée.", mode, pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
+		Audit.success(String.format("L'extraction des données de référence RPT (%s %d) en date du %s est terminée.", mode.getDescription(), pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
 }

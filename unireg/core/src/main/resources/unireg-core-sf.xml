@@ -112,7 +112,7 @@
 		<value>ch.vd.uniregctb.document.ListesNominativesRapport</value>
 		<value>ch.vd.uniregctb.document.DeterminerLRsEchuesRapport</value>
 		<value>ch.vd.uniregctb.document.AcomptesRapport</value>
-		<value>ch.vd.uniregctb.document.ExtractionAfcRapport</value>
+		<value>ch.vd.uniregctb.document.ExtractionDonneesRptRapport</value>
 		<value>ch.vd.uniregctb.document.ListeAssujettisRapport</value>
 		<value>ch.vd.uniregctb.document.ImpressionChemisesTORapport</value>
 		<value>ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport</value>

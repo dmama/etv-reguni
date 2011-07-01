@@ -11,9 +11,9 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
- * Service utilisé par l'extraction des listes AFC
+ * Service utilisé par l'extraction des listes des données de référence RPT
  */
-public class ExtractionAfcServiceImpl implements ExtractionAfcService {
+public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptService {
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -52,7 +52,7 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 	}
 
 	/**
-	 * Extrait la liste AFC de la période fiscale donnée
+	 * Extrait la liste des données de référence RPT de la période fiscale donnée
 	 * @param dateTraitement date d'exécution de l'extraction
 	 * @param pf période fiscale de référence
 	 * @param mode type d'extraction à effectuer
@@ -60,8 +60,8 @@ public class ExtractionAfcServiceImpl implements ExtractionAfcService {
 	 * @return extraction
 	 */
 	@Override
-	public ExtractionAfcResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionAfc mode, int nbThreads, StatusManager statusManager) {
-		final ExtractionAfcProcessor proc = new ExtractionAfcProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
+	public ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager) {
+		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
 	}
 }
