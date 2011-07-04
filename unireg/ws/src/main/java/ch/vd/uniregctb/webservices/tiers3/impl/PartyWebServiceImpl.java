@@ -201,17 +201,20 @@ public class PartyWebServiceImpl implements PartyWebService {
 			}
 
 			final Party data;
+			final Set<PartyPart> parts = DataHelper.toSet(params.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
-				data = PartyBuilder.newNaturalPerson(personne, DataHelper.toSet(params.getParts()), context);
+				BusinessHelper.warmIndividus(personne, parts, context);
+				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
-				data = PartyBuilder.newCommonHousehold(menage, DataHelper.toSet(params.getParts()), context);
+				BusinessHelper.warmIndividus(menage, parts, context);
+				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
 			else if (tiers instanceof DebiteurPrestationImposable) {
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-				data = PartyBuilder.newDebtor(debiteur, DataHelper.toSet(params.getParts()), context);
+				data = PartyBuilder.newDebtor(debiteur, parts, context);
 			}
 			else {
 				data = null;
