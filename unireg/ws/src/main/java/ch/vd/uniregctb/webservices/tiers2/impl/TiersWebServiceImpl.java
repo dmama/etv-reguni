@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -222,10 +223,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				BusinessHelper.warmIndividus(personne, params.parts, context);
 				data = new PersonnePhysique(personne, params.parts, date, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommun(menage, params.parts, date, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
@@ -260,10 +263,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final TiersHisto data;
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				BusinessHelper.warmIndividus(personne, params.parts, context);
 				data = new PersonnePhysiqueHisto(personne, params.periode, params.parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommunHisto(menage, params.periode, params.parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
@@ -298,10 +303,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final TiersHisto data;
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				BusinessHelper.warmIndividus(personne, params.parts, context);
 				data = new PersonnePhysiqueHisto(personne, params.parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommunHisto(menage, params.parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
@@ -448,7 +455,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 *         l'exception elle-même.
 	 */
 	@SuppressWarnings({"unchecked"})
-	private Map<Long, Object> mapTiers(Set<Long> tiersNumbers, RegDate date, Set<TiersPart> parts, MapCallback callback) {
+	private Map<Long, Object> mapTiers(Set<Long> tiersNumbers, @Nullable RegDate date, Set<TiersPart> parts, MapCallback callback) {
 
 		final Set<Long> allIds = trim(tiersNumbers);
 

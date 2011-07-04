@@ -16,7 +16,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
@@ -91,23 +90,7 @@ public class MappingThread extends Thread {
 			LOGGER.trace("Préchargement des individus - start");
 			start = System.nanoTime();
 
-			final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
-			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
-				try {
-					final AttributeIndividu[] attributs;
-					if (parts != null && (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI))) {
-						attributs = new AttributeIndividu[]{AttributeIndividu.ADRESSES, AttributeIndividu.PERMIS};
-					}
-					else {
-						attributs = new AttributeIndividu[]{AttributeIndividu.PERMIS};
-					}
-					// date=null => parce qu'on s'intéresse à l'historique complete de l'individu
-					context.serviceCivilService.getIndividus(numerosIndividus, null, attributs); // chauffe le cache
-				}
-				catch (Exception e) {
-					LOGGER.warn("Impossible de précharger le lot d'individus [" + numerosIndividus + "].", e);
-				}
-			}
+			BusinessHelper.warmIndividus(ids, parts, context);
 
 			warmIndividusTime = System.nanoTime() - start;
 			LOGGER.trace("Préchargement des individus - end");
