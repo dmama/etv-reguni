@@ -139,12 +139,12 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 			// Teste les adresses formattées
 			final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 			final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-			assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
+			assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
 			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 			final List<Address> mailAddresses = tiers.getMailAddresses();
 			final Address courrier = mailAddresses.get(mailAddresses.size() - 1);
-			assertFormattedAddress(courrier.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
+			assertFormattedAddress(courrier.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
 
 			final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 			assertAdresseEquals(domicile.getFormattedAddress(), debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress());
