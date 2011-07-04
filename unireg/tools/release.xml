@@ -20,6 +20,10 @@
 			<destName>perfs2.sh</destName>
 		</file>
 		<file>
+			<source>src/main/scripts/perfs3.sh</source>
+			<destName>perfs3.sh</destName>
+		</file>
+		<file>
 			<source>src/main/scripts/ws-analyzer.sh</source>
 			<destName>ws-analyzer.sh</destName>
 		</file>
