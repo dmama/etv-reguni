@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
@@ -148,11 +149,15 @@ public class AddressBuilder {
 			info.setTown(npaEtLocalite.getLocalite());
 		}
 
-		info.setCountry(from.getPays()); // FIXME (msi) il faut renseigner le code ISO sur 2 positions du pays, et pas son nom complet !
-		info.setCountryName(from.getPays());
+		final Pays pays = from.getPays();
+		if (pays != null) {
+			info.setCountry(pays.getCodeIso2());
+			info.setCountryName(pays.getNomMinuscule());
+			info.setCountryId(pays.getNoOFS());
+		}
+
 		info.setSwissZipCodeId(from.getNumeroOrdrePostal());
 		info.setStreetId(from.getNumeroTechniqueRue());
-		info.setCountryId(from.getNoOfsPays());
 		info.setTariffZone(EnumHelper.coreToWeb(from.getTypeAffranchissement()));
 
 		to.setAddressInformation(info);

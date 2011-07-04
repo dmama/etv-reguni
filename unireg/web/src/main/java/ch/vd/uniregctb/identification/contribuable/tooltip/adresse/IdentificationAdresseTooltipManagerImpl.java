@@ -41,7 +41,7 @@ public class IdentificationAdresseTooltipManagerImpl implements IdentificationAd
 			final String complements = adresseEnvoi.getComplement();
 			final String rue = (adresseEnvoi.getRueEtNumero() == null ? null : adresseEnvoi.getRueEtNumero().getRueEtNumero());
 			final String localite = (adresseEnvoi.getNpaEtLocalite() == null ? null : adresseEnvoi.getNpaEtLocalite().toString());
-			final String pays = adresseEnvoi.getPays();
+			final String pays = (adresseEnvoi.getPays() == null ? null : adresseEnvoi.getPays().getNomMinuscule());
 			final AdresseGenerique.SourceType source = adresseGenerique.getSource().getType();
 
 			view.init(rue, complements, localite, pays, source);

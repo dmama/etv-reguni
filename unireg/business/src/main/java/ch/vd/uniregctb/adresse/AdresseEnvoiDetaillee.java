@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -38,11 +39,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private RueEtNumero rueEtNumero;
 	private CasePostale casePostale;
 	private NpaEtLocalite npaEtLocalite;
-	private String pays;
+	private Pays pays;
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private Integer numeroOrdrePostal;
 	private Integer numeroTechniqueRue;
-	private Integer noOfsPays;
 	private final AdresseGenerique.SourceType source;
 
 	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin) {
@@ -165,16 +165,20 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		addLine(ligne.toString(), optionalite);
 	}
 
-	public void addPays(String ligne, TypeAffranchissement typeAffranchissement) {
-		this.pays = ligne;
+	public void addPays(Pays pays, TypeAffranchissement typeAffranchissement) {
+		this.pays = pays;
 		this.typeAffranchissement = typeAffranchissement;
-		addLine(ligne);
+		if (!pays.isSuisse()) {
+			addLine(pays.getNomMinuscule());
+		}
 	}
 
-	public void addPays(String ligne, TypeAffranchissement typeAffranchissement, int optionalite) {
-		this.pays = ligne;
+	public void addPays(Pays pays, TypeAffranchissement typeAffranchissement, int optionalite) {
+		this.pays = pays;
 		this.typeAffranchissement = typeAffranchissement;
-		addLine(ligne, optionalite);
+		if (!pays.isSuisse()) {
+			addLine(pays.getNomMinuscule(), optionalite);
+		}
 	}
 
 	public void setNumeroAppartement(String numeroAppartement) {
@@ -187,10 +191,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 	public void setNumeroTechniqueRue(Integer numeroTechniqueRue) {
 		this.numeroTechniqueRue = numeroTechniqueRue;
-	}
-
-	public void setNoOfsPays(Integer noOfsPays) {
-		this.noOfsPays = noOfsPays;
 	}
 
 	public AdresseGenerique.SourceType getSource() {
@@ -275,7 +275,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return npaEtLocalite;
 	}
 
-	public String getPays() {
+	public Pays getPays() {
 		return pays;
 	}
 
@@ -298,10 +298,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return numeroTechniqueRue;
 	}
 
-	public Integer getNoOfsPays() {
-		return noOfsPays;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -316,7 +312,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
 		if (destinataire != null ? !destinataire.equals(that.destinataire) : that.destinataire != null) return false;
 		if (formuleAppel != null ? !formuleAppel.equals(that.formuleAppel) : that.formuleAppel != null) return false;
-		if (noOfsPays != null ? !noOfsPays.equals(that.noOfsPays) : that.noOfsPays != null) return false;
 		if (nomsPrenoms != null ? !nomsPrenoms.equals(that.nomsPrenoms) : that.nomsPrenoms != null) return false;
 		if (npaEtLocalite != null ? !npaEtLocalite.equals(that.npaEtLocalite) : that.npaEtLocalite != null) return false;
 		if (numeroAppartement != null ? !numeroAppartement.equals(that.numeroAppartement) : that.numeroAppartement != null) return false;
@@ -353,7 +348,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (typeAffranchissement != null ? typeAffranchissement.hashCode() : 0);
 		result = 31 * result + (numeroOrdrePostal != null ? numeroOrdrePostal.hashCode() : 0);
 		result = 31 * result + (numeroTechniqueRue != null ? numeroTechniqueRue.hashCode() : 0);
-		result = 31 * result + (noOfsPays != null ? noOfsPays.hashCode() : 0);
 		result = 31 * result + (source != null ? source.hashCode() : 0);
 		return result;
 	}
@@ -370,11 +364,14 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 				", raisonsSociales=" + raisonsSociales +
 				", complement='" + complement + '\'' +
 				", pourAdresse='" + pourAdresse + '\'' +
+				", numeroAppartement='" + numeroAppartement + '\'' +
 				", rueEtNumero=" + rueEtNumero +
 				", casePostale=" + casePostale +
-				", npaEtLocalite='" + npaEtLocalite + '\'' +
-				", pays='" + pays + '\'' +
+				", npaEtLocalite=" + npaEtLocalite +
+				", pays=" + pays +
 				", typeAffranchissement=" + typeAffranchissement +
+				", numeroOrdrePostal=" + numeroOrdrePostal +
+				", numeroTechniqueRue=" + numeroTechniqueRue +
 				", source=" + source +
 				"} " + super.toString();
 	}

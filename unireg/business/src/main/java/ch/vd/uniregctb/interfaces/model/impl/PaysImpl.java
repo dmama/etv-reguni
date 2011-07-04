@@ -11,6 +11,8 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private final boolean valide;
 	private final boolean etatSouverain;
+	private final String codeIso2;
+	private final String codeIso3;
 
 	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
 		if (target == null) {
@@ -30,12 +32,16 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		super(target);
 		this.valide = true; // tous les pays retournés par host-interfaces sont valides
 		this.etatSouverain = true; // cette information n'est pas disponible dans host-interface
+		this.codeIso2 = null; // cette information n'est pas disponible dans host-interface
+		this.codeIso3 = null; // cette information n'est pas disponible dans host-interface
 	}
 
 	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
 		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
 		this.valide = target.isValide();
 		this.etatSouverain = target.isEtat() != null && target.isEtat();
+		this.codeIso2 = target.getIso2Id();
+		this.codeIso3 = target.getIso3Id();
 	}
 
 	@Override
@@ -46,6 +52,16 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	@Override
 	public boolean isValide() {
 		return valide;
+	}
+
+	@Override
+	public String getCodeIso2() {
+		return codeIso2;
+	}
+
+	@Override
+	public String getCodeIso3() {
+		return codeIso3;
 	}
 
 	@Override

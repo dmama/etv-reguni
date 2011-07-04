@@ -359,7 +359,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
 		assertEquals("St-Prex", info.getTown());
-		assertNull(info.getCountry());
+		assertEquals("CH", info.getCountry());
+		assertEquals("Suisse", info.getCountryName());
 	}
 
 	@Test
@@ -405,7 +406,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals(Long.valueOf(1012), info.getSwissZipCode());
 		assertEquals("Lausanne", info.getTown());
-		assertNull(info.getCountry());
+		assertEquals("CH", info.getCountry());
+		assertEquals("Suisse", info.getCountryName());
 	}
 
 	@Test
@@ -975,7 +977,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getSwissZipCode());
 		assertNull(info.getForeignZipCode());
 		assertEquals("4624 Aa Bergem Op Zoom", info.getTown());
-		assertEquals("Pays-Bas", info.getCountry());
+		assertEquals("NL", info.getCountry());
 		assertEquals("Pays-Bas", info.getCountryName());
 		assertNull(info.getSwissZipCodeId());
 		assertNull(info.getStreetId());

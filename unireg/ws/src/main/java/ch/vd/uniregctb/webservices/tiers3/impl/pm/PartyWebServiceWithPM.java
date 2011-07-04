@@ -829,11 +829,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 			final Pays pays = a.getPays();
 			if (pays != null) {
 				final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(pays.getNoOFS());
-				adresse.addPays(pays.getNomMinuscule(), typeAffranchissement);
-				adresse.setNoOfsPays(pays.getNoOFS());
-			}
-			else {
-				adresse.setNoOfsPays(ServiceInfrastructureService.noOfsSuisse);
+				adresse.addPays(pays, typeAffranchissement);
 			}
 
 			adresse.setNumeroTechniqueRue(a.getNumeroTechniqueRue());

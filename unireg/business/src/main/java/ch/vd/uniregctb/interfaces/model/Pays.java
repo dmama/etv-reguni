@@ -16,4 +16,14 @@ public interface Pays extends EntiteOFS {
 	 * @return <b>vrai</b> si le pays est un état souverain, <b>faux</b> s'il n'est qu'un territoire
 	 */
 	boolean isEtatSouverain();
+
+	/**
+	 * @return le code ISO du pays sur deux positions.
+	 */
+	String getCodeIso2();
+
+	/**
+	 * @return le code ISO du pays sur trois positions.
+	 */
+	String getCodeIso3();
 }

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.PartPM;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -957,9 +958,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 				adresse.addNpaEtLocalite(new NpaEtLocalite(adresseFiscale.numeroPostal, adresseFiscale.localite));
 			}
 
-			if (adresseFiscale.pays != null) {
-				final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(adresseFiscale.noPays);
-				adresse.addPays(adresseFiscale.pays, typeAffranchissement);
+			if (adresseFiscale.noPays != null) {
+				final Pays pays = serviceInfra.getPays(adresseFiscale.noPays);
+				if (pays != null) {
+					final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(adresseFiscale.noPays);
+					adresse.addPays(pays, typeAffranchissement);
+				}
 			}
 		}
 

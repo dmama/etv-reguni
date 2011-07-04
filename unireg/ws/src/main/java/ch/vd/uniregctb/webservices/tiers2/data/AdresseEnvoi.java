@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 /**
@@ -211,7 +212,8 @@ public class AdresseEnvoi {
 		this.rueNumero = adresse.getRueEtNumero() == null ? null : adresse.getRueEtNumero().getRueEtNumero();
 		this.casePostale = adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString();
 		this.npaLocalite = adresse.getNpaEtLocalite() == null ? null : adresse.getNpaEtLocalite().toString();
-		this.pays = adresse.getPays();
+		final Pays pays = adresse.getPays();
+		this.pays = (pays == null || pays.isSuisse() ? null : pays.getNomMinuscule());
 		this.typeAffranchissement = EnumHelper.coreToWeb(adresse.getTypeAffranchissement());
 	}
 }

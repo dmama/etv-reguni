@@ -377,11 +377,13 @@ public class AdresseServiceImpl implements AdresseService {
 		final String rueEtNumeroString = rueEtNumero == null ? null : rueEtNumero.getRueEtNumero();
 		final String npa = adresse != null ? adresse.getNumeroPostal() : null;
 		final String localite = adresse != null ? adresse.getLocalite() : null;
-		final String pays = adresse != null ? buildPays(adresse, true) : null;
+		final Pays pays = adresse != null ? buildPays(adresse) : null;
+
+		final String paysString = pays == null ? null : pays.getNomMinuscule();
 		final String nomPrenom1String = nomPrenom1 == null ? null : nomPrenom1.getNomPrenom();
 		final String nomPrenom2String = nomPrenom2 == null ? null : nomPrenom2.getNomPrenom();
 
-		return new AdresseCourrierPourRF(nomPrenom1String, nomPrenom2String, rueEtNumeroString, npa, localite, pays);
+		return new AdresseCourrierPourRF(nomPrenom1String, nomPrenom2String, rueEtNumeroString, npa, localite, paysString);
 	}
 
 	/**
@@ -834,17 +836,12 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	private String buildPays(AdresseGenerique adresse, boolean aussiSuisse) {
+	private Pays buildPays(AdresseGenerique adresse) {
 		final Integer noOfsPays = adresse.getNoOfsPays();
-		final Pays pays = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
-		final String nomPays;
-		if (pays != null && (aussiSuisse || !pays.isSuisse())) {
-			nomPays = pays.getNomMinuscule();
+		if (noOfsPays == null) {
+			return null;
 		}
-		else {
-			nomPays = null;
-		}
-		return nomPays;
+		return serviceInfra.getPays(noOfsPays);
 	}
 
 	/**
@@ -878,15 +875,14 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseEnvoi.addNpaEtLocalite(npaEtlocalite);
 		}
 
-		final String nomPays = buildPays(adresse, false);
-		if (StringUtils.isNotBlank(nomPays)) {
+		final Pays pays = buildPays(adresse);
+		if (pays != null) {
 			final TypeAffranchissement typeAffranchissement = getTypeAffranchissement(adresse);
-			adresseEnvoi.addPays(nomPays, typeAffranchissement);
+			adresseEnvoi.addPays(pays, typeAffranchissement);
 		}
 
 		adresseEnvoi.setNumeroTechniqueRue(adresse.getNumeroRue());
 		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal() == 0 ? null : adresse.getNumeroOrdrePostal());
-		adresseEnvoi.setNoOfsPays(adresse.getNoOfsPays());
 	}
 
 	/**

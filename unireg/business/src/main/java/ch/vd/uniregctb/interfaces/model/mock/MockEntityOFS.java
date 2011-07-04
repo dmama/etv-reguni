@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.interfaces.model.EntiteOFS;
 
 public abstract class MockEntityOFS implements EntiteOFS {
@@ -19,7 +21,7 @@ public abstract class MockEntityOFS implements EntiteOFS {
 		this.sigleOFS = entite.getSigleOFS();
 	}
 
-	public MockEntityOFS(int noOFS, String sigleOFS, String nomMinuscule) {
+	public MockEntityOFS(int noOFS, @Nullable String sigleOFS, String nomMinuscule) {
 		this.noOFS = noOFS;
 		this.sigleOFS = sigleOFS;
 		this.nomMinuscule = nomMinuscule;

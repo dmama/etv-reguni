@@ -26,6 +26,8 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
+import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
@@ -546,9 +548,12 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 				adresse.addNpaEtLocalite(new NpaEtLocalite(adresseFiscale.numeroPostal, adresseFiscale.localite));
 			}
 
-			if (adresseFiscale.pays != null) {
-				final Integer noOfsPays = (adresseFiscale.noPays == null ? ServiceInfrastructureService.noOfsSuisse : adresseFiscale.noPays);
-				adresse.addPays(adresseFiscale.pays, serviceInfra.getTypeAffranchissement(noOfsPays));
+			if (adresseFiscale.noPays != null) {
+				final Pays pays = serviceInfra.getPays(adresseFiscale.noPays);
+				if (pays != null) {
+					final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(adresseFiscale.noPays);
+					adresse.addPays(pays, typeAffranchissement);
+				}
 			}
 		}
 
