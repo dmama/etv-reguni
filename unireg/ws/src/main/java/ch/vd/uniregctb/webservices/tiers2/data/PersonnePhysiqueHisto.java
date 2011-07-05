@@ -85,7 +85,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 	/**
 	 * Date d'arrivée dans le canton. Nulle si cette information n'est pas connue.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>arrivalDate</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>activityStartDate</i>.
 	 */
 	@XmlElement(required = false)
 	public Date dateArrivee;

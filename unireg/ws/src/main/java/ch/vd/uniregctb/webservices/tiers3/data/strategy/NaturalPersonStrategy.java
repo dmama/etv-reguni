@@ -51,7 +51,6 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setIdentification(newPersonIdentification(personne));
 			to.setDateOfBirth(DataHelper.coreToWeb(personne.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces()));
-			to.setArrivalDate(DataHelper.coreToWeb(personne.getDateDebutActivite()));
 			to.setCategory(EnumHelper.coreToWeb(personne.getCategorieEtranger()));
 		}
 		else {
@@ -68,7 +67,6 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setIdentification(newPersonIdentification(individu, data));
 			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
-			to.setArrivalDate(DataHelper.coreToWeb(data.getDateDebutValidite()));
 
 			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(null);
 			if (permis == null) {
@@ -86,7 +84,6 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		to.setIdentification(cloneIdentification(from.getIdentification()));
 		to.setDateOfBirth(from.getDateOfBirth());
 		to.setDateOfDeath(from.getDateOfDeath());
-		to.setArrivalDate(from.getArrivalDate());
 		to.setCategory(from.getCategory());
 	}
 

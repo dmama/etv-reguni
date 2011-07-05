@@ -110,10 +110,11 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(12600001); // Isidor Pirez
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		final NaturalPerson tiers = (NaturalPerson) service.getParty(params);
 		assertNotNull(tiers);
-		assertSameDay(newDate(2008, 1, 29), tiers.getArrivalDate());
+		assertSameDay(newDate(2008, 1, 29), tiers.getActivityStartDate());
 	}
 
 	@Test
