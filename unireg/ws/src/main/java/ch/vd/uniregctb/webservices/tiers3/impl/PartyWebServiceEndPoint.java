@@ -380,8 +380,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.", BusinessExceptionCode.INVALID_REQUEST);
 		}
 
-		AuthenticationHelper.setPrincipal(login.getUserId());
-		AuthenticationHelper.setCurrentOID(login.getOid());
+		AuthenticationHelper.setPrincipal(login.getUserId(), login.getOid());
 	}
 
 	/**

@@ -661,8 +661,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			throw new BusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
 
-		AuthenticationHelper.setPrincipal(login.userId);
-		AuthenticationHelper.setCurrentOID(login.oid);
+		AuthenticationHelper.setPrincipal(login.userId, login.oid);
 	}
 
 	/**

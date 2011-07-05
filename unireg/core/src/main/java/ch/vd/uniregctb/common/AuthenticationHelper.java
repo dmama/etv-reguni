@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -38,6 +39,21 @@ public class AuthenticationHelper {
 		setAuthentication(authentication);
 	}
 
+	// Testing
+	public static void setCurrentOID(int i) {
+		UniregSecurityDetails details = getDetails();
+		details.setIfoSecOID(i);
+	}
+
+	public static void setPrincipal(String username, int oid) {
+
+		final UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
+		final UniregSecurityDetails details = getDetails(authentication);
+		details.setIfoSecOID(oid);
+
+		setAuthentication(authentication);
+	}
+
 	/**
 	 * crée un objet Authentication
 	 *
@@ -45,12 +61,8 @@ public class AuthenticationHelper {
 	 * @return un objet Authentication
 	 */
 	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
-
 		GrantedAuthority auth = new GrantedAuthorityImpl(username);
-		GrantedAuthority[] authorities = new GrantedAuthority[]{
-				auth
-		};
-		User user = new User(username, "noPwd", true, true, true, true, authorities);
+		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(auth));
 		return new UsernamePasswordAuthenticationToken(user, "noPwd");
 	}
 
@@ -128,6 +140,10 @@ public class AuthenticationHelper {
 		if (auth == null) {
 			throw new IllegalArgumentException("L'authentification ne peut pas être nulle");
 		}
+		return getDetails(auth);
+	}
+
+	private static UniregSecurityDetails getDetails(AbstractAuthenticationToken auth) {
 		UniregSecurityDetails d = (UniregSecurityDetails) auth.getDetails();
 		if (d == null) {
 			d = new UniregSecurityDetails();
@@ -147,12 +163,6 @@ public class AuthenticationHelper {
 		UniregSecurityDetails details = getDetails();
 		String sigle = details.getIfoSecOIDSigle();
 		return sigle;
-	}
-
-	// Testing
-	public static void setCurrentOID(int i) {
-		UniregSecurityDetails details = getDetails();
-		details.setIfoSecOID(i);
 	}
 
 }
