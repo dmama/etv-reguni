@@ -27,9 +27,9 @@
 	</xs:simpleType>
 	<xs:complexType name="addressType">
 		<xs:annotation>
-			<xs:documentation>Contient les informations d'une adresse d'un tiers dans Unireg valide pendant une période déterminée.
+			<xs:documentation>Contient les informations d'une adresse valide pendant une période déterminée.
 				Cette adresse est décomposé en trois parties : le destinataire, la destination et l'adresse complète formattée pour
-				six lignes (selon les recommandations de la poste suisse est disponible).
+				six lignes (selon les recommandations de la poste suisse).
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>

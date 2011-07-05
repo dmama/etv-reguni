@@ -28,11 +28,6 @@
 							<xs:documentation>La date de décès de la personne.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="arrivalDate" type="unireg:dateType">
-						<xs:annotation>
-							<xs:documentation>Date d'arrivée dans le canton. Nulle si cette information n'est pas connue.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
 					<xs:element name="category" type="unireg:naturalPersonCategoryType">
 						<xs:annotation>
 							<xs:documentation>Catégorie de personne physique.</xs:documentation>
