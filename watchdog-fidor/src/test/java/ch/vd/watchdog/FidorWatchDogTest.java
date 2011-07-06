@@ -38,9 +38,9 @@ public abstract class FidorWatchDogTest {
 
 	@Test
 	public void testGetLogiciel() {
-		final Logiciel logiciel = fidorClient.getLogicielDetail(11);
+		final Logiciel logiciel = fidorClient.getLogicielDetail(1);
 		assertNotNull(logiciel);
-		assertEquals("Geste Informatique", logiciel.getFournisseur());
+		assertEquals("Epsitec SA", logiciel.getFournisseur());
 	}
 
 	@Test
