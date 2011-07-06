@@ -159,5 +159,38 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertEquals(ModeCommunication.ELECTRONIQUE, q2.getModeCommunication());
 	}
 
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveEnregistrementEmployeurSansIdLogicielSansTypAcces() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeurSansIdLogSansAcces.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur1 = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur1);
+		final InfoEmployeur q1 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q1.getNoEmployeur());
+		assertEquals(0, q1.getLogicielId());
+		assertEquals(null, q1.getModeCommunication());
+	}
+
 
 }

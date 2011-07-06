@@ -126,8 +126,14 @@ public class EvenementIAMListenerImpl extends EsbMessageListener implements Moni
 			for (DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs.Employeur employeur : listeEmployeurs) {
 				final InfoEmployeur infoEmployeurFromIAM = new InfoEmployeur();
 				infoEmployeurFromIAM.setNoEmployeur(employeur.getNoEmployeur().longValue());
-				infoEmployeurFromIAM.setLogicielId(employeur.getIdLogiciel().longValue());
-				infoEmployeurFromIAM.setModeCommunication(InfoEmployeur.fromTypeSaisie(employeur.getTypeAcces().toString()));
+
+				if (employeur.getIdLogiciel() != null) {
+					infoEmployeurFromIAM.setLogicielId(employeur.getIdLogiciel().longValue());
+				}
+				if (employeur.getTypeAcces() != null) {
+					infoEmployeurFromIAM.setModeCommunication(InfoEmployeur.fromTypeSaisie(employeur.getTypeAcces().toString()));
+				}
+
 				employeursAMettreAJour.add(infoEmployeurFromIAM);
 
 			}

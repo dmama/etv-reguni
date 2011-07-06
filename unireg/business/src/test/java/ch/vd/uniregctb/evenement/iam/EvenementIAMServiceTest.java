@@ -74,6 +74,50 @@ public class EvenementIAMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testModifierInfoEmployeurSansLogiciel() throws Exception {
+
+		// Création d'un débiteur
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+				return siggenAirlines.getNumero();
+			}
+		});
+
+		// Simule la réception d'un enregistrement de debiteur
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final InfoEmployeur infoEmployeur = new InfoEmployeur();
+				infoEmployeur.setNoEmployeur(id);
+				infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+				listeEmp.add(infoEmployeur);
+				final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+				enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
+				service.onEnregistrementEmployeur(enregistrementEmployeur);
+				return null;
+			}
+		});
+
+		// Vérifie que les informations du débiteur ont bien été mis-à-jour
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
+				assertEquals(0, siggenAirlines.getLogicielId().longValue());
+				assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
+				return null;
+			}
+		});
+	}
+
+
+	@Test
 	public void testModifierInfo2Employeur() throws Exception {
 
 		// Création d'un débiteur 1
