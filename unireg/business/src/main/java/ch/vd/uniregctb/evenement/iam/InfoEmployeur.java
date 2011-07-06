@@ -31,7 +31,7 @@ public class InfoEmployeur{
 
 
 	private long noEmployeur;
-	private long logicielId;
+	private Long logicielId;
 	private ModeCommunication modeCommunication;
 
 
@@ -43,11 +43,11 @@ public class InfoEmployeur{
 		this.noEmployeur = noEmployeur;
 	}
 
-	public long getLogicielId() {
+	public Long getLogicielId() {
 		return logicielId;
 	}
 
-	public void setLogicielId(long logicielId) {
+	public void setLogicielId(Long logicielId) {
 		this.logicielId = logicielId;
 	}
 

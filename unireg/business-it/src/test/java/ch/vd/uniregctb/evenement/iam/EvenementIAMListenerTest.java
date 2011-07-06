@@ -117,7 +117,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertNotNull(enregistrementEmployeur);
 		final InfoEmployeur q = enregistrementEmployeur.getEmployeursAMettreAJour().get(0);
 		assertEquals(1038580L, q.getNoEmployeur());
-		assertEquals(20, q.getLogicielId());
+		assertEquals(20L, q.getLogicielId().longValue());
 		assertEquals(ModeCommunication.SITE_WEB, q.getModeCommunication());
 	}
 
@@ -150,12 +150,12 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertNotNull(enregistrementEmployeur1);
 		final InfoEmployeur q1 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(0);
 		assertEquals(1038580L, q1.getNoEmployeur());
-		assertEquals(20, q1.getLogicielId());
+		assertEquals(20L, q1.getLogicielId().longValue());
 		assertEquals(ModeCommunication.SITE_WEB, q1.getModeCommunication());
 
 		final InfoEmployeur q2 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(1);
 		assertEquals(1038640L, q2.getNoEmployeur());
-		assertEquals(15, q2.getLogicielId());
+		assertEquals(15L, q2.getLogicielId().longValue());
 		assertEquals(ModeCommunication.ELECTRONIQUE, q2.getModeCommunication());
 	}
 
@@ -188,7 +188,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertNotNull(enregistrementEmployeur1);
 		final InfoEmployeur q1 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(0);
 		assertEquals(1038580L, q1.getNoEmployeur());
-		assertEquals(0, q1.getLogicielId());
+		assertEquals(null, q1.getLogicielId());
 		assertEquals(null, q1.getModeCommunication());
 	}
 

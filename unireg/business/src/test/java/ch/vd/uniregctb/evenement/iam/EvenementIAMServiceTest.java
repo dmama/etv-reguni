@@ -109,7 +109,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final DebiteurPrestationImposable siggenAirlines = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
-				assertEquals(0, siggenAirlines.getLogicielId().longValue());
+				assertEquals(null, siggenAirlines.getLogicielId());
 				assertEquals(ModeCommunication.ELECTRONIQUE, siggenAirlines.getModeCommunication());
 				return null;
 			}
