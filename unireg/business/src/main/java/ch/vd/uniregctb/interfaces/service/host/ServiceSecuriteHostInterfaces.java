@@ -36,7 +36,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		try {
-			return serviceSecurite.getCollectivitesUtilisateur(visaOperateur);
+			return serviceSecurite.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
 		}
 		catch (RemoteException e) {
 			throw new ServiceSecuriteException("impossible de récupérer les collectivités de l'utilisateur " + visaOperateur, e);
