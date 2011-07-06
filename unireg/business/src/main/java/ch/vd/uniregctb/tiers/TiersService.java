@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -211,7 +212,7 @@ public interface TiersService {
 	 * @param personne la personne physique en question.
 	 * @return un individu, ou <i>null</i> si la personne physique est un non-habitant.
 	 */
-	public Individu getIndividu(PersonnePhysique personne);
+	public Individu getIndividu(@NotNull PersonnePhysique personne);
 
 	/**
 	 * Recupere l'individu correspondant à une personne physique avec l'état valide pour une année donnée.
@@ -301,7 +302,7 @@ public interface TiersService {
 	 * @throws TiersException
 	 *             si la nationalite ne peut être déterminée
 	 */
-	public boolean isEtrangerSansPermisC(PersonnePhysique pp, RegDate date) throws TiersException;
+	public boolean isEtrangerSansPermisC(PersonnePhysique pp, @Nullable RegDate date) throws TiersException;
 
 	/**
 	 * Détermine si une personne physique est réfugié.
@@ -326,7 +327,7 @@ public interface TiersService {
 	 * @param tiers2 une autre personne physique.
 	 * @return la personne physique principale.
 	 */
-	public PersonnePhysique getPrincipal(PersonnePhysique tiers1, PersonnePhysique tiers2);
+	public PersonnePhysique getPrincipal(@Nullable PersonnePhysique tiers1, @Nullable PersonnePhysique tiers2);
 
 	/**
 	 * Détermination de l'individidu principal du ménage
@@ -349,7 +350,7 @@ public interface TiersService {
 	 *            la date de référence, ou null pour obtenir le ménage courant.
 	 * @return le ménage common dont la personne est membre à la date donnée, ou <b>null<b> si aucun ménage n'a été trouvé.
 	 */
-	public MenageCommun findMenageCommun(PersonnePhysique personne, RegDate date);
+	public MenageCommun findMenageCommun(PersonnePhysique personne, @Nullable RegDate date);
 
 	/**
 	 * Recherche le dernier ménage commun d'une personne physique.
@@ -503,8 +504,8 @@ public interface TiersService {
 	 *            la date de fin de validité de la relation entre tiers (peut être nulle)
 	 * @return l'ensemble tiers-couple sauvé en base avec les références mises-à-jour des objets sauvés.
 	 */
-	public EnsembleTiersCouple createEnsembleTiersCouple(PersonnePhysique tiers1, PersonnePhysique tiers2, RegDate dateDebut,
-			RegDate dateFin);
+	public EnsembleTiersCouple createEnsembleTiersCouple(PersonnePhysique tiers1, @Nullable PersonnePhysique tiers2, RegDate dateDebut,
+			@Nullable RegDate dateFin);
 
 	/**
 	 * Etabli et sauve en base un rapport entre deux tiers.
@@ -785,7 +786,7 @@ public interface TiersService {
 	 * @param dateFin
 	 * @return la periodicité ajoutés
 	 */
-	Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut,RegDate dateFin);
+	Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, @Nullable PeriodeDecompte periodeDecompte, RegDate dateDebut, @Nullable RegDate dateFin);
 
 	/**
 	 * Ajoute un for fiscal secondaire sur un contribuable.
@@ -1029,7 +1030,7 @@ public interface TiersService {
 	 *
 	 * @see #getDernierForGestionConnu(RegDate)
 	 */
-	public ForGestion getForGestionActif(Tiers tiers, RegDate date);
+	public ForGestion getForGestionActif(Tiers tiers, @Nullable RegDate date);
 
 	/**
 	 * Calcul et retourne l'historique des fors de gestion. Les fors retournés se touchent tous même si le contribuable n'est plus assujetti
@@ -1051,7 +1052,7 @@ public interface TiersService {
 	 * @param date  la date de validité de la requête
 	 * @return le dernier for de festion connu, ou <b>null</b> si le tiers n'a jamais été assujetti (= aucun for).
 	 */
-	public ForGestion getDernierForGestionConnu(Tiers tiers, RegDate date);
+	public ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date);
 
 	/**
 	 * Ferme les adresses flagées temporaires dans le fiscale
@@ -1190,7 +1191,7 @@ public interface TiersService {
 	 * @param date date de référence
 	 * @return <code>true</code> si la personne physique est un sourcier gris
 	 */
-	boolean isSourcierGris(Contribuable pp, RegDate date);
+	boolean isSourcierGris(Contribuable pp, @Nullable RegDate date);
 
 	/**
 	 * Retourne l'ensemble des débiteurs de prestations imposables pour lesquels le contribuable donné est tiers référent

@@ -249,7 +249,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theNumeroIndividu the numeroIndividu to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8V1x9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setNumeroIndividu(Long theNumeroIndividu) {
+	public void setNumeroIndividu(@Nullable Long theNumeroIndividu) {
 		numeroIndividu = theNumeroIndividu;
 	}
 

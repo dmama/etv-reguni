@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -1432,7 +1433,7 @@ public class TiersServiceImpl implements TiersService {
 	 * Récupère l'individu correspondant au tiers spécifié.
 	 */
 	@Override
-	public Individu getIndividu(PersonnePhysique personne) {
+	public Individu getIndividu(@NotNull PersonnePhysique personne) {
 
 		if (personne.getNumeroIndividu() != null && personne.getNumeroIndividu() != 0) {
 			Individu individu = (Individu) personne.getIndividuCache();

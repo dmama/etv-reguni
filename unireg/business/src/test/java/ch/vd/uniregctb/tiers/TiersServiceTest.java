@@ -11,6 +11,7 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.apache.commons.lang.mutable.MutableLong;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
@@ -325,6 +326,7 @@ public class TiersServiceTest extends BusinessTest {
 		}
 
 		try {
+			//noinspection ConstantConditions
 			tiersService.getIndividu(null);
 			fail();
 		}
@@ -639,7 +641,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(pp.isHabitantVD());
 	}
 
-	private AppartenanceMenage buildAppartenanceMenage(MenageCommun mc, PersonnePhysique pp, RegDate dateDebut, RegDate dateFin, boolean isAnnule) {
+	private AppartenanceMenage buildAppartenanceMenage(MenageCommun mc, PersonnePhysique pp, RegDate dateDebut, @Nullable RegDate dateFin, boolean isAnnule) {
 		final AppartenanceMenage am = new AppartenanceMenage(dateDebut, dateFin, pp, mc);
 		am.setAnnule(isAnnule);
 		return (AppartenanceMenage) rapportEntreTiersDAO.save(am);
@@ -1313,7 +1315,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal secondForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
@@ -1324,7 +1326,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(secondForPrincipal.isAnnule());
 
 		// vérification que le premier for est bien ré-ouvert
-		final ForFiscalPrincipal premierForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
 		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
@@ -1367,7 +1369,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) tiersDAO.getHibernateTemplate().get(ForFiscalSecondaire.class, id.forSecondaire);
+		final ForFiscalSecondaire forFiscalSecondaire = tiersDAO.getHibernateTemplate().get(ForFiscalSecondaire.class, id.forSecondaire);
 		assertNotNull(forFiscalSecondaire);
 
 		// annulation du for fiscal secondaire
@@ -1448,7 +1450,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal secondForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
@@ -1459,7 +1461,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(secondForPrincipal.isAnnule());
 
 		// vérification que le premier for n'est pas ré-ouvert
-		final ForFiscalPrincipal premierForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
 		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
@@ -1501,10 +1503,10 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal premierForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
-		final ForFiscalPrincipal secondForPrincipal = (ForFiscalPrincipal) tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
 				ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
@@ -2311,7 +2313,7 @@ public class TiersServiceTest extends BusinessTest {
 		}
 	}
 
-	private ForFiscalAutreImpot newForChien(RegDate dateDebut, RegDate dateFin) {
+	private ForFiscalAutreImpot newForChien(RegDate dateDebut, @Nullable RegDate dateFin) {
 		ForFiscalAutreImpot for0 = new ForFiscalAutreImpot();
 		for0.setDateDebut(dateDebut);
 		for0.setDateFin(dateFin);
@@ -2321,7 +2323,7 @@ public class TiersServiceTest extends BusinessTest {
 		return for0;
 	}
 
-	private static ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, RegDate fermeture, Integer noOFS,
+	private static ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable RegDate fermeture, Integer noOFS,
 	                                                  TypeAutoriteFiscale type, MotifRattachement motif) {
 		ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(ouverture);
@@ -2335,7 +2337,7 @@ public class TiersServiceTest extends BusinessTest {
 		return f;
 	}
 
-	private static ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, RegDate fermeture, Integer noOFS,
+	private static ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, @Nullable RegDate fermeture, Integer noOFS,
 	                                                    TypeAutoriteFiscale type, MotifRattachement motif) {
 		ForFiscalSecondaire f = new ForFiscalSecondaire();
 		f.setDateDebut(ouverture);
@@ -2348,7 +2350,7 @@ public class TiersServiceTest extends BusinessTest {
 		return f;
 	}
 
-	private static void assertForGestion(RegDate debut, RegDate fin, int noOfsCommune, ForGestion f) {
+	private static void assertForGestion(RegDate debut, @Nullable RegDate fin, int noOfsCommune, ForGestion f) {
 		assertNotNull(f);
 		assertEquals(debut, f.getDateDebut());
 		assertEquals(fin, f.getDateFin());
@@ -3102,7 +3104,6 @@ public class TiersServiceTest extends BusinessTest {
 				addForDebiteur(dpi,date(anneeReference-1, 1, 1),null, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference-1);
-				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeReference);
 
 				addLR(dpi, date(anneePrecedente,1,1),date(anneePrecedente,3,31), fiscale2009, TypeEtatDeclaration.EMISE);
 				addLR(dpi, date(anneePrecedente,4,1),date(anneePrecedente,6,30), fiscale2009, TypeEtatDeclaration.EMISE);
@@ -3161,7 +3162,7 @@ public class TiersServiceTest extends BusinessTest {
 
 					// Crée un ménage commun avec un for principal ouvert
 					MenageCommun mc = new MenageCommun();
-					mc = (MenageCommun) hibernateTemplate.merge(mc);
+					mc = hibernateTemplate.merge(mc);
 					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 					ids.mc = mc.getId();
 
@@ -3174,10 +3175,10 @@ public class TiersServiceTest extends BusinessTest {
 		}
 
 		// On vérifie l'état initial : paul doit valider mais pas le ménage commun
-		final PersonnePhysique paul = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.paul);
+		final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paul);
 		assertNotNull(paul);
 		assertFalse(validationService.validate(paul).hasErrors()); // ok
-		final MenageCommun mc = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.mc);
+		final MenageCommun mc = hibernateTemplate.get(MenageCommun.class, ids.mc);
 		assertNotNull(mc);
 		assertTrue(validationService.validate(mc).hasErrors()); // manque l'appartenance ménage
 
@@ -4365,7 +4366,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
@@ -4447,7 +4448,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
@@ -4527,7 +4528,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
@@ -4612,7 +4613,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fils = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.fils);
+				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,

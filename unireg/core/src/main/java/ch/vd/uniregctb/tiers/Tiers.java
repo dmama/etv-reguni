@@ -1572,7 +1572,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return
 	 */
 	@Transient
-	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAt(RegDate date) {
+	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAt(@Nullable RegDate date) {
 
 		if (forsFiscaux == null) {
 			return null;

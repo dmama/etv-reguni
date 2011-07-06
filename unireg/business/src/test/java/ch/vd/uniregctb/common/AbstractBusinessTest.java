@@ -286,7 +286,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
 	}
 
-	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, RegDate fin, MockCommune commune) {
+	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, @Nullable RegDate fin, MockCommune commune) {
 		ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
 		f.setDateDebut(debut);
 		f.setDateFin(fin);
@@ -300,7 +300,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return f;
 	}
 
-	protected RapportPrestationImposable addRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RegDate debut, RegDate fin, boolean annule) {
+	protected RapportPrestationImposable addRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RegDate debut, @Nullable RegDate fin, boolean annule) {
 		RapportPrestationImposable rpi = new RapportPrestationImposable(debut, fin, sourcier, dpi);
 		rpi.setAnnule(annule);
 		rpi = (RapportPrestationImposable) hibernateTemplate.merge(rpi);

@@ -119,7 +119,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 * @param isMasculin <code>true</code> pour un homme, <code>false</code> pour une femme
 	 * @return un {@link MockIndividu}
 	 */
-	protected MockIndividu addIndividu(long numero, RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
+	protected MockIndividu addIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
 		return addIndividu(numero, dateNaissance, nom, prenom, isMasculin, dateNaissance);
 	}
 
@@ -403,7 +403,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
-	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, RegDate fin, int noSequence, boolean permisAnnule) {
+	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, int noSequence, boolean permisAnnule) {
 		final MockPermis permis = new MockPermis();
 		permis.setTypePermis(type);
 		permis.setDateDebutValidite(debut);
@@ -419,7 +419,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return permis;
 	}
 
-	protected void addOrigine(MockIndividu individu, Pays pays, Commune commune, RegDate debut) {
+	protected void addOrigine(MockIndividu individu, @Nullable Pays pays, @Nullable Commune commune, RegDate debut) {
 		final MockOrigine origine = new MockOrigine();
 		origine.setCommune(commune);
 		origine.setPays(pays);
@@ -427,7 +427,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		individu.setOrigine(origine);
 	}
 
-	protected void addNationalite(MockIndividu individu, Pays pays, RegDate debut, RegDate fin, int noSequence) {
+	protected void addNationalite(MockIndividu individu, Pays pays, RegDate debut, @Nullable RegDate fin, int noSequence) {
 		final MockNationalite nationalite = new MockNationalite();
 		nationalite.setDateDebutValidite(debut);
 		nationalite.setDateFinValidite(fin);
