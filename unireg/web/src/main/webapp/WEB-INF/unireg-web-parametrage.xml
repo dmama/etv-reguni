@@ -42,6 +42,7 @@
 	<!-- Les validators -->
 	<bean id="parametrePeriodeFiscaleValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleValidator"/>
 	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 	</bean>
 	<bean id="modeleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleDocumentValidator">
 			<property name="periodeFiscaleDAO" ref = "periodeFiscaleDAO"/>

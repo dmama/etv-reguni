@@ -21,6 +21,7 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeDocument;
 
 /**
@@ -165,5 +166,15 @@ public class ModeleDocument extends HibernateEntity {
 		// begin-user-code
 		periodeFiscale = thePeriodeFiscale;
 		// end-user-code
+	}
+
+	@Transient
+	public boolean possedeModeleFeuilleDocument(String codeModeleFeuille){
+		for (ModeleFeuilleDocument feuilleDocument : modelesFeuilleDocument) {
+			if(codeModeleFeuille.equals(feuilleDocument.getNumeroFormulaire())){
+				return true;
+			}
+		}
+		return false;
 	}
 }

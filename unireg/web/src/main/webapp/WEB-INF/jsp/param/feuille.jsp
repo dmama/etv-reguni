@@ -19,6 +19,7 @@
 		<td>
 		<td width="50%">&nbsp;<td>
 	</tr>
+	<spring:bind path="modeleFeuille">
 	<tr>
 		<th>
 			<fmt:message key="title.param.form"/>
@@ -41,7 +42,12 @@
 						</c:when>
 					</c:choose>
 			</form:select>
+			<c:if test="${status.error}">
+				&nbsp;<span class="erreur">${status.errorMessage}</span>
+			</c:if>
+
 		<td>
 	<td width="50%">&nbsp;<td>
 	</tr>
+	</spring:bind>
 </table>
