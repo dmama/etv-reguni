@@ -77,7 +77,7 @@ testprop.db2.schema=CIIA1
 testprop.esb.jms.url=failover:(tcp://spip:50900)
 testprop.esb.jms.username=smx
 testprop.esb.jms.password=smx
-testprop.esb.raft.store=http://ssv0309v:41000/raft/store
+testprop.esb.raft.store=http://raft-in.etat-de-vaud.ch/raft/store
 
 # Queues JMS
 testprop.jms.queue.evtCedi=unireg.test.retourDi-${testprop.jdbc.username}
