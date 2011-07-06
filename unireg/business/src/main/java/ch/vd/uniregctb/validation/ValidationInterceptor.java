@@ -36,7 +36,12 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 			return false;
 		}
 
-		// TODO (msi) mémoriser l'entité et déplacer la validation dans le preTransactionCommit.
+		// old-TO-DO (msi) mémoriser l'entité et déplacer la validation dans le preTransactionCommit.
+		// Non, en fait il n'est pas possible de déplacer la validation juste avant le commit de la transaction.
+		// Le problème est que les durées de vie de la transaction Spring et de la session Hibernate ne sont pas absolument pareilles. Dans certains cas, le preTransactionCommit sera appelé alors que
+		// la session Spring est encore valide (pour les transactions ouvertes par les @Transactional, car le session sera fermée par un listener sur le même preTransactionCommit), mais dans d'autres
+		// cas (par exemple les batches qui ouvrent une transaction puis une session nestée à travers le BatchTransactionTemplate) la session est déjà invalide lors de la fermeture de la transaction
+		// et les collections Hibernate non-initialisées font sauter une exception lors de la validation.
 		validate(entity, isAnnulation);
 		return false;
 	}
