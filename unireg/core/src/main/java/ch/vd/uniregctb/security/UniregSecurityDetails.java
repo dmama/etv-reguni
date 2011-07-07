@@ -2,18 +2,10 @@ package ch.vd.uniregctb.security;
 
 import java.util.Hashtable;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.ProfilOperateur;
 
-public class UniregSecurityDetails extends Hashtable<String, Object> {
+public class UniregSecurityDetails extends Hashtable<String, Object> implements IAMDetails, IFOSecDetails {
 
-	//private final static Logger LOGGER = Logger.getLogger(UniregSecurityDetails.class);
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 7427380869548372766L;
 
 	private String[] iamRoles = null;
@@ -23,59 +15,67 @@ public class UniregSecurityDetails extends Hashtable<String, Object> {
 	private Integer ifoSecOID = null;
 	private String ifoSecOIDSigle = null;
 
+	public UniregSecurityDetails() {
+		int z = 0;
+	}
 
+	@Override
 	public String getIamFirstName() {
 		return iamFirstName;
 	}
+
+	@Override
 	public void setIamFirstName(String firstName) {
 		this.iamFirstName = firstName;
 	}
 
+	@Override
 	public String getIamLastName() {
 		return iamLastName;
 	}
+
+	@Override
 	public void setIamLastName(String lastName) {
 		this.iamLastName = lastName;
 	}
 
+	@Override
 	public String[] getIamRoles() {
 		return iamRoles;
 	}
 
+	@Override
 	public void setIamRoles(String[] roles) {
 		iamRoles = roles;
 	}
 
+	@Override
 	public ProfilOperateur getIfoSecProfil() {
 		return ifoSecProfil;
 	}
+
+	@Override
 	public void setIfoSecProfil(ProfilOperateur ifosecProfil) {
 		this.ifoSecProfil = ifosecProfil;
 	}
 
+	@Override
 	public Integer getIfoSecOID() {
 		return ifoSecOID;
 	}
+
+	@Override
 	public void setIfoSecOID(Integer ifoSecOID) {
 		this.ifoSecOID = ifoSecOID;
 	}
+
+	@Override
 	public String getIfoSecOIDSigle() {
 		return ifoSecOIDSigle;
 	}
+
+	@Override
 	public void setIfoSecOIDSigle(String ifoSecOIDSigle) {
 		this.ifoSecOIDSigle = ifoSecOIDSigle;
 	}
-
-
-
-	public void setToAuthentication(AbstractAuthenticationToken auth) {
-		UniregSecurityDetails details = (UniregSecurityDetails)auth.getDetails();
-		if (details == null) {
-			auth.setDetails(this);
-		}
-		else {
-			Assert.isTrue(details == this);
-		}
-	}
-
 }

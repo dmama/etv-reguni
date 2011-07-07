@@ -151,7 +151,7 @@
 	</filter>
 	<filter>
 		<filter-name>springSecurityFilter</filter-name>
-		<!-- Ce bean va déléguer les appels au bean 'filterSecurityInterceptor' -->
+		<!-- Ce bean va déléguer les appels au bean 'filterChainProxy' -->
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 		<init-param>
 			<param-name>targetBeanName</param-name>

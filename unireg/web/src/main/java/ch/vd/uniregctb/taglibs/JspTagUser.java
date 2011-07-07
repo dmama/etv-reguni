@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.taglibs;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import ch.vd.uniregctb.security.IFOSecAuthenticationProcessingFilter;
-import ch.vd.uniregctb.security.UniregIAMAuthProcessingFilter;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class JspTagUser extends BodyTagSupport {
 
@@ -18,12 +15,10 @@ public class JspTagUser extends BodyTagSupport {
 		try {
 			JspWriter out = pageContext.getOut();
 
-			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				String prenom = (String) session.getAttribute(UniregIAMAuthProcessingFilter.UNIREG_IAM_FIRST);
-				String nom = (String)session.getAttribute(UniregIAMAuthProcessingFilter.UNIREG_IAM_LAST);
-				String oid = (String) session.getAttribute(IFOSecAuthenticationProcessingFilter.USER_OID_SIGLE);
+			if (AuthenticationHelper.isAuthenticated()) {
+				String prenom = AuthenticationHelper.getFirstName();
+				String nom = AuthenticationHelper.getLastName();
+				String oid = AuthenticationHelper.getCurrentOIDSigle();
 				out.print(buidHtlm(nom, prenom, oid));
 			}
 			// Skips the body.

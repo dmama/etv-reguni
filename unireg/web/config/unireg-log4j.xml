@@ -50,16 +50,6 @@
 		<level value="INFO" />
 	</logger>
 
-	<!-- Suppress "Request is to process authentication" debug logging from acegi AbstractProcessingFilter -->
-	<logger name="ch.vd.uniregctb.security.IFOSecAuthenticationProcessingFilter">
-		<level value="INFO" />
-	</logger>
-
-	<!-- Suppress "requiresAuthentication/doFilter/successfulAuthentication" debug logging  -->
-	<logger name="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
-		<level value="INFO" />
-	</logger>
-
 	<logger name="org.apache">
 		<level value="WARN" />
 	</logger>

@@ -48,9 +48,6 @@
 	<logger name="ch.vd.uniregctb.tiers.TiersHelper">
 		<level value="INFO" />
 	</logger>
-	<logger name="ch.vd.ati">
-		<level value="INFO" />
-	</logger>
 	<!-- END Cas particuilers -->
 
 	

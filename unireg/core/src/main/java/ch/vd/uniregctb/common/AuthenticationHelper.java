@@ -7,7 +7,6 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -31,9 +30,9 @@ public class AuthenticationHelper {
 		return stack;
 	}
 
-	public static void setPrincipal(String username) {
+	public static void setPrincipal(String visa) {
 
-		UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
+		UsernamePasswordAuthenticationToken authentication = createAuthentication(visa);
 
 		/* Enregistre le context de sécurité */
 		setAuthentication(authentication);
@@ -61,8 +60,7 @@ public class AuthenticationHelper {
 	 * @return un objet Authentication
 	 */
 	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
-		GrantedAuthority auth = new GrantedAuthorityImpl(username);
-		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(auth));
+		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new GrantedAuthorityImpl(username)));
 		return new UsernamePasswordAuthenticationToken(user, "noPwd");
 	}
 
@@ -165,4 +163,19 @@ public class AuthenticationHelper {
 		return sigle;
 	}
 
+	public static void setCurrentOID(int i, String sigle) {
+		UniregSecurityDetails details = getDetails();
+		details.setIfoSecOID(i);
+		details.setIfoSecOIDSigle(sigle);
+	}
+
+	public static String getFirstName() {
+		UniregSecurityDetails details = getDetails();
+		return details.getIamFirstName();
+	}
+
+	public static String getLastName() {
+		UniregSecurityDetails details = getDetails();
+		return details.getIamLastName();
+	}
 }

@@ -7,19 +7,29 @@
           http://www.springframework.org/schema/security
           http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
-	<!-- ======================== PERMISSIONS ======================= -->
+	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
+	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
 
-	<bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
-		<property name="authenticationManager" ref="ifosecAuthenticationManager" />
-		<property name="accessDecisionManager" ref="accessDecisionManager" />
-		<property name="securityMetadataSource">
-			<security:filter-security-metadata-source path-type="ant">
-				<security:intercept-url pattern="/**/*.do" access="ROLE_USER"/>
-				<security:intercept-url pattern="/*.do" access="ROLE_USER"/>
-				<!-- Ne JAMAIS ajouter de roles sur cette ligne! -->
-				<security:intercept-url pattern="/**" access="ROLE_ROOT"/>
-			</security:filter-security-metadata-source>
+	<!-- Récupère les paramètres renseignés par IAM et les stocke dans le context de sécurité -->
+	<bean id="iamAuthFilter" class="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
+		<property name="detailsClass" value="ch.vd.uniregctb.security.UniregSecurityDetails" />
+		<property name="allowedRoles">
+			<list>
+				<value>user</value>
+				<value>user_externe</value>
+				<value>tester</value>
+			</list>
 		</property>
+	</bean>
+
+	<!-- Filtre de choix de l'OId -->
+	<bean id="chooseOIDFilter" class="ch.vd.uniregctb.security.ChooseOIDProcessingFilter">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+	<!-- Récupère le profil IFOSec et le stocke dans le context de sécurité -->
+	<bean id="ifoSecProfileFilter" class="ch.vd.uniregctb.security.IFOSecProfileProcessingFilter">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
 	<!-- ======================== FILTER CHAIN ======================= -->
@@ -35,70 +45,16 @@
 			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter" />
 			<security:filter-chain pattern="/ws/**" filters="none" />
 			<security:filter-chain pattern="/remoting/**" filters="none" />
-			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,iamAuthenticationProcessingFilter" />
-			<security:filter-chain pattern="/authenticationfailed.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,bypassSecurityFilter,iamAuthFilter" />
+			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter, logoutFilter, exceptionTranslationFilter, iamAuthenticationProcessingFilter, ifoSecAuthenticationProcessingFilter, contextHolderAwareRequestFilter, filterSecurityInterceptor" />
+			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
 			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>
 
 	<!-- ======================== AUTHENTICATION ======================= -->
 
-	<!-- effectue le mapping entre les rôles IAM et les rôles métier tels que définis dans l’application. -->
-	<bean id="basicRolesGranter" class="ch.vd.registre.web.security.BasicRolesGranter">
-		<property name="ignoreUndefinedMapping" value="true" />
-		<property name="roleMappings">
-			<map>
-				<entry key="USER" value="ROLE_USER" />
-				<entry key="USER_EXTERNE" value="ROLE_USER" />
-				<!-- Dans IAM, certains environnements ont TESTER, d'autres DEVELOPPER -->
-				<!-- C'est un ROLE de TESTER et pas de DEVELOPPER bien que les developpeurs en ont aussi besoin -->
-				<!-- On doit donc prendre en compte les 2 ... -->
-				<entry key="DEVELOPPER" value="ROLE_TESTER" />
-				<entry key="TESTER" value="ROLE_TESTER" />
-			</map>
-		</property>
-	</bean>
-
-	<!-- Recupere l'utilisateur et ses roles depuis IAM -->
-	<bean id="iamAuthenticationProvider" class="ch.vd.registre.web.security.IAMDaoAuthenticationProvider">
-		<property name="basicRolesGranter" ref="basicRolesGranter"/>
-	</bean>
-
-	<!-- Recupere l'utilisateur et ses roles depuis IfoSec -->
-	<bean id="ifosecAuthenticationProvider" class="ch.vd.uniregctb.security.IFOSecAuthenticationProvider" depends-on="uniregModeHelper">
-	</bean>
-
-	<!-- Verifie que l'utilisateur est bien authentifié. -->
-	<bean id="ifosecAuthenticationManager" class="org.springframework.security.authentication.ProviderManager">
-		<property name="providers">
-			<list>
-				<ref local="ifosecAuthenticationProvider" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Verifie que l'utilisateur est bien authentifié. -->
-	<bean id="iamAuthenticationManager" class="org.springframework.security.authentication.ProviderManager">
-		<property name="providers">
-			<list>
-				<ref local="iamAuthenticationProvider" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Recupere l'utilisateur siteminder dans le header si il n'est pas présent en session -->
-	<bean id="iamAuthenticationProcessingFilter" class="ch.vd.uniregctb.security.UniregIAMAuthProcessingFilter">
-		<property name="authenticationManager" ref="iamAuthenticationManager" />
-	</bean>
-
-	<!-- Recupere les données IFOSEc si elles ne sont pas présentes en session -->
-	<bean id="ifoSecAuthenticationProcessingFilter" class="ch.vd.uniregctb.security.IFOSecAuthenticationProcessingFilter">
-		<property name="authenticationManager" ref="ifosecAuthenticationManager" />
-		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
-	</bean>
-	
 	<bean id="securityDebugConfig" class="ch.vd.uniregctb.security.SecurityDebugConfig">
 		<property name="properties" ref="uniregExternalProperties" />
 		<property name="ifoSecService" ref="ifoSecService" />
@@ -117,34 +73,18 @@
 		<property name="filterProcessesUrl" value="/logout"/>
 	</bean>
 
-	<!-- ===================== ACCESS DECISION ==================== -->
-
-	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
-		<property name="allowIfAllAbstainDecisions" value="false"/>
-		<property name="decisionVoters">
-		<list>
-			<ref bean="authVoter"/>
-			<ref bean="roleVoter"/>
-		</list>
-		</property>
-	</bean>
-
-	<!-- An access decision voter that reads ROLE_* configuration settings -->
-	<bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"/>
-	<bean id="authVoter" class="org.springframework.security.access.vote.AuthenticatedVoter"/>
-
 	<!-- ===================== HTTP REQUEST SECURITY ==================== -->
 
 	<!-- the fourth item in the chain: securityEnforcementFilter -->
 	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
 		<property name="authenticationEntryPoint">
 			<bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-				<property name="loginFormUrl" value="/login.do" />
+				<property name="loginFormUrl" value="/authenticationFailed.do" />
 			</bean>
 		</property>
 		<property name="accessDeniedHandler">
 			<bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-				<property name="errorPage" value="/errors/403.jsp"/>
+				<property name="errorPage" value="/403.do"/>
 			</bean>
 		</property>
 	</bean>
@@ -160,33 +100,6 @@
 
 	<!-- ================================================================ -->
 
-	<!--&lt;!&ndash;  Sécurité sur les méthodes: Intercepteur de sécurité, autorise l'execution des methodes protégées aux seuls roles qui y ont accès. &ndash;&gt;-->
-	<!--<bean id="attributes" class="org.acegisecurity.annotation.SecurityAnnotationAttributes" />-->
-	<!--<bean id="objectDefinitionSource" class="org.acegisecurity.intercept.method.MethodDefinitionAttributes">-->
-		<!--<property name="attributes" ref="attributes" />-->
-	<!--</bean>-->
-		<!---->
-	<!--<bean id="methodSecurityInterceptor" class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">-->
-		<!--<property name="validateConfigAttributes" value="false" />-->
-		<!--<property name="accessDecisionManager" ref="httpRequestAccessDecisionManager" />-->
-		<!--<property name="authenticationManager" ref="ifosecAuthenticationManager" />-->
-		<!--<property name="objectDefinitionSource" ref="objectDefinitionSource" />-->
-	<!--</bean>-->
-
-	<!--<bean id="methodDefinitionSourceAdvisor"  class="org.acegisecurity.intercept.method.aopalliance.MethodDefinitionSourceAdvisor">-->
-		<!--<constructor-arg><ref local="methodSecurityInterceptor"/></constructor-arg>-->
-	<!--</bean>-->
-	<!---->
-	<!--&lt;!&ndash; BeanNameAutoProxyCreator: Ajout de l'intercepteur de sécurité sur les méthodes des classes de Service&ndash;&gt;-->
-	<!--<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">-->
-		<!--<property name="beanNames" value="*Service" />-->
-		<!--<property name="interceptorNames">-->
-			<!--<list>-->
-				<!--<value>methodDefinitionSourceAdvisor</value>-->
-			<!--</list>-->
-		<!--</property>-->
-	<!--</bean>-->
-	
 	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="tiersDAO" ref="tiersDAO" />
