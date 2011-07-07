@@ -740,14 +740,27 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_ORDINAIRE, res.getMode());
-		Assert.assertEquals(0, res.getListePeriode().size());
-		Assert.assertEquals(1, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(1, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
 		Assert.assertEquals(0, res.getListeErreurs().size());
 
-		final ExtractionDonneesRptResults.InfoCtbIgnore elt = res.getListeCtbsIgnores().get(0);
+		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Hors canton", elt.raisonIgnore);
+		Assert.assertEquals("Toto", elt.prenom);
+		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
+		Assert.assertNull(elt.numeroAvs);
+		Assert.assertNull(elt.noCtbPrincipal);
+		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertNull(elt.motifOuverture);
+		Assert.assertNull(elt.motifFermeture);
+		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
+		Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
+		Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
+		Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, elt.autoriteFiscaleForPrincipal);
 	}
 
 	@Test
@@ -810,14 +823,27 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_ORDINAIRE, res.getMode());
-		Assert.assertEquals(0, res.getListePeriode().size());
-		Assert.assertEquals(1, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(1, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
 		Assert.assertEquals(0, res.getListeErreurs().size());
 
-		final ExtractionDonneesRptResults.InfoCtbIgnore elt = res.getListeCtbsIgnores().get(0);
+		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Hors canton", elt.raisonIgnore);
+		Assert.assertEquals("Toto", elt.prenom);
+		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
+		Assert.assertNull(elt.numeroAvs);
+		Assert.assertNull(elt.noCtbPrincipal);
+		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertNull(elt.motifOuverture);
+		Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, elt.motifFermeture);
+		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
+		Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
+		Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
+		Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, elt.autoriteFiscaleForPrincipal);
 	}
 
 	@Test

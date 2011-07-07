@@ -14,7 +14,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ExtractionDonneesRptRevenuOrdinaireResults extends ExtractionDonneesRptResults {
 
 	private static final String SOURCIER_PUR = "Sourcier pur";
-	private static final String HORS_CANTON = "Hors canton";
 
 	public ExtractionDonneesRptRevenuOrdinaireResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
 		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
@@ -36,19 +35,6 @@ public class ExtractionDonneesRptRevenuOrdinaireResults extends ExtractionDonnee
 			}
 		}
 
-		if (listeAFiltrer.size() == 0) {
-			return SOURCIER_PUR;
-		}
-
-		// on doit également enlever les contribuables HC
-		final Iterator<Assujettissement> iterHorsCanton = listeAFiltrer.iterator();
-		while (iterHorsCanton.hasNext()) {
-			final Assujettissement a = iterHorsCanton.next();
-			if (a instanceof HorsCanton) {
-				iterHorsCanton.remove();
-			}
-		}
-
-		return (listeAFiltrer.size() == 0 ? HORS_CANTON : null);
+		return (listeAFiltrer.size() == 0 ? SOURCIER_PUR : null);
 	}
 }
