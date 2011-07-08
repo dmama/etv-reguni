@@ -1,36 +1,24 @@
 package ch.vd.uniregctb.listes.afc;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.declaration.ordinaire.ForsList;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -44,9 +32,9 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 
 	public final int periodeFiscale;
 
-	private static final String NON_ASSUJETTI = "Non assujetti sur la période fiscale";
+	public static final String NON_ASSUJETTI = "Non assujetti sur la période fiscale";
 
-	private final ServiceInfrastructureService infraService;
+	protected final ServiceInfrastructureService infraService;
 
 	public static abstract class InfoCtbBase<T extends InfoCtbBase> implements Comparable<T> {
 		public final long noCtb;
@@ -85,13 +73,26 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 	}
 
-	public static class InfoPeriodeImposition extends InfoCtbBase<InfoPeriodeImposition> {
+	public static class InfoIdentificationCtb {
 		public final String nom;
 		public final String prenom;
 		public final String numeroAvs;
 		public final RegDate dateNaissance;
 		public final Long noCtbPrincipal;
 		public final Long noCtbConjoint;
+
+		public InfoIdentificationCtb(String nom, String prenom, String numeroAvs, RegDate dateNaissance, Long noCtbPrincipal, Long noCtbConjoint) {
+			this.nom = nom;
+			this.prenom = prenom;
+			this.numeroAvs = numeroAvs;
+			this.dateNaissance = dateNaissance;
+			this.noCtbPrincipal = noCtbPrincipal;
+			this.noCtbConjoint = noCtbConjoint;
+		}
+	}
+
+	public static class InfoPeriodeImposition extends InfoCtbBase<InfoPeriodeImposition> {
+		public final InfoIdentificationCtb identification;
 		public final ModeImposition modeImposition;
 		public final RegDate debutPeriodeImposition;
 		public final RegDate finPeriodeImposition;
@@ -105,16 +106,11 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 														"DEBUT_PERIODE_IMPOSITION", "FIN_PERIODE_IMPOSITION", "MOTIF_RATTACHEMENT", "MOTIF_OUVERTURE", "MOTIF_FERMETURE",
 														"OFS_COMMUNE_GESTION", "AUTORITE_FISC_FOR_PRN" };
 
-		public InfoPeriodeImposition(long noCtb, String nom, String prenom, String numeroAvs, RegDate dateNaissance, Long noCtbPrincipal, Long noCtbConjoint, ModeImposition modeImposition,
+		public InfoPeriodeImposition(long noCtb, InfoIdentificationCtb identification, ModeImposition modeImposition,
 		                             RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifFor motifOuverture, MotifFor motifFermeture,
 		                             Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 			super(noCtb);
-			this.nom = nom;
-			this.prenom = prenom;
-			this.numeroAvs = numeroAvs;
-			this.dateNaissance = dateNaissance;
-			this.noCtbPrincipal = noCtbPrincipal;
-			this.noCtbConjoint = noCtbConjoint;
+			this.identification = identification;
 			this.modeImposition = modeImposition;
 			this.debutPeriodeImposition = debutPeriodeImposition;
 			this.finPeriodeImposition = finPeriodeImposition;
@@ -142,12 +138,12 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 
 		@Override
 		public Object[] getValeursColonnes() {
-			return new Object[] { noCtb, nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint, modeImposition,
-					debutPeriodeImposition, finPeriodeImposition, motifRattachement, motifOuverture, motifFermeture, ofsCommuneForGestion, autoriteFiscaleForPrincipal };
+			return new Object[] { noCtb, identification.nom, identification.prenom, identification.numeroAvs, identification.dateNaissance, identification.noCtbPrincipal, identification.noCtbConjoint,
+					modeImposition, debutPeriodeImposition, finPeriodeImposition, motifRattachement, motifOuverture, motifFermeture, ofsCommuneForGestion, autoriteFiscaleForPrincipal };
 		}
 	}
 
-	private static class CoupleInvalideException extends Exception {
+	protected static class CoupleInvalideException extends Exception {
 
 		private final MenageCommun menageCommun;
 
@@ -172,7 +168,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	private final List<InfoPeriodeImposition> listePeriode = new LinkedList<InfoPeriodeImposition>();
 	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<InfoCtbIgnore>();
 
-	private static class ContribuableIgnoreException extends Exception {
+	protected static class ContribuableIgnoreException extends Exception {
 		public ContribuableIgnoreException(String message) {
 			super(message);
 		}
@@ -187,20 +183,30 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	 * @throws AssujettissementException problème dans le calcul de l'assujettissement du contribuable
 	 * @throws ContribuableIgnoreException si le contribuable est ignoré (le message inclus dans l'exception en explique la raison)
 	 */
-	private List<InfoPeriodeImposition> buildInfoPeriodeAssujettissement(Contribuable ctb) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
+	private List<InfoPeriodeImposition> buildInfoPeriodes(Contribuable ctb) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
+		final DecompositionForsAnneeComplete decomposition = new DecompositionForsAnneeComplete(ctb, periodeFiscale);
+		return buildInfoPeriodes(decomposition);
+	}
 
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, periodeFiscale);
-		if (assujettissements == null || assujettissements.size() == 0) {
-			throw new ContribuableIgnoreException(NON_ASSUJETTI);
-		}
+	/**
+	 * Calcul de la liste des périodes à faire apparaître dans l'extraction pour un contribuable donné
+	 * @param decomposition décomposition des fors pour le contribuable inspecté sur l'année de la période fiscale
+	 * @return périodes à faire apparaître dans l'extraction
+	 * @throws ServiceInfrastructureException problème dans l'infrastructure fiscale
+	 * @throws CoupleInvalideException contribuable ménage commun sans lien vers des personnes physiques
+	 * @throws AssujettissementException problème dans le calcul de l'assujettissement du contribuable
+	 * @throws ContribuableIgnoreException si le contribuable est ignoré (le message inclus dans l'exception en explique la raison)
+	 */
+	protected abstract List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException;
 
-		final String raisonExclusion = filterAssujettissements(ctb, assujettissements);
-		if (assujettissements.size() == 0) {
-			if (StringUtils.isBlank(raisonExclusion)) {
-				throw new RuntimeException("Tous les assujettissements de la période fiscale " + periodeFiscale + " ont été filtrés sans explication");
-			}
-			throw new ContribuableIgnoreException(raisonExclusion);
-		}
+	/**
+	 * Construit un objet {@link InfoIdentificationCtb} pour le contribuable donné à la date donnée
+	 * @param ctb contribuable
+	 * @param dateReference date de référence (pour les rapports d'appartenance ménage)
+	 * @return une nouvelle instance de InfoIdentificationCtb correspondant au contribuable
+	 * @throws CoupleInvalideException si le ménage commun n'a pas de contribuable principal à la date donnée
+	 */
+	protected InfoIdentificationCtb buildInfoIdentification(Contribuable ctb, RegDate dateReference) throws CoupleInvalideException {
 
 		final String nom;
 		final String prenom;
@@ -227,14 +233,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		else if (ctb instanceof MenageCommun) {
 			final MenageCommun mc = (MenageCommun) ctb;
 
-			final Assujettissement dernier = assujettissements.get(assujettissements.size() - 1);
-			final ForFiscalPrincipal dernierFfp = dernier.getFors().principauxDansLaPeriode.last();
-			if (dernierFfp == null) {
-				throw new RuntimeException("Comment ce contribuable " + ctb.getNumero() + " peut-il être avoir un assujettissement sur " + periodeFiscale + " alors qu'il n'a pas de for principal ?");
-			}
-			final RegDate dateReferenceMenage = RegDateHelper.minimum(dernierFfp.getDateFin(), dernier.getDateFin(), NullDateBehavior.LATEST);
-
-			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateReferenceMenage);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateReference);
 			if (couple == null || couple.getPrincipal() == null) {
 				throw new CoupleInvalideException(mc);
 			}
@@ -260,120 +259,20 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 			throw new IllegalArgumentException("Type de tiers non-supporté : " + ctb.getClass().getName() + " (" + ctb.getNumero() + ")");
 		}
 
-		// on boucle ensuite sur les périodes d'assujettissement pour faire une ligne par période
-		final List<InfoPeriodeImposition> liste = new ArrayList<InfoPeriodeImposition>(assujettissements.size());
-		for (Assujettissement a : assujettissements) {
-
-			final TypeAutoriteFiscale autoriteFiscaleForPrincipal;
-			final ModeImposition modeImposition;
-			final MotifRattachement motifRattachement;
-			final Integer ofsCommuneForGestion;
-			if (a instanceof SourcierPur) {
-				final ForFiscalPrincipal ffp = extraireDernierForSource(a.getFors().principauxDansLaPeriode);
-				modeImposition = ModeImposition.SOURCE;
-				if (ffp == null) {
-					// c'est toujours mieux que rien... cas du for SOURCE "inventé" par un for principal avec motif d'ouverture "CHGT_MODE_IMPOSITION"
-					final ForFiscalPrincipal ffpNonSource = a.getFors().principal;
-					motifRattachement = ffpNonSource.getMotifRattachement();
-					autoriteFiscaleForPrincipal = a.getFors().principal.getTypeAutoriteFiscale();
-					if (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						ofsCommuneForGestion = ffpNonSource.getNumeroOfsAutoriteFiscale();
-					}
-					else {
-						ofsCommuneForGestion = null;
-					}
-				}
-				else {
-					motifRattachement = ffp.getMotifRattachement();     // on n'a pas encore les fors secondaires sources...
-					autoriteFiscaleForPrincipal = ffp.getTypeAutoriteFiscale();
-					if (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						ofsCommuneForGestion = ffp.getNumeroOfsAutoriteFiscale();
-					}
-					else {
-						ofsCommuneForGestion = null;
-					}
-				}
-			}
-			else {
-				final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, a.getDateFin());
-				if (forGestion == null) {
-					throw new RuntimeException("Assujettissement " + a + " non sourcier-pur sans for de gestion en fin d'assujettissement ?");
-				}
-
-				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateDebut());
-				if (commune.isFraction()) {
-					final Commune communeFaitiere = infraService.getCommuneFaitiere(commune, forGestion.getDateDebut());
-					ofsCommuneForGestion = communeFaitiere.getNoOFSEtendu();
-				}
-				else {
-					ofsCommuneForGestion = commune.getNoOFSEtendu();
-				}
-
-				final ForFiscalRevenuFortune forRevenuFortune = forGestion.getSousjacent();
-				motifRattachement = forRevenuFortune.getMotifRattachement();
-				if (forRevenuFortune instanceof ForFiscalPrincipal) {
-					autoriteFiscaleForPrincipal = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-					modeImposition = ((ForFiscalPrincipal) forRevenuFortune).getModeImposition();
-				}
-				else {
-					// les rattachements économiques sont au mode d'imposition ordinaire, enfin je crois...
-					modeImposition = ModeImposition.ORDINAIRE;
-					if (!(a instanceof HorsSuisse || a instanceof HorsCanton)) {
-						throw new RuntimeException("Rattachement économique avec assujettissement différent de HS ou HC : " + a);
-					}
-					autoriteFiscaleForPrincipal = (a instanceof HorsSuisse ? TypeAutoriteFiscale.PAYS_HS : TypeAutoriteFiscale.COMMUNE_HC);
-				}
-			}
-
-			final InfoPeriodeImposition info = buildInfoPeriodeImposition(ctb, nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint, modeImposition,
-			                                                              motifRattachement, a, ofsCommuneForGestion, autoriteFiscaleForPrincipal);
-			if (info != null) {
-				liste.add(info);
-			}
-		}
-
-		return liste;
+		return new InfoIdentificationCtb(nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint);
 	}
 
-	/**
-	 * On se sert de cette méthode pour récupérer le dernier for SOURCE dans la collection des fors principaux actifs dans une période d'assujettissement
-	 * (cette collection est extraite de la décomposition des fors attachée à l'assujettissement lui-même)... La raison en est l'arrondi qui est fait dans
-	 * l'assujettissement entre la date de fin de for source et la date de fin d'assujettissement source (fin du mois) dans le cas d'un changement de mode
-	 * d'imposition
-	 * @param principauxDansLaPeriode les fors principaux triés valides dans une période
-	 * @return le dernier for principal de la liste fournie avec un mode d'imposition SOURCE, ou <code>null</code> s'il n'y en a pas...
-	 */
-	private static ForFiscalPrincipal extraireDernierForSource(ForsList<ForFiscalPrincipal> principauxDansLaPeriode) {
-		final ListIterator<ForFiscalPrincipal> iterator = principauxDansLaPeriode.listIterator(principauxDansLaPeriode.size());
-		while (iterator.hasPrevious()) {
-			final ForFiscalPrincipal ffp = iterator.previous();
-			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
-				return ffp;
-			}
-		}
-		return null;
+	protected final InfoPeriodeImposition buildInfoPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement, DateRange range,
+	                                                                 MotifFor motifDebut, MotifFor motifFin, Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
+		return new InfoPeriodeImposition(ctb.getNumero(), identification, modeImposition, range.getDateDebut(), range.getDateFin(),
+		                                 motifRattachement, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal);
 	}
-
-	protected InfoPeriodeImposition buildInfoPeriodeImposition(Contribuable ctb, String nom, String prenom, String numeroAvs, RegDate dateNaissance, Long noCtbPrincipal,
-	                                                           Long noCtbConjoint, ModeImposition modeImposition, MotifRattachement motifRattachement, Assujettissement a,
-	                                                           Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
-		return new InfoPeriodeImposition(ctb.getNumero(), nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint, modeImposition, a.getDateDebut(), a.getDateFin(),
-		                                 motifRattachement, a.getMotifFractDebut(), a.getMotifFractFin(), ofsCommuneForGestion, autoriteFiscaleForPrincipal);
-	}
-
-	/**
-	 * Implémentée par les classes dérivées pour oter les assujettissements qui ne doivent pas être pris en compte
-	 * @param ctb contribuable assujetti
-	 * @param listeAFiltrer liste à modifier en cas de filtrage effectif (en entrée, la liste n'est jamais vide)
-	 * @return si la liste à filtrer ne contient plus d'éléments en sortie de la méthode, alors la valeur retournée doit être une description de la raison pour laquelle tous les assujettissements ont été filtrés (sinon, la valeur retournée sera ignorée de toute façon)
-	 */
-	protected abstract String filterAssujettissements(Contribuable ctb, List<Assujettissement> listeAFiltrer);
 
 	@Override
 	public final void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
 		++ nbContribuablesAnalyses;
 		try {
-			final List<InfoPeriodeImposition> periodes = buildInfoPeriodeAssujettissement(ctb);
+			final List<InfoPeriodeImposition> periodes = buildInfoPeriodes(ctb);
 			Assert.notEmpty(periodes);
 			for (InfoPeriodeImposition periode : periodes) {
 				addPeriodeImposition(periode);

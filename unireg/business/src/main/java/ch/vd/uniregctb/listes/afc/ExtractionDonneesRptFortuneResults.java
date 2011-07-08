@@ -5,10 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -16,14 +13,14 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
 
-public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptResults {
+public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeriodeImpositionResults {
 
 	private final RegDate finAnnee;
 
 	private static final String ASSUJETTI_SANS_FOR_VD_31_12 = "Assujetti sans for vaudois au 31 décembre";
 	private static final String NON_ASSUJETTI_31_12 = "Non-assujetti au rôle ordinaire au 31 décembre";
-	private static final String NON_ASSUJETTI_ROLE_ORDINAIRE = "Non-assujetti au rôle ordinaire";
 
 	public ExtractionDonneesRptFortuneResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
 		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
@@ -36,25 +33,14 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptResu
 	}
 
 	@Override
-	protected String filterAssujettissements(Contribuable ctb, List<Assujettissement> listeAFiltrer) {
+	protected String filterPeriodes(Contribuable ctb, List<PeriodeImposition> listeAFiltrer) {
 		// pour la fortune, on ne s'intéresse qu'aux contribuables au rôle ordinaire assujettis en fin d'année fiscale
-		final Iterator<Assujettissement> iterSrc = listeAFiltrer.iterator();
-		while (iterSrc.hasNext()) {
-			final Assujettissement a = iterSrc.next();
-			if (a instanceof SourcierPur) {
-				iterSrc.remove();
-			}
-		}
 
-		if (listeAFiltrer.size() == 0) {
-			return NON_ASSUJETTI_ROLE_ORDINAIRE;
-		}
-
-		// on enlève ensuite tous les assujettissements qui ne couvrent pas la fin de l'année
-		final Iterator<Assujettissement> iterFinAnnee = listeAFiltrer.iterator();
+		// on enlève donc toutes les périodes qui ne couvrent pas la fin de l'année
+		final Iterator<PeriodeImposition> iterFinAnnee = listeAFiltrer.iterator();
 		while (iterFinAnnee.hasNext()) {
-			final Assujettissement a = iterFinAnnee.next();
-			if (!a.isValidAt(finAnnee)) {
+			final PeriodeImposition p = iterFinAnnee.next();
+			if (!p.isValidAt(finAnnee)) {
 				iterFinAnnee.remove();
 			}
 		}
@@ -84,12 +70,13 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptResu
 	}
 
 	@Override
-	protected InfoPeriodeImposition buildInfoPeriodeImposition(Contribuable ctb, String nom, String prenom, String numeroAvs, RegDate dateNaissance, Long noCtbPrincipal,
-	                                                           Long noCtbConjoint, ModeImposition modeImposition, MotifRattachement motifRattachement, Assujettissement a,
+	protected InfoPeriodeImposition buildInfoPeriodeImpositionFromPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement,
+	                                                           PeriodeImposition periode, MotifFor motifDebut, MotifFor motifFin,
 	                                                           Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
-		final boolean limite = a instanceof HorsCanton || a instanceof HorsSuisse;
-		return new InfoPeriodeImpositionFortune(ctb.getNumero(), nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint, modeImposition, a.getDateDebut(), a.getDateFin(),
-		                                        motifRattachement, a.getMotifFractDebut(), a.getMotifFractFin(), ofsCommuneForGestion, autoriteFiscaleForPrincipal, limite);
+		final TypeContribuable typeContribuable = periode.getTypeContribuable();
+		final boolean limite = typeContribuable == TypeContribuable.HORS_CANTON || typeContribuable == TypeContribuable.HORS_SUISSE;
+		return new InfoPeriodeImpositionFortune(ctb.getNumero(), identification, modeImposition, periode.getDateDebut(), periode.getDateFin(),
+		                                        motifRattachement, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal, limite);
 	}
 
 	/**
@@ -110,10 +97,10 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptResu
 			NOMS_COLONNES_FORTUNE[NOMS_COLONNES.length] = "LIMITE/ILLIMITE";
 		}
 
-		public InfoPeriodeImpositionFortune(long noCtb, String nom, String prenom, String numeroAvs, RegDate dateNaissance, Long noCtbPrincipal, Long noCtbConjoint, ModeImposition modeImposition,
+		public InfoPeriodeImpositionFortune(long noCtb, InfoIdentificationCtb identification, ModeImposition modeImposition,
 		                                     RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifFor motifOuverture, MotifFor motifFermeture,
 		                                     Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal, boolean limite) {
-			super(noCtb, nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint, modeImposition, debutPeriodeImposition, finPeriodeImposition, motifRattachement, motifOuverture,
+			super(noCtb, identification, modeImposition, debutPeriodeImposition, finPeriodeImposition, motifRattachement, motifOuverture,
 			      motifFermeture, ofsCommuneForGestion, autoriteFiscaleForPrincipal);
 			this.limite = limite;
 		}

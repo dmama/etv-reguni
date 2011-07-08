@@ -1,19 +1,14 @@
 package ch.vd.uniregctb.listes.afc;
 
-import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ExtractionDonneesRptRevenuOrdinaireResults extends ExtractionDonneesRptResults {
-
-	private static final String SOURCIER_PUR = "Sourcier pur";
+public class ExtractionDonneesRptRevenuOrdinaireResults extends ExtractionDonneesRptPeriodeImpositionResults {
 
 	public ExtractionDonneesRptRevenuOrdinaireResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
 		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
@@ -25,16 +20,7 @@ public class ExtractionDonneesRptRevenuOrdinaireResults extends ExtractionDonnee
 	}
 
 	@Override
-	protected String filterAssujettissements(Contribuable ctb, List<Assujettissement> listeAFiltrer) {
-		// ici, on ne tient pas compte des sourciers purs
-		final Iterator<Assujettissement> iterSource = listeAFiltrer.iterator();
-		while (iterSource.hasNext()) {
-			final Assujettissement a = iterSource.next();
-			if (a instanceof SourcierPur) {
-				iterSource.remove();
-			}
-		}
-
-		return (listeAFiltrer.size() == 0 ? SOURCIER_PUR : null);
+	protected String filterPeriodes(Contribuable ctb, List<PeriodeImposition> listeAFiltrer) {
+		return null;
 	}
 }

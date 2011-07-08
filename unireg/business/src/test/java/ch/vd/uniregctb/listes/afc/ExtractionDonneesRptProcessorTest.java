@@ -116,13 +116,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idOrdinaire, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Ordinaire", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Ordinaire", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -135,13 +135,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idMixte1, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("MixteUn", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("MixteUn", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 22), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 22), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -154,13 +154,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(2);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idMixte2, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("MixteDeux", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("MixteDeux", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 23), elt.dateNaissance);
-			Assert.assertEquals("7568700351431", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 23), elt.identification.dateNaissance);
+			Assert.assertEquals("7568700351431", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -173,13 +173,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(3);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idIndigent, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Indigent", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Indigent", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 24), elt.dateNaissance);
-			Assert.assertEquals("7569528331315", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 24), elt.identification.dateNaissance);
+			Assert.assertEquals("7569528331315", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -192,13 +192,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(4);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idDepense, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Dépense", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Dépense", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 25), elt.dateNaissance);
-			Assert.assertEquals("7567902948722", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 25), elt.identification.dateNaissance);
+			Assert.assertEquals("7567902948722", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -350,13 +350,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idOrdinaire, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Ordinaire", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Ordinaire", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -370,13 +370,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idMixte1, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("MixteUn", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("MixteUn", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 22), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 22), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -390,13 +390,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(2);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idMixte2, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("MixteDeux", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("MixteDeux", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 23), elt.dateNaissance);
-			Assert.assertEquals("7568700351431", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 23), elt.identification.dateNaissance);
+			Assert.assertEquals("7568700351431", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -410,13 +410,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(3);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idIndigent, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Indigent", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Indigent", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 24), elt.dateNaissance);
-			Assert.assertEquals("7569528331315", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 24), elt.identification.dateNaissance);
+			Assert.assertEquals("7569528331315", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -430,13 +430,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(4);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ids.idDepense, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Dépense", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Dépense", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 25), elt.dateNaissance);
-			Assert.assertEquals("7567902948722", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 25), elt.identification.dateNaissance);
+			Assert.assertEquals("7567902948722", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -483,13 +483,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -602,13 +602,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-		Assert.assertNull(elt.numeroAvs);
-		Assert.assertNull(elt.noCtbPrincipal);
-		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+		Assert.assertNull(elt.identification.numeroAvs);
+		Assert.assertNull(elt.identification.noCtbPrincipal);
+		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertEquals(MotifFor.DEPART_HS, elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -747,13 +747,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-		Assert.assertNull(elt.numeroAvs);
-		Assert.assertNull(elt.noCtbPrincipal);
-		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+		Assert.assertNull(elt.identification.numeroAvs);
+		Assert.assertNull(elt.identification.noCtbPrincipal);
+		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertNull(elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -793,8 +793,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, elt.autoriteFiscaleForPrincipal);
 		Assert.assertTrue(elt.limite);
@@ -830,13 +830,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-		Assert.assertNull(elt.numeroAvs);
-		Assert.assertNull(elt.noCtbPrincipal);
-		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+		Assert.assertNull(elt.identification.numeroAvs);
+		Assert.assertNull(elt.identification.noCtbPrincipal);
+		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -909,13 +909,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-		Assert.assertNull(elt.numeroAvs);
-		Assert.assertNull(elt.noCtbPrincipal);
-		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+		Assert.assertNull(elt.identification.numeroAvs);
+		Assert.assertNull(elt.identification.noCtbPrincipal);
+		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertNull(elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -955,13 +955,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals(ppId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);
-		Assert.assertEquals("Tartempion", elt.nom);
+		Assert.assertEquals("Toto", elt.identification.prenom);
+		Assert.assertEquals("Tartempion", elt.identification.nom);
 		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-		Assert.assertNull(elt.numeroAvs);
-		Assert.assertNull(elt.noCtbPrincipal);
-		Assert.assertNull(elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+		Assert.assertNull(elt.identification.numeroAvs);
+		Assert.assertNull(elt.identification.noCtbPrincipal);
+		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertNull(elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1028,13 +1028,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals((long) ids.mcId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);      // principal seulement
-		Assert.assertEquals("Tartempion", elt.nom);      // principal seulement
+		Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
+		Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
 		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);  // principal seulement
-		Assert.assertEquals("7562025802593", elt.numeroAvs);        // principal seulement
-		Assert.assertEquals(ids.mId, elt.noCtbPrincipal);
-		Assert.assertEquals(ids.mmeId, elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
+		Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
+		Assert.assertEquals(ids.mId, elt.identification.noCtbPrincipal);
+		Assert.assertEquals(ids.mmeId, elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertNull(elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1100,13 +1100,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 		Assert.assertNotNull(elt);
 		Assert.assertEquals((long) ids.mcId, elt.noCtb);
-		Assert.assertEquals("Toto", elt.prenom);      // principal seulement
-		Assert.assertEquals("Tartempion", elt.nom);      // principal seulement
+		Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
+		Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
 		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-		Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);  // principal seulement
-		Assert.assertEquals("7562025802593", elt.numeroAvs);        // principal seulement
-		Assert.assertEquals(ids.mId, elt.noCtbPrincipal);
-		Assert.assertEquals(ids.mmeId, elt.noCtbConjoint);
+		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
+		Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
+		Assert.assertEquals(ids.mId, elt.identification.noCtbPrincipal);
+		Assert.assertEquals(ids.mmeId, elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
 		Assert.assertNull(elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1177,13 +1177,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idToto, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1196,13 +1196,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
-			Assert.assertEquals("Tata", elt.prenom);
-			Assert.assertEquals("Tartempiona", elt.nom);
+			Assert.assertEquals("Tata", elt.identification.prenom);
+			Assert.assertEquals("Tartempiona", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1966, 3, 12), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1280,13 +1280,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idToto, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1300,13 +1300,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
-			Assert.assertEquals("Tata", elt.prenom);
-			Assert.assertEquals("Tartempiona", elt.nom);
+			Assert.assertEquals("Tata", elt.identification.prenom);
+			Assert.assertEquals("Tartempiona", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1966, 3, 12), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1383,13 +1383,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
-			Assert.assertEquals("Tata", elt.prenom);
-			Assert.assertEquals("Tartempiona", elt.nom);
+			Assert.assertEquals("Tata", elt.identification.prenom);
+			Assert.assertEquals("Tartempiona", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1966, 3, 12), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 10, 25), elt.debutPeriodeImposition);
@@ -1402,13 +1402,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);      // principal seulement
-			Assert.assertEquals("Tartempion", elt.nom);      // principal seulement
+			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
+			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);  // principal seulement
-			Assert.assertEquals("7562025802593", elt.numeroAvs);        // principal seulement
-			Assert.assertEquals(ids.idToto, elt.noCtbPrincipal);
-			Assert.assertEquals(ids.idTata, elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
+			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
+			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1478,13 +1478,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
-			Assert.assertEquals("Tata", elt.prenom);
-			Assert.assertEquals("Tartempiona", elt.nom);
+			Assert.assertEquals("Tata", elt.identification.prenom);
+			Assert.assertEquals("Tartempiona", elt.identification.nom);
 			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1966, 3, 12), elt.dateNaissance);
-			Assert.assertEquals("7568935457472", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
+			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 10, 25), elt.debutPeriodeImposition);
@@ -1562,13 +1562,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);      // principal seulement
-			Assert.assertEquals("Tartempion", elt.nom);      // principal seulement
+			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
+			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);      // principal seulement
-			Assert.assertEquals("7562025802593", elt.numeroAvs);            // principal seulement
-			Assert.assertEquals(ids.idToto, elt.noCtbPrincipal);
-			Assert.assertEquals(ids.idTata, elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);      // principal seulement
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);            // principal seulement
+			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
+			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1651,13 +1651,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);      // principal seulement
-			Assert.assertEquals("Tartempion", elt.nom);      // principal seulement
+			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
+			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);  // principal seulement
-			Assert.assertEquals("7562025802593", elt.numeroAvs);        // principal seulement
-			Assert.assertEquals(ids.idToto, elt.noCtbPrincipal);
-			Assert.assertEquals(ids.idTata, elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
+			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
+			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1714,8 +1714,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.LeLieu.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
 		}
 	}
@@ -1753,8 +1753,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.LeLieu.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
 		}
 	}
@@ -1794,13 +1794,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 5, 1), elt.debutPeriodeImposition);
@@ -1846,13 +1846,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -1898,13 +1898,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 5, 1), elt.debutPeriodeImposition);
@@ -1986,13 +1986,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertEquals(MotifFor.DEPART_HC, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -2005,13 +2005,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertNull(elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.DEPART_HC, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 4, 13), elt.debutPeriodeImposition);
@@ -2091,13 +2091,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
 			Assert.assertEquals(MotifFor.DEPART_HS, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
@@ -2110,13 +2110,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 9, 26), elt.debutPeriodeImposition);
@@ -2195,13 +2195,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 9, 26), elt.debutPeriodeImposition);
@@ -2240,7 +2240,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_ORDINAIRE, res.getMode());
-		Assert.assertEquals(2, res.getListePeriode().size());
+		Assert.assertEquals(1, res.getListePeriode().size());
 		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
 		Assert.assertEquals(0, res.getListeErreurs().size());
 
@@ -2248,35 +2248,16 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
-			Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
-			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifFermeture);
-			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
-			Assert.assertEquals(date(2008, 4, 12), elt.finPeriodeImposition);
-			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
-			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
-			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, elt.autoriteFiscaleForPrincipal);
-		}
-		{
-			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
-			Assert.assertNotNull(elt);
-			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
-			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
-			Assert.assertEquals(date(2008, 4, 13), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);
@@ -2352,16 +2333,16 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
 			Assert.assertNotNull(elt);
 			Assert.assertEquals(ppId, elt.noCtb);
-			Assert.assertEquals("Toto", elt.prenom);
-			Assert.assertEquals("Tartempion", elt.nom);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
 			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
-			Assert.assertEquals(date(1965, 2, 21), elt.dateNaissance);
-			Assert.assertEquals("7562025802593", elt.numeroAvs);
-			Assert.assertNull(elt.noCtbPrincipal);
-			Assert.assertNull(elt.noCtbConjoint);
-			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertNull(elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
-			Assert.assertEquals(date(2008, 4, 13), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);

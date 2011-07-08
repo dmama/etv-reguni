@@ -10,7 +10,7 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ExtractionDonneesRptRevenuSourcePureResults extends ExtractionDonneesRptResults {
+public class ExtractionDonneesRptRevenuSourcePureResults extends ExtractionDonneesRptAssujettissementResults {
 
 	private static final String ASSUJETTI_ORDINAIRE = "Assujetti au rôle ordinaire";
 
