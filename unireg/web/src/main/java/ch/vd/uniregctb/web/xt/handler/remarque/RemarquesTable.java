@@ -8,8 +8,8 @@ import org.springmodules.xt.ajax.component.TableData;
 import org.springmodules.xt.ajax.component.TableRow;
 
 import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.web.xt.component.PreservedText;
 import ch.vd.uniregctb.web.xt.component.SimpleText;
+import ch.vd.uniregctb.web.xt.component.UserPreservedText;
 
 /**
  * Composant qui permet d'afficher les remarques d'un tiers sous forme tabulaire.
@@ -37,7 +37,7 @@ public class RemarquesTable extends Table {
 			data.addAttribute("class", "entete");
 			row.addTableData(data);
 
-			data = new TableData(new PreservedText(remarque.getTexte()));
+			data = new TableData(new UserPreservedText(remarque.getTexte()));
 			data.addAttribute("class", "texte");
 			row.addTableData(data);
 		}
