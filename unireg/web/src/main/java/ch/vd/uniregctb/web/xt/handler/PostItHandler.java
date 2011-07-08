@@ -104,7 +104,6 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				middleRow.addAttribute("class", "middle");
 				TableData data = new TableData(new PostItBody(tachesEnInstanceCount, dossiersEnInstanceCount));
-				data.addAttribute("class", "iepngfix");
 				middleRow.addTableData(data);
 			}
 			addTableRow(middleRow);
