@@ -38,7 +38,7 @@ touch "$LOCK_FILE"
 
 MACHINE=logapp.etat-de-vaud.ch
 TOMCAT_PART="-cat_unireg${ENVIRONMENT}01"
-FILES="unireg-web.log srv-access-web.log unireg-web${TOMCAT_PART}.log srv-access-web${TOMCAT_PART}.log"
+FILES="unireg-web${TOMCAT_PART}.log srv-access-web${TOMCAT_PART}.log"
 
 function fetch() {
         WGET_OPT=""

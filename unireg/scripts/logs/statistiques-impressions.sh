@@ -51,6 +51,6 @@ ls -1 unireg-web-cat_unireg${ENVIRONMENT}01.log.* | grep "[0-9]\+$" | while read
 	compute_stats "$FILE" "$DATE"
 done | encode_output
 
-if [ -e "unireg-web.log" ]; then
+if [ -e "unireg-web-cat_unireg${ENVIRONMENT}01.log" ]; then
 	compute_stats "unireg-web-cat_unireg${ENVIRONMENT}01.log" "courant "
 fi | encode_output
