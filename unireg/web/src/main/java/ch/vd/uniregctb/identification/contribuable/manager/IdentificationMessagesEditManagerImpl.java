@@ -207,7 +207,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		Long idIdentification = bean.getDemandeIdentificationView().getId();
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification );
 
-		Erreur erreur = new Erreur(TypeErreur.METIER, "01", bean.getErreurMessage().getLibelle());
+		Erreur erreur = new Erreur(TypeErreur.METIER,bean.getErreurMessage().getCode(), bean.getErreurMessage().getLibelle());
 		identCtbService.impossibleAIdentifier(identificationContribuable, erreur);
 	}
 	@Override

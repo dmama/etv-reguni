@@ -545,6 +545,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>utilisateur ayant effectué l'identification</description>
 		</attribute>
+		<attribute>
+			<name>messageRetour</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Message envoyé en retour</description>
+		</attribute>
 	</tag>
 	<tag>
 		<name>raccourciAlerter</name>

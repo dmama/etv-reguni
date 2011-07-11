@@ -6,11 +6,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
@@ -18,6 +20,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -259,11 +262,16 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		}
 
 		if (identification.getReponse() != null) {
+			//Message par Défaut
+			identificationMessagesResultView.setMessageRetour("Identifié");
 			Long noContribuable = identification.getReponse().getNoContribuable();
 			if (noContribuable != null) {
 				identificationMessagesResultView.setNumeroContribuable(noContribuable);
 			}
-
+			Erreur erreur = identification.getReponse().getErreur();
+			if(erreur!=null){
+				identificationMessagesResultView.setMessageRetour(erreur.getMessage());
+			}
 		}
 		return identificationMessagesResultView;
 	}

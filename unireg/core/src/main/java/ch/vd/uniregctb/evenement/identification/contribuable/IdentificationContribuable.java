@@ -89,23 +89,22 @@ public class IdentificationContribuable extends HibernateEntity {
 	}
 
 	public enum	ErreurMessage {
-		/**
-		 * Aucun contribuable ne correspond au message
-		 */
-		AUCUNE_CORRESSPONDANCE("Aucun contribuable ne correspond au message"),
-		/**
-		 * erreur inconnue
-		 */
 
-		INCONNUE("Erreur inconnue");
+		AUCUNE_CORRESSPONDANCE("Aucun contribuable ne correspond au message", "01"),
+        ACI_AUTRE_CANTON("Envoi manuel à ACI autre canton", "02"),
+		SECTION_IMPOT_SOURCE("Envoi manuel à IS", "03"),
+		OIPM("Envoi manuel à OIPM", "04"),
+		INCONNUE("Erreur inconnue", "00");
 
 		private final String libelle;
+		private final String code;
 
-		ErreurMessage(String libelle){
+		ErreurMessage(String libelle, String code){
 			this.libelle = libelle;
-
+			this.code = code;
 		}
 		ErreurMessage(){
+			this.code = "";
 			this.libelle="";
 
 		}
@@ -114,6 +113,9 @@ public class IdentificationContribuable extends HibernateEntity {
 			return libelle;
 		}
 
+		public String getCode() {
+			return code;
+		}
 	}
 
 	/**

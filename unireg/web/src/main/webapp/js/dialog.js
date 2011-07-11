@@ -176,7 +176,7 @@ function open_consulter_log(nature, id) {
   * @param stringDate la date de traitement
   * @param userTraitement le nom du user de traitement
   */
- function open_consulter_info_traitement(userTraitement, stringDate) {
+ function open_consulter_info_traitement(userTraitement, stringDate, stringMessageRetour) {
 
 	var content = "<div style=\"display:none\">" +
 				"<table>" +
@@ -187,6 +187,10 @@ function open_consulter_log(nature, id) {
 				"<tr class=\"<unireg:nextRowClass/>\" >" +
 				"<td width=\"25%\">Date de traitement&nbsp;:</td>" +
 				"<td width=\"25%\">" + stringDate + "</td>" +
+				"</tr>" +
+				"<tr class=\"<unireg:nextRowClass/>\" >" +
+				"<td width=\"25%\">Message de retour&nbsp;:</td>" +
+				"<td width=\"25%\">" + stringMessageRetour + "</td>" +
 				"</tr>" +
 				"</table></div>";
 
@@ -201,7 +205,7 @@ function open_consulter_log(nature, id) {
 
  	dialog.dialog({
  		title: 'Consultation des informations de traitement',
- 		height: 150,
+ 		height: 160,
  		width: 600,
  		modal: true,
  		buttons: {

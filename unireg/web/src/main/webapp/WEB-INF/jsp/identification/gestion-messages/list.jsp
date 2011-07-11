@@ -115,7 +115,7 @@
 						 <unireg:consulterLog entityNature="identification" entityId="${message.id}"/>
                     </c:if>
 					<c:if test="${message.traitementUser != null }">
-						<unireg:consulterInfoTraitement dateTraitement="${message.traitementDate}" userTraitement="${message.traitementUser}"/>
+						<unireg:consulterInfoTraitement dateTraitement="${message.traitementDate}" userTraitement="${message.traitementUser}" messageRetour="${message.messageRetour}"/>
 					</c:if>
                </display:column>
 			</display:table>

@@ -24,6 +24,7 @@ public class IdentificationMessagesResultView implements Annulable{
 	private Date traitementDate;
 	private boolean annule;
 	private long numeroContribuable;
+	private String messageRetour;
 
 	public Long getId() {
 		return id;
@@ -129,5 +130,13 @@ public class IdentificationMessagesResultView implements Annulable{
 
 	public void setTraitementDate(Date traitementDate) {
 		this.traitementDate = traitementDate;
+	}
+
+	public String getMessageRetour() {
+		return messageRetour;
+	}
+
+	public void setMessageRetour(String messageRetour) {
+		this.messageRetour = messageRetour;
 	}
 }

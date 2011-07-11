@@ -277,7 +277,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	}
 
 	@Test
-	public void testSendReponseErreurMetier() throws Exception {
+	public void testSendReponseErreurContribuableInconnu() throws Exception {
 
 		// Création du message
 		final IdentificationContribuable message = new IdentificationContribuable();
@@ -290,8 +290,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		reponse.setDate(newUtilDate(2008, 3, 23));
 		final Erreur erreur = new Erreur();
 		erreur.setType(TypeErreur.METIER);
-		erreur.setCode("TestErreurMetier");
-		erreur.setMessage("Erreur métier de test");
+		erreur.setCode(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESSPONDANCE.getCode());
+		erreur.setMessage(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESSPONDANCE.getLibelle());
 		reponse.setErreur(erreur);
 		message.setReponse(reponse);
 
@@ -299,9 +299,89 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>TestErreurMetier</iden:code><iden:message>Erreur métier de test</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
+
+	@Test
+	public void testSendReponseErreurVersACI() throws Exception {
+
+		// Création du message
+		final IdentificationContribuable message = new IdentificationContribuable();
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessUser("IdentificationContribuableTest");
+		header.setBusinessId(String.valueOf(message.hashCode()));
+		header.setReplyTo("ReplyToTest");
+		message.setHeader(header);
+		final Reponse reponse = new Reponse();
+		reponse.setDate(newUtilDate(2008, 3, 23));
+		final Erreur erreur = new Erreur();
+		erreur.setType(TypeErreur.METIER);
+		erreur.setCode(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON.getCode());
+		erreur.setMessage(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON.getLibelle());
+		reponse.setErreur(erreur);
+		message.setReponse(reponse);
+
+		// Envoi du message
+		handler.sendReponse(message);
+
+		// On vérifie que l'on a bien envoyé le message
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>02</iden:code><iden:message>Envoi manuel à ACI autre canton</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
+	@Test
+	public void testSendReponseErreurVersIs() throws Exception {
+
+		// Création du message
+		final IdentificationContribuable message = new IdentificationContribuable();
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessUser("IdentificationContribuableTest");
+		header.setBusinessId(String.valueOf(message.hashCode()));
+		header.setReplyTo("ReplyToTest");
+		message.setHeader(header);
+		final Reponse reponse = new Reponse();
+		reponse.setDate(newUtilDate(2008, 3, 23));
+		final Erreur erreur = new Erreur();
+		erreur.setType(TypeErreur.METIER);
+		erreur.setCode(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE.getCode());
+		erreur.setMessage(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE.getLibelle());
+		reponse.setErreur(erreur);
+		message.setReponse(reponse);
+
+		// Envoi du message
+		handler.sendReponse(message);
+
+		// On vérifie que l'on a bien envoyé le message
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>03</iden:code><iden:message>Envoi manuel à IS</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
+	@Test
+	public void testSendReponseErreurVersOMPI() throws Exception {
+
+		// Création du message
+		final IdentificationContribuable message = new IdentificationContribuable();
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessUser("IdentificationContribuableTest");
+		header.setBusinessId(String.valueOf(message.hashCode()));
+		header.setReplyTo("ReplyToTest");
+		message.setHeader(header);
+		final Reponse reponse = new Reponse();
+		reponse.setDate(newUtilDate(2008, 3, 23));
+		final Erreur erreur = new Erreur();
+		erreur.setType(TypeErreur.METIER);
+		erreur.setCode(IdentificationContribuable.ErreurMessage.OIPM.getCode());
+		erreur.setMessage(IdentificationContribuable.ErreurMessage.OIPM.getLibelle());
+		reponse.setErreur(erreur);
+		message.setReponse(reponse);
+
+		// Envoi du message
+		handler.sendReponse(message);
+
+		// On vérifie que l'on a bien envoyé le message
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>04</iden:code><iden:message>Envoi manuel à OIPM</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
+
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveDemandeIdentificationCtb() throws Exception {

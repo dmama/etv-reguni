@@ -22,6 +22,7 @@ public class JspTagConsulterInfoTraitement extends BodyTagSupport {
 
 	private Date dateTraitement;
 	private String userTraitement;
+	private String messageRetour;
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -52,10 +53,19 @@ public class JspTagConsulterInfoTraitement extends BodyTagSupport {
 		this.userTraitement = userTraitement;
 	}
 
+	public String getMessageRetour() {
+		return messageRetour;
+	}
+
+	public void setMessageRetour(String messageRetour) {
+		this.messageRetour = messageRetour;
+	}
+
 	public String buildHtml() {
 		String stringDate = DateHelper.dateTimeToDisplayString(dateTraitement);
 		String stringUser = HtmlUtils.htmlEscape(userTraitement);
-		String onclick = "return open_consulter_info_traitement('" + stringUser + "', '" + stringDate + "');";
+		String stringMessageRetour = messageRetour == null ? "" : HtmlUtils.htmlEscape(messageRetour);
+		String onclick = "return open_consulter_info_traitement('" + stringUser + "', '" + stringDate + "', '" + stringMessageRetour + "');";
 		return String.format("<a href=\"#\" class=\"infotraitement\" title=\"Consultation des infos de traitement\" onclick=\"%s\">&nbsp;</a>", onclick);
 
 	}
