@@ -149,22 +149,22 @@
 					<xs:documentation>La deuxième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="line3" type="xs:string">
+			<xs:element name="line3" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La troisième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="line4" type="xs:string">
+			<xs:element name="line4" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La quatrième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="line5" type="xs:string">
+			<xs:element name="line5" type="xs:string" minOccurs="0" >
 				<xs:annotation>
 					<xs:documentation>La cinquième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="line6" type="xs:string">
+			<xs:element name="line6" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La sixième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</xs:documentation>
 				</xs:annotation>
@@ -238,7 +238,7 @@
 	<xs:complexType name="personNameType">
 		<xs:sequence>
 			<xs:element name="firstName" type="eCH-0010:firstNameType" minOccurs="0" />
-			<xs:element name="lastName" type="eCH-0010:lastNameType" minOccurs="0" />
+			<xs:element name="lastName" type="eCH-0010:lastNameType" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="otherPartyAddressTypeType">
