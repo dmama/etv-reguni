@@ -28,6 +28,13 @@
 				<version>0.8.0</version>
 				<configuration>
 					<schemaDirectory>src/main/resources/di</schemaDirectory>
+					<bindingDirectory>src/main/resources</bindingDirectory>
+					<bindingIncludes>
+						<include>bindings.xml</include>
+					</bindingIncludes>
+					<args>
+						<arg>-Xpretty-classname</arg>
+					</args>
 				</configuration>
 				<executions>
 					<execution>
@@ -36,6 +43,13 @@
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ch.vd.uniregctb</groupId>
+						<artifactId>jaxb2-pretty-classname</artifactId>
+						<version>1.0.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
