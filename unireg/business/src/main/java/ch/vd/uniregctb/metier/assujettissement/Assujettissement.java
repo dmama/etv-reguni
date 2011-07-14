@@ -175,19 +175,19 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	/**
-	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue de la commune vaudoise dont le numéro OFS
-	 * étendu est donné en paramètre
+	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS
+	 * étendus sont donnés en paramètre
 	 * <p/><p/>
 	 * <b>ATTENTION:</b> cette méthode n'est pas capable de faire la différence entre un vaudois avec for secondaire sur une commune (celle donnée en paramètre) différente
 	 * de la commune de domicile et un hors-canton qui a le même for secondaire... (en d'autres termes : l'assujettissement du vaudois vu de la commune où il a son
 	 * for secondaire sera HorsCanton !!)
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
-	 * @param noOfsCommuneVaudoise le numéro OFS de la commune vaudoise dont on veut le point de vue
+	 * @param noOfsCommunesVaudoises les numéros OFS des communes vaudoises dont on veut le point de vue
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	public static List<Assujettissement> determinePourCommune(Contribuable ctb, int noOfsCommuneVaudoise) throws AssujettissementException {
+	public static List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		if (ctb.isAnnule()) {
 			// un contribuable annulé n'est évidemment pas assujetti
@@ -203,34 +203,35 @@ public abstract class Assujettissement implements CollatableDateRange {
 		// (peut-être un jour y aura-t-il aussi les fors autres éléments imposables)
 
 		// pour les fors secondaires (et autres éléments imposables, du coup), c'est facile, tout ce qui n'est
-		// pas sur la commune qui nous intéresse peut être enlevé
-		retirerForsHorsCommune(fpt.secondaires, noOfsCommuneVaudoise);
-		retirerForsHorsCommune(fpt.autreElementImpot, noOfsCommuneVaudoise);
+		// pas sur les communes qui nous intéressent peut être enlevé
+		retirerForsHorsCommunes(fpt.secondaires, noOfsCommunesVaudoises);
+		retirerForsHorsCommunes(fpt.autreElementImpot, noOfsCommunesVaudoises);
 
-		// les fors principaux vaudois qui ne sont pas sur la commune vaudoise qui nous intéresse vont être remplacés par
+		// les fors principaux vaudois qui ne sont pas sur les communes vaudoises qui nous intéressent vont être remplacés par
 		// des fors hors-canton bidons (commune -1)
-		filtrerForsPrincipauxHorsCommune(fpt.principaux, noOfsCommuneVaudoise);
+		filtrerForsPrincipauxHorsCommune(fpt.principaux, noOfsCommunesVaudoises);
 
 		return determine(ctb, fpt);
 	}
 
-	private static void filtrerForsPrincipauxHorsCommune(List<ForFiscalPrincipal> liste, int noOfsCommuneVaudoise) {
+	private static void filtrerForsPrincipauxHorsCommune(List<ForFiscalPrincipal> liste, Set<Integer> noOfsCommunesVaudoises) {
 		final ListIterator<ForFiscalPrincipal> iterPrn = liste.listIterator();
 		while (iterPrn.hasNext()) {
 			final ForFiscalPrincipal ffp = iterPrn.next();
-			if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getNumeroOfsAutoriteFiscale() != noOfsCommuneVaudoise) {
-				final ForFiscalPrincipal remplacement =
-						new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ffp.getModeImposition());
+			if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())) {
+				final ForFiscalPrincipal remplacement = new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ModeImposition.ORDINAIRE);
+				remplacement.setMotifOuverture(ffp.getMotifOuverture());
+				remplacement.setMotifFermeture(ffp.getMotifFermeture());
 				iterPrn.set(remplacement);
 			}
 		}
 	}
 
-	private static <T extends ForFiscalRevenuFortune> void retirerForsHorsCommune(List<T> liste, int noOfsCommuneVaudoise) {
+	private static <T extends ForFiscalRevenuFortune> void retirerForsHorsCommunes(List<T> liste, Set<Integer> noOfsCommunesVaudoises) {
 		final Iterator<T> iter = liste.iterator();
 		while (iter.hasNext()) {
 			final T ff = iter.next();
-			if (ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || ff.getNumeroOfsAutoriteFiscale() != noOfsCommuneVaudoise) {
+			if (ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || !noOfsCommunesVaudoises.contains(ff.getNumeroOfsAutoriteFiscale())) {
 				iter.remove();
 			}
 		}

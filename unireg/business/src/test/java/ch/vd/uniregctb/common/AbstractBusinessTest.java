@@ -264,6 +264,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	/**
+	 * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié avec le mode d'imposition spécifié
+	 */
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
+		final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement);
+		ffp.setModeImposition(modeImposition);
+		return ffp;
+	}
+
+	/**
 	 * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
 	 */
 	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays) {
@@ -284,6 +293,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays) {
 		assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
+	}
+
+	/**
+	 * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode d'imposition spécifié
+	 */
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays, ModeImposition modeImposition) {
+		final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
+		ffp.setModeImposition(modeImposition);
+		return ffp;
 	}
 
 	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, @Nullable RegDate fin, MockCommune commune) {

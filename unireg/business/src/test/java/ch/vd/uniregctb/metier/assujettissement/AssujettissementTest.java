@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -2967,14 +2968,18 @@ public class AssujettissementTest extends MetierTest {
 		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
 	}
 
+	private static Set<Integer> buildSetFromArray(Integer... ints) {
+		return new HashSet<Integer>(Arrays.asList(ints));
+	}
+
 	@Test
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
-		final List<Assujettissement> listeLausanneSansFor = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		final List<Assujettissement> listeLausanneSansFor = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertNull(listeLausanneSansFor);
 
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-		final List<Assujettissement> listeLausanneAvecForARenens = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		final List<Assujettissement> listeLausanneAvecForARenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertNull(listeLausanneAvecForARenens);
 	}
 
@@ -2986,15 +2991,15 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 	}
@@ -3008,17 +3013,21 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsSuisse(date(2000, 9, 4), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsSuisse(date(2005, 6, 24), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+
+		final List<Assujettissement> listeCroyRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		assertEquals(1, listeCroyRenens.size());
+		assertHorsSuisse(date(2002, 7, 12), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
 
 	@Test
@@ -3030,21 +3039,61 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeAubonne = Assujettissement.determinePourCommune(ctb, MockCommune.Aubonne.getNoOFSEtendu());
+		final List<Assujettissement> listeAubonne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
 		assertEquals(1, listeAubonne.size());
 		assertOrdinaire(date(2000, 6, 1), null, MotifFor.ARRIVEE_HS, null, listeAubonne.get(0));
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+
+		final List<Assujettissement> listeCroyRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		assertEquals(1, listeCroyRenens.size());
+		assertHorsCanton(date(2002, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
+	}
+
+	/**
+	 * Cas trouvé en testant le batch des rôles
+	 * Exemple apparemment qui revient à chaque fois :
+	 *  - for HS
+	 *  - arrivée principale VD (mixte 2) avec for secondaire (et oui, mixte 2 quand-même !)dans autre commune (déjà présent ou débutant à l'arrivée, peu importe, apparemment)
+	 *  - déménagement vers la commune du for secondaire dans la même PF que l'arrivée HS (apparemment même pas nécessaire dans 100.356.43)
+	 *
+	 *  Exemples de contribuables : 100.001.71, 100.247.12, 100.356.43...
+	 *
+	 *  -> le calcul de l'assujettissement sur la commune du for secondaire explose avec un chevauchement d'assujettissements trouvé
+	 */
+	@Ignore(value = "Voir cas jira SIFISC-1769")
+	@Test
+	public void testDeterminePourCommuneSuivantArriveeHSAvecForSecondaireImmeubleDeMixte2() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 2, 18), MotifFor.DEPART_HS, MockCommune.Prilly, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2005, 2, 19), MotifFor.DEMENAGEMENT_VD, date(2008, 5, 28), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+		// trou ici : pas de for principal entre le 29.5.2008 et le 6.7.2008
+		addForPrincipal(ctb, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> listePrilly = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Prilly.getNoOFSEtendu()));
+		assertEquals(1, listePrilly.size());
+		assertSourcierMixte(date(2003, 1, 1), date(2005, 2, 18), MotifFor.INDETERMINE, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
+
+		final List<Assujettissement> listeBussigny = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFSEtendu()));
+		assertNull(listeBussigny);
+
+		// c'est ici que cela explose !
+		final List<Assujettissement> listeVevey = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
+		assertEquals(1, listeVevey.size());
+		assertSourcierMixte(date(2008, 7, 7), null, MotifFor.ACHAT_IMMOBILIER, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
 
 	@Test

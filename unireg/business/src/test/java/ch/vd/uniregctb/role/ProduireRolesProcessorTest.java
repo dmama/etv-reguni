@@ -518,6 +518,86 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertInfo(noCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
 	}
 
+	/**
+	 * SIFISC-1717
+	 */
+	@Test
+	public void testDateEtMotifFinSiDemenagementApresFinPeriode() throws Exception {
+
+		// Arrivée en 2006 sur la commune de Lausanne
+		// Déménagement en 2008 vers Vevey
+		// -> le rôle de Lausanne 2007 devrait donner une fin de for en 2008 pour motif déménagement
+		final RegDate arriveeLausanne = date(2006, 8, 1);
+		final RegDate departLausanne = date(2008, 6, 30);
+		final RegDate arriveeVevey = departLausanne.getOneDayAfter();
+
+		final long idpp = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Pierre", "Haitleloup", date(1970, 5, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, arriveeLausanne, MotifFor.ARRIVEE_HS, departLausanne, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, arriveeVevey, MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+		assertNotNull(infos);
+		assertEquals(1, infos.getInfosContribuables().size());
+
+		final InfoContribuable infosCtb = infos.getInfoPourContribuable(idpp);
+		assertNotNull(infosCtb);
+		assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arriveeLausanne, departLausanne, MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+	}
+
+	/**
+	 * SIFISC-1717
+	 */
+	@Test
+	public void testDateEtMotifFinSiDemenagementApresFinPeriodeDansMemeOID() throws Exception {
+
+		// Arrivée en 2006 sur la commune de Lausanne
+		// Déménagement en 2008 vers Vevey
+		// -> le rôle de Lausanne 2007 devrait donner une fin de for en 2008 pour motif déménagement
+		final RegDate arriveeRenens = date(2006, 8, 1);
+		final RegDate departRenens = date(2008, 6, 30);
+		final RegDate arriveePrilly = departRenens.getOneDayAfter();
+
+		final long idpp = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Pierre", "Haitleloup", date(1970, 5, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, arriveeRenens, MotifFor.ARRIVEE_HS, departRenens, MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
+				addForPrincipal(pp, arriveePrilly, MotifFor.DEMENAGEMENT_VD, MockCommune.Prilly);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		{
+			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Prilly.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+			assertNotNull(infosRegroupees);
+			assertEquals(1, infosRegroupees.size());
+
+			final InfoContribuable infoCtb = infosRegroupees.get(idpp);
+			assertNotNull(infoCtb);
+			assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), arriveeRenens, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
+		}
+	}
+
 	@Test
 	public void testRunOID() throws Exception {
 		
@@ -551,7 +631,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(6, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(4, results.infosCommunes.size());      // toutes les communes sont là pour l'instant (le regroupement enlèvera celle qui sont en trop)
 
 		{
 			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
