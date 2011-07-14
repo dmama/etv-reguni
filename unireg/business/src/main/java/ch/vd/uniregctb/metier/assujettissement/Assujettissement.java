@@ -220,8 +220,6 @@ public abstract class Assujettissement implements CollatableDateRange {
 			final ForFiscalPrincipal ffp = iterPrn.next();
 			if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())) {
 				final ForFiscalPrincipal remplacement = new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ModeImposition.ORDINAIRE);
-				remplacement.setMotifOuverture(ffp.getMotifOuverture());
-				remplacement.setMotifFermeture(ffp.getMotifFermeture());
 				iterPrn.set(remplacement);
 			}
 		}
