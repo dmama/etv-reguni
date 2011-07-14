@@ -7,11 +7,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.Date;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.EvenementAnnulationDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.EvenementDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.EvenementEmissionDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.ObjectFactory;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.Date;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.EvenementDeclarationImpot;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.EvenementAnnulationDeclarationImpot;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.EvenementEmissionDeclarationImpot;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
