@@ -16,4 +16,10 @@
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_addi2unireg_1.0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.addi2unireg" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 </jxb:bindings>
