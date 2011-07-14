@@ -72,7 +72,7 @@ public abstract class EvenementTest {
 
 		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
 		final EsbMessage msg = esbTemplate.receive(queueName);
-		assertNotNull(msg);
+		assertNotNull("L'événement n'a pas été reçu.", msg);
 		String actual = msg.getBodyAsString();
 		actual = actual.replaceAll(" standalone=\"(no|yes)\"", ""); // on ignore l'attribut standalone s'il existe
 		assertEquals(texte, actual);
