@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 14 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1" schemaLocation="evenementDeclarationImpot_common_1.0.xsd" />
+
+	<xs:element name="evenement" type="common:evenementDeclarationImpotType" />
+
+	<xs:complexType name="evenementEmissionDeclarationImpotType">
+		<xs:annotation>
+			<xs:documentation>Evénement émis par Unireg lors de l'émission d'une déclaration impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="common:evenementDeclarationImpotType">
+				<xs:sequence>
+					<xs:element name="codeControle" type="common:codeControleType">
+						<xs:annotation>
+							<xs:documentation>Le code de contrôle émis par Unireg qui permet de vérifier l'existence de la déclaration en cas de retour par voie électronique.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="codeRoutage" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Le code de routage spécifique à TAO.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="evenementAnnulationDeclarationImpotType">
+		<xs:annotation>
+			<xs:documentation>Evénement émis par Unireg lors de l'annulation d'une déclaration impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="common:evenementDeclarationImpotType">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

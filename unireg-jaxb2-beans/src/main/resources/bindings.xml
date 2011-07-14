@@ -4,9 +4,15 @@
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_1.0.xsd">
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_common_1.0.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot" />
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.common" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_unireg2addi_1.0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 

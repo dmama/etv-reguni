@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 13 juillet 2011 - hand-edited by Manuel Siggen -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/1"
-		   targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/1" elementFormDefault="qualified" attributeFormDefault="unqualified">
-
-	<xs:element name="evenement" type="evenementDeclarationImpotType" />
+<!-- v1.0beta - 14 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1"
+		   targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xs:complexType name="evenementDeclarationImpotType" abstract="true">
 		<xs:annotation>
-			<xs:documentation>Evénement émis par Unireg lors de l'émission ou de l'annulation d'une déclaration impôt ordinaire.</xs:documentation>
+			<xs:documentation>Evénement émis entre Unireg et ADDI concernant l'émission, l'annulation ou le quittancement d'une déclaration impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="periodeFiscale" type="yearType">
@@ -26,38 +24,6 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="evenementEmissionDeclarationImpotType">
-		<xs:annotation>
-			<xs:documentation>Evénement émis par Unireg lors de l'émission d'une déclaration impôt ordinaire.</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="evenementDeclarationImpotType">
-				<xs:sequence>
-					<xs:element name="codeControle" type="codeControleType">
-						<xs:annotation>
-							<xs:documentation>Le code de contrôle émis par Unireg qui permet de vérifier l'existence de la déclaration en cas de retour par voie électronique.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="codeRoutage" type="xs:string">
-						<xs:annotation>
-							<xs:documentation>Le code de routage spécifique à TAO.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="evenementAnnulationDeclarationImpotType">
-		<xs:annotation>
-			<xs:documentation>Evénement émis par Unireg lors de l'annulation d'une déclaration impôt ordinaire.</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="evenementDeclarationImpotType">
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:simpleType name="numeroContribuableType">
