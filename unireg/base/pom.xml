@@ -335,7 +335,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>trove</groupId>
@@ -678,6 +683,7 @@
 		<junit.version>4.8.1</junit.version>
 		<javamail.version>1.4</javamail.version>
 		<log4j.version>1.2.14</log4j.version>
+		<slf4j.version>1.6.1</slf4j.version>
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.3</cobertura.version>
 		<hsql.version>1.8.0.7</hsql.version>
