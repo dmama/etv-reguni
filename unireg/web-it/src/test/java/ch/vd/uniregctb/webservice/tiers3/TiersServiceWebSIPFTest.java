@@ -184,7 +184,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final SearchCorporationEventsRequest params = new SearchCorporationEventsRequest();
 		params.setLogin(login);
-		params.setCorporationNumber(222L);
+		params.setCorporationNumber(222);
 
 		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
@@ -197,96 +197,96 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(ev0);
 		assertSameDay(newDate(1979, 10, 30), ev0.getDate());
 		assertEquals("007", ev0.getCode()); // selon table EVENEMENT du host
-		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev0.getPartyNumber());
 
 		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
 		assertSameDay(newDate(1979, 10, 30), ev1.getDate());
 		assertEquals("026", ev1.getCode());
-		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev1.getPartyNumber());
 
 		final CorporationEvent ev2 = events.get(2);
 		assertNotNull(ev2);
 		assertSameDay(newDate(1992, 1, 1), ev2.getDate());
 		assertEquals("001", ev2.getCode());
-		assertEquals(Long.valueOf(222), ev2.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev2.getPartyNumber());
 
 		final CorporationEvent ev3 = events.get(3);
 		assertNotNull(ev3);
 		assertSameDay(newDate(1992, 1, 1), ev3.getDate());
 		assertEquals("001", ev3.getCode());
-		assertEquals(Long.valueOf(222), ev3.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev3.getPartyNumber());
 
 		final CorporationEvent ev4 = events.get(4);
 		assertNotNull(ev4);
 		assertSameDay(newDate(1992, 11, 6), ev4.getDate());
 		assertEquals("021", ev4.getCode());
-		assertEquals(Long.valueOf(222), ev4.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev4.getPartyNumber());
 
 		final CorporationEvent ev5 = events.get(5);
 		assertNotNull(ev5);
 		assertSameDay(newDate(1996, 10, 24), ev5.getDate());
-		assertEquals(Long.valueOf(222), ev5.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev5.getPartyNumber());
 		assertEquals("020", ev5.getCode());
 
 		final CorporationEvent ev6 = events.get(6);
 		assertNotNull(ev6);
 		assertSameDay(newDate(1997, 7, 10), ev6.getDate());
-		assertEquals(Long.valueOf(222), ev6.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev6.getPartyNumber());
 		assertEquals("008", ev6.getCode());
 
 		final CorporationEvent ev7 = events.get(7);
 		assertNotNull(ev7);
 		assertSameDay(newDate(1997, 12, 1), ev7.getDate());
-		assertEquals(Long.valueOf(222), ev7.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev7.getPartyNumber());
 		assertEquals("020", ev7.getCode());
 
 		final CorporationEvent ev8 = events.get(8);
 		assertNotNull(ev8);
 		assertSameDay(newDate(2000, 1, 1), ev8.getDate());
-		assertEquals(Long.valueOf(222), ev8.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev8.getPartyNumber());
 		assertEquals("020", ev8.getCode());
 
 		final CorporationEvent ev9 = events.get(9);
 		assertNotNull(ev9);
 		assertSameDay(newDate(2001, 9, 6), ev9.getDate());
-		assertEquals(Long.valueOf(222), ev9.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev9.getPartyNumber());
 		assertEquals("037", ev9.getCode());
 
 		final CorporationEvent ev10 = events.get(10);
 		assertNotNull(ev10);
 		assertSameDay(newDate(2003, 4, 3), ev10.getDate());
-		assertEquals(Long.valueOf(222), ev10.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev10.getPartyNumber());
 		assertEquals("003", ev10.getCode());
 
 		final CorporationEvent ev11 = events.get(11);
 		assertNotNull(ev11);
 		assertSameDay(newDate(2003, 4, 3), ev11.getDate());
-		assertEquals(Long.valueOf(222), ev11.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev11.getPartyNumber());
 		assertEquals("003", ev11.getCode());
 
 		final CorporationEvent ev12 = events.get(12);
 		assertNotNull(ev12);
 		assertSameDay(newDate(2003, 4, 3), ev12.getDate());
-		assertEquals(Long.valueOf(222), ev12.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev12.getPartyNumber());
 		assertEquals("016", ev12.getCode());
 
 		final CorporationEvent ev13 = events.get(13);
 		assertNotNull(ev13);
 		assertSameDay(newDate(2003, 4, 3), ev13.getDate());
-		assertEquals(Long.valueOf(222), ev13.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev13.getPartyNumber());
 		assertEquals("023", ev13.getCode());
 
 		final CorporationEvent ev14 = events.get(14);
 		assertNotNull(ev14);
 		assertSameDay(newDate(2003, 11, 6), ev14.getDate());
-		assertEquals(Long.valueOf(222), ev14.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev14.getPartyNumber());
 		assertEquals("002", ev14.getCode());
 
 		final CorporationEvent ev15 = events.get(15);
 		assertNotNull(ev15);
 		assertSameDay(newDate(2003, 11, 6), ev15.getDate());
-		assertEquals(Long.valueOf(222), ev15.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev15.getPartyNumber());
 		assertEquals("002", ev15.getCode());
 	}
 
@@ -296,7 +296,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final SearchCorporationEventsRequest params = new SearchCorporationEventsRequest();
 		params.setLogin(login);
 		params.setEventCode("001");
-		params.setCorporationNumber(222L); // pas obligatoire, juste pour limiter le nombre de résultats
+		params.setCorporationNumber(222); // pas obligatoire, juste pour limiter le nombre de résultats
 
 		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
@@ -309,13 +309,13 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(ev0);
 		assertSameDay(newDate(1992, 1, 1), ev0.getDate());
 		assertEquals("001", ev0.getCode());
-		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev0.getPartyNumber());
 
 		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
 		assertSameDay(newDate(1992, 1, 1), ev1.getDate());
 		assertEquals("001", ev1.getCode());
-		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev1.getPartyNumber());
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setLogin(login);
 		params.setStartDate(newDate(2000, 1, 1));
 		params.setEndDate(newDate(2003, 7, 1));
-		params.setCorporationNumber(222L);
+		params.setCorporationNumber(222);
 
 		final SearchCorporationEventsResponse array = service.searchCorporationEvents(params);
 		assertNotNull(array);
@@ -341,37 +341,37 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(ev0);
 		assertSameDay(newDate(2000, 1, 1), ev0.getDate());
 		assertEquals("020", ev0.getCode());
-		assertEquals(Long.valueOf(222), ev0.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev0.getPartyNumber());
 
 		final CorporationEvent ev1 = events.get(1);
 		assertNotNull(ev1);
 		assertSameDay(newDate(2001, 9, 6), ev1.getDate());
 		assertEquals("037", ev1.getCode());
-		assertEquals(Long.valueOf(222), ev1.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev1.getPartyNumber());
 
 		final CorporationEvent ev2 = events.get(2);
 		assertNotNull(ev2);
 		assertSameDay(newDate(2003, 4, 3), ev2.getDate());
 		assertEquals("003", ev2.getCode());
-		assertEquals(Long.valueOf(222), ev2.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev2.getPartyNumber());
 
 		final CorporationEvent ev3 = events.get(3);
 		assertNotNull(ev3);
 		assertSameDay(newDate(2003, 4, 3), ev3.getDate());
 		assertEquals("003", ev3.getCode());
-		assertEquals(Long.valueOf(222), ev3.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev3.getPartyNumber());
 
 		final CorporationEvent ev4 = events.get(4);
 		assertNotNull(ev4);
 		assertSameDay(newDate(2003, 4, 3), ev4.getDate());
 		assertEquals("016", ev4.getCode());
-		assertEquals(Long.valueOf(222), ev4.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev4.getPartyNumber());
 
 		final CorporationEvent ev5 = events.get(5);
 		assertNotNull(ev5);
 		assertSameDay(newDate(2003, 4, 3), ev5.getDate());
 		assertEquals("023", ev5.getCode());
-		assertEquals(Long.valueOf(222), ev5.getPartyNumber());
+		assertEquals(Integer.valueOf(222), ev5.getPartyNumber());
 	}
 
 	@Test
@@ -424,7 +424,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération du compte bancaire de la PM
 
-		final BankAccount comptePM = (compte0.getOwnerPartyId() == pm.getNumber() ? compte0 : compte1);
+		final BankAccount comptePM = (compte0.getOwnerPartyNumber() == pm.getNumber() ? compte0 : compte1);
 		assertNotNull(comptePM);
 		assertEquals("<un numéro IBAN>", comptePM.getAccountNumber());
 		assertEquals("<un numéro de clearing>", comptePM.getClearing());
@@ -435,7 +435,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Récupération du compte bancaire du mandataire
 
-		final BankAccount compteMandataire = (compte0.getOwnerPartyId() == pm.getNumber() ? compte1 : compte0);
+		final BankAccount compteMandataire = (compte0.getOwnerPartyNumber() == pm.getNumber() ? compte1 : compte0);
 		assertNotNull(compteMandataire);
 		assertEquals("<un numéro IBAN>", compteMandataire.getAccountNumber());
 		assertEquals("<un numéro de clearing>", compteMandataire.getClearing());
@@ -466,7 +466,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final BankAccount compteMandataire = comptes.get(0);
 		assertNotNull(compteMandataire);
-		assertEquals(426, compteMandataire.getOwnerPartyId());
+		assertEquals(426, compteMandataire.getOwnerPartyNumber());
 		assertEquals("230-575.013.03", compteMandataire.getAccountNumber());
 		assertNull(compteMandataire.getClearing());
 		assertNull(compteMandataire.getBicAddress());

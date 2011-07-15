@@ -126,7 +126,8 @@ public class TiersWebServiceTest extends WebserviceTest {
 		// Demande de retourner les deux tiers en un seul batch
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getPartyNumbers().addAll(Arrays.asList(ids.paul, ids.janine));
+		params.getPartyNumbers().add((int) ids.paul);
+		params.getPartyNumbers().add((int) ids.janine);
 		params.getParts().addAll(Arrays.asList(PartyPart.TAX_RESIDENCES, PartyPart.VIRTUAL_TAX_RESIDENCES, PartyPart.ADDRESSES));
 
 		final BatchParty batch = service.getBatchParty(params);
@@ -136,7 +137,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		Collections.sort(batch.getEntries(), new Comparator<BatchPartyEntry>() {
 			@Override
 			public int compare(BatchPartyEntry o1, BatchPartyEntry o2) {
-				return Long.valueOf(o1.getNumber()).compareTo(o2.getNumber());
+				return Integer.valueOf(o1.getNumber()).compareTo(o2.getNumber());
 			}
 		});
 
@@ -207,7 +208,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setPartyNumber(ids.menage);
+			params.setPartyNumber(ids.menage.intValue());
 			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES, PartyPart.ADDRESSES));
 
 			final CommonHousehold menage = (CommonHousehold) service.getParty(params);
@@ -273,7 +274,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setPartyNumber(ids.menage);
+			params.setPartyNumber(ids.menage.intValue());
 			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
 
 			final CommonHousehold menage = (CommonHousehold) service.getParty(params);
@@ -351,7 +352,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setPartyNumber(ids.tiia);
+			params.setPartyNumber((int) ids.tiia);
 			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
 
 			final NaturalPerson tiia = (NaturalPerson) service.getParty(params);
@@ -433,7 +434,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
 		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
-		demande.getKey().setTaxpayerNumber(ids.ppId);
+		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
 		demande.getKey().setTaxPeriod(2009);
 
@@ -526,7 +527,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
 		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
-		demande.getKey().setTaxpayerNumber(ids.ppId);
+		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
 		demande.getKey().setTaxPeriod(annee);
 
@@ -640,7 +641,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
 			demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
 			demande.setKey(new OrdinaryTaxDeclarationKey());
-			demande.getKey().setTaxpayerNumber(ids.idCtb);
+			demande.getKey().setTaxpayerNumber((int) ids.idCtb);
 			demande.getKey().setSequenceNumber(1);
 			demande.getKey().setTaxPeriod(annee);
 			quittances.getRequests().add(demande);
@@ -743,7 +744,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		{
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setPartyNumber(id);
+			params.setPartyNumber(id.intValue());
 			params.getParts().addAll(Arrays.asList(PartyPart.VIRTUAL_TAX_RESIDENCES));
 
 			// on s'assure que l'appartenance ménage annulé n'est pas pris en compte (s'il l'était, on recevrait une exception avec le message "Détecté 2 fors fiscaux principaux valides à la même date")
@@ -824,7 +825,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
 		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
-		demande.getKey().setTaxpayerNumber(ids.ppId);
+		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(ids.noSequence);
 		demande.getKey().setTaxPeriod(annee);
 

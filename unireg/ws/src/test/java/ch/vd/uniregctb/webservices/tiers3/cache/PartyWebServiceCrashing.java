@@ -34,9 +34,9 @@ import ch.vd.uniregctb.webservices.tiers3.impl.ExceptionHelper;
 public class PartyWebServiceCrashing implements PartyWebService {
 
 	private PartyWebService target;
-	private Set<Long> idsToCrash = new HashSet<Long>();
+	private Set<Integer> idsToCrash = new HashSet<Integer>();
 
-	public PartyWebServiceCrashing(PartyWebService target, Long... idsToCrash) {
+	public PartyWebServiceCrashing(PartyWebService target, Integer... idsToCrash) {
 		this.target = target;
 		this.idsToCrash.addAll(Arrays.asList(idsToCrash));
 	}
@@ -47,7 +47,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 	}
 
 	@Override
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		return target.getModifiedTaxpayers(params);
 	}
 
@@ -73,9 +73,9 @@ public class PartyWebServiceCrashing implements PartyWebService {
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
-		Set<Long> idsOk = new HashSet<Long>();
-		Set<Long> idsKo = new HashSet<Long>();
-		for (Long id : params.getPartyNumbers()) {
+		Set<Integer> idsOk = new HashSet<Integer>();
+		Set<Integer> idsKo = new HashSet<Integer>();
+		for (Integer id : params.getPartyNumbers()) {
 			if (idsToCrash.contains(id)) {
 				idsKo.add(id);
 			}
@@ -85,11 +85,11 @@ public class PartyWebServiceCrashing implements PartyWebService {
 		}
 
 		// on effectue l'appel sur les ids non-impactés
-		final GetBatchPartyRequest okParams = new GetBatchPartyRequest(params.getLogin(), new ArrayList<Long>(idsOk), params.getParts());
+		final GetBatchPartyRequest okParams = new GetBatchPartyRequest(params.getLogin(), new ArrayList<Integer>(idsOk), params.getParts());
 		final BatchParty res = target.getBatchParty(okParams);
 
 		// on complète le résultat avec les ids crashés
-		for (Long id : idsKo) {
+		for (Integer id : idsKo) {
 			res.getEntries().add(new BatchPartyEntry(id, null, new TechnicalExceptionInfo("Exception de test")));
 		}
 
@@ -104,7 +104,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 
 	@Override
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
-		check(Long.valueOf(params.getNumber()));
+		check(Integer.valueOf(params.getNumber()));
 		return target.searchParty(params);
 	}
 
@@ -119,7 +119,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 		throw new NotImplementedException();
 	}
 
-	private void check(Long numero) throws WebServiceException {
+	private void check(Integer numero) throws WebServiceException {
 		if (idsToCrash.contains(numero)) {
 			throw ExceptionHelper.newTechnicalException("Exception de test");
 		}

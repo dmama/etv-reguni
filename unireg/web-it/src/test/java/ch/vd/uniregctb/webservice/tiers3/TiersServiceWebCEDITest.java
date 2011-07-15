@@ -333,7 +333,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 
 		GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber(ctbID);
+		params.setPartyNumber((int) ctbID);
 		params.getParts().add(PartyPart.TAX_DECLARATIONS);
 		params.getParts().add(PartyPart.TAX_DECLARATIONS_STATUSES);
 
@@ -371,7 +371,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		demande.setReturnDate(dateRetour);
 
 		final OrdinaryTaxDeclarationKey di0 = new OrdinaryTaxDeclarationKey();
-		di0.setTaxpayerNumber(ctbId);
+		di0.setTaxpayerNumber((int) ctbId);
 		di0.setSequenceNumber(numeroSequenceDI);
 		di0.setTaxPeriod(periodeFiscale);
 		demande.setKey(di0);

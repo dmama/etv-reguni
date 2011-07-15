@@ -171,7 +171,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 			}
 			else {
 				// trouvé des données dans le cache -> on détermine ce qui manque
-				final List<Long> uncachedIds = extractUncachedTiersHistoIds(params.getPartyNumbers(), cachedEntries);
+				final List<Integer> uncachedIds = extractUncachedTiersHistoIds(params.getPartyNumbers(), cachedEntries);
 				if (uncachedIds.isEmpty()) {
 					batch = new BatchParty();
 				}
@@ -232,18 +232,18 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	 * @param cachedEntries les données trouvées dans le cache
 	 * @return l'ensemble des ids non trouvés dans le cache.
 	 */
-	private List<Long> extractUncachedTiersHistoIds(List<Long> requestedIds, List<BatchPartyEntry> cachedEntries) {
-		final Set<Long> cachedIds = new HashSet<Long>(cachedEntries.size());
+	private List<Integer> extractUncachedTiersHistoIds(List<Integer> requestedIds, List<BatchPartyEntry> cachedEntries) {
+		final Set<Integer> cachedIds = new HashSet<Integer>(cachedEntries.size());
 		for (BatchPartyEntry entry : cachedEntries) {
 			cachedIds.add(entry.getNumber());
 		}
-		final Set<Long> uncached = new HashSet<Long>(requestedIds.size() - cachedIds.size());
-		for (Long id : requestedIds) {
+		final Set<Integer> uncached = new HashSet<Integer>(requestedIds.size() - cachedIds.size());
+		for (Integer id : requestedIds) {
 			if (!cachedIds.contains(id)) {
 				uncached.add(id);
 			}
 		}
-		return new ArrayList<Long>(uncached);
+		return new ArrayList<Integer>(uncached);
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 
 		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<PartyPart>(params.getParts()));
 
-		for (Long id : params.getPartyNumbers()) {
+		for (Integer id : params.getPartyNumbers()) {
 			final GetPartyKey key = new GetPartyKey(id);
 
 			final Element element = cache.get(key);
@@ -367,7 +367,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	}
 
 	@Override
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		//données mouvantes inutile de cacher
 		return target.getModifiedTaxpayers(params);
 	}

@@ -165,19 +165,19 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		GetPartyRequest paramsNoPart = new GetPartyRequest();
 		paramsNoPart.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		paramsNoPart.setPartyNumber(ids.eric);
+		paramsNoPart.setPartyNumber(ids.eric.intValue());
 
 		final Set<PartyPart> adressesPart = new HashSet<PartyPart>();
 		adressesPart.add(PartyPart.ADDRESSES);
 
 		final GetPartyRequest paramsAdressePart = new GetPartyRequest();
 		paramsAdressePart.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		paramsAdressePart.setPartyNumber(ids.eric);
+		paramsAdressePart.setPartyNumber(ids.eric.intValue());
 		paramsAdressePart.getParts().add(PartyPart.ADDRESSES);
 
 		final GetPartyRequest paramsForsPart = new GetPartyRequest();
 		paramsForsPart.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		paramsForsPart.setPartyNumber(ids.eric);
+		paramsForsPart.setPartyNumber(ids.eric.intValue());
 		paramsForsPart.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		final Set<PartyPart> forsEtAdressesParts = new HashSet<PartyPart>();
@@ -186,7 +186,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		final GetPartyRequest paramsForsEtAdressesParts = new GetPartyRequest();
 		paramsForsEtAdressesParts.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		paramsForsEtAdressesParts.setPartyNumber(ids.eric);
+		paramsForsEtAdressesParts.setPartyNumber(ids.eric.intValue());
 		paramsForsEtAdressesParts.getParts().add(PartyPart.ADDRESSES);
 		paramsForsEtAdressesParts.getParts().add(PartyPart.TAX_RESIDENCES);
 
@@ -229,7 +229,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		for (PartyPart p : PartyPart.values()) {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-			params.setPartyNumber(ids.menage);
+			params.setPartyNumber(ids.menage.intValue());
 			params.getParts().add(p);
 			assertOnlyPart(p, cache.getParty(params));
 		}
@@ -238,7 +238,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		for (PartyPart p : PartyPart.values()) {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-			params.setPartyNumber(ids.menage);
+			params.setPartyNumber(ids.menage.intValue());
 			params.getParts().add(p);
 			assertOnlyPart(p, cache.getParty(params));
 		}
@@ -251,14 +251,14 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setPartyNumber(ids.eric);
+		params.setPartyNumber(ids.eric.intValue());
 
 		assertNotNull(cache.getParty(params));
 		assertNotNull(getCacheValue(params.getPartyNumber()));
 
 		GetPartyRequest paramsHisto = new GetPartyRequest();
 		paramsHisto.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		paramsHisto.setPartyNumber(ids.eric);
+		paramsHisto.setPartyNumber(ids.eric.intValue());
 
 		assertNotNull(cache.getParty(paramsHisto));
 		assertNotNull(getCacheValue(paramsHisto.getPartyNumber()));
@@ -283,7 +283,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		// On charge le cache avec le ménage commun
 		GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setPartyNumber(ids.menage);
+		params.setPartyNumber(ids.menage.intValue());
 		params.getParts().add(PartyPart.ADDRESSES);
 
 		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(params);
@@ -350,7 +350,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		GetDebtorInfoRequest params = new GetDebtorInfoRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setDebtorNumber(ids.debiteur);
+		params.setDebtorNumber(ids.debiteur.intValue());
 		params.setTaxPeriod(2010);
 
 		assertNotNull(cache.getDebtorInfo(params));
@@ -391,7 +391,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setPartyNumber(ids.monsieur);
+		params.setPartyNumber(ids.monsieur.intValue());
 
 		// 1. on demande le tiers avec les fors fiscaux virtuels
 		{
@@ -442,7 +442,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setPartyNumber(ids.menage);
+		params.setPartyNumber(ids.menage.intValue());
 
 		// 1. on demande le tiers avec les déclarations et leurs états
 		{
@@ -515,8 +515,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.getPartyNumbers().add(ids.monsieur);
-		params.getPartyNumbers().add(ids.madame);
+		params.getPartyNumbers().add(ids.monsieur.intValue());
+		params.getPartyNumbers().add(ids.madame.intValue());
 
 		// Etat initial : aucun appel au web-service
 		assertEmpty(implementation.getBatchTiersCalls);
@@ -560,7 +560,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel : avec un tiers de plus
 		{
-			params.getPartyNumbers().add(ids.eric);
+			params.getPartyNumbers().add(ids.eric.intValue());
 
 			final BatchParty batch = cache.getBatchParty(params);
 			assertNotNull(batch);
@@ -603,11 +603,11 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.getPartyNumbers().add(ids.monsieur);
-		params.getPartyNumbers().add(ids.madame);
+		params.getPartyNumbers().add(ids.monsieur.intValue());
+		params.getPartyNumbers().add(ids.madame.intValue());
 
 		// on intercale une implémentation du web-service qui lèvera une exception lors de la récupération de madame
-		cache.setTarget(new PartyWebServiceCrashing(implementation, ids.madame));
+		cache.setTarget(new PartyWebServiceCrashing(implementation, ids.madame.intValue()));
 
 		// 1er appel : monsieur est correctement récupéré et une exception est retournée à la place de madame.
 		{

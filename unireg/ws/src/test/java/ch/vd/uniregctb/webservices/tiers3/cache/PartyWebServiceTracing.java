@@ -48,7 +48,7 @@ public class PartyWebServiceTracing implements PartyWebService {
 	}
 
 	@Override
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		getListeCtbModifiesCalls.add(params);
 		return target.getModifiedTaxpayers(params);
 	}

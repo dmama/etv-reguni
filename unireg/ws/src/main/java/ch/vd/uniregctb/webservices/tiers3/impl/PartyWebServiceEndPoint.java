@@ -50,7 +50,8 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@WebService(targetNamespace = "http://www.vd.ch/unireg/webservices/tiers3", serviceName = "PartyWebServiceFactory", portName = "Service", endpointInterface = "ch.vd.unireg.webservices.tiers3.PartyWebService")
+@WebService(targetNamespace = "http://www.vd.ch/unireg/webservices/tiers3", serviceName = "PartyWebServiceFactory", portName = "Service",
+		endpointInterface = "ch.vd.unireg.webservices.tiers3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceEndPoint.class);
@@ -175,7 +176,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 
 				batch = new BatchParty();
 
-				final Long numero = params.getPartyNumbers().iterator().next();
+				final Integer numero = params.getPartyNumbers().iterator().next();
 				try {
 					final GetPartyRequest p = new GetPartyRequest();
 					p.setLogin(params.getLogin());
@@ -342,7 +343,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	}
 
 	@Override
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -452,7 +453,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 				ids.add(null);
 			}
 			else {
-				ids.add(e.getNumber());
+				ids.add((long) e.getNumber());
 			}
 		}
 		Assert.isTrue(ids.size() == size);

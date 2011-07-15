@@ -17,7 +17,8 @@ public class FamilyStatusBuilder {
 			final ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun situtationMenage = (ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun) situation;
 
 			s.setApplicableTariff(EnumHelper.coreToWeb(situtationMenage.getTarifApplicable()));
-			s.setMainTaxpayerNumber(situtationMenage.getNumeroContribuablePrincipal());
+			final Long numeroContribuablePrincipal = situtationMenage.getNumeroContribuablePrincipal();
+			s.setMainTaxpayerNumber(numeroContribuablePrincipal == null ? null : numeroContribuablePrincipal.intValue());
 		}
 
 		s.setMaritalStatus(EnumHelper.coreToWeb(situation.getEtatCivil()));

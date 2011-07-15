@@ -118,8 +118,8 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(new UserLogin("iamtestuser", 22));
-		params.getPartyNumbers().add(ids.a);
-		params.getPartyNumbers().add(ids.b);
+		params.getPartyNumbers().add((int) ids.a);
+		params.getPartyNumbers().add((int) ids.b);
 		params.getPartyNumbers().add(null);
 
 		BatchParty results = endpoint.getBatchParty(params);
@@ -130,7 +130,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		Collections.sort(list, new Comparator<BatchPartyEntry>() {
 			@Override
 			public int compare(BatchPartyEntry o1, BatchPartyEntry o2) {
-				return Long.valueOf(o1.getNumber()).compareTo(o2.getNumber());
+				return Integer.valueOf(o1.getNumber()).compareTo(o2.getNumber());
 			}
 		});
 

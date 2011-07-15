@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.tiers3.perfs;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -63,9 +64,9 @@ public class PerfsThread extends Thread {
 			this.parts = Collections.unmodifiableSet(parts);
 		}
 
-		public abstract Object execute(PartyWebService service, long id) throws WebServiceException;
+		public abstract Object execute(PartyWebService service, int id) throws WebServiceException;
 
-		public abstract List<?> executeBatch(PartyWebService port, Collection<Long> ids) throws WebServiceException;
+		public abstract List<?> executeBatch(PartyWebService port, Collection<Integer> ids) throws WebServiceException;
 
 		public abstract String description();
 
@@ -112,7 +113,7 @@ public class PerfsThread extends Thread {
 		}
 
 		@Override
-		public Object execute(PartyWebService service, long id) throws WebServiceException {
+		public Object execute(PartyWebService service, int id) throws WebServiceException {
 
 			GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
@@ -127,7 +128,7 @@ public class PerfsThread extends Thread {
 		}
 
 		@Override
-		public List<?> executeBatch(PartyWebService port, Collection<Long> ids) throws WebServiceException {
+		public List<?> executeBatch(PartyWebService port, Collection<Integer> ids) throws WebServiceException {
 			GetBatchPartyRequest params = new GetBatchPartyRequest();
 			params.setLogin(login);
 			params.getPartyNumbers().addAll(ids);
@@ -154,7 +155,7 @@ public class PerfsThread extends Thread {
 		}
 
 		@Override
-		public Object execute(PartyWebService service, long id) throws WebServiceException {
+		public Object execute(PartyWebService service, int id) throws WebServiceException {
 
 			// Récupère le tiers
 
@@ -198,7 +199,7 @@ public class PerfsThread extends Thread {
 		}
 
 		@Override
-		public List<?> executeBatch(PartyWebService port, Collection<Long> ids) {
+		public List<?> executeBatch(PartyWebService port, Collection<Integer> ids) {
 			throw new NotImplementedException();
 		}
 
@@ -246,7 +247,7 @@ public class PerfsThread extends Thread {
 				long before = System.nanoTime();
 
 				// exécution de la requête
-				Object tiers = query.execute(service, id);
+				Object tiers = query.execute(service, id.intValue());
 
 				long after = System.nanoTime();
 				long delta = after - before;
@@ -289,7 +290,7 @@ public class PerfsThread extends Thread {
 				long before = System.nanoTime();
 
 				// exécution de la requête
-				List<?> tiers = query.executeBatch(service, batch);
+				List<?> tiers = query.executeBatch(service, toIntegerList(batch));
 
 				long after = System.nanoTime();
 				long delta = after - before;
@@ -310,6 +311,17 @@ public class PerfsThread extends Thread {
 			}
 
 		}
+	}
+
+	private static List<Integer> toIntegerList(List<Long> list) {
+		if (list == null || list.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<Integer> res = new ArrayList<Integer>(list.size());
+		for (Long l : list) {
+			res.add(l.intValue());
+		}
+		return res;
 	}
 
 	public int getErrorsCount() {

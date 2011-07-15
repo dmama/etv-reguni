@@ -234,17 +234,18 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@Override
 	public BatchParty getBatchParty(final GetBatchPartyRequest params) throws WebServiceException {
 		try {
-			if (params.getPartyNumbers() == null || params.getPartyNumbers().isEmpty()) {
+			final List<Integer> partyNumbers = params.getPartyNumbers();
+			if (partyNumbers == null || partyNumbers.isEmpty()) {
 				return new BatchParty();
 			}
 
-			if (params.getPartyNumbers().size() > MAX_BATCH_SIZE) {
+			if (partyNumbers.size() > MAX_BATCH_SIZE) {
 				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
 				LOGGER.error(message);
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INVALID_REQUEST);
 			}
 
-			final Map<Long, Object> results = mapParties(new HashSet<Long>(params.getPartyNumbers()), null, DataHelper.toSet(params.getParts()), new MapCallback() {
+			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.toSet(params.getParts()), new MapCallback() {
 				@Override
 				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<PartyPart> parts, RegDate date, Context context) {
 					try {
@@ -282,6 +283,16 @@ public class PartyWebServiceImpl implements PartyWebService {
 			LOGGER.error(e, e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
+	}
+
+	private static HashSet<Long> toLongSet(List<Integer> partyNumbers) {
+		final HashSet<Long> numbers = new HashSet<Long>(partyNumbers.size());
+		for (Integer n : partyNumbers) {
+			if (n != null) {
+				numbers.add(n.longValue());
+			}
+		}
+		return numbers;
 	}
 
 	/**
@@ -574,7 +585,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 
 		try {
 			final Date searchBeginDate = XmlUtils.xmlcal2date(params.getSearchBeginDate());
@@ -584,7 +595,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 						BusinessExceptionCode.INVALID_REQUEST);
 			}
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(searchBeginDate, searchEndDate);
-			return listCtb.toArray(new Long[listCtb.size()]);
+			final List<Integer> list = new ArrayList<Integer>(listCtb.size());
+			for (Long l : listCtb) {
+				list.add(l.intValue());
+			}
+			return list.toArray(new Integer[list.size()]);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -620,7 +635,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	private TaxDeclarationReturnResponse handleRequest(TaxDeclarationReturnRequest demande) throws TaxDeclarationReturnError {
 
-		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get(demande.getKey().getTaxpayerNumber());
+		final int number = demande.getKey().getTaxpayerNumber();
+		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get((long) number);
 		if (ctb == null) {
 			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
 		}

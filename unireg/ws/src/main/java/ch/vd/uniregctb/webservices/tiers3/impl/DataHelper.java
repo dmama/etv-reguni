@@ -228,7 +228,7 @@ public class DataHelper {
 		}
 
 		final PartyInfo i = new PartyInfo();
-		i.setNumber(value.getNumero());
+		i.setNumber(value.getNumero().intValue());
 		i.setName1(value.getNom1());
 		i.setName2(value.getNom2());
 		i.setStreet(value.getRue());

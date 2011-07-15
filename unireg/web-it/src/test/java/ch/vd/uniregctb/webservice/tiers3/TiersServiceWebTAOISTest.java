@@ -97,7 +97,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		params.setSearchBeginDate(calDebut);
 		params.setSearchEndDate(calFin);
 
-		Long[] arraytTiersId = service.getModifiedTaxpayers(params);
+		Integer[] arraytTiersId = service.getModifiedTaxpayers(params);
 
 		assertNotNull(arraytTiersId);
 		assertEquals(9, arraytTiersId.length);
@@ -227,7 +227,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final FamilyStatus situationFamille = situations.get(0);
 		assertNotNull(situationFamille);
 		assertEquals(WithholdingTaxTariff.NORMAL, situationFamille.getApplicableTariff());
-		assertEquals(Long.valueOf(12600003), situationFamille.getMainTaxpayerNumber());
+		assertEquals(Integer.valueOf(12600003), situationFamille.getMainTaxpayerNumber());
 	}
 
 	@Test
@@ -494,7 +494,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final FamilyStatus situation = situations.get(0);
 		assertNotNull(situation);
-		assertEquals(Long.valueOf(12600003), situation.getMainTaxpayerNumber());
+		assertEquals(Integer.valueOf(12600003), situation.getMainTaxpayerNumber());
 	}
 
 	@Test
@@ -512,7 +512,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		final long contribuableId = debiteur.getAssociatedTaxpayerNumber();
 		assertEquals(43308102L, contribuableId);
 
-		params.setPartyNumber(contribuableId);
+		params.setPartyNumber((int) contribuableId);
 
 		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
 		assertNotNull(personne);
@@ -851,7 +851,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber(numeroCtb); // Café du Commerce
+		params.setPartyNumber(numeroCtb.intValue()); // Café du Commerce
 		params.getParts().add(PartyPart.TAX_DECLARATIONS);
 
 		final Debtor debiteur = (Debtor) service.getParty(params);
@@ -917,7 +917,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		GetDebtorInfoRequest params = new GetDebtorInfoRequest();
 		params.setLogin(login);
-		params.setDebtorNumber(1678432L); // débiteur trimestriel
+		params.setDebtorNumber(1678432); // débiteur trimestriel
 
 		// 2008
 		params.setTaxPeriod(2008);
@@ -943,7 +943,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		GetDebtorInfoRequest params = new GetDebtorInfoRequest();
 		params.setLogin(login);
-		params.setDebtorNumber(1877222L); // débiteur inconnu
+		params.setDebtorNumber(1877222); // débiteur inconnu
 		params.setTaxPeriod(2008);
 
 		// 2008

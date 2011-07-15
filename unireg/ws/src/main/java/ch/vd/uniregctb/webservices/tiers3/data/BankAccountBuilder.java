@@ -12,7 +12,7 @@ public class BankAccountBuilder {
 	public static BankAccount newBankAccount(ch.vd.uniregctb.tiers.Tiers tiers, Context context) {
 		final BankAccount c = new BankAccount();
 
-		c.setOwnerPartyId(tiers.getNumero());
+		c.setOwnerPartyNumber(tiers.getNumero().intValue());
 		c.setOwnerName(tiers.getTitulaireCompteBancaire());
 		c.setAccountNumber(tiers.getNumeroCompteBancaire());
 		c.setFormat(AccountNumberFormat.IBAN); // par définition, on ne stocke que le format IBAN dans Unireg

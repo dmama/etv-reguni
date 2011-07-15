@@ -50,7 +50,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableCelibataire() throws Exception {
 
-		final long noTiers = 44018108;
+		final int noTiers = 44018108;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -80,9 +80,9 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableCouple() throws Exception {
 
-		final long noTiersMenage = 10069459;
-		final long noTiersPrincipal;
-		final long noTiersConjoint;
+		final int noTiersMenage = 10069459;
+		final int noTiersPrincipal;
+		final int noTiersConjoint;
 
 		// détermination des composants du ménage
 		{
@@ -157,7 +157,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableSousCuratelle() throws Exception {
 
-		final long noTiers = 89016804;
+		final int noTiers = 89016804;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -189,7 +189,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableSousTutelle() throws Exception {
 
-		final long noTiers = 60510843;
+		final int noTiers = 60510843;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -223,7 +223,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableHSAvecRepresentantConventionel() throws Exception {
 
-		final long noTiers = 10536395;
+		final int noTiers = 10536395;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -255,7 +255,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableVDAvecRepresentantConventionel() throws Exception {
 
-		final long noTiers = 10033975;
+		final int noTiers = 10033975;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -282,7 +282,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableAvecAdresseSpecifiquePoursuite() throws Exception {
 
-		final long noTiers = 44018109;
+		final int noTiers = 44018109;
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);

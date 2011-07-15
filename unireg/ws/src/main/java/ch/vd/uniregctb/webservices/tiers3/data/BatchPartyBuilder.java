@@ -14,14 +14,14 @@ public class BatchPartyBuilder {
 			for (Map.Entry<Long, Object> e : map.entrySet()) {
 				final Long id = e.getKey();
 				if (id != null) {
-					b.getEntries().add(newBatchPartyEntry(id, e.getValue()));
+					b.getEntries().add(newBatchPartyEntry(id.intValue(), e.getValue()));
 				}
 			}
 		}
 		return b;
 	}
 
-	public static BatchPartyEntry newBatchPartyEntry(long numero, Object value) {
+	public static BatchPartyEntry newBatchPartyEntry(int numero, Object value) {
 		final BatchPartyEntry b = new BatchPartyEntry();
 		b.setNumber(numero);
 		if (value == null) {

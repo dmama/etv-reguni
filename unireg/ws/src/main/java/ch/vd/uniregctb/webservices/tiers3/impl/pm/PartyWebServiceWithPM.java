@@ -120,7 +120,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 	@Transactional(readOnly = true)
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
 		if (isCorporation(params.getPartyNumber())) {
-			return existsCorporation(params.getPartyNumber()) ? PartyType.CORPORATION : null;
+			return existsCorporation((long) params.getPartyNumber()) ? PartyType.CORPORATION : null;
 		}
 		else {
 			return target.getPartyType(params);
@@ -148,9 +148,9 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		}
 
 		// sépare les ids PP des ids PM
-		final Set<Long> idsPP = new HashSet<Long>();
-		final Set<Long> idsPM = new HashSet<Long>();
-		for (Long id : params.getPartyNumbers()) {
+		final Set<Integer> idsPP = new HashSet<Integer>();
+		final Set<Integer> idsPM = new HashSet<Integer>();
+		for (Integer id : params.getPartyNumbers()) {
 			if (isCorporation(id)) {
 				idsPM.add(id);
 			}
@@ -177,7 +177,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		if (!idsPM.isEmpty()) {
 			final HashSet<PartyPart> parts = (params.getParts() == null ? null : new HashSet<PartyPart>(params.getParts()));
 			batchPM = new BatchParty();
-			for (Long id : idsPM) {
+			for (Integer id : idsPM) {
 				final Corporation pmHisto = getCorporation(id, parts);
 				if (pmHisto != null) {
 					final BatchPartyEntry entry = new BatchPartyEntry();
@@ -208,10 +208,10 @@ public class PartyWebServiceWithPM implements PartyWebService {
 	@Transactional(rollbackFor = Throwable.class)
 	public void setAutomaticReimbursementBlocking(SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
 
-		if (isCorporation(params.getPartyNumber()) && !tiersDAO.exists(params.getPartyNumber())) {
+		if (isCorporation(params.getPartyNumber()) && !tiersDAO.exists((long) params.getPartyNumber())) {
 			// [UNIREG-2040] on crée l'entreprise à la volée
 			Entreprise e = new Entreprise();
-			e.setNumero(params.getPartyNumber());
+			e.setNumero((long) params.getPartyNumber());
 			tiersDAO.save(e);
 		}
 
@@ -242,7 +242,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 	}
 
 	@Override
-	public Long[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		return target.getModifiedTaxpayers(params);
 	}
 
@@ -276,7 +276,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		}
 
 		final Corporation corp = new Corporation();
-		corp.setNumber(hostCorp.getNumeroEntreprise());
+		corp.setNumber((int) hostCorp.getNumeroEntreprise());
 		corp.setBusinessPhoneNumber(hostCorp.getTelephoneContact());
 		corp.setFaxNumber(hostCorp.getTelecopieContact());
 
@@ -377,7 +377,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 
 					BankAccount cb = new BankAccount();
-					cb.setOwnerPartyId(m.getNumeroMandataire());
+					cb.setOwnerPartyNumber((int) m.getNumeroMandataire());
 
 					// on rempli les informations à partir du mandataire
 					fillBankAccountFromRepresentative(cb, m);
@@ -505,7 +505,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		final SearchCorporationEventsResponse response = new SearchCorporationEventsResponse();
 		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
 			CorporationEvent event = new CorporationEvent();
-			event.setPartyNumber(e.getNumeroPM());
+			event.setPartyNumber(e.getNumeroPM().intValue());
 			event.setDate(DataHelper.coreToWeb(e.getDate()));
 			event.setCode(e.getCode());
 			response.getEvents().add(event);

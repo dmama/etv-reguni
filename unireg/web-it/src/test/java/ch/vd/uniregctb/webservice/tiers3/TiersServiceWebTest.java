@@ -131,7 +131,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final Debtor debiteur = (Debtor) service.getParty(params);
 		assertNotNull(debiteur);
-		assertEquals(Long.valueOf(12100002L), debiteur.getAssociatedTaxpayerNumber());
+		assertEquals(Integer.valueOf(12100002), debiteur.getAssociatedTaxpayerNumber());
 		assertEquals("Employeur personnel menage", debiteur.getComplementaryName());
 		assertEquals(DebtorCategory.ADMINISTRATORS, debiteur.getCategory());
 		assertEquals(CommunicationMode.PAPER, debiteur.getCommunicationMode());
@@ -514,7 +514,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(situation.getDateTo());
 		assertEquals(new Integer(0), situation.getNumberOfChildren());
 		assertEquals(WithholdingTaxTariff.NORMAL, situation.getApplicableTariff()); // seulement renseigné sur un couple
-		assertEquals(Long.valueOf(12100002L), situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
+		assertEquals(Integer.valueOf(12100002), situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
 	}
 
 	@Test
@@ -549,7 +549,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		Collections.sort(rapportsMenage, new Comparator<RelationBetweenParties>() {
 			@Override
 			public int compare(RelationBetweenParties r1, RelationBetweenParties r2) {
-				return (int) (r1.getOtherPartyNumber() - r2.getOtherPartyNumber());
+				return (r1.getOtherPartyNumber() - r2.getOtherPartyNumber());
 			}
 		});
 		assertEquals(2, rapportsMenage.size());
@@ -875,7 +875,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetPartyTypeRequest params = new GetPartyTypeRequest();
 		params.setLogin(login);
-		params.setPartyNumber(32323232L); // inconnu
+		params.setPartyNumber(32323232); // inconnu
 
 		assertNull(service.getPartyType(params));
 	}
@@ -888,7 +888,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber(32323232L); // inconnu
+		params.setPartyNumber(32323232); // inconnu
 
 		assertNull(service.getParty(params));
 	}
@@ -1006,7 +1006,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getPartyNumbers().add(32323232L); // inconnu
+		params.getPartyNumbers().add(32323232); // inconnu
 
 		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
@@ -1021,7 +1021,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getPartyNumbers().add(12100003L);
+		params.getPartyNumbers().add(12100003);
 
 		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
@@ -1044,37 +1044,37 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getPartyNumbers().add(77714803L);
-		params.getPartyNumbers().add(12100003L);
-		params.getPartyNumbers().add(34777810L);
-		params.getPartyNumbers().add(12100001L);
-		params.getPartyNumbers().add(12100002L);
-		params.getPartyNumbers().add(86116202L);
-		params.getPartyNumbers().add(12500001L);
-		params.getPartyNumbers().add(12600101L);
-		params.getPartyNumbers().add(10035633L);
+		params.getPartyNumbers().add(77714803);
+		params.getPartyNumbers().add(12100003);
+		params.getPartyNumbers().add(34777810);
+		params.getPartyNumbers().add(12100001);
+		params.getPartyNumbers().add(12100002);
+		params.getPartyNumbers().add(86116202);
+		params.getPartyNumbers().add(12500001);
+		params.getPartyNumbers().add(12600101);
+		params.getPartyNumbers().add(10035633);
 		final int size = params.getPartyNumbers().size();
 
 		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);
 		assertEquals(size, batch.getEntries().size());
 
-		final Set<Long> ids = new HashSet<Long>();
+		final Set<Integer> ids = new HashSet<Integer>();
 		for (BatchPartyEntry entry : batch.getEntries()) {
 			ids.add(entry.getNumber());
 			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getParty());
 			assertNull(entry.getExceptionInfo());
 		}
 		assertEquals(size, ids.size());
-		assertTrue(ids.contains(77714803L));
-		assertTrue(ids.contains(12100003L));
-		assertTrue(ids.contains(34777810L));
-		assertTrue(ids.contains(12100001L));
-		assertTrue(ids.contains(12100002L));
-		assertTrue(ids.contains(86116202L));
-		assertTrue(ids.contains(12500001L));
-		assertTrue(ids.contains(12600101L));
-		assertTrue(ids.contains(10035633L));
+		assertTrue(ids.contains(77714803));
+		assertTrue(ids.contains(12100003));
+		assertTrue(ids.contains(34777810));
+		assertTrue(ids.contains(12100001));
+		assertTrue(ids.contains(12100002));
+		assertTrue(ids.contains(86116202));
+		assertTrue(ids.contains(12500001));
+		assertTrue(ids.contains(12600101));
+		assertTrue(ids.contains(10035633));
 	}
 
 	/**
@@ -1085,7 +1085,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(zciddo); // Daniel Di Lallo
-		params.getPartyNumbers().add(10149508L); // Pascal Broulis
+		params.getPartyNumbers().add(10149508); // Pascal Broulis
 
 		final BatchParty batch = service.getBatchParty(params);
 		assertNotNull(batch);

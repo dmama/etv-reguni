@@ -62,7 +62,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	protected void initBase(T to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws WebServiceException {
-		to.setNumber(from.getNumero());
+		to.setNumber(from.getNumero().intValue());
 		to.setComplementaryName(from.getComplementNom());
 		to.setCancellationDate(DataHelper.coreToWeb(from.getAnnulationDate()));
 		to.setContactPerson(from.getPersonneContact());
