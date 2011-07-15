@@ -60,16 +60,18 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns2:evenement xmlns:ns2=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
+						"<ns3:evenement " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
 						"xmlns=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1\" " +
+						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns2:evenementEmissionDeclarationImpotType\">" +
+						"xsi:type=\"ns3:evenementEmissionDeclarationImpotType\">" +
 						"<periodeFiscale>2000</periodeFiscale>" +
 						"<numeroContribuable>12344556</numeroContribuable>" +
-						"<date><year>2000</year><month>1</month><day>1</day></date>" +
-						"<ns2:codeControle>2X3ff%</ns2:codeControle>" +
-						"<ns2:codeRoutage>A14</ns2:codeRoutage>" +
-						"</ns2:evenement>");
+						"<date><ns2:year>2000</ns2:year><ns2:month>1</ns2:month><ns2:day>1</ns2:day></date>" +
+						"<ns3:codeControle>2X3ff%</ns3:codeControle>" +
+						"<ns3:codeRoutage>A14</ns3:codeRoutage>" +
+						"</ns3:evenement>");
 	}
 
 	@Test
@@ -78,14 +80,16 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns2:evenement xmlns:ns2=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
+						"<ns3:evenement " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
 						"xmlns=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1\" " +
+						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns2:evenementAnnulationDeclarationImpotType\">" +
+						"xsi:type=\"ns3:evenementAnnulationDeclarationImpotType\">" +
 						"<periodeFiscale>2000</periodeFiscale>" +
 						"<numeroContribuable>12344556</numeroContribuable>" +
-						"<date><year>2000</year><month>1</month><day>1</day></date>" +
-						"</ns2:evenement>");
+						"<date><ns2:year>2000</ns2:year><ns2:month>1</ns2:month><ns2:day>1</ns2:day></date>" +
+						"</ns3:evenement>");
 	}
 
 	@Test
@@ -96,7 +100,7 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		}
 		catch (EvenementDeclarationException e) {
 			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException: " +
-					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'numeroContribuableType'.", e.getMessage());
+					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'partyNumberType'.", e.getMessage());
 		}
 	}
 
@@ -108,7 +112,7 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		}
 		catch (EvenementDeclarationException e) {
 			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException: " +
-					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'numeroContribuableType'.", e.getMessage());
+					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'partyNumberType'.", e.getMessage());
 		}
 	}
 }

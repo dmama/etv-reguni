@@ -72,11 +72,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 	}
 
 	private static Date regdate2xml(RegDate date) {
-		final Date d = new Date();
-		d.setYear(date.year());
-		d.setMonth(date.month());
-		d.setDay(date.day());
-		return d;
+		return new Date(date.year(), date.month(), date.day());
 	}
 
 	private void sendEvent(EvenementDeclarationImpot evenement) throws EvenementDeclarationException {
