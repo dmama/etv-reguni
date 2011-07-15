@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/party.xsd" />
 	<xs:complexType name="searchPartyRequestType">
@@ -27,7 +31,7 @@
 							<xs:documentation>Critère sur la localité (ou le pays pour les tiers hors-Suisse) de l'adresse courrier du tiers</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateOfBirth" type="unireg:dateType">
+					<xs:element minOccurs="0" name="dateOfBirth" type="common:dateType">
 						<xs:annotation>
 							<xs:documentation>Critère de recherche sur la date de naissance du tiers. Les ménages communs composés de personnes physiques qui correspondent au critère sont aussi
 								retournés.

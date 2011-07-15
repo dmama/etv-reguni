@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="party.xsd" />
 	<xs:complexType abstract="true" name="taxpayerType">
 		<xs:annotation>
@@ -55,17 +59,17 @@
 			<xs:documentation>Contient la situation familliale d'un contribuable d'un point de vue fiscal.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de la situation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de la situation. Si elle est toujours active, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</xs:documentation>
 				</xs:annotation>
@@ -90,7 +94,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="mainTaxpayerNumber" type="xs:long">
+			<xs:element minOccurs="0" name="mainTaxpayerNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Numéro du contribuable principal d'un couple sourcier.
 						Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:

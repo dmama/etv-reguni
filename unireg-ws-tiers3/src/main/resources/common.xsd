@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="unireg-common-1.xsd" />
+
 	<xs:complexType name="userLoginType">
 		<xs:annotation>
 			<xs:documentation>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</xs:documentation>
@@ -19,28 +23,6 @@
 						certains utilisateurs possèdent plus d'un rattachement à un office d'impôt. Ces utilisateurs doivent sélectionner un office d'impôt bien précis au moment du login, et ce choix
 						doit être propagé à tous les systèmes.
 					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="dateType">
-		<xs:annotation>
-			<xs:documentation>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="year" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>L'année sur 4 digits (e.g. 1337, 2001, 2400, ...).</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="month" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>Le mois (1..12). En cas de date partielle, la valeur peut être 0.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="day" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>Le jour (1..31). En cas de date partielle, la valeur peut être 0.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -278,10 +260,10 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:simpleType name="idListType">
+	<xs:simpleType name="partyNumberListType">
 		<xs:annotation>
-			<xs:documentation>Une liste d'ids d'éléments (tiers ou autres, en fonction du contexte d'utilisation).</xs:documentation>
+			<xs:documentation>Une liste de numéros de tiers.</xs:documentation>
 		</xs:annotation>
-		<xs:list itemType="xs:long" />
+		<xs:list itemType="common:partyNumberType" />
 	</xs:simpleType>
 </xs:schema>

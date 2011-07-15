@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="party.xsd" />
 	<xs:complexType name="debtorType">
 		<xs:annotation>
@@ -42,7 +46,7 @@
 							<xs:documentation>L'id du logiciel utilisé par le débiteur pour remplir et retourner ses LRs.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="associatedTaxpayerNumber" type="xs:long">
+					<xs:element minOccurs="0" name="associatedTaxpayerNumber" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</xs:documentation>
 						</xs:annotation>
@@ -63,7 +67,7 @@
 			<xs:documentation>Informations métier supplémentaires sur d'un débiteur de prestations imposables (voir cas JIRA UNIREG-2110).</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="xs:long">
+			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de tiers du débiteur.</xs:documentation>
 				</xs:annotation>
@@ -127,17 +131,17 @@
 			<xs:documentation>Mode et fréquence d'envoi des LRs d'un débiteur pendant une période donnée.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date de début.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date de fin.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date d'annulation.</xs:documentation>
 				</xs:annotation>

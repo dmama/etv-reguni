@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="base.xsd" />
 	<xs:include schemaLocation="../data/party.xsd" />
 	<xs:complexType name="getBatchPartyRequestType">
@@ -10,7 +14,7 @@
 		<xs:complexContent>
 			<xs:extension base="unireg:requestType">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" name="partyNumbers" type="xs:long">
+					<xs:element maxOccurs="unbounded" name="partyNumbers" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:documentation>Les ids des tiers à retourner</xs:documentation>
 						</xs:annotation>
@@ -34,7 +38,7 @@
 			<xs:documentation>Les données trouvées pour un tiers demandé à travers la méthode 'getBatchParty'.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="xs:long">
+			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de tiers demandé.</xs:documentation>
 				</xs:annotation>

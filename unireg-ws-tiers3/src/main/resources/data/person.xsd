@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="taxpayer.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="eCH-0044-2-0f.xsd" />
 	<xs:complexType name="naturalPersonType">
@@ -17,13 +21,13 @@
 							<xs:documentation>Information d'identification de la personne.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateOfBirth" type="unireg:dateType">
+					<xs:element minOccurs="0" name="dateOfBirth" type="common:dateType">
 						<xs:annotation>
 							<xs:documentation>La date de naissance de la personne physique. Cette date peut être partielle, c'est-à-dire que les informations de jour et/ou de mois peuvent valoir 0.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="dateOfDeath" type="unireg:dateType">
+					<xs:element minOccurs="0" name="dateOfDeath" type="common:dateType">
 						<xs:annotation>
 							<xs:documentation>La date de décès de la personne.</xs:documentation>
 						</xs:annotation>

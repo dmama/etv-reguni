@@ -6,7 +6,7 @@
 			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-	<jxb:bindings schemaLocation="data/address.xsd">
+	<jxb:bindings schemaLocation="data/unireg-address-1.xsd">
 		<jxb:bindings node="//xs:complexType[@name='addressType']">
 			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
 		</jxb:bindings>
@@ -81,6 +81,18 @@
 	<jxb:bindings schemaLocation="data/eCH-0044-2-0f.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0044" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="unireg-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.webservices.tiers3" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/unireg-address-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.webservices.tiers3" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 

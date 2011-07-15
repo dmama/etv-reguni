@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 15 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/unireg/common/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:simpleType name="yearType">
+		<xs:annotation>
+			<xs:documentation>L'année sur 4 digits (e.g. 1887, 2001, 2200, ...).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1800" />
+			<xs:maxInclusive value="2400" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="monthType">
+		<xs:annotation>
+			<xs:documentation>Le mois (1..12).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="12" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="dayType">
+		<xs:annotation>
+			<xs:documentation>Le jour (1..31).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="31" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="dateType">
+		<xs:annotation>
+			<xs:documentation>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="year" type="common:yearType" />
+			<xs:element name="month" type="common:monthType" />
+			<xs:element name="day" type="common:dayType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="partialDateType">
+		<xs:annotation>
+			<xs:documentation>Date partielle (jour et/ou mois inconnu) spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier
+				est grégorien.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="year" type="common:yearType" />
+			<xs:element name="month" type="common:monthType" minOccurs="0" />
+			<xs:element name="day" type="common:dayType" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="partyNumberType">
+		<xs:annotation>
+			<xs:documentation>Le numéro de tiers pour un contribuable ou un débiteur.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:long">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="99999999" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

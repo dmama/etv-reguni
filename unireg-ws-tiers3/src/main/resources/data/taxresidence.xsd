@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:complexType name="taxResidenceType">
 		<xs:annotation>
@@ -11,17 +15,17 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date d'ouverture du for fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fermeture du for fiscal. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle le for fiscal a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
 				</xs:annotation>
@@ -78,12 +82,12 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element minOccurs="0" name="dateFrom" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du for de gestion.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du for de gestion. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
@@ -411,8 +415,8 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType" />
-			<xs:element name="dateTo" type="unireg:dateType" />
+			<xs:element name="dateFrom" type="common:dateType" />
+			<xs:element name="dateTo" type="common:dateType" />
 			<xs:element name="type" type="unireg:simplifiedTaxLiabilityTypeType" />
 		</xs:sequence>
 	</xs:complexType>
@@ -440,8 +444,8 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType" />
-			<xs:element name="dateTo" type="unireg:dateType" />
+			<xs:element name="dateFrom" type="common:dateType" />
+			<xs:element name="dateTo" type="common:dateType" />
 			<xs:element minOccurs="0" name="taxDeclarationId" type="xs:long" />
 		</xs:sequence>
 	</xs:complexType>
@@ -450,12 +454,12 @@
 			<xs:documentation>Classe de base des différents types d'assujettissement théoriques d'un contribuable.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de l'assujettissement.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateTo" type="unireg:dateType">
+			<xs:element name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de l'assujettissement. Si l'assujettissement est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>

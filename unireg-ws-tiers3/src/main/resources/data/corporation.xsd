@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="taxpayer.xsd" />
 	<xs:complexType name="corporationType">
 		<xs:annotation>
@@ -31,12 +35,12 @@
 							<xs:documentation>Troisième ligne de la raison sociale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="endDateOfLastBusinessYear" type="unireg:dateType">
+					<xs:element minOccurs="0" name="endDateOfLastBusinessYear" type="common:dateType">
 						<xs:annotation>
 							<xs:documentation>Date de fin du dernier exercice commercial.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="endDateOfNextBusinessYear" type="unireg:dateType">
+					<xs:element minOccurs="0" name="endDateOfNextBusinessYear" type="common:dateType">
 						<xs:annotation>
 							<xs:documentation>Date de bouclement futur de la PM.</xs:documentation>
 						</xs:annotation>
@@ -85,12 +89,12 @@
 			<xs:documentation>Contient les informations du siège d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du siège de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du siège de la PM. Si le siège est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
@@ -112,12 +116,12 @@
 			<xs:documentation>Informations sur la forme juridique d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de la forme juridique.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de la forme juridique; ou non-renseigné si elle est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -151,12 +155,12 @@
 			<xs:documentation>Informations sur le capital à disposition d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du régime fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du régime fiscal; ou
 						<i>null</i>
@@ -208,12 +212,12 @@
 			<xs:documentation>Informations sur un régime fiscal d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du régime fiscal.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du régime fiscal; ou non-renseigné s'il est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -230,12 +234,12 @@
 			<xs:documentation>Informations sur l'état d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de l'état de la PM.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de l'état de la PM; ou non-renseigné s'il est toujours valide.</xs:documentation>
 				</xs:annotation>
@@ -252,12 +256,12 @@
 			<xs:documentation>Représente un événement d'une personne morale.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="date" type="unireg:dateType">
+			<xs:element name="date" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de valeur de l'événement.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="partyNumber" type="xs:long">
+			<xs:element minOccurs="0" name="partyNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de contribuable de la personne morale.</xs:documentation>
 				</xs:annotation>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:complexType name="relationBetweenPartiesType">
 		<xs:annotation>
@@ -12,33 +16,33 @@
 					<xs:documentation>Le type de rapport entre tiers</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité du rapport.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité du rapport. Si le rapport est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle le rapport a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="otherPartyNumber" type="xs:long">
+			<xs:element name="otherPartyNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Numéro de tiers pointé par cette relation.
-					En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
-					 - Tutelle : Personne physique -> Personne physique ou Collectivité administrative
-					 - Curatelle : Personne physique -> Personne physique ou Collectivité administrative
-					 - Conseil légal : Personne physique -> Personne physique ou Collectivité administrative
-					 - Prestations imposables : Personne physique -> Débiteur prestation imposable
-					 - Appartenance ménage : Personne physique -> Ménage
-					 - Représentation : Personne physique -> Tiers
-					 - Contact impôt source : Débiteur prestation imposable -> Contribuable
-					 - Annule et remplace : Tiers -> Tiers
+						En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
+						- Tutelle : Personne physique -> Personne physique ou Collectivité administrative
+						- Curatelle : Personne physique -> Personne physique ou Collectivité administrative
+						- Conseil légal : Personne physique -> Personne physique ou Collectivité administrative
+						- Prestations imposables : Personne physique -> Débiteur prestation imposable
+						- Appartenance ménage : Personne physique -> Ménage
+						- Représentation : Personne physique -> Tiers
+						- Contact impôt source : Débiteur prestation imposable -> Contribuable
+						- Annule et remplace : Tiers -> Tiers
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -52,7 +56,7 @@
 					<xs:documentation>Taux d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="unireg:dateType">
+			<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
 				</xs:annotation>

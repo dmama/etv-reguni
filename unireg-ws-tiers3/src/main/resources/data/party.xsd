@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="unireg-address-1.xsd" />
+
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:include schemaLocation="taxresidence.xsd" />
 	<xs:include schemaLocation="taxdeclaration.xsd" />
-	<xs:include schemaLocation="address.xsd" />
 	<xs:include schemaLocation="relation.xsd" />
 	<xs:complexType abstract="true" name="partyType">
 		<xs:annotation>
@@ -13,7 +17,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="xs:long">
+			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de tiers qui identifie de manière unique un contribuable ou un débiteur.</xs:documentation>
 				</xs:annotation>
@@ -23,21 +27,21 @@
 					<xs:documentation>Complément du nom utilisé lors de l'adressage.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="activityStartDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="activityStartDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle l'activité du tiers a débuté. Si le tiers n'a jamais été assujetti, cette date est nulle.
 						Attention ! Cette date n'est renseignée qui si la part TAX_RESIDENCES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="activityEndDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="activityEndDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle l'activité du tiers a pris fin. Si le tiers est toujours actif, la date n'est pas renseignée.
 						Attention ! Cette date n'est renseignée que si la part TAX_RESIDENCES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle le tiers a été annulé, ou non-renseigné si le tiers n'est pas annulé.</xs:documentation>
 				</xs:annotation>
@@ -82,35 +86,35 @@
 					<xs:documentation>Vrai s'il le tiers est un débiteur inactif (i107); faux pour tous les autres tiers.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="mailAddresses" type="unireg:addressType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="mailAddresses" type="address:addressType">
 				<xs:annotation>
 					<xs:documentation>Historique des adresses courrier.
 						Attention ! Cette collection n'est renseignée que si la part ADDRESSES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="debtProsecutionAddresses" type="unireg:addressType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="debtProsecutionAddresses" type="address:addressType">
 				<xs:annotation>
 					<xs:documentation>Historique des adresses de poursuite.
 						Attention ! Cette collection n'est renseignée que si la part ADDRESSES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="representationAddresses" type="unireg:addressType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="representationAddresses" type="address:addressType">
 				<xs:annotation>
 					<xs:documentation>Historique des adresses de représentation.
 						Attention ! Cette collection n'est renseignée que si la part ADDRESSES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="residenceAddresses" type="unireg:addressType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="residenceAddresses" type="address:addressType">
 				<xs:annotation>
 					<xs:documentation>Historique des adresses de résidence.
 						Attention ! Cette collection n'est renseignée que si la part ADDRESSES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="debtProsecutionAddressesOfOtherParty" type="unireg:addressOtherPartyType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="debtProsecutionAddressesOfOtherParty" type="address:addressOtherPartyType">
 				<xs:annotation>
 					<xs:documentation>Historique des adresses de poursuite 'autre tiers'.
 						Attention ! Cette collection n'est renseignée que si la part ADDRESSES est demandée.
@@ -166,7 +170,7 @@
 			<xs:documentation>Contient les coordonnées financière d'un compte auprès d'un organisme financier (CCP ou compte bancaire, suisse ou étranger).</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="ownerPartyId" type="xs:long">
+			<xs:element name="ownerPartyNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de tiers du titulaire du compte.
 						Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est égal au
@@ -236,7 +240,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="xs:long">
+			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de tiers.</xs:documentation>
 				</xs:annotation>
@@ -257,7 +261,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateOfBirth" type="unireg:dateType">
+			<xs:element minOccurs="0" name="dateOfBirth" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de naissance de la personne physique. Ce champs n'est pas renseigné pour les autres types de tiers.
 						Attention ! Cette date peut être partielle au niveau du jour et du mois (ex: "1973.11" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).

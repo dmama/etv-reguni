@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:include schemaLocation="debtor.xsd" />
 	<xs:complexType name="taxDeclarationType">
@@ -10,17 +14,17 @@
 					<xs:documentation>L'id technique (= clé primaire)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateTo" type="unireg:dateType">
+			<xs:element name="dateTo" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle la déclaration a été annulée, ou
 						<b>null</b>
@@ -36,7 +40,8 @@
 			<xs:element maxOccurs="unbounded" name="statuses" type="unireg:taxDeclarationStatusType">
 				<xs:annotation>
 					<xs:documentation>Les états de la déclaration.
-					Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS_STATUSES est demandée.</xs:documentation>
+						Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS_STATUSES est demandée.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -106,14 +111,14 @@
 					<xs:documentation>L'état de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateFrom" type="unireg:dateType">
+			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date d'obtention de l'état décrit ici (pour le cas de la sommation, ce n'est pas la date de traitement métier de la sommation qui est indiquée ici, i.e. la vraie
 						date d'obtention, mais la date indiquée sur le courrier envoyé au contribuable).
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="cancellationDate" type="unireg:dateType">
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date à laquelle l'état a été annulé, ou null s'il n'est pas annulé.
 					</xs:documentation>
