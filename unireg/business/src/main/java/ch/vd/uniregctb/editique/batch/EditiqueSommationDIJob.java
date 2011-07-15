@@ -62,7 +62,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 		final RegDate dateTraitment = getDateTraitement(params);
 		final boolean miseSousPliAutomatiqueImpossible = getBooleanValue(params, PARAM_MISE_SS_PLI);
 		final Integer nombreMax = getOptionalIntegerValue(params, PARAM_NB_MAX_SOMMATIONS);
-		final EnvoiSommationsDIsResults results = declarationImpotService.envoyerSommations(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax, getStatusManager());
+		final EnvoiSommationsDIsResults results = declarationImpotService.envoyerSommations(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax == null ? 0 : nombreMax, getStatusManager());
 		if (results == null) {
 			Audit.error( String.format(
 					"L'envoi en masse des sommations DIs  pour le %s a échoué"

@@ -92,7 +92,7 @@ public class EnvoiSommationsDIsProcessor  {
 		return isSourcierPur;
 	}
 
-	public EnvoiSommationsDIsResults run(final RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager statusManager) {
+	public EnvoiSommationsDIsResults run(final RegDate dateTraitement, final boolean miseSousPliImpossible, final int nombreMax, StatusManager statusManager) {
 
 		if (statusManager == null) {
 			statusManager = new LoggingStatusManager(LOGGER);
@@ -102,6 +102,7 @@ public class EnvoiSommationsDIsProcessor  {
 		final EnvoiSommationsDIsResults rapportFinal = new EnvoiSommationsDIsResults();
 		rapportFinal.setDateTraitement(dateTraitement);
 		rapportFinal.setMiseSousPliImpossible(miseSousPliImpossible);
+		rapportFinal.setNombreMaxSommations(nombreMax);
 
 		status.setMessage(
 			String.format(
@@ -140,10 +141,10 @@ public class EnvoiSommationsDIsProcessor  {
 
 			@Override
 			public void afterTransactionCommit() {
-				int nombreTotal = (nombreMax == 0 || dis.size() < nombreMax ? dis.size() : nombreMax);
+				int nombreTotal = dis.size();
 				int percent = (100 * rapportFinal.getTotalDisTraitees()) / nombreTotal;
 				status.setMessage(String.format(
-						"%d sur %d des déclarations d'impôt traitées : %d sommée(s), %d en erreur",
+						"%d sur %d déclarations d'impôt analysées : %d sommée(s), %d en erreur",
 						rapportFinal.getTotalDisTraitees(), nombreTotal, rapportFinal.getTotalDisSommees(), rapportFinal.getTotalSommationsEnErreur()), percent);
 			}
 		});

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -110,7 +111,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		}
 	}
 
-	protected final void addParameterDefinition(JobParam param, Object defaultWebValue) {
+	protected final void addParameterDefinition(JobParam param, @Nullable Object defaultWebValue) {
 		final JobParam oldParam = paramDefinition.put(param.getName(), param);
 		if (oldParam != null) {
 			throw new IllegalArgumentException(String.format("Paramètre '%s' défini deux fois", param.getName()));
@@ -490,7 +491,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 * @return la valeur entière du paramètre; ou <code>null</code> si le paramètre n'est pas renseigné.
 	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire, ou si aucun paramètre de ce nom n'a été défini
 	 */
-	protected final Integer getOptionalIntegerValue(Map<String, Object> params, String key) {
+	protected final @Nullable Integer getOptionalIntegerValue(Map<String, Object> params, String key) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
 		if (parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
@@ -498,7 +499,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return getOptionalIntegerValue(params, parameterDefinition);
 	}
 
-	private static Integer getOptionalIntegerValue(Map<String, Object> params, JobParam paramDefinition) {
+	private static @Nullable Integer getOptionalIntegerValue(Map<String, Object> params, JobParam paramDefinition) {
 		Assert.notNull(paramDefinition);
 		Integer value = null;
 		if (params != null) {
@@ -555,7 +556,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 * @return la valeur entière du paramètre; ou <code>null</code> si le paramètre n'est pas renseigné.
 	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire, ou si aucun paramètre de ce nom n'a été défini
 	 */
-	protected final Long getOptionalLongValue(Map<String, Object> params, String key) {
+	protected final @Nullable Long getOptionalLongValue(Map<String, Object> params, String key) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
 		if (parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
@@ -563,7 +564,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return getOptionalLongValue(params, parameterDefinition);
 	}
 
-	private static Long getOptionalLongValue(Map<String, Object> params, JobParam paramDefinition) {
+	private static @Nullable Long getOptionalLongValue(Map<String, Object> params, JobParam paramDefinition) {
 		Assert.notNull(paramDefinition);
 		Long value = null;
 		if (params != null) {

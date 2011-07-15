@@ -110,6 +110,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	
 	private RegDate dateTraitement;
 	private boolean miseSousPliImpossible;
+	private int nombreMaxSommations;
 	private boolean interrompu;
 	private final List<ErrorInfo> sommationsEnErreur = new ArrayList<ErrorInfo>();
 	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
@@ -209,6 +210,14 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 
 	public void setMiseSousPliImpossible(boolean miseSousPliImpossible) {
 		this.miseSousPliImpossible = miseSousPliImpossible;
+	}
+
+	public int getNombreMaxSommations() {
+		return nombreMaxSommations;
+	}
+
+	public void setNombreMaxSommations(int nombreMaxSommations) {
+		this.nombreMaxSommations = nombreMaxSommations;
 	}
 
 	public boolean isInterrompu() {

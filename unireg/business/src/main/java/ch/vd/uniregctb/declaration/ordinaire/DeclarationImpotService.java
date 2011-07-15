@@ -26,8 +26,7 @@ public interface DeclarationImpotService {
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return le nombre de tâches en instance créées.
 	 */
-	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status)
-			throws DeclarationException;
+	DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
 
 	/**
 	 * Envoie (en masse) à l'impression les déclarations d'impôts ordinaires à partir des tâches en instances pré-existantes. En cas de
@@ -50,7 +49,7 @@ public interface DeclarationImpotService {
 	 *          Si vrai, exclure les décédés (date d'événement) se trouvant entre le 15.11 et le 31.12
 	 * @return le nombre de déclarations envoyées.
 	 */
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, StatusManager status)
+	EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, StatusManager status)
 			throws DeclarationException;
 
 	/**
@@ -62,7 +61,7 @@ public interface DeclarationImpotService {
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	public StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+	StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
 
 	/**
 	 * Produit des statistiques sur les contribuables assujettis pour la période fiscale spécifiée.
@@ -73,7 +72,7 @@ public interface DeclarationImpotService {
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+	StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
 
 	/**
 	 * Produit la liste des DIs non émises pour la période fiscale spécifiée.
@@ -84,8 +83,7 @@ public interface DeclarationImpotService {
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	public ListeDIsNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager)
-			throws DeclarationException;
+	ListeDIsNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires sommées et dont le délai de retour est dépassé.
@@ -96,7 +94,7 @@ public interface DeclarationImpotService {
 	 * @param statusManager
 	 * @return les résultats détaillés des DIs qui ont été traitées.
 	 */
-	public EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
+	EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la déclaration spécifiée pour une visualisation on-line, et envoie un événement fiscal correspondant. Cette
@@ -108,7 +106,7 @@ public interface DeclarationImpotService {
 	 *            la date d'impression
 	 * @return l'ID du document d'impression
 	 */
-	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
+	EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression le duplicata de la déclaration spécifiée pour une visualisation on-line. Cette
@@ -124,7 +122,7 @@ public interface DeclarationImpotService {
 	 *            la liste des annexes
 	 * @return l'ID du document d'impression
 	 */
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
+	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
 			List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 	/**
@@ -137,7 +135,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement
 	 *            la date d'impression
 	 */
-	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
+	void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode
@@ -152,7 +150,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement
 	 *            la date d'impression
 	 */
-	public void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
+	void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Fait passer la déclaration à l'état <i>échu</i>, et envoie un événement fiscal correspondant.
@@ -172,7 +170,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
-	public DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
 	 * Annulation d'une DI
@@ -182,7 +180,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
-	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
 	 * Envoye des sommations à la date donnée
@@ -194,7 +192,7 @@ public interface DeclarationImpotService {
 	 * @param nombreMax
 	 * 			Le nombre maximal de sommation que le batch peut emettre. 0 = pas de limite.
 	 */
-	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager status);
+	EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager status);
 
 
 	/**
@@ -203,14 +201,14 @@ public interface DeclarationImpotService {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
+	InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
 
 	/**
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises
 	 * n'ont pas encore été imprimées
 	 * @param noColOid si donné, limite l'envoi des chemises à cet OID
 	 */
-	public ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status);
+	ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status);
 
 	/**
 	 * Ajoute un délai aux déclarations des contribuables spécifiés.
@@ -226,8 +224,7 @@ public interface DeclarationImpotService {
 	 * @param s
 	 *            un status manager
 	 */
-	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int annee, final RegDate dateDelai,
-			final RegDate dateTraitement, final StatusManager s);
+	DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int annee, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s);
 
 	/**Permet de produire la liste des contribuables ayant une Di transformée en note
 	 *

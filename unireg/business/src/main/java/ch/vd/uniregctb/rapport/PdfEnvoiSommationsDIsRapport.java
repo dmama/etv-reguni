@@ -36,11 +36,14 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 
         // Paramètres
         addEntete1("Paramètres");
-        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+        addTableSimple(new float[] {70, 30}, new PdfRapport.TableSimpleCallback() {
             @Override
             public void fillTable(PdfTableSimple table) throws DocumentException {
                 table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
                 table.addLigne("Mise sous pli impossible: ", Boolean.toString(results.isMiseSousPliImpossible()));
+	            if (results.getNombreMaxSommations() > 0) {
+		            table.addLigne("Nombre maximal de sommations à émettre: ", Integer.toString(results.getNombreMaxSommations()));
+	            }
             }
         });
         // Résultats
