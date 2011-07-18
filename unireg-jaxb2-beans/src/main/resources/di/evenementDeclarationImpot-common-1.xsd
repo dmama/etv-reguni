@@ -2,26 +2,26 @@
 <!-- v1.0beta - 14 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
 		   xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/unireg/common/1">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/common/1" >
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../common/unireg-common-1.xsd" />
 
-	<xs:complexType name="evenementDeclarationImpotType" abstract="true">
+	<xs:complexType name="evenementDeclarationImpotContextType">
 		<xs:annotation>
-			<xs:documentation>Evénement émis entre Unireg et ADDI concernant l'émission, l'annulation ou le quittancement d'une déclaration impôt ordinaire.</xs:documentation>
+			<xs:documentation>Information communes à tous les types d'événement émis ou reçus par Unireg concernant une déclaration d'impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="periodeFiscale" type="common:yearType">
+			<xs:element name="periodeFiscale" type="unireg:yearType">
 				<xs:annotation>
 					<xs:documentation>La période fiscale (1er janvier au 31 décembre) pour laquelle la déclaration est valable.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="numeroContribuable" type="common:partyNumberType">
+			<xs:element name="numeroContribuable" type="unireg:partyNumberType">
 				<xs:annotation>
 					<xs:documentation>Le numéro de contribuable qui possède la déclaration d'impôt ordinaire.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="date" type="common:dateType">
+			<xs:element name="date" type="unireg:dateType">
 				<xs:annotation>
 					<xs:documentation>La date de valeur de l'événement.</xs:documentation>
 				</xs:annotation>

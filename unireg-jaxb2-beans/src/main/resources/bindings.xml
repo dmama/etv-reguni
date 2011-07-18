@@ -6,25 +6,25 @@
 
 	<jxb:bindings schemaLocation="common/unireg-common-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.common" />
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_common_1.0.xsd">
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot-common-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.common" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_unireg2addi_1.0.xsd">
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot-output-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi" />
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.output" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="di/evenementDeclarationImpot_addi2unireg_1.0.xsd">
+	<jxb:bindings schemaLocation="di/evenementDeclarationImpot-input-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.addi2unireg" />
+			<jxb:package name="ch.vd.fiscalite.registre.evenementDeclarationImpot.input" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 

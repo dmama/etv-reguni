@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 14 juillet 2011 - hand-edited by Manuel Siggen -->
-<xs:schema targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
-		   xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<!-- v1.0beta - 18 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/output/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/output/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		   xmlns:common="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1" schemaLocation="evenementDeclarationImpot_common_1.0.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1" schemaLocation="evenementDeclarationImpot-common-1.xsd" />
 
-	<xs:element name="evenement" type="common:evenementDeclarationImpotType" />
+	<xs:element name="evenement" type="evenementDeclarationImpotOutputType" />
+
+	<xs:complexType name="evenementDeclarationImpotOutputType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Evénement émis par Unireg à destination d'ADDI concernant une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="context" type="common:evenementDeclarationImpotContextType">
+				<xs:annotation>
+					<xs:documentation>Le context de l'événement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 
 	<xs:complexType name="evenementEmissionDeclarationImpotType">
 		<xs:annotation>
 			<xs:documentation>Evénement émis par Unireg lors de l'émission d'une déclaration impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="common:evenementDeclarationImpotType">
+			<xs:extension base="evenementDeclarationImpotOutputType">
 				<xs:sequence>
 					<xs:element name="codeControle" type="common:codeControleType">
 						<xs:annotation>
@@ -35,7 +48,7 @@
 			<xs:documentation>Evénement émis par Unireg lors de l'annulation d'une déclaration impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="common:evenementDeclarationImpotType">
+			<xs:extension base="evenementDeclarationImpotOutputType">
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
