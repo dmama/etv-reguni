@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:exception="http://www.vd.ch/unireg/exception/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
 
 	<xs:include schemaLocation="base.xsd" />
 	<xs:complexType name="returnTaxDeclarationsRequestType">
@@ -76,7 +77,7 @@
 					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="exceptionInfo" type="unireg:webServiceExceptionInfoType">
+			<xs:element minOccurs="0" name="exceptionInfo" type="exception:serviceExceptionInfoType">
 				<xs:annotation>
 					<xs:documentation>Le type et le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
 				</xs:annotation>

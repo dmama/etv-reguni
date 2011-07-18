@@ -67,4 +67,27 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:complexType name="userLoginType">
+		<xs:annotation>
+			<xs:documentation>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="userId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le système.
+						Pour les batchs, il faut utiliser un utilisateur technique.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="oid" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>L'id de l'office d'impôt sélectionné par l'utilisateur. Dans la majorité des cas cette information peut être déduite à partir de l'id de l'utilisateur. Cependant
+						certains utilisateurs possèdent plus d'un rattachement à un office d'impôt. Ces utilisateurs doivent sélectionner un office d'impôt bien précis au moment du login, et ce choix
+						doit être propagé à tous les systèmes.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
 </xs:schema>

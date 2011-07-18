@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0r-SNAPSHOT -->
+<!-- version 3.0s-SNAPSHOT -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3"
-				   xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+				   xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+				   xmlns:exception="http://www.vd.ch/unireg/exception/1">
+			<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="unireg-exception-1.xsd" />
 			<xs:include schemaLocation="common.xsd" />
 			<xs:include schemaLocation="data/taxdeclaration.xsd" />
 			<xs:include schemaLocation="data/person.xsd" />
@@ -38,7 +41,7 @@
 			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="unireg:setAutomaticReimbursementBlockingRequestType" />
 			<xs:element name="returnTaxDeclarationsRequest" nillable="true" type="unireg:returnTaxDeclarationsRequestType" />
 			<xs:element name="returnTaxDeclarationsResponse" nillable="true" type="unireg:returnTaxDeclarationsResponseType" />
-			<xs:element name="webServiceException" type="unireg:webServiceExceptionInfoType" />
+			<xs:element name="webServiceException" type="exception:serviceExceptionInfoType" />
 		</xs:schema>
 	</wsdl:types>
 

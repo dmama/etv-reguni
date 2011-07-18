@@ -3,6 +3,7 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
 		   xmlns:common="http://www.vd.ch/unireg/common/1">
 
+	<xs:include schemaLocation="../common.xsd" />
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
 	<xs:include schemaLocation="base.xsd" />

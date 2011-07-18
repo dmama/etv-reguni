@@ -4,7 +4,7 @@
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../unireg-address-1.xsd" />
 
 	<xs:include schemaLocation="../common.xsd" />
 	<xs:include schemaLocation="taxresidence.xsd" />

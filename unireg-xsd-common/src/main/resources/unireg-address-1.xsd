@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 15 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.0beta - 18 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/unireg/address/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/unireg/common/1"
 		   xmlns:unireg="http://www.vd.ch/unireg/address/1" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4">
 
-	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="unireg-common-1.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="eCH-0010-4-0f.xsd" />
 
 	<xs:simpleType name="tariffZoneType">
@@ -65,6 +65,11 @@
 					<xs:documentation>L'adresse formattée sur six lignes.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="type" type="unireg:addressTypeType">
+				<xs:annotation>
+					<xs:documentation>Le type de l'adresse.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="addressOtherPartyType">
@@ -76,7 +81,7 @@
 		<xs:complexContent>
 			<xs:extension base="unireg:addressType">
 				<xs:sequence>
-					<xs:element name="type" type="unireg:otherPartyAddressTypeType">
+					<xs:element name="otherPartyType" type="unireg:otherPartyAddressTypeType">
 						<xs:annotation>
 							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
 						</xs:annotation>
@@ -273,6 +278,38 @@
 			<xs:enumeration value="GUARDIAN">
 				<xs:annotation>
 					<xs:documentation>Adresse du tuteur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="addressTypeType">
+		<xs:annotation>
+			<xs:documentation>Le type d'une adresse de tiers.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MAIL">
+				<xs:annotation>
+					<xs:documentation>L'adresse courier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBT_PROSECUTION">
+				<xs:annotation>
+					<xs:documentation>L'adresse de poursuite.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATION">
+				<xs:annotation>
+					<xs:documentation>L'adresse de représentation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESIDENCE">
+				<xs:annotation>
+					<xs:documentation>L'adresse de domicile.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBT_PROSECUTION_OF_OTHER_PARTY">
+				<xs:annotation>
+					<xs:documentation>L'adresse de poursuiter 'autre tiers'.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

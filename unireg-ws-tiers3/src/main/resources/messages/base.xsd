@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3">
-	<xs:include schemaLocation="../common.xsd" />
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
 	<xs:complexType abstract="true" name="requestType">
 		<xs:annotation>
 			<xs:documentation>Données de base communes à toutes les requêtes au web-service Tiers d'Unireg.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="login" type="unireg:userLoginType">
+			<xs:element name="login" type="common:userLoginType">
 				<xs:annotation>
 					<xs:documentation>Information de login de l'utilisateur qui a initié la requête.</xs:documentation>
 				</xs:annotation>

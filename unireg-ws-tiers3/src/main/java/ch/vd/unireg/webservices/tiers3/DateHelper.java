@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.vd.unireg.webservices.tiers3.common.Date;
+
 /**
  * Classe utilitaire qui expose des méthodes en relation avec les dates et les périodes.
  */

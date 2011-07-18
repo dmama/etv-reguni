@@ -6,7 +6,7 @@
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
 	<xs:include schemaLocation="taxpayer.xsd" />
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="eCH-0044-2-0f.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0f.xsd" />
 	<xs:complexType name="naturalPersonType">
 		<xs:annotation>
 			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne physique. Les collections sont renseignées en fonction des parts demandées lors de l'appel

@@ -1,5 +1,7 @@
 package ch.vd.unireg.webservices.tiers3;
 
+import ch.vd.unireg.webservices.tiers3.common.Date;
+
 /**
  * Représente une période temporelle délimitée par deux dates. Si la date de début est nulle, la période est supposée exister depuis l'aube des temps. Si la date de fin est nulle, la période est
  * supposée exister jusqu'à la fin des temps.
