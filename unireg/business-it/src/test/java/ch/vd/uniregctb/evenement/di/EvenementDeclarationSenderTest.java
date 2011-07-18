@@ -42,7 +42,8 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		clearQueue(OUTPUT_QUEUE);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("di/evenementDeclarationImpot_common_1.0.xsd"), new ClassPathResource("di/evenementDeclarationImpot_unireg2addi_1.0.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("common/unireg-common-1.xsd"), new ClassPathResource("di/evenementDeclarationImpot-common-1.xsd"),
+				new ClassPathResource("di/evenementDeclarationImpot-output-1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
@@ -61,14 +62,15 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<ns3:evenement " +
-						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/output/1\" " +
 						"xmlns=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1\" " +
 						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 						"xsi:type=\"ns3:evenementEmissionDeclarationImpotType\">" +
-						"<periodeFiscale>2000</periodeFiscale>" +
+						"<ns3:context><periodeFiscale>2000</periodeFiscale>" +
 						"<numeroContribuable>12344556</numeroContribuable>" +
 						"<date><ns2:year>2000</ns2:year><ns2:month>1</ns2:month><ns2:day>1</ns2:day></date>" +
+						"</ns3:context>" +
 						"<ns3:codeControle>2X3ff%</ns3:codeControle>" +
 						"<ns3:codeRoutage>A14</ns3:codeRoutage>" +
 						"</ns3:evenement>");
@@ -81,14 +83,16 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<ns3:evenement " +
-						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/unireg2addi/1\" " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/output/1\" " +
 						"xmlns=\"http://www.vd.ch/fiscalite/registre/evenementDeclarationImpot/common/1\" " +
 						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 						"xsi:type=\"ns3:evenementAnnulationDeclarationImpotType\">" +
+						"<ns3:context>" +
 						"<periodeFiscale>2000</periodeFiscale>" +
 						"<numeroContribuable>12344556</numeroContribuable>" +
 						"<date><ns2:year>2000</ns2:year><ns2:month>1</ns2:month><ns2:day>1</ns2:day></date>" +
+						"</ns3:context>" +
 						"</ns3:evenement>");
 	}
 

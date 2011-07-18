@@ -7,11 +7,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.Date;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.EvenementDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.EvenementAnnulationDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.EvenementEmissionDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg2addi.ObjectFactory;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.EvenementDeclarationImpotContext;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementAnnulationDeclarationImpot;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementDeclarationImpotOutput;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementEmissionDeclarationImpot;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.ObjectFactory;
+import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg.Date;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
@@ -51,9 +52,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 	public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 
 		final EvenementEmissionDeclarationImpot emission = objectFactory.createEvenementEmissionDeclarationImpotType();
-		emission.setDate(regdate2xml(date));
-		emission.setNumeroContribuable((int) numeroContribuable);
-		emission.setPeriodeFiscale(periodeFiscale);
+		emission.setContext(new EvenementDeclarationImpotContext(periodeFiscale, (int) numeroContribuable, regdate2xml(date)));
 		emission.setCodeControle(codeControle);
 		emission.setCodeRoutage(codeRoutage);
 
@@ -64,9 +63,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
 
 		final EvenementAnnulationDeclarationImpot annulation = objectFactory.createEvenementAnnulationDeclarationImpotType();
-		annulation.setDate(regdate2xml(date));
-		annulation.setNumeroContribuable((int) numeroContribuable);
-		annulation.setPeriodeFiscale(periodeFiscale);
+		annulation.setContext(new EvenementDeclarationImpotContext(periodeFiscale, (int) numeroContribuable, regdate2xml(date)));
 
 		sendEvent(annulation);
 	}
@@ -75,7 +72,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 		return new Date(date.year(), date.month(), date.day());
 	}
 
-	private void sendEvent(EvenementDeclarationImpot evenement) throws EvenementDeclarationException {
+	private void sendEvent(EvenementDeclarationImpotOutput evenement) throws EvenementDeclarationException {
 
 		try {
 			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -89,7 +86,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 			marshaller.marshal(objectFactory.createEvenement(evenement), doc);
 
 			final EsbMessageImpl m = (EsbMessageImpl) esbMessageFactory.createMessage();
-			m.setBusinessId(String.format("%d-%d", evenement.getNumeroContribuable(), evenement.getPeriodeFiscale()));
+			m.setBusinessId(String.format("%d-%d", evenement.getContext().getNumeroContribuable(), evenement.getContext().getPeriodeFiscale()));
 			m.setBusinessUser(businessUser);
 			m.setServiceDestination(serviceDestination);
 			m.setContext("declarationEvent");
