@@ -24,7 +24,7 @@ public class AdresseAutreTiers extends Adresse {
 	/**
 	 * le type de l'adresse
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>type</i>
+	 * <b>Dans la version 3 du web-service :</b> <i>otherPartyType</i>
 	 */
 	@XmlElement(required = true)
 	public TypeAdresseAutreTiers type;

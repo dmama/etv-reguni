@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
-import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.BankAccount;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
@@ -50,6 +49,8 @@ import ch.vd.unireg.webservices.tiers3.TaxSystem;
 import ch.vd.unireg.webservices.tiers3.TaxType;
 import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.NpaEtLocalite;
@@ -304,10 +305,10 @@ public class PartyWebServiceWithPM implements PartyWebService {
 			if (adresses != null && !adresses.isEmpty()) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
 					if (a.getType() == TypeAdressePM.COURRIER) {
-						corp.getMailAddresses().add(address2web(tiers, corp, a));
+						corp.getMailAddresses().add(address2web(tiers, corp, a, AddressType.MAIL));
 					}
 					else if (a.getType() == TypeAdressePM.SIEGE) {
-						corp.getResidenceAddresses().add(address2web(tiers, corp, a));
+						corp.getResidenceAddresses().add(address2web(tiers, corp, a, AddressType.RESIDENCE));
 					}
 					else if (a.getType() == TypeAdressePM.FACTURATION) {
 						// ces adresses sont ignorées
@@ -319,8 +320,8 @@ public class PartyWebServiceWithPM implements PartyWebService {
 			}
 			else {
 				// par défaut, on renseigne une adresse partiellement vide (= sans la destination)
-				corp.getMailAddresses().add(address2web(tiers, corp, null));
-				corp.getResidenceAddresses().add(address2web(tiers, corp, null));
+				corp.getMailAddresses().add(address2web(tiers, corp, null, AddressType.MAIL));
+				corp.getResidenceAddresses().add(address2web(tiers, corp, null, AddressType.RESIDENCE));
 			}
 			corp.getRepresentationAddresses().addAll(corp.getMailAddresses());
 			// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
@@ -783,7 +784,7 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private Address address2web(ch.vd.uniregctb.tiers.Tiers destinataire, Corporation pm, @Nullable ch.vd.uniregctb.interfaces.model.AdresseEntreprise a) {
+	private Address address2web(ch.vd.uniregctb.tiers.Tiers destinataire, Corporation pm, @Nullable ch.vd.uniregctb.interfaces.model.AdresseEntreprise a, AddressType type) {
 
 		final RegDate dateDebut = (a == null ? null : a.getDateDebutValidite());
 		final RegDate dateFin = (a == null ? null : a.getDateFinValidite());
@@ -836,6 +837,6 @@ public class PartyWebServiceWithPM implements PartyWebService {
 			adresse.setNumeroOrdrePostal(a.getNumeroOrdrePostal() == 0 ? null : a.getNumeroOrdrePostal());
 		}
 
-		return AddressBuilder.newAddress(adresse);
+		return AddressBuilder.newAddress(adresse, type);
 	}
 }

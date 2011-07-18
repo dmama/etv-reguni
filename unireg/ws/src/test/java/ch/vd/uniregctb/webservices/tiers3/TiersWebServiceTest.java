@@ -14,18 +14,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.Address;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.BusinessExceptionInfo;
 import ch.vd.unireg.webservices.tiers3.CommonHousehold;
-import ch.vd.unireg.webservices.tiers3.Date;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.LiabilityChangeReason;
 import ch.vd.unireg.webservices.tiers3.NaturalPerson;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddressType;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
@@ -37,8 +33,12 @@ import ch.vd.unireg.webservices.tiers3.TaxResidence;
 import ch.vd.unireg.webservices.tiers3.TaxType;
 import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
 import ch.vd.unireg.webservices.tiers3.TaxationMethod;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
-import ch.vd.unireg.webservices.tiers3.WebServiceExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.OtherPartyAddressType;
+import ch.vd.unireg.webservices.tiers3.common.Date;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.exception.ServiceExceptionInfo;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -387,11 +387,11 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertNotNull(tiia.getDebtProsecutionAddressesOfOtherParty());
 			assertEquals(3, tiia.getDebtProsecutionAddressesOfOtherParty().size());
 			assertAddress(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getDebtProsecutionAddressesOfOtherParty().get(0));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(0).getType());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(0).getOtherPartyType());
 			assertAddress(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getDebtProsecutionAddressesOfOtherParty().get(1));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(1).getType());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(1).getOtherPartyType());
 			assertAddress(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getDebtProsecutionAddressesOfOtherParty().get(2));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(2).getType());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(2).getOtherPartyType());
 		}
 	}
 
@@ -549,7 +549,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(annee, retour.getKey().getTaxPeriod());
 		assertEquals(TaxDeclarationReturnCode.EXCEPTION, retour.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = retour.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = retour.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
@@ -668,7 +668,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(annee, retourInvalide.getKey().getTaxPeriod());
 		assertEquals(TaxDeclarationReturnCode.EXCEPTION, retourInvalide.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = retourInvalide.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = retourInvalide.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);

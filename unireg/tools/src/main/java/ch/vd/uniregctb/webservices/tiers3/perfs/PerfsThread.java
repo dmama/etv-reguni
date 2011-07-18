@@ -22,8 +22,8 @@ import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.SearchMode;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 

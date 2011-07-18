@@ -15,7 +15,7 @@ import ch.vd.unireg.webservices.tiers3.PartyInfo;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;

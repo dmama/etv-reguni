@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.BusinessExceptionInfo;
-import ch.vd.unireg.webservices.tiers3.Date;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclaration;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
@@ -19,8 +17,10 @@ import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatus;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatusType;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
-import ch.vd.unireg.webservices.tiers3.WebServiceExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.common.Date;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.exception.ServiceExceptionInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -80,7 +80,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAXPAYER, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("Le contribuable est inconnu.", exceptionInfo.getMessage());
@@ -107,7 +107,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_TAX_LIABILITY, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.", exceptionInfo.getMessage());
@@ -134,7 +134,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_INACTIVE_DEBTOR, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.", exceptionInfo.getMessage());
@@ -161,7 +161,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAX_DECLARATION, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("La déclaration n'existe pas.", exceptionInfo.getMessage());
@@ -189,7 +189,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_INVALID_RETURN_DATE, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("La date de retour spécifiée (2009.01.01) est avant la date d'envoi de la déclaration (2009.01.28).", exceptionInfo.getMessage());
@@ -216,7 +216,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse);
 		assertEquals(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, reponse.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
 		assertEquals("La déclaration a été annulée entre-temps.", exceptionInfo.getMessage());
@@ -302,7 +302,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertNotNull(reponse0);
 		assertEquals(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, reponse0.getCode());
 
-		final WebServiceExceptionInfo exceptionInfo0 = reponse0.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo0 = reponse0.getExceptionInfo();
 		assertNotNull(exceptionInfo0);
 		assertTrue(exceptionInfo0 instanceof BusinessExceptionInfo);
 		assertEquals("La déclaration a été annulée entre-temps.", exceptionInfo0.getMessage());

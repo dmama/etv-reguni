@@ -8,14 +8,15 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.webservices.tiers3.Address;
-import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.TaxDeclaration;
 import ch.vd.unireg.webservices.tiers3.TaxResidence;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.address.AddressType;
+import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionCode;
 import ch.vd.uniregctb.webservices.tiers3.data.BankAccountBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.ManagingTaxResidenceBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.RelationBetweenPartiesBuilder;
@@ -235,27 +236,27 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (adresses != null) {
-			final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null);
+			final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, AddressType.MAIL);
 			if (adressesCourrier != null) {
 				tiers.getMailAddresses().addAll(adressesCourrier);
 			}
 
-			final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null);
+			final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, AddressType.REPRESENTATION);
 			if (adressesRepresentation != null) {
 				tiers.getRepresentationAddresses().addAll(adressesRepresentation);
 			}
 
-			final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null);
+			final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, AddressType.RESIDENCE);
 			if (adressesDomicile != null) {
 				tiers.getResidenceAddresses().addAll(adressesDomicile);
 			}
 
-			final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null);
+			final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
 			if (adressesPoursuite != null) {
 				tiers.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 			}
 
-			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null);
+			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
 			if (adresseAutreTiers != null) {
 				tiers.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 			}

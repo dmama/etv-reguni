@@ -14,10 +14,8 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
-import ch.vd.unireg.webservices.tiers3.AccessDeniedExceptionInfo;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.BusinessExceptionCode;
 import ch.vd.unireg.webservices.tiers3.DebtorInfo;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
@@ -36,9 +34,11 @@ import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.WebServiceExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.webservices.tiers3.exception.AccessDeniedExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionCode;
+import ch.vd.unireg.webservices.tiers3.exception.ServiceExceptionInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -545,7 +545,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			message.append("Les exceptions suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
 			for (BatchPartyEntry entry : inError) {
 				message.append("\n - id=").append(entry.getNumber());
-				final WebServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
+				final ServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
 				message.append(", exception=\"").append(exceptionInfo.getMessage());
 				message.append("\", type=").append(exceptionInfo.getClass().getSimpleName());
 			}
@@ -580,7 +580,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 				b.append("\n - key=").append(reponse.getKey());
 				b.append(", code=").append(reponse.getCode());
 				if (reponse.getCode() == TaxDeclarationReturnCode.EXCEPTION) {
-					final WebServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
+					final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 					b.append(", exception=\"").append(exceptionInfo.getMessage()).append("\", type=").append(exceptionInfo.getClass().getSimpleName());
 				}
 			}

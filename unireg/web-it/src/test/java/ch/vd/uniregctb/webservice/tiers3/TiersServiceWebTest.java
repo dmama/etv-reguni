@@ -11,7 +11,58 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.*;
+import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
+import ch.vd.unireg.webservices.tiers3.BankAccount;
+import ch.vd.unireg.webservices.tiers3.BatchParty;
+import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
+import ch.vd.unireg.webservices.tiers3.CommonHousehold;
+import ch.vd.unireg.webservices.tiers3.CommunicationMode;
+import ch.vd.unireg.webservices.tiers3.Corporation;
+import ch.vd.unireg.webservices.tiers3.Debtor;
+import ch.vd.unireg.webservices.tiers3.DebtorCategory;
+import ch.vd.unireg.webservices.tiers3.DebtorPeriodicity;
+import ch.vd.unireg.webservices.tiers3.DocumentType;
+import ch.vd.unireg.webservices.tiers3.FamilyStatus;
+import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
+import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.tiers3.NaturalPerson;
+import ch.vd.unireg.webservices.tiers3.NaturalPersonCategory;
+import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclaration;
+import ch.vd.unireg.webservices.tiers3.Party;
+import ch.vd.unireg.webservices.tiers3.PartyInfo;
+import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.tiers3.PartyType;
+import ch.vd.unireg.webservices.tiers3.PartyWebService;
+import ch.vd.unireg.webservices.tiers3.RelationBetweenParties;
+import ch.vd.unireg.webservices.tiers3.RelationBetweenPartiesType;
+import ch.vd.unireg.webservices.tiers3.SearchMode;
+import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
+import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
+import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiability;
+import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiabilityType;
+import ch.vd.unireg.webservices.tiers3.TaxDeclaration;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatus;
+import ch.vd.unireg.webservices.tiers3.TaxLiabilityReason;
+import ch.vd.unireg.webservices.tiers3.TaxResidence;
+import ch.vd.unireg.webservices.tiers3.TaxType;
+import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
+import ch.vd.unireg.webservices.tiers3.TaxationMethod;
+import ch.vd.unireg.webservices.tiers3.TaxationPeriod;
+import ch.vd.unireg.webservices.tiers3.Taxpayer;
+import ch.vd.unireg.webservices.tiers3.WithholdingTaxDeclaration;
+import ch.vd.unireg.webservices.tiers3.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.webservices.tiers3.WithholdingTaxTariff;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressInformation;
+import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
+import ch.vd.unireg.webservices.tiers3.address.PersonMailAddressInfo;
+import ch.vd.unireg.webservices.tiers3.address.TariffZone;
+import ch.vd.unireg.webservices.tiers3.common.Date;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.webservices.tiers3.exception.AccessDeniedExceptionInfo;
+import ch.vd.unireg.webservices.tiers3.exception.ServiceExceptionInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1095,7 +1146,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(entry);
 		assertNull(entry.getParty()); // autorisation exclusive pour Francis Perroset
 
-		final WebServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
+		final ServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
 		assertTrue(exceptionInfo instanceof AccessDeniedExceptionInfo);
 		assertEquals("L'utilisateur spécifié (zciddo/21) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", exceptionInfo.getMessage());
 	}

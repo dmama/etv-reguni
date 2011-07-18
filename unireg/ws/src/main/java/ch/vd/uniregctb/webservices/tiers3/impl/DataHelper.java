@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.ech.ech0044.DatePartiallyKnown;
-import ch.ech.ech0044.NamedPersonId;
+import ch.ech.ech0044_2.DatePartiallyKnown;
+import ch.ech.ech0044_2.NamedPersonId;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -23,14 +23,15 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.webservices.tiers3.Address;
-import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.Date;
 import ch.vd.unireg.webservices.tiers3.PartyInfo;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyType;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.address.AddressType;
+import ch.vd.unireg.webservices.tiers3.common.Date;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
@@ -101,8 +102,7 @@ public class DataHelper {
 		}
 	}
 
-	public static List<Address> coreToWeb(List<AdresseEnvoiDetaillee> adresses,
-	                                      @Nullable DateRangeHelper.Range range) throws WebServiceException {
+	public static List<Address> coreToWeb(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
@@ -110,15 +110,14 @@ public class DataHelper {
 		List<Address> list = new ArrayList<Address>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newAddress(a));
+				list.add(AddressBuilder.newAddress(a, type));
 			}
 		}
 
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<AddressOtherParty> coreToWebAT(List<AdresseEnvoiDetaillee> adresses,
-	                                                  @Nullable DateRangeHelper.Range range) throws WebServiceException {
+	public static List<AddressOtherParty> coreToWebAT(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws WebServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
@@ -126,7 +125,7 @@ public class DataHelper {
 		List<AddressOtherParty> list = new ArrayList<AddressOtherParty>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newOtherPartyAddress(a));
+				list.add(AddressBuilder.newOtherPartyAddress(a, type));
 			}
 		}
 

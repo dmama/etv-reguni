@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.Address;
-import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
 import ch.vd.unireg.webservices.tiers3.CommonHousehold;
-import ch.vd.unireg.webservices.tiers3.FormattedAddress;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddressType;
 import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.TariffZone;
-import ch.vd.unireg.webservices.tiers3.UserLogin;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
+import ch.vd.unireg.webservices.tiers3.address.OtherPartyAddressType;
+import ch.vd.unireg.webservices.tiers3.address.TariffZone;
+import ch.vd.unireg.webservices.tiers3.common.UserLogin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -182,7 +182,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
-		assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, debtProsecutionAddressOfOtherParty.getType());
+		assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, debtProsecutionAddressOfOtherParty.getOtherPartyType());
 		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getFormattedAddress(), "Monsieur", "Alain Bally", "Place Saint-François", "1003 Lausanne");
 	}
 
@@ -216,7 +216,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
-		assertEquals(OtherPartyAddressType.GUARDIAN, debtProsecutionAddressOfOtherParty.getType());
+		assertEquals(OtherPartyAddressType.GUARDIAN, debtProsecutionAddressOfOtherParty.getOtherPartyType());
 		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getFormattedAddress(), "Office du tuteur général", "du Canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 	}
 
@@ -248,7 +248,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
-		assertEquals(OtherPartyAddressType.REPRESENTATIVE, debtProsecutionAddressOfOtherParty.getType());
+		assertEquals(OtherPartyAddressType.REPRESENTATIVE, debtProsecutionAddressOfOtherParty.getOtherPartyType());
 		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
 	}
 
@@ -307,7 +307,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty poursuiteAutreTiers = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
-		assertEquals(OtherPartyAddressType.SPECIFIC, poursuiteAutreTiers.getType());
+		assertEquals(OtherPartyAddressType.SPECIFIC, poursuiteAutreTiers.getOtherPartyType());
 		assertFormattedAddress(poursuiteAutreTiers.getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
 	}
 

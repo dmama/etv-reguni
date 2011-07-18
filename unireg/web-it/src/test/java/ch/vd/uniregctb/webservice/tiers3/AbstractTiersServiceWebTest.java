@@ -12,9 +12,9 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
 import ch.vd.unireg.webservices.tiers3.BankAccount;
-import ch.vd.unireg.webservices.tiers3.Date;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.PartyWebServiceFactory;
+import ch.vd.unireg.webservices.tiers3.common.Date;
 import ch.vd.uniregctb.common.WebitTest;
 
 import static junit.framework.Assert.assertEquals;

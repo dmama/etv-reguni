@@ -4,15 +4,16 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.unireg.webservices.tiers3.Address;
-import ch.vd.unireg.webservices.tiers3.AddressInformation;
-import ch.vd.unireg.webservices.tiers3.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.CoupleMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.OrganisationMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.OtherPartyAddressType;
-import ch.vd.unireg.webservices.tiers3.PersonMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.PersonName;
+import ch.vd.unireg.webservices.tiers3.address.Address;
+import ch.vd.unireg.webservices.tiers3.address.AddressInformation;
+import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
+import ch.vd.unireg.webservices.tiers3.address.AddressType;
+import ch.vd.unireg.webservices.tiers3.address.CoupleMailAddressInfo;
+import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
+import ch.vd.unireg.webservices.tiers3.address.OrganisationMailAddressInfo;
+import ch.vd.unireg.webservices.tiers3.address.OtherPartyAddressType;
+import ch.vd.unireg.webservices.tiers3.address.PersonMailAddressInfo;
+import ch.vd.unireg.webservices.tiers3.address.PersonName;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.CasePostale;
@@ -29,22 +30,23 @@ public class AddressBuilder {
 
 //	private static final Logger LOGGER = Logger.getLogger(AddressBuilder.class);
 
-	public static Address newAddress(AdresseEnvoiDetaillee adresse) {
+	public static Address newAddress(AdresseEnvoiDetaillee adresse, AddressType type) {
 		final Address a = new Address();
-		fillAddress(adresse, a);
+		fillAddress(adresse, a, type);
 		return a;
 	}
 
-	public static AddressOtherParty newOtherPartyAddress(AdresseEnvoiDetaillee adresse) {
+	public static AddressOtherParty newOtherPartyAddress(AdresseEnvoiDetaillee adresse, AddressType type) {
 		final AddressOtherParty a = new AddressOtherParty();
-		fillAddress(adresse, a);
-		a.setType(source2type(adresse.getSource()));
+		fillAddress(adresse, a, type);
+		a.setOtherPartyType(source2type(adresse.getSource()));
 		return a;
 	}
 
-	private static void fillAddress(AdresseEnvoiDetaillee adresse, Address a) {
+	private static void fillAddress(AdresseEnvoiDetaillee adresse, Address a, AddressType type) {
 		a.setDateFrom(DataHelper.coreToWeb(adresse.getDateDebut()));
 		a.setDateTo(DataHelper.coreToWeb(adresse.getDateFin()));
+		a.setType(type);
 
 		fillRecipient(a, adresse);
 		fillDestination(a, adresse);
