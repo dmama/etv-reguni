@@ -591,7 +591,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
 			assertEquals(2, implementation.getBatchTiersCalls.size());
 			assertEquals(params.getPartyNumbers(), implementation.getBatchTiersCalls.get(0).getPartyNumbers());
-			assertEquals(Arrays.asList(ids.eric), implementation.getBatchTiersCalls.get(1).getPartyNumbers());
+			assertEquals(Arrays.asList(ids.eric.intValue()), implementation.getBatchTiersCalls.get(1).getPartyNumbers());
 		}
 	}
 
