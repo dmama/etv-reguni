@@ -3781,7 +3781,7 @@ public class TiersServiceImpl implements TiersService {
 	private boolean isPersonnePhysiqueSourcierGris(PersonnePhysique pp, RegDate date) {
 		final boolean gris;
 		if (pp.getNumeroIndividu() == null) {
-			final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(date);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipalAvant(date);
 			if (ffp != null) {
 				// for spécifique sur la personne physique
 				gris = isForVaudoisSource(ffp);
@@ -3797,7 +3797,7 @@ public class TiersServiceImpl implements TiersService {
 						gris = false;
 					}
 					else {
-						final ForFiscalPrincipal ffpMc = mc.getForFiscalPrincipalAt(date);
+						final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipalAvant(date);
 						gris = ffpMc != null && isForVaudoisSource(ffpMc);
 					}
 				}
@@ -3822,8 +3822,8 @@ public class TiersServiceImpl implements TiersService {
 		if (principal != null || conjoint != null) {
 			final boolean tousInconnusAuCivil = (principal == null || principal.getNumeroIndividu() == null) && (conjoint == null || conjoint.getNumeroIndividu() == null);
 			if (tousInconnusAuCivil) {
-				final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(date);
-				gris = isForVaudoisSource(ffp);
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipalAvant(date);
+				gris = ffp != null && isForVaudoisSource(ffp);
 			}
 			else {
 				gris = false;

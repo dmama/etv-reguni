@@ -8,6 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -33,8 +34,10 @@ import ch.vd.uniregctb.role.ProduireRolesResults.InfoCommune;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -1000,5 +1003,59 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final T actual = iter.next();
 		assertNotNull(actual);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testSourcierGrisMarieDepartHS() throws Exception {
+
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(1990, 4, 13), null);
+				final MenageCommun mc = couple.getMenage();
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return mc.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(1, results.ctbsIgnores.size());
+		assertEquals(0, results.infosCommunes.size());
+
+		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
+		assertNotNull(ignore);
+		assertEquals(mcId, ignore.noCtb);
+		assertEquals(ProduireRolesResults.IgnoreType.SOURCIER_GRIS, ignore.raison);
+	}
+
+	@Test
+	public void testSourcierGrisCelibataireDepartHS() throws Exception {
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(1, results.ctbsIgnores.size());
+		assertEquals(0, results.infosCommunes.size());
+
+		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
+		assertNotNull(ignore);
+		assertEquals(ppId, ignore.noCtb);
+		assertEquals(ProduireRolesResults.IgnoreType.SOURCIER_GRIS, ignore.raison);
 	}
 }
