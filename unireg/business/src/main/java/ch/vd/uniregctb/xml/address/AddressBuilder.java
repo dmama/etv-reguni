@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.webservices.tiers3.data;
+package ch.vd.uniregctb.xml.address;
 
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.unireg.webservices.tiers3.address.Address;
-import ch.vd.unireg.webservices.tiers3.address.AddressInformation;
-import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.address.AddressType;
-import ch.vd.unireg.webservices.tiers3.address.CoupleMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.address.OrganisationMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.address.OtherPartyAddressType;
-import ch.vd.unireg.webservices.tiers3.address.PersonMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.address.PersonName;
+import ch.vd.unireg.xml.address.Address;
+import ch.vd.unireg.xml.address.AddressInformation;
+import ch.vd.unireg.xml.address.AddressOtherParty;
+import ch.vd.unireg.xml.address.AddressType;
+import ch.vd.unireg.xml.address.CoupleMailAddressInfo;
+import ch.vd.unireg.xml.address.FormattedAddress;
+import ch.vd.unireg.xml.address.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.address.OtherPartyAddressType;
+import ch.vd.unireg.xml.address.PersonMailAddressInfo;
+import ch.vd.unireg.xml.address.PersonName;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.CasePostale;
@@ -23,8 +23,7 @@ import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.DataHelper;
 
 public class AddressBuilder {
 
@@ -44,8 +43,8 @@ public class AddressBuilder {
 	}
 
 	private static void fillAddress(AdresseEnvoiDetaillee adresse, Address a, AddressType type) {
-		a.setDateFrom(DataHelper.coreToWeb(adresse.getDateDebut()));
-		a.setDateTo(DataHelper.coreToWeb(adresse.getDateFin()));
+		a.setDateFrom(DataHelper.coreToXML(adresse.getDateDebut()));
+		a.setDateTo(DataHelper.coreToXML(adresse.getDateFin()));
 		a.setType(type);
 
 		fillRecipient(a, adresse);
@@ -160,7 +159,7 @@ public class AddressBuilder {
 
 		info.setSwissZipCodeId(from.getNumeroOrdrePostal());
 		info.setStreetId(from.getNumeroTechniqueRue());
-		info.setTariffZone(EnumHelper.coreToWeb(from.getTypeAffranchissement()));
+		info.setTariffZone(DataHelper.coreToXML(from.getTypeAffranchissement()));
 
 		to.setAddressInformation(info);
 	}

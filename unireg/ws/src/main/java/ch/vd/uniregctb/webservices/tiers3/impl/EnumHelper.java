@@ -21,7 +21,7 @@ import ch.vd.unireg.webservices.tiers3.TaxationMethod;
 import ch.vd.unireg.webservices.tiers3.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.webservices.tiers3.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.webservices.tiers3.WithholdingTaxTariff;
-import ch.vd.unireg.webservices.tiers3.address.TariffZone;
+import ch.vd.unireg.xml.address.TariffZone;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.TypePermis;

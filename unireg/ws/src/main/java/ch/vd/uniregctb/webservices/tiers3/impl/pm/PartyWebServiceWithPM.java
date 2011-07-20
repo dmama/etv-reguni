@@ -49,8 +49,8 @@ import ch.vd.unireg.webservices.tiers3.TaxSystem;
 import ch.vd.unireg.webservices.tiers3.TaxType;
 import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.address.Address;
-import ch.vd.unireg.webservices.tiers3.address.AddressType;
+import ch.vd.unireg.xml.address.Address;
+import ch.vd.unireg.xml.address.AddressType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.NpaEtLocalite;
@@ -72,9 +72,9 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdressePM;
-import ch.vd.uniregctb.webservices.tiers3.data.AddressBuilder;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
  * Classe qui retourne des données bouchonnées concernant les personnes morales. Les appels concernant les personnes physiques sont simplement délégués plus loin.

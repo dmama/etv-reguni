@@ -7,16 +7,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.common.EvenementDeclarationImpotContext;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementAnnulationDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementDeclarationImpotOutput;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.EvenementEmissionDeclarationImpot;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.output.ObjectFactory;
-import ch.vd.fiscalite.registre.evenementDeclarationImpot.unireg.Date;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.xml.common.Date;
+import ch.vd.unireg.xml.event.di.common.EvenementDeclarationImpotContext;
+import ch.vd.unireg.xml.event.di.output.EvenementAnnulationDeclarationImpot;
+import ch.vd.unireg.xml.event.di.output.EvenementDeclarationImpotOutput;
+import ch.vd.unireg.xml.event.di.output.EvenementEmissionDeclarationImpot;
+import ch.vd.unireg.xml.event.di.output.ObjectFactory;
 
 public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender {
 

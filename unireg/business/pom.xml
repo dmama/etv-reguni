@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-beans</artifactId>
-			<version>1.0a-SNAPSHOT</version>
+			<version>1.0b-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>

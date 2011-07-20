@@ -17,10 +17,10 @@ import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatus;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatusType;
-import ch.vd.unireg.webservices.tiers3.common.Date;
-import ch.vd.unireg.webservices.tiers3.common.UserLogin;
-import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionInfo;
-import ch.vd.unireg.webservices.tiers3.exception.ServiceExceptionInfo;
+import ch.vd.unireg.xml.common.Date;
+import ch.vd.unireg.xml.common.UserLogin;
+import ch.vd.unireg.xml.exception.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.ServiceExceptionInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

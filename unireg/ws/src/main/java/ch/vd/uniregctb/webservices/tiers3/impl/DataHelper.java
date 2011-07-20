@@ -28,10 +28,10 @@ import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyType;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.address.Address;
-import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.address.AddressType;
-import ch.vd.unireg.webservices.tiers3.common.Date;
+import ch.vd.unireg.xml.address.Address;
+import ch.vd.unireg.xml.address.AddressOtherParty;
+import ch.vd.unireg.xml.address.AddressType;
+import ch.vd.unireg.xml.common.Date;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
@@ -48,7 +48,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.webservices.tiers3.data.AddressBuilder;
+import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'web'.

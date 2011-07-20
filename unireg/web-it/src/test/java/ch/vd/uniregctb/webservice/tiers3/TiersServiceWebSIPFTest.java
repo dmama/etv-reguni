@@ -25,12 +25,12 @@ import ch.vd.unireg.webservices.tiers3.TaxResidence;
 import ch.vd.unireg.webservices.tiers3.TaxSystem;
 import ch.vd.unireg.webservices.tiers3.TaxType;
 import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
-import ch.vd.unireg.webservices.tiers3.address.Address;
-import ch.vd.unireg.webservices.tiers3.address.AddressInformation;
-import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.address.OrganisationMailAddressInfo;
-import ch.vd.unireg.webservices.tiers3.address.TariffZone;
-import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.xml.address.Address;
+import ch.vd.unireg.xml.address.AddressInformation;
+import ch.vd.unireg.xml.address.FormattedAddress;
+import ch.vd.unireg.xml.address.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.address.TariffZone;
+import ch.vd.unireg.xml.common.UserLogin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

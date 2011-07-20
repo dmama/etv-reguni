@@ -25,7 +25,7 @@ import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.exception.TechnicalExceptionInfo;
+import ch.vd.unireg.xml.exception.TechnicalExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.impl.ExceptionHelper;
 
 /**

@@ -8,12 +8,12 @@ import ch.vd.unireg.webservices.tiers3.CommonHousehold;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.address.Address;
-import ch.vd.unireg.webservices.tiers3.address.AddressOtherParty;
-import ch.vd.unireg.webservices.tiers3.address.FormattedAddress;
-import ch.vd.unireg.webservices.tiers3.address.OtherPartyAddressType;
-import ch.vd.unireg.webservices.tiers3.address.TariffZone;
-import ch.vd.unireg.webservices.tiers3.common.UserLogin;
+import ch.vd.unireg.xml.address.Address;
+import ch.vd.unireg.xml.address.AddressOtherParty;
+import ch.vd.unireg.xml.address.FormattedAddress;
+import ch.vd.unireg.xml.address.OtherPartyAddressType;
+import ch.vd.unireg.xml.address.TariffZone;
+import ch.vd.unireg.xml.common.UserLogin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

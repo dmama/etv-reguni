@@ -12,7 +12,7 @@ import ch.vd.unireg.webservices.tiers3.NaturalPerson;
 import ch.vd.unireg.webservices.tiers3.NaturalPersonCategory;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.BusinessExceptionCode;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;

@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.webservices.tiers3.impl;
 
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.webservices.tiers3.exception.AccessDeniedExceptionInfo;
-import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionCode;
-import ch.vd.unireg.webservices.tiers3.exception.BusinessExceptionInfo;
-import ch.vd.unireg.webservices.tiers3.exception.TechnicalExceptionInfo;
+import ch.vd.unireg.xml.exception.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.TechnicalExceptionInfo;
 
 public class ExceptionHelper {
 
