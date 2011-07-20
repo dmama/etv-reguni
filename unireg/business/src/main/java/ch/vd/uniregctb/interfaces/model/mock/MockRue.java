@@ -81,11 +81,11 @@ public class MockRue implements Rue {
 	}
 
 	public static class Enney {
-		public static final MockRue chemin = new MockRue(MockLocalite.Enney, "Chemin d'Afflon", 11);
+		public static final MockRue chemin = new MockRue(MockLocalite.Enney, "Chemin d'Afflon", 334842);
 	}
 
 	public static class Chamblon {
-		public static final MockRue RueDesUttins = new MockRue(MockLocalite.Chamblon, "Rue des Uttins", 23);
+		public static final MockRue RueDesUttins = new MockRue(MockLocalite.Chamblon, "Rue des Uttins", 198539);
 	}
 
 	public static class LIsle {
@@ -172,9 +172,9 @@ public class MockRue implements Rue {
 	private final String designationCourrier;
 	private final Integer noRue;
 
-	public MockRue(MockLocalite localite, String designationCourrier, Integer noRue) {
+	public MockRue(MockLocalite localite, String designationCourrier, Integer noTechniqueRue) {
 		this.designationCourrier = designationCourrier;
-		this.noRue = noRue;
+		this.noRue = noTechniqueRue;
 		this.localite = localite;
 
 		DefaultMockServiceInfrastructureService.addRue(this);
