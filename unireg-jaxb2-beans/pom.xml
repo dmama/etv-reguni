@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-beans</artifactId>
-	<version>1.0a-SNAPSHOT</version>
+	<version>1.0b-SNAPSHOT</version>
 
 	<name>Unireg - Beans JAXB2</name>
 	<description>Les beans JAXB2 du projet Unireg</description>
-	
+
 	<dependencies>
+		<dependency>
+			<artifactId>unireg-jaxb2-common</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -27,14 +32,23 @@
 				<artifactId>maven-jaxb2-plugin</artifactId>
 				<version>0.8.0</version>
 				<configuration>
-					<schemaDirectory>src/main/resources/di</schemaDirectory>
+					<schemaDirectory>src/main/resources</schemaDirectory>
+					<schemaIncludes>
+						<include>*.xsd</include>
+						<include>**/*.xsd</include>
+					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
 						<include>bindings.xml</include>
 					</bindingIncludes>
 					<args>
+						<arg>-extension</arg>
 						<arg>-Xpretty-classname</arg>
+						<arg>-Xunireg-ws</arg>
+						<arg>-Xts</arg>
+						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
 						<arg>-Xvalue-constructor</arg>
+						<arg>-Xinheritance</arg>
 					</args>
 				</configuration>
 				<executions>
@@ -46,14 +60,34 @@
 				</executions>
 				<dependencies>
 					<dependency>
+						<artifactId>unireg-jaxb2-common</artifactId>
+						<groupId>ch.vd.uniregctb</groupId>
+						<version>1.0-SNAPSHOT</version>
+					</dependency>
+					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-pretty-classname</artifactId>
 						<version>1.0.0</version>
 					</dependency>
 					<dependency>
+						<groupId>ch.vd.uniregctb</groupId>
+						<artifactId>jaxb2-unireg-ws-plugin</artifactId>
+						<version>1.1.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.cxf.xjcplugins</groupId>
+						<artifactId>cxf-xjc-ts</artifactId>
+						<version>2.3.2</version>
+					</dependency>
+					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-value-constructor</artifactId>
 						<version>3.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+					   <artifactId>jaxb2-basics</artifactId>
+					   <version>0.5.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -64,6 +98,13 @@
 					<encoding>UTF-8</encoding>
 					<source>1.6</source>
 					<target>1.6</target>
+					<excludes>
+						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-common, car ils ont déjà été compilés dans ce dernier -->
+						<exclude>ch/ech/ech0010_4/**</exclude>
+						<exclude>ch/vd/unireg/xml/common/**</exclude>
+						<exclude>ch/vd/unireg/xml/address/**</exclude>
+						<exclude>ch/vd/unireg/xml/exception/**</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -87,7 +128,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>nexus.releases</id>
@@ -102,13 +143,13 @@
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<properties>
 		<!-- Application settings -->
 		<copyright.year>2011</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 	</properties>
-	
+
 </project>
 
