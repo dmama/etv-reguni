@@ -42,8 +42,6 @@ import static org.junit.Assert.assertTrue;
  * Classe de test et d'exemple d'utilisation du web-service PM à l'usage de SIPF.
  * <p/>
  * Basé sur le document de spécification d'Eric Wyss "Echanges Registe - SIPF particularités des personnes morales" v0.96 du 10 octobre 2009.
- * <p/>
- * <b>Note:</b> tous les tests sont actuellement désactivés parce que le service n'est pas implémenté.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

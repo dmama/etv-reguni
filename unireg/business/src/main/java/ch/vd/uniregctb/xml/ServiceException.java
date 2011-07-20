@@ -7,6 +7,7 @@ public class ServiceException extends Exception {
 	private ServiceExceptionInfo info;
 
 	public ServiceException(ServiceExceptionInfo info) {
+		super(info.getMessage());
 		this.info = info;
 	}
 

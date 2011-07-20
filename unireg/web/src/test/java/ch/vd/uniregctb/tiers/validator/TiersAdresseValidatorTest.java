@@ -23,8 +23,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -61,22 +59,9 @@ public class TiersAdresseValidatorTest extends WebTest {
 		validator = null;
 
 		// reset le security provider pour les autres tests (ceux qui seront lancés alors que le contexte spring n'aura pas encore été ré-initialisé)
-		resetSecurityProvider();
+		popSecurityProvider();
 
 		super.onTearDown();
-	}
-
-	private void setSecurityProvider(SecurityProviderInterface providerInterface) throws Exception {
-		final SecurityProvider provider = new SecurityProvider();
-		provider.setProvider(providerInterface);
-		if (provider instanceof InitializingBean) {
-			((InitializingBean) provider).afterPropertiesSet();
-		}
-	}
-
-	private void resetSecurityProvider() throws Exception {
-		final SecurityProviderInterface intf = getBean(SecurityProviderInterface.class, "securityProviderCache");
-		setSecurityProvider(intf);
 	}
 
 	/**
@@ -99,7 +84,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 				Role.ADR_PP_B,
 				Role.ADR_P,
 				Role.ADR_PP_C_DCD};
-		setSecurityProvider(new MockSecurityProvider(roles));
+		pushSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -178,7 +163,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		final RegDate dateMariage = date(2000, 1, 1);
 
 		final Role[] roles = {Role.VISU_ALL, Role.MODIF_VD_ORD, Role.ADR_PP_C};
-		setSecurityProvider(new MockSecurityProvider(roles));
+		pushSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {

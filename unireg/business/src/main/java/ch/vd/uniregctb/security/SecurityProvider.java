@@ -23,6 +23,11 @@ public class SecurityProvider {
 		SecurityProvider.provider = provider;
 	}
 
+	// pour le testing uniquement
+	public static SecurityProviderInterface getProvider() {
+		return provider;
+	}
+
 	/**
 	 * Vérifie que l'opérateur courant possède le rôle spécifié.
 	 * <p>
