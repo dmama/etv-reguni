@@ -52,7 +52,6 @@
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
-    <column>NUMERO_PM</column>
     <row>
       <value>PersonnePhysique</value>
       <value>10035633</value>
@@ -99,7 +98,6 @@
       <value>0</value>
       <null/>
       <value><![CDATA[Tummers-De Wit Wouter]]></value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -159,7 +157,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -209,7 +206,6 @@
       <null/>
       <null/>
       <value>212620</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -267,7 +263,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -321,7 +316,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -371,7 +365,6 @@
       <null/>
       <null/>
       <value>327706</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -483,7 +476,6 @@
       <value>8212</value>
       <value>Andrea</value>
       <value>MASCULIN</value>
-      <null/>
     </row>
     <row>
       <value>Entreprise</value>
@@ -500,7 +492,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -591,7 +582,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -645,7 +635,6 @@
       <null/>
       <value>Delano</value>
       <value>MASCULIN</value>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -695,7 +684,6 @@
       <null/>
       <null/>
       <value>674417</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -753,7 +741,6 @@
       <null/>
       <value>Jean</value>
       <value>MASCULIN</value>
-      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -769,7 +756,6 @@
       <null/>
       <null/>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -861,7 +847,6 @@
       <null/>
       <value>Alfred</value>
       <value>MASCULIN</value>
-      <null/>
     </row>
   </table>
   <table name="SITUATION_FAMILLE">
