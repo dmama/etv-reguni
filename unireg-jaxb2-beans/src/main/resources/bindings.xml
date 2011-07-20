@@ -40,23 +40,23 @@
 
 	<!-- beans -->
 
-	<!--<jxb:bindings schemaLocation="event/request-event-1.xsd">-->
-		<!--<jxb:schemaBindings>-->
-			<!--<jxb:package name="ch.vd.unireg.xml.event" />-->
-		<!--</jxb:schemaBindings>-->
-	<!--</jxb:bindings>-->
+	<jxb:bindings schemaLocation="event/request-event-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
 
-	<!--<jxb:bindings schemaLocation="event/address/get-address-request-1.xsd">-->
-		<!--<jxb:schemaBindings>-->
-			<!--<jxb:package name="ch.vd.unireg.xml.event.address" />-->
-		<!--</jxb:schemaBindings>-->
-	<!--</jxb:bindings>-->
+	<jxb:bindings schemaLocation="event/address/get-address-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.address" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
 
-	<!--<jxb:bindings schemaLocation="event/address/get-address-response-1.xsd">-->
-		<!--<jxb:schemaBindings>-->
-			<!--<jxb:package name="ch.vd.unireg.xml.event.address" />-->
-		<!--</jxb:schemaBindings>-->
-	<!--</jxb:bindings>-->
+	<jxb:bindings schemaLocation="event/address/get-address-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.address" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="event/di/evenementDeclarationImpot-common-1.xsd">
 		<jxb:schemaBindings>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 20 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/unireg/event/get-address-request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/unireg/event/get-address-request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1" xmlns:request="http://www.vd.ch/unireg/event/request/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../../common/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../../common/unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/event/request/1" schemaLocation="../request-event-1.xsd" />
+
+	<xs:element name="request" type="getAddressRequestType" />
+
+	<xs:complexType name="getAddressRequestType">
+		<xs:annotation>
+			<xs:documentation>Requête qui permet de demander à Unireg les adresses d'un tiers.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="request:requetEventType">
+				<xs:sequence>
+					<xs:element name="partyNumber" type="common:partyNumberType">
+						<xs:annotation>
+							<xs:documentation>L'id du tiers dont on veut obtenir les adresses.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="types" type="address:addressTypeType" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Le ou les types d'adresse demandés.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="date" type="common:dateType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Le date de valeur de l'adresse, ou non-renseigné pour demander l'adresse du jour.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>
