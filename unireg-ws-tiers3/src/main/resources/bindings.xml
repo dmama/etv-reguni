@@ -6,71 +6,7 @@
 			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-	<jxb:bindings schemaLocation="unireg-address-1.xsd">
-		<jxb:bindings node="//xs:complexType[@name='addressType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/taxpayer.xsd">
-		<jxb:bindings node="//xs:complexType[@name='familyStatusType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/debtor.xsd">
-		<jxb:bindings node="//xs:complexType[@name='debtorPeriodicityType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/taxdeclaration.xsd">
-		<jxb:bindings node="//xs:complexType[@name='taxDeclarationType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/taxresidence.xsd">
-		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='managingTaxResidenceType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='simplifiedTaxLiabilityType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxationPeriodType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxLiabilityType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/corporation.xsd">
-		<jxb:bindings node="//xs:complexType[@name='legalSeatType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='legalFormType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='capitalType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxSystemType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='corporationStatusType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="data/relation.xsd">
-		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
-			<inheritance:implements>ch.vd.unireg.webservices.tiers3.DateRange</inheritance:implements>
-		</jxb:bindings>
-	</jxb:bindings>
+	<!-- common -->
 
 	<jxb:bindings schemaLocation="eCH-0010-4-0f.xsd">
 		<jxb:schemaBindings>
@@ -78,27 +14,96 @@
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="eCH-0044-2-0f.xsd">
+	<jxb:bindings schemaLocation="unireg-address-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.ech.ech0044_2" />
+			<jxb:package name="ch.vd.unireg.xml.address" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="unireg-common-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.webservices.tiers3.common" />
+			<jxb:package name="ch.vd.unireg.xml.common" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="unireg-exception-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.webservices.tiers3.exception" />
+			<jxb:package name="ch.vd.unireg.xml.exception" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="unireg-address-1.xsd">
+		<jxb:bindings node="//xs:complexType[@name='addressType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<!-- web-service -->
+
+	<jxb:bindings schemaLocation="data/taxpayer.xsd">
+		<jxb:bindings node="//xs:complexType[@name='familyStatusType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/debtor.xsd">
+		<jxb:bindings node="//xs:complexType[@name='debtorPeriodicityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/taxdeclaration.xsd">
+		<jxb:bindings node="//xs:complexType[@name='taxDeclarationType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/taxresidence.xsd">
+		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='managingTaxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='simplifiedTaxLiabilityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxationPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxLiabilityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/corporation.xsd">
+		<jxb:bindings node="//xs:complexType[@name='legalSeatType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='legalFormType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='capitalType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxSystemType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='corporationStatusType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/relation.xsd">
+		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+
+	<jxb:bindings schemaLocation="eCH-0044-2-0f.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.webservices.tiers3.address" />
+			<jxb:package name="ch.ech.ech0044_2" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
