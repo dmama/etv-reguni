@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.adresses;
+package ch.vd.uniregctb.evenement.party;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import ch.vd.unireg.xml.address.PersonMailAddressInfo;
 import ch.vd.unireg.xml.address.TariffZone;
 import ch.vd.unireg.xml.common.Date;
 import ch.vd.unireg.xml.common.UserLogin;
-import ch.vd.unireg.xml.event.address.GetAddressRequest;
-import ch.vd.unireg.xml.event.address.GetAddressResponse;
+import ch.vd.unireg.xml.event.party.address.AddressRequest;
+import ch.vd.unireg.xml.event.party.address.AddressResponse;
 import ch.vd.unireg.xml.exception.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.BusinessExceptionInfo;
@@ -34,17 +34,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class GetAdressesRequestListenerTest extends BusinessTest {
+public class AddressRequestHandlerTest extends BusinessTest {
 
-	private GetAdressesRequestListener listener;
+	private AddressRequestHandler handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		listener = new GetAdressesRequestListener();
-		listener.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		listener.setTiersDAO(tiersDAO);
+		handler = new AddressRequestHandler();
+		handler.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		handler.setTiersDAO(tiersDAO);
 	}
 
 	@Test
@@ -53,12 +53,12 @@ public class GetAdressesRequestListenerTest extends BusinessTest {
 		pushSecurityProvider(new MockSecurityProvider());
 		try {
 
-			final GetAddressRequest request = new GetAddressRequest();
+			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
 
 			try {
-				listener.handle(request);
+				handler.handle(request);
 				fail();
 			}
 			catch (ServiceException e) {
@@ -82,13 +82,13 @@ public class GetAdressesRequestListenerTest extends BusinessTest {
 		pushSecurityProvider(provider);
 		try {
 
-			final GetAddressRequest request = new GetAddressRequest();
+			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
 			request.setPartyNumber(4224);
 
 			try {
-				listener.handle(request);
+				handler.handle(request);
 				fail();
 			}
 			catch (ServiceException e) {
@@ -110,13 +110,13 @@ public class GetAdressesRequestListenerTest extends BusinessTest {
 
 		pushSecurityProvider(provider);
 		try {
-			final GetAddressRequest request = new GetAddressRequest();
+			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
 			request.setPartyNumber(4224);
 
 			try {
-				listener.handle(request);
+				handler.handle(request);
 				fail();
 			}
 			catch (ServiceException e) {
@@ -148,13 +148,13 @@ public class GetAdressesRequestListenerTest extends BusinessTest {
 
 		pushSecurityProvider(provider);
 		try {
-			final GetAddressRequest request = new GetAddressRequest();
+			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
 			request.setPartyNumber(id.intValue());
 			request.getTypes().add(AddressType.RESIDENCE);
 
-			final GetAddressResponse response = listener.handle(request);
+			final AddressResponse response = (AddressResponse) handler.handle(request);
 			assertNotNull(response);
 
 			final List<Address> addresses = response.getAddresses();

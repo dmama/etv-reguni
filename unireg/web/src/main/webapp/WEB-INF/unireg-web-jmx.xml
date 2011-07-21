@@ -55,7 +55,7 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediListenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbListenerContainer"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=GetAddress" value-ref="evenementAdresseListenerContainer"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestListenerContainer"/>
 			</map>
 		</property>
 	</bean>
