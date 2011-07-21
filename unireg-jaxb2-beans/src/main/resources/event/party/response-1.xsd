@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 21 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/unireg/event/party/response/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/unireg/event/party/response/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:exception="http://www.vd.ch/unireg/exception/1">
+
+	<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="../../common/unireg-exception-1.xsd" />
+
+	<xs:element name="response" type="responseType" />
+
+	<xs:complexType name="responseType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type de base pour toutes les réponses qui retournent des données d'un tiers.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
+
+	<xs:complexType name="exceptionResponseType">
+		<xs:annotation>
+			<xs:documentation>Réponse en cas d'erreur métier dans le traitement de la requête.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="responseType">
+				<xs:sequence>
+					<xs:element name="exceptionInfo" type="exception:serviceExceptionInfoType">
+						<xs:annotation>
+							<xs:documentation>En cas de problème, contient la raison aussi précise que possible du problème.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

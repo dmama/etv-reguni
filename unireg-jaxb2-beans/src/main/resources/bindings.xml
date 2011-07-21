@@ -40,21 +40,27 @@
 
 	<!-- beans -->
 
-	<jxb:bindings schemaLocation="event/request-event-1.xsd">
+	<jxb:bindings schemaLocation="event/party/request-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event" />
+			<jxb:package name="ch.vd.unireg.xml.event.party" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="event/address/get-address-request-1.xsd">
+	<jxb:bindings schemaLocation="event/party/response-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.address" />
+			<jxb:package name="ch.vd.unireg.xml.event.party" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="event/address/get-address-response-1.xsd">
+	<jxb:bindings schemaLocation="event/party/address-request-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.address" />
+			<jxb:package name="ch.vd.unireg.xml.event.party.address" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/address-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.address" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 

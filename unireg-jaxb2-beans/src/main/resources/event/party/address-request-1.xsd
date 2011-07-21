@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 20 juillet 2011 - hand-edited by Manuel Siggen -->
-<xs:schema targetNamespace="http://www.vd.ch/unireg/event/get-address-request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
-		   xmlns="http://www.vd.ch/unireg/event/get-address-request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1" xmlns:request="http://www.vd.ch/unireg/event/request/1">
+<!-- v1.0beta - 21 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/unireg/event/party/address-request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/unireg/event/party/address-request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1" xmlns:request="http://www.vd.ch/unireg/event/party/request/1">
 
+	<xs:import namespace="http://www.vd.ch/unireg/event/party/request/1" schemaLocation="request-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../../common/unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../../common/unireg-address-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/event/request/1" schemaLocation="../request-event-1.xsd" />
 
-	<xs:element name="request" type="getAddressRequestType" />
-
-	<xs:complexType name="getAddressRequestType">
+	<xs:complexType name="addressRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête qui permet de demander à Unireg les adresses d'un tiers.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="request:requetEventType">
+			<xs:extension base="request:requestType">
 				<xs:sequence>
 					<xs:element name="partyNumber" type="common:partyNumberType">
 						<xs:annotation>
