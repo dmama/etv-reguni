@@ -5,8 +5,8 @@
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1" xmlns:request="http://www.vd.ch/unireg/event/party/request/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/event/party/request/1" schemaLocation="request-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../../common/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../../common/unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-address-1.xsd" />
 
 	<xs:complexType name="addressRequestType">
 		<xs:annotation>

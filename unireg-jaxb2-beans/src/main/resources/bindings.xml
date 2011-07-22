@@ -8,31 +8,31 @@
 
 	<!-- common -->
 
-	<jxb:bindings schemaLocation="common/eCH-0010-4-0f.xsd">
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0010_4" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="common/unireg-address-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-address-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.address" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="common/unireg-common-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.common" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="common/unireg-exception-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.exception" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="common/unireg-address-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-address-1.xsd">
 		<jxb:bindings node="//xs:complexType[@name='addressType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
 		</jxb:bindings>

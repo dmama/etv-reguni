@@ -6,7 +6,7 @@
 		   xmlns:address="http://www.vd.ch/unireg/address/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/event/party/response/1" schemaLocation="response-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../../common/unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-address-1.xsd" />
 
 	<xs:complexType name="addressResponseType">
 		<xs:annotation>
