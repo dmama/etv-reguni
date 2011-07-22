@@ -47,6 +47,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage() + " exception when resolving systemId [" + systemId + "]");
 		}
 
@@ -92,8 +93,21 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 
 		if (t == null) {
 
+			// On gère le cas des sous-répertoires dans le nom de fichier
+			File parent = d;
+			int sep = filename.lastIndexOf(File.separatorChar);
+			if (sep >= 0) {
+				parent = new File(d, filename.substring(0, sep));
+				filename = filename.substring(sep + 1);
+				if (!parent.mkdirs()) {
+					throw new RuntimeException("Impossible de créer le répertoire " + parent.getCanonicalPath());
+				}
+			}
+
+			//System.out.println("Creating file  [" + parent.getCanonicalPath() + "] / [" + filename + "]...");
+
 			// Création du fichier temporaire
-			final File f = new File(d, filename);
+			final File f = new File(parent, filename);
 			f.deleteOnExit();
 
 			// Copie des données
