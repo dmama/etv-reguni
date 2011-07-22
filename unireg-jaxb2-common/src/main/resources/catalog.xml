@@ -1,0 +1,6 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd" uri="eCH-0010-4-0f.xsd" />
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" uri="unireg-common-1.xsd" />
+
+</catalog>
