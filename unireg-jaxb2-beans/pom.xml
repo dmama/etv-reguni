@@ -7,21 +7,26 @@
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-beans</artifactId>
-	<version>1.0b-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 
 	<name>Unireg - Beans JAXB2</name>
 	<description>Les beans JAXB2 du projet Unireg</description>
 
 	<dependencies>
 		<dependency>
-			<artifactId>unireg-jaxb2-common</artifactId>
+			<artifactId>unireg-jaxb2-party</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>1.0b-SNAPSHOT</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<artifactId>jaxb2-catalog-resolver</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 
@@ -61,14 +66,15 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<artifactId>unireg-jaxb2-common</artifactId>
+						<!-- pour la résolution des XSDs par le classpath resolver -->
+						<artifactId>unireg-jaxb2-party</artifactId>
 						<groupId>ch.vd.uniregctb</groupId>
-						<version>1.0b-SNAPSHOT</version>
+						<version>1.0-SNAPSHOT</version>
 					</dependency>
 					<dependency>
 						<artifactId>jaxb2-catalog-resolver</artifactId>
 						<groupId>ch.vd.uniregctb</groupId>
-						<version>1.0.0</version>
+						<version>1.0.1</version>
 					</dependency>
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
@@ -105,11 +111,12 @@
 					<source>1.6</source>
 					<target>1.6</target>
 					<excludes>
-						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-common, car ils ont déjà été compilés dans ce dernier -->
-						<exclude>ch/ech/ech0010_4/**</exclude>
+						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-party, car ils ont déjà été compilés dans ce dernier -->
+						<exclude>ch/ech/ech0010/v4/**</exclude>
+						<exclude>ch/ech/ech0044/v2/**</exclude>
 						<exclude>ch/vd/unireg/xml/common/**</exclude>
-						<exclude>ch/vd/unireg/xml/address/**</exclude>
 						<exclude>ch/vd/unireg/xml/exception/**</exclude>
+						<exclude>ch/vd/unireg/xml/party/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

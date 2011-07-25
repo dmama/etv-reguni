@@ -3,10 +3,10 @@
 <xs:schema targetNamespace="http://www.vd.ch/unireg/event/party/address-response/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
 		   xmlns="http://www.vd.ch/unireg/event/party/address-response/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		   xmlns:response="http://www.vd.ch/unireg/event/party/response/1"
-		   xmlns:address="http://www.vd.ch/unireg/address/1">
+		   xmlns:address="http://www.vd.ch/unireg/party/address/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/event/party/response/1" schemaLocation="response-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd" />
 
 	<xs:complexType name="addressResponseType">
 		<xs:annotation>
