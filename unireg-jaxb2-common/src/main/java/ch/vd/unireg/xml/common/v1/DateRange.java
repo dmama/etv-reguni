@@ -1,4 +1,6 @@
-package ch.vd.unireg.xml.common;
+package ch.vd.unireg.xml.common.v1;
+
+import ch.vd.unireg.xml.common.v1.Date;
 
 /**
  * Représente une période temporelle délimitée par deux dates. Si la date de début est nulle, la période est supposée exister depuis l'aube des temps. Si la date de fin est nulle, la période est

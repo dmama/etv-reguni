@@ -1,39 +1,19 @@
 <?xml version="1.0"?>
 <jxb:bindings version="1.0"
 			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd">
+	<jxb:bindings schemaLocation="unireg-common-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.ech.ech0010_4" />
-		</jxb:schemaBindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.common" />
-		</jxb:schemaBindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="unireg-address-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.address" />
+			<jxb:package name="ch.vd.unireg.xml.common.v1" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="unireg-exception-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.exception" />
+			<jxb:package name="ch.vd.unireg.xml.exception.v1" />
 		</jxb:schemaBindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="unireg-address-1.xsd">
-		<jxb:bindings node="//xs:complexType[@name='addressType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.DateRange</inheritance:implements>
-		</jxb:bindings>
 	</jxb:bindings>
 
 </jxb:bindings>

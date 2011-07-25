@@ -1,4 +1,4 @@
-package ch.vd.unireg.xml.common;
+package ch.vd.unireg.xml.common.v1;
 
 import java.util.ArrayList;
 import java.util.Collection;
