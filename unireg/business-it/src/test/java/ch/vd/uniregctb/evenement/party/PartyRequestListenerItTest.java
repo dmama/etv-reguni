@@ -2,10 +2,17 @@ package ch.vd.uniregctb.evenement.party;
 
 import javax.jms.ConnectionFactory;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -20,11 +27,21 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
+import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
+import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -34,10 +51,12 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Classe de test du listener de requêtes de résolution d'adresses. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -131,26 +150,14 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 			}
 		});
 
-		// On attend le message
-		final String response =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns5:response " +
-						"xmlns:ns5=\"http://www.vd.ch/unireg/event/party/response/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
-						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
-						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
-						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
-						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns5:exceptionResponseType\">" +
-						"<ns5:exceptionInfo xsi:type=\"ns4:accessDeniedExceptionInfoType\">" +
-						"<ns4:message>L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.</ns4:message>" +
-						"</ns5:exceptionInfo>" +
-						"</ns5:response>";
-
-		assertTextMessage(OUTPUT_QUEUE, response);
+		try {
+			getResponse(OUTPUT_QUEUE);
+			fail();
+		}
+		catch (ServiceException e) {
+			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
+			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", e.getMessage());
+		}
 	}
 
 	@NotTransactional
@@ -176,26 +183,14 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 			}
 		});
 
-		// On attend le message
-		final String response =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns5:response " +
-						"xmlns:ns5=\"http://www.vd.ch/unireg/event/party/response/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
-						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
-						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
-						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
-						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns5:exceptionResponseType\">" +
-						"<ns5:exceptionInfo xsi:type=\"ns4:accessDeniedExceptionInfoType\">" +
-						"<ns4:message>L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 222.</ns4:message>" +
-						"</ns5:exceptionInfo>" +
-						"</ns5:response>";
-
-		assertTextMessage(OUTPUT_QUEUE, response);
+		try {
+			getResponse(OUTPUT_QUEUE);
+			fail();
+		}
+		catch (ServiceException e) {
+			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
+			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 222.", e.getMessage());
+		}
 	}
 
 	@NotTransactional
@@ -220,27 +215,14 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 			}
 		});
 
-		// On attend le message
-		final String response =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns5:response " +
-						"xmlns:ns5=\"http://www.vd.ch/unireg/event/party/response/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
-						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
-						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
-						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
-						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns5:exceptionResponseType\">" +
-						"<ns5:exceptionInfo xsi:type=\"ns4:businessExceptionInfoType\">" +
-						"<ns4:message>Le tiers n°222 n'existe pas.</ns4:message>" +
-						"<ns4:code>UNKNOWN_PARTY</ns4:code>" +
-						"</ns5:exceptionInfo>" +
-						"</ns5:response>";
-
-		assertTextMessage(OUTPUT_QUEUE, response);
+		try {
+			getResponse(OUTPUT_QUEUE);
+			fail();
+		}
+		catch (ServiceException e) {
+			assertInstanceOf(BusinessExceptionInfo.class, e.getInfo());
+			assertEquals("Le tiers n°222 n'existe pas.", e.getMessage());
+		}
 	}
 
 	@NotTransactional
@@ -274,51 +256,47 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 			}
 		});
 
-		// On attend le message
-		final String response =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-						"<ns5:response " +
-						"xmlns:ns5=\"http://www.vd.ch/unireg/event/party/response/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
-						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
-						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
-						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
-						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-						"xsi:type=\"ns8:addressResponseType\">" +
-						"<ns8:addresses>" +
-						"<ns6:dateFrom><year>1950</year><month>3</month><day>14</day></ns6:dateFrom>" +
-						"<ns6:person>" +
-						"<ns7:mrMrs>2</ns7:mrMrs>" +
-						"<ns7:firstName>Michel</ns7:firstName>" +
-						"<ns7:lastName>Mabelle</ns7:lastName>" +
-						"<ns6:salutation>Monsieur</ns6:salutation>" +
-						"<ns6:formalGreeting>Monsieur</ns6:formalGreeting>" +
-						"</ns6:person>" +
-						"<ns6:addressInformation>" +
-						"<ns7:street>Les Uttins</ns7:street>" +
-						"<ns7:town>Chamblon</ns7:town>" +
-						"<ns7:swissZipCode>1436</ns7:swissZipCode>" +
-						"<ns7:swissZipCodeId>5876</ns7:swissZipCodeId>" +
-						"<ns7:country>CH</ns7:country>" +
-						"<ns6:countryName>Suisse</ns6:countryName>" +
-						"<ns6:streetId>198539</ns6:streetId>" +
-						"<ns6:countryId>8100</ns6:countryId>" +
-						"<ns6:tariffZone>SWITZERLAND</ns6:tariffZone>" +
-						"</ns6:addressInformation>" +
-						"<ns6:formattedAddress>" +
-						"<ns6:line1>Monsieur</ns6:line1>" +
-						"<ns6:line2>Michel Mabelle</ns6:line2>" +
-						"<ns6:line3>Les Uttins</ns6:line3>" +
-						"<ns6:line4>1436 Chamblon</ns6:line4>" +
-						"</ns6:formattedAddress>" +
-						"<ns6:type>RESIDENCE</ns6:type>" +
-						"</ns8:addresses>" +
-						"</ns5:response>";
+		final AddressResponse response = getResponse(OUTPUT_QUEUE);
+		assertNotNull(response);
 
-		assertTextMessage(OUTPUT_QUEUE, response);
+		final List<Address> addresses = response.getAddresses();
+		assertNotNull(addresses);
+		assertEquals(1, addresses.size());
+
+		final Address address = addresses.get(0);
+		assertNotNull(address);
+
+		assertEquals(new Date(1950, 3, 14), address.getDateFrom());
+		assertNull(address.getDateTo());
+		assertEquals(AddressType.RESIDENCE, address.getType());
+
+		final PersonMailAddressInfo person = address.getPerson();
+		assertNotNull(person);
+		assertEquals("2", person.getMrMrs());
+		assertEquals("Michel", person.getFirstName());
+		assertEquals("Mabelle", person.getLastName());
+		assertEquals("Monsieur", person.getSalutation());
+		assertEquals("Monsieur", person.getFormalGreeting());
+
+		final AddressInformation info = address.getAddressInformation();
+		assertNotNull(info);
+		assertEquals("Les Uttins", info.getStreet());
+		assertEquals("Chamblon", info.getTown());
+		assertEquals(Long.valueOf(1436), info.getSwissZipCode());
+		assertEquals(Integer.valueOf(5876), info.getSwissZipCodeId());
+		assertEquals("CH", info.getCountry());
+		assertEquals("Suisse", info.getCountryName());
+		assertEquals(Integer.valueOf(198539), info.getStreetId());
+		assertEquals(Integer.valueOf(8100), info.getCountryId());
+		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+
+		final FormattedAddress formatted = address.getFormattedAddress();
+		assertNotNull(formatted);
+		assertEquals("Monsieur", formatted.getLine1());
+		assertEquals("Michel Mabelle", formatted.getLine2());
+		assertEquals("Les Uttins", formatted.getLine3());
+		assertEquals("1436 Chamblon", formatted.getLine4());
+		assertNull(formatted.getLine5());
 	}
 
 	protected void assertTextMessage(String queueName, final String texte) throws Exception {
@@ -352,5 +330,27 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		marshaller.marshal(new ObjectFactory().createRequest(request), out);
 		return out.toString();
+	}
+
+	private AddressResponse getResponse(String queue) throws Exception {
+
+		esbTemplate.setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
+		final EsbMessage msg = esbTemplate.receive(queue);
+		assertNotNull("L'événement n'a pas été reçu.", msg);
+
+		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		final Unmarshaller u = context.createUnmarshaller();
+		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		sf.setResourceResolver(new ClasspathCatalogResolver());
+		Schema schema = sf.newSchema(new Source[]{new StreamSource(new ClassPathResource("event/party/address-request-1.xsd").getURL().toExternalForm()),
+				new StreamSource(new ClassPathResource("event/party/address-response-1.xsd").getURL().toExternalForm())});
+		u.setSchema(schema);
+
+		final JAXBElement element = (JAXBElement) u.unmarshal(msg.getBodyAsSource());
+		final Object value = element.getValue();
+		if (value instanceof ExceptionResponse) {
+			throw new ServiceException(((ExceptionResponse) value).getExceptionInfo());
+		}
+		return (AddressResponse) value;
 	}
 }
