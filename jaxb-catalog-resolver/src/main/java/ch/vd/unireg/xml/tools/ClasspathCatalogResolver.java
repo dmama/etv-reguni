@@ -9,12 +9,16 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.xerces.internal.dom.DOMInputImpl;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
+
 /**
  * Catalog resolver qui recherche dans le classpath les XSDs dont le schemaLocation commence par http://ressources.etat-de-vaud.ch/fiscalite/registre/ ou http://www.ech.ch/xmlns. Spécifique au projet
  * Unireg.
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver {
+public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver implements LSResourceResolver {
 
 	@Override
 	public String getResolvedEntity(final String publicId, final String systemId) {
@@ -51,6 +55,16 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 			System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage() + " exception when resolving systemId [" + systemId + "]");
 		}
 
+		return null;
+	}
+
+	@Override
+	public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+
+		final String resolvedId = getResolvedEntity(publicId, systemId);
+		if (resolvedId != null) {
+			return new DOMInputImpl(publicId, resolvedId, baseURI);
+		}
 		return null;
 	}
 
