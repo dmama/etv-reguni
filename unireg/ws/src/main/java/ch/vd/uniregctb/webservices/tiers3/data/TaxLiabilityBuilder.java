@@ -3,16 +3,16 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.unireg.webservices.tiers3.ExpenditureBased;
-import ch.vd.unireg.webservices.tiers3.ForeignCountry;
-import ch.vd.unireg.webservices.tiers3.Indigent;
-import ch.vd.unireg.webservices.tiers3.MixedWithholding;
-import ch.vd.unireg.webservices.tiers3.OrdinaryResident;
-import ch.vd.unireg.webservices.tiers3.OtherCanton;
-import ch.vd.unireg.webservices.tiers3.PureWithholding;
-import ch.vd.unireg.webservices.tiers3.SwissDiplomat;
-import ch.vd.unireg.webservices.tiers3.TaxLiability;
-import ch.vd.unireg.webservices.tiers3.Withholding;
+import ch.vd.unireg.xml.party.taxresidence.v1.ExpenditureBased;
+import ch.vd.unireg.xml.party.taxresidence.v1.ForeignCountry;
+import ch.vd.unireg.xml.party.taxresidence.v1.Indigent;
+import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding;
+import ch.vd.unireg.xml.party.taxresidence.v1.OrdinaryResident;
+import ch.vd.unireg.xml.party.taxresidence.v1.OtherCanton;
+import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
+import ch.vd.unireg.xml.party.taxresidence.v1.SwissDiplomat;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v1.Withholding;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

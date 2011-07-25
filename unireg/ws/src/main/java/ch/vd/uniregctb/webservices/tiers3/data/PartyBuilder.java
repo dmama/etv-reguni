@@ -6,13 +6,13 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.tiers3.CommonHousehold;
-import ch.vd.unireg.webservices.tiers3.Corporation;
-import ch.vd.unireg.webservices.tiers3.Debtor;
-import ch.vd.unireg.webservices.tiers3.NaturalPerson;
-import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.party.corporation.v1.Corporation;
+import ch.vd.unireg.xml.party.debtor.v1.Debtor;
+import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.webservices.tiers3.data.strategy.CommonHouseholdStrategy;
 import ch.vd.uniregctb.webservices.tiers3.data.strategy.CorporationStrategy;

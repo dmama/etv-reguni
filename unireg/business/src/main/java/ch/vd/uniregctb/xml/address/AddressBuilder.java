@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.unireg.xml.address.Address;
-import ch.vd.unireg.xml.address.AddressInformation;
-import ch.vd.unireg.xml.address.AddressOtherParty;
-import ch.vd.unireg.xml.address.AddressType;
-import ch.vd.unireg.xml.address.CoupleMailAddressInfo;
-import ch.vd.unireg.xml.address.FormattedAddress;
-import ch.vd.unireg.xml.address.OrganisationMailAddressInfo;
-import ch.vd.unireg.xml.address.OtherPartyAddressType;
-import ch.vd.unireg.xml.address.PersonMailAddressInfo;
-import ch.vd.unireg.xml.address.PersonName;
+import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressInformation;
+import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.address.v1.CoupleMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v1.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
+import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v1.PersonName;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.CasePostale;

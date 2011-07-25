@@ -3,8 +3,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
 import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
-import ch.vd.unireg.xml.exception.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError;
 
 public class TaxDeclarationReturnBuilder {

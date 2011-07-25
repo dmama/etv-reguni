@@ -11,12 +11,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.xml.common.Date;
-import ch.vd.unireg.xml.event.di.common.EvenementDeclarationImpotContext;
-import ch.vd.unireg.xml.event.di.output.EvenementAnnulationDeclarationImpot;
-import ch.vd.unireg.xml.event.di.output.EvenementDeclarationImpotOutput;
-import ch.vd.unireg.xml.event.di.output.EvenementEmissionDeclarationImpot;
-import ch.vd.unireg.xml.event.di.output.ObjectFactory;
+import ch.vd.unireg.xml.common.v1.Date;
+import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
+import ch.vd.unireg.xml.event.di.output.v1.EvenementAnnulationDeclarationImpot;
+import ch.vd.unireg.xml.event.di.output.v1.EvenementDeclarationImpotOutput;
+import ch.vd.unireg.xml.event.di.output.v1.EvenementEmissionDeclarationImpot;
+import ch.vd.unireg.xml.event.di.output.v1.ObjectFactory;
 
 public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender {
 

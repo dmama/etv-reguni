@@ -2,7 +2,7 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.DebtorCategory;
+import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers3.EnumTest;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;

@@ -29,11 +29,12 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
-import ch.vd.unireg.xml.event.party.ExceptionResponse;
-import ch.vd.unireg.xml.event.party.ObjectFactory;
-import ch.vd.unireg.xml.event.party.Request;
-import ch.vd.unireg.xml.event.party.Response;
-import ch.vd.unireg.xml.event.party.address.AddressRequest;
+import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
+import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
+import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.party.v1.Request;
+import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 import ch.vd.uniregctb.xml.ServiceException;
@@ -120,6 +121,7 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final List<Source> sources = new ArrayList<Source>(handlers.size());
 			for (PartyRequestHandler handler : handlers.values()) {
 				final ClassPathResource resource = handler.getRequestXSD();
@@ -184,6 +186,7 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 		}
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
 
 		esbMessageFactory = new EsbMessageFactory();

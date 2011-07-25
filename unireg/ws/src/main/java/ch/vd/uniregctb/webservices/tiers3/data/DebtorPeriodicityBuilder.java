@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers3.data;
 
-import ch.vd.unireg.webservices.tiers3.DebtorPeriodicity;
+import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

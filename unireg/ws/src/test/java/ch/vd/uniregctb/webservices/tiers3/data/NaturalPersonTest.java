@@ -2,7 +2,7 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers3.EnumTest;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;

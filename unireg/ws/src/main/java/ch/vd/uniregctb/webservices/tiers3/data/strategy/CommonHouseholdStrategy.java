@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.tiers3.CommonHousehold;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.webservices.tiers3.data.PartyBuilder;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;

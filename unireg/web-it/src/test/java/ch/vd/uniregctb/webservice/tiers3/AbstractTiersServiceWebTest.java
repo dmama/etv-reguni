@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
-import ch.vd.unireg.webservices.tiers3.BankAccount;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.PartyWebServiceFactory;
-import ch.vd.unireg.xml.common.Date;
+import ch.vd.unireg.xml.common.v1.Date;
+import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
+import ch.vd.unireg.xml.party.v1.BankAccount;
 import ch.vd.uniregctb.common.WebitTest;
 
 import static junit.framework.Assert.assertEquals;

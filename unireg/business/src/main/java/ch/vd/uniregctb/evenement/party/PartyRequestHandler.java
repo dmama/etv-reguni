@@ -2,8 +2,8 @@ package ch.vd.uniregctb.evenement.party;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.xml.event.party.Request;
-import ch.vd.unireg.xml.event.party.Response;
+import ch.vd.unireg.xml.event.party.v1.Request;
+import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**

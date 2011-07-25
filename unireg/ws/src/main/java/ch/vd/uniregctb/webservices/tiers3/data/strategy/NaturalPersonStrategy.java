@@ -2,17 +2,17 @@ package ch.vd.uniregctb.webservices.tiers3.data.strategy;
 
 import java.util.Set;
 
-import ch.ech.ech0044_2.NamedPersonId;
-import ch.ech.ech0044_2.PersonIdentification;
+import ch.ech.ech0044.v2.NamedPersonId;
+import ch.ech.ech0044.v2.PersonIdentification;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.tiers3.NaturalPerson;
-import ch.vd.unireg.webservices.tiers3.NaturalPersonCategory;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.xml.exception.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;

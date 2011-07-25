@@ -94,6 +94,7 @@
 	</bean>
 
 	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
+		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
 			<list>
 				<value>classpath:xsd/civil/**/*.xsd</value>

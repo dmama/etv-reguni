@@ -7,11 +7,11 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclaration;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.TaxDeclaration;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatus;
-import ch.vd.unireg.webservices.tiers3.WithholdingTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

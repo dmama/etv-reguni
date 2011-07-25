@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.xml;
 
-import ch.vd.unireg.xml.exception.ServiceExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 
 public class ServiceException extends Exception {
 

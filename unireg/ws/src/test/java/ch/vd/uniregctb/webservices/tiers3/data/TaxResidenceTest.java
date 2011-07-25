@@ -2,10 +2,10 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.TaxLiabilityReason;
-import ch.vd.unireg.webservices.tiers3.TaxType;
-import ch.vd.unireg.webservices.tiers3.TaxationAuthorityType;
-import ch.vd.unireg.webservices.tiers3.TaxationMethod;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.uniregctb.webservices.tiers3.EnumTest;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
 

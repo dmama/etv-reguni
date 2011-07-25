@@ -2,8 +2,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiability;
-import ch.vd.unireg.webservices.tiers3.SimplifiedTaxLiabilityType;
+import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 
 public class SimplifiedTaxLiabilityBuilder {

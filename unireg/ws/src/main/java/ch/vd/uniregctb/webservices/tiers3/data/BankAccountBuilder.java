@@ -2,8 +2,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import java.util.List;
 
-import ch.vd.unireg.webservices.tiers3.AccountNumberFormat;
-import ch.vd.unireg.webservices.tiers3.BankAccount;
+import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
+import ch.vd.unireg.xml.party.v1.BankAccount;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;

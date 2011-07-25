@@ -4,8 +4,8 @@ import java.util.Map;
 
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.party.v1.Party;
 
 public class BatchPartyBuilder {
 	public static BatchParty newBatchParty(Map<Long, Object> map) {

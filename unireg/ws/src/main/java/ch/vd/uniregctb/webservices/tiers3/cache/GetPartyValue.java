@@ -2,8 +2,8 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 
 import java.util.Set;
 
-import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.cache.CacheValueWithParts;
 import ch.vd.uniregctb.webservices.tiers3.data.PartyBuilder;
 

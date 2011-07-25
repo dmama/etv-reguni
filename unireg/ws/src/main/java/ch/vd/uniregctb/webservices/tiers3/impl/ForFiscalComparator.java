@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.webservices.tiers3.TaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 
 /**
  * Comparateur qui permet de trier des fors fiscaux web dans l'ordre croissant.

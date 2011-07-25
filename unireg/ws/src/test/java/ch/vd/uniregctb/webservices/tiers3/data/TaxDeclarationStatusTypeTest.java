@@ -3,8 +3,8 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatus;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationStatusType;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;

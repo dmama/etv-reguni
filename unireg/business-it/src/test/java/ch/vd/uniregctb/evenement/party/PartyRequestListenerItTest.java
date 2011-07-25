@@ -20,11 +20,12 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.ESBXMLValidator;
-import ch.vd.unireg.xml.address.AddressType;
-import ch.vd.unireg.xml.common.UserLogin;
-import ch.vd.unireg.xml.event.party.ObjectFactory;
-import ch.vd.unireg.xml.event.party.Request;
-import ch.vd.unireg.xml.event.party.address.AddressRequest;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
+import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.party.v1.Request;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -65,6 +66,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(new Resource[]{new ClassPathResource("event/party/address-request-1.xsd"), new ClassPathResource("event/party/address-response-1.xsd")});
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
@@ -84,8 +86,8 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 
 		final PartyRequestListener listener = new PartyRequestListener();
 		listener.setEsbTemplate(esbTemplate);
-		listener.setEsbMessageFactory(esbMessageFactory);
 		listener.setHandlers(handlers);
+		listener.afterPropertiesSet();
 
 		container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
@@ -138,7 +140,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
 						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
 						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/address/1\" " +
+						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
 						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
 						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -183,7 +185,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
 						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
 						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/address/1\" " +
+						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
 						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
 						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -227,7 +229,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
 						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
 						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/address/1\" " +
+						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
 						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
 						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -281,7 +283,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 						"xmlns:ns2=\"http://www.vd.ch/unireg/event/party/request/1\" " +
 						"xmlns:ns3=\"http://www.vd.ch/unireg/event/party/address-request/1\" " +
 						"xmlns:ns4=\"http://www.vd.ch/unireg/exception/1\" " +
-						"xmlns:ns6=\"http://www.vd.ch/unireg/address/1\" " +
+						"xmlns:ns6=\"http://www.vd.ch/unireg/party/address/1\" " +
 						"xmlns:ns7=\"http://www.ech.ch/xmlns/eCH-0010/4\" " +
 						"xmlns:ns8=\"http://www.vd.ch/unireg/event/party/address-response/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +

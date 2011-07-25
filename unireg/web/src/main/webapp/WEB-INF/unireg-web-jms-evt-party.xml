@@ -10,7 +10,7 @@
 		<property name="esbMessageFactory" ref="esbMessageFactory" />
 		<property name="handlers">
 			<util:map>
-				<entry key="ch.vd.unireg.xml.event.party.address.AddressRequest" value-ref="addressRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
 			</util:map>
 		</property>
 	</bean>

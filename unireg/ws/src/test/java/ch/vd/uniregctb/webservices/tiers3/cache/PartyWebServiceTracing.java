@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.unireg.webservices.tiers3.BatchParty;
-import ch.vd.unireg.webservices.tiers3.DebtorInfo;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
-import ch.vd.unireg.webservices.tiers3.Party;
-import ch.vd.unireg.webservices.tiers3.PartyType;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
@@ -21,6 +18,9 @@ import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
+import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.unireg.xml.party.v1.PartyType;
 
 /**
  * Cette implémentation du web-service tient le décompte de tous les appels (qui sont ensuite délégués à une implémentation target).

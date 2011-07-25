@@ -13,17 +13,17 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
-import ch.vd.unireg.webservices.tiers3.CommonHousehold;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.NaturalPerson;
-import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
 import ch.vd.unireg.webservices.tiers3.SearchMode;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
-import ch.vd.unireg.xml.common.UserLogin;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 

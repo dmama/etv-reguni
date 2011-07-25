@@ -2,14 +2,14 @@ package ch.vd.uniregctb.evenement.party;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.xml.address.AddressType;
-import ch.vd.unireg.xml.common.UserLogin;
-import ch.vd.unireg.xml.event.party.Response;
-import ch.vd.unireg.xml.event.party.address.AddressRequest;
-import ch.vd.unireg.xml.event.party.address.AddressResponse;
-import ch.vd.unireg.xml.exception.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.BusinessExceptionInfo;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
+import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
+import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;

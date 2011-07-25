@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.CommonHousehold;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.Party;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.xml.address.Address;
-import ch.vd.unireg.xml.address.AddressOtherParty;
-import ch.vd.unireg.xml.address.FormattedAddress;
-import ch.vd.unireg.xml.address.OtherPartyAddressType;
-import ch.vd.unireg.xml.address.TariffZone;
-import ch.vd.unireg.xml.common.UserLogin;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
+import ch.vd.unireg.xml.party.address.v1.TariffZone;
+import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.v1.Party;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -5,9 +5,9 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.unireg.webservices.tiers3.Corporation;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
