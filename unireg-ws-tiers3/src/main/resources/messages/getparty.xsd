@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3"
 		   xmlns:common="http://www.vd.ch/unireg/common/1">
 
-	<xs:include schemaLocation="../common.xsd" />
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
 	<xs:include schemaLocation="base.xsd" />
@@ -12,14 +11,14 @@
 			<xs:documentation>Requête qui demande tout ou partie des informations historiques d'un tiers.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:requestType">
+			<xs:extension base="ws:requestType">
 				<xs:sequence>
 					<xs:element name="partyNumber" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:documentation>L'id du tiers dont on veut obtenir les informations.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:partyPartType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="ws:partyPartType">
 						<xs:annotation>
 							<xs:documentation>Les parties à renseigner sur le tiers retourné.</xs:documentation>
 						</xs:annotation>

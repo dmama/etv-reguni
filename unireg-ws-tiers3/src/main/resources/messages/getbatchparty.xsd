@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:exception="http://www.vd.ch/unireg/exception/1">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:exception="http://www.vd.ch/unireg/exception/1"
+		   xmlns:party="http://www.vd.ch/unireg/party/party/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="../party/unireg-party-1.xsd" />
 
 	<xs:include schemaLocation="base.xsd" />
-	<xs:include schemaLocation="../data/party.xsd" />
 	<xs:complexType name="getBatchPartyRequestType">
 		<xs:annotation>
 			<xs:documentation>Requête qui demande les informations de plusieurs tiers d'un seul coup.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:requestType">
+			<xs:extension base="ws:requestType">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" name="partyNumbers" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:documentation>Les ids des tiers à retourner</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="unireg:partyPartType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="ws:partyPartType">
 						<xs:annotation>
 							<xs:documentation>Les parties à renseigner sur les tiers retournés.</xs:documentation>
 						</xs:annotation>
@@ -31,7 +32,7 @@
 	</xs:complexType>
 	<xs:complexType name="batchPartyType">
 		<xs:sequence>
-			<xs:element maxOccurs="unbounded" name="entries" type="unireg:batchPartyEntryType" />
+			<xs:element maxOccurs="unbounded" name="entries" type="ws:batchPartyEntryType" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="batchPartyEntryType">
@@ -44,7 +45,7 @@
 					<xs:documentation>Le numéro de tiers demandé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="party" type="unireg:partyType">
+			<xs:element minOccurs="0" name="party" type="party:partyType">
 				<xs:annotation>
 					<xs:documentation>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
 						S'il le tiers est non-renseigné, il y a deux possibilités :

@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/taxpayer/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:party="http://www.vd.ch/unireg/party/party/1" xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
 
-	<xs:include schemaLocation="party.xsd" />
 	<xs:complexType abstract="true" name="taxpayerType">
 		<xs:annotation>
 			<xs:documentation>Classe de base pour les contribuables. Les collections sont renseignées en fonction des parts demandées lors de l'appel au service.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:partyType">
+			<xs:extension base="party:partyType">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="familyStatuses" type="unireg:familyStatusType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="familyStatuses" type="taxpayer:familyStatusType">
 						<xs:annotation>
 							<xs:documentation>L'historique complet des situations de famille du contribuable.
 								Attention ! Cette collection n'est renseignée qui si la part FAMILY_STATUSES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="ordinaryTaxLiabilities" type="unireg:taxLiabilityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="ordinaryTaxLiabilities" type="taxresidence:taxLiabilityType">
 						<xs:annotation>
 							<xs:documentation>L'historique complet des assujettissements du contribuable du point de vue du rôle ordinaire (en cas de conflit entre l'assujettissement source et
 								ordinaire, l'assujettissement ordinaire est privilégié).
@@ -29,21 +30,21 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityVD" type="unireg:simplifiedTaxLiabilityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityVD" type="taxresidence:simplifiedTaxLiabilityType">
 						<xs:annotation>
 							<xs:documentation>La liste des périodes d'assujettissement au niveau cantonal (LIC) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
 								Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityCH" type="unireg:simplifiedTaxLiabilityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityCH" type="taxresidence:simplifiedTaxLiabilityType">
 						<xs:annotation>
 							<xs:documentation>La liste des périodes d'assujettissement au niveau fédéral (LIFD) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
 								Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxationPeriods" type="unireg:taxationPeriodType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxationPeriods" type="taxresidence:taxationPeriodType">
 						<xs:annotation>
 							<xs:documentation>La liste des périodes d'imposition. Cette liste peut être vide si le tiers n'est pas assujetti.
 								Attention ! Cette collection n'est renseignée qui si la part TAXATION_PERIODS est demandée.
@@ -74,7 +75,7 @@
 					<xs:documentation>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="maritalStatus" type="unireg:maritalStatusType">
+			<xs:element name="maritalStatus" type="taxpayer:maritalStatusType">
 				<xs:annotation>
 					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
 				</xs:annotation>
@@ -84,7 +85,7 @@
 					<xs:documentation>Le nombre d'enfants à charge du contribuable, ou non-renseigné si cette information n'est pas connue ou inapplicable.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="applicableTariff" type="unireg:withholdingTaxTariffType">
+			<xs:element minOccurs="0" name="applicableTariff" type="taxpayer:withholdingTaxTariffType">
 				<xs:annotation>
 					<xs:documentation>Tarif impôt source applicable.
 						Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:

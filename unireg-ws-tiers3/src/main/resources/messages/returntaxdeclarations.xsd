@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3"
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:exception="http://www.vd.ch/unireg/exception/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
@@ -12,9 +12,9 @@
 			<xs:documentation>Requête qui demande de quittancer une ou plusieurs déclarations.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:requestType">
+			<xs:extension base="ws:requestType">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" name="requests" type="unireg:taxDeclarationReturnRequestType">
+					<xs:element maxOccurs="unbounded" name="requests" type="ws:taxDeclarationReturnRequestType">
 						<xs:annotation>
 							<xs:documentation>Les demandes de quittancement à traiter.</xs:documentation>
 						</xs:annotation>
@@ -28,7 +28,7 @@
 			<xs:documentation>Demande de quittancement (= enregistrement du retour) d'une déclaration d'impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="key" type="unireg:ordinaryTaxDeclarationKeyType">
+			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
 				<xs:annotation>
 					<xs:documentation>La clé qui permet d'identification la déclaration.</xs:documentation>
 				</xs:annotation>
@@ -67,12 +67,12 @@
 			<xs:documentation>Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="key" type="unireg:ordinaryTaxDeclarationKeyType">
+			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
 				<xs:annotation>
 					<xs:documentation>La clé qui permet d'identifier la déclaration concernée</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="code" type="unireg:taxDeclarationReturnCodeType">
+			<xs:element name="code" type="ws:taxDeclarationReturnCodeType">
 				<xs:annotation>
 					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
 				</xs:annotation>
@@ -130,7 +130,7 @@
 	</xs:simpleType>
 	<xs:complexType final="#all" name="returnTaxDeclarationsResponseType">
 		<xs:sequence>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="responses" nillable="true" type="unireg:taxDeclarationReturnResponseType" />
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="responses" nillable="true" type="ws:taxDeclarationReturnResponseType" />
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

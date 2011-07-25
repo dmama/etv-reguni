@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/debtor/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:debtor="http://www.vd.ch/unireg/party/debtor/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:party="http://www.vd.ch/unireg/party/party/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
 
-	<xs:include schemaLocation="party.xsd" />
 	<xs:complexType name="debtorType">
 		<xs:annotation>
 			<xs:documentation>Classe concrète qui contient toutes les informations d'un débiteur de prestations imposables. Les collections sont renseignées en fonction des parts demandées lors de
@@ -14,19 +14,19 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:partyType">
+			<xs:extension base="party:partyType">
 				<xs:sequence>
 					<xs:element name="name" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>La raison sociale du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="category" type="unireg:debtorCategoryType">
+					<xs:element name="category" type="debtor:debtorCategoryType">
 						<xs:annotation>
 							<xs:documentation>La catégorie actuelle du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="communicationMode" type="unireg:communicationModeType">
+					<xs:element name="communicationMode" type="debtor:communicationModeType">
 						<xs:annotation>
 							<xs:documentation>Le mode de communication actuel du débiteur.</xs:documentation>
 						</xs:annotation>
@@ -51,7 +51,7 @@
 							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="unireg:debtorPeriodicityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="debtor:debtorPeriodicityType">
 						<xs:annotation>
 							<xs:documentation>L'historique des périodicités du débiteur.
 								Attention ! Cette collection n'est renseignée qui si la part DEBTOR_PERIODICITIES est demandée.
@@ -146,12 +146,12 @@
 					<xs:documentation>Date d'annulation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="periodicity" type="unireg:withholdingTaxDeclarationPeriodicityType">
+			<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
 				<xs:annotation>
 					<xs:documentation>La périodicité temporelle d'envoi des LRs au débiteur.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="specificPeriod" type="unireg:withholdingTaxDeclarationPeriodType">
+			<xs:element minOccurs="0" name="specificPeriod" type="debtor:withholdingTaxDeclarationPeriodType">
 				<xs:annotation>
 					<xs:documentation>Uniquement valide pour la périodicité ONCE : la période à laquelle est envoyée la LR unique.</xs:documentation>
 				</xs:annotation>

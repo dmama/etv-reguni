@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0t-SNAPSHOT -->
+<!-- version 3.0u-SNAPSHOT -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
-				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3"
 				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-				   xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
+				   xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3"
+				   xmlns:party="http://www.vd.ch/unireg/party/party/1"
+				   xmlns:debtor="http://www.vd.ch/unireg/party/debtor/1"
 				   xmlns:exception="http://www.vd.ch/unireg/exception/1">
 			<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="unireg-exception-1.xsd" />
-			<xs:include schemaLocation="common.xsd" />
-			<xs:include schemaLocation="data/taxdeclaration.xsd" />
-			<xs:include schemaLocation="data/person.xsd" />
-			<xs:include schemaLocation="data/corporation.xsd" />
-			<xs:include schemaLocation="data/debtor.xsd" />
-			<xs:include schemaLocation="data/taxresidence.xsd" />
-			<xs:include schemaLocation="data/relation.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="party/unireg-party-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/person/1" schemaLocation="party/unireg-party-person-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/debtor/1" schemaLocation="party/unireg-party-debtor-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/corporation/1" schemaLocation="party/unireg-party-corporation-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/taxdeclaration/1" schemaLocation="party/unireg-party-taxdeclaration-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/taxresidence/1" schemaLocation="party/unireg-party-taxresidence-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/unireg/party/relation/1" schemaLocation="party/unireg-party-relation-1.xsd" />
 			<xs:include schemaLocation="messages/getpartytype.xsd" />
 			<xs:include schemaLocation="messages/getparty.xsd" />
 			<xs:include schemaLocation="messages/getbatchparty.xsd" />
@@ -24,23 +26,23 @@
 			<xs:include schemaLocation="messages/returntaxdeclarations.xsd" />
 			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
 			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
-			<xs:element name="searchPartyRequest" nillable="true" type="unireg:searchPartyRequestType" />
-			<xs:element name="searchPartyResponse" nillable="true" type="unireg:searchPartyResponseType" />
-			<xs:element name="searchCorporationEventsRequest" nillable="true" type="unireg:searchCorporationEventsRequestType" />
-			<xs:element name="searchCorporationEventsResponse" nillable="true" type="unireg:searchCorporationEventsResponseType" />
-			<xs:element name="getPartyTypeRequest" nillable="true" type="unireg:getPartyTypeRequestType" />
-			<xs:element name="getPartyTypeResponse" nillable="true" type="unireg:partyTypeType" />
-			<xs:element name="getPartyRequest" nillable="true" type="unireg:getPartyRequestType" />
-			<xs:element name="getPartyResponse" nillable="true" type="unireg:partyType" />
-			<xs:element name="getBatchPartyRequest" nillable="true" type="unireg:getBatchPartyRequestType" />
-			<xs:element name="getBatchPartyResponse" nillable="true" type="unireg:batchPartyType" />
-			<xs:element name="getDebtorInfoRequest" nillable="true" type="unireg:getDebtorInfoRequestType" />
-			<xs:element name="getDebtorInfoResponse" nillable="true" type="unireg:debtorInfoType" />
-			<xs:element name="getModifiedTaxpayersRequest" nillable="true" type="unireg:getModifiedTaxpayersRequestType" />
-			<xs:element name="getModifiedTaxpayersResponse" nillable="true" type="unireg:partyNumberListType" />
-			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="unireg:setAutomaticReimbursementBlockingRequestType" />
-			<xs:element name="returnTaxDeclarationsRequest" nillable="true" type="unireg:returnTaxDeclarationsRequestType" />
-			<xs:element name="returnTaxDeclarationsResponse" nillable="true" type="unireg:returnTaxDeclarationsResponseType" />
+			<xs:element name="searchPartyRequest" nillable="true" type="ws:searchPartyRequestType" />
+			<xs:element name="searchPartyResponse" nillable="true" type="ws:searchPartyResponseType" />
+			<xs:element name="searchCorporationEventsRequest" nillable="true" type="ws:searchCorporationEventsRequestType" />
+			<xs:element name="searchCorporationEventsResponse" nillable="true" type="ws:searchCorporationEventsResponseType" />
+			<xs:element name="getPartyTypeRequest" nillable="true" type="ws:getPartyTypeRequestType" />
+			<xs:element name="getPartyTypeResponse" nillable="true" type="party:partyTypeType" />
+			<xs:element name="getPartyRequest" nillable="true" type="ws:getPartyRequestType" />
+			<xs:element name="getPartyResponse" nillable="true" type="party:partyType" />
+			<xs:element name="getBatchPartyRequest" nillable="true" type="ws:getBatchPartyRequestType" />
+			<xs:element name="getBatchPartyResponse" nillable="true" type="ws:batchPartyType" />
+			<xs:element name="getDebtorInfoRequest" nillable="true" type="ws:getDebtorInfoRequestType" />
+			<xs:element name="getDebtorInfoResponse" nillable="true" type="debtor:debtorInfoType" />
+			<xs:element name="getModifiedTaxpayersRequest" nillable="true" type="ws:getModifiedTaxpayersRequestType" />
+			<xs:element name="getModifiedTaxpayersResponse" nillable="true" type="ws:partyNumberListType" />
+			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="ws:setAutomaticReimbursementBlockingRequestType" />
+			<xs:element name="returnTaxDeclarationsRequest" nillable="true" type="ws:returnTaxDeclarationsRequestType" />
+			<xs:element name="returnTaxDeclarationsResponse" nillable="true" type="ws:returnTaxDeclarationsResponseType" />
 			<xs:element name="webServiceException" type="exception:serviceExceptionInfoType" />
 		</xs:schema>
 	</wsdl:types>
@@ -170,7 +172,7 @@
 	</wsdl:portType>
 
 	<!-- BINDING declarations -->
-	<wsdl:binding name="PartyServiceSoapBinding" type="unireg:PartyWebService">
+	<wsdl:binding name="PartyServiceSoapBinding" type="ws:PartyWebService">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 		<wsdl:operation name="getParty">
 			<wsdl:input>
@@ -283,7 +285,7 @@
 
 	<!-- SERVICE declarations -->
 	<wsdl:service name="PartyWebServiceFactory">
-		<wsdl:port binding="unireg:PartyServiceSoapBinding" name="Service">
+		<wsdl:port binding="ws:PartyServiceSoapBinding" name="Service">
 			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/tiers3" />
 		</wsdl:port>
 	</wsdl:service>

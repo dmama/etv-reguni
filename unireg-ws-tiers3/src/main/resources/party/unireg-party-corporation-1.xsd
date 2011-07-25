@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/corporation/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:corporation="http://www.vd.ch/unireg/party/corporation/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/taxpayer/1" schemaLocation="unireg-party-taxpayer-1.xsd" />
 
-	<xs:include schemaLocation="taxpayer.xsd" />
 	<xs:complexType name="corporationType">
 		<xs:annotation>
 			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne morale.
@@ -13,7 +13,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:taxpayerType">
+			<xs:extension base="taxpayer:taxpayerType">
 				<xs:sequence>
 					<xs:element name="shortName" type="xs:string">
 						<xs:annotation>
@@ -50,32 +50,32 @@
 							<xs:documentation>Numéro IPMRO (n'existe pas sur toutes les PMs).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalSeats" type="unireg:legalSeatType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalSeats" type="corporation:legalSeatType">
 						<xs:annotation>
 							<xs:documentation>L'historique des sièges.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalForms" type="unireg:legalFormType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalForms" type="corporation:legalFormType">
 						<xs:annotation>
 							<xs:documentation>L'historique des formes juridiques.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="capitals" type="unireg:capitalType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="capitals" type="corporation:capitalType">
 						<xs:annotation>
 							<xs:documentation>L'historique des capitaux.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsVD" type="unireg:taxSystemType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsVD" type="corporation:taxSystemType">
 						<xs:annotation>
 							<xs:documentation>L'historique des régimes fiscaux ICC (Impôt Canton-Commune).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsCH" type="unireg:taxSystemType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsCH" type="corporation:taxSystemType">
 						<xs:annotation>
 							<xs:documentation>L'historique des régimes fiscaux IFD (Impôt Fédéral Direct).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="statuses" type="unireg:corporationStatusType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="statuses" type="corporation:corporationStatusType">
 						<xs:annotation>
 							<xs:documentation>L'historique des états de la PM.</xs:documentation>
 						</xs:annotation>
@@ -99,7 +99,7 @@
 					<xs:documentation>La date de fin de validité du siège de la PM. Si le siège est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="type" type="unireg:legalSeatTypeType">
+			<xs:element name="type" type="corporation:legalSeatTypeType">
 				<xs:annotation>
 					<xs:documentation>Cet enum permet d'interpréter le numéro OFS contenu dans noOfsSiege.</xs:documentation>
 				</xs:annotation>
@@ -183,7 +183,7 @@
 					<xs:documentation>Retourne vrai si l'absence de capital libéré est normale, ou faux si elle est anormale.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="sogcEdition" type="unireg:sogcEditionType">
+			<xs:element minOccurs="0" name="sogcEdition" type="corporation:sogcEditionType">
 				<xs:annotation>
 					<xs:documentation>L'édition de la Feuille officielle suisse du commerce dans laquelle ces informations sont parues.</xs:documentation>
 				</xs:annotation>

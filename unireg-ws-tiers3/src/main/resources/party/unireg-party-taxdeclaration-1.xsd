@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/taxdeclaration/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxdeclaration="http://www.vd.ch/unireg/party/taxdeclaration/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:debtor="http://www.vd.ch/unireg/party/debtor/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/debtor/1" schemaLocation="unireg-party-debtor-1.xsd" />
 
-	<xs:include schemaLocation="../common.xsd" />
-	<xs:include schemaLocation="debtor.xsd" />
 	<xs:complexType name="taxDeclarationType">
 		<xs:sequence>
 			<xs:element name="id" type="xs:long">
@@ -32,12 +31,12 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="taxPeriod" type="unireg:taxPeriodType">
+			<xs:element name="taxPeriod" type="taxdeclaration:taxPeriodType">
 				<xs:annotation>
 					<xs:documentation>La période fiscale à laquelle la déclaration est rattachée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" name="statuses" type="unireg:taxDeclarationStatusType">
+			<xs:element maxOccurs="unbounded" name="statuses" type="taxdeclaration:taxDeclarationStatusType">
 				<xs:annotation>
 					<xs:documentation>Les états de la déclaration.
 						Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS_STATUSES est demandée.
@@ -51,14 +50,14 @@
 			<xs:documentation>Contient les informations relative à une liste récapitulative (= LR) émise sur un débiteur.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:taxDeclarationType">
+			<xs:extension base="taxdeclaration:taxDeclarationType">
 				<xs:sequence>
-					<xs:element name="periodicity" type="unireg:withholdingTaxDeclarationPeriodicityType">
+					<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
 						<xs:annotation>
 							<xs:documentation>La périodicité du débiteur au moment de l'émission de la LR.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="communicationMode" type="unireg:communicationModeType">
+					<xs:element name="communicationMode" type="debtor:communicationModeType">
 						<xs:annotation>
 							<xs:documentation>Le mode de communication du débiteur au moment de l'émission de la LR.</xs:documentation>
 						</xs:annotation>
@@ -72,14 +71,14 @@
 			<xs:documentation>Contient les informations relative à une déclaration d'impôt ordinaire (= DI) émise sur un contribuable.</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:taxDeclarationType">
+			<xs:extension base="taxdeclaration:taxDeclarationType">
 				<xs:sequence>
 					<xs:element name="sequenceNumber" type="xs:long">
 						<xs:annotation>
 							<xs:documentation>Le numéro de séquence de la déclaration pour la période fiscale.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="documentType" type="unireg:documentTypeType">
+					<xs:element name="documentType" type="taxdeclaration:documentTypeType">
 						<xs:annotation>
 							<xs:documentation>Le type de document.</xs:documentation>
 						</xs:annotation>
@@ -106,7 +105,7 @@
 			<xs:documentation>L'état d'une déclaration avec sa date d'obtention.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="type" type="unireg:taxDeclarationStatusTypeType">
+			<xs:element name="type" type="taxdeclaration:taxDeclarationStatusTypeType">
 				<xs:annotation>
 					<xs:documentation>L'état de la déclaration.</xs:documentation>
 				</xs:annotation>

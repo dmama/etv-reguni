@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/person/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:person="http://www.vd.ch/unireg/party/person/1"
+		   xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-
-	<xs:include schemaLocation="taxpayer.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0f.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/taxpayer/1" schemaLocation="unireg-party-taxpayer-1.xsd" />
+
 	<xs:complexType name="naturalPersonType">
 		<xs:annotation>
-			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne physique. Les collections sont renseignées en fonction des parts demandées lors de l'appel
-				au service.
+			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne physique. Les collections sont renseignées en fonction des parts demandées lors de
+				l'appel au service.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:taxpayerType">
+			<xs:extension base="taxpayer:taxpayerType">
 				<xs:sequence>
 					<xs:element name="identification" type="eCH-0044:personIdentificationType">
 						<xs:annotation>
@@ -32,7 +33,7 @@
 							<xs:documentation>La date de décès de la personne.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="category" type="unireg:naturalPersonCategoryType">
+					<xs:element name="category" type="person:naturalPersonCategoryType">
 						<xs:annotation>
 							<xs:documentation>Catégorie de personne physique.</xs:documentation>
 						</xs:annotation>
@@ -46,10 +47,10 @@
 			<xs:documentation>Représente un ménage-commun (couple).</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="unireg:taxpayerType">
+			<xs:extension base="taxpayer:taxpayerType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="mainTaxpayer" type="unireg:naturalPersonType" />
-					<xs:element minOccurs="0" name="secondaryTaxpayer" type="unireg:naturalPersonType" />
+					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType" />
+					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

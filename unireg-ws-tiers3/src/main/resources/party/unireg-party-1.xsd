@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/webservices/tiers3"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/address/1">
+<xs:schema targetNamespace="http://www.vd.ch/unireg/party/party/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/unireg/party/party/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/party/address/1"
+		xmlns:relation="http://www.vd.ch/unireg/party/relation/1" xmlns:taxdeclaration="http://www.vd.ch/unireg/party/taxdeclaration/1"
+		xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/address/1" schemaLocation="../unireg-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/address/1" schemaLocation="unireg-party-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/relation/1" schemaLocation="unireg-party-relation-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/taxdeclaration/1" schemaLocation="unireg-party-taxdeclaration-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
 
-	<xs:include schemaLocation="../common.xsd" />
-	<xs:include schemaLocation="taxresidence.xsd" />
-	<xs:include schemaLocation="taxdeclaration.xsd" />
-	<xs:include schemaLocation="relation.xsd" />
 	<xs:complexType abstract="true" name="partyType">
 		<xs:annotation>
 			<xs:documentation>Classe de base pour les tiers (un tiers est soit un débiteur, soit un contribuable normal). Les collections sont renseignées en fonction des parts demandées lors de
@@ -121,42 +122,42 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="relationsBetweenParties" type="unireg:relationBetweenPartiesType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="relationsBetweenParties" type="relation:relationBetweenPartiesType">
 				<xs:annotation>
 					<xs:documentation>Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent).
 						Attention ! Cette collection n'est renseignée que si la part RELATIONS_BETWEEN_PARTIES est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="mainTaxResidences" type="unireg:taxResidenceType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="mainTaxResidences" type="taxresidence:taxResidenceType">
 				<xs:annotation>
 					<xs:documentation>Historique des fors fiscaux principaux existants sur le tiers (du plus ancien au plus récent).
 						Attention ! Cette collection n'est renseignée que si la part TAX_RESIDENCES (ou VIRTUAL_TAX_RESIDENCES) est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="otherTaxResidences" type="unireg:taxResidenceType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="otherTaxResidences" type="taxresidence:taxResidenceType">
 				<xs:annotation>
 					<xs:documentation>Historique des autres fors fiscaux (secondaires, ...) existants sur le contribuable (du plus ancien au plus récent). Toujours vide dans le cas d'un débiteur.
 						Attention ! Cette collection n'est renseignée que si la part TAX_RESIDENCES (ou VIRTUAL_TAX_RESIDENCES) est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="managingTaxResidences" type="unireg:managingTaxResidenceType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="managingTaxResidences" type="taxresidence:managingTaxResidenceType">
 				<xs:annotation>
 					<xs:documentation>Historique des fors de gestion (du plus ancien au plus récent). Cette liste peut-être vide si le tiers n'a jamais été assujetti.
 						Attention ! Cette collection n'est renseignée que si la part TAX_RESIDENCES (ou VIRTUAL_TAX_RESIDENCES) est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="taxDeclarations" type="unireg:taxDeclarationType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="taxDeclarations" type="taxdeclaration:taxDeclarationType">
 				<xs:annotation>
 					<xs:documentation>Historique des déclarations (DI ou LR) pour le tiers.
 						Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="bankAccounts" type="unireg:bankAccountType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="bankAccounts" type="party:bankAccountType">
 				<xs:annotation>
 					<xs:documentation>Les coordonnées financières du tiers.
 						Attention ! Cette collection n'est renseignée que si la part BANK_ACCOUNTS est demandée.
@@ -188,7 +189,7 @@
 					<xs:documentation>Le numéro du compte (tel que saisi par l'utilisateur).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="format" type="unireg:accountNumberFormatType">
+			<xs:element name="format" type="party:accountNumberFormatType">
 				<xs:annotation>
 					<xs:documentation>Le type du numéro (IBAN, CPP, ...).</xs:documentation>
 				</xs:annotation>
@@ -288,7 +289,7 @@
 					<xs:documentation>Le pays de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="type" type="unireg:partyTypeType">
+			<xs:element minOccurs="0" name="type" type="party:partyTypeType">
 				<xs:annotation>
 					<xs:documentation>Le type de tiers au sens large (débiteur, personne physique, ménage commune, ...)</xs:documentation>
 				</xs:annotation>
