@@ -88,6 +88,8 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 		// on décode la requête
 		final Request request = parse(message.getBodyAsSource());
 
+		LOGGER.info(String.format("Arrivée d'un événement %s", request));
+
 		// on traite la requête
 		Response response;
 		try {
@@ -160,7 +162,7 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 			m.setBusinessId(businessId + "-answer");
 			m.setBusinessUser("unireg");
 			m.setServiceDestination(replyTo);
-			m.setContext("address");
+			m.setContext("party");
 			m.setBody(doc);
 
 			esbTemplate.send(m);
