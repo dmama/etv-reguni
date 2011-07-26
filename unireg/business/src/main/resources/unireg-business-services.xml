@@ -126,6 +126,14 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
+	<!-- Section Evenement ADDI-->
+	<bean id="evenementAddiService" class="ch.vd.uniregctb.evenement.addi.EvenementAddiServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="diService" ref="diService"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
+
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
 		<property name="docService" ref="docService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
