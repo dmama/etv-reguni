@@ -43,6 +43,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 
 		final URL resource;
 		try {
+			// on essaie de résoudre le XSD dans le classpath
 			resource = Thread.currentThread().getContextClassLoader().getResource(resourceLookup);
 			if (resource != null) {
 				final URL path = createTempFile(resourceLookup, resource);
