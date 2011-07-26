@@ -487,20 +487,22 @@ public class EnvoiDIsEnMasseProcessor {
 	 */
 	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		DeclarationImpotOrdinaire di = creeDI(tache, dcache, simul);
+		final DeclarationImpotOrdinaire di = creeDI(tache, dcache, simul);
 		if (di == null) {
 			return false;
 		}
 		di.setRetourCollectiviteAdministrativeId(cache.cedi.getId());
 
 		// [UNIREG-1980] l'état 'émis' doit aussi être présent sur les DIs des indigents
-		EtatDeclaration etat = new EtatDeclarationEmise();
-		etat.setDateObtention(dateTraitement);
-		di.addEtat(etat);
+		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement, false);
 
-		etat = new EtatDeclarationRetournee();
-		etat.setDateObtention(dateTraitement);
-		di.addEtat(etat);
+		// [SIFISC-1720] il faut également enregistrer un délai de retour initial (pour l'éventuel duplicata qui serait imprimé plus tard)
+		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
+
+		// Les déclarations d'indigent sont marquées comme déjà retournées
+		final EtatDeclaration etatRetour = new EtatDeclarationRetournee();
+		etatRetour.setDateObtention(dateExpedition);
+		di.addEtat(etatRetour);
 
 		rapport.addCtbIndigent(tache.getContribuable().getNumero());
 		return true;
@@ -576,7 +578,7 @@ public class EnvoiDIsEnMasseProcessor {
 		if (di == null) {
 			return false;
 		}
-		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement);
+		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement, true);
 		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
 		ajouterAdresseRetour(di, tache);
 
@@ -649,9 +651,9 @@ public class EnvoiDIsEnMasseProcessor {
 	 * Ajoute l'état initial d'une déclaration, à savoir EMISE.
 	 * @return la date d'expédition (= date d'obtention de l'état "EMISE")
 	 */
-	private RegDate ajouterEtatInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement) {
+	private RegDate ajouterEtatInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement, boolean avecCalculExpedition) {
 
-		final RegDate dateExpedition = calculerDateExpedition(dateTraitement);
+		final RegDate dateExpedition = avecCalculExpedition ? calculerDateExpedition(dateTraitement) : dateTraitement;
 
 		final EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(dateExpedition);

@@ -1257,7 +1257,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
 			}
 		});
-			assertNotNull(results);
+		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
 		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
@@ -1344,7 +1344,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(dateTraitement, etat1.getDateObtention());
 
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, null, decl);
+				ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	@Test

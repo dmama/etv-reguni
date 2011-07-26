@@ -1311,11 +1311,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				final Contribuable ours = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.oursId);
-				final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId);
-				final Contribuable totor = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.totorId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable ours = hibernateTemplate.get(Contribuable.class, ids.oursId);
+				final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId);
+				final Contribuable totor = hibernateTemplate.get(Contribuable.class, ids.totorId);
 				assertEmpty(eric.getDeclarationsForPeriode(2007));
 				assertEmpty(john.getDeclarationsForPeriode(2007));
 				assertEmpty(ours.getDeclarationsForPeriode(2007));
@@ -1352,15 +1352,15 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
-				final Contribuable ours = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.oursId);
-				final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId);
-				final Contribuable totor = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.totorId);
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+				final Contribuable ours = hibernateTemplate.get(Contribuable.class, ids.oursId);
+				final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId);
+				final Contribuable totor = hibernateTemplate.get(Contribuable.class, ids.totorId);
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, john.getDeclarationsForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), john.getDeclarationsForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 25), ours.getDeclarationsForPeriode(2007)); // [UNIREG-1852], [UNIREG-1861]
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
