@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.addi;
+package ch.vd.uniregctb.evenement.di;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class QuittancementDI extends EvenementAddi{
+public class QuittancementDI extends EvenementDeclaration {
 	private String businessId;
 	private long numeroContribuable;
 	private int periodeFiscale;

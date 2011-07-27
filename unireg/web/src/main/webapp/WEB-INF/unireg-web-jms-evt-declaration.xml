@@ -8,17 +8,17 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementAddiListener" class="ch.vd.uniregctb.evenement.addi.EvenementAddiListenerImpl" parent="esbMessageListener">
-		<property name="handler" ref="evenementAddiService" />
+	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationListenerImpl" parent="esbMessageListener">
+		<property name="handler" ref="evenementDeclarationService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="evenementAddiListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
+	<bean id="evenementDeclarationListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="destinationName" value="${extprop.jms.queue.evtAddi}" />
-		<property name="messageListener" ref="evenementCediListener" />
+		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration}" />
+		<property name="messageListener" ref="evenementDeclarationListener" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="autoStartup" value="${extprop.jms.queue.evtAddi.enabled}" />
+		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.enabled}" />
 	</bean>
 
 </beans>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.addi;
+package ch.vd.uniregctb.evenement.di;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,28 +23,23 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.cedi.EvenementCedi;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediHandler;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl;
-import ch.vd.uniregctb.evenement.cedi.RetourDI;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
- * Classe de test du listener d'événements ADDI. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
+ * Classe de test du listener d'événements Declaration. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  */
-public class EvenementAddiListenerTest extends EvenementTest {
+public class EvenementDeclarationListenerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementAddiListenerImpl listener;
+	private EvenementDeclarationListenerImpl listener;
 	private DefaultMessageListenerContainer container;
 
 	@Before
 	public void setUp() throws Exception {
 
-		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtAddi");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
@@ -65,7 +60,7 @@ public class EvenementAddiListenerTest extends EvenementTest {
 			}
 		};
 
-		listener = new EvenementAddiListenerImpl();
+		listener = new EvenementDeclarationListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHibernateTemplate(hibernateTemplate);
 
@@ -93,11 +88,11 @@ public class EvenementAddiListenerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveQuittancementDI() throws Exception {
 
-		final List<EvenementAddi> events = new ArrayList<EvenementAddi>();
+		final List<EvenementDeclaration> events = new ArrayList<EvenementDeclaration>();
 
-		listener.setHandler(new EvenementAddiHandler() {
+		listener.setHandler(new EvenementDeclarationHandler() {
 			@Override
-			public void onEvent(EvenementAddi event) {
+			public void onEvent(EvenementDeclaration event) {
 				events.add(event);
 			}
 
@@ -108,7 +103,7 @@ public class EvenementAddiListenerTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/addi/quittancementStandard.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/di/quittancementStandard.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

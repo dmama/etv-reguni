@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.addi;
+package ch.vd.uniregctb.evenement.di;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -28,11 +28,11 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementAddiListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
+public class EvenementDeclarationListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementAddiListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationListenerImpl.class);
 
-	private EvenementAddiHandler handler;
+	private EvenementDeclarationHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -41,7 +41,7 @@ public class EvenementAddiListenerImpl extends EsbMessageListener implements Mon
 	private Schema schemaCache;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHandler(EvenementAddiHandler handler) {
+	public void setHandler(EvenementDeclarationHandler handler) {
 		this.handler = handler;
 	}
 
@@ -55,21 +55,20 @@ public class EvenementAddiListenerImpl extends EsbMessageListener implements Mon
 
 		nbMessagesRecus.incrementAndGet();
 
-		AuthenticationHelper.pushPrincipal("JMS-EvtAddi");
+		AuthenticationHelper.pushPrincipal("JMS-EvtDeclaration");
 
 		try {
 			final String businessId = message.getBusinessId();
-			LOGGER.info("Arrivée du message ADDI n°" + businessId);
 			onMessage(message);
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
-		catch (EvenementAddiException e) {
+		catch (EvenementDeclarationException e) {
 			// on a un truc qui a sauté au moment du traitement de l'événement
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
+			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.BUSINESS, "");
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
@@ -90,11 +89,12 @@ public class EvenementAddiListenerImpl extends EsbMessageListener implements Mon
 	}
 
 	private void onMessage(EsbMessage message) throws Exception {
-		final EvenementAddi event = parse(message.getBodyAsSource(), message.getBusinessId());
+		final EvenementDeclaration event = parse(message.getBodyAsSource(), message.getBusinessId());
 		handler.onEvent(event);
 	}
 
-	private EvenementAddi parse(Source message, String businessId) throws JAXBException, SAXException, IOException {
+	private EvenementDeclaration parse(Source message, String businessId) throws JAXBException, SAXException, IOException {
+
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
@@ -106,6 +106,7 @@ public class EvenementAddiListenerImpl extends EsbMessageListener implements Mon
 			return null;
 		}
 		if (event instanceof QuittancementDeclarationImpot) {
+				LOGGER.info("Arrivée du message de quittancement de DI n°" + businessId);
 			final QuittancementDeclarationImpot evtQuittancement = ((QuittancementDeclarationImpot) event);
 			final EvenementDeclarationImpotContext contextQuittancement = evtQuittancement.getContext();
 			final QuittancementDI quittancementDI = new QuittancementDI();

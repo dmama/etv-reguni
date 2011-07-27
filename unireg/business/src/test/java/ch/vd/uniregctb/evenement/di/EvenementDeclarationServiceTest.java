@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.addi;
+package ch.vd.uniregctb.evenement.di;
 
 import java.util.List;
 
@@ -7,18 +7,13 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl;
-import ch.vd.uniregctb.evenement.cedi.RetourDI;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -33,15 +28,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class EvenementAddiServiceTest extends BusinessTest {
+public class EvenementDeclarationServiceTest extends BusinessTest {
 
-	private EvenementAddiServiceImpl service;
+	private EvenementDeclarationServiceImpl service;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		service = new EvenementAddiServiceImpl();
+		service = new EvenementDeclarationServiceImpl();
 		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		service.setDiService(getBean(DeclarationImpotService.class,"diService"));
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
@@ -76,7 +71,7 @@ public class EvenementAddiServiceTest extends BusinessTest {
 			}
 		});
 
-		// Simule la réception d'un événement de scan de DI
+		// Simule la réception d'un événement de quittancement de DI
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {

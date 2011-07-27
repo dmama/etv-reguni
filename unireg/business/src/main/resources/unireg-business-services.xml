@@ -126,8 +126,8 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
-	<!-- Section Evenement ADDI-->
-	<bean id="evenementAddiService" class="ch.vd.uniregctb.evenement.addi.EvenementAddiServiceImpl">
+	<!-- Section Evenement Declaration-->
+	<bean id="evenementDeclarationService" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="diService" ref="diService"/>
 		<property name="validationService" ref="validationService"/>

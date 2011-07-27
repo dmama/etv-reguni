@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.addi;
+package ch.vd.uniregctb.evenement.di;
 
 import java.util.List;
 
@@ -12,14 +12,14 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.validation.ValidationService;
 
-public class EvenementAddiServiceImpl implements EvenementAddiService, EvenementAddiHandler {
+public class EvenementDeclarationServiceImpl implements EvenementDeclarationService, EvenementDeclarationHandler {
 
 	private TiersDAO tiersDAO;
 	private ValidationService validationService;
 	private DeclarationImpotService diService;
 
 	@Override
-	public void onEvent(EvenementAddi event) throws EvenementAddiException {
+	public void onEvent(EvenementDeclaration event) throws EvenementDeclarationException {
 
 		if (event instanceof QuittancementDI) {
 			onQuittancementDI((QuittancementDI) event);
@@ -29,28 +29,28 @@ public class EvenementAddiServiceImpl implements EvenementAddiService, Evenement
 		}
 	}
 
-	private void onQuittancementDI(QuittancementDI quittance) throws EvenementAddiException {
+	private void onQuittancementDI(QuittancementDI quittance) throws EvenementDeclarationException {
 		// On récupère le contribuable correspondant
 		final long ctbId = quittance.getNumeroContribuable();
 		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		if (ctb == null) {
-			throw new EvenementAddiException("Le contribuable n°" + ctbId + " n'existe pas.");
+			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " n'existe pas.");
 		}
 
 		final ValidationResults results = validationService.validate(ctb);
 		if (results.hasErrors()) {
-			throw new EvenementAddiException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
+			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
 		}
 
 		// On s'assure que l'on est bien cohérent avec les données en base
 		if (ctb.isDebiteurInactif()) {
-			throw new EvenementAddiException("Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
+			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
 		}
 
 		final int annee = quittance.getPeriodeFiscale();
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee);
 		if (declarations == null || declarations.isEmpty()) {
-			throw new EvenementAddiException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + ".");
+			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + ".");
 		}
 
 		quittancerDeclarations(ctb,declarations,quittance);
