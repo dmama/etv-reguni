@@ -59,6 +59,7 @@ public class EvenementDeclarationListenerImpl extends EsbMessageListener impleme
 
 		try {
 			final String businessId = message.getBusinessId();
+			LOGGER.info("Arrivée de lévènement de Déclaration n°" + businessId);
 			onMessage(message);
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
@@ -106,7 +107,6 @@ public class EvenementDeclarationListenerImpl extends EsbMessageListener impleme
 			return null;
 		}
 		if (event instanceof QuittancementDeclarationImpot) {
-				LOGGER.info("Arrivée du message de quittancement de DI n°" + businessId);
 			final QuittancementDeclarationImpot evtQuittancement = ((QuittancementDeclarationImpot) event);
 			final EvenementDeclarationImpotContext contextQuittancement = evtQuittancement.getContext();
 			final QuittancementDI quittancementDI = new QuittancementDI();
