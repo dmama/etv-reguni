@@ -62,6 +62,7 @@
 							<xs:documentation>Le mode de communication du débiteur au moment de l'émission de la LR.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -88,6 +89,7 @@
 							<xs:documentation>numéro OFS de la commune du for de gestion à la date de fin de la DI</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -98,6 +100,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="year" type="xs:int" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="taxDeclarationStatusType">
@@ -105,11 +108,6 @@
 			<xs:documentation>L'état d'une déclaration avec sa date d'obtention.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="type" type="taxdeclaration:taxDeclarationStatusTypeType">
-				<xs:annotation>
-					<xs:documentation>L'état de la déclaration.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:documentation>Date d'obtention de l'état décrit ici (pour le cas de la sommation, ce n'est pas la date de traitement métier de la sommation qui est indiquée ici, i.e. la vraie
@@ -123,6 +121,12 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="type" type="taxdeclaration:taxDeclarationStatusTypeType">
+				<xs:annotation>
+					<xs:documentation>L'état de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="taxDeclarationStatusTypeType">

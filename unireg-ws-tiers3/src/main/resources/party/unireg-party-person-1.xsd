@@ -38,6 +38,7 @@
 							<xs:documentation>Catégorie de personne physique.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -51,6 +52,12 @@
 				<xs:sequence>
 					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType" />
 					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType" />
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

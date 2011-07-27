@@ -72,6 +72,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="managingTaxResidenceType">
@@ -96,6 +97,7 @@
 					<xs:documentation>Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="taxTypeType">
@@ -417,6 +419,7 @@
 			<xs:element name="dateFrom" type="common:dateType" />
 			<xs:element name="dateTo" type="common:dateType" />
 			<xs:element name="type" type="taxresidence:simplifiedTaxLiabilityTypeType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="simplifiedTaxLiabilityTypeType">
@@ -443,9 +446,10 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
+			<xs:element minOccurs="0" name="taxDeclarationId" type="xs:long" />
 			<xs:element name="dateFrom" type="common:dateType" />
 			<xs:element name="dateTo" type="common:dateType" />
-			<xs:element minOccurs="0" name="taxDeclarationId" type="xs:long" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType abstract="true" name="taxLiabilityType">
@@ -482,7 +486,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="otherCantonType">
@@ -492,7 +500,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="foreignCountryType">
@@ -502,7 +514,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="indigentType">
@@ -512,7 +528,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType abstract="true" name="withholdingType">
@@ -524,7 +544,7 @@
 		<xs:complexContent>
 			<xs:extension base="taxresidence:taxLiabilityType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="taxationAuthority" type="taxresidence:taxationAuthorityTypeType">
+					<xs:element name="taxationAuthority" type="taxresidence:taxationAuthorityTypeType">
 						<xs:annotation>
 							<xs:documentation>Le type qui permet de distinguer un sourcier vaudois, d'un hors-canton ou hors-Suisse.</xs:documentation>
 						</xs:annotation>
@@ -540,7 +560,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:withholdingType" />
+			<xs:extension base="taxresidence:withholdingType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="mixedWithholdingType">
@@ -550,7 +574,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:withholdingType" />
+			<xs:extension base="taxresidence:withholdingType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="expenditureBasedType">
@@ -560,7 +588,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ordinaryResidentType">
@@ -570,7 +602,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="taxresidence:taxLiabilityType" />
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 </xs:schema>

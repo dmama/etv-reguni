@@ -75,11 +75,6 @@
 					<xs:documentation>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="maritalStatus" type="taxpayer:maritalStatusType">
-				<xs:annotation>
-					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element minOccurs="0" name="numberOfChildren" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Le nombre d'enfants à charge du contribuable, ou non-renseigné si cette information n'est pas connue ou inapplicable.</xs:documentation>
@@ -105,6 +100,12 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="maritalStatus" type="taxpayer:maritalStatusType">
+				<xs:annotation>
+					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="maritalStatusType">

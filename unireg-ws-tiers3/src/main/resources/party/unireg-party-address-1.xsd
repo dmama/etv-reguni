@@ -70,6 +70,7 @@
 					<xs:documentation>Le type de l'adresse.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="addressOtherPartyType">
@@ -78,17 +79,19 @@
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="address:addressType">
-				<xs:sequence>
-					<xs:element name="otherPartyType" type="address:otherPartyAddressTypeType">
-						<xs:annotation>
-							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element name="base" type="address:addressType">
+				<xs:annotation>
+					<xs:documentation>Les informations de base de l'adresse 'autre tiers'.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="otherPartyType" type="address:otherPartyAddressTypeType">
+				<xs:annotation>
+					<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="addressInformationType">
 		<xs:complexContent>
@@ -142,6 +145,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -184,7 +188,7 @@
 		<xs:complexContent>
 			<xs:extension base="eCH-0010:personMailAddressInfoType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="salutation" type="xs:string">
+					<xs:element name="salutation" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Les salutations selon les us et coutumes de l'ACI. Exemples : 'Monsieur', 'Madame', 'Aux héritiers de', ...
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -192,7 +196,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="formalGreeting" type="xs:string">
+					<xs:element name="formalGreeting" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur',
 								'Madame', 'Madame, Monsieur', ...
@@ -201,6 +205,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -225,6 +230,12 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="names" type="address:personNameType" minOccurs="0" maxOccurs="2" />
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="organisationMailAddressInfoType">
@@ -240,6 +251,12 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -248,6 +265,7 @@
 		<xs:sequence>
 			<xs:element name="firstName" type="eCH-0010:firstNameType" minOccurs="0" />
 			<xs:element name="lastName" type="eCH-0010:lastNameType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="otherPartyAddressTypeType">

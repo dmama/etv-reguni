@@ -30,21 +30,6 @@
 					<xs:documentation>Date à laquelle le rapport a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="otherPartyNumber" type="common:partyNumberType">
-				<xs:annotation>
-					<xs:documentation>Numéro de tiers pointé par cette relation.
-						En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
-						- Tutelle : Personne physique -> Personne physique ou Collectivité administrative
-						- Curatelle : Personne physique -> Personne physique ou Collectivité administrative
-						- Conseil légal : Personne physique -> Personne physique ou Collectivité administrative
-						- Prestations imposables : Personne physique -> Débiteur prestation imposable
-						- Appartenance ménage : Personne physique -> Ménage
-						- Représentation : Personne physique -> Tiers
-						- Contact impôt source : Débiteur prestation imposable -> Contribuable
-						- Annule et remplace : Tiers -> Tiers
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element minOccurs="0" name="activityType" type="relation:activityTypeType">
 				<xs:annotation>
 					<xs:documentation>Type d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</xs:documentation>
@@ -65,6 +50,22 @@
 					<xs:documentation>Vrai si la représentation conventionnelle s'étend à l'exécution forcée; faux autrement. Seulement renseigné pour le type = REPRESENTATION.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="otherPartyNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:documentation>Numéro de tiers pointé par cette relation.
+						En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
+						- Tutelle : Personne physique -> Personne physique ou Collectivité administrative
+						- Curatelle : Personne physique -> Personne physique ou Collectivité administrative
+						- Conseil légal : Personne physique -> Personne physique ou Collectivité administrative
+						- Prestations imposables : Personne physique -> Débiteur prestation imposable
+						- Appartenance ménage : Personne physique -> Ménage
+						- Représentation : Personne physique -> Tiers
+						- Contact impôt source : Débiteur prestation imposable -> Contribuable
+						- Annule et remplace : Tiers -> Tiers
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="relationBetweenPartiesTypeType">
