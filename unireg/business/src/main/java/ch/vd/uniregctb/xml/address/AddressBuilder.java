@@ -37,7 +37,9 @@ public class AddressBuilder {
 
 	public static AddressOtherParty newOtherPartyAddress(AdresseEnvoiDetaillee adresse, AddressType type) {
 		final AddressOtherParty a = new AddressOtherParty();
-		fillAddress(adresse, a, type);
+		final Address base = new Address();
+		fillAddress(adresse, base, type);
+		a.setBase(base);
 		a.setOtherPartyType(source2type(adresse.getSource()));
 		return a;
 	}
@@ -94,7 +96,7 @@ public class AddressBuilder {
 			coupleInfo.setSalutation(adresse.getSalutations());
 			coupleInfo.setFormalGreeting(adresse.getFormuleAppel());
 			for (NomPrenom nomPrenom : adresse.getNomsPrenoms()) {
-				coupleInfo.getNames().add(new PersonName(nomPrenom.getPrenom(), nomPrenom.getNom()));
+				coupleInfo.getNames().add(new PersonName(nomPrenom.getPrenom(), nomPrenom.getNom(), null));
 			}
 			a.setCouple(coupleInfo);
 		}

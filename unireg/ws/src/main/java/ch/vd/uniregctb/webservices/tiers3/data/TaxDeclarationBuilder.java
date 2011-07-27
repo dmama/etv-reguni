@@ -94,11 +94,11 @@ public class TaxDeclarationBuilder {
 		final ArrayList<TaxDeclarationStatus> clonedEtats = cloneStatuses(d.getStatuses());
 		if (d instanceof OrdinaryTaxDeclaration) {
 			return new OrdinaryTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((OrdinaryTaxDeclaration) d).getSequenceNumber(),
-					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId());
+					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId(), null);
 		}
 		else if (d instanceof WithholdingTaxDeclaration) {
 			return new WithholdingTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((WithholdingTaxDeclaration) d).getPeriodicity(),
-					((WithholdingTaxDeclaration) d).getCommunicationMode());
+					((WithholdingTaxDeclaration) d).getCommunicationMode(), null);
 		}
 		else {
 			throw new IllegalArgumentException("Type de déclaration d'impôt inconnu = [" + d.getClass() + "]");
@@ -123,6 +123,6 @@ public class TaxDeclarationBuilder {
 		if (etat == null) {
 			return null;
 		}
-		return new TaxDeclarationStatus(etat.getType(), etat.getDateFrom(), etat.getCancellationDate());
+		return new TaxDeclarationStatus(etat.getDateFrom(), etat.getCancellationDate(), etat.getType(), null);
 	}
 }

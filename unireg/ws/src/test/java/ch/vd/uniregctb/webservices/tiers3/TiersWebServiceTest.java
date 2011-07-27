@@ -31,6 +31,7 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
@@ -384,14 +385,15 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertAddress(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getDebtProsecutionAddresses().get(1));
 			assertAddress(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getDebtProsecutionAddresses().get(2));
 
-			assertNotNull(tiia.getDebtProsecutionAddressesOfOtherParty());
-			assertEquals(3, tiia.getDebtProsecutionAddressesOfOtherParty().size());
-			assertAddress(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.getDebtProsecutionAddressesOfOtherParty().get(0));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(0).getOtherPartyType());
-			assertAddress(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.getDebtProsecutionAddressesOfOtherParty().get(1));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(1).getOtherPartyType());
-			assertAddress(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.getDebtProsecutionAddressesOfOtherParty().get(2));
-			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, tiia.getDebtProsecutionAddressesOfOtherParty().get(2).getOtherPartyType());
+			final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiia.getDebtProsecutionAddressesOfOtherParty();
+			assertNotNull(debtProsecutionAddressesOfOtherParty);
+			assertEquals(3, debtProsecutionAddressesOfOtherParty.size());
+			assertAddress(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", debtProsecutionAddressesOfOtherParty.get(0).getBase());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, debtProsecutionAddressesOfOtherParty.get(0).getOtherPartyType());
+			assertAddress(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", debtProsecutionAddressesOfOtherParty.get(1).getBase());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, debtProsecutionAddressesOfOtherParty.get(1).getOtherPartyType());
+			assertAddress(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", debtProsecutionAddressesOfOtherParty.get(2).getBase());
+			assertEquals(OtherPartyAddressType.WELFARE_ADVOCATE, debtProsecutionAddressesOfOtherParty.get(2).getOtherPartyType());
 		}
 	}
 
