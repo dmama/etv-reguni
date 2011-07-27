@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/party/party/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/party/party/1"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/unireg/party/party/1"
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:address="http://www.vd.ch/unireg/party/address/1"
 		xmlns:relation="http://www.vd.ch/unireg/party/relation/1" xmlns:taxdeclaration="http://www.vd.ch/unireg/party/taxdeclaration/1"
 		xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1">
@@ -157,7 +157,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="bankAccounts" type="unireg:bankAccountType">
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="bankAccounts" type="party:bankAccountType">
 				<xs:annotation>
 					<xs:documentation>Les coordonnées financières du tiers.
 						Attention ! Cette collection n'est renseignée que si la part BANK_ACCOUNTS est demandée.
@@ -171,14 +171,6 @@
 			<xs:documentation>Contient les coordonnées financière d'un compte auprès d'un organisme financier (CCP ou compte bancaire, suisse ou étranger).</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="ownerPartyNumber" type="common:partyNumberType">
-				<xs:annotation>
-					<xs:documentation>Le numéro de tiers du titulaire du compte.
-						Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est égal au
-						numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui du mandataire.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element minOccurs="0" name="ownerName" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Le titulaire du compte.</xs:documentation>
@@ -189,7 +181,7 @@
 					<xs:documentation>Le numéro du compte (tel que saisi par l'utilisateur).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="format" type="unireg:accountNumberFormatType">
+			<xs:element name="format" type="party:accountNumberFormatType">
 				<xs:annotation>
 					<xs:documentation>Le type du numéro (IBAN, CPP, ...).</xs:documentation>
 				</xs:annotation>
@@ -209,6 +201,15 @@
 					<xs:documentation>Le nom de l'institution financière (lorsque cette information est connnue).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="ownerPartyNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:documentation>Le numéro de tiers du titulaire du compte.
+						Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est égal au
+						numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui du mandataire.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="accountNumberFormatType">
@@ -241,11 +242,6 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="number" type="common:partyNumberType">
-				<xs:annotation>
-					<xs:documentation>Le numéro de tiers.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element minOccurs="0" name="name1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>La première ligne du nom du contribuable. Pour une personne physique, il s'agit de son prénom et de son nom. Pour un ménage, il s'agit du prénom et du nom du
@@ -289,11 +285,17 @@
 					<xs:documentation>Le pays de l'adresse courrier du tiers, ou non-renseigné si ancune adresse n'est connue.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="type" type="unireg:partyTypeType">
+			<xs:element minOccurs="0" name="type" type="party:partyTypeType">
 				<xs:annotation>
 					<xs:documentation>Le type de tiers au sens large (débiteur, personne physique, ménage commune, ...)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="number" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:documentation>Le numéro de tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="partyTypeType">

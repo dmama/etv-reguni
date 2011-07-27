@@ -2,7 +2,7 @@
 <!-- v1.0beta - 18 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/unireg/party/address/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/unireg/common/1"
-		   xmlns:unireg="http://www.vd.ch/unireg/party/address/1" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4">
+		   xmlns:address="http://www.vd.ch/unireg/party/address/1" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd" />
@@ -51,25 +51,26 @@
 				<xs:annotation>
 					<xs:documentation>Les informations détaillées sur le destinataire de l'adresse.</xs:documentation>
 				</xs:annotation>
-				<xs:element name="organisation" type="unireg:organisationMailAddressInfoType" />
-				<xs:element name="person" type="unireg:personMailAddressInfoType" />
-				<xs:element name="couple" type="unireg:coupleMailAddressInfoType" />
+				<xs:element name="organisation" type="address:organisationMailAddressInfoType" />
+				<xs:element name="person" type="address:personMailAddressInfoType" />
+				<xs:element name="couple" type="address:coupleMailAddressInfoType" />
 			</xs:choice>
-			<xs:element name="addressInformation" type="unireg:addressInformationType" minOccurs="0">
+			<xs:element name="addressInformation" type="address:addressInformationType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Les informations détaillées sur la destination de l'adresse.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="formattedAddress" type="unireg:formattedAddressType">
+			<xs:element name="formattedAddress" type="address:formattedAddressType">
 				<xs:annotation>
 					<xs:documentation>L'adresse formattée sur six lignes.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="type" type="unireg:addressTypeType">
+			<xs:element name="type" type="address:addressTypeType">
 				<xs:annotation>
 					<xs:documentation>Le type de l'adresse.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="addressOtherPartyType">
@@ -78,17 +79,19 @@
 				poursuites).
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="unireg:addressType">
-				<xs:sequence>
-					<xs:element name="otherPartyType" type="unireg:otherPartyAddressTypeType">
-						<xs:annotation>
-							<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element name="base" type="address:addressType">
+				<xs:annotation>
+					<xs:documentation>Les informations de base de l'adresse 'autre tiers'.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="otherPartyType" type="address:otherPartyAddressTypeType">
+				<xs:annotation>
+					<xs:documentation>la raison pour laquelle il y a une adresse 'autre tiers'.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="addressInformationType">
 		<xs:complexContent>
@@ -134,7 +137,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="tariffZone" type="unireg:tariffZoneType">
+					<xs:element name="tariffZone" type="address:tariffZoneType">
 						<xs:annotation>
 							<xs:documentation>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -142,6 +145,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -184,7 +188,7 @@
 		<xs:complexContent>
 			<xs:extension base="eCH-0010:personMailAddressInfoType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="salutation" type="xs:string">
+					<xs:element name="salutation" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Les salutations selon les us et coutumes de l'ACI. Exemples : 'Monsieur', 'Madame', 'Aux héritiers de', ...
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
@@ -192,7 +196,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" name="formalGreeting" type="xs:string">
+					<xs:element name="formalGreeting" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur',
 								'Madame', 'Madame, Monsieur', ...
@@ -201,6 +205,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -224,7 +229,13 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="names" type="unireg:personNameType" minOccurs="0" maxOccurs="2" />
+			<xs:element name="names" type="address:personNameType" minOccurs="0" maxOccurs="2" />
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="organisationMailAddressInfoType">
@@ -240,6 +251,12 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -248,6 +265,7 @@
 		<xs:sequence>
 			<xs:element name="firstName" type="eCH-0010:firstNameType" minOccurs="0" />
 			<xs:element name="lastName" type="eCH-0010:lastNameType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="otherPartyAddressTypeType">

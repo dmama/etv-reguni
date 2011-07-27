@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/party/taxpayer/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/party/taxpayer/1"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1"
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:party="http://www.vd.ch/unireg/party/party/1" xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
@@ -15,7 +15,7 @@
 		<xs:complexContent>
 			<xs:extension base="party:partyType">
 				<xs:sequence>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="familyStatuses" type="unireg:familyStatusType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="familyStatuses" type="taxpayer:familyStatusType">
 						<xs:annotation>
 							<xs:documentation>L'historique complet des situations de famille du contribuable.
 								Attention ! Cette collection n'est renseignée qui si la part FAMILY_STATUSES est demandée.
@@ -75,17 +75,12 @@
 					<xs:documentation>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="maritalStatus" type="unireg:maritalStatusType">
-				<xs:annotation>
-					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element minOccurs="0" name="numberOfChildren" type="xs:int">
 				<xs:annotation>
 					<xs:documentation>Le nombre d'enfants à charge du contribuable, ou non-renseigné si cette information n'est pas connue ou inapplicable.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="applicableTariff" type="unireg:withholdingTaxTariffType">
+			<xs:element minOccurs="0" name="applicableTariff" type="taxpayer:withholdingTaxTariffType">
 				<xs:annotation>
 					<xs:documentation>Tarif impôt source applicable.
 						Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
@@ -105,6 +100,12 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="maritalStatus" type="taxpayer:maritalStatusType">
+				<xs:annotation>
+					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="maritalStatusType">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/party/person/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:unireg="http://www.vd.ch/unireg/party/person/1"
+		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:person="http://www.vd.ch/unireg/party/person/1"
 		   xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
@@ -33,11 +33,12 @@
 							<xs:documentation>La date de décès de la personne.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="category" type="unireg:naturalPersonCategoryType">
+					<xs:element name="category" type="person:naturalPersonCategoryType">
 						<xs:annotation>
 							<xs:documentation>Catégorie de personne physique.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -49,8 +50,14 @@
 		<xs:complexContent>
 			<xs:extension base="taxpayer:taxpayerType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="mainTaxpayer" type="unireg:naturalPersonType" />
-					<xs:element minOccurs="0" name="secondaryTaxpayer" type="unireg:naturalPersonType" />
+					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType" />
+					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType" />
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

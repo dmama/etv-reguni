@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/unireg/party/debtor/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/unireg/party/debtor/1"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:debtor="http://www.vd.ch/unireg/party/debtor/1"
 		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:party="http://www.vd.ch/unireg/party/party/1">
 
 	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
@@ -21,24 +21,14 @@
 							<xs:documentation>La raison sociale du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="category" type="unireg:debtorCategoryType">
+					<xs:element name="category" type="debtor:debtorCategoryType">
 						<xs:annotation>
 							<xs:documentation>La catégorie actuelle du débiteur.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="communicationMode" type="unireg:communicationModeType">
+					<xs:element name="communicationMode" type="debtor:communicationModeType">
 						<xs:annotation>
 							<xs:documentation>Le mode de communication actuel du débiteur.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="withoutReminder" type="xs:boolean">
-						<xs:annotation>
-							<xs:documentation>Vrai si on n'envoie pas de rappel au débiteur.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="withoutWithholdingTaxDeclaration" type="xs:boolean">
-						<xs:annotation>
-							<xs:documentation>Vrai si le débiteur ne reçoit pas de LR.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="softwareId" type="xs:long">
@@ -51,13 +41,24 @@
 							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="unireg:debtorPeriodicityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="debtor:debtorPeriodicityType">
 						<xs:annotation>
 							<xs:documentation>L'historique des périodicités du débiteur.
 								Attention ! Cette collection n'est renseignée qui si la part DEBTOR_PERIODICITIES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="withoutReminder" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Vrai si on n'envoie pas de rappel au débiteur.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="withoutWithholdingTaxDeclaration" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Vrai si le débiteur ne reçoit pas de LR.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -87,6 +88,7 @@
 					<xs:documentation>Le nombre de déclarations impôts source (LRs) réellement émises (et non-annulées) dans la période fiscale considérée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="debtorCategoryType">
@@ -146,16 +148,17 @@
 					<xs:documentation>Date d'annulation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="periodicity" type="unireg:withholdingTaxDeclarationPeriodicityType">
-				<xs:annotation>
-					<xs:documentation>La périodicité temporelle d'envoi des LRs au débiteur.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="specificPeriod" type="unireg:withholdingTaxDeclarationPeriodType">
+			<xs:element minOccurs="0" name="specificPeriod" type="debtor:withholdingTaxDeclarationPeriodType">
 				<xs:annotation>
 					<xs:documentation>Uniquement valide pour la périodicité ONCE : la période à laquelle est envoyée la LR unique.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
+				<xs:annotation>
+					<xs:documentation>La périodicité temporelle d'envoi des LRs au débiteur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="withholdingTaxDeclarationPeriodicityType">
