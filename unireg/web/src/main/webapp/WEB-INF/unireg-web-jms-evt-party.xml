@@ -17,10 +17,10 @@
 
 	<bean id="partyRequestListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="destinationName" value="${extprop.jms.queue.party.request}" />
+		<property name="destinationName" value="${extprop.jms.queue.party.service}" />
 		<property name="messageListener" ref="partyRequestListener" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="autoStartup" value="${extprop.jms.queue.party.request.enabled}" />
+		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
 	</bean>
 
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">

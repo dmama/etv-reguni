@@ -88,7 +88,7 @@ testprop.jms.queue.ident.ctb.input=unireg.test.identificationCtb.input-${testpro
 testprop.jms.queue.ident.ctb.output=unireg.test.identificationCtb.output-${testprop.jdbc.username}
 testprop.jms.queue.pm.event.input=unireg.test.evtRegPM-${testprop.jdbc.username}
 testprop.jms.queue.evtIAM=unireg.test.evtInfoDebiteur-${testprop.jdbc.username}
-testprop.jms.queue.party.request=unireg.test.party.service-${testprop.jdbc.username}
+testprop.jms.queue.party.service=unireg.test.partyService-${testprop.jdbc.username}
 testprop.jms.queue.evtDeclaration=unireg.test.evtDeclaration-${testprop.jdbc.username}
 
 #

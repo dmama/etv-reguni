@@ -90,7 +90,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 
-		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.party.request");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		OUTPUT_QUEUE = INPUT_QUEUE + ".response";
 
 		clearQueue(INPUT_QUEUE);
