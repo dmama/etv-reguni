@@ -20,11 +20,11 @@ public class AciComServiceTest extends BusinessItTest {
 	@Test
 	public void testGetMessageFile() throws Exception {
 		// voir colonne BUSINESS_ID de la table EVENEMENT_IDENTIFICATION_CTB pour des exemples de businessId.
-		final String businessId = "3001-000101-2-BS-5-Test_4406cd0e-d98d-4ee6-b62b-4356639";
+		final String businessId = "3001-000101-2008-2-BE-5-MWNACHDRUCK0220100108131806360923000";
 		final FichierOrigine file = service.getMessageFile(businessId);
 		assertNotNull(file);
-		assertEquals("pdf", file.getExtension());
-		assertEquals("application/pdf", file.getMimeType());
+		assertEquals("zip", file.getExtension());
+		assertEquals("application/zip", file.getMimeType());
 		// suite au reprise de données, le fichier PDF lui-même est perdu : assertNotNull(file.getContent());
 	}
 }
