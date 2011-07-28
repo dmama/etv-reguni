@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
@@ -157,7 +156,7 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 
 			marshaller.marshal(objectFactory.createResponse(response), doc);
 
-			final EsbMessageImpl m = (EsbMessageImpl) esbMessageFactory.createMessage();
+			final EsbMessage m = esbMessageFactory.createMessage();
 			m.setBusinessCorrelationId(businessId);
 			m.setBusinessId(businessId + "-answer");
 			m.setBusinessUser("unireg");

@@ -8,8 +8,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
@@ -85,7 +85,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 
 			marshaller.marshal(objectFactory.createEvenement(evenement), doc);
 
-			final EsbMessageImpl m = (EsbMessageImpl) esbMessageFactory.createMessage();
+			final EsbMessage m = esbMessageFactory.createMessage();
 			m.setBusinessId(String.format("%d-%d", evenement.getContext().getNumeroContribuable(), evenement.getContext().getPeriodeFiscale()));
 			m.setBusinessUser(businessUser);
 			m.setServiceDestination(serviceDestination);
