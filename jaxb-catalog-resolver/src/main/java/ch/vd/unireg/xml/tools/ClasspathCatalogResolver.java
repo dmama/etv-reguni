@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,29 @@ import org.w3c.dom.ls.LSResourceResolver;
 @SuppressWarnings({"UnusedDeclaration"})
 public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver implements LSResourceResolver {
 
+	final static File tempDir;
+
+	private static Map<String, String> resolvedCache = Collections.synchronizedMap(new HashMap<String, String>());
+
+	static {
+		System.out.println("Loading ClasspathCatalogResolver ...");
+
+		// Création d'un répertoire de travail temporaire
+		try {
+			tempDir = File.createTempFile("ClasspathCatalogResolver", "");
+			if (!tempDir.delete()) {
+				throw new RuntimeException("Cannot delete file " + tempDir.getCanonicalPath());
+			}
+			if (!tempDir.mkdir()) {
+				throw new RuntimeException("Cannot create directory " + tempDir.getCanonicalPath());
+			}
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	public String getResolvedEntity(final String publicId, final String systemId) {
 
@@ -30,16 +54,39 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 			return result;
 		}
 
-		String resourceLookup = systemId;
-		if (systemId.startsWith("http://ressources.etat-de-vaud.ch/fiscalite/registre/")) {
-			// pour tout ce qui Unireg, on va chercher dans le classpath, en tenant compte du répertoire relatif
-			resourceLookup = systemId.replace("http://ressources.etat-de-vaud.ch/fiscalite/registre/", "");
+		final String r = resolvedCache.get(systemId);
+		if (r != null) {
+			return r;
 		}
-		else if (systemId.startsWith("http://www.ech.ch/xmlns")) {
-			// pour tout ce qui eCH, on va chercher dans la racine du classpath
-			int pos = systemId.lastIndexOf('/');
-			resourceLookup = systemId.substring(pos + 1);
+
+		final String r2 = resolveInClasspath(systemId);
+		if (r2 != null) {
+			resolvedCache.put(systemId, r2);
+			return r2;
 		}
+
+		return null;
+	}
+
+	@Override
+	public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+
+		final String resolvedId = getResolvedEntity(publicId, systemId);
+		if (resolvedId != null) {
+			return new DOMInputImpl(publicId, resolvedId, baseURI);
+		}
+		return null;
+	}
+
+	/**
+	 * Cette méthode va résoudre le systemId fourni et retourner un chemin vers une copie local de la ressource.
+	 *
+	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd")
+	 * @return un chemin vers la ressource locale (par exemple "file:/tmp/ClasspathCatalogResolver5317162594717290146/eCH-0010-4-0f.xsd")
+	 */
+	private String resolveInClasspath(String systemId) {
+
+		final String resourceLookup = systemId2Classpath(systemId);
 
 		final URL resource;
 		try {
@@ -59,38 +106,25 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 		return null;
 	}
 
-	@Override
-	public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-
-		final String resolvedId = getResolvedEntity(publicId, systemId);
-		if (resolvedId != null) {
-			return new DOMInputImpl(publicId, resolvedId, baseURI);
+	/**
+	 * Cette méthode permet de transformer un sytemId en un chemin relatif dans le classpath.
+	 *
+	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd")
+	 * @return un chemin relatif dans le classpath (par exemple "eCH-0010-4-0f.xsd")
+	 */
+	private String systemId2Classpath(String systemId) {
+		String resourceLookup = systemId;
+		if (systemId.startsWith("http://ressources.etat-de-vaud.ch/fiscalite/registre/")) {
+			// pour tout ce qui Unireg, on va chercher dans le classpath, en tenant compte du répertoire relatif
+			resourceLookup = systemId.replace("http://ressources.etat-de-vaud.ch/fiscalite/registre/", "");
 		}
-		return null;
+		else if (systemId.startsWith("http://www.ech.ch/xmlns")) {
+			// pour tout ce qui eCH, on va chercher dans la racine du classpath
+			int pos = systemId.lastIndexOf('/');
+			resourceLookup = systemId.substring(pos + 1);
+		}
+		return resourceLookup;
 	}
-
-	final static File d;
-
-	static {
-		System.out.println("Loading ClasspathCatalogResolver ...");
-
-		// Création d'un répertoire temporaire
-		try {
-			d = File.createTempFile("ClasspathCatalogResolver", "");
-			if (!d.delete()) {
-				throw new RuntimeException("Impossible de détruire le fichier " + d.getCanonicalPath());
-			}
-			if (!d.mkdir()) {
-				throw new RuntimeException("Impossible de créer le répertoire " + d.getCanonicalPath());
-			}
-		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static Map<URL, URL> tempFilesMap = new HashMap<URL, URL>();
 
 	/**
 	 * Cette méthode prend le fichier donné en paramètre (par exemple "file:jar:blabla.jar!ech/ech0010-4-0.xsd") et en fait une copie temporaire sur le filesystem (par exemple
@@ -104,43 +138,38 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 	 */
 	private synchronized URL createTempFile(String filename, URL filepath) throws IOException {
 
-		URL t = tempFilesMap.get(filepath);
-
-		if (t == null) {
-
-			// On gère le cas des sous-répertoires dans le nom de fichier
-			File parent = d;
-			int sep = filename.lastIndexOf(File.separatorChar);
-			if (sep >= 0) {
-				parent = new File(d, filename.substring(0, sep));
-				filename = filename.substring(sep + 1);
-				if (!parent.mkdirs()) {
-					throw new RuntimeException("Impossible de créer le répertoire " + parent.getCanonicalPath());
-				}
+		// On gère le cas des sous-répertoires dans le nom de fichier
+		File parent = tempDir;
+		int sep = filename.lastIndexOf(File.separatorChar);
+		if (sep >= 0) {
+			parent = new File(tempDir, filename.substring(0, sep));
+			filename = filename.substring(sep + 1);
+			if (!parent.mkdirs()) {
+				throw new RuntimeException("Impossible de créer le répertoire " + parent.getCanonicalPath());
 			}
-
-			//System.out.println("Creating file  [" + parent.getCanonicalPath() + "] / [" + filename + "]...");
-
-			// Création du fichier temporaire
-			final File f = new File(parent, filename);
-			f.deleteOnExit();
-
-			// Copie des données
-			final FileOutputStream out = new FileOutputStream(f);
-			final InputStream in = filepath.openStream();
-			try {
-				copy(in, out);
-			}
-			finally {
-				out.close();
-				in.close();
-			}
-
-			t = f.toURI().toURL();
-			tempFilesMap.put(filepath, t);
 		}
 
-		return t;
+		//System.out.println("Creating file  [" + parent.getCanonicalPath() + "] / [" + filename + "]...");
+
+		// Création du fichier temporaire
+		final File f = new File(parent, filename);
+		if (f.exists()) {
+			throw new RuntimeException("Programming error : file [" + f.getCanonicalPath() + "] already exists !");
+		}
+		f.deleteOnExit();
+
+		// Copie des données
+		final FileOutputStream out = new FileOutputStream(f);
+		final InputStream in = filepath.openStream();
+		try {
+			copy(in, out);
+		}
+		finally {
+			out.close();
+			in.close();
+		}
+
+		return f.toURI().toURL();
 	}
 
 	private static final int IO_BUFFER_SIZE = 4 * 1024;
