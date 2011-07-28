@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 21 juillet 2011 - hand-edited by Manuel Siggen -->
-<xs:schema targetNamespace="http://www.vd.ch/unireg/event/party/request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
-		   xmlns="http://www.vd.ch/unireg/event/party/request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
 
-	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
 	<xs:element name="request" type="requestType" />
 
