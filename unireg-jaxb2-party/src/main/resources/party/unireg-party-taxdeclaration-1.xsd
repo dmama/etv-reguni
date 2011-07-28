@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1">
