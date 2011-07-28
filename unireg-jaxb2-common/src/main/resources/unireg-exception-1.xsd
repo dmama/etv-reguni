@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 18 juillet 2011 - hand-edited by Manuel Siggen -->
-<xs:schema targetNamespace="http://www.vd.ch/unireg/exception/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exception="http://www.vd.ch/unireg/exception/1">
+<!-- v1.0 - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/exception/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
 
 	<xs:complexType name="serviceExceptionInfoType" abstract="true">
 		<xs:annotation>
@@ -31,6 +31,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -41,7 +42,9 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="exception:serviceExceptionInfoType">
-				<xs:sequence />
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -51,7 +54,9 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="exception:serviceExceptionInfoType">
-				<xs:sequence />
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
