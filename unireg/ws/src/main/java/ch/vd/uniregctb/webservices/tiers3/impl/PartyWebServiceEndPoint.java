@@ -50,7 +50,7 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@WebService(targetNamespace = "http://www.vd.ch/unireg/webservices/tiers3", serviceName = "PartyWebServiceFactory", portName = "Service",
+@WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/tiers3", serviceName = "PartyWebServiceFactory", portName = "Service",
 		endpointInterface = "ch.vd.unireg.webservices.tiers3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable {
 
@@ -471,7 +471,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
 				entry.setParty(null);
-				entry.setExceptionInfo(new AccessDeniedExceptionInfo(message));
+				entry.setExceptionInfo(new AccessDeniedExceptionInfo(message, null));
 			}
 		}
 	}

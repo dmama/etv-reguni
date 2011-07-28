@@ -62,9 +62,9 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<ns3:evenement " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/di/output/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/event/di/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/unireg/event/di/output/1\" " +
+						"xmlns=\"http://www.vd.ch/fiscalite/unireg/event/di/common/1\" " +
+						"xmlns:ns2=\"http://www.vd.ch/fiscalite/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 						"xsi:type=\"ns3:evenementEmissionDeclarationImpotType\">" +
 						"<ns3:context>" +
@@ -84,9 +84,9 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		assertTextMessage(OUTPUT_QUEUE,
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<ns3:evenement " +
-						"xmlns:ns3=\"http://www.vd.ch/unireg/event/di/output/1\" " +
-						"xmlns=\"http://www.vd.ch/unireg/event/di/common/1\" " +
-						"xmlns:ns2=\"http://www.vd.ch/unireg/common/1\" " +
+						"xmlns:ns3=\"http://www.vd.ch/fiscalite/unireg/event/di/output/1\" " +
+						"xmlns=\"http://www.vd.ch/fiscalite/unireg/event/di/common/1\" " +
+						"xmlns:ns2=\"http://www.vd.ch/fiscalite/unireg/common/1\" " +
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 						"xsi:type=\"ns3:evenementAnnulationDeclarationImpotType\">" +
 						"<ns3:context>" +

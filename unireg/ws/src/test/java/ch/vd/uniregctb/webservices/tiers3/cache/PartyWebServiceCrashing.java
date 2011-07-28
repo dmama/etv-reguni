@@ -90,7 +90,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 
 		// on complète le résultat avec les ids crashés
 		for (Integer id : idsKo) {
-			res.getEntries().add(new BatchPartyEntry(id, null, new TechnicalExceptionInfo("Exception de test")));
+			res.getEntries().add(new BatchPartyEntry(id, null, new TechnicalExceptionInfo("Exception de test", null)));
 		}
 
 		return res;

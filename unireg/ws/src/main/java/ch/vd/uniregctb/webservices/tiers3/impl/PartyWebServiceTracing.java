@@ -62,7 +62,7 @@ public class PartyWebServiceTracing implements ServiceTracingInterface, Initiali
 			for (Map.Entry<ObjectName, Counter> e : counters.entrySet()) {
 				final String canonicalName = e.getKey().getCanonicalName();
 				final ResponseTimeCounter counter = (ResponseTimeCounter) e.getValue();
-				if (canonicalName.contains("service=\"{http://www.vd.ch/unireg/webservices/tiers3}PartyWebServiceFactory\"")) {
+				if (canonicalName.contains("service=\"{http://www.vd.ch/fiscalite/unireg/webservices/tiers3}PartyWebServiceFactory\"")) {
 					if (!canonicalName.contains("operation=")) {
 						// temps de réponse général du service
 						globalCounter = new ResponseTimeTracingCounter(counter);

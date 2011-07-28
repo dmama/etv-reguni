@@ -520,14 +520,14 @@ public class PartyWebServiceImpl implements PartyWebService {
 		@Override
 		public void addErrorException(TaxDeclarationReturnRequest element, Exception e) {
 			if (e instanceof ValidationException) {
-				reponses.getResponses()
-						.add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name())));
+				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION,
+						new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null)));
 			}
 			else if (e instanceof RuntimeException) {
-				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
+				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
 			}
 			else {
-				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage())));
+				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
 			}
 		}
 
@@ -617,11 +617,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 		catch (ValidationException e) {
 			LOGGER.error(e, e);
-			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), "VALIDATION"));
+			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
-			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage()));
+			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 		return r;
 	}
@@ -631,7 +631,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 *
 	 * @param demande la demande de quittancement à traiter
 	 * @return la réponse de la demande de quittancement en cas de traitement effectué.
-	 * @throws ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError une erreur explicite en cas d'impossibilité d'effectuer le traitement.
+	 * @throws ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError
+	 *          une erreur explicite en cas d'impossibilité d'effectuer le traitement.
 	 */
 	private TaxDeclarationReturnResponse handleRequest(TaxDeclarationReturnRequest demande) throws TaxDeclarationReturnError {
 

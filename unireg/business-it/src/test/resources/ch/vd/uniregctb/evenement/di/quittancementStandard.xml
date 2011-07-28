@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<evt:quittancement xmlns:common="http://www.vd.ch/unireg/common/1"
-				   xmlns:di="http://www.vd.ch/unireg/event/di/common/1"
-				   xmlns:evt="http://www.vd.ch/unireg/event/di/input/1"
+<evt:quittancement xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+				   xmlns:di="http://www.vd.ch/fiscalite/unireg/event/di/common/1"
+				   xmlns:evt="http://www.vd.ch/fiscalite/unireg/event/di/input/1"
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:type="evt:quittancementDeclarationImpotType">
 	<evt:context>

@@ -10,7 +10,7 @@ import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError;
 public class TaxDeclarationReturnBuilder {
 
 	public static TaxDeclarationReturnResponse newTaxDeclarationReturnResponse(OrdinaryTaxDeclarationKey key, TaxDeclarationReturnError exception) {
-		return new TaxDeclarationReturnResponse(key, exception.getCode(), new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.TAX_DECLARATION_RETURN.value()));
+		return new TaxDeclarationReturnResponse(key, exception.getCode(), new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.TAX_DECLARATION_RETURN.value(), null));
 	}
 
 	public static TaxDeclarationReturnResponse newTaxDeclarationReturnResponse(OrdinaryTaxDeclarationKey key, TaxDeclarationReturnCode code) {
