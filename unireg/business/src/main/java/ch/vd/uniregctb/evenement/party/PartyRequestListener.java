@@ -52,10 +52,6 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 	private Map<Class<? extends Request>, PartyRequestHandler> handlers;
 	private Schema schemaCache;
 
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
-	}
-
 	public void setHandlers(Map<Class<? extends Request>, PartyRequestHandler> handlers) {
 		this.handlers = handlers;
 	}
