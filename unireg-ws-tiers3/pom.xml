@@ -91,6 +91,8 @@
 									<extraargs> 
 										<extraarg>-wsdlLocation</extraarg>
 										<extraarg>${basedir}/src/main/resources/PartyService3.wsdl</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>ch.vd.unireg.webservices.tiers3</extraarg>
 										<extraarg>-xjc-b,${basedir}/src/main/resources/bindings.xml</extraarg>
 										<extraarg>-xjc-Xpretty-classname</extraarg>
 										<extraarg>-xjc-Xunireg-ws</extraarg>
