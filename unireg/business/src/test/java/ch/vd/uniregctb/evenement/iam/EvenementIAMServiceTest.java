@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -30,6 +31,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifierInfoEmployeur() throws Exception {
 
 		// Création d'un débiteur
@@ -74,6 +76,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifierInfoEmployeurSansLogiciel() throws Exception {
 
 		// Création d'un débiteur
@@ -118,6 +121,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifierInfo2Employeur() throws Exception {
 
 		// Création d'un débiteur 1

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
@@ -84,6 +85,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInitIndividuSeul() throws Exception {
 
 		final long numeroIndividu = 12345L;
@@ -145,6 +147,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Teste les différents scénarios devant échouer au test de complétude de l'arrivée.
 	 */
@@ -169,6 +172,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
@@ -226,6 +230,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * Teste les différentes exceptions acceptées pour le traitement d'une arrivée
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateException() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -259,6 +264,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -330,6 +336,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-1603] Teste les différents cas de recherche de non-habitants
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindNonHabitants() throws Exception {
 
 		final Arrivee arrivee = new Arrivee(null, null, null, null, null, null, null, null, null, context);
@@ -472,6 +479,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommunePasEncoreFusionneeAuCivilNiAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -535,6 +543,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil, mais pas encore au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -599,6 +608,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil, mais pas encore au fiscal et que l'egid n'est pas mentionné dans l'adresse.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilMaisPasAuFiscalSansEgid() throws Exception {
 
 		final Long noInd = 1234L;
@@ -652,6 +662,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * Vérifie que le for fiscal est bien ouvert sur la commune de Bourg-en-Lavaux lorsqu'un habitant arrive dans Bourg-en-Lavaux après la date de fusion fiscale des communes,
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilEtAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -708,6 +719,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * communes sont fusionnées au civil, mais pas encore au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeEntreCommunesFusionneesAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;

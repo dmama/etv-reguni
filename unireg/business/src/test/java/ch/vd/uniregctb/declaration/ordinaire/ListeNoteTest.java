@@ -1,28 +1,16 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.List;
-
 import org.junit.Test;
-import org.springframework.util.Assert;
+import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
 
-import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -45,6 +33,7 @@ public class ListeNoteTest extends BusinessTest {
 
 	// 1 for secondaire avec une date de fin dans la période fiscale
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireSeulNonRecouvert() {
 		// Un tiers avec un for ouvert à droite
 		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
@@ -61,6 +50,7 @@ public class ListeNoteTest extends BusinessTest {
 	//2 for secondaires finissant le meme jour
 	// 1 for secondaire finissant en fin d'année
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireMultiplesNonRecouvert() {
 
 		// Un tiers avec un for ouvert à droite
@@ -84,6 +74,7 @@ public class ListeNoteTest extends BusinessTest {
 
 	//1 for secondaire fermé le meme jour que l'ouverture d'un nouveau for secondaire
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireRecouvertSurUnJour() {
 
 		// Un tiers avec un for ouvert à droite
@@ -104,6 +95,7 @@ public class ListeNoteTest extends BusinessTest {
 
 	//1 for secondaire recouvert par un for secondaire ouvert
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireRecouvert() {
 
 		// Un tiers avec un for ouvert à droite
@@ -124,6 +116,7 @@ public class ListeNoteTest extends BusinessTest {
 
 	//1 for secondaire non recouvert avec un for secondaire ouvert le jours d'après
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireNonRecouvertJoursApres() {
 
 		// Un tiers avec un for ouvert à droite

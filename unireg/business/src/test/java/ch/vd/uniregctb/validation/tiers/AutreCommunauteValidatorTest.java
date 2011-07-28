@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.tiers;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -14,6 +15,7 @@ public class AutreCommunauteValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTiersAnnule() {
 
 		final AutreCommunaute tiers = new AutreCommunaute();

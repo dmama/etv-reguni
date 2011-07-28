@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -29,6 +30,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableExistingEntreprise() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -84,6 +86,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableNewEntreprise() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -128,6 +131,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableNewAutreCommunaute() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -171,6 +175,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAjoutPeriodicite() throws Exception {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -195,6 +200,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDesactivation() throws Exception {
 
 		// pas de for -> pas désactivé

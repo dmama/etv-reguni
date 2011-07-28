@@ -1,17 +1,18 @@
 package ch.vd.uniregctb.admin;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.WebTest;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test case du controlleur spring du meme nom.
@@ -41,6 +42,7 @@ public class AuditLogControllerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);

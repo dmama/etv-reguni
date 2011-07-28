@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.declaration;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 
@@ -38,6 +39,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	 * Teste la methode qui recherche les DIs suivant certains criteres
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
@@ -52,6 +54,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	 * Teste la methode qui renvoi les DIs d'un contribuable
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindByNumero() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		List<DeclarationImpotOrdinaire> dis = diDao.findByNumero(new Long(12600001));
@@ -65,6 +68,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	 * de la derniere DI envoyee pour un contribuable donne
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindDerniereDiEnvoyee() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);

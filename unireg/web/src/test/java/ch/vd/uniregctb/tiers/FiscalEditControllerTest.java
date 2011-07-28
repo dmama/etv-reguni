@@ -1,15 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -23,6 +16,12 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Note: pour simuler le context d'exécution exact d'un controlleur web, il faut définir :
@@ -56,7 +55,6 @@ public class FiscalEditControllerTest extends WebTest {
 	 * <li>provoquer le réaffichage du formulaire avec des messages d'erreur</li>
 	 * </ul>
 	 */
-	@NotTransactional
 	@Test
 	public void testAnnuleForPrincipalAvecForSecondaireOuvert() throws Exception {
 
@@ -114,7 +112,6 @@ public class FiscalEditControllerTest extends WebTest {
 	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal doit réouvrir le for précédent s'il celui-ci est adjacent.
 	 */
 	@Test
-	@NotTransactional
 	public void testAnnuleForPrincipalAvecPrecedentAdjacent() throws Exception {
 
 		class Ids {
@@ -184,7 +181,6 @@ public class FiscalEditControllerTest extends WebTest {
 	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal ne doit pas réouvrir le for précédent s'il celui-ci n'est pas adjacent.
 	 */
 	@Test
-	@NotTransactional
 	public void testAnnuleForPrincipalAvecPrecedentNonAdjacents() throws Exception {
 
 		class Ids {

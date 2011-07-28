@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.fiscal;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -63,7 +62,6 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testTransactionaliteSend() throws Exception {
 
 		// test positif : le message arrive bien
@@ -136,7 +134,6 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 	 * Vérifie qu'aucun événement n'est envoyé dans une transaction marquée comme rollback-only (voir utilisation de la méthode ForFiscalManagerImpl#buildSynchronizeActionsTableSurFermetureDeFor)
 	 */
 	@Test
-	@NotTransactional
 	public void testSendEvenementInRollbackOnlyTransaction() throws Exception {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

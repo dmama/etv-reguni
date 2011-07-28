@@ -6,8 +6,8 @@ import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -79,6 +79,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * [UNIREG-1121] Teste que le mariage d'un contribuable hors-canton ouvre bien un for principal hors-canton sur le ménage commun
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMarieHorsCanton() throws Exception {
 
 		class Ids {
@@ -133,6 +134,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * [UNIREG-1121] Teste que la séparation/divorce d'un couple hors-canton ouvre bien les fors principaux hors-canton sur le contribuables séparés
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSepareHorsCanton() throws Exception {
 
 		class Ids {
@@ -201,6 +203,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation/divorce d'un couple hors-Suisse ouvre bien les fors principaux hors-Suisse sur le contribuables séparés
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSepareHorsSuisse() throws Exception {
 
 		class Ids {
@@ -268,6 +271,7 @@ public class MetiersServiceTest extends BusinessTest {
 	//UNIREG-2771 La fusion doit être empéchée s'il existe au moins un for ou une Di non annule 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFusionMenagePresenceForOuDiNonAnnulee() throws Exception {
 
 		final RegDate dateMariageAlfredo = RegDate.get(2003, 1, 6);
@@ -332,6 +336,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * [UNIREG-1121] Teste que le décès d'un contribuable marié hors-canton ouvre bien un for principal hors-canton sur le conjoint survivant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesHorsCanton() throws Exception {
 
 		class Ids {
@@ -387,7 +392,6 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDecesDansCouple() throws Exception {
 
 		final long noIndividuM = 123546;
@@ -532,6 +536,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que le décès d'un contribuable marié hors-Suisse ouvre bien un for principal hors-Suisse sur le conjoint survivant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesHorsSuisse() throws Exception {
 
 		class Ids {
@@ -590,6 +595,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * [UNIREG-1121] Teste que le veuvage d'un contribuable marié hors-canton ouvre bien un for principal hors-canton sur lui-même
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageHorsCanton() throws Exception {
 
 		class Ids {
@@ -645,6 +651,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseDomicileOuCourrierHorsCanton() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -794,6 +801,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseDomicileOuCourrierHorsSuisseDepuisMemePf() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -912,6 +920,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseDomicileOuCourrierHorsSuisseDepuisPfAnterieure() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1063,6 +1072,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseInconnue() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1198,6 +1208,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * civil mais pas encore au fiscal)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseDomicileSurCommunesFusionneesAuCivilMaisPasAuFiscal() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1305,6 +1316,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * civil et au fiscal)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationAdresseDomicileSurCommunesFusionneesAuCivilEtAuFiscal() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1411,6 +1423,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesAdresseDomicileHorsCanton() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1540,6 +1553,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la clôture d'un ménage par décès pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesAdresseDomicileHorsSuisse() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1669,6 +1683,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * C'est le cas du cas JIRA UNIREG-1623
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageCivilSurCoupleSepareDepuisTellementLongtempsQueLeCoupleEstAbsentDUnireg() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1722,6 +1737,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * C'est un cas dérivé du cas JIRA UNIREG-1623
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageSurSepare() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1780,6 +1796,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * C'est un cas dérivé du cas JIRA UNIREG-1623
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageSurSepareSansFor() throws Exception {
 
 		final long noIndFabrice = 12541L;
@@ -1827,7 +1844,6 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDecesDansCoupleNonAssujetti() throws Exception {
 
 		final long noIndMr = 124578L;
@@ -1927,7 +1943,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Cas UNIREG-2653 le seul décès fiscal d'un habitant toujours vivant dans le civil ne doit pas faire passer la personne physique en non-habitant
 	 */
 	@Test
-	@NotTransactional
 	public void testDecesFiscalHabitantToujoursVivantDansLeCivil() throws Exception {
 
 		final long noInd = 435241L;
@@ -1977,7 +1992,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Cas UNIREG-2653 le décès fiscal d'un habitant également décédé au civil doit faire passer la personne physique en non-habitant
 	 */
 	@Test
-	@NotTransactional
 	public void testDecesFiscalHabitantDecedeDansLeCivil() throws Exception {
 
 		final long noInd = 435241L;
@@ -2028,6 +2042,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDecesCivil() throws Exception {
 
 		final long noIndDecede = 1234524L;
@@ -2116,6 +2131,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant (sauf s'il n'est pas résident sur le canton...)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDecesCivilResidentHorsCanton() throws Exception {
 
 		final long noIndDecede = 1234524L;
@@ -2204,6 +2220,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 * UNIREG-2653 une annulation de décès seulement fiscale ne doit pas repasser la personne physique en habitant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDecesFiscalSeulement() throws Exception {
 
 		final long noIndDecede = 1234524L;
@@ -2273,7 +2290,6 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testVenteImmeubleVeilleMariage() throws Exception {
 
 		final long noIndividuMonsieur = 123456789L;
@@ -2385,7 +2401,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Cas UNIREG-1599
 	 */
 	@Test
-	@NotTransactional
 	public void testAnnulationMariageEtReouvertureDeFors() throws Exception {
 
 		final long noIndividuMonsieur = 123456789L;
@@ -2488,7 +2503,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * couple
 	 */
 	@Test
-	@NotTransactional
 	public void testMariageAvecForsSecondairesIdentiques() throws Exception {
 
 		final class Ids {
@@ -2577,7 +2591,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas la même commune, ils doivent tous deux se retrouver sur le couple
 	 */
 	@Test
-	@NotTransactional
 	public void testMariageAvecForsSecondairesDifferentsParCommune() throws Exception {
 
 		final class Ids {
@@ -2682,7 +2695,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * indépendante)
 	 */
 	@Test
-	@NotTransactional
 	public void testMariageAvecForsSecondairesDifferentsParMotifRattachement() throws Exception {
 
 		final class Ids {
@@ -2788,7 +2800,6 @@ public class MetiersServiceTest extends BusinessTest {
 	 * couple
 	 */
 	@Test
-	@NotTransactional
 	public void testMariageAvecForsSecondairesDifferentsParDateOuverture() throws Exception {
 
 		final class Ids {

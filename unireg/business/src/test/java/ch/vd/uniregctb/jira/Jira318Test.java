@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.jira;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -34,6 +35,7 @@ public class Jira318Test extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateCoupleFrom2NonHabitantKO() {
 
 		RegDate dateOuvFor = RegDate.get(2008, 5, 1);
@@ -78,6 +80,7 @@ public class Jira318Test extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateCoupleFrom2NonHabitantOK() throws MetierServiceException {
 
 		RegDate dateOuvFor = RegDate.get(2008, 5, 1);

@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.lr;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Test case du controlleur spring du meme nom.
@@ -38,6 +38,7 @@ public class ListeRecapEditDelaiControllerTest extends AbstractLrControllerTest 
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 		//
 		//LR 1
@@ -53,6 +54,7 @@ public class ListeRecapEditDelaiControllerTest extends AbstractLrControllerTest 
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitAddDelai() throws Exception {
 
 		{

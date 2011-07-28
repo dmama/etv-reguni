@@ -3,6 +3,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -31,6 +32,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1742] Vérifie que la dernière déclaration qui découle de la vente de l'immeuble n'est pas optionnelle.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleContribuableHorsSuisse() throws Exception {
 
 		final RegDate dateAchat = date(2000, 7, 1);
@@ -82,6 +84,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * périodes d'imposition et plusieurs déclarations (confirmé par Thierry Declercq le 18 décembre 2009)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineAchatsEtVentesMultipleHorsSuisse() throws Exception {
 
 		final DateRangeHelper.Range immeuble1 = new DateRangeHelper.Range(date(2008, 1, 15), date(2008, 3, 30));
@@ -109,6 +112,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsSuisseAvecImmeuble() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
@@ -164,6 +168,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * même année est bien fractionné à la date d'arrivée HS.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsSuisseEtVenteImmeubleDansLAnnee() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
@@ -220,6 +225,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * d'imposition doit commencer à la date d'arrivée et - puisqu'il y a un immeuble - s'étendre jusqu'à la fin de l'année.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsSuisseAchatImmeubleEtDepartHorsSuisseDansLAnnee() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
@@ -268,6 +274,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * y avoir deux périodes d'imposition distinctes : une pour sa présence en Suisse, et une autre pour son immeuble acheté plus tard.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsSuisseEtDepartHorsSuissePuisAchatImmeubleDansLAnnee() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 2, 1);
@@ -314,6 +321,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
 
 		final RegDate dateDepart = date(2007, 6, 30);
@@ -357,6 +365,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecImmeuble() throws Exception {
 
 		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(date(2007, 6, 30));
@@ -399,6 +408,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante() throws Exception {
 
 		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(date(2007, 6, 30));
@@ -443,6 +453,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1360] Vérifie que la période d'imposition s'arrête bien à la date du décès dans le cas d'un contribuable hors-canton qui possèdait un immeuble dans le canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDecesHorsCantonAvecImmeuble() throws Exception {
 
 		final RegDate dateAchat = date(2006, 8, 5);
@@ -475,6 +486,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * principal est fermé sans motif (cas du ctb n°807.110.03).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineHorsForPrincipalFermeSansMotif() throws Exception {
 
 		final RegDate dateVente = date(2009, 3, 24);
@@ -491,6 +503,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1756] Vérifie que le type de DI est vaudtax pour un sourcier qui passe à l'ordinaire.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierPassantOrdinaire() throws Exception
 	{
 		final RegDate dateChangement = date(2008, 9, 1);
@@ -512,6 +525,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1741]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVaudoisDepense() throws Exception {
 
 		final RegDate dateArrivee = date(1990, 4, 13);
@@ -548,6 +562,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1741]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDecesHorsCantonImmeuble() throws Exception {
 
 		final RegDate dateAchat = date(1990, 4, 13);
@@ -586,6 +601,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1742] Vérifie que la dernière déclaration qui découle du décès du contribuable n'est pas optionnelle.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDecesHorsSuisseImmeuble() throws Exception {
 
 		final RegDate dateAchat = date(2000, 7, 1);
@@ -636,6 +652,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1741]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDecesHorsCantonActiviteIndependante() throws Exception {
 
 		final RegDate debutExploitation = date(1990, 4, 13);
@@ -674,6 +691,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1741]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDecesVaudoisOrdinaire() throws Exception {
 
 		final RegDate debutExploitation = date(1990, 4, 13);
@@ -707,6 +725,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierPur() throws Exception {
 
 		final Contribuable ctb = createDepartHorsCantonSourcierPur(date(2008, 9, 25));
@@ -718,6 +737,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
 		final Contribuable ctb = createDepartHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
@@ -748,6 +768,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierMixte137Al2() throws Exception {
 
 		final RegDate dateDepart = date(2008, 9, 25);
@@ -784,6 +805,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierPur() throws Exception {
 
 		final Contribuable ctb = createArriveeHorsCantonSourcierPur(date(2008, 9, 25));
@@ -795,6 +817,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
 		final Contribuable ctb = createArriveeHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
@@ -825,6 +848,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al2() throws Exception {
 
 		final RegDate dateArrivee = date(2008, 9, 25);
@@ -864,6 +888,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleHorsCanton() throws Exception {
 
 		final RegDate dateVente = date(2008, 9, 30);
@@ -895,6 +920,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFinActiviteHorsCanton() throws Exception {
 
 		final RegDate dateFin = date(2008, 9, 30);
@@ -926,6 +952,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDiplomateSuisse() throws Exception {
 
 		final RegDate dateNomination = date(2008, 9, 30);
@@ -958,6 +985,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDiplomateSuisseAvecImmeuble() throws Exception {
 
 		final Contribuable paul = createDiplomateAvecImmeuble(10000052L, date(2000, 1, 1), date(2001, 6, 13));
@@ -992,6 +1020,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-1980] Teste que le type de document pour un indigent qui a reçu des Vaudtax reste Vaudtax.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineIndigent() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -1007,6 +1036,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	 * [UNIREG-820] [UNIREG-1824] Teste l'algorithme de détermination du format (VaudTax ou complète) pour une déclaration ordinaire
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFormatDIOrdinaire() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);

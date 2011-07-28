@@ -6,7 +6,6 @@ import java.util.Map;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -37,7 +36,6 @@ public class CivilEditControllerTest extends WebTest {
 	 * [UNIREG-2233] Vérifie qu'il n'est pas possible de mettre un nom vide sur un non-habitant
 	 */
 	@Test
-	@NotTransactional
 	public void testSubmitPrenomNomVides() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
@@ -84,7 +82,6 @@ public class CivilEditControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOnSubmitWithNom() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -117,7 +114,6 @@ public class CivilEditControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -154,7 +150,6 @@ public class CivilEditControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -186,7 +181,6 @@ public class CivilEditControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -219,7 +213,6 @@ public class CivilEditControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testModifyNonHabitant() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {

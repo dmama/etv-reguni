@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -126,6 +127,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testImprimeNouveauxDossiers() throws Exception {
 
 		final PersonnePhysique jose = addNonHabitant("José", "Papenddrum", date(1972, 3, 4), Sexe.MASCULIN);

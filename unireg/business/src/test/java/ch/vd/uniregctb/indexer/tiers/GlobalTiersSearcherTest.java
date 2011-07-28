@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -100,6 +101,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParNumeroContribuable() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -132,6 +134,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchMenage() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -194,6 +197,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParNumeroAVS() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -252,6 +256,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	// Recherche sur le type de tiers
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParTypeTiers() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -266,6 +271,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNatureJuridique() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -286,6 +292,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParAdresse() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -299,6 +306,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParNpa() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -321,6 +329,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheVideException() throws Exception {
 
 		try {
@@ -334,6 +343,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParAdresseZeroTrouve() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -348,6 +358,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParFors() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -382,6 +393,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParDateNaissance() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -403,6 +415,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * Effectue une recherche complexe basée sur le nom.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheNomContient() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -430,6 +443,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheAutresNoms() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -461,6 +475,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * Effectue une recherche complexe basée sur le nom.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheNomRessemble() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -492,6 +507,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * Teste la recherche sur un numero.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchIndividuParPrenom() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -517,6 +533,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchEntreprise() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -546,6 +563,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheTropDeResultats() throws Exception {
 
 		// Le nombre de resultats est limité dans la recherche
@@ -584,6 +602,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAllIds() throws Exception {
 
 		globalTiersIndexer.overwriteIndex();
@@ -617,6 +636,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * [UNIREG-2592] Vérifie qu'une recherche avec un nom de raison égal à un espace (" ") ne plante pas.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheNomRaisonUnEspace() throws Exception {
 
 		final TiersCriteria criteria = new TiersCriteria();
@@ -628,6 +648,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * [UNIREG-3157] Vérifie que la recherche avec le mode de visualisation limitée fonctionne correctement.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheVisualisationLimitee()  throws Exception {
 
 		class Ids {
@@ -688,6 +709,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheCriteresTropCommuns() throws Exception {
 
 		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {

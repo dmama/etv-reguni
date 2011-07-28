@@ -4,9 +4,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -39,7 +39,6 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testGetErrorForContribuable() throws Exception {
 
 		final long id = 12345678;
@@ -57,7 +56,6 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testExistsForContribuable() throws Exception {
 
 		final long id = 12345678;
@@ -84,7 +82,6 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testUniqueNumeroContribuable() throws Exception {
 
 		final long id = 12345678;
@@ -157,6 +154,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getAllNoCtb() {
 		List<Long> list = dao.getAllNoCtb();
 		Assert.assertEquals(2, list.size());

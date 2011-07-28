@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 
 import ch.vd.uniregctb.common.JobTest;
 
@@ -37,7 +36,6 @@ public class BatchSchedulerTest extends JobTest {
 	}
 
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testJob() throws Exception {
 		LOGGER.debug("Begin testJob method.");
 
@@ -72,7 +70,6 @@ public class BatchSchedulerTest extends JobTest {
 	}
 
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testDoubleStart() throws Exception {
 		LOGGER.debug("Begin testDoubleStart method.");
 
@@ -107,7 +104,6 @@ public class BatchSchedulerTest extends JobTest {
 	}
 
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testStartStopStart() throws Exception {
 
 		LOGGER.debug("Begin testStartStopStart method.");
@@ -154,7 +150,6 @@ public class BatchSchedulerTest extends JobTest {
 
 
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testStartExceptionThrown() throws Exception {
 
 		LOGGER.info("### Test: testStartExceptionThrown");
@@ -178,7 +173,6 @@ public class BatchSchedulerTest extends JobTest {
 	 * Démarre 2 jobs différents, mais en même temps.
 	 */
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testStart2jobs() throws Exception {
 
 		// Job1: Exception
@@ -210,7 +204,6 @@ public class BatchSchedulerTest extends JobTest {
 	}
 
 	@Test(timeout = 10000)
-	@NotTransactional
 	public void testCronJob() throws Exception {
 
 		// Construit une expression cron pour faire démarrer le batch dans trois secondes (= temps d'initialisation maximum estimé entre l'enregistrement d'un job dans Quartz et son démarrage) 
@@ -239,7 +232,6 @@ public class BatchSchedulerTest extends JobTest {
 	 * Vérifie qu'un job qui a reçu une demande d'interruption reste bien 'running' tant qu'il ne s'est pas réellement interrompu.
 	 */
 	@Test
-	@NotTransactional()
 	public void testStartAndInterruptJob() throws Exception {
 
 		HashMap<String, Object> map = new HashMap<String, Object>();

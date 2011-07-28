@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -44,6 +45,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	 * Vérifie qu'un débiteur est bien indexé en fonction du nom du contribuable auquel il est associé.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationDebiteurEtContribuable() throws Exception {
 
 		/* Création d'un contribuable et d'un débiteur lié au contribuable */
@@ -128,6 +130,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationDebiteurEtEntreprise() throws Exception {
 
 		/* Création d'un contribuable et d'un débiteur lié au contribuable */
@@ -243,6 +246,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	 * [UNIREG-1376] Indexation d'un débiteur lié à une autre communauté.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationDebiteurEtAutreCommunaute() throws Exception {
 
 		final long idDpi = 1500040L;
@@ -307,6 +311,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 
 	// [UNIREG-2907] Vérifique la catérorie IS sur un débiteur est bien recherchable
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationDebiteurCategorieIS() throws Exception {
 
 		// Création d'un débiteur avec catégorie impôt source prestation de prévoyance

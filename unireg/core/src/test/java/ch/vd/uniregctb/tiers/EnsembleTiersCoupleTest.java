@@ -1,12 +1,13 @@
 package ch.vd.uniregctb.tiers;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.type.Sexe;
+
+import static org.junit.Assert.assertEquals;
 
 public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
@@ -15,6 +16,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 		super.onSetUp();
 	}
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEstComposeDe2Personnes(){
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
@@ -29,6 +31,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEstComposeDeAlain(){
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
@@ -45,6 +48,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEstComposeDeMylaine(){
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
@@ -59,6 +63,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
 	}
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContientMylaine(){
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
@@ -75,6 +80,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContientAlain(){
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
@@ -90,6 +96,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
 	}
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContientMylaineEtAlain(){
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);

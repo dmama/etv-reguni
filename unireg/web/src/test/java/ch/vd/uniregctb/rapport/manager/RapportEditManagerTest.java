@@ -3,7 +3,6 @@ package ch.vd.uniregctb.rapport.manager;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.validation.ValidationException;
@@ -40,7 +39,6 @@ public class RapportEditManagerTest extends WebTest {
 	 * [UNIREG-1341/UNIREG-2655] Il ne doit pas être possible d'ajouter une représentation conventionnelle avec extension de l'exécution forcée sur un contribuable vaudois
 	 */
 	@Test
-	@NotTransactional
 	public void testAjouterRepresentationConventionnelleSurCtbVaudois() throws Exception {
 
 		final long noIndRepresentant = 1L;
@@ -98,7 +96,6 @@ public class RapportEditManagerTest extends WebTest {
 	 * [UNIREG-1341/UNIREG-2655] Il ne doit pas être possible d'ajouter une représentation conventionnelle avec extension de l'exécution forcée sur un contribuable hors-canton
 	 */
 	@Test
-	@NotTransactional
 	public void testAjouterRepresentationConventionnelleSurCtbHorsCanton() throws Exception {
 
 		final long noIndRepresentant = 1L;
@@ -156,7 +153,6 @@ public class RapportEditManagerTest extends WebTest {
 	 * [UNIREG-1341/UNIREG-2655] Il doit être possible d'ajouter une représentation conventionnelle avec extension de l'exécution forcée sur un contribuable hors-Suisse
 	 */
 	@Test
-	@NotTransactional
 	public void testAjouterRepresentationConventionnelleSurCtbHorsSuisse() throws Exception {
 
 		final long noIndRepresentant = 1L;

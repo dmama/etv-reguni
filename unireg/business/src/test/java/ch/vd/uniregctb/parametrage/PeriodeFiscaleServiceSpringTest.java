@@ -2,6 +2,7 @@ package ch.vd.uniregctb.parametrage;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -31,6 +32,7 @@ public class PeriodeFiscaleServiceSpringTest extends BusinessTest {
 	 * Vérifie que la méthode 'getPeriodeFiscaleByYear' ne déclenche pas l'intercepteur de validation des tiers
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPeriodeFiscaleByYearDoesntFlushSession() throws Exception {
 
 		// Crée la période fiscale 2008 dans sa propre transaction pour initialiser la base de données

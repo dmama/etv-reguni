@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.civil.mariage;
 
 import ch.vd.uniregctb.civil.common.NorentesTest;
-import ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_06_Mariage_FusionMenages_Scenario;
 import ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_11_Mariage_JIRA2771_Scenario;
 
 /**

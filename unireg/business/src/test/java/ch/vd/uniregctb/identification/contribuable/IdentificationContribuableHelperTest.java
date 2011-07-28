@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 
@@ -18,6 +19,7 @@ public class IdentificationContribuableHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testgetPremierMot() throws Exception {
 		String mot = "jean-renée";
 		assertEquals("jean", helper.getPremierMot(mot));

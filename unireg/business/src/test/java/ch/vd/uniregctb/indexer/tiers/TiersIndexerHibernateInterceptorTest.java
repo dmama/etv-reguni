@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -101,6 +102,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnCreate() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -140,6 +142,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnUpdate() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -220,6 +223,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 *  => Résultat, on doit pouvoir chercher le NH mais pas l'Habitant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPartialIndexation() throws Exception {
 
 		final class Numeros {
@@ -275,6 +279,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnModifyFor() throws Exception {
 
 		LOGGER.info("==== testIndexationOnModifyFor START ====");
@@ -423,6 +428,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 * Vérifie que le flag dirty est bien mis lorsqu'un tiers est mis-à-jour dans la base alors que l'indexation on-the-fly est désactivée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDisabledOnTheFlyIndexation() throws Exception {
 
 		// On crée un tiers
@@ -490,6 +496,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 * Vérifie que le flag dirty est bien resetté lorsqu'un tiers dirty est finalement indexé sans erreur.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResetIndexDirtyFlag() throws Exception {
 
 		// Charge un tiers dirty
@@ -545,6 +552,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 * [UNIREG-1988] Vérifie qu'un tiers nouvellement créé n'est pas indexé si la transaction est rollée-back
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexOnRollback() throws Exception {
 
 		// l'indexeur doit être vide

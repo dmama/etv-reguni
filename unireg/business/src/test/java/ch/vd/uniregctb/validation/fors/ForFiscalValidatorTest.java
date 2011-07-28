@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.fors;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -25,6 +26,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCommunePrincipale() throws Exception {
 
 		final MockCommune communesPrincipales[] = { MockCommune.LAbbaye, MockCommune.LeChenit, MockCommune.LeLieu };
@@ -41,6 +43,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateFinValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.Malapalud;
 		{
@@ -66,6 +69,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateFinValiditeCommuneDansFutur() throws Exception {
 		final Commune commune = MockCommune.Mirage;
 		Assert.assertTrue(commune.getDateFinValidite().isAfterOrEqual(RegDate.get()));
@@ -87,6 +91,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDebutValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.ValDeTravers;
 		{
@@ -112,6 +117,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneVaudoiseOuHorsCanton() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;
@@ -138,6 +144,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPaysHS() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;

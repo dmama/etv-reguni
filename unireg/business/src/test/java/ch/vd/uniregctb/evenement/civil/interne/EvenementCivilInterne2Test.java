@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
@@ -83,6 +84,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testUpdateForFiscalPrincipal() {
 
 		/*
@@ -131,6 +133,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testUpdateForFiscalPrincipalModeImpositionInvariant() {
 
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -176,6 +179,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateCommon() throws EvenementCivilException {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

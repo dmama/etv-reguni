@@ -7,6 +7,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -42,6 +43,7 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEnvoiCourrierForSommation() throws Exception {
 		LOGGER.debug("ImpressionListeRecapHelperTest - testDateEnvoiCourrierForSommation");
 	     final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));

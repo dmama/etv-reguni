@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 
@@ -37,6 +38,7 @@ public class PeriodeFiscaleDAOTest extends CoreDAOTest {
 	 * Teste la methode qui recherche les LRs suivant certains criteres
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAllDesc() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();

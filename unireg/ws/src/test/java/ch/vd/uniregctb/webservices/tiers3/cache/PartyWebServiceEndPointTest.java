@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
@@ -50,6 +51,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 	 * [UNIREG-1246] Teste que les opérateurs avec visualisation limitées peuvent accèder à la méthode searchParty.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVisualisationLimiteeSearchTiersRequest() throws Exception {
 
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
@@ -90,6 +92,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 	 * Teste que la méthode getBatch fonctionne même avec des ids nuls.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersRequestWithIdNull() throws Exception {
 
 		serviceSecurite.setUp(new DefaultMockServiceSecurite());

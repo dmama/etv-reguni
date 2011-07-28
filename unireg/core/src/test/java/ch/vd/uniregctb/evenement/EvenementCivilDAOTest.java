@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -54,6 +55,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	 * Teste la methode getAll.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAll() throws Exception {
 
 		List<EvenementCivilExterne> list = dao.getAll();
@@ -65,6 +67,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	 * Teste la methode getEvenementCivilsNonTraites.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEvenementCivilsNonTraites() throws Exception {
 
 		final List<Long> list = dao.getEvenementCivilsNonTraites();
@@ -81,6 +84,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	 * Teste la methode findByNumeroIndividu.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 
 		EvenementCivilExterneCriteria evenementCriteria = new EvenementCivilExterneCriteria();

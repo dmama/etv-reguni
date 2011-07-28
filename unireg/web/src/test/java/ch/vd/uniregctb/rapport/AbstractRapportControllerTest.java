@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractRapportControllerTest extends WebTest {
 

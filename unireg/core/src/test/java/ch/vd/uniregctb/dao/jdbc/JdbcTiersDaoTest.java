@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -26,6 +27,7 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGet() throws Exception {
 
 		final Long id = doInNewTransaction(new TransactionCallback<Long>() {
@@ -47,6 +49,7 @@ public class JdbcTiersDaoTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetList() throws Exception {
 
 		class Ids {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -44,6 +45,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationReconciliationMarieSeul() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement d'annulation de réconciliation d'une personne mariée seule");
@@ -107,6 +109,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationReconciliationCouple() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement d'annulation de réconciliation d'une personne mariée et dont le conjoint est connu");
@@ -184,6 +187,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationMariageCelibataire() {
 		
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'une personne non mariée (cas d'erreur).");

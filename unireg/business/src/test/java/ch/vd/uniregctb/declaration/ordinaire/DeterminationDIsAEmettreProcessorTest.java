@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -47,7 +48,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -95,6 +95,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1742] Les contribuables possédant des déclarations d'impôt ou avec des tâches d'envoi de déclarations d'impôt en instance doivent aussi être retournés.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateListeIdsContribuables() {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -210,6 +211,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateListeIdsContribuablesAvecDeclarations() {
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -264,6 +266,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Les cas ci-dessous reflètent un problème de filtrage au niveau de la requête SQL
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiProblemeRequeteSql() throws Exception {
 
 		// Un tiers sans aucun for
@@ -322,6 +325,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiCasDesDiplomates() throws Exception {
 
 		// Un diplomate suisse en mission hors Suisse ne recoivent pas de DIs
@@ -349,6 +353,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Les cas ci-dessous reflètent une incohérence des données de la base
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiProblemeIncoherenceDonnees() throws Exception {
 
 		loadDatabase("TestDetermineDetailsEnvoiProblemeIncoherenceDonnees.xml");
@@ -400,6 +405,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Teste des cas standards pour les contribuables avec fors principaux
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersAvecForPrincipal() throws Exception {
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -446,6 +452,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Teste des cas standards pour les contribuables avec fors secondaires
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersAvecForsSecondaires() throws Exception {
 
 		// contribuable hors canton ayant une activité indépendante dans le canton
@@ -496,6 +503,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Teste des cas standards pour les contribuables avec fors principaux
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersDepartHorsCantonFinPeriode() throws Exception {
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -521,6 +529,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersAvecForsSansMotifsOuvertureFermeture() throws Exception {
 
 		// Un tiers avec for ouvert pendant l'année mais sans motif
@@ -532,6 +541,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersHorsCantonAyantVenduSonDernierImmeubleEnCoursDAnnee() throws Exception {
 
 		/*
@@ -548,6 +558,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourHorsSuisseAvecImmeuble() throws Exception {
 
 		{
@@ -585,6 +596,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * doit leur envoyer des déclarations.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiRattrapageContribuables() throws Exception {
 
 		final RegDate dateFin = date(2007, 8, 30);
@@ -610,6 +622,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiRattrapagePlusieursPeriodesImpositions() throws Exception {
 
 		final Range activite1 = new Range(date(2007, 1, 18), date(2007, 3, 31));
@@ -676,6 +689,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterPeriodeImposition() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
@@ -722,6 +736,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1417] 
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterPeriodeImpositionTacheDejaTraite() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -755,6 +770,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * Essai de duplication de tâches (qui ne doit pas être possible)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterPeriodeImpositionDuplication() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -798,6 +814,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoi() throws Exception {
 
 		// Contribuable vaudois sans aucun for
@@ -994,6 +1011,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckTacheExistence() {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1060,6 +1078,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDILibres() throws Exception {
 
 		class Ids {
@@ -1136,6 +1155,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDeclarationSansPeriodeCorrespondante() throws Exception {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -1176,6 +1196,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1981] vérifie qu'on ne génère pas une tâche d'annulation de déclaration d'impôt s'il en existe déjà une non-traitée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDeclarationSansPeriodeMaisAvecTacheAnnulationPreexistante() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1207,6 +1228,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheSansPeriodeCorrespondante() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1245,6 +1267,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheSansPeriodeCorrespondanteComplexe() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1288,6 +1311,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1981] Vérifie que les tâches déjà traitées ne sont pas annulées
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheDejaTraitee() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1326,6 +1350,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1984] Vérifie que les tâches qui ne chevauche la période d'imposition théorique sont bien annulées
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheCollisionPeriode() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1364,6 +1389,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1984] Vérifie que les tâches déjà traitées sont ignorées et qu'une nouvelle tâche d'envoi de DI est bien générée
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIgnoreTacheTraitee() throws Exception {
 
 		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
@@ -1402,6 +1428,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 * [UNIREG-1417] Test qu'une déclaration annulée est bien ignorée
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIgnoreDeclarationAnnulee() throws Exception {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -1437,6 +1464,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableIndigentVaudTax() throws Exception {
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);

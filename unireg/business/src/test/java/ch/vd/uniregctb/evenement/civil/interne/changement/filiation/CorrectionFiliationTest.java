@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.filiation;
 
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
@@ -36,7 +35,6 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 	 * Ce test vérifie que l'arrivée d'un événement civil de correction de filiation provoque bien l'invalidation de l'individu correspondant et de ses
 	 * parents dans le cache du service civil.
 	 */
-	@NotTransactional
 	@Test
 	public void testInvalidationDuCache() throws Exception {
 

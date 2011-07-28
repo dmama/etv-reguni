@@ -7,6 +7,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -34,6 +35,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGet() throws Exception {
 
 		class Ids {
@@ -68,6 +70,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForTiers() throws Exception {
 
 		class Ids {
@@ -135,6 +138,7 @@ public class JdbcForFiscalDaoTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForMultipleTiers() throws Exception {
 
 		class Ids {

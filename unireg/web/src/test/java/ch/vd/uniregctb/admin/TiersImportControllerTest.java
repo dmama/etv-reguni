@@ -8,8 +8,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -96,6 +96,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetScriptFilenames() throws Exception {
 
 		List<LoadableFileDescription> files = controller.getScriptFilenames();
@@ -103,6 +104,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testListScripts() throws Exception {
 
 		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
@@ -118,7 +120,6 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 	}
 
 	@Test
-	@NotTransactional
 	public void testImportBuiltinScript() throws Exception {
 
 		new UniregModeHelper().setEnvironnement("Hudson");
@@ -152,7 +153,6 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		});
 	}
 	@Test
-	@NotTransactional
 	public void testImportUploadedScript() throws Exception {
 
 		new UniregModeHelper().setEnvironnement("Hudson");

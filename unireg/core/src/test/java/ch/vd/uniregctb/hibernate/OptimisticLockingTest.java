@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -40,7 +39,6 @@ public class OptimisticLockingTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLocking() {
 
 		// Créée un Habitant dans le base

@@ -1,32 +1,18 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.util.Collections;
-import java.util.List;
-
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -51,6 +37,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	 * [UNIREG-3115] teste que l'envoi de LR ne plante pas lorsque la LR généré a une date de début antérieur à la date de début de // la périodicité
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiLRAnterieurPeriodicite() throws Exception {
 
 
@@ -84,6 +71,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiLRPeriodiciteUnique() throws Exception {
 
 

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -27,6 +28,7 @@ public class ServiceCivilTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividu() throws Exception {
 
 		Individu elie = service.getIndividu(333527L, 2007);
@@ -49,6 +51,7 @@ public class ServiceCivilTest extends BusinessItTest {
 		assertEquals("Sara", sara.getDernierHistoriqueIndividu().getPrenom());
 	}
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNumeroIndividuConjoint(){
 		Individu jeanMarc = service.getIndividu(132720L, 2006);
 		assertNotNull(jeanMarc);
@@ -62,6 +65,7 @@ public class ServiceCivilTest extends BusinessItTest {
 		assertEquals(845875,numeroAmelie.longValue());
 	}
    @Test
+   @Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividuConjoint(){
 		Individu jeanMarc = service.getIndividu(132720L, 2006);
 		assertNotNull(jeanMarc);
@@ -94,6 +98,7 @@ public class ServiceCivilTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesAvecEgidEtEwid() {
 
 		final Individu ind0 = service.getIndividu(1015956, 2010, AttributeIndividu.ADRESSES);

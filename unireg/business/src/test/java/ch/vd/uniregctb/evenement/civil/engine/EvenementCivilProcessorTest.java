@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -92,7 +91,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * @param tiers
 	 */
-	@NotTransactional
 	@Test
 	public void testEvenementsSansType() throws Exception {
 
@@ -115,7 +113,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testNumeroOfsInvalide() throws Exception {
 
@@ -141,7 +138,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * @param tiers
 	 */
-	@NotTransactional
 	@Test
 	public void testEvenementsSansIndividuPrincipal() throws Exception {
 
@@ -164,7 +160,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsNaissance() throws Exception {
 
@@ -190,7 +185,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsArriveeEnErreur() throws Exception {
 
@@ -215,7 +209,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsExceptionDansCheckCompleteness() throws Exception {
 
@@ -239,7 +232,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsErreursDansCheckCompleteness() throws Exception {
 
@@ -263,7 +255,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsWarnDansCheckCompleteness() throws Exception {
 
@@ -306,6 +297,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 // TODO (msi) : supprimer une fois pour toute ce test lorsque les informations de conjoint auront été supprimées des événements civils
 //	@NotTransactional
 //	@Test
+//	@Transactional(rollbackFor = Throwable.class)
 //	public void testEvenementsIndividuConjointDifferentQueDansEvenement() throws Exception {
 //
 //		final long noInd2 = 34567L;
@@ -343,7 +335,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 //		});
 //	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsPasDeTiersPrincipal() throws Exception {
 
@@ -368,7 +359,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsPasDeTiersConjoint() throws Exception {
 
@@ -409,7 +399,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	 *
 	 * @throws Exception
 	 */
-	@NotTransactional
 	@Test
 	public void testEvenementsDepart() throws Exception {
 
@@ -434,7 +423,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testEvenementsChangementSexe() throws Exception {
 
@@ -489,7 +477,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * [UNIREG-1200] Teste que le retraitement de plusieurs événements civil suite au traitement correct d'un événement fonctionne bien
 	 */
-	@NotTransactional
 	@Test
 	public void testRetraitementPlusieursEvenementsCivil() throws Exception {
 
@@ -654,7 +641,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * Cas UNIREG-2785
 	 */
-	@NotTransactional
 	@Test
 	public void testAncienHabitantMarieSansMenageRecevantCorrectionConjoint() throws Exception {
 
@@ -744,7 +730,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	 * personnes physiques correspondantes sont bien préservés.
 	 */
 	@Test
-	@NotTransactional
 	public void testExceptionDansEvenementCivilInterne() throws Exception {
 
 		final long noIndividuMonsieur = 12457319L;

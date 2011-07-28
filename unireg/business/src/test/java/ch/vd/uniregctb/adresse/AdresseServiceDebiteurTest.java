@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -57,6 +58,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesDebiteurAvecAdresseCourrierSurPersonnePhysiqueAvecAdresseCourrier() throws Exception {
 
 		final long noIndividu = 1;
@@ -163,6 +165,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	 * [UNIREG-2896] Vérifie que les adresses du débiteur (même celles par défaut) sont utilisées lorsque le contribuable associé ne possède pas d'adresse.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesDebiteurAvecAdressePoursuiteSurPersonnePhysiqueSansAdresse() throws Exception {
 
 		// Crée un non-habitant sans adresse et un débiteur associé avec adresse de poursuite
@@ -211,6 +214,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	 * Teste qu'un débiteur hérite bien des adresses du contribuable associé.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesDebiteurSansAdresseSurPersonnePhysique() throws Exception {
 
 		final long noIndividu = 1;
@@ -294,6 +298,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	 * Teste qu'il est possible de récupérer les adresses d'un débiteur sans contribuable associé.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesDebiteurSansContribuableAssocie() throws Exception {
 
 		// Crée un habitant et un débiteur associé

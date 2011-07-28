@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.permis;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -29,6 +29,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuInconnuAuFiscal() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -51,7 +52,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurSansForNiPermis() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -82,7 +82,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurPermisBSansFor() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -114,7 +113,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurPermisCSansFor() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -146,7 +144,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurSansPermisAvecFor() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -178,7 +175,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurAvecForEtPermisB() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -211,7 +207,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurAvecForEtPermisC() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -244,7 +239,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurMarieSeulAvecForEtPermisC() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -281,7 +275,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurMarieAvecAutreMineurAvecForEtPermisC() throws Exception {
 
 		final long noIndividuMme = 12334122L;
@@ -322,7 +315,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurMarieAvecAutreMineurPermisCSansFor() throws Exception {
 
 		final long noIndividuMme = 12334122L;
@@ -362,7 +354,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMineurMarieMajeurPermisCSansFor() throws Exception {
 
 		final long noIndividuMme = 12334122L;
@@ -403,7 +394,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMajeurSansForNiPermis() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -434,7 +424,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMajeurPermisBSansFor() throws Exception {
 
 		final long noIndividu = 12334122L;
@@ -466,7 +455,6 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuMajeurPermisCSansFor() throws Exception {
 
 		final long noIndividu = 12334122L;

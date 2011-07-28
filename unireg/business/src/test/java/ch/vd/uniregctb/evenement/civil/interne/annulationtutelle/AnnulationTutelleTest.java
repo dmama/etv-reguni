@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -65,6 +66,7 @@ public class AnnulationTutelleTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandlerAvecTuteur() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de tutelle avec un tuteur.");

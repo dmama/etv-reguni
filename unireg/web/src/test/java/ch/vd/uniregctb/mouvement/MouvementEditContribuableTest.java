@@ -3,8 +3,8 @@ package ch.vd.uniregctb.mouvement;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 public class MouvementEditContribuableTest extends AbstractMouvementControllerTest {
@@ -26,6 +26,7 @@ public class MouvementEditContribuableTest extends AbstractMouvementControllerTe
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		request.setMethod("GET");

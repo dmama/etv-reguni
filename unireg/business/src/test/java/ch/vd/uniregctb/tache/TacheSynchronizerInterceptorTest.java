@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -69,7 +68,6 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 	/**
 	 * [UNIREG-2894] Teste que la synchronisation des tâches après l'arrivée d'un message Cedi se déroule correctement et notamment qu'il n'y a pas de  problème d'authentification nulle.
 	 */
-	@NotTransactional
 	@Test
 	public void testSynchronizeTachesOnEsbMessage() throws Exception {
 

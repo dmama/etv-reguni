@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -35,6 +36,7 @@ public class TiersRapportControllerTest extends WebTest {
 	 * Vérifie les données retournées pour l'édition d'un rapport d'appartenance ménage.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		// Crée un ménage commun
@@ -69,6 +71,7 @@ public class TiersRapportControllerTest extends WebTest {
 	 * Vérifie qu'il est possible de renseigner une date de fin sur un rapport de représentation conventionnelle.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 
 		class Ids {

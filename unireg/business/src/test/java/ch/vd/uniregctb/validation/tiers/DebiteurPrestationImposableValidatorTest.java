@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -24,6 +25,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 	 * Cas où un for intermédiaire est ouvert (date de fin = null).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsDebiteurForIntermediateOuvert() {
 
 		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
@@ -77,6 +79,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTiersAnnule() {
 
 		final DebiteurPrestationImposable tiers = new DebiteurPrestationImposable();

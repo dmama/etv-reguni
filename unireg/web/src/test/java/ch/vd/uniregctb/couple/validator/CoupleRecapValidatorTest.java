@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -64,6 +65,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 	 * [UNIREG-1595] on doit pouvoir marier un non-habitant connu au civil même s'il est séparé là-bas
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMariageNonHabitantSepareAuCivil() throws Exception {
 
 		final long noIndividu = 123542L;
@@ -106,6 +108,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMariageNonHabitantSituationFamilleIncompatible() throws Exception {
 
 		final long noIndividu = 123542L;
@@ -158,6 +161,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValideTiers3Inexistant() throws Exception {
 
 		class Ids {
@@ -204,6 +208,7 @@ public class CoupleRecapValidatorTest extends WebTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValideTiers3NumeroTropGrand() throws Exception {
 
 		class Ids {

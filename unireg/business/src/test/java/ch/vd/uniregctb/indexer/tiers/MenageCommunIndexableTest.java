@@ -1,18 +1,26 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-
-import java.util.Date;
-import java.util.List;
 
 @SuppressWarnings({"JavaDoc"})
 public class MenageCommunIndexableTest extends BusinessTest {
@@ -35,6 +43,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	 * UNIREG-601: Vérifie qu'un ménage-commun avec rapport-entre-tiers annulés est quand même indexé avec les noms des personnes physiques.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMenageCommunRapportsAnnules() throws Exception {
 
 		final RegDate dateN1 = RegDate.get(1956, 1, 21);
@@ -97,6 +106,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	 * UNIREG-1619: Vérifie un ménage-commun avec rapport-entre-tiers annulés et non-annulés
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMenageCommunRapportsAnnulesEtNonAnnules() throws Exception {
 
 		final RegDate dateN1 = RegDate.get(1956, 1, 21);
@@ -158,6 +168,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	 * UNIREG-1619: Vérifie un ménage-commun dont tous les rapports sont annulés (seuls deux sont pris)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMenageCommunTroisRapportsAnnulesDifferentesDatesAnnulation() throws Exception {
 
 		final RegDate dateN1 = RegDate.get(1956, 1, 21);
@@ -240,6 +251,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	 * UNIREG-1619: Vérifie un ménage-commun dont tous les rapports sont annulés (seuls deux sont pris)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMenageCommunTroisRapportsAnnulesMemesDatesAnnulation() throws Exception {
 
 		final RegDate dateN1 = RegDate.get(1956, 1, 21);

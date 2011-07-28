@@ -5,6 +5,7 @@ import java.util.Map;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -51,6 +52,7 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		request.setMethod("GET");
@@ -66,6 +68,7 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 
 		// affiche la page d'édition d'une DI (la session est chargée)
@@ -96,6 +99,7 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 	 * Teste la création et l'impression d'une nouvelle déclaration d'impôt
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitImpressionDI() throws Exception {
 
 		// affiche la page de création d'une nouvelle DI
@@ -142,6 +146,7 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 	 * test de création de Di sans délai
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitImpressionDiSansDelai() throws Exception {
 		request.setMethod("POST");
 		request.addParameter(DeclarationImpotEditController.TARGET_IMPRIMER_DI, "Imprimer");

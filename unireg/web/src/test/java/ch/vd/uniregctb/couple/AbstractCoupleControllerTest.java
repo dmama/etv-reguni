@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.couple;
 
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractCoupleControllerTest extends WebTest {
 

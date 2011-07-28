@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -62,6 +63,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableInvalide() throws Exception {
 
 		final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
@@ -110,6 +112,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableSansFor() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -136,6 +139,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForsSurAutresCommunes() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -176,6 +180,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecAnciensFors() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -224,6 +229,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForSecondaire() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -269,6 +275,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForPrincipal() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -310,6 +317,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForsExotiques() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -363,6 +371,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForsDansLeFutur() throws Exception {
 
 		final RegDate dateFutur = date(2006, 1, 1);
@@ -432,6 +441,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteContribuableAvecForDejaSurNouvelleCommune() throws Exception {
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion
@@ -467,6 +477,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteDebiteurAvecFor() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
@@ -103,6 +104,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerDateExpedition() {
 
 		final RegDate lundi = RegDate.get(2008, 1, 7);
@@ -137,6 +139,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEstIndigent() {
 
 		// Contribuable sans for fiscal
@@ -168,6 +171,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEstAssujettiDansLeCanton() {
 
 		// Contribuable sans for fiscal
@@ -192,6 +196,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInitCachePeriodeFiscaleInexistante() {
 
 		try {
@@ -204,6 +209,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInitCacheModelDocumentInexistant() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -225,6 +231,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreeDIForGestionInconnu() throws Exception {
 
 		class Ids {
@@ -266,6 +273,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDeclarationsInRange() throws Exception {
 
 		class Ids {
@@ -373,6 +381,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPlusieursDiSurMemePeriodeFiscaleEnMemeTemps() throws Exception {
 		class Ids {
 			Long marcId;
@@ -450,6 +459,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 * Vérifie que le batch d'envoi des dis ne traite pas les contribuables qui possède une date d'exclusion non échue.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterTacheCtbExclu() throws Exception {
 
 		class Ids {
@@ -541,6 +551,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIsContribuableDeuxTachesSuiteDecesTraiteTardivement() throws Exception {
 
 		final RegDate dateDeces = date(2008, 7, 31);
@@ -661,6 +672,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIsContribuableDeuxTachesSuiteAnnulationDecesTraiteTardivement() throws Exception {
 
 		final RegDate dateDeces = date(2008, 7, 31);
@@ -754,6 +766,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDelaisRetoursDIsHabitantDecede() throws Exception {
 
 		final RegDate dateDeces = date(2008, 7, 31);
@@ -818,6 +831,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDelaisRetoursDIsHabitantStandard() throws Exception {
 
 		class Ids {
@@ -879,6 +893,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 * [UNIREG-1976] Vérifie les nouvelles règles sur les délais en cas d'envoi en masse
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAjouterDelaisDeRetourInitial() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -1078,6 +1093,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableIndigentDecede() throws Exception {
 
 		final RegDate dateDeces = date(2008, 5, 23);
@@ -1144,6 +1160,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableDecedeFinAnnee() throws Exception {
 
 		final RegDate dateDeces = date(2008, 11, 26);
@@ -1209,6 +1226,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableDecedeMilieuAnnee() throws Exception {
 
 		final RegDate dateDeces = date(2008, 5, 23);
@@ -1274,6 +1292,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableIndigent() throws Exception {
 
 		class Ids {
@@ -1348,6 +1367,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroSequenceApresDiAnnulee() throws Exception {
 
 		final int annee = 2009;

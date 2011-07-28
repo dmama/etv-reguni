@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -27,6 +28,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSave() {
 
 		final Long mvtId = getHibernateTemplate().executeWithNewSession(new HibernateCallback<Long>() {
@@ -52,6 +54,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testProtoBordereaux() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {

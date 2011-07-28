@@ -3,6 +3,7 @@ package ch.vd.uniregctb.validation.rapport;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -23,6 +24,7 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDatesTutelle() throws Exception {
 		final PersonnePhysique pupille = addNonHabitant("Dominique", "Ruette", date(1967, 1, 1), Sexe.MASCULIN);
 		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -45,6 +47,7 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 	 * [SIFISC-719] Il doit être possible d'établir une tutelle sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTutelleSurPersonnePhysique() throws Exception {
 		final PersonnePhysique pupille = addNonHabitant("Dominique", "Ruette", date(1967, 1, 1), Sexe.MASCULIN);
 		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -58,6 +61,7 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 	 * [SIFISC-719] Il ne doit pas être possible d'établir une tutelle sur un ménage commun
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTutelleSurMenage() throws Exception {
 		final MenageCommun pupille = (MenageCommun) tiersDAO.save(new MenageCommun());
 		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -74,6 +78,7 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 	 * [SIFISC-719] Il ne doit pas être possible d'établir une tutelle depuis un ménage commun sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTutelleDepuisMenage() throws Exception {
 		final MenageCommun tuteur = (MenageCommun) tiersDAO.save(new MenageCommun());
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -90,6 +95,7 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 	 * [SIFISC-719] Il DOIT être possible d'établir une tutelle depuis une collectivité administrative (exception pour l'office du tuteur général) sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTutelleDepuisCollectiviteAdministrative() throws Exception {
 		final CollectiviteAdministrative tuteur = (CollectiviteAdministrative) tiersDAO.save(new CollectiviteAdministrative());
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);

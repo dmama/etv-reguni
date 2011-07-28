@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -80,6 +81,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAsyncIndexer() throws Exception {
 
 		final long id = 7823L;
@@ -162,6 +164,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 	 * Test que l'office d'impôt est bien mise-à-jour lors de l'indexation asynchrone
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testUpdateOID() throws Exception {
 
 		class Ids {

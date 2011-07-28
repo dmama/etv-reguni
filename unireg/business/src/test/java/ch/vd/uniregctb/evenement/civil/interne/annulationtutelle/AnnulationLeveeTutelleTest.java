@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -71,6 +72,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationLeveeTutelleAvecTuteur() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec un tuteur.");
@@ -113,6 +115,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationLeveeTutelleAvecErreur() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec des données erronées.");

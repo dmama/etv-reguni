@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
@@ -128,7 +127,6 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		}
 	}
 
-	@NotTransactional
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testAddressRequestUserWithoutAccessRight() throws Exception {
 
@@ -160,7 +158,6 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		}
 	}
 
-	@NotTransactional
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testAddressRequestOnProtectedFolder() throws Exception {
 
@@ -193,7 +190,6 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		}
 	}
 
-	@NotTransactional
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testAddressRequestOnUnknownParty() throws Exception {
 
@@ -225,7 +221,6 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		}
 	}
 
-	@NotTransactional
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testAddressRequestOK() throws Exception {
 

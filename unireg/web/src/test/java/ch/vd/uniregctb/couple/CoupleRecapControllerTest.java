@@ -5,8 +5,8 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -35,6 +35,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void showForm() throws Exception {
 
 		request.setMethod("GET");
@@ -49,6 +50,7 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void onSubmitSansDate() throws Exception {
 
 		PersonnePhysique nhab1 = (PersonnePhysique)tiersDAO.get(numeroPP1);
@@ -79,7 +81,6 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	 * possible de marier deux personnes avant la date d'ouverture du for principal.
 	 */
 	@Test
-	@NotTransactional
 	public void onSubmitAvecDateAvantForFiscal() throws Exception {
 
 		final Date dateMariage = DateHelper.getDate(2007, 2, 12);
@@ -119,7 +120,6 @@ public class CoupleRecapControllerTest extends AbstractCoupleControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-	@NotTransactional
 	public void onSubmitAvecDateApresForFiscal() throws Exception {
 
 		final RegDate dateMariage = RegDate.get(2008, 3, 12);

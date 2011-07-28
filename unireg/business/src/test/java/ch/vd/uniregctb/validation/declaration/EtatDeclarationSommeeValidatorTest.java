@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -21,6 +22,7 @@ public class EtatDeclarationSommeeValidatorTest extends AbstractValidatorTest<Et
 	}
 
 		@Test
+		@Transactional(rollbackFor = Throwable.class)
 	public void testValidateEtatAnnule() {
 
 		final EtatDeclarationSommee etatSomme = new EtatDeclarationSommee();
@@ -41,6 +43,7 @@ public class EtatDeclarationSommeeValidatorTest extends AbstractValidatorTest<Et
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDateObtentionDateEnvoi() {
 
 		final EtatDeclarationSommee etatSomme = new EtatDeclarationSommee();

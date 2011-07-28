@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -90,6 +90,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-1985] Vérifie que les fors fiscaux virtuels sont bien retournés <b>même si</b> on demande l'adresse d'envoi en même temps.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersHistoForsFiscauxVirtuelsEtAdresseEnvoi() throws Exception {
 
 		class Ids {
@@ -167,6 +168,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-2227] Cas du contribuable n°237.056.03
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecTuteur() throws Exception {
 
 		class Ids {
@@ -250,6 +252,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-3203] Cas du contribuable n°497.050.02
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecConseilLegal() throws Exception {
 
 		class Ids {
@@ -334,6 +337,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecCurateur() throws Exception {
 
 		final long noIndividuTiia = 339619;
@@ -489,7 +493,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * n'a pas été créé fonctionne quand-même
 	 */
 	@Test
-	@NotTransactional
 	public void testQuittanceDeclarationSansDateEmission() throws Exception {
 
 		class Ids {
@@ -557,7 +560,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 	// [UNIREG-3179] si un tiers ne valide pas au milieu du lot, tout explose
 	@Test
-	@NotTransactional
 	public void testQuittanceDeclarationSurContribuableQuiNeValidePas() throws Exception {
 
 		class Ids {
@@ -649,7 +651,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testQuittanceDeclarationsGroupeesAvecUnContribuableQuiNeValidePas() throws Exception {
 
 		final int annee = 2010;
@@ -772,6 +773,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-2950] Vérifie que les rapports-entre-tiers d'appartenance ménage annulés ne sont pas pris en compte lors du calcul des fors fiscaux virtuels
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxVirtuelsPersonnePhysiqueAvecAppartenanceMenageAnnulee() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -848,6 +850,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testQuittancementAvecPlusieursDiQuiPartagentLeMemeNumeroDeSequence() throws Exception {
 
 		final class Ids {

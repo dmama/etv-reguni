@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -76,6 +77,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -138,6 +140,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleWithErrors() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -204,6 +207,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	 * Hibernate entre le moment où la date de naissance est mise-à-jour et le moment où le flag index dirty est resetté).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurContribuableDirty() throws Exception {
 
 		final long noIndJean = 1234L;
@@ -289,6 +293,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	 * une erreur si le contribuable possède des déclarations.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleErreurAnneeDeMajoriteDifferente() throws Exception {
 
 		final long noIndHuguette = 1234L;

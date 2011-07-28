@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -59,6 +60,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieSimple() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -74,6 +76,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieDroitEchu() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), RegDate.get(2009,12,31), Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -93,6 +96,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertDroitEchu() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), RegDate.get(2009,12,31), Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -112,6 +116,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertSimple() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -127,6 +132,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecChevauchement() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -143,6 +149,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecChevauchement() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -159,6 +166,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecChevauchementChangementDateDebut() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -176,6 +184,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecChevauchementChangementDateDebut() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -193,6 +202,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecConflitDeNiveau() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -215,6 +225,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecConflitDeNiveau() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -237,6 +248,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecConflitDeType() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -259,6 +271,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecConflitDeType() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
@@ -281,6 +294,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecConflitSurDroitAnnule() throws Exception {
 		final PersonnePhysique dossier = createTiersPourDossier();
 		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);

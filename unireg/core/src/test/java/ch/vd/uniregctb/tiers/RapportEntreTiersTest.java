@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -32,6 +33,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 	 * Teste que la création d'un ensemble tiers-menagecommun-tiers est possible.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateEnsembleTiersMenageCommun() throws Exception {
 
 		final class Numeros {
@@ -158,6 +160,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 	 * Teste que l'ajout d'une tutelle entre deux tiers existant est possible.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateTutelleEntreTiersExistant() throws Exception {
 
 		final class Numeros {
@@ -257,6 +260,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsValid() {
 
 		final RapportEntreTiers rapport = new AppartenanceMenage();

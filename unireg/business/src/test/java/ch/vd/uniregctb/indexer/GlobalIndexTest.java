@@ -17,7 +17,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
@@ -178,7 +178,6 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 	}
 
-	@NotTransactional
 	@Test
 	public void testDocCount() {
 
@@ -202,7 +201,6 @@ public class GlobalIndexTest extends BusinessTest {
 	/**
 	 * @throws Exception
 	 */
-	@NotTransactional
 	@Test
 	public void testSearchStringQuery() throws Exception {
 
@@ -258,7 +256,6 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 	}
 
-	@NotTransactional
 	@Test
 	public void testSearchProgrammaticQuery() throws IndexerException {
 
@@ -340,7 +337,6 @@ public class GlobalIndexTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testDeleteDuplicateIndexeVide() throws Exception {
 
@@ -351,7 +347,6 @@ public class GlobalIndexTest extends BusinessTest {
 		assertEquals(0, globalIndex.deleteDuplicate());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDeleteDuplicateIndexeSansDoublon() throws Exception {
 
@@ -368,7 +363,6 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, LuceneEngine.F_ENTITYID + ":456");
 	}
 
-	@NotTransactional
 	@Test
 	public void testDeleteDuplicateIndexeAvecDoublons() throws Exception {
 
@@ -383,7 +377,6 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
 	}
 
-	@NotTransactional
 	@Test
 	public void testDeleteDuplicateIndexeAvecDocumentEfface() throws Exception {
 
@@ -399,7 +392,6 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
 	}
 
-	@NotTransactional
 	@Test
 	public void testDeleteDuplicateIndexeAvecDoublonsEtDonneesCorrectes() throws Exception {
 
@@ -433,7 +425,6 @@ public class GlobalIndexTest extends BusinessTest {
 	 * @throws IndexerException
 	 * @throws ParseException
 	 */
-	@NotTransactional
 	@Test
 	public void testRemoveDocumentNeCherchePlus() throws IndexerException, ParseException {
 
@@ -467,7 +458,6 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 	}
 
-	@NotTransactional
 	@Test
 	public void testRemoveDocument() throws IndexerException, ParseException {
 
@@ -518,7 +508,6 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testReplaceDocument() throws IndexerException, ParseException {
 
 		// Un hit avec ID=1234
@@ -547,7 +536,6 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, "NOM:andré");
 	}
 
-	@NotTransactional
 	@Test
 	public void testDateNaissance() throws Exception {
 
@@ -585,6 +573,7 @@ public class GlobalIndexTest extends BusinessTest {
 	 * Teste que le global index est thread-safe
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMultithreadAccess() throws Exception {
 
 		Runnable command = new Runnable() {
@@ -645,6 +634,7 @@ public class GlobalIndexTest extends BusinessTest {
 	 * qui correspond à la configuration de plusieurs processes (Unireg + Unireg interface) se partageant le même index.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMultiprocessAccess() throws Exception {
 
 		// crée un index local de manière à pouvoir utiliser les méthodes protégées

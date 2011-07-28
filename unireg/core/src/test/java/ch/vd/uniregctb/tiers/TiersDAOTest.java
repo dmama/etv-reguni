@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -86,6 +87,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getTiersInRangeBounded() throws Exception {
 
 		{
@@ -112,6 +114,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getTiersInRangeUnboundedRight() throws Exception {
 
 		loadDatabase();
@@ -130,6 +133,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getTiersInRangeUnboundedLeft() throws Exception {
 
 		loadDatabase();
@@ -142,6 +146,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getTiersInRangeUnbounded() throws Exception {
 
 		loadDatabase();
@@ -152,6 +157,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void getAllIds() throws Exception {
 
 		{
@@ -172,6 +178,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testExists() throws Exception {
 
 		assertFalse(dao.exists(1234456567L));
@@ -187,6 +194,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroContribuable() throws Exception {
 
 		loadDatabase();
@@ -205,6 +213,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 */
 	@ExpectedException(IllegalArgumentException.class)
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroEntrepriseNOK() throws Exception {
 		insertAndTestNumeroTiers(new Entreprise(), Entreprise.FIRST_ID, Entreprise.LAST_ID);
 	}
@@ -213,6 +222,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroEntrepriseOK() throws Exception {
 
 		Entreprise ent = new Entreprise();
@@ -224,6 +234,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroAutreCommunaute() throws Exception {
 
 		AutreCommunaute ac = new AutreCommunaute();
@@ -235,6 +246,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroCollectiviteAdministrative() throws Exception {
 
 		insertAndTestNumeroTiers(new CollectiviteAdministrative(), Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID);
@@ -244,6 +256,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroDebiteurPrestationImposable() throws Exception {
 
 		DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
@@ -281,6 +294,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * L'idée est de changer une propriété, der ne PAS faire de save(), de committer puis de recharger le tiers La modif doit être persistée
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifyTiersWithoutSave() throws Exception {
 
 		loadDatabase();
@@ -309,6 +323,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste la methode findByNumero.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetContribuableByNumero() throws Exception {
 
 		loadDatabase();
@@ -319,6 +334,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetHabitantsByNumeroIndividu() throws Exception {
 
 		loadDatabase();
@@ -330,6 +346,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNonHabitant() throws Exception {
 
 		loadDatabase();
@@ -342,6 +359,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSaveNonHabitant() throws Exception {
 
 		final long id = 12345678L;
@@ -369,6 +387,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPersonnePhysiqueSansForByNumeroIndividu() throws Exception {
 
 		final long noIndividu = 1234567890L;
@@ -388,6 +407,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPersonnePhysiqueDesactiveeByNumeroIndividu() throws Exception {
 
 		final long noIndividu = 1234567890L;
@@ -407,6 +427,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPersonnePhysiqueReactiveeByNumeroIndividu() throws Exception {
 
 		final long noIndividu = 1234567890L;
@@ -431,6 +452,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Teste la methode find.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 
 		loadDatabase();
@@ -482,6 +504,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertTiers() throws Exception {
 
 		final int NOMBRE_TIERS = 23;
@@ -663,6 +686,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetRapportCouple() throws Exception {
 
 		loadDatabase();
@@ -711,6 +735,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertMenageCommun() throws Exception {
 
 		final class Numeros {
@@ -860,6 +885,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertTutelle() throws Exception {
 
 		final class Tierss {
@@ -949,6 +975,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSituationFamille() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -994,6 +1021,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSituationFamilleMapping() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -1128,6 +1156,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseAutreTiers() throws Exception {
 
 		final class Tierss {
@@ -1187,6 +1216,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatch() throws Exception {
 		loadDatabase();
 
@@ -1233,6 +1263,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchMaximumDepasse() throws Exception {
 		final List<Long> ids = new ArrayList<Long>(600);
 		for (int i = 0; i < 600; ++i) {
@@ -1252,6 +1283,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchAvecRapportEntreTiersEtForsFiscaux() throws Exception {
 
 		final HibernateTemplate hibernateTemplate = dao.getHibernateTemplate();
@@ -1363,6 +1395,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchDebiteursAvecBeaucoupDeSourciers() throws Exception {
 
 		final int size = 1200;
@@ -1417,6 +1450,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * Vérifie que vider la collection d'identifications de personnes (sur PersonnePhysique) supprime bien les instances de IdentificationPersonne correspondantes.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOrphaningIdentificationPersonne() throws Exception {
 
 		// Crée une personne physique avec deux identifications existantes
@@ -1470,6 +1504,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetListContribuablesModifies() throws Exception{
 
 		loadDatabase("tiersCtbModifies.xml");

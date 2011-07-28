@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -64,6 +65,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandlePermisCNationaliteSuisse() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu ayant obtenu la nationalité suisse.");
@@ -84,6 +86,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandlePermisCSansNationaliteSuisse() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu n'ayant pas obtenu la nationalité suisse.");
@@ -104,6 +107,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleAutrePermis() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis autre que C.");

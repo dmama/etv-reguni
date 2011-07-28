@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -65,6 +66,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCompletenessIndividuSeul() throws Exception {
 
 		final long noIndividu = 1;
@@ -147,6 +149,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCompletenessIndividuMarieSeul() throws Exception {
 
 		final long noIndividu = 1;
@@ -223,6 +226,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCompletenessIndividuMarie() throws Exception {
 
 		final long noIndividuPrincipal = 1;
@@ -340,6 +344,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDateDemenagement() throws Exception {
 
 		final long noIndividu = 1;
@@ -429,6 +434,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetArriveeType() throws Exception {
 
 		// La nouvelle commune principale doit être renseignée
@@ -479,6 +485,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Teste qu'une arrivée hors canton génère bien une exception.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateAdressePrincipaleHorsCanton() throws Exception {
 
 		final long noIndividu = 1;
@@ -531,6 +538,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * insuffisance d'information (on a besoin de la fraction précise).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateAdressePrincipaleCommunesComposeesFractions() throws Exception {
 
 		final long noIndividuLAbbaye = 1;
@@ -639,6 +647,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Teste qu'une arrivée sur les fractions de communes du Sentier et du Lieu génère bien une exception pour traitement manuel.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateAdressePrincipaleFractionsSentierEtLieu() throws Exception {
 
 		final long noIndividuLeSentier = 1;
@@ -717,6 +726,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateAdresseSecondaire() throws Exception {
 
 		final RegDate toutDebut = RegDate.get(1980, 2, 2);
@@ -766,6 +776,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateIndividuSeul() throws Exception {
 
 		final long noIndividu = 1;
@@ -829,6 +840,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un individu seul suisse depuis une commune hors-canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleIndividuSeulSuisseDeHorsCanton() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
@@ -912,6 +924,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un individu seul suisse depuis une commune du canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleIndividuSeulSuisseDeCanton() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
@@ -1012,6 +1025,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un individu seul étranger depuis une commune hors-canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleIndividuSeulEtrangerDeHorsCanton() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
@@ -1095,6 +1109,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un individu seul réfugié depuis une commune hors-canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleIndividuSeulRefugieDeHorsCanton() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
@@ -1180,6 +1195,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un individu seul étranger depuis une commune du canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleIndividuSeulEtrangerDeCanton() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
@@ -1283,6 +1299,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un couple depuis une commune hors-canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleCoupleDeHorsCanton() throws Exception {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
@@ -1419,6 +1436,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un couple depuis une commune du canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleCoupleDeCanton() throws Exception {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
@@ -1566,6 +1584,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée en adresse principale dans le canton d'un couple étranger depuis une commune du canton.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveePrincipaleCoupleEtrangerDeCanton() throws Exception {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
@@ -1707,6 +1726,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée d'un individu seul avec une adresse fiscale courrier surchargée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveeIndividuAvecAdresseFiscale() throws Exception {
 		final long noIndividu = 1;
 		final RegDate dateArrivee = RegDate.get(2004, 7, 1);
@@ -1810,6 +1830,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée d'un couple avec une adresse fiscale courrier surchargée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveeCoupleAvecAdresseFiscale() throws Exception {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
@@ -1973,6 +1994,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée hors-canton d'un individu avec recherche du non-habitant correspondant dans unireg.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveeIndividuAvecNonHabitantDeHorsCanton() throws Exception {
 		
 		final RegDate dateArrivee = RegDate.get(2007, 11, 19);
@@ -2103,6 +2125,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * Test de l'arrivée hors-canton d'un individu avec recherche du non-habitant correspondant dans unireg.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveeCoupleNonHabitantsDeHorsCanton() throws Exception {
 		
 		final long noIndividuPrincipal = 1;
@@ -2305,6 +2328,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2145]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveVaudoiseSourcierMixteAvecPermisB() throws Exception {
 
 		final long noInd = 1;
@@ -2369,6 +2393,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2145]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveHCAncienSourcierMixteAvecPermisB() throws Exception {
 
 		final long noInd = 1;
@@ -2430,6 +2455,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModeImpositionArriveeHCEtrangerNonEtabliAvecImmeuble() throws Exception {
 
 		final long noInd = 123456;
@@ -2491,6 +2517,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 	@Ignore(value = "Cas très rare, on y réfléchira plus tard")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Scénario :
 	 * - M. et Mme vivaient heureux à lausanne jusqu'à leur séparation (fiscale seulement)
@@ -2625,6 +2652,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2145]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveHSAncienSourcierMixteAvecPermisB() throws Exception {
 
 		final long noInd = 1;
@@ -2690,6 +2718,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'un déménagement vaudois au 20 décembre ouvre bien un nouveau for fiscal au 20 décembre sur la nouvelle commune (règle de fin d'année non-active)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudois20Decembre() throws Exception {
 
 		final long noInd = 1;
@@ -2748,6 +2777,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'un déménagement vaudois au 21 décembre ouvre bien un nouveau for fiscal au 1er janvier de l'année suivante sur la nouvelle commune (règle de fin d'année activée).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudois21Decembre() throws Exception {
 
 		final long noInd = 1;
@@ -2806,6 +2836,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'une arrivée de hors-Canton au 21 décembre ouvre bien un nouveau for fiscal au 21 décembre sur la nouvelle commune (pas de règle de fin d'année)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDeHorsCanton21Decembre() throws Exception {
 
 		final long noInd = 1;
@@ -2864,6 +2895,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-3073] Vérifie que l'arrivée d'un individu provoque bien la recherche d'un éventuel non-habitant, et que si ce dernier ne possède pas de date de naissance, l'événement part en erreur.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleArriveeNonHabitantSansDateNaissance() throws Exception {
 
 		setWantIndexation(true);

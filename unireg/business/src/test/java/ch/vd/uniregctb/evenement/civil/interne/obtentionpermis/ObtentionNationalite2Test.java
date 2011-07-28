@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -80,6 +80,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	 * @param tiers
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionNationaliteHandlerSourcierCelibataire() throws Exception {
 
 		setupServiceCivilAndLoadDb();
@@ -118,6 +119,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	 * @param tiers
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionNationaliteHandlerSourcierCelibataireMaisNationaliteNonSuisse() throws Exception {
 
 		setupServiceCivilAndLoadDb();
@@ -156,6 +158,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	 * @param tiers
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionNationaliteHandlerSourcierMarieSeul() throws Exception {
 
 		setupServiceCivilAndLoadDb();
@@ -226,6 +229,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	 * @param tiers
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionNationaliteHandlerSourcierMarieADeux() throws Exception {
 
 		setupServiceCivilAndLoadDb();
@@ -307,7 +311,6 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testObtentionNationaliteSuisseSurAncienHabitant() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 4, 19);
@@ -370,7 +373,6 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testObtentionNationaliteNonSuisseSurAncienHabitant() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 4, 19);

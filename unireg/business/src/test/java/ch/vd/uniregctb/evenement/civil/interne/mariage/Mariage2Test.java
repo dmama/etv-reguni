@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -67,6 +68,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMariageNonHabitantConnuAuCivilSepare() throws Exception {
 
 		final long noIndMonsieur = 1234566L;
@@ -144,6 +146,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUnionSeulOrdinaire() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -226,6 +229,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUnionHeteroOrdinaire() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -329,6 +333,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUnionHomoOrdinaire() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);

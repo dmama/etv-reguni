@@ -3,6 +3,7 @@ package ch.vd.uniregctb.validation.rapport;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
@@ -26,6 +27,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 	 * [SIFISC-719] Il doit être possible d'établir une conseil légal sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateConseilLegalSurPersonnePhysique() throws Exception {
 		final PersonnePhysique pupille = addNonHabitant("Dominique", "Ruette", date(1967, 1, 1), Sexe.MASCULIN);
 		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -39,6 +41,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 	 * [SIFISC-719] Il ne doit pas être possible d'établir une conseil légal sur un ménage commun
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateConseilLegalSurMenage() throws Exception {
 		final MenageCommun pupille = (MenageCommun) tiersDAO.save(new MenageCommun());
 		final PersonnePhysique tuteur = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -55,6 +58,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 	 * [SIFISC-719] Il ne doit pas être possible d'établir un conseil légal depuis un ménage commun sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateConseilLegalDepuisMenage() throws Exception {
 		final MenageCommun tuteur = (MenageCommun) tiersDAO.save(new MenageCommun());
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
@@ -71,6 +75,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 	 * [SIFISC-719] Il ne doit pas être possible d'établir un conseil légal depuis une collectivité administrative sur une personne physique
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateConseilLegalDepuisCollectiviteAdministrative() throws Exception {
 		final CollectiviteAdministrative tuteur = (CollectiviteAdministrative) tiersDAO.save(new CollectiviteAdministrative());
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -30,6 +31,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForAnnule() {
 
 		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
@@ -54,6 +56,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForDiplomateSuisse() {
 
 		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
@@ -106,6 +109,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDateDebut() {
 
 		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
@@ -141,6 +145,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	 * Voir spéc. "enregistrer un nouveau tiers" 3.1.9.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateModeImposition() {
 
 		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();

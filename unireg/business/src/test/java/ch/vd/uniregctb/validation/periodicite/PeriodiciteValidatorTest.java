@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.periodicite;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.PeriodeDecompte;
@@ -17,6 +18,7 @@ public class PeriodiciteValidatorTest extends AbstractValidatorTest<Periodicite>
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidatePeriodiciteAnnulee() {
 
 		final Periodicite periodicite = new Periodicite();

@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -35,6 +36,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitIdArchivageDocument");
 		String idArchivageAttendu = "200802 Sommation DI        0101123020000";
@@ -53,6 +55,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocument");
 		String idArchivageAttendu = "200802 Sommation DI         200701011230";
@@ -71,6 +74,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocumentPourOnLine() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocumentPourOnLine");
 		String idArchivageAttendu = "200802 Sommation DI         20070101123020000";

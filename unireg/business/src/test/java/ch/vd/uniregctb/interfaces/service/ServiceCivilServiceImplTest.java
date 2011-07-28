@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -40,6 +41,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifAucunEtatCivil() {
 
 		// Aucun état civil
@@ -63,6 +65,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifUnSeulEtatCivil() {
 
 		final long noIndividu = 1;
@@ -95,6 +98,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifListeEtatsCivils() {
 
 		final long noIndividu = 1;
@@ -147,6 +151,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifAdresseDebutNulle() {
 
 		final long noIndividu = 1;
@@ -182,6 +187,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifAucunPermis() {
 
 		final long noIndividu = 1;
@@ -202,6 +208,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifUnSeulPermisOuvert() {
 
 		final long noIndividu = 1;
@@ -234,6 +241,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifUnSeulPermisFerme() {
 
 		final long noIndividu = 1;
@@ -266,6 +274,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifListDesordonnees() {
 
 		final long noIndividu = 1;
@@ -315,6 +324,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifAdresseDebutNulle() {
 
 		final long noIndividu = 1;
@@ -352,6 +362,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	 * Vérifie que getAdresses détecte bien des incohérences de données lorsque le mode stricte est activé.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesStrict() {
 
 		final long noIndividu = 1;
@@ -379,6 +390,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	 * Vérifie que getAdresses ignore bien des incohérences de données lorsque le mode stricte est désactivé.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesNonStrict() throws Exception {
 
 		final long noIndividu = 1;
@@ -408,6 +420,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesToutesCommunes() throws Exception {
 
 		final long noIndividu = 1L;
@@ -474,6 +487,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesCommunesVaudoises() throws Exception {
 
 		final long noIndividu = 1L;
@@ -533,6 +547,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesAvecTrous() throws Exception {
 
 		final long noIndividu = 1L;

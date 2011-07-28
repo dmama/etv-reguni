@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.securite.model.impl.ProfilOperateurImpl;
@@ -24,6 +25,7 @@ public class PrintPCLServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void printLocalStream() throws Exception {
 		File file = ResourceUtils.getFile(PCL_SAMPLE_FILE);
 		InputStream inputStream = new FileInputStream(file.getAbsolutePath());

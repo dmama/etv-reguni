@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.rapport;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -27,6 +28,7 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateRapportAnnule() {
 
 		final RapportEntreTiers rapport = new RapportEntreTiers() {
@@ -60,6 +62,7 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 	 * [SIFISC-719] Vérifie que l'infrastructure de validation des rapports-entre-tiers est bien en place.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInfrastructureValidationRapports() throws Exception {
 
 		final long idMenage = 10851795;

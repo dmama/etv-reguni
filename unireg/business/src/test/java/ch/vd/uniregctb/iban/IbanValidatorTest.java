@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.iban;
 
 import junit.framework.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 
@@ -18,6 +18,7 @@ public class IbanValidatorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidate() throws Exception {
 
 		// ceux-ci sont valides
@@ -92,6 +93,7 @@ public class IbanValidatorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testExtractionClearing() {
 
 		final String clearingInvalide = ibanValidator.getClearing("?");
@@ -105,6 +107,7 @@ public class IbanValidatorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	@Ignore(value = "On a décidé de transformer les minuscules en majuscules avant la validation")
 	public void testValidateAvecMinuscule() throws Exception {
 

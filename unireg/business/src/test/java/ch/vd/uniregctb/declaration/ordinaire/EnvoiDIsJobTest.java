@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobTest;
@@ -36,6 +37,7 @@ public class EnvoiDIsJobTest extends JobTest {
 	 * Teste que le job d'envoi des DIs en masse fonctionne sans erreur
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIsEnMasse() throws Exception {
 
 		final Map<String, Object> params = new HashMap<String, Object>();

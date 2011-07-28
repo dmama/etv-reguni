@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -30,6 +31,7 @@ public class EditiqueListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	// FIXME(FDE) : Ca teste rien!
 	public void testGetCopieConformeLR() throws Exception {
 		LOGGER.debug("EditiqueListeRecapServiceTest - testEditiqueListeRecapService");

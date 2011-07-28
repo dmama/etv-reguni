@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -32,7 +32,6 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLogAuditLine() throws Exception {
 
 		setAuthentication("UnitTest");
@@ -51,6 +50,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLogAuditLineInNewTx() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -93,6 +93,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLogAuditLineIdCriterion() throws Exception {
 
 		final int ALL_LINES = 12345; // big enough
@@ -145,6 +146,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLogAuditLineCountLimit() throws Exception {
 
 		final int ALL_IDS = 0;
@@ -207,6 +209,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLogEventWhenThrowException() throws Exception {
 
 		AuditLineDAOTestService service = getBean(AuditLineDAOTestService.class, "auditLineDAOTestService");

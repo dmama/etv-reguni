@@ -5,6 +5,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
@@ -43,6 +44,7 @@ public class ProduireRolesResultsTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRegrouppementCommunes() throws Exception {
 
 		// ctb a un immeuble à Renens jusqu'au 1 juin

@@ -10,6 +10,7 @@ import org.hibernate.impl.AbstractSessionImpl;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -76,6 +77,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateEmptyDb() {
 		assertEquals(firstId + 1, nextId().longValue());
 		assertEquals(firstId + 2, nextId().longValue());
@@ -85,6 +87,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGeneratePartialFilledDb() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5);
 
@@ -96,6 +99,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigration1() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5, firstId + 20);
 		addErrorIds(firstId + 7, firstId + 9);
@@ -111,6 +115,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * [UNIREG-726] vérifie que les ids des ctbs non-migrés ne puisse pas être utilisés pour de nouveaux ctbs
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigration2() throws Exception {
 		addIds(firstId + 4, firstId + 5, firstId + 6, firstId + 7, firstId + 8, firstId + 10, firstId + 12);
 		addErrorIds(firstId + 1, firstId + 2, firstId + 3, firstId + 9);
@@ -123,6 +128,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecUniquementErreursMigration() throws Exception {
 		addErrorIds(firstId + 4, firstId + 5, firstId + 7);
 
@@ -137,6 +143,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Cas particulier où l'id d'un ctb non-migré est <b>plus grand</b> que le plus grand id des ctb migrés.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigrationCasParticulier() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5);
 		addErrorIds(firstId + 7, firstId + 9);

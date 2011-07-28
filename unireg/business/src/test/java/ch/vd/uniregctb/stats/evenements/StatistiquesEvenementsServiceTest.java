@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.stats.evenements;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-
 import org.hibernate.dialect.Oracle10gDialect;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BusinessTest;
 
 public class StatistiquesEvenementsServiceTest extends BusinessTest {
 
@@ -20,6 +21,7 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Ce test est surtout là pour vérifier que les requêtes SQL présentes dans le service
 	 * (et qui sont écrites en dur, donc dépendantes du schéma de base de données qui peut
@@ -33,6 +35,7 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Ce test est surtout là pour vérifier que les requêtes SQL présentes dans le service
 	 * (et qui sont écrites en dur, donc dépendantes du schéma de base de données qui peut

@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.hibernate;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.List;
-
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -17,15 +12,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
+
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test qui met en évidence le comportement étrange d'Hibernate qui créé des proxy sous-classant 'Tiers' à la place des classes concrètes
@@ -133,7 +131,6 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testSaveReload() {
 
 		Session session = sessionFactory.openSession();

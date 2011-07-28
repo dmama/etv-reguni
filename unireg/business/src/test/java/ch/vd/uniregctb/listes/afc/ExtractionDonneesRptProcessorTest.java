@@ -3,6 +3,7 @@ package ch.vd.uniregctb.listes.afc;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -37,6 +38,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -209,6 +211,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 	}
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -271,6 +274,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -449,6 +453,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourceContribuableSourcierPur() throws Exception {
 		final long noInd = 6341423L;
 
@@ -501,6 +506,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuNonAssujettiDuTout() throws Exception {
 
 		final long noInd = 6341423L;
@@ -536,6 +542,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneNonAssujettiDuTout() throws Exception {
 
 		final long noInd = 6341423L;
@@ -571,6 +578,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuNonAssujettiFinAnnee() throws Exception {
 
 		final long noInd = 6341423L;
@@ -619,6 +627,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneNonAssujettiFinAnnee() throws Exception {
 
 		final long noInd = 6341423L;
@@ -654,6 +663,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableSourcierPur() throws Exception {
 
 		final long noInd = 6341423L;
@@ -686,6 +696,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableSourcierPur() throws Exception {
 
 		final long noInd = 6341423L;
@@ -718,6 +729,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsCanton() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -764,6 +776,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsCanton() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -801,6 +814,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -847,6 +861,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -880,6 +895,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsSuisse() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -926,6 +942,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsSuisse() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -973,6 +990,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCouple() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1045,6 +1063,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCouple() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1118,6 +1137,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleDivorceDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1221,6 +1241,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleDivorceDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1325,6 +1346,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleVeuvageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1420,6 +1442,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleVeuvageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1503,6 +1526,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleMariageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1592,6 +1616,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleMariageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1682,6 +1707,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuFractionCommune() throws Exception {
 
 		final long noInd = 6341423L;
@@ -1721,6 +1747,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneFractionCommune() throws Exception {
 
 		final long noInd = 6341423L;
@@ -1760,6 +1787,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1812,6 +1840,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1864,6 +1893,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1917,6 +1947,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1951,6 +1982,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2023,6 +2055,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2057,6 +2090,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2128,6 +2162,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2161,6 +2196,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2214,6 +2250,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2266,6 +2303,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2299,6 +2337,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 

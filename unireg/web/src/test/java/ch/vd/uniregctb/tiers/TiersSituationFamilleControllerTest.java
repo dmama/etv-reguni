@@ -3,8 +3,8 @@ package ch.vd.uniregctb.tiers;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebTest;
@@ -41,6 +41,7 @@ public class TiersSituationFamilleControllerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -56,6 +57,7 @@ public class TiersSituationFamilleControllerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);

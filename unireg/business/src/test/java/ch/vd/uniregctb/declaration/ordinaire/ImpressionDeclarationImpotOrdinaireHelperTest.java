@@ -16,6 +16,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -42,7 +43,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -77,6 +77,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitExpediteur() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur");
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -99,6 +100,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	//UNIREG-2541 Adresse de retour pour les DI hors canton 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIHorsCanton() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
 
@@ -139,6 +141,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	//UNIREG-3059 Adresse de retour pour les DI sur deux periode fiscales différentes avec chacune un for differents
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDISur3Periodes() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
@@ -264,6 +267,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 	//UNIREG-3059 Adresse de retour pour les DI sur deux periode fiscales différentes avec chacune un for differents
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDI2008() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
@@ -349,6 +353,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 * [UNIREG-1257] l'office d'impôt expéditeur doit être celui du for fiscal valide durant la période couverte par la déclaration.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitAncienneCommune() throws Exception {
 
 		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
@@ -450,6 +455,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 * [UNIREG-1957] vérifie que la case postale ext bien renseignée dans le cas d'une déclaraiton dépense.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIDepense() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -482,6 +488,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 * [UNIREG-1741] vérifie que l'adresse de retour d'une DI pour un contribuable décédé est bien CEDI - 22
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIDecede() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -515,6 +522,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitDestinataire() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitDestinataire");
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -550,6 +558,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRempliQuelquesMachins() throws Exception {
 		loadDatabase("ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
@@ -586,6 +595,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitAnnexe320_Annexe_330() throws Exception {
 		loadDatabase("ImpressionDeclarationAnnexe_320_330.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -48,6 +49,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUtilisateurSansDroit() throws Exception {
 
 		pushSecurityProvider(new MockSecurityProvider());
@@ -73,6 +75,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurDossierProtege() throws Exception {
 
 		final Role[] roles = {Role.VISU_ALL};
@@ -103,6 +106,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurTiersInconnu() throws Exception {
 
 		final Role[] roles = {Role.VISU_ALL};
@@ -132,6 +136,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleRequeteOK() throws Exception {
 
 		final Role[] roles = {Role.VISU_ALL};

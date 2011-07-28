@@ -9,8 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;

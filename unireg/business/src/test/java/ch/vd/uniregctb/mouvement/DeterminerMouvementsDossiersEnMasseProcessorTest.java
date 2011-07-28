@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -75,6 +76,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSansFor() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -93,6 +95,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSansChangementDeFor() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -112,6 +115,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementSansChangementOID() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -133,6 +137,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVieuxDepartTousMouvements() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -155,6 +160,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVieuxDepartArchivesSeulement() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -177,6 +183,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeAnneeDerniere() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -197,6 +204,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartAnneeDerniere() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -217,6 +225,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementAnneeDerniereTousMouvements() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -240,6 +249,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementAnneeDerniereSeulementArchives() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -315,6 +325,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeEtDemenagementAnneeDerniere() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -342,6 +353,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	 * C'est le cas décrit dans le cas JIRA UNIREG-2434
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementIlYADeuxAnsPuisEncoreAnneeDerniere() throws Exception {
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
@@ -371,6 +383,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	 * C'est le cas décrit dans le cas JIRA UNIREG-2555
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationPuisDemenagementAnneeDerniere() throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
@@ -400,6 +413,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	 * C'est le cas décrit dans le cas jira UNIREG-2854
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHorsCantonAchatImmeubleAnneeDerniere() throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
@@ -437,6 +451,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierPur() throws Exception {
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
@@ -464,6 +479,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMixteDirectementOuvertHS() throws Exception {
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
@@ -488,6 +504,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPassageDeSourceAuRoleAnneeDerniere() throws Exception {
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();

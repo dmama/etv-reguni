@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -85,6 +85,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesNonHabitantAvecDomicileSeulement() throws Exception {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
@@ -117,6 +118,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-2895] Vérifie que le service ne retourne pas d'adresse valide pour un non-habitant avec une seule et unique adresse annulée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesNonHabitantAvecAdressesAnnulees() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -160,6 +162,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoNonHabitantAvecDomicileSeulement() throws Exception {
 
 		final RegDate dateDebut1 = date(2003, 1, 3);
@@ -209,6 +212,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoSansTiers() throws Exception {
 		assertNull(adresseService.getAdressesFiscales(null, date(2000, 1, 1), false));
 		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseFiscale.COURRIER, date(2000, 1, 1), false));
@@ -218,6 +222,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoSansAdresseFiscale() throws Exception {
 
 		final long noIndividu = 1;
@@ -291,6 +296,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesSansAdresseCivile() throws Exception {
 
 		/*
@@ -433,6 +439,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesAvecAdressesAnnulees() throws Exception {
 
 		final long numeroIndividu = 676660L;
@@ -508,6 +515,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesSansAdresseCivile2() throws Exception {
 
 		/*
@@ -627,6 +635,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCasGeneral() throws Exception {
 
 		final long noIndividu = 1;
@@ -785,6 +794,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscales_JIRA_2856() throws Exception {
 		final long noIndividu = 2;
 
@@ -857,6 +867,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoSurchargeCivil() throws Exception {
 		final long noIndividu = 2;
 
@@ -961,6 +972,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoSurchargeAutreTiers() throws Exception {
 		final long noIndividu = 1;
 		final long noAutreIndividu = 2;
@@ -1076,6 +1088,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoSurchargeAutreTiersAnnule() throws Exception {
 		final long noIndividu = 1;
 		final long noAutreIndividu = 2;
@@ -1150,6 +1163,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCasParticulier1() throws Exception {
 		final long noIndividu = 2;
 
@@ -1276,6 +1290,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCasParticulier2() throws Exception {
 		final long noIndividu = 2;
 
@@ -1371,6 +1386,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCasParticulier3() throws Exception {
 		final long noIndividu = 2;
 
@@ -1475,6 +1491,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoDonneesIncoherentesPlusieursPrincipales() throws Exception {
 		final long noIndividu = 2;
 
@@ -1553,6 +1570,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoDonneesIncoherentesDatesDebutEtFinInversees() throws Exception {
 		final long noIndividu = 2;
 
@@ -1630,6 +1648,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesAvecAdresseAnnulee() throws Exception {
 		final long noIndividu = 2;
 
@@ -1776,6 +1795,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Cas particulier d'un ménage composé de deux habitants avec adresses civiles et dont le principal possède une adresse fiscale surchargée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoMenageCommun() throws Exception {
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
@@ -1836,6 +1856,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Cas particulier du ménage composé de non-habitants (donc sans adresses civiles) et avec un principal qui possède une adresse courrier définie au niveau fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoMenageCommunNonHabitants() throws Exception {
 
 		// Crée un ménage composé de deux non-habitants et un principal avec une adresse fiscale courrier
@@ -1955,6 +1976,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoTutelle() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
@@ -2067,6 +2089,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoAdresseTiersEtTutelle() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
@@ -2167,6 +2190,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCoupleTutellePrincipal() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
@@ -2333,6 +2357,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCoupleConseilLegalPrincipal() throws Exception {
 
 		final long noPrincipal = 2;
@@ -2455,6 +2480,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCouplePrincipalDecedeEtConjointSousCuratelle() throws Exception {
 
 		final long noPrincipal = 2;
@@ -2620,6 +2646,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCoupleTutelleConjoint() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
@@ -2802,6 +2829,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoCoupleTutellePrincipalEtConjoint() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
@@ -2961,6 +2989,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Cas d'une adresse "autre tiers" pointant du tuteur vers la pupille et générant ainsi une récursion infinie.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesDetectionRecursionInfinie() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
@@ -3062,6 +3091,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-3154] Cas d'une adresse "autre tiers" pointant du tuteur vers la pupille et générant ainsi une récursion infinie <b>mais</b> annulée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesDetectionRecursionInfinieAdresseAnnulee() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
@@ -3158,6 +3188,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoAvecAdresseCivile() throws Exception {
 
 		final long noIndividu = 2;
@@ -3215,6 +3246,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 	//Ne doit renvoyer que les adresses de sources  fiscales(stockées en base)
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiers() throws Exception {
 
 		final long noIndividu = 2;
@@ -3303,6 +3335,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoDefaultAdressesPrincipalCivil() throws Exception {
 
 		final long noIndividu = 1;
@@ -3426,6 +3459,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoDefaultAdressesCourrierCivil() throws Exception {
 
 		final long noIndividu = 1;
@@ -3522,6 +3556,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoEntrepriseSansAdresseFiscale() throws Exception {
 
 		final long noEntreprise = 1;
@@ -3575,6 +3610,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetSalutations() {
 
 		/* (création d'un adresse service à la main, pour pouver appeler une méthode protégée sans se heurter au proxy spring.) */
@@ -3682,6 +3718,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Test du cas JIRA UNIREG-461
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseSurNonHabitant() throws Exception {
 
 		// Données d'entrées
@@ -3751,6 +3788,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseSansAdresseExistante() throws Exception {
 
 		// Données d'entrées
@@ -3777,6 +3815,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseAvecAdresseFiscaleExistante() throws Exception {
 
 		// Données d'entrées
@@ -3811,6 +3850,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseAvecAdresseCourrierExistante() throws Exception {
 
 		final long noIndividu = 1;
@@ -3855,6 +3895,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAdresseAvecAdressesFiscaleEtCourrierExistantes() throws Exception {
 
 		final long noIndividu = 1;
@@ -3910,6 +3951,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseSansAdressePrecedenteExistante() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -3949,6 +3991,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistante() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -3998,6 +4041,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1580] Cas du contribuable n°107.147.00
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisAvecDateFinNulle() throws Exception {
 
 		loadDatabase("classpath:ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
@@ -4026,6 +4070,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisNonAccolee() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -4076,6 +4121,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseCourrierPrecedenteExistante() throws Exception {
 
 		final long noIndividu = 1;
@@ -4134,6 +4180,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdressesFiscaleEtCourrierExistantes() throws Exception {
 
 		final long noIndividu = 1;
@@ -4202,6 +4249,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRapportsAnnules() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4289,6 +4337,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun avec représentant est bien celle du représentant.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentant() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4393,6 +4442,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le composant principal possède un représentant n'est *pas* celle du représentant de ce dernier.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurPrincipal() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4484,6 +4534,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le conjoint possède un représentant reste bien celle du ménage (le représentant du conjoint est ignoré).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurConjoint() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4577,6 +4628,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * représentant du principal est ignoré).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurMenageEtSurPrincipal() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4688,6 +4740,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * son représentant).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurConjointEtPrincipalSousTutelle() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4799,6 +4852,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont les deux membres sont avec un conseiller légal est bien celle du conseiller.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecConseillerLegal() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -4906,6 +4960,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Vérifie que si le membre principal d'un couple passe sous conseil légal, c'est l'adresse du secondaire qui devient déterminante
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecConseillerLegalSurPrincipalSeul() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5012,6 +5067,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dans le cas où un des membres (ou les deux) est sous curatelle.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecCurateurs() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5194,6 +5250,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dans le cas où un des membres (ou les deux) est sous tutelle.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecTuteurs() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5376,6 +5433,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-2676] Vérifie que l'adresse courrier d'un ménage-commun dans le cas où le principal est sous-tutelle et le conjoint hors-Suisse est bien celle du tuteur du principal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecPrincipalSousTutelleEtConjointHorsSuisse() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5527,6 +5585,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-2644] Vérifie que l'adresse courrier d'un ménage-commun dans le cas où le principal est sous-tutelle et son conjoint décédé est bien celle du tuteur du principal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvecPrincipalSousTutelleEtConjointDecede() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5662,6 +5721,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [SIFISC-1292] Vérifie que l'adresse courrier d'un ménage-commun séparé dans le cas où le principal est sous-tutelle est bien celle du conjoint (pour autant qu'il ne soit pas décédé).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunSepareAvecPrincipalSousTutelle() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5811,6 +5871,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [SIFISC-1516] Vérifie que l'adresse courrier d'un ménage-commun avant sa création (oui, c'est possible) dans le cas où le principal est sous-tutelle est bien celle du conjoint.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunAvantMariageAvecPrincipalSousTutelle() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -5952,6 +6013,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableCelibataire() throws Exception {
 
 		final long noTiers = 44018108;
@@ -6015,6 +6077,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableCouple() throws Exception {
 
 		final long noTiersPrincipal = 77619511;
@@ -6123,6 +6186,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableSousCuratelle() throws Exception {
 
 		final long noTiers = 89016804;
@@ -6232,6 +6296,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableSousTutelleSansAutoriteTutelaire() throws Exception {
 
 		final long noTiers = 60510843;
@@ -6332,6 +6397,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableSousTutelleAvecAutoriteTutelaire() throws Exception {
 
 		final long noTiers = 60510843;
@@ -6450,6 +6516,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableHSAvecRepresentantConventionel() throws Exception {
 
 		final long noTiers = 10536395;
@@ -6556,6 +6623,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableVDAvecRepresentantConventionel() throws Exception {
 
 		final long noTiers = 10033975;
@@ -6644,6 +6712,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableAvecAdresseSpecifiquePoursuite() throws Exception {
 
 		final long noTiers = 44018109;
@@ -6741,6 +6810,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-3025] Vérifie qu'une adresse spécifique de poursuite est plus prioritaire qu'une tutelle (ou curatelle ou conseil légal)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesPoursuiteContribuableSousTutelleAvecAdresseSpecifiquePoursuite() throws Exception {
 
 		final long noTiers = 60510843;
@@ -6865,6 +6935,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Vérifie que les rapports entre tiers annulés ne sont pas pris en compte.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesRapportsAnnules() throws Exception {
 
 		final PersonnePhysique representant = addNonHabitant("Marcel", "Espol", date(1923, 3, 2), Sexe.MASCULIN);
@@ -6887,6 +6958,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-2654] Vérifie que la surcharge des adresses fonctionne correctement lorsqu'une adresse poursuite fermée existe en même temps qu'une adresse courrier valide sur toute la période.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesAvecAdressePoursuiteFermee() throws Exception {
 
 		final DebiteurPrestationImposable debiteur = addDebiteur();
@@ -6909,6 +6981,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-2688] On s'assure que la source de l'adresse 'poursuite autre tiers' est bien CURATELLE dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesPersonnePhysiqueAvecCuratelleDatesDebutFinNulles() throws Exception {
 
 		final long noIndividuTiia = 339619;
@@ -7006,6 +7079,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsPrefixedByPourAdresse() {
 
 		// Case de base
@@ -7156,6 +7230,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Types de tiers qui n'ont pas de formule de politesse
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitesseTiersSansFormule() {
 
 		assertNull(adresseService.getFormulePolitesse(new AutreCommunaute()));
@@ -7169,6 +7244,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Cas des personnes physiques
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitessePersonnesPhysiques() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
@@ -7186,6 +7262,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Cas des personnes physiques décédées
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitessePersonnePhysiquesDecedees() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
@@ -7204,6 +7281,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Cas des ménages communs
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitesseMenageCommuns() {
 
 		PersonnePhysique pp1 = addNonHabitant(null, "pp-un", date(1977, 1, 1), Sexe.MASCULIN);
@@ -7258,6 +7336,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Cas des ménages communs avec un ou plusieurs composants décédés
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitesseMenageCommunsAvecDecedes() {
 
 		PersonnePhysique pp1 = addNonHabitant(null, "pp-un", date(1977, 1, 1), Sexe.MASCULIN);
@@ -7342,6 +7421,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTypeAffranchissement() throws Exception {
 
 		final PersonnePhysique jean = addNonHabitant("Jean", "Lavanchy", date(1967, 5, 12), Sexe.MASCULIN);
@@ -7365,6 +7445,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * surchargée est maintenant prioritaire sur l'adresse induite par la représentation conventionnelle
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesContribuableAvecRepresentationQuiCommenceAvantSonAdresseCourrier() throws Exception {
 
 		final PersonnePhysique sophie = addNonHabitant("Sophie", "Regamey", date(1960, 1, 1), Sexe.FEMININ);
@@ -7397,7 +7478,6 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testGetNomCourrierSurMenageDontMembrePrincipalAUneSurchargeRepriseDuCivil() throws Exception {
 
 		final long noIndividuM = 12345687L;
@@ -7468,6 +7548,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * 'autre tiers' du tiers A, et non pas l'id de l'adresse fiscale du tiers B.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesContribuableAvecAdresseAutreTiers() throws Exception {
 
 		class Ids {
@@ -7513,6 +7594,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-3279] Cas du ménage commun n°850.088.03.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesMenageCommunPrincipalSousTutelleConjointAvecRepresentantSeparesPuisReconcilies() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -7694,6 +7776,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesSandwichCasParticulierDefautsSurAdressesCiviles() throws Exception {
 
 		final long noIndividu = 1;

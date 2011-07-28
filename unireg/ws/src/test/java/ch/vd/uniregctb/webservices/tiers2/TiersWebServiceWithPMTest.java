@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.WebserviceTest;
@@ -70,6 +71,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSetBlocageRemboursementAutomatiquePMInconnueDansUnireg() throws Exception {
 
 		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -109,6 +111,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSetBlocageRemboursementAutomatiquePMConnueDansUnireg() throws Exception {
 
 		final long noNestle = MockPersonneMorale.NestleSuisse.getNumeroEntreprise();
@@ -157,6 +160,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-2302]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 
 		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -200,6 +204,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMorale2() throws Exception {
 
 		final long noJal = MockPersonneMorale.JalHolding.getNumeroEntreprise();
@@ -243,6 +248,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMoraleOptionnaliteComplement() throws Exception {
 
 		final long noEvian = MockPersonneMorale.EvianRussie.getNumeroEntreprise();
@@ -290,6 +296,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs vaudoides possèdent bien le type d'autorité 'commune vaudoise'.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMVaudoise() throws Exception {
 
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -325,6 +332,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-canton possèdent bien le type d'autorité 'commune hors-canton'.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMHorsCanton() throws Exception {
 
 		final long noPM = MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise();
@@ -360,6 +368,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-Suisse possèdent bien le type d'autorité 'pays hors-Suisse'.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMHorsSuisse() throws Exception {
 
 		final long noPM = MockPersonneMorale.KhatAnstalt.getNumeroEntreprise();
@@ -392,6 +401,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -434,6 +444,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersHistoAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();

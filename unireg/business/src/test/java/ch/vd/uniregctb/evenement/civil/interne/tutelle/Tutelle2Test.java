@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -80,6 +81,7 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleTutelleAvecTuteur() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
@@ -152,6 +154,7 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleTutelleAvecTuteurGeneral() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 

@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -67,6 +68,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReconciliationMarieSeul() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un individu marié seul.");
@@ -123,6 +125,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReconciliationMariesADeux() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
@@ -184,6 +187,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReconciliationDateFuture() throws Exception {
 
 		RegDate DATE_RECONCILIATION_FUTURE = RegDate.get(2080, 1, 1);

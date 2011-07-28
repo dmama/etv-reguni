@@ -8,8 +8,8 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -63,7 +63,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDesactiveTiersSansForActif() throws Exception {
 
 		// mise en place
@@ -109,7 +108,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testReactiveTiersCompletementAnnule() throws Exception {
 
 		// mise en place du tiers annulé
@@ -157,7 +155,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDesactiveTiers() throws Exception {
 
 		// mise en place
@@ -298,7 +295,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRemplaceTiers() throws Exception {
 
 		class Ids {
@@ -371,6 +367,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReactiveTiers() throws Exception {
 
 		final RegDate dateDesactivation = date(2009, 12, 31);
@@ -453,6 +450,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationInterditePourCauseDeDeclarationUlterieure() throws Exception {
 
 		// mise en place
@@ -513,6 +511,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationAutoriseeAvecDeclarationUlterieureAnnulee() throws Exception {
 
 		// mise en place
@@ -579,6 +578,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationInterditePourCauseDeForOuvertApresDateAnnulation() throws Exception {
 
 		final class Ids {
@@ -694,6 +694,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationInterditePourCauseDeForOuvertAvantEtFermeApresDateAnnulation() throws Exception {
 
 		// mise en place
@@ -748,6 +749,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationAutoriseeSiForOuvertAvantDateAnnulationEtPasEncoreFerme() throws Exception {
 
 		// mise en place
@@ -786,6 +788,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationAutoriseeSiForOuvertExactementDateAnnulationEtPasEncoreFerme() throws Exception {
 
 		// mise en place
@@ -843,6 +846,7 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReactivationTiersAvecPlusieursFors() throws Exception {
 
 		final RegDate dateDesactivation = date(2009, 2, 22);
@@ -994,7 +998,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDesactivationDebiteurPrestationImposable() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);
@@ -1076,7 +1079,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	@Ignore(value = "La réactivation d'un DPI ne fonctionne pas puisqu'il n'y a pas de moyen de stocker la date de désactivation sur un débiteur")
 	public void testDesactivationEtReactivationDebiteurPrestationImposable() throws Exception {
 

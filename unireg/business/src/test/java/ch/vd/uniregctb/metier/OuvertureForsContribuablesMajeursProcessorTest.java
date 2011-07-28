@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -62,6 +63,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * Vérifie que le batch n'ouvre pas de for principal sur un habitant suisse qui n'est pas encore majeur.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseNonMajeur() {
 
 		final int noIndividu = 1234;
@@ -102,6 +104,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * Vérifie que le batch ouvre bien un for principal ordinaire sur un habitant suisse majeur qui n'en possède pas.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurSansFor() {
 
 		final int noIndividu = 1234;
@@ -161,6 +164,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * Vérifie que le rapport du batch contient bien le numéro d'OID calculé à partir du for nouvellement crée .
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantMajeurSansForAvecOID() throws Exception {
 
 		final int noIndividu = 1234;
@@ -211,6 +215,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * Vérifie que le batch ouvre bien un for principal ordinaire sur un habitant suisse majeur qui n'en possède pas.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantEtrangerMajeurSansFor() {
 
 		final int noIndividu = 1234;
@@ -272,6 +277,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * SQL. Il est donc normal que le traitement provoque une erreur.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurAvecForPreexistant() {
 
 		final int noIndividu = 1234;
@@ -313,6 +319,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * être utilisées).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurSansAdresseDomicile() {
 
 		final int noIndividu = 1234;
@@ -352,6 +359,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * [UNIREG-1588] Vérifie que le batch génère une erreur lorsqu'un habitant ne possède pas de nationalité.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurSansNationalite() {
 
 		final int noIndividu1 = 1234;
@@ -404,6 +412,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * [SIFISC-488] Message d'erreur plus parlant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMessageException() {
 
 		final int noIndividu1 = 1234;
@@ -448,6 +457,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * [UNIREG-1585] Vérifie que le batch renseigne bien l'office d'impôt, notamment sur les contribuables qui ne possèdaient pas de for fiscal avant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRenseignementOIDapresTraitement() {
 
 		final int noIndividu = 1234;
@@ -488,6 +498,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * [UNIREG-3379] Vérifie que le batch ouvre bien un for principal ordinaire sur la bonne commune pour un habitant suisse majeur qui habitent une commune fusionnée au civil mais pas au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurSansForSurCommuneFusionneeAuCivilMaisPasAuFiscal() {
 
 		final int noIndividu = 1234;
@@ -549,6 +560,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	 * [UNIREG-3379] Vérifie que le batch ouvre bien un for principal ordinaire sur la bonne commune pour un habitant suisse majeur qui habitent une commune fusionnée au civil et au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiteHabitantSuisseMajeurSansForSurCommuneFusionneeAuCivilEtAuFiscal() {
 
 		final int noIndividu = 1234;

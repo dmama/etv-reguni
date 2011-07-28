@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.declaration;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -17,6 +18,7 @@ public class DeclarationImpotOrdinaireValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDeclarationAnnulee() {
 
 		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();

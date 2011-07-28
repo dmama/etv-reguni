@@ -3,9 +3,9 @@ package ch.vd.uniregctb.norentes;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebTest;
@@ -27,6 +27,7 @@ public class NorentesControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		request.setMethod("GET");

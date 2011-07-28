@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.database;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -61,7 +60,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		super.onTearDown();
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectTiersChange() throws Exception {
 
@@ -90,7 +88,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(id, eventService.changedTiers.iterator().next());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectDeclarationChange() throws Exception {
 
@@ -131,7 +128,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectForFiscalChange() throws Exception {
 
@@ -169,7 +165,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectAdresseTiersChange() throws Exception {
 
@@ -207,7 +202,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectRapportEntreTiersChange() throws Exception {
 
@@ -252,7 +246,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	/**
 	 * Vérifie que l'annnulation d'un rapport-entre-tiers provoque bien l'émission d'événements de changements sur les tiers anciennement liés, alors même que le rapport est maintenant annulé.
 	 */
-	@NotTransactional
 	@Test
 	public void testDetectAnnulationRapportEntreTiers() throws Exception {
 
@@ -294,7 +287,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertTrue(eventService.changedTiers.contains(ids.tuteur));
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectSituationFamilleChange() throws Exception {
 
@@ -332,7 +324,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
 	}
 
-	@NotTransactional
 	@Test
 	public void testDetectIdentificationPersonneChange() throws Exception {
 
@@ -373,7 +364,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	/**
 	 * Vérifie que des changements multiples apportés au même tiers ne provoque l'envoi que d'un seul événement
 	 */
-	@NotTransactional
 	@Test
 	public void testIgnoreDuplicatedChange() throws Exception {
 

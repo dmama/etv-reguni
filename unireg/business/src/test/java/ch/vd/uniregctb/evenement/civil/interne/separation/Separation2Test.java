@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -83,6 +84,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationPersonneMarieeSeule() throws Exception {
 		
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -133,6 +135,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationPersonneMarieeAvecSuisseOuPermisC() throws Exception {
 		
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -202,6 +205,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationPersonneMarieeDeNationaliteInconnue() throws Exception {
 		
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -223,6 +227,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Voir JIRA UNIREG-2292
 	 */

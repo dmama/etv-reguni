@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
@@ -37,6 +38,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 	 * Vérifie qu'un événement de déménagement est bien traduit en arrivée lorsqu'un habitant déménagement entre deux communes fusionnées au civil mais pas au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementEntreCommunesFusionneesAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -85,6 +87,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 	 * Vérifie qu'un événement de déménagement reste traduit en déménagement lorsqu'un habitant déménagement à l'intérieur d'une commune fusionnée au civil mais pas au fiscal.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementDansUneCommuneFusionneeAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;

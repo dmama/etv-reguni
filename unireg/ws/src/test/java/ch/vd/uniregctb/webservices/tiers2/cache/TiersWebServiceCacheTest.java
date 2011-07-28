@@ -9,8 +9,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.WebserviceTest;
@@ -163,6 +163,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiers() throws Exception {
 
 		GetTiers paramsNoPart = new GetTiers();
@@ -217,6 +218,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersAllParts() throws Exception {
 
 		GetTiers paramsNoPart = new GetTiers();
@@ -243,6 +245,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersHisto() throws Exception {
 
 		GetTiersHisto paramsNoPart = new GetTiersHisto();
@@ -296,6 +299,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersHistoAllParts() throws Exception {
 
 		GetTiersHisto paramsNoPart = new GetTiersHisto();
@@ -321,6 +325,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictTiers() throws Exception {
 
 		// On charge le cache avec des tiers
@@ -355,7 +360,6 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	/**
 	 * [UNIREG-2588] Vérifie que l'éviction d'un tiers se propage automatiquement à tous les tiers liés par rapport-entre-tiers
 	 */
-	@NotTransactional
 	@Test
 	public void testEvictTiersMenageCommun() throws Exception {
 
@@ -421,6 +425,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictDebiteurInfo() throws Exception {
 
 		// On charge le cache avec des tiers
@@ -443,6 +448,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersInexistant() throws Exception {
 
 		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
@@ -465,6 +471,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersHistoInexistant() throws Exception {
 
 		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
@@ -494,6 +501,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 * </ol>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersCasSpecialForFiscauxVirtuels() throws Exception {
 
 		final GetTiers params = new GetTiers();
@@ -548,6 +556,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 * </ol>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersHistoCasSpecialForFiscauxVirtuels() throws Exception {
 
 		final GetTiersHisto params = new GetTiersHisto();
@@ -596,6 +605,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiers() throws Exception {
 
 		GetBatchTiers params = new GetBatchTiers();
@@ -683,6 +693,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersHisto() throws Exception {
 
 		GetBatchTiersHisto params = new GetBatchTiersHisto();
@@ -773,6 +784,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchParty sont correctement gérées au niveau du cache.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersAvecExceptionSurUnTiers() throws Exception {
 
 		GetBatchTiers params = new GetBatchTiers();
@@ -834,6 +846,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchTiersHisto sont correctement gérées au niveau du cache.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersHistoAvecExceptionSurUnTiers() throws Exception {
 
 		GetBatchTiersHisto params = new GetBatchTiersHisto();

@@ -10,9 +10,9 @@ import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -69,6 +69,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 	// [UNIREG-1521]
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHEnMenageCommun() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -149,6 +150,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 	// [UNIREG-3011]
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHEnMenageCommunAvecForsFiscauxPreexistants() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -232,6 +234,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 	// [UNIREG-2893] Droits d'accès sur le non-habitant à transformer en couple
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHAvecDroitsAccesEnMenageCommun() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -341,7 +344,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 	// [UNIREG-1521] Teste que toutes les opérations sont bien rollées-back en cas d'erreur de validation
 	@Test
-	@NotTransactional
 	public void testTranformationNHEnMenageCommunEtRollback() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -446,6 +448,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReconciliationDeSeparesAuCivilMariageInconnuAuFiscal() throws Exception {
 
 		final long noMr = 1234567L;

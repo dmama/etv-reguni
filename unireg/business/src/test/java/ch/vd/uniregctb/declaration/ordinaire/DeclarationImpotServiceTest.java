@@ -7,9 +7,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -159,6 +159,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreInterruption() throws Exception {
 
 		class Ids {
@@ -212,6 +213,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreContribuableNonValide() throws Exception {
 
 		/*
@@ -241,6 +243,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettrePasDePeriodeFiscale() throws Exception {
 
 		try {
@@ -256,6 +259,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste qu'il n'est pas possible de créer des tâches d'envoi de DIs en masse en dehors des délais.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreHorsPeriode() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -288,6 +292,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste que la méthode 'determineDIsAEmettre' catch les exceptions et continue son travail sans roller-back la transaction.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreException() throws Exception {
 		class Ids {
 			Long ericId;
@@ -358,6 +363,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRetourDI() throws Exception {
 		class Ids {
 			public long ericId;
@@ -450,6 +456,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste la détermination des tâches <b>et</b> l'envoi des déclarations d'impôt à partir de ces tâches.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineEtEnvoyerDIs() throws Exception {
 
 		class Ids {
@@ -859,6 +866,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste la limitation sur le nombre d'envois
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoyerDIsEnMasseNbMaxEnvoi() throws Exception {
 
 		class Ids {
@@ -920,6 +928,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoyerDIsEnMassePlageCtb() throws Exception {
 
 		class Ids {
@@ -980,6 +989,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoyerDIsEnMasseInterruption() throws Exception {
 
 		final int taille = 1;
@@ -1057,6 +1067,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste que la méthode 'envoyerDIsEnMasse'.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoyerDIsEnMasseForGestionNull() throws Exception {
 
 		class Ids {
@@ -1136,7 +1147,6 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * test le traitement par lot
 	 */
 	@Test
-	@NotTransactional
 	public void testEnvoiDiEnMasseParLot() throws Exception {
 
 		class Ids {
@@ -1241,6 +1251,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterTache() throws Exception {
 
 		class Ids {
@@ -1390,6 +1401,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste l'envoi de déclaration pour les contribuables propriétaires d'immeuble sis dans le canton mais domiciliés hors suisse.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreHorsSuisse() throws Exception {
 
 		class Ids {
@@ -1478,6 +1490,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * Teste l'envoi de déclaration pour les contribuables dit "indigents"
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreIndigents() throws Exception {
 
 		class Ids {

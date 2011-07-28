@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -55,7 +54,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	private static final RegDate DATE_DECES = RegDate.get(2008, 1, 1);
 
 	@Test
-	@NotTransactional
 	public void testAnnulationDecesCelibataire() throws Exception {
 
 		// mise en place civile
@@ -128,7 +126,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationDecesMarieSeul() throws Exception {
 
 		// mise en place civile
@@ -232,7 +229,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationDecesMarie() throws Exception {
 
 		// mise en place civile

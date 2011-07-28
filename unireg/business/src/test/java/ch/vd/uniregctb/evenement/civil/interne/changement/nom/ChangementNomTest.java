@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -59,6 +60,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -137,6 +139,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	 * autre
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleTiersDirty() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());

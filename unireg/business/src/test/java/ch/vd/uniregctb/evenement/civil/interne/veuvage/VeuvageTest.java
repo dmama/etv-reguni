@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -105,6 +106,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageSuisse() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un suisse marié seul.");
@@ -160,6 +162,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageNonSuisse() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non suisse marié seul.");
@@ -215,6 +218,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageMarieAvecHabitant() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié.");
@@ -233,6 +237,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageMarieSeulAvecForPosterieur() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié seul ayant un for fiscal principal ouvert après la date de veuvage.");

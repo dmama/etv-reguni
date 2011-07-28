@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
@@ -15,6 +13,9 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeDroitAcces;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class SecuriteDossierServiceTest extends SecurityTest {
 
@@ -32,6 +33,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesOperateurInconnu() throws Exception {
 
 		setupDefaultTestOperateur();
@@ -59,6 +61,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * Cas simple : l'opérateur est connu et aucune autorisation ni restriction n'existe.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesCasSimple() throws Exception {
 
 		setupDefaultTestOperateur();
@@ -86,6 +89,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * L'opérateur est connu et il possède une restriction à l'écriture (= lecture seule)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesRestrictionEcriture() throws Exception {
 
 		setupDefaultTestOperateur();
@@ -116,6 +120,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * opérateurs ne sont pas impactés.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesRestrictions() throws Exception {
 
 		setAuthentication(TEST_OP_NAME);
@@ -201,6 +206,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * ne doivent plus pouvoir accèder au dossier.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesAutorisations() throws Exception {
 
 		setAuthentication(TEST_OP_NAME);
@@ -266,6 +272,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * Teste que le mélange des restrictions et autorisations donne bien le résultat voulu.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesRestrictionsEtAutorisations() throws Exception {
 
 		setAuthentication(TEST_OP_NAME);
@@ -321,6 +328,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * accéder aux dossiers.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesBypassDirectionACI() throws Exception {
 
 		setAuthentication(TEST_OP_NAME);
@@ -388,6 +396,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 	 * autorisation ECRITURE possède bien un accès en lecture seul.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAccesAutorisationLectureEtEcriture() throws Exception {
 
 		setAuthentication("zaiamx");

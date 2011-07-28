@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.JobTest;
@@ -36,6 +37,7 @@ public class EditiqueSommationLRJobTest extends JobTest {
 	}
 
 	@Test(timeout = 30000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEditiqueSommationLRJob() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);

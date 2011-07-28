@@ -3,8 +3,8 @@ package ch.vd.uniregctb.fusion;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 public class HabitantListControllerTest extends AbstractFusionControllerTest {
@@ -26,6 +26,7 @@ public class HabitantListControllerTest extends AbstractFusionControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		request.setMethod("GET");
@@ -39,6 +40,7 @@ public class HabitantListControllerTest extends AbstractFusionControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 
 		request.setMethod("POST");

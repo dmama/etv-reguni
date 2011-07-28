@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
@@ -51,6 +52,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 	 * [UNIREG-1246] Teste que les opérateurs avec visualisation limitées peuvent accèder à la méthode searchTiers.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testVisualisationLimiteeSearchTiers() throws Exception {
 
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
@@ -88,6 +90,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 	 * Teste que la méthode getBatch fonctionne même avec des ids nuls.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersWithIdNull() throws Exception {
 
 		serviceSecurite.setUp(new DefaultMockServiceSecurite());

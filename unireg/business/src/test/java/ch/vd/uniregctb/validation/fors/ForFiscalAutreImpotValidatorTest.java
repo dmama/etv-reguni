@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.fors;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
@@ -13,6 +14,7 @@ import static junit.framework.Assert.assertFalse;
 public class ForFiscalAutreImpotValidatorTest extends AbstractValidatorTest<ForFiscalAutreImpot> {
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForAnnule() {
 
 		final ForFiscalAutreImpot forFiscal = new ForFiscalAutreImpot();

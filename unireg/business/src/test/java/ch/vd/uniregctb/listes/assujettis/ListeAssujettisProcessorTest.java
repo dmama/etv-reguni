@@ -2,7 +2,6 @@ package ch.vd.uniregctb.listes.assujettis;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -33,7 +32,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testVaudoisOrdinaire() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -74,7 +72,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testVaudoisOrdinaireMariage() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -111,7 +108,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testCoupleVaudoisOrdinaireMariage() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -170,7 +166,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsCanton() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -212,7 +207,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsSuisse() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -254,7 +248,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsSuisseQuiDebarque() throws Exception {
 
 		final long noIndividu = 1235435L;
@@ -306,7 +299,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testSourcierInclus() throws Exception {
 		final long noIndividu = 1235435L;
 
@@ -347,7 +339,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testSourcierExclu() throws Exception {
 		final long noIndividu = 1235435L;
 
@@ -384,7 +375,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDepartHorsSuissePasSeulementAssujettisFinAnnee() throws Exception {
 		final long noIndividu = 1235435L;
 
@@ -425,7 +415,6 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDepartHorsSuisseSeulementAssujettisFinAnnee() throws Exception {
 		final long noIndividu = 1235435L;
 

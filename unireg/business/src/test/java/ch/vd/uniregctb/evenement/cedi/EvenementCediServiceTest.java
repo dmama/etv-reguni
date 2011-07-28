@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -42,6 +43,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifierInformationsPersonnelles() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
@@ -114,6 +116,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifierInformationsPersonnellesAvecStreamlining() throws Exception {
 
 		assertEquals("La valeur de la constante a changé, le test doit être modifié", 35, LengthConstants.TIERS_NUMTEL);

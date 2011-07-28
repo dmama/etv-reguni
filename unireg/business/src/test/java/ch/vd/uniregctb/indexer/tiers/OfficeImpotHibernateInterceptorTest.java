@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -51,6 +51,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableSansFor() throws Exception {
 
 		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
@@ -71,6 +72,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableSansForAvecNumeroOID() throws Exception {
 
 		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
@@ -93,6 +95,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipal() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -125,6 +128,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipalVariante() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -148,6 +152,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipalFerme() throws Exception {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -180,6 +185,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAjoutForPrincipal() throws Exception {
 
 		// Crée un contribuable sans for
@@ -244,6 +250,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	 * [UNIREG-2386] Vérifie que l'annulation du dernier for principal provoque bien le recalcul de l'office d'impôt
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAnnulationForPrincipal() throws Exception {
 
 		// Crée un contribuable né à Lausanne et ayant déménagé récemment à Orbe
@@ -301,7 +308,6 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOfficeImpotContribuableDemenagement() throws Exception {
 
 		class Ids {
@@ -398,7 +404,6 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testContribuableAvecTachesEnInstance() throws Exception {
 
 		class Ids {

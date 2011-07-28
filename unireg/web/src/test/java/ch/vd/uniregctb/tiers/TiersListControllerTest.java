@@ -6,7 +6,6 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
@@ -104,7 +103,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheForTous() throws Exception {
 
 		loadDatabase();
@@ -119,7 +117,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheForActifs() throws Exception {
 
 		loadDatabase();
@@ -136,7 +133,6 @@ public class TiersListControllerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
-	@NotTransactional
 	public void testShowForm() throws Exception {
 
 		loadDatabase();
@@ -148,7 +144,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOnSubmitWithCriteresWithNumCTB() throws Exception {
 
 		loadDatabase();
@@ -168,7 +163,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheNomContient() throws Exception {
 
 		loadDatabase();
@@ -188,7 +182,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheNomPhonetique() throws Exception {
 
 		loadDatabase();
@@ -208,7 +201,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheDateNaissance() throws Exception {
 
 		loadDatabase();
@@ -227,7 +219,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheLocalite() throws Exception {
 
 		loadDatabase();
@@ -246,7 +237,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheNumAVS() throws Exception {
 
 		loadDatabase();
@@ -265,7 +255,6 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRechercheNumAVSWithDash() throws Exception {
 
 		loadDatabase();

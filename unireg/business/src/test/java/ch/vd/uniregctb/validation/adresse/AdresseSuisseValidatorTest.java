@@ -3,6 +3,7 @@ package ch.vd.uniregctb.validation.adresse;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -23,6 +24,7 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateAdresseAnnulee() {
 
 		final AdresseSuisse adresse = new AdresseSuisse();
@@ -44,6 +46,7 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDateDebut() {
 
 		final AdresseSuisse adresse = new AdresseSuisse();

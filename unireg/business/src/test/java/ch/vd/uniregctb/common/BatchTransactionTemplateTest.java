@@ -9,9 +9,9 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -48,7 +48,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 	}
 
-	@NotTransactional
 	@Test
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
@@ -90,7 +89,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		return b.toString();
 	}
 
-	@NotTransactional
 	@Test
 	public void testSansRepriseSansException() throws Exception {
 
@@ -144,7 +142,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testSansRepriseAvecException() throws Exception {
 
@@ -201,7 +198,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testAvecRepriseSansException() throws Exception {
 
@@ -256,7 +252,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testAvecRepriseAvecException() throws Exception {
 
@@ -332,7 +327,6 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testRollbackOnException() throws Exception {
 
@@ -414,6 +408,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	 * Vérifie que la génération du rapport final fonctionne correctement dans le cas simple (sans rollback)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationRapportSansRollback() {
 
 		final int count = 50;
@@ -450,6 +445,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	 * Vérifie que la génération du rapport final fonctionne correctement avec des rollbacks
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationRapportAvecRollback() {
 
 		final int count = 50;

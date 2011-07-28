@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -33,6 +34,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPM() throws Exception {
 
 		PersonneMorale pm = service.getPersonneMorale(10245L);
@@ -41,6 +43,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtablissement() throws Exception {
 		final Etablissement etablissement = service.getEtablissement(5192);
 		assertNotNull(etablissement);
@@ -66,6 +69,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetMandatsPM() throws Exception {
 
 		PersonneMorale pm = service.getPersonneMorale(10245L, PartPM.MANDATS);
@@ -84,6 +88,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	 * [INTER-186] Vérifie que les fors fiscaux principaux retournés par le service PM sont corrects.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPrincipauxPM() throws Exception {
 
 		final PersonneMorale pm = service.getPersonneMorale(222L, PartPM.FORS_FISCAUX);
@@ -107,6 +112,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	 * [INTER-186] Vérifie que les fors fiscaux secondaires retournés par le service PM sont corrects.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxSecondairesPM() throws Exception {
 
 		final PersonneMorale pm = service.getPersonneMorale(222L, PartPM.FORS_FISCAUX);
@@ -130,6 +136,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 	 * [INTER-186] Vérifie que les sièges retournés par le service PM sont corrects.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetSiegesPM() throws Exception {
 
 		final PersonneMorale pm = service.getPersonneMorale(222L, PartPM.SIEGES);

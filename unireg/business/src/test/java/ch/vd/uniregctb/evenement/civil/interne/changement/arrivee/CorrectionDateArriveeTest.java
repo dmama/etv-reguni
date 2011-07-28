@@ -6,7 +6,6 @@ import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -71,7 +70,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testMineur() throws Exception {
 
 		// mise en place fiscale
@@ -100,7 +98,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testMajeurSansFor() throws Exception {
 
 		// mise en place fiscale
@@ -117,7 +114,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsSuisse() throws Exception {
 
 		// mise en place fiscale
@@ -135,7 +131,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testMauvaiseCommuneAnnonce() throws Exception {
 
 		// mise en place fiscale
@@ -153,7 +148,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testMauvaisMotifOuverture() throws Exception {
 
 		// mise en place fiscale
@@ -174,7 +168,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testChangementAnnee() throws Exception {
 
 		// mise en place fiscale
@@ -192,7 +185,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testDejaBonneDate() throws Exception {
 
 		// mise en place fiscale
@@ -222,7 +214,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testCasSimpleCelibataire() throws Exception {
 
 		// mise en place fiscale
@@ -264,7 +255,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testCasSimpleCouple() throws Exception {
 
 		class Ids {
@@ -318,7 +308,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testModificationForPrecedent() throws Exception {
 
 		// mise en place fiscale
@@ -369,7 +358,6 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	@Test
-	@NotTransactional
 	public void testIndividuInconnu() throws Exception {
 		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
 		assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));

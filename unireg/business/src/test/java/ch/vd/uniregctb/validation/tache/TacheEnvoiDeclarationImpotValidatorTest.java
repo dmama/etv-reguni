@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.tache;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -22,6 +23,7 @@ public class TacheEnvoiDeclarationImpotValidatorTest extends AbstractValidatorTe
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTacheAnnulee() {
 
 		final int annee = RegDate.get().year() - 1;

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.situationfamille;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -16,6 +17,7 @@ public class SituationFamilleValidatorTest extends AbstractValidatorTest<Situati
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateSituationAnnule() {
 
 		final SituationFamille situation = new SituationFamille() {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -93,6 +94,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorceCelibataire() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne seule.");
@@ -111,6 +113,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorcePersonneMarieeSeule() throws EvenementCivilException {
 	
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée seule.");
@@ -160,6 +163,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorcePersonneMarieeAvecSuisseOuPermisC() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée avec un suisse ou étranger avec permis C.");
@@ -227,6 +231,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorcePersonneMarieeDeNationaliteInconnue() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne de nationalité inconnue.");
@@ -246,6 +251,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorcePersonneSepare() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne déjà séparée.");

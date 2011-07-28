@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service;
 
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -24,6 +25,7 @@ public class ServicePersonneMoraleCacheTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInvalidationCacheSurEvenementPM() throws Exception {
 
 		final long idPM = 12345L;

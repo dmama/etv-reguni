@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -64,7 +64,6 @@ public class ForFiscalManagerTest extends WebTest {
 	 * [UNIREG-1036] Test que le bug qui provoquait la disparition des fors fiscaux précédents après l'ajout d'un fors fiscal HS sur un
 	 * contribuable ne réapparaît pas.
 	 */
-	@NotTransactional
 	@Test
 	public void testAddForHorsSuisseSurCouple() throws Exception {
 
@@ -188,6 +187,7 @@ public class ForFiscalManagerTest extends WebTest {
 
 	//@Transactional
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAjoutForFerme() throws Exception {
 
 		final long noIndLaurent = 333908;
@@ -295,7 +295,6 @@ public class ForFiscalManagerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForDebiteur() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);
@@ -349,7 +348,6 @@ public class ForFiscalManagerTest extends WebTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDemenagementDebiteur() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);

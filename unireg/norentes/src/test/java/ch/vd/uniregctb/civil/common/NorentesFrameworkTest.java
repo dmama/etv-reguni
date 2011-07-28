@@ -1,13 +1,13 @@
 package ch.vd.uniregctb.civil.common;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario;
 import ch.vd.uniregctb.norentes.common.NorentesScenario;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class NorentesFrameworkTest extends NorentesTest {
 
@@ -25,6 +25,7 @@ public class NorentesFrameworkTest extends NorentesTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testStaticInfos() throws Exception {
 
 		assertEquals("NorentesFrameworkTestScenario", scenario.getName());
@@ -33,7 +34,6 @@ public class NorentesFrameworkTest extends NorentesTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testStepBack() throws Exception {
 
 		norentesManager.runToStep(scenario, 2);
@@ -49,13 +49,11 @@ public class NorentesFrameworkTest extends NorentesTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRunToLast() throws Exception {
 		norentesManager.runToLast(scenario);
 	}
 
 	@Test
-	@NotTransactional
 	public void testRunToLastFrom() throws Exception {
 
 		norentesManager.runToStep(scenario, 2);

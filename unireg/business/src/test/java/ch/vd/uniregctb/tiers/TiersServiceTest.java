@@ -13,8 +13,8 @@ import org.apache.commons.lang.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -95,6 +95,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertTiers() {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -109,6 +110,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertContribuable() {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -128,6 +130,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInsertAndUpdateTiers() {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -178,6 +181,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteSuisse() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -194,6 +198,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisC() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -210,6 +215,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisCAnnule() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -226,6 +232,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_AvecNationaliteEtrangere_PermisNonC() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -242,6 +249,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineSuisse() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -258,6 +266,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineRenseigne_SansPermisC() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -274,6 +283,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineRenseigne_AvecPermisC() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -290,6 +300,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_AvecPermisC() throws Exception {
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -307,6 +318,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividu() {
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -343,6 +355,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividuParAnnee() {
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -407,6 +420,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_SansPermisC() throws Exception {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -423,6 +437,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsEtrangerSansPermisC_SansNationalite_OrigineNonSuisse_PaysOrigineNonRenseigne_SansAucunPermis() {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -445,6 +460,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPrincipal() {
 
 		final long numeroPierre = 1;
@@ -514,6 +530,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateEnsembleTiersCouple() {
 
 		final String nomPierre = "Pierre";
@@ -591,6 +608,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOpenForFiscalPrincipal() throws Exception {
 
 		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
@@ -618,6 +636,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForFiscalPrincipalUNIREG1370() throws Exception {
 		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
 
@@ -648,6 +667,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCloseAppartenanceMenageAvecRapportAnnule() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -686,6 +706,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetHabitant() throws Exception {
 
 		final long noNouveauHabitant = 3324;
@@ -728,6 +749,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetByNoIndividuSurContribuableAnnule() throws Exception {
 
 		final long noIndividu = 3244521L;
@@ -832,6 +854,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetByNumeroIndividuSurContribuableDesactive() throws Exception {
 
 		final long noIndividu = 3244521L;
@@ -991,6 +1014,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEnsembleTiersCouple() throws Exception {
 
 		final long NO_PIERRE = 1;
@@ -1157,6 +1181,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindMenageCommun() throws Exception {
 
 		class Ids {
@@ -1202,6 +1227,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetSexe() {
 
 		final long NO_PIERRE = 1;
@@ -1287,6 +1313,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal doit réouvrir le for précédent s'il celui-ci est adjacent.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForPrincipalAvecPrecedentAdjacent() throws Exception {
 
 		class Ids {
@@ -1342,6 +1369,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForSecondaireContribuableDecede() throws Exception {
 
 		class Id {
@@ -1383,6 +1411,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOpenForSecondaireContribuableDecede() throws Exception {
 
 		class Id {
@@ -1423,6 +1452,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal ne doit pas réouvrir le for précédent s'il celui-ci n'est pas adjacent.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForPrincipalAvecPrecedentNonAdjacents() throws Exception {
 
 		class Ids {
@@ -1475,6 +1505,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * L'annulation d'un for fiscal principal alors qu'il n'est pas le dernier doit lever un exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForPrincipalAvecSuivant() throws Exception {
 
 		class Ids {
@@ -1536,6 +1567,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDernierForGestionConnuDebiteur() {
 		// les DPI n'ont pas de for de gestion car ils sont gérés par une OID spéciale
 
@@ -1648,6 +1680,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableAucunFor() {
 
 		// Contribuable sans for
@@ -1667,6 +1700,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipal() {
 
 		// Contribuable avec un for principal ouvert
@@ -1707,6 +1741,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalHorsCanton() {
 
 		// Contribuable avec un for principal ouvert hors-canton
@@ -1724,6 +1759,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalSourcier() {
 
 		// Contribuable avec un for principal ouvert dans le canton mais sourcier
@@ -1743,6 +1779,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDeuxForsPrincipaux() {
 
 		// Contribuable avec deux fors principaux dans le canton
@@ -1768,6 +1805,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForSecondaire() {
 
 		// Contribuable avec un for secondaire activite independante
@@ -1829,6 +1867,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDeuxForsSecondairesConsecutifs() {
 
 		// Contribuable avec deux fors secondaires
@@ -1855,6 +1894,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDeuxForsSecondairesSeRecoupant() {
 
 		// Contribuable avec deux fors secondaires se recoupant
@@ -1881,6 +1921,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalOuvertEtUnForSecondaireOuvert() {
 
 		// Contribuable avec un for principal ouvert et un for secondaire ouvert
@@ -1903,6 +1944,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalFermeEtUnForSecondaireOuvert() {
 
 		// Contribuable avec un for principal fermé et un for secondaires ouvert
@@ -1925,6 +1967,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalOuvertEtUnForSecondaireFerme() {
 
 		// Contribuable avec un for principal ouvert et un for secondaire fermé
@@ -1947,6 +1990,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalHorsCantonEtUnForSecondaire() {
 
 		// Contribuable avec un for principal hors-canton et un for secondaire ouvert dans le canton
@@ -1968,6 +2012,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalHorsCantonEtDeuxForsSecondairesSeRecoupant() {
 
 		// Contribuable avec un for principal hors-canton et deux fors secondaires dans le canton se recoupant
@@ -1997,6 +2042,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * Contribuable avec un for principal dans le canton fermé suivi d'un for principal hors-canton ouvert et deux fors secondaires dans le canton se recoupant
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalCantonFermeUnForPrincipalHorsCantonOuvertEtDeuxForsSecondairesSeRecoupant() {
 
 		PersonnePhysique c = new PersonnePhysique(false);
@@ -2031,6 +2077,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * Contribuable avec un for principal dans le canton fermé suivi d'un for principal hors-canton ouvert et deux fors secondaires dans le canton qui débutent en même temps
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalCantonFermeUnForPrincipalHorsCantonOuvertEtDeuxForsSecondairesDebutantEnMemeTemps() {
 
 		final int aubonne = MockCommune.Aubonne.getNoOFS(); // 5422
@@ -2127,6 +2174,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDeuxForsPrincipauxDontUnAnnule() {
 
 		// Contribuable avec deux fors principaux dont le plus récent est annulé
@@ -2150,6 +2198,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDernierForGestionConnuContribuable() {
 
 		// Contribuable sans for
@@ -2274,6 +2323,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsSuisse() throws Exception {
 
 		// individu avec nationalité suisse
@@ -2358,6 +2408,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermeAdresseTemporaireSimple() throws Exception {
 
 		final RegDate dateDebut = date(2000, 1, 1);
@@ -2379,6 +2430,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermeAdresseTemporairePermanente() {
 
 		final RegDate dateDebut = date(2000, 1, 1);
@@ -2401,6 +2453,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermeAdresseTemporaireAnnulee() {
 
 		final RegDate dateDebut = date(2000, 1, 1);
@@ -2424,6 +2477,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermeAdresseTemporaireDebutDansLeFutur() {
 
 		final RegDate dateDebut = date(2010, 1, 1);
@@ -2445,6 +2499,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermeAdresseTemporaireDejaFermee() {
 
 		final RegDate dateDebut = date(2000, 1, 1);
@@ -2467,6 +2522,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFlagHabitantApresOuvertureDeForSurCouple() throws Exception {
 
 		// voilà le topo :
@@ -2543,6 +2599,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFlagHabitantSuiteAAnnulationDeForSurCouple() throws Exception {
 		// cas tiré du cas jira UNIREG-2021 :
 		// - couple, Monsieur est en Italie, Madame à Lausanne depuis le 24.02.2010, étranger avant (donc Madame est maintenant habitante)
@@ -2618,6 +2675,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleDernierForFiscalPrincipalDeuxFois() throws Exception {
 
 		final long ffpId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -2665,6 +2723,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisHabitant() throws Exception {
 
 		// un habitant ne peut pas être sourcier gris!
@@ -2708,6 +2767,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGris() throws Exception {
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
@@ -2725,6 +2785,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisHorsCanton() throws Exception {
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
@@ -2742,6 +2803,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisHorsSuisse() throws Exception {
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
@@ -2759,6 +2821,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMixte() throws Exception {
 
 		final MutableLong idCtbMixte1 = new MutableLong();
@@ -2790,6 +2853,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMenage() throws Exception {
 
 		final MutableLong idCtbPrincipal = new MutableLong();
@@ -2828,6 +2892,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMenageMarieSeul() throws Exception {
 
 		final MutableLong idCtbPrincipal = new MutableLong();
@@ -2859,6 +2924,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMenageAvecUnMembreConnuAuCivil() throws Exception {
 
 		final long noIndAchille = 12345L;
@@ -2907,6 +2973,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMenageMarieSeulConnuAuCivil() throws Exception {
 
 		final long noIndAchille = 12345L;
@@ -2948,6 +3015,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDebiteurPrestationImposable() throws Exception {
 		loadDatabase("TiersServiceTest.xml");
 
@@ -2958,6 +3026,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodiciteDebiteurPrestationImposable() throws Exception {
 
 
@@ -3089,6 +3158,7 @@ public class TiersServiceTest extends BusinessTest {
 	//test UNIREG-3041 AJout d'une nouvelle périodicité avec une périodicité existante l'année suivante et une
 	//absence de LR sur l'année en cours
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodicitesAbsencesLR() throws Exception{
 		//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
@@ -3139,6 +3209,7 @@ public class TiersServiceTest extends BusinessTest {
 	 * </ul>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddRapportEntreTiersInvalidesQuiSontValidesEnsuite() throws Exception {
 
 		final RegDate dateMariage = date(1995, 1, 1);
@@ -3199,6 +3270,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodicite() throws Exception {
 		loadDatabase("TiersServiceTest.xml");
 		doInNewTransaction(new TxCallback<Object>() {
@@ -3212,6 +3284,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodiciteBeforAddFor() throws Exception{
 
 		//Ajout d'une première periodicite et d'un for à la même date
@@ -3266,6 +3339,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLR() throws Exception {
 
 			//Ajout d'une première periodicite'
@@ -3292,6 +3366,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteAvecLR() throws Exception {
 
 			//Ajout d'une première periodicite'
@@ -3320,6 +3395,7 @@ public class TiersServiceTest extends BusinessTest {
 
 	}
 		@Test
+		@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLRSansFor() throws Exception {
 
 			//Ajout d'une première periodicite'
@@ -3347,7 +3423,6 @@ public class TiersServiceTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurSansTiersReferent() throws Exception {
 
@@ -3378,7 +3453,6 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
 
@@ -3423,7 +3497,6 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPersonnePhysique() throws Exception {
 
@@ -3458,7 +3531,6 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentMenageCommun() throws Exception {
 
@@ -3496,7 +3568,6 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentAutreCommunaute() throws Exception {
 
@@ -3531,7 +3602,6 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentCollectiviteAdministrative() throws Exception {
 
@@ -3569,7 +3639,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOuvertureForHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3599,7 +3668,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOuvertureForHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3629,7 +3697,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testOuvertureForVaudoisEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3659,7 +3726,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationForVaudoisSansForRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3691,7 +3757,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationForVaudoisAvecForVaudoisRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3728,7 +3793,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationForVaudoisAvecForHorsCantonRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3766,7 +3830,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationForVaudoisAvecForHorsSuisseRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3804,7 +3867,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForVaudoisDecesEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3838,7 +3900,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForVaudoisDepartHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3872,7 +3933,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForVaudoisDepartHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3906,7 +3966,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForVaudoisDemenagementVaudoisEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
@@ -3942,7 +4001,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testExtractionNumeroIndividuPrincipalCoupleComplet() throws Exception {
 
 		final long noIndM = 123564L;
@@ -3984,7 +4042,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testExtractionNumeroIndividuPrincipalCoupleAnnule() throws Exception {
 
 		final long noIndM = 123564L;
@@ -4034,6 +4091,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAndSaveForSurCommuneFaitiereFractions() throws Exception {
 		final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
 
@@ -4058,6 +4116,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIsMineur() throws Exception {
 
 		final long noIndividu = 12345L;
@@ -4100,7 +4159,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForDebiteurSansFermetureRT() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);
@@ -4175,7 +4233,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testFermetureForDebiteurAvecFermetureRT() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);
@@ -4255,7 +4312,6 @@ public class TiersServiceTest extends BusinessTest {
 	 * éléments qu'un couple annulé
 	 */
 	@Test
-	@NotTransactional
 	public void testAjoutNouveauRapportMenageIdentiqueARapportAnnule() throws Exception {
 		final RegDate dateMariage = RegDate.get(2000, 5, 2);
 
@@ -4319,7 +4375,6 @@ public class TiersServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-3244] Vérifie qu'un événement de fin d'autorité parentale est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que sa mère.
 	 */
-	@NotTransactional
 	@Test
 	public void testOuvertureForPrincipalPourMajoriteMereSeule() throws Exception {
 
@@ -4401,7 +4456,6 @@ public class TiersServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que son père.
 	 */
-	@NotTransactional
 	@Test
 	public void testOuvertureForPrincipalPourMajoritePereSeul() throws Exception {
 
@@ -4478,7 +4532,6 @@ public class TiersServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-3244] Vérifie qu'un événement de fin d'autorité parentale est envoyé lorsqu'un enfant devient majeure et qu'on ne connaît que sa mère et que cette dernière appartient à un ménage-commun.
 	 */
-	@NotTransactional
 	@Test
 	public void testOuvertureForPrincipalPourMajoriteMereEnCouple() throws Exception {
 
@@ -4564,7 +4617,6 @@ public class TiersServiceTest extends BusinessTest {
 	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeure alors qu'il est déjà été assujetti (pour cause de fortune personnelle, par
 	 * exemple).
 	 */
-	@NotTransactional
 	@Test
 	public void testOuvertureForPrincipalPourMajoriteEnfantDejaAssujettiDansLePasse() throws Exception {
 

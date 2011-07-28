@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
@@ -51,6 +51,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEventImpotSource() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -117,6 +118,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEventLC() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -164,6 +166,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEventAnnulationEtatRetourNonExiste() throws Exception{
 
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -227,6 +230,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEventDoubleAnnulation() throws Exception{
 
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -281,7 +285,6 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testEventAnnulation() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -350,7 +353,6 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testEvenementDoubleQuittancement() throws Exception {
 		
 		final RegDate dateDebut = date(2008, 1, 1);
@@ -420,7 +422,6 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testEvenementAnnulationDoubleQuittancement() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);

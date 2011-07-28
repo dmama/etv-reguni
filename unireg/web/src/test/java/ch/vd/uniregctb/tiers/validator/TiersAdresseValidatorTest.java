@@ -6,7 +6,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -68,7 +67,6 @@ public class TiersAdresseValidatorTest extends WebTest {
 	 * Cas du jira UNIREG-3081
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationDroitsAccesRefuse() throws Exception {
 
 		final long noIndOlivia = 25612436L;
@@ -155,7 +153,6 @@ public class TiersAdresseValidatorTest extends WebTest {
 	 * Cas du jira UNIREG-3081
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationDroitsAccesAccepte() throws Exception {
 
 		final long noIndOlivia = 25612436L;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -50,6 +51,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleNationaliteSuisse() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité suisse.");
@@ -68,6 +70,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleNationaliteNonSuisse() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité non suisse.");

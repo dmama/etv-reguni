@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -58,6 +59,7 @@ public class TiersVisuManagerTest extends WebTest {
 	 */
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetViewHabitant() throws Exception{
 
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
@@ -69,6 +71,7 @@ public class TiersVisuManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetViewNonHabitant() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
 		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, true, true, false, webParamPagination);
@@ -80,6 +83,7 @@ public class TiersVisuManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesHistoriques() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
 		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, false, webParamPagination);
@@ -95,6 +99,7 @@ public class TiersVisuManagerTest extends WebTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesCivilesPrincipalHC() throws Exception {
 	    serviceCivil.setUp(new MockServiceCivil() {
 			@Override

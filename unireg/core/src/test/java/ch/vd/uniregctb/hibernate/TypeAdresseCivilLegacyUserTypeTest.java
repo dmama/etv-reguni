@@ -8,6 +8,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -35,6 +36,7 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 	 * Ce test vérifie que le chargement d'un enum de type EnumTypeAdresse fonctionne correctement.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLoad() throws Exception {
 
 		loadDatabase("TypeAdresseCivilLegacyUserTypeTest.xml");
@@ -62,6 +64,7 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 	 * Ce test vérifie que la persistence d'un enum de type EnumTypeAdresse fonctionne correctement.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSave() throws Exception {
 
 		// date de création des adresses, utilisées pour distinguer les types d'adresse

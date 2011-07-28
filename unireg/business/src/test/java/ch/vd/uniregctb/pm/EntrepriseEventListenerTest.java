@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.pm;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
@@ -24,6 +25,7 @@ public class EntrepriseEventListenerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreationCoquillePM() throws Exception {
 
 		final long id = 332244L;

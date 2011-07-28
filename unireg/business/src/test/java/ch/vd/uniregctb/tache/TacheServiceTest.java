@@ -8,10 +8,10 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -170,6 +170,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereArriveeHSDepuisOuvertureForPrincipal() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -196,6 +197,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereArriveeHSDepuisOuvertureForPrincipalSourceUNIREG1888() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -219,6 +221,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereArriveeHCDepuisOuvertureForPrincipal() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -247,6 +250,7 @@ public class TacheServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereDemenagementVDDepuisOuvertureForPrincipal() throws Exception {
 
 		final int periodeCourante = RegDate.get().year();
@@ -310,6 +314,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereMariageDepuisOuvertureForPrincipal() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -340,6 +345,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereDecesDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
@@ -403,6 +409,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-1956] Les DI des années postérieures au décès doivent avoir une tâche d'annulation
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheApresDeces() throws Exception {
 
 		// Etat 2010
@@ -488,6 +495,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheEmissionDiApresDeces() throws Exception {
 
 		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
@@ -559,6 +567,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereDivorceDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
@@ -627,6 +636,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepuisOuvertureForSecondaireActivite() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -659,6 +669,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepuisOuvertureForSecondaireImmeuble() throws Exception {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
@@ -684,6 +695,7 @@ public class TacheServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepartHSDepuisFermetureForPrincipal() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -715,6 +727,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * Scénario : un contribuable vaudois par hors-Suisse en 2005, mais on ne reçoit l'événement de départ qu'en 2008
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepartHSArriveeTardiveEvenement() throws Exception {
 
 		class Ids {
@@ -877,6 +890,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * Vérifie la création des tâches en cas de fermeture tardive du for fiscal principal où le contribuable repart hors-canton la même année de son arrivée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepartHCDepuisFermetureForPrincipal() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -924,7 +938,6 @@ public class TacheServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-2266] Vérifie que les nouvelles tâches possède bien une collectivité administrative assignée, même si l'OID du tiers ne change pas suite au changement de for.
 	 */
-	@NotTransactional
 	@Test
 	public void testGenereTacheDepartHCTardif() throws Exception {
 
@@ -1000,6 +1013,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepartHCDepuisFermetureForPrincipaleFinPeriode() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -1031,6 +1045,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * different de depart HS ou HC hors elles doivent l'être si le for secondaire est le dernier actif.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testClotureDuDernierForSecondaireUNIREG1110() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -1086,6 +1101,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * L'ouverture d'un for principal sur un contribuable ordinaire doit générer un envoi de DIs et l'ouverture d'un dossier
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOuvertureForPrincipalImpositionOrdinaire() throws Exception {
 		ouvreForPrincipal(ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, RegDate.get(2006, 6, 12));
 		assertEquals(1, getNouveauDossierCount());
@@ -1096,6 +1112,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * L'ouverture d'un for principal sur un contribuable sourcier ne doit pas générer d'envoi de DIs, ni d'ouverture de dossier
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOuvertureForPrincipalImpositionSourcier() throws Exception {
 		ouvreForPrincipal(ModeImposition.SOURCE, MotifFor.ARRIVEE_HS, RegDate.get(2006, 6, 12));
 		assertEquals(0, getNouveauDossierCount());
@@ -1106,6 +1123,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * UNIREG-533: on teste que la fermeture d'un for fiscal principal avec une date de fermeture qui précède la date de début génère bien une exception et que celle-ci est une exception de validation.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCloseForFiscalPrincipalDateFermetureAvantDateDebut() throws Exception {
 
 		class Ids {
@@ -1145,6 +1163,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * <b>Note:</b> ce test reproduit un cas réel (voir ctb n°52108102) où le départ HS à été entré comme déménagement VD, ce qui est évidemment incorrecte.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermetureForPrincipalHorsSuisse() throws Exception {
 
 		class Ids {
@@ -1179,6 +1198,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-1102] Teste que la fin d'activité indépendante en cours d'année (pour un contribuable hors-Suisse) génère bien une tâche d'émission de DI limitée à la période d'activité indépendante.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDIFinActiviteIndependanteCtbHS() throws Exception {
 
 		class Ids {
@@ -1264,6 +1284,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * Vérifie qu'il y a le nombre correct d'annulation de DIs et d'émission de DIs générées lors du mariage de deux contribuables pour une période passée (= événement de mariage reçu en retard).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateTacheMariagePeriodePassee() throws Exception {
 
 		final RegDate dateMariage = date(2007, 11, 11);
@@ -1385,6 +1406,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * retard).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateTacheDivorcePeriodePassee() throws Exception {
 
 		final RegDate dateMariage = date(2002, 5, 1);
@@ -1540,6 +1562,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-1105] Vérifie qu'il y a bien une tâche de contrôle de dossier lorsqu'un for secondaire existe sur le ménage qui se divorce.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateTacheDivorceAvecForSecondaire() throws Exception {
 
 		final RegDate dateMariage = date(2002, 5, 1);
@@ -1704,6 +1727,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * <p/>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateTacheDecesCouplePeriodePassee() throws Exception {
 
 		final RegDate dateMariage = date(2002, 5, 1);
@@ -1846,6 +1870,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * correcte. Et tout spécialement que la période d'imposition calculée s'étend bien du 1er janvier (= assujetti par l'immeuble) au 31 décembre (= assujetti comme vaudois).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTachesDepuisArriveeHSContribuablePossedantDejaImmeuble() throws Exception {
 
 		final RegDate dateArrivee = date(2005, 5, 1);
@@ -1921,6 +1946,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTachesDepuisAnnulationDeFor() throws Exception {
 
 		// 1 Contribuable avec 1 for courant sur 2008 + 1 declaration 2008
@@ -1966,6 +1992,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenereTacheDepuisFermetureForPrincipalUNIREG1303() throws Exception {
 
 		// 1 Contribuable qui décéde avec 1 déclaration active : la période de la DI doit etre ajusté
@@ -2017,6 +2044,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testgenereTacheDepuisFermetureForPrincipalUNIREG1305() throws Exception {
 
 		// 1 Contribuable qui décéde avec sans déclarartion active : une tache d'émission de DI doit être généré.
@@ -2065,6 +2093,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-1218] Vérifie que l'annulation d'un contribuable annule bien toutes les tâches associées à ce contribuable (à l'exception des tâches d'annulation de DIs qui restent valables).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnAnnulationContribuableSansTache() throws Exception {
 
 		// Un contribuable normal avec des tâches associées.
@@ -2107,6 +2136,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnAnnulationContribuableAvecTaches() throws Exception {
 
 		// Un contribuable normal sans aucune tâche associée.
@@ -2378,6 +2408,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionQuitteSourceVersMixte() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.MIXTE_137_2);
 		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2385,6 +2416,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionQuitteSourceVersDepense() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.DEPENSE);
 		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2392,6 +2424,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionOrdinaireVersIndigent() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.ORDINAIRE, ModeImposition.INDIGENT);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2399,6 +2432,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionIndigentVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.INDIGENT, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2406,6 +2440,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionMixteVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2413,6 +2448,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionMixteVersDepense() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.DEPENSE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
@@ -2426,6 +2462,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-2806] Vérifie que l'ouverture d'un for principal avec motif d'ouverture 'permis C/Suisse' planifie une réindexation pour le 1er du mois suivant.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddForPrincipalDateReindexationFutur1() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
@@ -2446,6 +2483,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-2806] Vérifie que l'ouverture d'un for principal avec motif d'ouverture 'changement mode d'imposition' planifie une réindexation pour le 1er du mois suivant.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddForPrincipalDateReindexationFutur2() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
@@ -2466,6 +2504,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-2806] Vérifie qu'un changement du mode d'imposition planifie une réindexation pour le 1er du mois suivant.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testChangeModeImpositionDateReindexationFutur() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
@@ -2482,6 +2521,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationForSansOidGestion() throws Exception {
 
 		// mise en place
@@ -2533,6 +2573,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationSurContribuableHS() throws Exception {
 
 		class Ids {
@@ -2596,6 +2637,7 @@ public class TacheServiceTest extends BusinessTest {
 
 	@Ignore(value = "Après la correction du cas jira UNIREG-2378, on a découvert qu'une tâche d'envoi de DI est générée à tort")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationSurContribuableHSAvecImmeuble() throws Exception {
 
 		// TODO(msi,jde) Enlever le @Ignore une fois le cas UNIREG-2380 corrigé.
@@ -2674,6 +2716,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-2439] Vérifie qu'aucune tâche d'envoi de DIs n'est émise lors du divorce d'un ménage commun de sourciers purs.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDivorceMenageCommunSourcePur() throws Exception {
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -2762,6 +2805,7 @@ public class TacheServiceTest extends BusinessTest {
 	// Note: ce test était initialement dans la classe TiersServiceTest
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermetureForFiscalPrincipalUNIREG1888() throws Exception {
 		final RegDate dateOuverture = RegDate.get(2006, 7, 1);
 
@@ -2817,6 +2861,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsOptionnelles() throws Exception {
 
 		// Contribuable hors-Suisse avec un immeuble dans le canton
@@ -2842,6 +2887,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsRemplaceesParNote() throws Exception {
 
 		// Contribuable hors-Canton qui commence une activité indépendante à Renense et décède la même année
@@ -2867,6 +2913,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsCasDuDiplomateSuisse() throws Exception {
 
 		// Contribuable du diplomate suisse basé à l'étranger
@@ -2891,6 +2938,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsSansDIAvecTacheEnvoiPreexistante() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -2913,6 +2961,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsSansDIAvecTacheEnvoiPreexistanteMaisIncorrecte() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -2940,6 +2989,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsSansDISansForsAvecTacheEnvoi() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -2963,6 +3013,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDI() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -2985,6 +3036,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDIHorsPeriode() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3010,6 +3062,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDITypeContribuableIncompatible() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3033,6 +3086,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDIAvecTacheAnnulationIncorrecte() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3062,6 +3116,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDIAvecTacheAnnulationCorrecte() throws Exception {
 
 		final int anneeCourante = RegDate.get().year();
@@ -3093,6 +3148,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDISansForFiscal() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3115,6 +3171,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDISansForFiscalAvecTacheAnnulation() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3140,6 +3197,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsUneDIDejaAnnuleeSansForFiscalAvecTacheAnnulation() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3169,6 +3227,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchent() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3195,6 +3254,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchentEtTypeContribuableIncompatible() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3222,6 +3282,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchentSansCorrespondanceParfaiteDesDates() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3248,6 +3309,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsDeuxDIsSansForFiscalAvecUneTacheAnnulation() throws Exception {
 
 		final int anneePrecedente = RegDate.get().year() - 1;
@@ -3283,6 +3345,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [date arrivée; 31 décembre]. Le départ provoque la création d'une nouvelle tâche d'envoi de DI sur la période [date arrivée; date départ]. Ce test vérifie que le première tâche d'envoi est bien annulée automatiquement.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsArriveeHSEtDepartHSMemeAnnee() throws Exception {
 
 		final RegDate aujourdhui = RegDate.get();
@@ -3359,6 +3422,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-1653] Vérifie que l'ouverture dans une période passée d'un for fiscal pour motif veuvage génère bien une tâche d'envoi de DI.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsVeuvageTraiteTardivement() throws Exception {
 
 		final RegDate aujourdhui = RegDate.get();
@@ -3393,6 +3457,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-2685] Vérifique que les déclarations valides pour l'année courante (= DIs libres) ne sont pas annulées automatiquement.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsLibres() throws Exception {
 
 		final int anneeCourante = RegDate.get().year();
@@ -3413,6 +3478,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-3028] Vérifie que l'annulation d'un for fiscale HC activité indépendante et son remplacement par un for ordinaire VD (cas du ctb n°833.153.01)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsAnnulationForActiviteIndependenteHCEtRemplacementForOrdinaireVD() throws Exception {
 
 		final int anneeCourante = RegDate.get().year();
@@ -3563,6 +3629,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * partielle (cas du contribuable n°100.104.57).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsAnnulationForIndigentEtRemplacementForOrdinaire() throws Exception {
 
 		final int anneeCourante = RegDate.get().year();
@@ -3704,7 +3771,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRecalculTachesAvecDiSansTypeContribuable() throws Exception {
 
 		final long noInd = 333908L;
@@ -3765,7 +3831,6 @@ public class TacheServiceTest extends BusinessTest {
 
 	// [SIFISC-1288]
 	@Test
-	@NotTransactional
 	public void testRecalculTachesAvecDiSansTypeContribuableEtDeuxTachesAnnulationEtEnvoi() throws Exception {
 
 		final long noInd = 333908L;
@@ -3869,7 +3934,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRecalculTachesApresDepartHSAvecImmeuble() throws Exception {
 
 		final long noInd = 333908L;
@@ -3939,6 +4003,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * (rattrapage) sont assignées à l'OID courant.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsDecesAvecRattrapage() throws Exception {
 
 		final RegDate aujourdhui = RegDate.get();
@@ -4065,7 +4130,6 @@ public class TacheServiceTest extends BusinessTest {
 	 * Cas du Jira UNIREG-2735
 	 */
 	@Test
-	@NotTransactional
 	public void testDepartHorsSuisseDansPeriodeEnCours() throws Exception {
 
 		final long noIndividu = 12345678L;
@@ -4215,7 +4279,6 @@ public class TacheServiceTest extends BusinessTest {
 	 * Cas du Jira UNIREG-2735
 	 */
 	@Test
-	@NotTransactional
 	public void testDecesDansPeriodeEnCours() throws Exception {
 
 		final long noIndividu = 12345678L;
@@ -4352,6 +4415,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-3223] Vérifie que la fermeture d'un for principal pour cause de décès sur un sourcier pur parti hors-canton ne génère pas de tâche de transmission de dossier
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesSourcierPur() throws Exception {
 
 		final PersonnePhysique marcel = addNonHabitant("Marcel", "Longuesmanches", date(1923, 4, 22), Sexe.MASCULIN);
@@ -4364,7 +4428,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationDeclarationDansPeriodeEnCours() throws Exception {
 
 		// par exemple sur une annulation de décès :
@@ -4448,7 +4511,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAnnulationTacheEnvoiDeclarationDansPeriodeEnCours() throws Exception {
 
 		// par exemple sur une annulation de décès :
@@ -4544,7 +4606,6 @@ public class TacheServiceTest extends BusinessTest {
 	 * Encore un cas du UNIREG-2735
 	 */
 	@Test
-	@NotTransactional
 	public void testTacheAnnulationDIQuittanceeSurAnnulationDepartHS() throws Exception {
 
 		// exemple:
@@ -4671,7 +4732,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testModificationDateFinAssujettissementDansPeriodeCourante() throws Exception {
 
 		// par exemple :
@@ -4787,7 +4847,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testModificationDateFinAssujettissementDansPeriodeCouranteAvecDI() throws Exception {
 
 		// par exemple :
@@ -4880,7 +4939,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsSuisseVenteDernierImmeubleDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HS qui possède un immeuble et qui le vend dans la période courante
@@ -4928,7 +4986,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsSuisseFinActiviteIndependanteDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HS qui a une activité indépendante et qui l'arrête dans la période courante
@@ -4982,7 +5039,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsCantonVenteDernierImmeubleDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HC qui possède un immeuble et qui le vend dans la période courante
@@ -5029,7 +5085,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testHorsCantonFinActiviteIndependanteDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HC qui a une activité indépendante et qui l'arrête dans la période courante
@@ -5076,7 +5131,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDiLibre() throws Exception {
 
 		// contribuable assujetti depuis le début de l'année qui se fait faire une DI libre en annonçant son départ
@@ -5126,7 +5180,6 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testNouvelleFinAssujettissementAvecDICouranteDejaEmise() throws Exception {
 
 		// cas d'un contribuable dont on apprend aujourd'hui seulement le départ HS
@@ -5220,6 +5273,7 @@ public class TacheServiceTest extends BusinessTest {
 	 */
 	@Rollback
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetOfficeImpot() throws Exception {
 
 		final TacheServiceImpl service = new TacheServiceImpl();

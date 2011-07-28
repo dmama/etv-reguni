@@ -1,5 +1,16 @@
 package ch.vd.uniregctb.tiers;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -9,16 +20,13 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
-import ch.vd.uniregctb.type.*;
-import org.apache.log4j.Logger;
-import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.TransactionStatus;
-
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,6 +62,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParTypeEtatTache() throws Exception {
 
 		loadDatabase();
@@ -89,6 +98,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParTypeTache() throws Exception {
 
 		loadDatabase();
@@ -132,6 +142,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParTypeTacheInverse() throws Exception {
 
 		loadDatabase();
@@ -189,6 +200,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParDateCreation() throws Exception {
 
 		loadDatabase();
@@ -241,6 +253,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParAnnee() throws Exception {
 
 		loadDatabase();
@@ -271,6 +284,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindParContribuable() throws Exception {
 
 		loadDatabase();
@@ -304,6 +318,7 @@ public class TacheDAOTest extends CoreDAOTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindAvecPagination() throws Exception {
 		loadDatabase();
 		ParamPagination paramPagination = new ParamPagination(1, 1, null, false);
@@ -319,6 +334,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testUpdateCollAdmAssignee() throws Exception {
 
 		class Ids {

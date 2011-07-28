@@ -1,28 +1,32 @@
 package ch.vd.uniregctb.situationfamille;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.*;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Erreur;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.ErreurType;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Ignore;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.IgnoreType;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Situation;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleDAO;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Testos della procezzario e pizza.
@@ -45,6 +49,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationIdNull() {
 		try {
 			processor.traiterSituation(null, date(2000, 1, 1));
@@ -56,6 +61,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationInexistante() {
 		try {
 			processor.traiterSituation(12345L, date(2000, 1, 1));
@@ -67,6 +73,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationBaremeNormal() throws Exception {
 
 		final RegDate dateTraitement = date(2007, 1, 1);
@@ -103,6 +110,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationDoubleGain() throws Exception {
 
 		final RegDate dateTraitement = date(2007, 1, 1);
@@ -163,11 +171,13 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRetrieveSituationsDoubleGainBaseVide() {
 		assertEmpty(processor.retrieveSituationsDoubleGain(date(2007, 1, 1)));
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRetrieveSituationsDoubleGainDiversesSituations() throws Exception {
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -195,6 +205,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRunBaseVide() {
 
 		final ReinitialiserBaremeDoubleGainResults rapport = processor.run(date(2007,1,1), null);
@@ -205,6 +216,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRunSituationDoubleGain() throws Exception {
 
 		class Ids {
@@ -262,7 +274,6 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	/**
 	 * Cas spécial du traitement à rebours : en premier 2010, puis 2009 (pour faire compliqué, ça ne devrait pas arriver en production).
 	 */
-	@NotTransactional
 	@Test
 	public void testRunCasSpecial() throws Exception {
 

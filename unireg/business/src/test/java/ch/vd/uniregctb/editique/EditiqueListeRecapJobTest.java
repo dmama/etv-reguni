@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -40,7 +39,6 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	}
 
 	@Test(timeout = 120000)
-	@NotTransactional
 	/**
 	 * Not transactional: pour rendre visibles les données DBUnit au job qui tourne dans un autre thread
 	 */

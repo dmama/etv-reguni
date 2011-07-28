@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -81,6 +82,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	}
 
 	@Test(timeout=10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOrdreTraitement() throws Exception {
 
 		final MyProcessor processor = new MyProcessor();
@@ -143,6 +145,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	 * on s'y attend (une ancienne implémentation faisait échouer ce test)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSyncOnOneElement() throws Exception {
 		final MyProcessor processor = new MyProcessor();
 		buildAsyncProcessor(processor, 1);

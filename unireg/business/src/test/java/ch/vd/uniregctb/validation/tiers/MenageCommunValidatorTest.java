@@ -3,6 +3,7 @@ package ch.vd.uniregctb.validation.tiers;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
@@ -26,6 +27,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForsMenageCommun() {
 
 		/*
@@ -116,6 +118,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 	 * Teste le cas ou un ménage précédemment fermé (fors et rapports entre tiers) est rouvert comme résultat, par exemple, d'une action d'annulation.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReovertureForsEtRapports() {
 
 		{
@@ -152,6 +155,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 	 * Vérifie que le validator détecte bien les ménages à trois.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetecteMenageATroisSimultanes() {
 
 		MenageCommun mc = new MenageCommun();
@@ -173,6 +177,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 	 * Vérifie que le validator détecte bien les ménages à trois.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetecteMenageATroisSequentiel() {
 
 		MenageCommun mc = new MenageCommun();

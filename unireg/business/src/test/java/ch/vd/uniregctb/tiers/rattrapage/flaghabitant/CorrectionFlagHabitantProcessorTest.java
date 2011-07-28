@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
+import org.apache.log4j.Logger;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -7,11 +13,8 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.*;
-import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 
 public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 
@@ -97,6 +100,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHabitantForVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.HABITANT, true);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);
@@ -106,6 +110,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHabitantForNonVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.HABITANT, false);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);
@@ -115,6 +120,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonHabitantAncienHabitantForVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.NON_HABITANT_AVEC_NO_INDIVIDU, true);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);
@@ -124,6 +130,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonHabitantInconnuForVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.NON_HABITANT_SANS_NO_INDIVIDU, true);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);
@@ -144,6 +151,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonHabitantAncienHabitantForNonVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.NON_HABITANT_SANS_NO_INDIVIDU, false);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);
@@ -153,6 +161,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonHabitantInconnuForNonVaudois() throws Exception {
 		final long id = createPersonnePhysique(TypePersonnePhysique.NON_HABITANT_AVEC_NO_INDIVIDU, false);
 		final CorrectionFlagHabitantSurPersonnesPhysiquesResults results = runProcessorPersonnesPhysiques(1);

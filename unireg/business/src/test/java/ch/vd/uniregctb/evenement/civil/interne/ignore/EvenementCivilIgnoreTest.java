@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest {
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCompleteness() {
 		final EvenementCivilInterne evt = new EvenementCivilIgnore(TypeEvenementCivil.ETAT_COMPLET, context);
 
@@ -26,6 +28,7 @@ public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest 
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws EvenementCivilException {
 		final EvenementCivilInterne evt = new EvenementCivilIgnore(TypeEvenementCivil.ETAT_COMPLET, context);
 

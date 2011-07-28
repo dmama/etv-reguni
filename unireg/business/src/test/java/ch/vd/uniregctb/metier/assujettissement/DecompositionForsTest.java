@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -8,9 +11,11 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -23,6 +28,7 @@ public class DecompositionForsTest extends MetierTest {
 	 */
 	@SuppressWarnings({"deprecation"})
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecompositionFermetureForPrincipalFinAnnee() throws Exception {
 
 		final RegDate dateAchat = date(1998, 10, 17);

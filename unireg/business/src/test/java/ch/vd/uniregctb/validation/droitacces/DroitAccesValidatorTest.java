@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.droitacces;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.DroitAcces;
@@ -16,6 +17,7 @@ public class DroitAccesValidatorTest extends AbstractValidatorTest<DroitAcces> {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDroitAccesAnnule() {
 
 		final DroitAcces acces = new DroitAcces();

@@ -29,7 +29,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -50,7 +49,6 @@ import static org.junit.Assert.assertEquals;
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class
 /*, OpenSessionInTestExecutionListener.class*/})
-@Transactional(rollbackFor = Throwable.class)
 public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 	protected PlatformTransactionManager transactionManager;

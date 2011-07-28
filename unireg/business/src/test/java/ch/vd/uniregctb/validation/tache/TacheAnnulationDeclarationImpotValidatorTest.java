@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.tache;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -20,6 +21,7 @@ public class TacheAnnulationDeclarationImpotValidatorTest extends AbstractValida
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTacheAnnulee() {
 
 		final TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, null, null);

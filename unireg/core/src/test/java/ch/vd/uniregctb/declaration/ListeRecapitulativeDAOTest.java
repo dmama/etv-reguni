@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -42,6 +43,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	 * Teste la methode qui recherche les LRs suivant certains criteres
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		ListeRecapCriteria criterion = new ListeRecapCriteria();
@@ -60,6 +62,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	 * Teste la methode qui renvoi les LRs d'un contribuable
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindByNumero() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		List<DeclarationImpotSource> lrs = lrDao.findByNumero(new Long(12500001));
@@ -73,6 +76,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	 * de la derniere LR envoyee pour un contribuable donne
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindDerniereLrEnvoyee() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);

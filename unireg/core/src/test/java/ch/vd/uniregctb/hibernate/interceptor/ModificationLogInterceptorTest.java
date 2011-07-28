@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.hibernate.interceptor;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.Date;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -21,6 +18,10 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 public class ModificationLogInterceptorTest extends CoreDAOTest {
 
@@ -36,6 +37,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreationInfos() throws Exception {
 
 		String activeUser = "BlaBla";
@@ -63,6 +65,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationInfos() throws Exception {
 
 		final String activeUser = "BlaBla";
@@ -122,6 +125,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	 * Test qu'une modification du numéro Ofs du for principal est bien détectée
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationForFiscaux() throws Exception {
 
 		final String activeUser = "BlaBla";

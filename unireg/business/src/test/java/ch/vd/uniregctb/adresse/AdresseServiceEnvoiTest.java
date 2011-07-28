@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -61,6 +62,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonnePhysiqueSansComplementNiCasePostale() throws Exception {
 		final long noIndividu = 1;
 
@@ -141,6 +143,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleSansComplementNiCasePostale() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -240,6 +243,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	 * [UNIREG-2234] Vérifie que l'adresse complète du couple est disponible, même après la date de séparation/divorce
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleApresDivorce() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -324,6 +328,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonnePhysiqueAvecComplement() throws Exception {
 		final long noIndividu = 1;
 
@@ -406,6 +411,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonnePhysiqueAvecCasePostale() throws Exception {
 		final long noIndividu = 1;
 
@@ -487,6 +493,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonnePhysiqueAvecComplementEtCasePostale() throws Exception {
 		final long noIndividu = 1;
 
@@ -569,6 +576,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleAvecComplementEtCasePostale() throws Exception {
 
 		final long noIndividuPrincipal = 2;
@@ -663,6 +671,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSansAdresseSurPersonnePhysique() throws Exception {
 
 		final long noIndividu = 1;
@@ -754,6 +763,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableAvecAdresseCourrierSurPersonnePhysique() throws Exception {
 
 		final long noIndividu = 1;
@@ -877,6 +887,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurCollectiviteAdministrative() throws Exception {
 
 		final int noTribunalCantonal = 1;
@@ -983,6 +994,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurEntreprise() throws Exception {
 
 		servicePM.setUp(new MockServicePM() {
@@ -1104,6 +1116,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableAvecAdresseCourrierSurEntreprise() throws Exception {
 
 		serviceInfra.setUp(new MockServiceInfrastructureService() {
@@ -1291,6 +1304,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCollectiviteAdministrative() throws Exception {
 
 		final int noCollectivite = 1;
@@ -1399,6 +1413,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonnePhysiqueSousTutelle() throws Exception {
 		final long noPupille = 1;
 		final long noTuteur = 2;
@@ -1542,6 +1557,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleAvecPrincipalSousTutelle() throws Exception {
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
@@ -1703,6 +1719,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleAvecConjointSousTutelle() throws Exception {
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
@@ -1824,6 +1841,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCouplePrincipalEtConjointSousTutelle() throws Exception {
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
@@ -2009,6 +2027,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	 * [UNIREG-2915] Cas du contribuable n° 808'172'14 qui provoquait un assert dans le calcul du représentant (à cause du conjoint décédé)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleConjointSousTutelleEtDecede() throws Exception {
 
 		final long noIndPrincipal = 615125;
@@ -2145,6 +2164,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 	// [UNIREG-749] Ajout d'un suffixe 'défunt' en cas de décès
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiCoupleEnCasDeces() throws Exception {
 
 		final RegDate dateDeces = date(2002, 2, 2);
@@ -2409,6 +2429,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiEntrangere() throws Exception {
 
 		final RegDate aujourdhui = RegDate.get();
@@ -2469,6 +2490,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseEnvoiCurateurDeMadameHabitanteAvecMonsieurNonHabitant() throws Exception {
 
 		// test créé pour le cas jira UNIREG-1954
@@ -2521,6 +2543,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiJalHolding() throws Exception {
 
 		servicePM.setUp(new DefaultMockServicePM());
@@ -2604,6 +2627,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiEvianRussie() throws Exception {
 
 		servicePM.setUp(new DefaultMockServicePM());

@@ -1,19 +1,27 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.*;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.EvenementFiscalLR;
+import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
-import org.junit.Test;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class EvenementFiscalServiceTest extends BusinessTest {
 
@@ -45,6 +53,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPublierEvenementNullArgument() throws Exception {
 		try {
 			evenementFiscalService.publierEvenementFiscal(null);
@@ -56,6 +65,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPublierEvenementFor() throws Exception {
 
 		evenementFiscalSender.count = 0;
@@ -76,6 +86,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void publierEvenementFiscalRetourLR() throws Exception {
 
 		evenementFiscalSender.count = 0;
@@ -96,6 +107,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void publierEvenementFiscalChangementSituation() throws Exception {
 
 		evenementFiscalSender.count = 0;

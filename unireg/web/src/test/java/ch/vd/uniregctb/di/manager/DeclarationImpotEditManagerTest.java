@@ -3,6 +3,7 @@ package ch.vd.uniregctb.di.manager;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
@@ -61,6 +62,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableNonAssujetti() {
 
 		// le contribuable n'est pas assujetti, il ne doit pas être possible d'ajouter une DI
@@ -89,6 +91,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAssujettiEnContinu() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -114,6 +117,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecFinAssujettissement() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -146,6 +150,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecDebutAssujettissement() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -174,6 +179,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecDepartHSEtRetourDansLAnnee() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -204,6 +210,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	 * [UNIREG-1118] Vérifie que l'on fusionne les périodes qui provoqueraient des déclarations identiques contiguës.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableDepartHSAvecImmeuble() {
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -227,6 +234,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableNonAssujetti() {
 
 		// le contribuable n'est pas assujetti, il ne doit pas être possible d'ajouter une DI
@@ -236,6 +244,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAssujettiEnContinu() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -258,6 +267,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableDepartHSAvecImmeuble() {
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -293,6 +303,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	 * l'autre canton et il ne doit pas être possible d'envoyer une déclaration d'impôt.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableHCVenteImmeuble() {
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -354,6 +365,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableDeclarationAnnulee() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -385,6 +397,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableDansLeFutur() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -408,6 +421,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecFinAssujettissement() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -440,6 +454,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecDebutAssujettissement() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
@@ -469,6 +484,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecDepartHSEtRetourDansLAnnee() {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);

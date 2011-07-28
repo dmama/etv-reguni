@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
@@ -114,6 +114,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjointSurvivantCelibataire() throws Exception {
 		// Cas du célibataire
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -130,6 +131,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjointSurvivantMarieSeul() throws Exception {
 		// Cas du marié seul
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -145,6 +147,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjointSurvivantMarieCouple() throws Exception {
 		// Cas du marié
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -160,6 +163,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjointSurvivantPacse() throws Exception {
 		// Cas du pacsé
 		PersonnePhysique habitant = new PersonnePhysique(true);
@@ -239,6 +243,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesPersonneSeule() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne seule.");
@@ -281,6 +286,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesPersonneMarieeAvecSuisseOuPermisC() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un suisse ou étranger avec permis C.");
@@ -377,6 +383,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesPersonneMarieeAvecEtrangerSansPermisC() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un étranger sans permis C.");
@@ -488,7 +495,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	 * Un événement civil de décès doit faire passer le décédé en "non-habitant" même si le décès avait déjà été traité fiscalement
 	 */
 	@Test
-	@NotTransactional
 	public void testDecesCivilApresDecesFiscalEtFlagHabitant() throws Exception {
 
 		final long noIndividu = 12356723L;

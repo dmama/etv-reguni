@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers3.data;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.uniregctb.webservices.tiers3.EnumTest;
@@ -12,11 +13,13 @@ import static junit.framework.Assert.assertNull;
 public class RapportEntreTiersTest extends EnumTest {
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTypeCoherence() {
 		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTypeFromValue() {
 		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeRapportEntreTiers) null));
 		assertEquals(RelationBetweenPartiesType.GUARDIAN, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.TUTELLE));

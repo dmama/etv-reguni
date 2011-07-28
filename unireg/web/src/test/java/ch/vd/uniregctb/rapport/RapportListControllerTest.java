@@ -3,8 +3,8 @@ package ch.vd.uniregctb.rapport;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 public class RapportListControllerTest  extends AbstractRapportControllerTest {
@@ -26,6 +26,7 @@ public class RapportListControllerTest  extends AbstractRapportControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		request.setMethod("GET");
@@ -39,6 +40,7 @@ public class RapportListControllerTest  extends AbstractRapportControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 
 		request.setMethod("POST");

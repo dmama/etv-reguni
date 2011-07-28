@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.utils.Pair;
@@ -49,6 +49,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
@@ -79,6 +80,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleNaissanceFinAnnee() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de naissance en fin d'année.");
@@ -113,6 +115,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleMajeur() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
@@ -137,7 +140,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-3244] Teste que le traitement d'un événement civil de naissance provoque bien l'envoi d'un événement fiscal de naissance.
 	 */
 	@Test
-	@NotTransactional
 	public void testHandlePourEnvoiEvenementFiscalDeNaissance() throws Exception {
 
 		final long indPere = 1;

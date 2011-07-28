@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
@@ -75,6 +76,7 @@ public class DetermineDIsJobTest extends JobTest {
 	 * Teste que le job de détermination des DIs en masse fonctionne sans erreur
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsEnMasse() throws Exception {
 
 		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");

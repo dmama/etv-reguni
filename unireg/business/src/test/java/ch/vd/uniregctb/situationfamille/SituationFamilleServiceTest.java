@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -56,6 +57,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueNonHabitantSansSituationFamille() {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
@@ -76,6 +78,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueNonHabitantAvecSituationsFamille() {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
@@ -131,6 +134,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueHabitantSansEtatCivil() {
 
 		final long noIndividu = 1;
@@ -162,6 +166,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueHabitantAvecPlusieursEtatsCivils() {
 
 		final long noIndividu = 1;
@@ -211,6 +216,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueHabitantAvecEtatsCivilsEtSituationsFamille() {
 
 		final long noIndividu = 1;
@@ -277,6 +283,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHabitantAnnulerSituationsFamille() {
 
 		final long noIndividu = 1;
@@ -366,6 +373,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueMenageCommunSansSituationFamille() {
 
 		MenageCommun menage = new MenageCommun();
@@ -384,6 +392,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueMenageCommunAvecSituationsFamille() {
 
 		PersonnePhysique madame = new PersonnePhysique(true);
@@ -482,6 +491,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueEntreprise() {
 
 		Entreprise entreprise = new Entreprise();
@@ -523,6 +533,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivil() {
 
 		final long NO_PIERRE = 1;
@@ -620,6 +631,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 	// [UNIREG-823] le dernier état-civil doit être fermé à la date de décès si l'individu est décédé.
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHabitantDecede() {
 
 		final long noIndividu = 1;
@@ -657,6 +669,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 	 * [UNIREG-1673] Vérifie qu'une NullPointerException ne survient pas dans le cas tordu ci-dessous.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetVueHabitantAvecEtatsCivilsDatesDebutNulles() {
 
 		final long noIndividu = 1;

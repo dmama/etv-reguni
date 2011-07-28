@@ -1,18 +1,19 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class IdentCtbDAOTest extends CoreDAOTest {
 
@@ -50,6 +51,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 	 * Teste la methode find
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 
 		IdentificationContribuableCriteria identificationContribuableCriteria = new IdentificationContribuableCriteria();

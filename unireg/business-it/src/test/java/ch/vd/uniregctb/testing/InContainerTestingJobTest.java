@@ -2,7 +2,6 @@ package ch.vd.uniregctb.testing;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -28,7 +27,6 @@ public class InContainerTestingJobTest extends BusinessItTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testJob() throws Exception {
 
 		JobDefinition job = batchScheduler.startJob(InContainerTestingJob.NAME, null);

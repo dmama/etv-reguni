@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -55,6 +55,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateNomVideNonHabitant() {
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
@@ -77,6 +78,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateNomCaracteresSpeciauxNonHabitant() {
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
@@ -123,6 +125,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidatePrenomCaracteresSpeciauxNonHabitant() {
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
@@ -174,6 +177,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForOK() {
 
 		final PersonnePhysique hab = createHabitantWithFors();
@@ -182,6 +186,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForAdresseDebutApresDateFin() {
 
 		final PersonnePhysique hab = createHabitantWithFors();
@@ -201,6 +206,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateMotifRattachement() {
 
 		PersonnePhysique hab = createHabitantWithFors();
@@ -221,6 +227,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 	// UNIREG-601: un tiers annulé doit toujours valider
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateTiersAnnule() {
 
 		// habitant qui valide
@@ -249,6 +256,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsPrincipaux() {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
@@ -312,6 +320,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	 * Teste que le chevauchement sur un seul jour est détecté (cas limite).
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsPrincipauxCasLimite() {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
@@ -354,6 +363,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsPrincipauxForIntermediateOuvert() {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
@@ -432,6 +442,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	 * Vérifie qu'on valide bien qu'on for secondaire doit toujours posséder un for principal pendant sa période de validité.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForSecondaireVersusForPrincipal() {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
@@ -472,6 +483,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationAdresses() throws Exception {
 
 		PersonnePhysique nh = new PersonnePhysique(false);
@@ -593,6 +605,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	 * [UNIREG-467]
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationAdressesAvecAdressesAnnulees() throws Exception {
 
 		final PersonnePhysique nh = new PersonnePhysique(false);
@@ -724,6 +737,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSansChevauchementRepresentationsLegales() throws Exception {
 
 		final class Ids {
@@ -767,6 +781,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAvecChevauchementSimpleRepresentationsLegales() throws Exception {
 
 		final class Ids {
@@ -820,7 +835,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
-	@NotTransactional
 	public void testAvecChevauchementRépartiRepresentationsLegales() throws Exception {
 
 		final class Ids {
@@ -880,7 +894,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
-	@NotTransactional
 	public void testAvecChevauchementMultipleRepresentationsLegales() throws Exception {
 
 		final class Ids {
@@ -942,6 +955,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 	// [SIFISC-719] on vérifie que les rapports de représentation conventionnels ne se chevauchent pas
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRapportsRepresentationConventionnels() throws Exception {
 
 		final PersonnePhysique representant = addNonHabitant("Lionel", "Schtroumpf", date(1954, 7, 23), Sexe.MASCULIN);

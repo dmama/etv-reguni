@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import static junit.framework.Assert.assertEquals;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
@@ -15,6 +14,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+
+import static junit.framework.Assert.assertEquals;
 
 public class TiersAdresseManagerTest extends WebTest {
 
@@ -53,6 +54,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	 */
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseView() throws Exception {
 		AdresseView adview = adresseManager.getAdresseView(new Long(5));
 		assertEquals("75012 PARIS", adview.getLocaliteNpa());
@@ -60,6 +62,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSaveAdresseSuisse() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
@@ -78,6 +81,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifyAdresseSuisse() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
@@ -98,6 +102,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSaveAdresseEtrangere() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
@@ -117,6 +122,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifyAdresseEtrangere() throws Exception {
 
 		AdresseView adresseView = new AdresseView();

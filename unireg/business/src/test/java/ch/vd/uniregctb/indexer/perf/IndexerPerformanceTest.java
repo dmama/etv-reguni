@@ -7,6 +7,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -60,6 +61,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPerf() throws Exception {
 
 		boolean runTestPerf = false;

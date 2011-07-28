@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -105,6 +106,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	 * Compare les résultats retournés par les méthodes 'get' des daos Jdbc et Hibernate
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiers() {
 
 		LOGGER.info("Liste des ids fixes utilisés pour la comparaison = " + Arrays.toString(fixedIds.toArray()));
@@ -127,6 +129,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 	 * Compare les résultats retournés par les méthodes 'getBatch' des daos Jdbc et Hibernate
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersBatch() {
 
 		LOGGER.info("Liste des ids fixes utilisés pour la comparaison = " + Arrays.toString(fixedIds.toArray()));

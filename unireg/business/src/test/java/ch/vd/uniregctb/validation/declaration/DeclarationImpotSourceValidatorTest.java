@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.declaration;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -15,6 +16,7 @@ public class DeclarationImpotSourceValidatorTest extends AbstractValidatorTest<D
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDeclarationAnnulee() {
 
 		final DeclarationImpotSource lr = new DeclarationImpotSource();

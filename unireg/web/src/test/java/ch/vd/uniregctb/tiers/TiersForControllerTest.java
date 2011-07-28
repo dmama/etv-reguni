@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,6 +49,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -69,6 +71,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalMotifOuverture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -93,6 +96,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalMotifFermeture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -116,6 +120,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalDateDebut() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -139,6 +144,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalDateDebutFuture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -164,6 +170,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalDateFinFuture() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -188,6 +195,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipalDateError() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -212,6 +220,7 @@ public class TiersForControllerTest  extends WebTest {
 	}
 	
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitForPrincipal() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -239,6 +248,7 @@ public class TiersForControllerTest  extends WebTest {
 	 * [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddForPrincipalSurPaysInvalide() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>(){
@@ -280,6 +290,7 @@ public class TiersForControllerTest  extends WebTest {
 	 * [UNIREG-3338] en cas de modification d'un for fiscal existant, le pays peut être invalide
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFermetureForPrincipalSurPaysInvalide() throws Exception {
 
 		class Ids {

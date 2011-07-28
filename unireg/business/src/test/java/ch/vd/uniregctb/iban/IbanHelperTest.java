@@ -3,6 +3,7 @@ package ch.vd.uniregctb.iban;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 
@@ -12,6 +13,7 @@ public class IbanHelperTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemoveSpaceAndDoUpperCase() {
 
 		LOGGER.debug("Début de test removeSpaceAndDoUpperCase");
@@ -27,6 +29,7 @@ public class IbanHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPerfRemoveSpaceAndDoUpperCase() {
 
 		LOGGER.debug("Début de test removeSpaceAndDoUpperCase");

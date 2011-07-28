@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -52,6 +52,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDINull() {
 		try {
 			processor.traiterDI(null, new EchoirDIsResults(date(2000, 1, 1)));
@@ -64,6 +65,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDIInexistante() {
 		try {
 			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsResults(date(2000, 1, 1)));
@@ -76,6 +78,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDISansEtat() throws Exception {
 
 		// Crée une déclaration sans état
@@ -103,6 +106,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDINonSommee() throws Exception {
 
 		final RegDate dateTraitement = date(2009, 1, 1);
@@ -136,7 +140,6 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRunAvecDINonSommee() throws Exception {
 
 		final RegDate dateTraitement = date(2009, 1, 1);
@@ -162,7 +165,6 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDIDelaiNonDepasse() throws Exception {
 
 		final RegDate dateTraitement = date(2008, 8, 1);
@@ -192,7 +194,6 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDIDelaiDepasse() throws Exception {
 
 		final RegDate dateTraitement = date(2008, 9, 1);
@@ -236,7 +237,6 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testDITiersInvalide() throws Exception {
 
 		final RegDate dateTraitement = date(2008, 9, 1);
@@ -260,6 +260,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDIDejaEchue() throws Exception {
 
 		final RegDate dateTraitement = date(2009, 1, 1);

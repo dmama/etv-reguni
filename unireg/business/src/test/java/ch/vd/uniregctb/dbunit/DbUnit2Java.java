@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -100,6 +101,7 @@ public class DbUnit2Java extends BusinessTest {
 	 */
 	@Ignore(value = "à lancer à la main lorsque nécessaire")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void convertXMLToJavaCode() throws Exception {
 
 		initMetaData();

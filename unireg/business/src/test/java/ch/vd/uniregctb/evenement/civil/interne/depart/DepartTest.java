@@ -10,6 +10,7 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -337,6 +338,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 *
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleJira1996() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
@@ -361,6 +363,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleJira2161() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de départ secondaire alors qu'aucune adresse secondaire n'est valide");
@@ -391,6 +394,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste la complétude du départ d'un individu seul.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuSeul() throws Exception {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -408,6 +412,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste la complétude du départ d'un individu Marié seul.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuMarieSeul() throws Exception {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -426,6 +431,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste la complétude du départ d'un individu Marié seul.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuMarie() throws Exception {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -534,6 +540,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste la validation d'un départ antérieur à la date de fin de validité de l'adresse principale.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDepartAnterieurPrincipale() throws Exception {
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle...");
 
@@ -566,6 +573,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste de validation que la nouvelle commune principale n'est pas dans le canton de vaud
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateNouvelleCommunePrinHorsCanton() throws Exception {
 
 		LOGGER.debug("Test si la nouvelle commune principale est hors canton...");
@@ -586,6 +594,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Teste de validation de la commune d'annonce
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateCommuneAnnoncePrincipal() throws Exception {
 
 		LOGGER.debug("Teste si la commune d'annonce principale est correcte...");
@@ -606,6 +615,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 *
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
@@ -630,6 +640,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 *
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleNouvelleAdresseInconnue() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
@@ -650,6 +661,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleDepartHCFinAnnee() throws Exception {
 		final Depart depart = createValidDepart(NO_IND_ALBERT, DATE_EVENEMENT_FIN_ANNEE, true, null);
 		final ForFiscalPrincipal ffp = handleDepart(depart);
@@ -661,6 +673,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * canton) quitte sa résidence secondaire pour sa résidence principale située hors canton
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleDepartSecondaireHorsCanton() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de départ d'une residence secondaire vaudoise.");
@@ -690,6 +703,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * canton) quitte sa résidence secondaire pour sa résidence principale elle-même située dans le canton
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleDepartSecondaireVaudois() throws Exception {
 
 		Depart depart = createValidDepart(NO_IND_RAMONA, DATE_EVENEMENT, false, null);
@@ -751,6 +765,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDeFermetureFinDeMois() throws Exception {
 
 		Depart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, true, null);
@@ -774,6 +789,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDeFermetureNeuchatelDebutMois() throws Exception {
 
 		Depart depart = createValidDepart(1240, DATE_EVENEMENT_DEBUT_MOIS, MockCommune.Neuchatel);
@@ -797,6 +813,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * Update 22.11.2010 [UNIREG-2212] : les dates ne sont plus ajustées dans ce cas-là.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDeFermetureNeuchatelFinMois() throws Exception {
 
 		Depart depart = createValidDepart(1239, DATE_EVENEMENT_FIN_MOIS, MockCommune.Neuchatel);
@@ -818,6 +835,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-1921] En cas de départ secondaire de la commune où se situe également le for principal, rien à faire sur les fors
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartSecondaireDeCommuneAvecForPrincipal() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -870,6 +888,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_AucunFor() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -910,6 +929,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_ForAnnule() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -957,6 +977,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_ForFerme() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1014,6 +1035,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_ForOuvert() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1071,6 +1093,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_MenageAvecFor() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1139,6 +1162,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartCommuneSansAncienneCommuneConnue_MenageSansFor() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1202,6 +1226,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * le for vaudois doit se fermer...
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartSecondaireAvecResidencePrincipaleHC() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1252,6 +1277,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 19 décembre ouvre bien un nouveau for fiscal au 19 décembre sur la nouvelle commune (règle de fin d'année non-active)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartResidenceSecondaire19Decembre() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1300,6 +1326,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 20 décembre ne ferme effectivement le for que le 31 décembre (règle de fin d'année activée)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartResidenceSecondaire20Decembre() throws Exception {
 
 		final long noIndividu = 123456L;
@@ -1348,6 +1375,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-2212] Vérifie qu'un départ hors-Canton au 20 décembre ouvre bien un nouveau for fiscal au 21 décembre sur la nouvelle commune (pas de règle de fin d'année)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartHorsCanton20Decembre() throws Exception {
 
 		final long noIndividu = 123456L;

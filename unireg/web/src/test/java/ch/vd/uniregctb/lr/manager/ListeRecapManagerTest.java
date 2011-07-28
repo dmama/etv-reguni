@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.lr.manager;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebTest;
@@ -16,6 +13,10 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class ListeRecapManagerTest extends WebTest {
 
@@ -38,6 +39,7 @@ public class ListeRecapManagerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreerLr() throws Exception {
 		loadDatabase(DB_UNIT_FILE);
 
@@ -75,6 +77,7 @@ public class ListeRecapManagerTest extends WebTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreerLrForPeriodiciteUnique() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -117,6 +120,7 @@ public class ListeRecapManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesMultiples() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
@@ -159,6 +163,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 	//[UNIREG-3115]
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicites_3115() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference =2009;
@@ -195,6 +200,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 	//[UNIREG-3120]
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicites_3120() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference =2009;
@@ -233,6 +239,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 //[UNIREG-3120] le debiteur n'a pas de for pour la periode pour laquelle on veut générer la lr
 @Test
+@Transactional(rollbackFor = Throwable.class)
 public void testLRForPeriodicites_3120_2() throws Exception{
 //Ajout d'une première periodicite'
 	final int anneeReference =2009;
@@ -270,6 +277,7 @@ public void testLRForPeriodicites_3120_2() throws Exception{
 
 //le debiteur possède plusieurs for mais pas de manière continue
 @Test
+@Transactional(rollbackFor = Throwable.class)
 public void testLRForPeriodicites_3120_3() throws Exception{
 //Ajout d'une première periodicite'
 	final int anneeReference =2009;
@@ -313,6 +321,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 
 
 		@Test
+		@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesMultiplesUniques() throws Exception{
 	//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
@@ -351,6 +360,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesMensuelUnique() throws Exception {
 //Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
 		final int anneeReference = RegDate.get().year();
@@ -391,6 +401,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesMensuelUniqueMensuel() throws Exception{
 	//Ajout d'une première periodicite'
 
@@ -428,6 +439,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesTrimestriel() throws Exception {
 //Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
 		final int anneeReference = RegDate.get().year();
@@ -468,6 +480,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 		public void testLRForPeriodicitesTrimestrielSansDecembre() throws Exception {
 //Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
 			final int anneeReference = RegDate.get().year();
@@ -508,6 +521,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 		}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesUnique() throws Exception {
 //Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
 		final int anneeReference = RegDate.get().year();
@@ -546,6 +560,7 @@ public void testLRForPeriodicites_3120_3() throws Exception{
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testLRForPeriodicitesUniqueSansLR() throws Exception {
 //Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
 		final int anneeReference = RegDate.get().year();

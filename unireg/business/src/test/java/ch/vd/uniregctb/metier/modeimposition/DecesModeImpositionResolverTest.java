@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier.modeimposition;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -37,6 +38,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResolveOrdinaireResteOrdinaireNationaliteSuisse() throws Exception {
 
 		final RegDate date = RegDate.get();
@@ -51,6 +53,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResolveOrdinaireResteOrdinairePermisC() throws Exception {
 
 		final RegDate date = RegDate.get();
@@ -66,6 +69,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResolveOrdinairePasseMixte1() throws Exception {
 
 		final RegDate date = RegDate.get();
@@ -81,6 +85,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResolveNeChangePasEtranger() throws Exception {
 
 		final RegDate date = RegDate.get();
@@ -99,6 +104,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testResolveNeChangePasSuisse() throws Exception {
 
 		final RegDate date = RegDate.get();

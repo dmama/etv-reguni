@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.transaction;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.transaction.dao.SimpleDao;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
 	"/ch/vd/uniregctb/transaction/SimpleServiceTest-spring.xml"
@@ -33,7 +32,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testInsert() {
 
 		String str = "blabla";
@@ -42,7 +40,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testUpdate() {
 
 		int id=44;
@@ -56,7 +53,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testUpdateWithException() {
 
 		int id=89;
@@ -74,7 +70,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testInsertWithException() {
 
 		int id=18;
@@ -89,7 +84,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testRequiresNew() {
 
 		int id = 78;
@@ -97,7 +91,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testInsertRequiresNew() {
 
 		int id1 = 7;
@@ -114,7 +107,6 @@ public class TransactionSimpleServiceTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testInsertLineMandatory() {
 
 		int id = 23;

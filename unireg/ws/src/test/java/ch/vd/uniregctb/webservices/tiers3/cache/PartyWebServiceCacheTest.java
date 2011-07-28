@@ -10,8 +10,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
@@ -161,6 +161,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetParty() throws Exception {
 
 		GetPartyRequest paramsNoPart = new GetPartyRequest();
@@ -223,6 +224,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyAllParts() throws Exception {
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
@@ -245,6 +247,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictParty() throws Exception {
 
 		// On charge le cache avec des tiers
@@ -276,7 +279,6 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	/**
 	 * [UNIREG-2588] Vérifie que l'éviction d'un tiers se propage automatiquement à tous les tiers liés par rapport-entre-tiers
 	 */
-	@NotTransactional
 	@Test
 	public void testEvictPartyCommonHousehold() throws Exception {
 
@@ -344,6 +346,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictDebtorInfo() throws Exception {
 
 		// On charge le cache avec des tiers
@@ -366,6 +369,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyInexistant() throws Exception {
 
 		// Essaie une fois sans part
@@ -387,6 +391,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	 * <li>finalement de nouveau avec ses fors fiscaux virtuels.</li> </ol>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartySpecialCaseVirtualTaxResidences() throws Exception {
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -438,6 +443,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	 * <li>finalement de nouveau avec ses déclarations et leurs états.</li> </ol>
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartySpecialCaseTaxDeclarationsAndStatuses() throws Exception {
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -511,6 +517,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchParty() throws Exception {
 
 		GetBatchPartyRequest params = new GetBatchPartyRequest();
@@ -599,6 +606,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchParty sont correctement gérées au niveau du cache.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchPartyWithExceptionOnTiers() throws Exception {
 
 		GetBatchPartyRequest params = new GetBatchPartyRequest();

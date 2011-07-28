@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -79,6 +79,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierCelibataire() throws Exception {
 
 		setupServiceCivilAndLoadDatabase();
@@ -116,6 +117,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierCelibataireMaisPermisNonC() throws Exception {
 
 		setupServiceCivilAndLoadDatabase();
@@ -153,6 +155,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierMarieSeul() throws Exception {
 
 		setupServiceCivilAndLoadDatabase();
@@ -215,6 +218,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierMarieADeux() throws Exception {
 
 		setupServiceCivilAndLoadDatabase();
@@ -299,7 +303,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testObtentionPermisEtablissementPourAncienHabitant() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
@@ -364,7 +367,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testObtentionPermisNonEtablissementPourAncienHabitant() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
@@ -432,7 +434,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	 * [SIFISC-1199] Vérifie que l'obtention d'un permis C et le passage du mode d'imposition source à ordinaire provoque bien la réindexation dans le futur (= à la fin du mois) du contribuable.
 	 */
 	@Test
-	@NotTransactional
 	public void testDateReindexationSuiteObtentionPermisEtablissementSourcier() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
@@ -511,7 +512,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	 * [SIFISC-1199] Vérifie que l'obtention d'un permis C sur un contribuable non-assujetti (sourcier implicite( provoque bien la réindexation dans le futur (= à la fin du mois) du contribuable.
 	 */
 	@Test
-	@NotTransactional
 	public void testDateReindexationSuiteObtentionPermisEtablissementSourcierImplicite() throws Exception {
 
 		final RegDate dateNaissance = date(1977, 5, 23);

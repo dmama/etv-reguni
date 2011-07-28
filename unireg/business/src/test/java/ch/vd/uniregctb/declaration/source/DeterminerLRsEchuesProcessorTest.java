@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.source;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -39,6 +40,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrNonSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -66,6 +68,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -96,6 +99,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeToutesEmises() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -129,6 +133,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeTresRecemment() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -158,6 +163,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeEtDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -188,6 +194,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecUneLrSommeeEtUneDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -226,6 +233,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecUneLrRetourneeApresSommation() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -258,6 +266,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecPlusieursLrSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

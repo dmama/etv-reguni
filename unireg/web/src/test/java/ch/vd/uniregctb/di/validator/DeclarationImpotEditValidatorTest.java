@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.di.validator;
 
-
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
@@ -51,6 +51,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testEditDelai() {
 		DeclarationImpotDetailView view = new DeclarationImpotDetailView();
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
@@ -64,6 +65,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddDateRetourSuiteEmission() throws Exception {
 		class Ids {
 			Long ericId;
@@ -119,6 +121,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 
 	//SIFISC-90
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCorrectionRetourAvecDateAnterieurEmission() throws Exception {
 		class Ids {
 			Long jeanneId;
@@ -165,6 +168,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAddDateRetourSuiteSommation() throws Exception {
 		class Ids {
 			Long gustaveId;
@@ -221,6 +225,7 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 
 //SIFISC-90
 @Test
+@Transactional(rollbackFor = Throwable.class)
 public void testCorrectionRetourAvecDateAnterieurSommation() throws Exception {
 	class Ids {
 		Long coridonId;

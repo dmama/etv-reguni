@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -70,6 +70,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -81,6 +82,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowFormExistingAdresse() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -93,6 +95,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitAdresseEtrangere() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -114,6 +117,7 @@ public class TiersAdresseControllerTest extends WebTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitAdresseSuisse() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -133,6 +137,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitAdresseSuisseWithNoDateDebut() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -149,6 +154,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitAdresseEtrangereWithNoDateDebut() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -169,6 +175,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitModifyAdresseSuisse() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -191,6 +198,7 @@ public class TiersAdresseControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitModifyAdresseEtrangere() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -215,7 +223,6 @@ public class TiersAdresseControllerTest extends WebTest {
 	/**
 	 * [UNIREG-3152] Vérifie que la reprise d'une adresse de type 'autre tiers' fonctionne correctement, et notamment que les ids tiers_id et autre_tiers_id ne sont pas les mêmes.
 	 */
-	@NotTransactional
 	@Test
 	public void testRepriseAdresseAutreTiers() throws Exception {
 

@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -36,6 +37,7 @@ public class AbstractMouvementManagerTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	@SuppressWarnings({"unchecked"})
 	public void testDestructionMouvementsTropVieux() throws Exception {
 

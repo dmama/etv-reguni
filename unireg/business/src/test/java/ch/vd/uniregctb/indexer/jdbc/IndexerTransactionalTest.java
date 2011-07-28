@@ -10,6 +10,7 @@ import org.apache.lucene.search.TopDocs;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
@@ -105,6 +106,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTransactionalRemove() throws Exception {
 
 		fillIndex();
@@ -151,6 +153,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 	@Ignore
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	// ce test est ignoré parce qu'il ne peut marcher que si l'indexer est transactionnel donc JDBC
 	public void _testTransactionalRollback() throws Exception {
 

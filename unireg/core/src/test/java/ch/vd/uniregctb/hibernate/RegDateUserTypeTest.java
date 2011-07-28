@@ -1,15 +1,10 @@
 package ch.vd.uniregctb.hibernate;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
-
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
@@ -19,12 +14,15 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.classic.Session;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 @ContextConfiguration(locations = {
 	"classpath:ut/RegDateUserTypeTest-spring.xml"
@@ -90,7 +88,6 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testBasicSaveReload() {
 
 		Session session = sessionFactory.openSession();
@@ -114,7 +111,6 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLoadFromDatabase() throws Exception {
 
 		loadDatabase("RegDateUserTypeTest.xml");
@@ -161,7 +157,6 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testSaveToDatabase() {
 
 		Session session = sessionFactory.openSession();

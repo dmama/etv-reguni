@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.acomptes;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -10,8 +14,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class AcomptesResultsTest extends BusinessTest {
 
@@ -20,6 +22,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	private static final RegDate dateOuvertureForSecondaire = RegDate.get(1998,5,12);
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerInfoAssujettissementHC() {
 
 		final int annee = dateTraitement.year();
@@ -35,6 +38,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerInfoAssujettissementHS() {
 
 		final int annee = dateTraitement.year();

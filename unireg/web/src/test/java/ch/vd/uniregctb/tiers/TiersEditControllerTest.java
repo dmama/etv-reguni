@@ -5,6 +5,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -55,6 +56,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -67,6 +69,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitWithNom() throws Exception {
 
 		request.addParameter("tiers.nom", "Kamel");
@@ -85,6 +88,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
 		final String nom = "TestKamel";
@@ -108,6 +112,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
 		request.addParameter("tiers.dateNaissance", "12/*/.2008");
@@ -121,6 +126,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
 		request.addParameter("tiers.nom", "TestKamel");
@@ -139,6 +145,7 @@ public class TiersEditControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModifyNonHabitant() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -163,6 +170,7 @@ public class TiersEditControllerTest extends WebTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmitWithAiguillage() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);

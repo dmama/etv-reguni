@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -111,6 +112,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationPermisHandlerCelibataire() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis C de célibataire.");
@@ -128,6 +130,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationPermisHandlerCelibataireMaisPermisNonC() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis non C de célibataire.");
@@ -160,6 +163,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationPermisHandlerMarieSeul() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié seul.");
@@ -216,6 +220,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPermisHandlerMarieADeux() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié à deux.");

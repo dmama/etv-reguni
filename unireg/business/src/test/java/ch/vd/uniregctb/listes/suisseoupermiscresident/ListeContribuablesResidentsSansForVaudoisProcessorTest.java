@@ -2,7 +2,6 @@ package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -36,7 +35,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testPresentEnSecondaireSansForVaudois() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -75,7 +73,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testMineurSansForAucun() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -114,7 +111,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testDecedeSansForAucun() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -154,7 +150,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testPresentEnPrincipalSansForAucun() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -190,7 +185,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testPresentEnPrincipalAvecForHorsCanton() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -227,7 +221,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testPresentEnPrincipalAvecForHorsCantonEtForSecondaireVaudois() throws Exception {
 
 		final long noIndividu = 12352326L;
@@ -265,7 +258,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testNonHabitantAvecAdresseCourrierVaudoise() throws Exception {
 
 		// mise en place civile (vide, où sont-ils tous partis ???)
@@ -301,7 +293,6 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 	}
 
 	@Test
-	@NotTransactional
 	public void testTiersAnnule() throws Exception {
 
 		// mise en place civile (vide, où sont-ils tous partis ???)

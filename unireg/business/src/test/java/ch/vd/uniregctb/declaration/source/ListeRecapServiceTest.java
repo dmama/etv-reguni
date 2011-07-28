@@ -6,8 +6,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
@@ -43,6 +43,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantes() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
@@ -58,6 +59,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites1() throws Exception {
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -89,6 +91,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 
 		final long dpiId2 = doInNewTransaction(new TxCallback<Long>() {
@@ -120,6 +123,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites3() throws Exception {
 
 		final long dpiId3 = doInNewTransaction(new TxCallback<Long>() {
@@ -157,6 +161,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites4() throws Exception {
 
 		final long dpiId4 = doInNewTransaction(new TxCallback<Long>() {
@@ -188,6 +193,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAjusterSelonPeriodeFiscale() throws Exception {
 
 		// cas simple sur une seule période fiscale (= pas de coupure à générer)
@@ -247,7 +253,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testExtrairePeriodesAvecPeriodicites() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);

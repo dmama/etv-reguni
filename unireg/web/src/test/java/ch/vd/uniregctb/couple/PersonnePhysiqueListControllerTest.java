@@ -3,8 +3,8 @@ package ch.vd.uniregctb.couple;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 public class PersonnePhysiqueListControllerTest extends AbstractCoupleControllerTest {
@@ -21,6 +21,7 @@ public class PersonnePhysiqueListControllerTest extends AbstractCoupleController
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void showForm() throws Exception {
 
 		request.setMethod("GET");
@@ -34,6 +35,7 @@ public class PersonnePhysiqueListControllerTest extends AbstractCoupleController
 	 * @throws Exception
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void onSubmit() throws Exception {
 
 		request.setMethod("POST");

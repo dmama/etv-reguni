@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.fors;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -18,6 +19,7 @@ public class ForFiscalSecondaireValidatorTest extends AbstractValidatorTest<ForF
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForAnnule() {
 
 		final ForFiscalSecondaire forFiscal = new ForFiscalSecondaire();

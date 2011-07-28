@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -53,6 +53,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiRetournee() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -93,6 +94,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiPasEncoreSommable() throws Exception {
 
 		final int anneePf = 2008;
@@ -134,6 +136,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableSimple() throws Exception {
 
 		final int anneePf = 2008;
@@ -175,6 +178,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEnvoiCourrierDiSommee() throws Exception {
 
 		final int anneePf = 2008;
@@ -220,6 +224,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisIndigent() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -261,6 +266,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisNonAssujetti() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -303,6 +309,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisOptionnelle() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -345,6 +352,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableEtPartiellementOptionnelle() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -391,6 +399,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testErreurSommation() throws Exception {
 
 		final int anneePf = 2009;
@@ -449,6 +458,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDiContribuableSourcierPur() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -496,6 +506,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	 * Par acquis de conscience, on fait aussi le test pour les DIs
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationDiRetourneeAvantEmission() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -540,6 +551,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationLrDejaSommee() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -584,7 +596,6 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testSommationDiSurMenageAvecMembresInconnus() throws Exception {
 
 		class Ids {

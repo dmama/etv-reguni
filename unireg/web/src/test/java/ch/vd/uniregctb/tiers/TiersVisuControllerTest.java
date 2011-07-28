@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -65,6 +66,7 @@ public class TiersVisuControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 		loadDatabase();
 		//
@@ -134,6 +136,7 @@ public class TiersVisuControllerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnSubmit() throws Exception {
 		loadDatabase();
 		request.addParameter("id", "86006202");

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -20,7 +20,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.Typ
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.DemandeHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
@@ -31,7 +30,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -139,6 +137,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieBaseVide() {
 
 		{
@@ -156,6 +155,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUnNonHabitant() throws Exception {
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -172,6 +172,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUnHabitant() throws Exception {
 
 		final long noIndividu = 1234;
@@ -276,6 +277,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableMisAJourSuiteIdentification() throws Exception {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
@@ -357,6 +359,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableSurNPA() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
@@ -446,6 +449,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableSurNAVS11Habitant() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
@@ -521,6 +525,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableSurNAVS11NonHabitant() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
@@ -595,6 +600,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentificationAvecDate1900() throws Exception {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
@@ -675,6 +681,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifiePlusieursPersonnesPhysiques() throws Exception {
 
 		final long noIndividuAlbert = 1234;
@@ -768,6 +775,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testTooManyResultsExceptions() throws Exception {
 
 
@@ -823,6 +831,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNomCantonFromMessage() throws Exception {
 
 		CriteresAdresse adresse = new CriteresAdresse();
@@ -857,6 +866,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieParAdresse() throws Exception {
 
 		class Ids {
@@ -998,6 +1008,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieSansAdresse() throws Exception {
 
 		class Ids {
@@ -1040,7 +1051,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemandeZeroContribuableTrouve() throws Exception {
 
@@ -1078,7 +1088,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemandeUnContribuableTrouve() throws Exception {
 
@@ -1134,7 +1143,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemande_SANS_MANUEL() throws Exception {
 
@@ -1190,7 +1198,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemande_MANUEL_AVEC_ACK() throws Exception {
 
@@ -1247,7 +1254,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 
-	@NotTransactional
 	@Test
 	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
 
@@ -1297,7 +1303,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
 
@@ -1346,7 +1351,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEmpty(messageHandler.getSentMessages());
 	}
 
-	@NotTransactional
 	@Test
 	public void testHandleDemandeException() throws Exception {
 
@@ -1416,7 +1420,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 *
 	 * @throws Exception en cas d'erreur
 	 */
-	@NotTransactional
 	@Test
 	public void testHandleDemandeAvecNumeroAVSInconnu() throws Exception {
 
@@ -1473,7 +1476,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 *
 	 * @throws Exception en cas d'erreur
 	 */
-	@NotTransactional
 	@Test
 	public void testHandleDemandeAvecNumeroAVSConnuMaisFaux() throws Exception {
 
@@ -1527,7 +1529,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-1911] on retourne aussi le numéro de ménage du contribuable
 	 */
-	@NotTransactional
 	@Test
 	public void testHandleDemandeUnContribuableAvecMenageTrouve() throws Exception {
 
@@ -1600,6 +1601,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUE() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1639,6 +1641,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieAE() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1677,6 +1680,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieOE() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1715,6 +1719,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieSansDernierPrenom() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1753,6 +1758,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieSansDernierNom() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1791,6 +1797,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieOESansDernierPrenom() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1829,6 +1836,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieOESansDernierNom() throws Exception {
 
 		final long noIndividu = 1234;
@@ -1868,6 +1876,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieSansE_NomPrenom() throws Exception {
 
 		final long noIndividu = 1234;

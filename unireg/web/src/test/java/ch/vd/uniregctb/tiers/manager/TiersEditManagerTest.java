@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -65,6 +65,7 @@ public class TiersEditManagerTest extends WebTest {
 	 */
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetView() throws Exception {
 
 		TiersEditView view = tiersEditManager.getView(new Long(6789));
@@ -76,6 +77,7 @@ public class TiersEditManagerTest extends WebTest {
 	 */
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreePersonne() {
 
 		TiersEditView view = tiersEditManager.creePersonne();
@@ -89,6 +91,7 @@ public class TiersEditManagerTest extends WebTest {
 	 */
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreeOrganisation() {
 
 		TiersEditView view = tiersEditManager.creeOrganisation();
@@ -101,6 +104,7 @@ public class TiersEditManagerTest extends WebTest {
 	 * Teste la methode creeDebiteur
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreeDebiteur() throws Exception{
 
 		TiersEditView view = tiersEditManager.creeDebiteur(new Long(6789));
@@ -113,6 +117,7 @@ public class TiersEditManagerTest extends WebTest {
 	 * Teste la methode save
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSave() {
 
 		TiersEditView view = tiersEditManager.creePersonne();
@@ -130,7 +135,6 @@ public class TiersEditManagerTest extends WebTest {
 	 * Cas jira UNIREG-3180
 	 */
 	@Test
-	@NotTransactional
 	public void testChangeModeCommunicationDebiteur() throws Exception {
 
 		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
@@ -165,7 +169,6 @@ public class TiersEditManagerTest extends WebTest {
 	 * Cas jira UNIREG-3180
 	 */
 	@Test
-	@NotTransactional
 	public void testChangeCategorieImpotSource() throws Exception {
 
 		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
@@ -197,6 +200,7 @@ public class TiersEditManagerTest extends WebTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRefresh() throws AdresseException, ServiceInfrastructureException {
 		TiersEditView view = tiersEditManager.getView(6789L);
 		view.getTiers().setPersonneContact("toto");

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -82,6 +83,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurSansForCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -115,6 +117,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForAnnuleCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -151,6 +154,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForNonAnnuleCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -191,6 +195,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurSansForMarieSeul() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -236,6 +241,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForAnnuleMarieSeul() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -284,6 +290,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForNonAnnuleMarieSeul() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -336,6 +343,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurSansForMarieAvecMineur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -388,6 +396,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForAnnuleMarieAvecMineur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -443,6 +452,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForNonAnnuleMarieAvecMineur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -502,6 +512,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurSansForMarieAvecMajeur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -559,6 +570,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForAnnuleMarieAvecMajeur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -619,6 +631,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMineurAvecForNonAnnuleMarieAvecMajeur() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -678,6 +691,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMajeurSansForCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -715,6 +729,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMajeurAvecForAnnuleCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;
@@ -755,6 +770,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMajeurAvecForNonAnnuleCelibataire() throws Exception {
 
 		final long noIndividu = 12345657879L;

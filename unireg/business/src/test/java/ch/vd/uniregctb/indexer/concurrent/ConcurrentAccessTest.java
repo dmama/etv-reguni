@@ -1,12 +1,13 @@
 package ch.vd.uniregctb.indexer.concurrent;
 
-import static junit.framework.Assert.assertFalse;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+
+import static junit.framework.Assert.assertFalse;
 
 public class ConcurrentAccessTest extends BusinessTest {
 
@@ -27,6 +28,7 @@ public class ConcurrentAccessTest extends BusinessTest {
 	 * Cette methode insère des Document et fait des recherches en meme temps.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testConcurrentAccess() throws Exception {
 
 		ConcurrentAccessIndexerThread thread1 = new ConcurrentAccessIndexerThread(globalIndex);

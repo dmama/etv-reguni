@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -40,7 +39,6 @@ public class SuperGraControllerTest extends WebTest {
 	/**
 	 * [UNIREG-3160] Vérifie que l'ajout d'un rapport d'appartenance ménage fonctionne correctement (pas d'exception 'TransientObjectException' notamment)
 	 */
-	@NotTransactional
 	@Test
 	public void testAjouterRapportAppartenanceMenage() throws Exception {
 

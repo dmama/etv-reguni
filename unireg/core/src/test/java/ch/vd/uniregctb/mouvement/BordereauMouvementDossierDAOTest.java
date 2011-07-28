@@ -8,6 +8,7 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -41,6 +42,7 @@ public class BordereauMouvementDossierDAOTest extends AbstractMouvementDossierDA
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testBordereauxAReceptionner() throws Exception {
 
 		// création des objets en base

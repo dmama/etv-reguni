@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,7 +32,6 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 	}
 
-	@NotTransactional
 	@Test
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
@@ -65,7 +64,6 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		assertTrue(completed);
 	}
 
-	@NotTransactional
 	@Test
 	public void testEverythingProcessed() {
 
@@ -94,7 +92,6 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	/**
 	 * Vérifie que le template s'arrête si tous les threads sont morts avant d'avoir terminé le processing
 	 */
-	@NotTransactional
 	@Test(timeout = 5000)
 	public void testDetectDeadThreads() {
 
@@ -125,7 +122,6 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	/**
 	 * Vérifie que le template s'arrête sans erreur si le traitement est interrompu avec le status manager
 	 */
-	@NotTransactional
 	@Test
 	public void testStatusManagerInterrupted() {
 
@@ -168,7 +164,6 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	/**
 	 * Vérifie que le template s'arrête sans erreur si le traitement est interrompu avec un retour de 'execute' à false.
 	 */
-	@NotTransactional
 	@Test
 	public void testExecutionStopped() {
 
@@ -203,6 +198,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	 * Vérifie que la génération du rapport final fonctionne correctement dans le cas simple (sans rollback)
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationRapportSansRollback() {
 
 		final int count = 5000;
@@ -241,6 +237,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	 * Vérifie que la génération du rapport final fonctionne correctement avec des rollbacks
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationRapportAvecRollback() {
 
 		final int count = 5000;

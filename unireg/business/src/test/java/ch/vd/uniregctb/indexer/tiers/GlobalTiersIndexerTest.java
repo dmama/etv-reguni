@@ -8,7 +8,6 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -41,7 +40,6 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	 * [UNIREG-1979] Vérifie que l'indexation des dirty va bien réindexer un tiers non-dirty avec une date de réindexation schedulée dans le passé. Après l'exécution, le tiers doit avoir été indexé, il
 	 * ne doit plus être dirty et la date de schedule doit être nulle.
 	 */
-	@NotTransactional
 	@Test
 	public void testIndexDirtyTiersNonDirtyAvecDateReindexOnDansLePasse() throws Exception {
 
@@ -75,7 +73,6 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	 * [UNIREG-1979] Vérifie que l'indexation des dirty va bien réindexer un tiers non-dirty avec une date de réindexation schedulée pour le jour même. Après l'exécution, le tiers doit avoir été indexé,
 	 * il ne doit plus être dirty et la date de schedule doit être nulle.
 	 */
-	@NotTransactional
 	@Test
 	public void testIndexDirtyTiersNonDirtyAvecDateReindexOnAujourdhui() throws Exception {
 
@@ -109,7 +106,6 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	 * [UNIREG-1979] Vérifie que l'indexation des dirty va bien réindexer un tiers dirty malgré une date de réindexation schedulée dans le futur. Après l'exécution, le tiers doit avoir été réindexé, il
 	 * ne doit plus être dirty <b>et</b> la date de schedule doit être inchangée.
 	 */
-	@NotTransactional
 	@Test
 	public void testIndexDirtyTiersDirtyAvecDateReindexOnDansLeFutur() throws Exception {
 
@@ -142,7 +138,6 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	 * [UNIREG-1979] Vérifie que l'indexation des dirty ne réindexe pas un tiers non-dirty avec une date de réindexation schedulée dans le futur. Après l'exécution, le tiers ne doit pas avoir été
 	 * réindexé, il ne doit pas être dirty <b>et</b> la date de schedule doit être inchangée.
 	 */
-	@NotTransactional
 	@Test
 	public void testIndexDirtyTiersNonDirtyAvecDateReindexOnDansLeFutur() throws Exception {
 

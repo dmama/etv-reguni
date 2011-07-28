@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -53,6 +54,7 @@ public class ExtractionServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testPlainExtractorEntryPoint() throws Exception {
 
 		final class MyPlainExtractor extends BaseExtractorImpl implements PlainExtractor {
@@ -105,6 +107,7 @@ public class ExtractionServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testBatchExtractorEntryPoint() throws Exception {
 
 		class MyResult implements BatchResults<Long, MyResult> {
@@ -224,6 +227,7 @@ public class ExtractionServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testBatchParallelExtractorEntryPoint() throws Exception {
 
 		class MyResult implements BatchResults<Long, MyResult> {
@@ -349,6 +353,7 @@ public class ExtractionServiceTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testInterrupt() throws Exception {
 
 		final class MyInterruptibleExtractor extends BaseExtractorImpl implements PlainExtractor {

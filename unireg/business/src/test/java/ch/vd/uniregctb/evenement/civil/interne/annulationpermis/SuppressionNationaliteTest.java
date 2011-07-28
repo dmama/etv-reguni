@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -84,6 +85,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationNationaliteHandlerCelibataire() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de célibataire.");
@@ -114,6 +116,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationNationaliteHandlerCelibataireNonSuisse() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité non suisse de célibataire.");
@@ -148,6 +151,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationNationaliteHandlerMarieSeul() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié seul.");
@@ -204,6 +208,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationNationaliteHandlerMarieADeux() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié à deux.");

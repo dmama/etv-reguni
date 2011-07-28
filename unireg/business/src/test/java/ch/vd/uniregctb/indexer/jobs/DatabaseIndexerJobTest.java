@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -82,6 +83,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testReindexationJob() throws Exception {
 
 		globalTiersIndexer.setOnTheFlyIndexation(false);

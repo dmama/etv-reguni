@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -26,6 +24,9 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 
@@ -45,6 +46,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testAccorderDelaiTiersSansDeclaration() throws Exception {
 
 		final RegDate dateDelai = RegDate.get(2010, 9, 1);

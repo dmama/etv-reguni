@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -97,6 +98,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
@@ -127,6 +129,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuSeulHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu seul.");
@@ -151,6 +154,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuSeulFinDecembreHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement fin décembre individu seul.");
@@ -175,6 +179,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuMarieSeulHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
@@ -211,6 +216,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuMarieHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié .");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
@@ -249,6 +255,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudoisSansChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
@@ -281,6 +288,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 
 @Test
+@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudoisAvecChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
@@ -356,6 +364,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	 * Vérifie que les fors fiscaux restent inchangés lorsqu'un habitant déménage à l'intérieur de Bourg-en-Lavaux après la date de fusion fiscale.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementDansUneCommuneFusionneeAuCivilEtAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;

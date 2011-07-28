@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessItTest;
 
@@ -18,6 +19,7 @@ public class AciComServiceTest extends BusinessItTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetMessageFile() throws Exception {
 		// voir colonne BUSINESS_ID de la table EVENEMENT_IDENTIFICATION_CTB pour des exemples de businessId.
 		final String businessId = "3001-000101-2008-2-BE-5-MWNACHDRUCK0220100108131806360923000";

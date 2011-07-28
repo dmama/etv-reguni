@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.civil.common;
 
-import static junit.framework.Assert.assertNotNull;
-
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.common.AbstractBusinessTest;
 import ch.vd.uniregctb.norentes.common.NorentesManager;
 import ch.vd.uniregctb.norentes.common.NorentesScenario;
+
+import static junit.framework.Assert.assertNotNull;
 
 @ContextConfiguration(locations = {
 		"classpath:unireg-norentes-main.xml",
@@ -39,7 +38,6 @@ public abstract class NorentesTest extends AbstractBusinessTest {
 	protected abstract String getScenarioName();
 
 	@Test
-	@NotTransactional
 	public void testScenario() throws Exception {
 		String name = getScenarioName();
 		if (name != null) {

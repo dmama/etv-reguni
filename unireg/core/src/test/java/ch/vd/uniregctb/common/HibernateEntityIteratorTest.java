@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.common;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 public class HibernateEntityIteratorTest extends CoreDAOTest {
 
@@ -31,6 +32,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	 * La méthode 'find' retourne une liste d'objets présents en mémoire : aucun proxy n'est créé dans ce cas.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateFind() {
 
 		final List<?> list = hibernateTemplate.find("from Tiers");
@@ -50,6 +52,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	 * caster en Habitant, NonHabitant ou autres sous-classes réelles.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateIterate() {
 
 		Iterator<?> iter = hibernateTemplate.iterate("from Tiers");
@@ -82,6 +85,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateEntityIterator() {
 
 		Iterator<Tiers> iter = new HibernateEntityIterator<Tiers>(hibernateTemplate.iterate("from Tiers"));

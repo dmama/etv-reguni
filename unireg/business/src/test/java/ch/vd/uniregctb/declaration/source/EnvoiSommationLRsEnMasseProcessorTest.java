@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -51,6 +52,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	 * [UNIREG-2003] teste la possibilité de restreindre le traitement des LRs à certaines catégories de débiteurs
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetListIdLRsParCategories() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
@@ -116,6 +118,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	 * [UNIREG-2109] Vérifie qu'il est possible de restreindre les LRs traitées par trimestre
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetListIdLRsParTrimestre() {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
@@ -210,6 +213,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	 * C'est un cas qui se produit beaucoup avec les débiteur "web" : ils envoient la LR avant même qu'on leur demande...
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationLrRetourneeAvantEmission() throws Exception {
 		final PeriodeFiscale pf = addPeriodeFiscale(2007);
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
@@ -226,6 +230,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationLrDejaSommee() throws Exception {
 		final PeriodeFiscale pf = addPeriodeFiscale(2007);
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
@@ -237,6 +242,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testErreurException() throws Exception {
 		// processeur qui fait boom! au traitement d'une LR
 		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService) {
@@ -263,6 +269,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEnvoiCourrierLrSommee() throws Exception {
 
 

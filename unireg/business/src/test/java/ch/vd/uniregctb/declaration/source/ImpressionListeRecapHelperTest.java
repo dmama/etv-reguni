@@ -8,6 +8,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -42,6 +43,7 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitExpediteur() throws Exception {
 		LOGGER.debug("ImpressionListeRecapHelperTest - testRemplitExpediteur");
 	     final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));

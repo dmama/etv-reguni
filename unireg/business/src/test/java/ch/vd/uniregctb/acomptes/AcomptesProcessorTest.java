@@ -11,9 +11,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -63,6 +63,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateIteratorOnIDsOfCtbs() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
@@ -95,7 +96,6 @@ public class AcomptesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testMenageFermeAnneePrecedente() throws Exception {
 
 		final class Ids {
@@ -188,7 +188,6 @@ public class AcomptesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testForsSecondaires() throws Exception {
 
 		final long idIndividuVaudoisSansForSecondaire = 3564712513467L;

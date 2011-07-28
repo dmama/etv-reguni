@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -64,7 +63,6 @@ public class EvenementCivilTest extends BusinessTest {
 	 * Ce test vérifie que l'arrivée d'un événement civil provoque bien l'invalidation de l'individu correspondant dans le cache du service
 	 * civil.
 	 */
-	@NotTransactional
 	@Test
 	public void testInvalidationDuCache() throws Exception {
 
@@ -182,7 +180,6 @@ public class EvenementCivilTest extends BusinessTest {
 	 * Ce test vérifie que le user de création de l'évenement civil a bien
 	 * été initialisé avec le visa de mutation provenant de RcPers ou REgPP.
 	 */
-	@NotTransactional
 	@Test
 	public void testVisaMutation() throws Exception {
 

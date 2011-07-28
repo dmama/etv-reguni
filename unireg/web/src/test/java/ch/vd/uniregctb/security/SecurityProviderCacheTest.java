@@ -1,18 +1,22 @@
 package ch.vd.uniregctb.security;
 
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Teste que le cache du service provider se comporte bien comme il faut.
@@ -35,6 +39,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	 * [UNIREG-1191] Vérifie que la modification d'un droit d'accès met bien à jour le cache.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationDroitAcces() throws Exception {
 
 		setupDefaultTestOperateur();
@@ -73,6 +78,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	 * [UNIREG-1191] Vérifie que l'ajout d'un droit d'accès sur composant d'un ménage met bien à jour le cache sur le ménage lui-même.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationDroitAccesMenageCommun() throws Exception {
 
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
@@ -140,6 +146,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDroitAccessWithNullId() throws Exception {
 
 		class Ids {

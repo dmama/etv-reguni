@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.validation.ValidationException;
@@ -44,7 +44,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une entité valide ne lève pas d'exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationEntiteValide() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
@@ -61,7 +60,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une entité invalide lève bien une exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationEntiteInvalide() throws Exception {
 
 		try {
@@ -90,7 +88,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une sous-entité valide et qui référence une entité parente elle-même valide ne lève pas d'exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationSousEntiteValideEtParentValide() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
@@ -111,7 +108,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une sous-entité valide et qui référence une entité parente invalide lève bien une exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationSousEntiteValideEtParentInvalide() throws Exception {
 
 		final Long jeanId = addInvalidePP();
@@ -145,7 +141,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une join-entité valide et qui référence deux entités elles-mêmes valides ne lève pas d'exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationJoinEntiteValideEtParentsValides() throws Exception {
 
 		doInNewTransaction(new TransactionCallback<Object>() {
@@ -170,7 +165,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 * Vérifie que la validation sur une join-entité valide et qui référence au moins une entité parente invalide lève bien une exception.
 	 */
 	@Test
-	@NotTransactional
 	public void testValidationJoinEntiteValideEtParentsInvalides() throws Exception {
 
 		final Long jeanId = addInvalidePP();
@@ -236,6 +230,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationOnSave() throws Exception {
 
 		// On teste que si le nom est NULL, on a une erreur de validation

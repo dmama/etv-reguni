@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -106,6 +107,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	}
 
 	@Test(timeout = 10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnMessageGood() throws Exception {
 
 		final int id = 54;
@@ -131,6 +133,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	 * @throws Exception
 	 */
 	@Test(timeout = 10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnMessageBad() throws Exception {
 
 		final int id = 54;
@@ -159,6 +162,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	}
 
 	@Test(timeout = 10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMessageDeTypeInconnu() throws Exception {
 		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
 		sendMessageSync(xmlContent);
@@ -166,6 +170,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	}
 
 	@Test(timeout = 10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testMessageDeTypeConnuMaisIgnore() throws Exception {
 		final int typeConnuMaisIgnore = 0;
 		final TypeEvenementCivil typeIgnore = TypeEvenementCivil.valueOf(typeConnuMaisIgnore);
@@ -178,6 +183,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	}
 
 	@Test(timeout = 10000)
+	@Transactional(rollbackFor = Throwable.class)
 	public void testOnMessageDuplicateId() throws Exception {
 
 		final int id = 54;
