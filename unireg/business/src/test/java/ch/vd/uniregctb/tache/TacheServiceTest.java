@@ -178,7 +178,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
 				hab.setNumeroIndividu(333908L);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -204,7 +204,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
 				hab.setNumeroIndividu(333908L);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
@@ -227,7 +227,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
 				hab.setNumeroIndividu(333908L);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -259,7 +259,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(11111111L);
 				hab.setNumeroIndividu(333908L);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(periodeCourante, 6, 11), 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -287,7 +287,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab2 = new PersonnePhysique(true);
 				hab2.setNumero(11111112L);
 				hab2.setNumeroIndividu(333904L);
-				hab2 = (PersonnePhysique) hibernateTemplate.merge(hab2);
+				hab2 = hibernateTemplate.merge(hab2);
 
 				ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(periodeEchue, 6, 11), 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -373,7 +373,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
 				// Etat après veuvage
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, new Integer(5652),
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab1.addForFiscal(forFiscalPrincipal);
 				forFiscalPrincipal.setMotifOuverture(MotifFor.VEUVAGE_DECES);
@@ -501,7 +501,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// Etat 2010
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
@@ -574,15 +574,15 @@ public class TacheServiceTest extends BusinessTest {
 				MenageCommun menage = ensemble.getMenage();
 				assertNotNull(menage);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, new Integer(5652),
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 				menage.addForFiscal(forFiscalPrincipal);
 
-				PeriodeFiscale pf2006 = (PeriodeFiscale) tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
-				PeriodeFiscale pf2007 = (PeriodeFiscale) tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
-				ModeleDocument modele2006 = (ModeleDocument) tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
-				ModeleDocument modele2007 = (ModeleDocument) tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
+				PeriodeFiscale pf2006 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
+				PeriodeFiscale pf2007 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
+				ModeleDocument modele2006 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
+				ModeleDocument modele2007 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
 				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
 				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
@@ -606,12 +606,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab1.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 				hab2.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 
-				ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, new Integer(5652),
+				ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				ffp1.setMotifOuverture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				hab1.addForFiscal(ffp1);
 
-				ForFiscalPrincipal ffp2 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, new Integer(5652),
+				ForFiscalPrincipal ffp2 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				ffp2.setMotifOuverture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				hab2.addForFiscal(ffp2);
@@ -635,7 +635,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero((long) 11111111);
 				hab.setNumeroIndividu((long) 333908);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
 						TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -664,7 +664,7 @@ public class TacheServiceTest extends BusinessTest {
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero((long) 11111111);
 		hab.setNumeroIndividu((long) 333908);
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+		hab = hibernateTemplate.merge(hab);
 
 		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
 				TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
@@ -686,7 +686,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepartHSDepuisFermetureForPrincipal() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -1849,7 +1849,6 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereTachesDepuisArriveeHSContribuablePossedantDejaImmeuble() throws Exception {
 
 		final RegDate dateArrivee = date(2005, 5, 1);
-		final RegDate nextSunday = getNextSunday(RegDate.get());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2208,7 +2207,7 @@ public class TacheServiceTest extends BusinessTest {
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero((long) 11111111);
 				hab.setNumeroIndividu((long) 333908);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+				hab = hibernateTemplate.merge(hab);
 
 				ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						MotifRattachement.DOMICILE, modeImposition);
@@ -2356,9 +2355,9 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(taches);
 		int size = taches.size();
 		assertEquals(nombreResultats, size);
-		for (int i = 0; i < size; ++i) {
-			assertTrue(taches.get(i) instanceof TacheAnnulationDeclarationImpot);
-			tacheAnnulation = (TacheAnnulationDeclarationImpot) taches.get(i);
+		for (Tache tache : taches) {
+			assertTrue(tache instanceof TacheAnnulationDeclarationImpot);
+			tacheAnnulation = (TacheAnnulationDeclarationImpot) tache;
 			assertNotNull(tacheAnnulation);
 		}
 	}
@@ -2723,7 +2722,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
+				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
 				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, false, null);
 				return null;
 			}
@@ -2731,7 +2730,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Vérifie qu'ils sont bien divorcés
 		{
-			final PersonnePhysique ilya = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ilya);
+			final PersonnePhysique ilya = hibernateTemplate.get(PersonnePhysique.class, ids.ilya);
 			final ForFiscalPrincipal dernier = ilya.getDernierForFiscalPrincipal();
 			assertNotNull(dernier);
 			assertEquals(date(2008, 11, 15), dernier.getDateDebut());
@@ -2739,7 +2738,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		{
-			final PersonnePhysique katharine = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.katharine);
+			final PersonnePhysique katharine = hibernateTemplate.get(PersonnePhysique.class, ids.katharine);
 			final ForFiscalPrincipal dernier = katharine.getDernierForFiscalPrincipal();
 			assertNotNull(dernier);
 			assertEquals(date(2008, 11, 15), dernier.getDateDebut());
@@ -2747,7 +2746,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		{
-			final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
+			final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
 			final ForFiscalPrincipal dernier = menage.getDernierForFiscalPrincipal();
 			assertNotNull(dernier);
 			assertEquals(date(2008, 11, 14), dernier.getDateFin());
@@ -3081,7 +3080,7 @@ public class TacheServiceTest extends BusinessTest {
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneeCourante, 5, 12), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
 
 		// une tâche d'annulation de la déclaration
-		final TacheAnnulationDeclarationImpot tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
+		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
 
 		// On vérifie que :
 		// - la tache correcte n'est pas annulée
@@ -3324,7 +3323,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
-				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
 				final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(null);
 
 				ffp.setDateFin(date(anneePrecedente, 7, 23));
@@ -3479,7 +3478,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffs = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffs);
+				final ForFiscal ffs = hibernateTemplate.get(ForFiscal.class, ids.ffs);
 				assertNotNull(ffs);
 				ffs.setAnnule(true);
 				return null;
@@ -3504,7 +3503,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffp = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp);
+				final ForFiscal ffp = hibernateTemplate.get(ForFiscal.class, ids.ffp);
 				assertNotNull(ffp);
 				ffp.setAnnule(true);
 				return null;
@@ -3529,7 +3528,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
 				assertNotNull(pp);
 				addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				return null;
@@ -3622,7 +3621,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffp2 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp2);
+				final ForFiscal ffp2 = hibernateTemplate.get(ForFiscal.class, ids.ffp2);
 				assertNotNull(ffp2);
 				tiersService.annuleForFiscal(ffp2, false);
 				return null;
@@ -3644,7 +3643,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffp1 = (ForFiscal) hibernateTemplate.get(ForFiscal.class, ids.ffp1);
+				final ForFiscal ffp1 = hibernateTemplate.get(ForFiscal.class, ids.ffp1);
 				assertNotNull(ffp1);
 				tiersService.annuleForFiscal(ffp1, false);
 				return null;
@@ -3670,7 +3669,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
 				assertNotNull(pp);
 				addForPrincipal(pp, date(2004, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 				return null;
@@ -3784,7 +3783,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Crée un contribuable assujettissement sur l'année 2008 comme hors-canton immeuble, avec une déclaration à laquelle il manque le type de contribuable et
 		// avec deux tâches : une d'annulation de la DI et une autre d'émission d'une DI de remplacement.
-		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
@@ -3825,7 +3824,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// après le recalcul des tâches, la déclaration devrait avoir sont type de contribuable renseigné et les deux tâches préexistantes devraient avoir été annulées
-		doInNewTransaction(new TransactionCallback() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);

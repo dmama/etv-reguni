@@ -2,6 +2,8 @@ package ch.vd.uniregctb.metier;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.StatusManager;
@@ -46,7 +48,7 @@ public interface MetierService {
 	 * 
 	 * @return
 	 */
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 
 	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
@@ -232,7 +234,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant la séparation
 	 */
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public void separe(MenageCommun menage, RegDate date, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 
 	/**
@@ -261,7 +263,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le décès
 	 */
-	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) throws MetierServiceException;
+	public void deces(PersonnePhysique defunt, RegDate date, @Nullable String remarque, @Nullable Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Annule un décès.

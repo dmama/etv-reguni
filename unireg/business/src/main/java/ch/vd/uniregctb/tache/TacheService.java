@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -26,7 +27,7 @@ public interface TacheService {
 	 * @param ancienModeImposition le mode d'imposition de l'ancien for principal actif
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void genereTacheDepuisOuvertureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal, ModeImposition ancienModeImposition);
+	void genereTacheDepuisOuvertureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal, @Nullable ModeImposition ancienModeImposition);
 
 	/**
 	 * Genere une tache à partir de l'ouverture d'un for secondaire

@@ -506,7 +506,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theDecede the decede to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_YWcUYJN-Edy7DqR-SPIh9g?SETTER"
 	 */
-	public void setDateDeces(RegDate date) {
+	public void setDateDeces(@Nullable RegDate date) {
 		this.dateDeces = date;
 	}
 

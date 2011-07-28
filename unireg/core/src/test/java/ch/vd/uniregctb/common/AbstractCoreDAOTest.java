@@ -519,8 +519,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
-	protected static void assertDI(RegDate debut, RegDate fin, TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, Long idCollRetour, RegDate delaiRetourImprime, Declaration declaration) {
+	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
 		DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 		assertEquals(debut, di.getDateDebut());
@@ -709,7 +709,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
 	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                     Contribuable contribuable, Qualification qualification, CollectiviteAdministrative colAdm) {
+	                                                     Contribuable contribuable, @Nullable Qualification qualification, CollectiviteAdministrative colAdm) {
 		TacheEnvoiDeclarationImpot tache =
 				new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI, colAdm);
 		tache = hibernateTemplate.merge(tache);

@@ -436,7 +436,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	 * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
 	 */
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
-	                                                        TypeContribuable typeC, ModeleDocument modele) {
+	                                                        @Nullable TypeContribuable typeC, ModeleDocument modele) {
 
 		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		assertNotNull("La collectivité administrative du CEDI n'a pas été définie", cedi);

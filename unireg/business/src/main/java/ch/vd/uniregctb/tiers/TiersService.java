@@ -765,7 +765,7 @@ public interface TiersService {
 	 * @param modeImposition      le mode d'imposition du for à créer
 	 * @return le nouveau for fiscal principal.
 	 */
-	ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
+	ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture, MotifRattachement motifRattachement,
 	                                   int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
 
 	/**
@@ -959,7 +959,7 @@ public interface TiersService {
 	 * @param date  la date de validité de l'office d'impôt; ou <i>null</i> pour obtenir l'état courant.
 	 * @return un office d'impôt; ou <i>null</null> si le tiers n'est pas assujetti ou que son office d'impôt ne peut pas être calculé pour une autre raison.
 	 */
-	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, RegDate date);
+	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, @Nullable RegDate date);
 
 	/**
 	 * Calcule l'office d'impôt du tiers spécifié et retourne son id.
