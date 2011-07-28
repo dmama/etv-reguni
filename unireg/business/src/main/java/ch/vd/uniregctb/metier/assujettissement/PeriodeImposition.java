@@ -672,4 +672,9 @@ public class PeriodeImposition implements CollatableDateRange {
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("PeriodeImposition{debut=%s, fin=%s, categorieEnvoiDI=%s, optionnelle=%s, remplaceeParNote=%s}", debut, fin, categorieEnvoiDI, optionnelle, remplaceeParNote);
+	}
 }
