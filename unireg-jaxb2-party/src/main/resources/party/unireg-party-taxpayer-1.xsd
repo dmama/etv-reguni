@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/party/taxpayer/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/unireg/party/taxpayer/1"
-		   xmlns:common="http://www.vd.ch/unireg/common/1" xmlns:party="http://www.vd.ch/unireg/party/party/1" xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1">
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1">
 
-	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
 
 	<xs:complexType abstract="true" name="taxpayerType">
 		<xs:annotation>
