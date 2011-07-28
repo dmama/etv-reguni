@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0v-SNAPSHOT -->
-<wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/unireg/webservices/tiers3" xmlns="http://www.vd.ch/unireg/webservices/tiers3"
-				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<!-- version 3.0w-SNAPSHOT -->
+<wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
-		<xs:schema targetNamespace="http://www.vd.ch/unireg/webservices/tiers3"
+		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
 				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-				   xmlns:ws="http://www.vd.ch/unireg/webservices/tiers3"
-				   xmlns:party="http://www.vd.ch/unireg/party/party/1"
-				   xmlns:debtor="http://www.vd.ch/unireg/party/debtor/1"
-				   xmlns:exception="http://www.vd.ch/unireg/exception/1">
-			<xs:import namespace="http://www.vd.ch/unireg/exception/1" schemaLocation="unireg-exception-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/party/1" schemaLocation="party/unireg-party-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/person/1" schemaLocation="party/unireg-party-person-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/debtor/1" schemaLocation="party/unireg-party-debtor-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/corporation/1" schemaLocation="party/unireg-party-corporation-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/taxdeclaration/1" schemaLocation="party/unireg-party-taxdeclaration-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/taxresidence/1" schemaLocation="party/unireg-party-taxresidence-1.xsd" />
-			<xs:import namespace="http://www.vd.ch/unireg/party/relation/1" schemaLocation="party/unireg-party-relation-1.xsd" />
+				   xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+				   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+				   xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
+				   xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="unireg-exception-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="party/unireg-party-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="party/unireg-party-person-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="party/unireg-party-debtor-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="party/unireg-party-corporation-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" schemaLocation="party/unireg-party-taxdeclaration-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="party/unireg-party-taxresidence-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="party/unireg-party-relation-1.xsd" />
 			<xs:include schemaLocation="messages/getpartytype.xsd" />
 			<xs:include schemaLocation="messages/getparty.xsd" />
 			<xs:include schemaLocation="messages/getbatchparty.xsd" />

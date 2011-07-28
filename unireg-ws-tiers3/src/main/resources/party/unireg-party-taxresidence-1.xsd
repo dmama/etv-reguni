@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/unireg/party/taxresidence/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/unireg/party/taxresidence/1"
-		   xmlns:common="http://www.vd.ch/unireg/common/1">
+<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
 
-	<xs:import namespace="http://www.vd.ch/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
 	<xs:complexType name="taxResidenceType">
 		<xs:annotation>
