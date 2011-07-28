@@ -82,7 +82,8 @@
 	</bean>
 
 	<!-- Version sans validation parce que les XSDs de éditique n'ont pas de namespace et que ça bloque à la validation automatique -->
-	<bean id="esbMessageFactoryForEditique" class="ch.vd.technical.esb.EsbMessageFactory"/>
+	<!-- Egalement utilisé dans les cas - événements internes - où la validation prend trop de temps par rapport au traitement métier un-->
+	<bean id="esbMessageFactorySansValidation" class="ch.vd.technical.esb.EsbMessageFactory"/>
 
 	<bean id="esbHttpTemplate" class="ch.vd.technical.esb.http.EsbHttpTemplate">
 		<property name="username" value="${extprop.esb.http.username}" />

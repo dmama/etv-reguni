@@ -8,9 +8,10 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+	<!-- [UNIREG-2399] on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion des événements civils -->
 	<bean id="dataEventJmsSender" class="ch.vd.uniregctb.data.DataEventJmsSender">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation"/>
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.db.event.output}" />
 		<property name="businessUser" value="Unireg-Web" />
