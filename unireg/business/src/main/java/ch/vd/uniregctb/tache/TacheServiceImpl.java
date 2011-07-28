@@ -470,7 +470,7 @@ public class TacheServiceImpl implements TacheService {
 			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
-				if (!periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) {
+				if (isDeclarationMandatory(periode)) {
 					// on ajoute une DI si elle est obligatoire
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
 					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
@@ -614,6 +614,14 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
+	 * @param periode une période d'imposition
+	 * @return <b>vrai</b> si une déclaration d'impôt doit obligatoirement être envoyée pour la période d'imposition spécifiée; <b>faux</b> dans tous les autres cas.
+	 */
+	private static boolean isDeclarationMandatory(PeriodeImposition periode) {
+		return !periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
+	}
+
+	/**
 	 * Détermine si la tâche d'envoi d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
 	 *
 	 * @param envoi         une tâche d'envoi
@@ -625,8 +633,9 @@ public class TacheServiceImpl implements TacheService {
 	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
-		if (periode == null) {
+		if (periode == null || !isDeclarationMandatory(periode)) {
 			// pas de période correspondante -> la tâche n'est plus valable
+			// [SIFISC-1653] déclaration d'impôt pas obligatoire -> la tâche n'est plus valable
 			return false;
 		}
 

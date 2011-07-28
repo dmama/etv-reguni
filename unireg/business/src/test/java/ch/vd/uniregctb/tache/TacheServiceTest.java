@@ -3900,7 +3900,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(1, declarations.size());
 
 				// le type de contribuable doit être maintenant renseigné
-				final DeclarationImpotOrdinaire di =(DeclarationImpotOrdinaire) declarations.get(0);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declarations.get(0);
 				assertEquals(TypeContribuable.HORS_CANTON, di.getTypeContribuable());
 
 				// la tâche d'annulation doit être annulée
@@ -4267,7 +4267,8 @@ public class TacheServiceTest extends BusinessTest {
 					assertEquals(1, taches.size());
 
 					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
+					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE,
+							TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
 				}
 
 				return null;
@@ -4403,7 +4404,8 @@ public class TacheServiceTest extends BusinessTest {
 					assertEquals(1, taches.size());
 
 					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, tache);
+					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+							TypeAdresseRetour.ACI, tache);
 				}
 
 				return null;
@@ -4830,13 +4832,15 @@ public class TacheServiceTest extends BusinessTest {
 						assertFalse("Deuxième tâche annulée trouvée", trouveeAnnulee);
 						trouveeAnnulee = true;
 
-						assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+						assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
 					}
 					else {
 						assertFalse("Deuxième tâche non-annulée trouvée", trouveeNonAnnulee);
 						trouveeNonAnnulee = true;
 
-						assertTache(TypeEtatTache.EN_INSTANCE, nouvelleDateDeces.addDays(30), date(anneeCourante, 1, 1), nouvelleDateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+						assertTache(TypeEtatTache.EN_INSTANCE, nouvelleDateDeces.addDays(30), date(anneeCourante, 1, 1), nouvelleDateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
 					}
 				}
 				assertTrue(trouveeAnnulee);
@@ -5079,6 +5083,73 @@ public class TacheServiceTest extends BusinessTest {
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1653] cas du contribuable VD qui possède un immeuble, qui part HC puis vend son immeuble dans la même période fiscale et pour qui une tâche d'envoi de déclaration d'impôt a été créée ->
+	 * bien qu'il y ait une fin d'assujettissement en cours d'année, la tâche d'émission de DI doit être annulée car la déclaration d'impôt correspondante est remplacée par une note.
+	 */
+	@Test
+	public void testHorsCantonVenteDernierImmeubleDansMemePeriodeAvecTacheEnvoiErronee() throws Exception {
+
+		final RegDate dateArrivee = date(2007, 11, 9);
+		final RegDate dateDepartHC = date(2009, 4, 1);
+		final RegDate dateVente = date(2009, 11, 9);
+
+		class Ids {
+			long pp;
+			long tache;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(pp, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				// on crée déjà les DIs 2007 et 2008
+				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
+				addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007));
+				final PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
+				addDeclarationImpot(pp, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008));
+
+				final CollectiviteAdministrative oi = tiersService.getCollectiviteAdministrative(15, true);
+				final TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2011, 6, 19), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON,
+						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.COMPLEXE_1, oi);
+
+				ids.pp = pp.getNumero();
+				ids.tache = tache.getId();
+				return null;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.pp);
+				assertNotNull(pp);
+
+				// la tâche d'émission de DI en 2009 devrait être annulée
+				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) tacheDAO.get(ids.tache);
+				assertNotNull(tache);
+				assertTrue(tache.isAnnule());
+
+				// il ne devrait pas y avoir de tâche d'émission de DI en 2009 malgré la vente du dernier immeuble (car la DI remplacée par une note)
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setInclureTachesAnnulees(false);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+
 				return null;
 			}
 		});
