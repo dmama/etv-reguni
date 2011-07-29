@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import junit.framework.Assert;
-
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.junit.Test;
-
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
@@ -94,13 +92,13 @@ public class EvenementImpotSourceTest extends WithoutSpringTest {
 		ArrayList<XmlError> errorList = new ArrayList<XmlError>();
 		validateOptions.setErrorListener(errorList);
 		if (!object.validate(validateOptions)) {
-			StringBuilder builder = new StringBuilder();
-			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
-				//System.out.println(builder.toString());
-			}
+//			StringBuilder builder = new StringBuilder();
+//			for (XmlError error : errorList) {
+//				builder.append("\n");
+//				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
+//				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+//				System.out.println(builder.toString());
+//			}
 			return false;
 		}
 		return true;

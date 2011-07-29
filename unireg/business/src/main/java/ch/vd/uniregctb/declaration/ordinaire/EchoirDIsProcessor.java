@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -165,14 +164,12 @@ public class EchoirDIsProcessor {
 						final Query query = session.createSQLQuery(sql);
 						final List<Object[]> rows = query.list();
 						if (rows != null && !rows.isEmpty()) {
-							final List<Long> idDis = new LinkedList<Long>();
 							for (Object[] row : rows) {
 								final int indexDateSommation = ((Number) row[1]).intValue();
 								final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
 								final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
 								if (dateTraitement.isAfter(echeanceReelle)) {
 									final long diId = ((Number) row[0]).longValue();
-									idDis.add(diId);
 									final Number numeroDi = ((Number) row[0]).longValue();
 									final Number numeroTiers = ((Number) row[2]).longValue();
 									final Number numeroOID = (row[3]==null?  0 :((Number) row[3]).intValue());

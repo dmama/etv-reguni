@@ -293,16 +293,14 @@ public class IndividuView {
 	}
 
 	/**
-	 * Redefinition de la methode equals pour gerer les ajout/suppression d'objets
-	 * dans une collection
+	 * Redefinition de la methode equals pour gerer les ajout/suppression d'objets dans une collection
 	 */
 	@Override
-	public boolean equals(Object obj)
-	{
-		if(this == obj)
-		return true;
-		if((obj == null) || (obj.getClass() != this.getClass()))
-		return false;
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if ((obj == null) || (obj.getClass() != this.getClass()))
+			return false;
 		// object must be Test at this point
 		IndividuView individuView = (IndividuView) obj;
 		return (numeroIndividu.equals(individuView.numeroIndividu) || (numeroIndividu != null && numeroIndividu.equals(individuView.numeroIndividu)));
