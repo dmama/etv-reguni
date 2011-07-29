@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
@@ -31,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@SuppressWarnings({"JavaDoc"})
+@SuppressWarnings({"JavaDoc", "deprecation"})
 public abstract class MetierTest extends BusinessTest {
 
 	protected static final Range RANGE_1999_2010 = new Range(date(1999, 1, 1), date(2010, 12, 31));
@@ -52,14 +54,7 @@ public abstract class MetierTest extends BusinessTest {
 	}
 
 
-	/**
-	 * Diplomate suisse ayant vécu à Lausanne jusqu'à sa nomination comme diplomate en Albanie le 1er janvier 2000. Possède un immeuble à Cossonay depuis le 13 juin 2001.
-	 */
-	protected Contribuable createDiplomateAvecImmeuble(RegDate dateNomination, RegDate achatImmeuble) throws Exception {
-		return createDiplomateAvecImmeuble(null, dateNomination, achatImmeuble);
-	}
-
-	protected Contribuable createDiplomateAvecImmeuble(Long noTiers, RegDate dateNomination, RegDate achatImmeuble) throws Exception {
+	protected Contribuable createDiplomateAvecImmeuble(@Nullable Long noTiers, RegDate dateNomination, RegDate achatImmeuble) throws Exception {
 		// on crée un non-habitant par commodité, mais cela devrait être un habitant normalement
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, dateNomination.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Lausanne);
@@ -73,7 +68,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createContribuableSansFor(null);
 	}
 
-	protected Contribuable createContribuableSansFor(Long noTiers) throws Exception {
+	protected Contribuable createContribuableSansFor(@Nullable Long noTiers) throws Exception {
 		return addNonHabitant(noTiers, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 	}
 
@@ -81,14 +76,10 @@ public abstract class MetierTest extends BusinessTest {
 		return createUnForSimple(null);
 	}
 
-	protected Contribuable createUnForSimple(Long noTiers) throws Exception {
+	protected Contribuable createUnForSimple(@Nullable Long noTiers) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		return paul;
-	}
-
-	protected EnsembleTiersCouple createMenageCommunMarie(RegDate dateMariage) {
-		return createMenageCommunMarie(null, null, null, dateMariage);
 	}
 
 	protected EnsembleTiersCouple createMenageCommunMarie(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage) {
@@ -106,10 +97,6 @@ public abstract class MetierTest extends BusinessTest {
 				MockCommune.Lausanne);
 
 		return ensemble;
-	}
-
-	protected EnsembleTiersCouple createMenageCommunDivorce(RegDate dateMariage, RegDate dateDivorce) {
-		return createMenageCommunDivorce(null, null, null, dateMariage, dateDivorce);
 	}
 
 	protected EnsembleTiersCouple createMenageCommunDivorce(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage, RegDate dateDivorce) {
@@ -234,19 +221,12 @@ public abstract class MetierTest extends BusinessTest {
 				MockCommune.Fraction.LAbbaye.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
-	}	
-	protected Contribuable createDepartHorsCanton(RegDate dateDepart) throws Exception {
-		return createDepartHorsCanton(null, dateDepart);
 	}
 
 	protected Contribuable createDepartHorsCanton(Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		return paul;
-	}
-
-	protected Contribuable createDepartHorsCantonAvecImmeuble(RegDate dateDepart) throws Exception {
-		return createDepartHorsCantonAvecImmeuble(null, dateDepart);
 	}
 
 	protected Contribuable createDepartHorsCantonAvecImmeuble(Long noTiers, RegDate dateDepart) throws Exception {
@@ -256,10 +236,6 @@ public abstract class MetierTest extends BusinessTest {
 		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
-	}
-
-	protected Contribuable createDepartHorsCantonEtVenteImmeuble(RegDate dateDepart, RegDate dateVente) throws Exception {
-		return createDepartHorsCantonEtVenteImmeuble(null, dateDepart, dateVente);
 	}
 
 	protected Contribuable createDepartHorsCantonEtVenteImmeuble(Long noTiers, RegDate dateDepart, RegDate dateVente) throws Exception {
@@ -274,7 +250,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsCantonSourcierPur(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsCantonSourcierPur(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsCantonSourcierPur(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.SOURCE);
@@ -287,7 +263,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsCantonSourcierMixte137Al1(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
@@ -301,7 +277,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsCantonSourcierMixte137Al2(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsCantonSourcierMixte137Al2(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al2(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
@@ -314,7 +290,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsSuisse(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsSuisse(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsSuisse(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu);
@@ -325,7 +301,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsSuisseAvecImmeuble(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsSuisseAvecImmeuble(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsSuisseAvecImmeuble(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
@@ -337,16 +313,12 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), null, dateDepart, MotifFor.DEPART_HS, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
 		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
-	}
-
-	protected Contribuable createDepartHorsSuisseEtArriveeDeHorsCanton(RegDate dateDepart, RegDate dateArrivee) throws Exception {
-		return createDepartHorsSuisseEtArriveeDeHorsCanton(null, dateDepart, dateArrivee);
 	}
 
 	protected Contribuable createDepartHorsSuisseEtArriveeDeHorsCanton(Long noTiers, RegDate dateDepart, RegDate dateArrivee) throws Exception {
@@ -361,7 +333,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(Long noTiers, RegDate dateDepart) throws Exception {
+	protected Contribuable createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), null, dateDepart, MotifFor.DEPART_HS, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
@@ -373,7 +345,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createHorsSuisseAvecAchatEtVenteImmeuble(null, dateAchat, dateVente);
 	}
 
-	protected Contribuable createHorsSuisseAvecAchatEtVenteImmeuble(Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
+	protected Contribuable createHorsSuisseAvecAchatEtVenteImmeuble(@Nullable Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
 		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -391,7 +363,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createHorsSuisseAvecAchatsEtVentesImmeubles(null, periodes);
 	}
 
-	protected Contribuable createHorsSuisseAvecAchatsEtVentesImmeubles(Long noTiers, DateRange... periodes) throws Exception {
+	protected Contribuable createHorsSuisseAvecAchatsEtVentesImmeubles(@Nullable Long noTiers, DateRange... periodes) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
 		for (DateRange periode : periodes) {
@@ -399,13 +371,6 @@ public abstract class MetierTest extends BusinessTest {
 					MotifRattachement.IMMEUBLE_PRIVE);
 		}
 		return paul;
-	}
-
-	/**
-	 * Crée un contribuable hors-Suisse sourcier avec un immeuble acheté et vendu aux dates spécifiées.
-	 */
-	protected Contribuable createHorsSuisseSourcierAvecAchatEtVenteImmeuble(RegDate dateAchat, RegDate dateVente) throws Exception {
-		return createHorsSuisseSourcierAvecAchatEtVenteImmeuble(null, dateAchat, dateVente);
 	}
 
 	protected Contribuable createHorsSuisseSourcierAvecAchatEtVenteImmeuble(Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
@@ -428,7 +393,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(null, dateVente);
 	}
 
-	protected Contribuable createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(Long noTiers, final RegDate dateVente) throws Exception {
+	protected Contribuable createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(@Nullable Long noTiers, final RegDate dateVente) throws Exception {
 		Contribuable ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.ARRIVEE_HS, date(1997, 3, 7), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(1997, 3, 8), MotifFor.DEPART_HS, dateVente, null, MockPays.France);
@@ -441,7 +406,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHorsSuisseAvecImmeuble(null, dateArrivee);
 	}
 
-	protected Contribuable createArriveeHorsSuisseAvecImmeuble(Long noTiers, RegDate dateArrivee) throws Exception {
+	protected Contribuable createArriveeHorsSuisseAvecImmeuble(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -491,13 +456,6 @@ public abstract class MetierTest extends BusinessTest {
 		return ctb;
 	}
 
-	/**
-	 * Cas réel du contribuable n°16109718. Il s'agit d'une arrivée de hors-Suisse normale, mais avec un motif de fermeture du for principal 'Déménagement'.
-	 */
-	protected Contribuable createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(RegDate dateAchat, RegDate dateArrivee) throws Exception {
-		return createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(null, dateAchat, dateArrivee);
-	}
-
 	@SuppressWarnings({"deprecation"})
 	protected Contribuable createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(Long noTiers, RegDate dateAchat, RegDate dateArrivee) throws Exception {
 		Contribuable ctb = createContribuableSansFor(noTiers);
@@ -511,7 +469,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHorsSuisseEtVenteImmeuble(null, dateArrivee, dateVente);
 	}
 
-	protected Contribuable createArriveeHorsSuisseEtVenteImmeuble(Long noTiers, RegDate dateArrivee, RegDate dateVente) throws Exception {
+	protected Contribuable createArriveeHorsSuisseEtVenteImmeuble(@Nullable Long noTiers, RegDate dateArrivee, RegDate dateVente) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS,
 				MockPays.Danemark);
@@ -521,11 +479,7 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createArriveHorsSuisseEtDemenagementVaudoisDansLAnnee(RegDate dateArrivee, RegDate dateDemenagement) {
-		return createArriveHorsSuisseEtDemenagementVaudoisDansLAnnee(null, dateArrivee, dateDemenagement);
-	}
-
-	protected Contribuable createArriveHorsSuisseEtDemenagementVaudoisDansLAnnee(Long noTiers, RegDate dateArrivee, RegDate dateDemenagement) {
+	protected Contribuable createArriveHorsSuisseEtDemenagementVaudoisDansLAnnee(@Nullable Long noTiers, RegDate dateArrivee, RegDate dateDemenagement) {
 		Contribuable ctb = addNonHabitant(noTiers, "Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		addForPrincipal(ctb, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
@@ -537,7 +491,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHSAchatImmeubleEtDepartHS(null, dateArrivee, dateAchat, dateDepart);
 	}
 
-	protected Contribuable createArriveeHSAchatImmeubleEtDepartHS(Long noTiers, RegDate dateArrivee, RegDate dateAchat, RegDate dateDepart)
+	protected Contribuable createArriveeHSAchatImmeubleEtDepartHS(@Nullable Long noTiers, RegDate dateArrivee, RegDate dateAchat, RegDate dateDepart)
 			throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
@@ -551,7 +505,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHSDepartHSPuisAchatImmeuble(null, dateArrivee, dateDepart, dateAchat);
 	}
 
-	protected Contribuable createArriveeHSDepartHSPuisAchatImmeuble(Long noTiers, RegDate dateArrivee, RegDate dateDepart, RegDate dateAchat)
+	protected Contribuable createArriveeHSDepartHSPuisAchatImmeuble(@Nullable Long noTiers, RegDate dateArrivee, RegDate dateDepart, RegDate dateAchat)
 			throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
@@ -564,7 +518,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHorsCantonSourcierPur(null, dateArrivee);
 	}
 
-	protected Contribuable createArriveeHorsCantonSourcierPur(Long noTiers, RegDate dateArrivee) throws Exception {
+	protected Contribuable createArriveeHorsCantonSourcierPur(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), null, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		ffp.setModeImposition(ModeImposition.SOURCE);
@@ -573,19 +527,11 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createArriveeHorsCanton(RegDate dateArrivee) throws Exception {
-		return createArriveeHorsCanton(null, dateArrivee);
-	}
-
-	protected Contribuable createArriveeHorsCanton(Long noTiers, RegDate dateArrivee) throws Exception {
+	protected Contribuable createArriveeHorsCanton(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		return paul;
-	}
-
-	protected Contribuable createArriveeHorsCantonAvecImmeuble(RegDate dateArrivee) throws Exception {
-		return createArriveeHorsCantonAvecImmeuble(null, dateArrivee);
 	}
 
 	protected Contribuable createArriveeHorsCantonAvecImmeuble(Long noTiers, RegDate dateArrivee) throws Exception {
@@ -600,7 +546,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHorsCantonSourcierMixte137Al1(null, dateArrivee);
 	}
 
-	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(Long noTiers, RegDate dateArrivee) throws Exception {
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
@@ -614,25 +560,12 @@ public abstract class MetierTest extends BusinessTest {
 		return createArriveeHorsCantonSourcierMixte137Al2(null, dateArrivee);
 	}
 
-	protected Contribuable createArriveeHorsCantonSourcierMixte137Al2(Long noTiers, RegDate dateArrivee) throws Exception {
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al2(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), null, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		ffp.setModeImposition(ModeImposition.SOURCE);  // un hors-canton ne peut pas être mixte 137 al. 2
 		ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
-		return paul;
-	}
-
-	protected Contribuable createArriveeEtDepartHorsSuisse(RegDate dateArrivee, RegDate dateDepart) throws Exception {
-		Contribuable paul = createContribuableSansFor();
-		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-		return paul;
-	}
-
-	protected Contribuable createDepartEtArriveeHorsSuisseDansLAnnee(RegDate dateDepart, RegDate dateArrivee) throws Exception {
-		Contribuable paul = createContribuableSansFor();
-		addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		return paul;
 	}
 
@@ -646,10 +579,6 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createSourcierPureHorsSuisse() throws Exception {
-		return createSourcierPureHorsSuisse(null);
-	}
-
 	protected Contribuable createSourcierPureHorsSuisse(Long noTiers) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockPays.Albanie);
@@ -657,22 +586,11 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createSourcierPureHorsCanton() throws Exception {
-		return createSourcierPureHorsCanton(null);
-	}
-
 	protected Contribuable createSourcierPureHorsCanton(Long noTiers) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Neuchatel);
 		fp.setModeImposition(ModeImposition.SOURCE);
 		return paul;
-	}
-
-	/**
-	 * Contribuable sourcier hors-canton avec un immeuble dans le canton => sourcier mixte art. 137 al. 1
-	 */
-	protected Contribuable createSourcierMixte137Al1HorsCanton(RegDate achatImmeuble) throws Exception {
-		return createSourcierMixte137Al1HorsCanton(null, achatImmeuble);
 	}
 
 	protected Contribuable createSourcierMixte137Al1HorsCanton(Long noTiers, RegDate achatImmeuble) throws Exception {
@@ -689,13 +607,6 @@ public abstract class MetierTest extends BusinessTest {
 	}
 
 	/**
-	 * Contribuable sourcier hors-Suisse avec un immeuble dans le canton => sourcier mixte art. 137 al. 1
-	 */
-	protected Contribuable createSourcierMixte137Al1HorsSuisse(RegDate dateAchat) throws Exception {
-		return createSourcierMixte137Al1HorsSuisse(null, dateAchat);
-	}
-
-	/**
 	 * TODO (msi) corriger cela (mixte 149) en fonction de la nouvelle spéc. de Thierry en cours de validation
 	 */
 	protected Contribuable createSourcierMixte137Al1HorsSuisse(Long noTiers, RegDate dateAchat) throws Exception {
@@ -708,13 +619,6 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	/**
-	 * Contribuable sourcier dans le canton avec un mode d'imposition mixte (gagnant plus de 120'000 francs) => sourcier mixte art. 137 al. 2
-	 */
-	protected Contribuable createSourcierPassageMixte137Al2(RegDate datePassage) throws Exception {
-		return createSourcierPassageMixte137Al2(null, datePassage);
-	}
-
 	protected Contribuable createSourcierPassageMixte137Al2(Long noTiers, RegDate datePassage) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, datePassage.getOneDayBefore(),
@@ -723,13 +627,6 @@ public abstract class MetierTest extends BusinessTest {
 		fp = addForPrincipal(paul, datePassage, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.MIXTE_137_2);
 		return paul;
-	}
-
-	/**
-	 * Sourcier pure vaudois qui passe en mode ordinaire en 2008
-	 */
-	protected Contribuable createPassageRoleSourceAOrdinaire(RegDate dateChangement) throws Exception {
-		return createPassageRoleSourceAOrdinaire(null, dateChangement);
 	}
 
 	/**
@@ -760,7 +657,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDecesHorsCantonAvecImmeuble(null, dateAchat, dateDeces);
 	}
 
-	protected Contribuable createDecesHorsCantonAvecImmeuble(Long noTiers, RegDate dateAchat, RegDate dateDeces) throws Exception {
+	protected Contribuable createDecesHorsCantonAvecImmeuble(@Nullable Long noTiers, RegDate dateAchat, RegDate dateDeces) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
 		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin.getNoOFS(),
@@ -785,7 +682,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createDecesHorsCantonActiviteIndependante(null, debutExploitation, dateDeces);
 	}
 
-	protected Contribuable createDecesHorsCantonActiviteIndependante(Long noTiers, RegDate debutExploitation, RegDate dateDeces) throws Exception {
+	protected Contribuable createDecesHorsCantonActiviteIndependante(@Nullable Long noTiers, RegDate debutExploitation, RegDate dateDeces) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, debutExploitation, MotifFor.DEBUT_EXPLOITATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
 		addForSecondaire(paul, debutExploitation, MotifFor.DEBUT_EXPLOITATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin.getNoOFS(),
@@ -810,7 +707,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createHorsCantonAvecImmeuble(null, dateAchat);
 	}
 
-	protected Contribuable createHorsCantonAvecImmeuble(Long noTiers, RegDate dateAchat) throws Exception {
+	protected Contribuable createHorsCantonAvecImmeuble(@Nullable Long noTiers, RegDate dateAchat) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
 		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -821,7 +718,7 @@ public abstract class MetierTest extends BusinessTest {
 		return createVenteImmeubleHorsCanton(null, dateVente);
 	}
 
-	protected Contribuable createVenteImmeubleHorsCanton(Long noTiers, RegDate dateVente) throws Exception {
+	protected Contribuable createVenteImmeubleHorsCanton(@Nullable Long noTiers, RegDate dateVente) throws Exception {
 		Contribuable ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
 		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -832,28 +729,20 @@ public abstract class MetierTest extends BusinessTest {
 		return createFinActiviteHorsCanton(null, dateFin);
 	}
 
-	protected Contribuable createFinActiviteHorsCanton(Long noTiers, RegDate dateFin) throws Exception {
+	protected Contribuable createFinActiviteHorsCanton(@Nullable Long noTiers, RegDate dateFin) throws Exception {
 		Contribuable ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Neuchatel);
 		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return ctb;
 	}
 
-	protected Contribuable createOrdinairePuisSourcierCasLimite() throws Exception {
-		return createOrdinairePuisSourcierCasLimite(null);
-	}
-
-	protected Contribuable createOrdinairePuisSourcierCasLimite(Long noTiers) throws Exception {
+	protected Contribuable createOrdinairePuisSourcierCasLimite(@Nullable Long noTiers) throws Exception {
 		final Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2006, 1, 15), MotifFor.CHGT_MODE_IMPOSITION,
 				MockCommune.Lausanne);
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2006, 1, 16), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
 		return paul;
-	}
-
-	protected Contribuable createSourcierPuisOrdinaireCasLimite() throws Exception {
-		return createSourcierPuisOrdinaireCasLimite(null);
 	}
 
 	protected Contribuable createSourcierPuisOrdinaireCasLimite(Long noTiers) throws Exception {
@@ -882,7 +771,7 @@ public abstract class MetierTest extends BusinessTest {
 		return ctb;
 	}
 
-	protected void assertOrdinaire(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	protected void assertOrdinaire(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
 			Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(VaudoisOrdinaire.class, assujettissement);
@@ -892,7 +781,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
-	protected void assertDiplomateSuisse(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	protected void assertDiplomateSuisse(RegDate debut, RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
 			Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(DiplomateSuisse.class, assujettissement);
@@ -902,7 +791,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
-	protected void assertHorsCanton(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	protected void assertHorsCanton(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
 			Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(HorsCanton.class, assujettissement);
@@ -912,7 +801,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
-	protected void assertHorsSuisse(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	protected void assertHorsSuisse(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
 			Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(HorsSuisse.class, assujettissement);
@@ -922,7 +811,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
-	protected void assertSourcierPur(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+	protected void assertSourcierPur(RegDate debut, RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(SourcierPur.class, assujettissement);
 		final SourcierPur a = (SourcierPur) assujettissement;
@@ -933,7 +822,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
 	}
 
-	protected void assertSourcierMixte(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+	protected void assertSourcierMixte(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(SourcierMixte.class, assujettissement);
 		final SourcierMixte a = (SourcierMixte) assujettissement;
@@ -944,7 +833,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
 	}
 
-	protected void assertPeriodeImposition(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
+	protected void assertPeriodeImposition(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
 	                                       boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
 		assertNotNull(periode);
 		assertEquals(debut, periode.getDateDebut());

@@ -254,7 +254,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune) {
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE);
 	}
 
@@ -269,7 +269,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié avec le mode d'imposition spécifié
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
 		final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement);
 		ffp.setModeImposition(modeImposition);
 		return ffp;
@@ -293,7 +293,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockPays pays) {
 		assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
 	}

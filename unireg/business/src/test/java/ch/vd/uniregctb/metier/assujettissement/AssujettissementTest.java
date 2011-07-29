@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 //		DirtiesContextTestExecutionListener.class,
 //		WebScreenshotTransactionalTestExecutionListener.class},
 //		inheritListeners = false)
-@SuppressWarnings({"JavaDoc"})
+@SuppressWarnings({"JavaDoc", "deprecation"})
 public class AssujettissementTest extends MetierTest {
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000001&print=true&title=${methodName}")
