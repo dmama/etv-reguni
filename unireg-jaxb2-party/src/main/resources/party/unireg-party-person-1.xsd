@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/person/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/1"
