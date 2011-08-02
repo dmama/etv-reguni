@@ -268,7 +268,7 @@ public abstract class PdfRapport extends Document {
 				b.append(elt.officeImpotID).append(COMMA);
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.nomCtb)).append(COMMA);
-				b.append(elt.getDescriptionRaison());
+				b.append(escapeChars(elt.getDescriptionRaison()));
 				if (elt.details != null) {
 					b.append(COMMA).append(asCsvField(elt.details));
 				}

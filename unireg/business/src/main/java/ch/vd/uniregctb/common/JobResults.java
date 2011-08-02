@@ -10,7 +10,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 
 /**
  * Classe de base des containers de résultats pour les rapports d'exécution des batchs
@@ -75,7 +75,7 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 
 		List<String> noms;
 
-		final Contribuable tiers = hibernateTemplate.get(Contribuable.class, noCtb);
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, noCtb);
 		if (tiers == null) {
 			noms = Collections.emptyList();
 		}
@@ -111,7 +111,7 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 			for (String part : noms) {
 				if (StringUtils.isNotBlank(part)) {
 					if (b.length() > 0) {
-						b.append(" & ");
+						b.append(", ");
 					}
 					b.append(StringUtils.trimToEmpty(part));
 				}
