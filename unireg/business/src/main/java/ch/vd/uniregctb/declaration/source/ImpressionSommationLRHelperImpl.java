@@ -360,7 +360,12 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final BigInteger annee = BigInteger.valueOf(anneeAsInteger.longValue());
 		bvrDemande.setAnneeTaxation(annee);
 		bvrDemande.setTypeDebiteurIS(dpi.getCategorieImpotSource().toString());
+
 		final BvrReponse bvrReponse = bvrPlusClient.getBVRDemande(bvrDemande);
+//		final BvrReponse bvrReponse = new BvrReponse();
+//		bvrReponse.setLigneCodage("0100003949753>210000000003139471430009017+ 01010391391>");
+//		bvrReponse.setNoAdherent("10-1245-8");
+
 		if (bvrReponse.getLigneCodage() == null) {
 			throw new EditiqueException("Le service 'SipfBVRPlus' ne renvoie pas d'information pour le débiteur " + dpi.getNumero().toString() + " de type " + dpi.getCategorieImpotSource()  + " et l'année " + annee );
 		}
