@@ -19,6 +19,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -375,10 +376,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
-
-		return addLR(debiteur, debut, fin, periode,null);
+		return addLR(debiteur, debut, fin, periode, TypeEtatDeclaration.EMISE);
 	}
-	//TODO (BNM) Refactorer afin de generer des LR avec un état cohérent: par exemple toujours avec un état émis
+
 	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(debut);
@@ -387,13 +387,21 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setModeCommunication(ModeCommunication.PAPIER);
 		lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
 
-		if(typeEtat!=null){
-			EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
-			etat.setDateObtention(debut);
+		// l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
+		if (typeEtat != TypeEtatDeclaration.EMISE) {
+			final EtatDeclaration etatEmission = new EtatDeclarationEmise();
+			etatEmission.setDateObtention(fin);
+			lr.addEtat(etatEmission);
+		}
+
+		if (typeEtat != null) {
+			final EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
+			etat.setDateObtention(fin);
 			lr.addEtat(etat);
 		}
+
 		lr.setTiers(debiteur);
-		lr = (DeclarationImpotSource) hibernateTemplate.merge(lr);
+		lr = hibernateTemplate.merge(lr);
 		debiteur.addDeclaration(lr);
 		return lr;
 	}

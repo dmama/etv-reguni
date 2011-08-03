@@ -22,8 +22,8 @@ import ch.vd.fiscalite.taxation.evtQuittanceListeV1.OrigineType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -103,95 +103,49 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		}
 
 		if (event instanceof QuittanceLR) {
-			onQuittance((QuittanceLR) event);
+			onEvenementLR((QuittanceLR) event);
 		}
 		else {
 			throw new EvenementExterneException("Type d'événement inconnu = " + event.getClass());
 		}
 	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @param event	 */
 
 	@Override
-	public boolean traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException {
-		boolean resultat;
+	public boolean retraiterEvenementExterne(EvenementExterne event) {
 		if (event instanceof QuittanceLR) {
-			resultat = traiterQuittanceLR((QuittanceLR) event);
+			return traiterEvenementLR((QuittanceLR) event);
 		}
 		else {
-			throw new EvenementExterneException("Type d'événement inconnu = " + event.getClass());
+			throw new RuntimeException("Type d'événement inconnu = " + event.getClass());
 		}
-		return resultat;
-	}
-
-	private boolean traiterQuittanceLR(QuittanceLR event) throws EvenementExterneException {
-		final Long tiersId = event.getTiersId();
-		boolean resultat;
-		// On recherche le débiteur correspondant
-		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null) {
-			throw new EvenementExterneException("Tiers n'existe pas " + tiersId);
-		}
-
-		// Si la cible de l'evenement(la LR) est déjà traitée, on met juste l'evenement à l'etat traite
-		if (lrDejaTraitee(event, tiers)) {
-			event.setEtat(EtatEvenementExterne.TRAITE);
-			event.setErrorMessage(null);
-			resultat = false;
-		}
-		else {
-			// On quittance la LR
-			quittancementLr(event);
-			// Tout s'est bien passé
-			event.setEtat(EtatEvenementExterne.TRAITE);
-			event.setErrorMessage(null);
-			resultat = true;
-		}
-		return resultat;
-
-
 	}
 
 	/**
-	 * teste si la lr a u etat conforme pour le type de quittancement que l'evenement demande:
-	 * si la LR a un etat retourne et que l'on a une demande de quittancement
-	 * ou si la lr a un etat non retourne et
-	 * * que l'on a une demande d'annulation de quittancement la lr est déja traité, donc on est sensé ne rien faire
-	 *
-	 * @param event
-	 * @param tiers
-	 * @return
-	 * @throws EvenementExterneException
+	 * Traitement d'un événement traitant du quittancement (ou du dé-quittancement) d'une LR ; l'état de l'événement est mis à "TRAITE"
+	 * si le traitement ne lève aucune exception
+	 * @param event événement à traiter
+	 * @return <code>true</code> si l'événement a été traité, <code>false</code> s'il est parti/resté en erreur
 	 */
-	//
-	private boolean lrDejaTraitee(QuittanceLR event, Tiers tiers) throws EvenementExterneException {
-		boolean dejaTraite = false;
-		final RegDate dateValidite = event.getDateFin().getOneDayBefore();
-		Declaration lr = tiers.getDeclarationActive(dateValidite);
-		if (lr != null) {
-			if (TypeEtatDeclaration.RETOURNEE == lr.getDernierEtat().getEtat() && TypeQuittance.QUITTANCEMENT == event.getType() ||
-					isNonQuittancee(lr) && TypeQuittance.ANNULATION == event.getType()) {
-				dejaTraite = true;
-			}
+	private boolean traiterEvenementLR(QuittanceLR event) {
+		boolean result = true;
+		try {
+			quittancementLr(event);
+			event.setEtat(EtatEvenementExterne.TRAITE);
+			event.setErrorMessage(null);
 		}
-		else {
-			throw new EvenementExterneException("la LR " + RegDateHelper.dateToDisplayString(event.getDateDebut()) + "-" +  RegDateHelper.dateToDisplayString(event.getDateFin()) + " du debiteur " + tiers.getNumero() + " n'existe pas");
+		catch (EvenementExterneException e) {
+			event.setEtat(EtatEvenementExterne.ERREUR);
+			event.setErrorMessage(e.getMessage());
+			result = false;
 		}
-
-		return dejaTraite;
+		return result;
 	}
 
-	private boolean isNonQuittancee(Declaration lr) {
-		if (TypeEtatDeclaration.RETOURNEE == lr.getDernierEtat().getEtat()) {
-			return false;
-		}
-		return true;
-	}
-
-	private void onQuittance(QuittanceLR event) {
+	/**
+	 * Appelé à la réception de l'événement de quittancement
+	 * @param event événement de quittancement (ou d'annulation de quittancement) nouvellement reçu
+	 */
+	private void onEvenementLR(QuittanceLR event) {
 
 		final Long tiersId = event.getTiersId();
 
@@ -199,24 +153,16 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		event.setEtat(EtatEvenementExterne.NON_TRAITE);
 		event = (QuittanceLR) evenementExterneDAO.save(event);
 
-		try {
-			// On recherche le débiteur correspondant
-			final Tiers tiers = tiersDAO.get(tiersId);
-			if (tiers == null) {
-				throw new EvenementExterneException("Tiers n'existe pas " + tiersId);
-			}
+		final Tiers tiers = tiersDAO.get(tiersId);
+		if (tiers == null) {
+			event.setEtat(EtatEvenementExterne.ERREUR);
+			event.setErrorMessage(String.format("Tiers n'existe pas : %d", tiersId));
+		}
+		else {
 			event.setTiers(tiers);
 
-			// On quittance la LR
-			quittancementLr(event);
-
-			// Tout s'est bien passé
-			event.setEtat(EtatEvenementExterne.TRAITE);
-			event.setErrorMessage(null);
-		}
-		catch (EvenementExterneException e) {
-			event.setEtat(EtatEvenementExterne.ERREUR);
-			event.setErrorMessage(e.getMessage());
+			// travail de traitement proprement dit
+			traiterEvenementLR(event);
 		}
 	}
 
@@ -233,17 +179,17 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			}
 		}
 		if (declarationImpotSource == null) {
-			throw new EvenementExterneException("Il n'est pas de déclaration impôt source pour ce débiteur: " + tiers.getNumero());
+			throw new EvenementExterneException(String.format("Aucune correspondance avec une déclaration impôt source de ce débiteur: %d", tiers.getNumero()));
 		}
-		// Au moins la date de retour ou l’annulation du retour doit être renseignée et elles ne peuvent être présentes
-		// simultanément.
+
+		// Au moins la date de retour ou l’annulation du retour doit être renseignée et elles ne peuvent être présentes simultanément.
 		if (quittance.getType() == TypeQuittance.QUITTANCEMENT) {
 			if (quittance.getDateEvenement() == null) {
 				throw new EvenementExterneException("Pour un quittancement la date de retour est requise.");
 			}
 			// Si la date de retour est renseignée, elle ne se situe pas dans le futur et le retour n’a pas encore été enregistré.
 			if (DateHelper.isAfter(quittance.getDateEvenement(), DateHelper.getCurrentDate())) {
-				throw new EvenementExterneException("La date de retour ne peut se situer dans le futur");
+				throw new EvenementExterneException(String.format("La date de retour (%s) ne peut se situer dans le futur", DateHelper.dateTimeToDisplayString(quittance.getDateEvenement())));
 			}
 		}
 		else if (quittance.getType() == TypeQuittance.ANNULATION) {
@@ -254,7 +200,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			final EtatDeclaration etatDeclaration = declarationImpotSource.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 			// S’il s’agit d’une annulation du retour, le retour a déjà été enregistré.
 			if (etatDeclaration == null) {
-				throw new EvenementExterneException("La déclaration impôt source sélectionnée ne contient pas de retour à annuler.");
+				throw new EvenementExterneException(String.format("La déclaration impôt source sélectionnée (tiers=%d, période=%s) ne contient pas de retour à annuler.",
+				                                                  tiers.getNumero(), DateRangeHelper.toDisplayString(declarationImpotSource)));
 			}
 		}
 
@@ -265,9 +212,18 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		final DeclarationImpotSource declarationImpotSource = validate(quittance);
 		// En l’absence d’erreur, l’application met à jour la liste récapitulative du débiteur de l’impôt à la source
 		// correspondant à la période de décompte :
-		// ● Si la date de retour est renseignée, elle en y insère la date de retour.
-		// ● S’il s’agit d’une annulation du retour, elle efface la date de retour.
+		// - Si la date de retour est renseignée, elle en y insère la date de retour.
+		// - S’il s’agit d’une annulation du retour, elle efface la date de retour.
 		if (quittance.getType() == TypeQuittance.QUITTANCEMENT) {
+
+			// on annule les éventuels quittancements antérieurs si nécessaire
+			for (EtatDeclaration etat : declarationImpotSource.getEtats()) {
+				if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+					etat.setAnnule(true);
+				}
+			}
+
+			// on crée le nouvel état "retourné"
 			final EtatDeclaration etatDeclaration = new EtatDeclarationRetournee();
 			etatDeclaration.setDateObtention(RegDate.get(quittance.getDateEvenement()));
 			etatDeclaration.setAnnule(false);
@@ -278,10 +234,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			etatDeclaration.setAnnule(true);
 		}
 		else {
-			throw new RuntimeException("Unexpected Error.");
+			throw new RuntimeException("Type d'événement de quittancement de LR invalide : " + quittance.getType());
 		}
 
-		// [UNIREG-1947] EvenementExterneListenerImplne pas oublier d'invalider le cache du tiers!
+		// [UNIREG-1947] ne pas oublier d'invalider le cache du tiers!
 		dataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 

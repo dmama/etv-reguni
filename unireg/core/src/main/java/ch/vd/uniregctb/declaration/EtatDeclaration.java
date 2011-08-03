@@ -72,7 +72,14 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 			Assert.notNull(etat2);
 
 			// l'ordre est simplement l'ordre logique de l'enum (EMISE -> SOMMEE -> ECHUE -> RETOURNEE)
-			return etat1.compareTo(etat2);
+			if (etat1 != etat2) {
+				return etat1.compareTo(etat2);
+			}
+
+			// s'il y a des états identiques annulés aux mêmes dates, on mets l'état annulé avant
+			final boolean e1annule = o1.isAnnule();
+			final boolean e2annule = o2.isAnnule();
+			return e1annule == e2annule ? 0 : (e1annule ? -1 : 1);
 		}
 	}
 

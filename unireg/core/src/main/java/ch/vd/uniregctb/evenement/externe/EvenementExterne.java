@@ -1,11 +1,25 @@
 package ch.vd.uniregctb.evenement.externe;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.util.Date;
-
-import javax.persistence.*;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -149,6 +163,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	 * @return the errorMessage
 	 */
 	@Column(name = "ERREUR_MESSAGE", nullable=true)
+	@Nullable
 	public String getErrorMessage() {
 		return errorMessage;
 	}
@@ -156,7 +171,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	/**
 	 * @param errorMessage the errorMessage to set
 	 */
-	public void setErrorMessage(String errorMessage) {
+	public void setErrorMessage(@Nullable String errorMessage) {
 		if (errorMessage != null && errorMessage.length() > 255) {
 			throw new IllegalArgumentException("Le message d'erreur <" + errorMessage + "> contient plus de 255 caractères.");
 		}

@@ -347,7 +347,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					dpi.setNumero(id);
 					dpi.setNom1("nom1");
 					dpi.setNom2("nom2");
-					dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);
+					dpi = hibernateTemplate.merge(dpi);
 
 					DeclarationImpotSource lr = new DeclarationImpotSource();
 					lr.setDateDebut(date(2000, 1, 1));
@@ -365,7 +365,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					lr.addDelai(delaiDeclaration);
 
 					lr.setTiers(dpi);
-					lr = (DeclarationImpotSource) hibernateTemplate.merge(lr);
+					lr = hibernateTemplate.merge(lr);
 				}
 
 				hibernateTemplate.flush();

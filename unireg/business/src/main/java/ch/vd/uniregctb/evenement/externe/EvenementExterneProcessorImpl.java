@@ -9,6 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -32,20 +33,16 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<TraiterEvenementExterneResult>();
 
 	@Override
-	public TraiterEvenementExterneResult traiteEvenementExterne(final RegDate dateTraitement, int nbThreads, StatusManager s) {
+	public TraiterEvenementExterneResult traiteEvenementsExternes(final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement);
 		status.setMessage("Récupération des evenements externes à traiter...");
 		final List<Long> ids = recupererEvenementATraiter();
-		if(ids!=null){
-			rapportFinal.nbEvenementTotalProcesses = ids.size();	
-		}
-
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>
 				template = new ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, evenementExterneDAO.getHibernateTemplate());
+				                                                                                     transactionManager, status, evenementExterneDAO.getHibernateTemplate());
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, TraiterEvenementExterneResult>() {
 
 			@Override
@@ -68,13 +65,14 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 		if (status.interrupted()) {
 			status.setMessage("la relance du traitement des evenements externes a été interrompue."
-					+ " Nombre d'evenement traités au moment de l'interruption = " + count);
+					                  + " Nombre d'evenement traités au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;
 		}
 		else {
 			status.setMessage("la relance  relance du traitement des evenements externes est terminée."
-					+ "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotalProcesses + ". Nombre d'evenement traites = " + rapportFinal.traites.size() + ". Nombre d'erreurs = " +
-					rapportFinal.erreurs.size());
+					                  + "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotal + ". Nombre d'evenement traites = " + rapportFinal.traites.size() +
+					                  ". Nombre d'erreurs = " +
+					                  rapportFinal.erreurs.size());
 		}
 
 		rapportFinal.end();
@@ -83,7 +81,8 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	}
 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
-		//Chargement des evenement externes		
+
+		//Chargement des evenement externes
 		final List<EvenementExterne> list = evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
 			@Override
 			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
@@ -94,24 +93,21 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 				return crit.list();
 			}
 		});
-		for (EvenementExterne evenementExterne : list) {
-			rapport.get().nbEvenementTotal++;
 
-			boolean estTraite = evenementExterneService.traiterEvenementExterne(evenementExterne);
-			if (estTraite) {
-				rapport.get().addTraite(evenementExterne);
+		for (EvenementExterne evenementExterne : list) {
+			final TraiterEvenementExterneResult result = rapport.get();
+			if (evenementExterneService.retraiterEvenementExterne(evenementExterne)) {
+				result.addTraite(evenementExterne);
 			}
 			else {
-				rapport.get().addIgnores(evenementExterne);
+				result.addErreur(evenementExterne);
 			}
 		}
-
-
 	}
 
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	private List<Long> recupererEvenementATraiter() {
-		final String queryMessage ="select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat in (:etats) ORDER BY evenementExterne.id";
+		final String queryMessage = "select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat in (:etats) ORDER BY evenementExterne.id";
 
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -133,7 +129,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 						return queryObject.list();
 					}
 				});
-			
+
 				return idsEvenement;
 			}
 
@@ -141,16 +137,18 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		return ids;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
 		this.evenementExterneDAO = evenementExterneDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementExterneService(EvenementExterneService evenementExterneService) {
 		this.evenementExterneService = evenementExterneService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
-
 }

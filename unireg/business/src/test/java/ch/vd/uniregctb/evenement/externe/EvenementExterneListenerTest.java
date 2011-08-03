@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -104,13 +105,21 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 				final Set<EtatDeclaration> etats = lr.getEtats();
 				assertNotNull(etats);
-				assertEquals(1, etats.size());
+				assertEquals(2, etats.size());      // l'état "EMISE" et l'état "RETOURNEE"
 
-				final EtatDeclaration etat = etats.iterator().next();
-				assertNotNull(etat);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
-				assertEquals(dateQuittancement, etat.getDateObtention());
-				assertFalse(etat.isAnnule());
+				final EtatDeclaration etatEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
+				assertNotNull(etatEmission);
+				assertTrue(etats.contains(etatEmission));
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin, etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
+
+				final EtatDeclaration etatRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+				assertNotNull(etatRetour);
+				assertTrue(etats.contains(etatRetour));
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatRetour.getEtat());
+				assertEquals(dateQuittancement, etatRetour.getDateObtention());
+				assertFalse(etatRetour.isAnnule());
 
 				return null;
 			}
@@ -167,12 +176,11 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testEventAnnulationEtatRetourNonExiste() throws Exception{
+	public void testEventAnnulationEtatRetourInexistant() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
-
 
 		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
@@ -209,8 +217,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
 				assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
-				assertEquals("La déclaration impôt source sélectionnée ne contient pas de retour à annuler.", evts.get(0).getErrorMessage());
-
+				final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%d, période=%s) ne contient pas de retour à annuler.",
+				                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
+				assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final Set<Declaration> lrs = dpi.getDeclarations();
@@ -222,7 +231,13 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 				final Set<EtatDeclaration> etats = lr.getEtats();
 				assertNotNull(etats);
-				assertEquals(0, etats.size());
+				assertEquals(1, etats.size());      // l'état "EMISE"
+
+				final EtatDeclaration etatEmission = etats.iterator().next();
+				assertNotNull(etatEmission);
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin, etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
 
 				return null;
 			}
@@ -278,7 +293,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
 				assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
-				assertEquals("La déclaration impôt source sélectionnée ne contient pas de retour à annuler.", evts.get(0).getErrorMessage());
+				final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%s, période=%s) ne contient pas de retour à annuler.",
+				                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
+				assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
 				return null;
 			}
 		});
@@ -337,15 +354,21 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final List<EtatDeclaration> etats = lr.getEtatsSorted();
 				assertNotNull(etats);
-				assertEquals(1, etats.size());
+				assertEquals(2, etats.size());      // états "EMISE" et "RETOURNEE" (ce dernier annulé)
 
-				final EtatDeclaration etat = etats.iterator().next();
-				assertNotNull(etat);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
-				assertEquals(dateQuittancement, etat.getDateObtention());
-				assertTrue(etat.isAnnule());
+				final EtatDeclaration etatEmission = etats.get(0);
+				assertNotNull(etatEmission);
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin,  etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
+
+				final EtatDeclaration etatRetour = etats.get(1);
+				assertNotNull(etatRetour);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatRetour.getEtat());
+				assertEquals(dateQuittancement, etatRetour.getDateObtention());
+				assertTrue(etatRetour.isAnnule());
 
 				return null;
 			}
@@ -405,17 +428,32 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final List<EtatDeclaration> etats = lr.getEtatsSorted();
 				assertNotNull(etats);
-				assertEquals(2, etats.size());
+				assertEquals(3, etats.size());      // l'état "EMISE", puis les deux états "RETOURNEE", dont l'un est annulé
 
-				for (EtatDeclaration etat : etats) {
-					assertNotNull(etat);
-					assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
-					assertEquals(dateQuittancement, etat.getDateObtention());
-					assertFalse(etat.isAnnule());
-				}
+				final EtatDeclaration etatEmission = etats.get(0);
+				assertNotNull(etatEmission);
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin,  etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
 
+				final EtatDeclaration etatAnnule = etats.get(1);
+				assertNotNull(etatAnnule);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatAnnule.getEtat());
+				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
+				assertTrue(etatAnnule.isAnnule());
+
+				final EtatDeclaration etatValide = etats.get(2);
+				assertNotNull(etatValide);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatValide.getEtat());
+				assertEquals(dateQuittancement, etatValide.getDateObtention());
+				assertFalse(etatValide.isAnnule());
+
+				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				assertNotNull(dernierEtat);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
+				assertFalse(dernierEtat.isAnnule());
 				return null;
 			}
 		});
@@ -475,28 +513,32 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final List<EtatDeclaration> etats = lr.getEtatsSorted();
 				assertNotNull(etats);
-				assertEquals(2, etats.size());
+				assertEquals(3, etats.size());      // "EMISE", et deux "RETOURNEE", dont un est annulé
 
-				boolean trouveAnnule = false;
-				for (EtatDeclaration etat : etats) {
-					assertNotNull(etat);
-					assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
-					assertEquals(dateQuittancement, etat.getDateObtention());
+				final EtatDeclaration etatEmission = etats.get(0);
+				assertNotNull(etatEmission);
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin,  etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
 
-					if (etat.isAnnule()) {
-						assertFalse(trouveAnnule);
-						trouveAnnule = true;
-					}
-				}
-				assertTrue(trouveAnnule);
+				final EtatDeclaration etatAnnule = etats.get(1);
+				assertNotNull(etatAnnule);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatAnnule.getEtat());
+				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
+				assertTrue(etatAnnule.isAnnule());
+
+				final EtatDeclaration etatValide = etats.get(2);
+				assertNotNull(etatValide);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etatValide.getEtat());
+				assertEquals(dateQuittancement, etatValide.getDateObtention());
+				assertFalse(etatValide.isAnnule());
 
 				final EtatDeclaration dernierEtat = lr.getDernierEtat();
 				assertNotNull(dernierEtat);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());
-
 				return null;
 			}
 		});

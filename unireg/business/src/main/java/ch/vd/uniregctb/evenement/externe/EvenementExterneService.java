@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import org.springframework.transaction.annotation.Transactional;
-
-
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
@@ -17,16 +14,16 @@ public interface EvenementExterneService extends EvenementExterneHandler {
 	 * @param document   l'événement externe  @throws Exception en cas de probléme
 	 * @throws Exception en cas d'erreur
 	 */
-	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception;
+	void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception;
 
-	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
-	                                                              RegDate dateFin, RegDate dateQuittance);
+	EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
+	                                                       RegDate dateFin, RegDate dateQuittance);
 
-	/**Permet de traiter les evenements externes depuis un batch de relance
+	/**
+	 * Permet de re-traiter les evenements externes depuis un batch de relance
 	 *
- 	 * @param event
-	 * @return true si levenement est traité false si l'evenement n'a pas besoin d'être traité
-	 * @throws EvenementExterneException 
+ 	 * @param event événement à re-traiter
+	 * @return <code>true</code> si l'événement a été traité, <code>false</code> s'il est parti/resté en erreur
 	 */
-	public boolean traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException;
+	boolean retraiterEvenementExterne(EvenementExterne event);
 }

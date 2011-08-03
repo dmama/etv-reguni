@@ -41,7 +41,7 @@ public class EvenementExterneHandlerJob extends JobDefinition {
 
 		// Validation/Traitement des événements externes
 		status.setMessage("traitement des événements externes...");
-		final TraiterEvenementExterneResult results = evenementExterneProcessor.traiteEvenementExterne(dateTraitement, nbThreads, status);
+		final TraiterEvenementExterneResult results = evenementExterneProcessor.traiteEvenementsExternes(dateTraitement, nbThreads, status);
 		final TraiterEvenementExterneRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
 		Audit.success("La relance du traitement des événements externes à la date du "
