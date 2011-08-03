@@ -3,6 +3,8 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -229,26 +231,25 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	@Override
 	public int getNumeroOrdrePostal() {
-		final int noOrdreFourni = adresse.getNumeroOrdrePostal();
-		if (noOrdreFourni == 0) {
-			return super.getNumeroOrdrePostal();
+		final int noOrdrePostal = super.getNumeroOrdrePostal();
+		if (noOrdrePostal != 0) {
+			return noOrdrePostal;
 		}
 		else {
-			return noOrdreFourni;
+			return adresse.getNumeroOrdrePostal();
 		}
 	}
 
 	@Override
 	public String getNumeroPostal() {
-		final String numeroFourni = adresse.getNumeroPostal();
-		if (numeroFourni == null || numeroFourni.trim().length() == 0) {
-			return super.getNumeroPostal();
+		final String npa = super.getNumeroPostal();
+		if (!StringUtils.isBlank(npa)) {
+			return npa;
 		}
 		else {
-			return numeroFourni;
+			return adresse.getNumeroPostal();
 		}
 	}
-
 
 	@Override
 	public String getNumeroPostalComplementaire() {
