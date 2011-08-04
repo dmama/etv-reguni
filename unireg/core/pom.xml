@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-xmlbeans</artifactId>
-			<version>1.30</version>
+			<version>1.31</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
