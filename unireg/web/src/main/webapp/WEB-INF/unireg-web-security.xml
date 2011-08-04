@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
+	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
+
+	<!-- Récupère les paramètres renseignés par IAM et les stocke dans le context de sécurité -->
+	<bean id="iamAuthFilter" class="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
+		<property name="detailsClass" value="ch.vd.uniregctb.security.UniregSecurityDetails" />
+		<property name="allowedRoles">
+			<list>
+				<value>user</value>
+				<value>user_externe</value>
+				<value>tester</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Filtre de choix de l'OId -->
+	<bean id="chooseOIDFilter" class="ch.vd.uniregctb.security.ChooseOIDProcessingFilter">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+	<!-- Récupère le profil IFOSec et le stocke dans le context de sécurité -->
+	<bean id="ifoSecProfileFilter" class="ch.vd.uniregctb.security.IFOSecProfileProcessingFilter">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+	<!-- ======================== FILTER CHAIN ======================= -->
+
+	<!-- La chaine des filtres Spring à appliquer. -->
+	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
+		<security:filter-chain-map path-type="ant">
+			<security:filter-chain pattern="/403.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/404.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/error.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/logout.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/logoutiam.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/ws/**" filters="none" />
+			<security:filter-chain pattern="/remoting/**" filters="none" />
+			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,bypassSecurityFilter,iamAuthFilter" />
+			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter" />
+			<!-- Version IAM + IFOSEC -->
+			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
+			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
+		</security:filter-chain-map>
+	</bean>
+
+	<!-- ======================== AUTHENTICATION ======================= -->
+
+	<bean id="securityDebugConfig" class="ch.vd.uniregctb.security.SecurityDebugConfig">
+		<property name="properties" ref="uniregExternalProperties" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<!-- Filtre de logout: Le securityContextLogoutHandler effectue le logout et invalide la session -->
+	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg value="/logoutIAM.do" />
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+					<property name="invalidateHttpSession" value="true" />
+				</bean>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/logout"/>
+	</bean>
+
+	<!-- ===================== HTTP REQUEST SECURITY ==================== -->
+
+	<!-- the fourth item in the chain: securityEnforcementFilter -->
+	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		<property name="authenticationEntryPoint">
+			<bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+				<property name="loginFormUrl" value="/authenticationFailed.do" />
+			</bean>
+		</property>
+		<property name="accessDeniedHandler">
+			<bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+				<property name="errorPage" value="/403.do"/>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Handles any AccessDeniedException and AuthenticationException thrown within the filter chain -->
+	<bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+
+	<!-- Allow the use of getRemoteUser(), getUserPrincipal(), etc on request for Spring Security -->
+	<bean id="contextHolderAwareRequestFilter" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter"/>
+
+	<!-- This bean automatically receives AuthenticationEvent messages from	DaoAuthenticationProvider -->
+	<!--<bean id="loggerListener" class="org.springframework.security.authentication.event.LoggerListener" />-->
+
+	<!-- ================================================================ -->
+
+	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+	</bean>
+
+	<bean id="ifoSecService" class="ch.vd.uniregctb.security.IfoSecServiceImpl">
+		<property name="securiteService" ref="serviceSecuriteService" />
+	</bean>
+	
+	<bean id="securityProviderImpl" class="ch.vd.uniregctb.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
+		<property name="securiteDossierService" ref="securiteDossierService" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+		<property name="target" ref="securityProviderImpl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="securityProvider" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="preloadTiersIds" value="false"/>
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
+		<property name="provider" ref="securityProviderCache" />
+	</bean>
+
+</beans>

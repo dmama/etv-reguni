@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- [UNIREG-2399] on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion des événements civils -->
+	<bean id="dataEventJmsSender" class="ch.vd.uniregctb.data.DataEventJmsSender">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.db.event.output}" />
+		<property name="businessUser" value="Unireg-Web" />
+	</bean>
+
+</beans>

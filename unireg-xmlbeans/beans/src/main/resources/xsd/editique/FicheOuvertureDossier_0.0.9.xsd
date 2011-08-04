@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 31.03.09: JVO - Spécification de la Fiche d'ouverture de dossier UNIREG-->
+<!--Version  0.0.3  - 31.03.09: JVO - Ajout de la <DateEditiion>-->
+<!--Version  0.0.4  - 27.04.09: JVO - Supprimé <Civil2>-->
+<!--Version  0.0.5  - 01.05.09: JVO - Pas de formatage <DateNaissance1> et DateNaissance2>-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DonneesTechniques_0.0.6.xsd"/>
+	<xs:element name="FicheOuvertureDossier">
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="NumContrib" type="typNumeroCtb" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Numéro  du contribuable</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Dossier">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Motif" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Motif</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DateEvenement" type="typDatAAAAMMJJ">
+								<xs:annotation>
+									<xs:documentation>Date de l'evenement</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumOffice" type="typNumeroOffice" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>For de Gestion</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Commune" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Commune</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Contrib1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Nom1" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Nom de l'individu1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Prenom1" type="typCdata" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Prénom l'individu1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DateNaissance1" type="typDatIncplte" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Date de naissance de l'individu1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Civil" type="xs:string" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Civil</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumCTB1" type="typNumeroCtb">
+								<xs:annotation>
+									<xs:documentation>Num CTB</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumAVS131" type="typNumeroAvs13" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Num AVS 13</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Contrib2" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Nom2" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Nom de l'individu2</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Prenom2" type="typCdata" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Prénom l'individu2</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DateNaissance2" type="typDatIncplte" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Date de naissance de l'individu2</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumCTB2" type="typNumeroCtb">
+								<xs:annotation>
+									<xs:documentation>Num CTB</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumAVS132" type="typNumeroAvs13" nillable="true">
+								<xs:annotation>
+									<xs:documentation>Num AVS 13</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="DateEdition" type="typDatAAAAMMJJ">
+					<xs:annotation>
+						<xs:documentation>Date d' édition</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

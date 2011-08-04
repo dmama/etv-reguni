@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.evenement.party.PartyRequestListener" parent="esbMessageListener">
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="partyRequestListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destinationName" value="${extprop.jms.queue.party.service}" />
+		<property name="messageListener" ref="partyRequestListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
+	</bean>
+
+	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+</beans>

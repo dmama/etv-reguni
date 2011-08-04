@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<jxb:bindings version="1.0"
+			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
+
+	<!-- unireg-jaxb2-common -->
+
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.common.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.exception.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<!-- unireg-jaxb2-ech -->
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0010.v4" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<!-- unireg-jaxb2-party -->
+	
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.address.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='addressType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<!-- beans -->
+
+	<jxb:bindings schemaLocation="event/party/request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/address-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.address.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/address-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.address.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/di/evenementDeclarationImpot-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.di.common.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/di/evenementDeclarationImpot-output-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.di.output.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/di/evenementDeclarationImpot-input-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.di.input.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+</jxb:bindings>

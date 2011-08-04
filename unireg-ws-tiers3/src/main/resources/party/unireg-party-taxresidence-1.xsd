@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
+	<xs:complexType name="taxResidenceType">
+		<xs:annotation>
+			<xs:documentation>Un for fiscal détermine la raison pour laquelle un contribuable est soumis à l'impôt.
+				De manière générale, un for fiscal possède une date de début et une date de fin (incluse) qui délimitent une période de validité. En dehors de cette période, le for fiscal n’est pas
+				valide. Une date de fin de validité nulle indique que le for est toujours actif, et peut être interprétée comme "la fin des temps". Une date de début de validité nulle n’est pas
+				autorisée.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date d'ouverture du for fiscal.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fermeture du for fiscal. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle le for fiscal a été annulé, ou null s'il n'est pas annulé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxType" type="taxresidence:taxTypeType">
+				<xs:annotation>
+					<xs:documentation>Le genre d'impôt (dans 90% des cas égal à REVENU_FORTUNE ou DEBITEUR_PRESTATION_IMPOSABLE).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxationAuthorityType" type="taxresidence:taxationAuthorityTypeType">
+				<xs:annotation>
+					<xs:documentation>Cet enum permet d'interpréter le numéro OFS contenu dans noOfsAutoriteFiscale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxationAuthorityFSOId" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Numéro OFS étendu de la commune, du canton ou du pays de l'autorité fiscale du fors.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="taxLiabilityReason" type="taxresidence:taxLiabilityReasonType">
+				<xs:annotation>
+					<xs:documentation>Le motif de rattachement est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="startReason" type="taxresidence:liabilityChangeReasonType">
+				<xs:annotation>
+					<xs:documentation>Le motif d'ouverture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="endReason" type="taxresidence:liabilityChangeReasonType">
+				<xs:annotation>
+					<xs:documentation>Le motif de fermeture est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="taxationMethod" type="taxresidence:taxationMethodType">
+				<xs:annotation>
+					<xs:documentation>Le mode d'imposition est uniquement renseignée sur les fors fiscaux de genre = REVENU_FORTUNE et de rattachement = {DOMICILE; DIPLOMATE}</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="virtual" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Vrai si le for fiscal n'existe pas en tel que tel, mais est une vue construite en fonction de règles métier.
+						Exemple: les fors fiscaux principaux individuels des sourciers appartenant à des ménages-communs sont virtuels, car les fors fiscaux réels sont définis sur les contribuables
+						ménages. Voir la part PartyPart.VIRTUAL_TAX_RESIDENCES.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="managingTaxResidenceType">
+		<xs:annotation>
+			<xs:documentation>Le for de gestion permet de retrouver l’office d’impôt compétent 'ratione loci' du contribuable. Il ne s’agit pas à proprement parler d’une notion fiscale, mais
+				uniquement d’une notion propre à l’organisation de l’ACI
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de début de validité du for de gestion.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fin de validité du for de gestion. Si le for est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="municipalityFSOId" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="taxTypeType">
+		<xs:annotation>
+			<xs:documentation>Le genre d'impôt.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="INCOME_WEALTH">
+				<xs:annotation>
+					<xs:documentation>Revenu/fortune.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_GAINS">
+				<xs:annotation>
+					<xs:documentation>Gains immobiliers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REAL_ESTATE_TRANSFER">
+				<xs:annotation>
+					<xs:documentation>Droits de mutation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAPITAL_INCOME">
+				<xs:annotation>
+					<xs:documentation>Prestation capital.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INHERITANCE">
+				<xs:annotation>
+					<xs:documentation>Succession.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REAL_ESTATE">
+				<xs:annotation>
+					<xs:documentation>Foncier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBTOR_TAXABLE_INCOME">
+				<xs:annotation>
+					<xs:documentation>Débiteur prestation imposable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GIFTS">
+				<xs:annotation>
+					<xs:documentation>Donation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOGS">
+				<xs:annotation>
+					<xs:documentation>Chiens.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOBACCO_PATENT">
+				<xs:annotation>
+					<xs:documentation>Patente tabac.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PROFITS_CAPITAL">
+				<xs:annotation>
+					<xs:documentation>Bénéfice en capital.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="taxationAuthorityTypeType">
+		<xs:annotation>
+			<xs:documentation>Le type d'autorité fiscale.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VAUD_MUNICIPALITY">
+				<xs:annotation>
+					<xs:documentation>Commune ou fraction vaudoise.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_CANTON_MUNICIPALITY">
+				<xs:annotation>
+					<xs:documentation>Commune hors-canton.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Pays hors-Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="taxLiabilityReasonType">
+		<xs:annotation>
+			<xs:documentation>Le motif de rattachement.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RESIDENCE">
+				<xs:annotation>
+					<xs:documentation>Domicile.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PRIVATE_IMMOVABLE_PROPERTY">
+				<xs:annotation>
+					<xs:documentation>Immeuble privé.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SWISS_DIPLOMAT">
+				<xs:annotation>
+					<xs:documentation>Diplomate suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDEPENDANT_ACTIVITY">
+				<xs:annotation>
+					<xs:documentation>Activité indépendante.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEASONAL_JOURNEY">
+				<xs:annotation>
+					<xs:documentation>Séjour saisonnier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPANY_LEADER">
+				<xs:annotation>
+					<xs:documentation>Dirigeant de société.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GAINFUL_ACTIVITY_SAS">
+				<xs:annotation>
+					<xs:documentation>Activité lucrative - conférencier/artiste/sportifs (CAS).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ADMINISTRATOR">
+				<xs:annotation>
+					<xs:documentation>Administrateur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MORTGAGE_CREDITORS">
+				<xs:annotation>
+					<xs:documentation>Créance hypothécaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PENSION">
+				<xs:annotation>
+					<xs:documentation>Prestation de prévoyance.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_DIPLOMAT">
+				<xs:annotation>
+					<xs:documentation>Diplomate étranger.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAW_ON_UNDECLARED_WORK">
+				<xs:annotation>
+					<xs:documentation>Loi sur la travail au noir.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STABLE_ESTABLISHMENT">
+				<xs:annotation>
+					<xs:documentation>Etablissement stable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="liabilityChangeReasonType">
+		<xs:annotation>
+			<xs:documentation>Les différents motifs possibles d'ouverture/fermeture d'un for fiscal.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MOVE_VD">
+				<xs:annotation>
+					<xs:documentation>Déménagement vaudois.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WIDOWHOOD_DEATH">
+				<xs:annotation>
+					<xs:documentation>Veuvage/décès.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MARRIAGE_PARTNERSHIP_END_OF_SEPARATION">
+				<xs:annotation>
+					<xs:documentation>Mariage/enregistrement partenariat/réconciliation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION">
+				<xs:annotation>
+					<xs:documentation>Séparation/divorce/dissolution de partenariat.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_PERMIT_SWISS">
+				<xs:annotation>
+					<xs:documentation>Obtention du permis C ou de la nationalité suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAJORITY">
+				<xs:annotation>
+					<xs:documentation>Majorité.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MOVE_IN_FROM_FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Arrivée de hors-Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MOVE_IN_FROM_OTHER_CANTON">
+				<xs:annotation>
+					<xs:documentation>Arrivée de hors-canton.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MERGE_OF_MUNICIPALITIES">
+				<xs:annotation>
+					<xs:documentation>Fusion de communes.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PURCHASE_REAL_ESTATE">
+				<xs:annotation>
+					<xs:documentation>Achat immobilier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SALE_REAL_ESTATE">
+				<xs:annotation>
+					<xs:documentation>Vente immobilier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="START_COMMERCIAL_EXPLOITATION">
+				<xs:annotation>
+					<xs:documentation>Début d'exploitation commerciale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="END_COMMERCIAL_EXPLOITATION">
+				<xs:annotation>
+					<xs:documentation>Fin d'exploitation commerciale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEPARTURE_TO_FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Départ hors-Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEPARTURE_TO_OTHER_CANTON">
+				<xs:annotation>
+					<xs:documentation>Départ hors-canton.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNDETERMINED">
+				<xs:annotation>
+					<xs:documentation>Motif indéterminé ou inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEASONAL_JOURNEY">
+				<xs:annotation>
+					<xs:documentation>Séjout saisonnier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHANGE_OF_TAXATION_METHOD">
+				<xs:annotation>
+					<xs:documentation>Changement du mode d'imposition.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANCELLATION">
+				<xs:annotation>
+					<xs:documentation>Annulation du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REACTIVATION">
+				<xs:annotation>
+					<xs:documentation>Réactivation du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="START_DIPLOMATIC_ACTVITY">
+				<xs:annotation>
+					<xs:documentation>Début d'activité diplomatique.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="END_DIPLOMATIC_ACTVITY">
+				<xs:annotation>
+					<xs:documentation>Fin d'activité diplomatique.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="taxationMethodType">
+		<xs:annotation>
+			<xs:documentation>Le mode d'imposition.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ORDINARY">
+				<xs:annotation>
+					<xs:documentation>Ordinaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WITHHOLDING">
+				<xs:annotation>
+					<xs:documentation>A la source.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXPENDITURE_BASED">
+				<xs:annotation>
+					<xs:documentation>A la dépense.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIXED_137_1">
+				<xs:annotation>
+					<xs:documentation>Sourcier mixte 137-1.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIXED_137_2">
+				<xs:annotation>
+					<xs:documentation>Sourcier mixte 137-2.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDIGENT">
+				<xs:annotation>
+					<xs:documentation>Indigent.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="simplifiedTaxLiabilityType">
+		<xs:annotation>
+			<xs:documentation>Cette classe contient les date de début et de fin d'une période d'assujettissement d'un contribuable pour un niveau institutionnel donné (cantonal ou fédéral).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType" />
+			<xs:element name="dateTo" type="common:dateType" />
+			<xs:element name="type" type="taxresidence:simplifiedTaxLiabilityTypeType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="simplifiedTaxLiabilityTypeType">
+		<xs:annotation>
+			<xs:documentation>Défini le type d'assujettissement d'une période d'assujettissement.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LIMITED">
+				<xs:annotation>
+					<xs:documentation>Type d'assujettissement pour raisons économiques uniquement (activité indépendante, immeuble, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNLIMITED">
+				<xs:annotation>
+					<xs:documentation>Type d'assujettissement à raison de domicile/siège (plus éventuellement pour des raisons économiques).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="taxationPeriodType">
+		<xs:annotation>
+			<xs:documentation>Cette classe contient les date de début et de fin d'une période d'imposition au rôle ordinaire d'un contribuable.
+				Note: une période d'imposition est toujours incluse dans une année fiscale (du 1er janvier au 31 décembre). Elle peut être plus courte ou égale, mais pas plus grande.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="taxDeclarationId" type="xs:long" />
+			<xs:element name="dateFrom" type="common:dateType" />
+			<xs:element name="dateTo" type="common:dateType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="taxLiabilityType">
+		<xs:annotation>
+			<xs:documentation>Classe de base des différents types d'assujettissement théoriques d'un contribuable.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de début de l'assujettissement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fin de l'assujettissement. Si l'assujettissement est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="startReason" type="taxresidence:liabilityChangeReasonType">
+				<xs:annotation>
+					<xs:documentation>Le motif de début d'assujettissement. Non-renseigné si le motif est inconnu (pour une raison ou une autre).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="endReason" type="taxresidence:liabilityChangeReasonType">
+				<xs:annotation>
+					<xs:documentation>Le motif de fin d'assujettissement. Si l'assujettissement est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="swissDiplomatType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type diplomate Suisse; c'est-à-dire pour un diplomate de nationalité Suisse, basé à l'étranger mais rattaché à une commune vaudoise (pour imposition à
+				l'IFD).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="otherCantonType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type hors Canton; c'est-à-dire pour un contribuable domicilié dans un canton autre que le canton de vaud, et possédant un ou plusieurs fors
+				secondaires actifs dans une commune vaudoise.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="foreignCountryType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type hors Suisse; c'est-à-dire pour un contribuable domicilié dans un pays étranger, et possédant un ou plusieurs fors secondaires actifs dans une
+				commune vaudoise.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="indigentType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type indigent; c'est-à-dire pour un contribuable domicilié dans une commune vaudoise, mais n'ayant pas de revenu ni fortune personnelle et au bénéfice
+				d'une décision de l'ACI l'exemptant de déclaration d'impôt.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="withholdingType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier; c'est-à-dire pour un contribuable (non-Suisse et sans permis C) dont l'impôt est directement ponctionné sur son salaire (imposition à
+				la source).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:element name="taxationAuthority" type="taxresidence:taxationAuthorityTypeType">
+						<xs:annotation>
+							<xs:documentation>Le type qui permet de distinguer un sourcier vaudois, d'un hors-canton ou hors-Suisse.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="pureWithholdingType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier; c'est-à-dire pour un contribuable (non-Suisse et sans permis C) dont l'impôt est directement ponctionné sur son salaire (imposition à
+				la source).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:withholdingType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="mixedWithholdingType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier mixte; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt car il possède un revenu
+				suffisamment élevé, ou il est en ménage avec un contribuable qui possède un permis C.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:withholdingType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="expenditureBasedType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement à la dépense; c'est-à-dire pour un contribuable étranger, domicilé dans le canton de Vaud mais sans activité lucrative sur territoire Suisse, et qui a
+				négocié un forfait d'imposition avec l'ACI.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ordinaryResidentType">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type vaudois ordinaire; c'est-à-dire pour un contribuable Suisse ou permis C, domicilié dans le canton de Vaud et exerçant une activité lucrative
+				(dans le canton ou ailleurs). Ce cas représente la majorité des contribuables.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:taxLiabilityType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

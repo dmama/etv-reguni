@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+        					http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.pm.EntrepriseEventListener" parent="esbMessageListener">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="entrepriseEventListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
+		<property name="concurrentConsumers" value="${extprop.jms.queue.pm.event.consumers}" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="messageListener" ref="entrepriseEventListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="destinationName" value="${extprop.jms.queue.pm.event.input}" />
+		<property name="autoStartup" value="${extprop.jms.queue.pm.event.enabled}" />
+	</bean>
+
+</beans>

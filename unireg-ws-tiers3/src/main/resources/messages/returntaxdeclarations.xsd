@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
+
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="returnTaxDeclarationsRequestType">
+		<xs:annotation>
+			<xs:documentation>Requête qui demande de quittancer une ou plusieurs déclarations.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ws:requestType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="requests" type="ws:taxDeclarationReturnRequestType">
+						<xs:annotation>
+							<xs:documentation>Les demandes de quittancement à traiter.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="taxDeclarationReturnRequestType">
+		<xs:annotation>
+			<xs:documentation>Demande de quittancement (= enregistrement du retour) d'une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
+				<xs:annotation>
+					<xs:documentation>La clé qui permet d'identification la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="returnDate" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de retour (= date de quittancement) de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ordinaryTaxDeclarationKeyType">
+		<xs:annotation>
+			<xs:documentation>Contient les données qui permettent d'identifier de manière unique une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="taxpayerNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:documentation>Le numéro de contribuable auquel appartient la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxPeriod" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>La période fiscale complète (ex. 2010) pour laquelle la déclaration a été émise.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sequenceNumber" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le numéro de séquence de la déclaration (pour le contribuable et la période fiscale considérée)..</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="taxDeclarationReturnResponseType">
+		<xs:annotation>
+			<xs:documentation>Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
+				<xs:annotation>
+					<xs:documentation>La clé qui permet d'identifier la déclaration concernée</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code" type="ws:taxDeclarationReturnCodeType">
+				<xs:annotation>
+					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="exceptionInfo" type="exception:serviceExceptionInfoType">
+				<xs:annotation>
+					<xs:documentation>Le type et le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="taxDeclarationReturnCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OK">
+				<xs:annotation>
+					<xs:documentation>La déclaration a bien été quittancée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_UNKNOWN_TAXPAYER">
+				<xs:annotation>
+					<xs:documentation>Le contribuable spécifié est inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_TAX_LIABILITY">
+				<xs:annotation>
+					<xs:documentation>Une erreur en relation avec l'assujettissement du contribuable a été détectée (pas de for fiscal principal, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_INACTIVE_DEBTOR">
+				<xs:annotation>
+					<xs:documentation>Le contribuable est un débiteur inactif.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_UNKNOWN_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>La déclaration spécifiée n'existe pas.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_CANCELLED_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>La déclaration d'impôt est annnulée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERROR_INVALID_RETURN_DATE">
+				<xs:annotation>
+					<xs:documentation>La date de retour est invalide.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXCEPTION">
+				<xs:annotation>
+					<xs:documentation>La déclaration n'a pas pu être quittancée pour une raison inconnue. Voir le message d'exception pour plus de détails.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType final="#all" name="returnTaxDeclarationsResponseType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="responses" nillable="true" type="ws:taxDeclarationReturnResponseType" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

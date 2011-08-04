@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/person/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/1"
+		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0044-2-0f.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" schemaLocation="unireg-party-taxpayer-1.xsd" />
+
+	<xs:complexType name="naturalPersonType">
+		<xs:annotation>
+			<xs:documentation>Classe concrète qui contient toutes les informations d'un contribuable de type personne physique. Les collections sont renseignées en fonction des parts demandées lors de
+				l'appel au service.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxpayer:taxpayerType">
+				<xs:sequence>
+					<xs:element name="identification" type="eCH-0044:personIdentificationType">
+						<xs:annotation>
+							<xs:documentation>Information d'identification de la personne.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateOfBirth" type="common:dateType">
+						<xs:annotation>
+							<xs:documentation>La date de naissance de la personne physique. Cette date peut être partielle, c'est-à-dire que les informations de jour et/ou de mois peuvent valoir 0.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateOfDeath" type="common:dateType">
+						<xs:annotation>
+							<xs:documentation>La date de décès de la personne.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="category" type="person:naturalPersonCategoryType">
+						<xs:annotation>
+							<xs:documentation>Catégorie de personne physique.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="commonHouseholdType">
+		<xs:annotation>
+			<xs:documentation>Représente un ménage-commun (couple).</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxpayer:taxpayerType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType" />
+					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType" />
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="sexType">
+		<xs:annotation>
+			<xs:documentation>Sexe d'une personne physique.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FEMALE">
+				<xs:annotation>
+					<xs:documentation>Féminin.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALE">
+				<xs:annotation>
+					<xs:documentation>Masculin.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="naturalPersonCategoryType">
+		<xs:annotation>
+			<xs:documentation>Les différentes catégories d'une personne physique.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SWISS">
+				<xs:annotation>
+					<xs:documentation>Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CIVIL_SERVANT">
+				<xs:annotation>
+					<xs:documentation>Fonctionnaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_02_B_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Permis de séjour (B).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_03_C_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Permis d'établissement (C).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_04_CI_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Permis de conjoint de diplomate (CI).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_05_F_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Etranger admis provisoirement (F).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_06_G_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Frontalier (G).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_07_L_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Permis de séjour de courte durée (L).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_08_N_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Requérant d'asile (N).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_09_S_PERMIT">
+				<xs:annotation>
+					<xs:documentation>Personne à protéger (S).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_10_OBLIGED_TO_ANNOUNCE">
+				<xs:annotation>
+					<xs:documentation>Personne tenue de s'annoncer.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_11_DIPLOMAT">
+				<xs:annotation>
+					<xs:documentation>Diplomate.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_12_INTERNATIONAL_CIVIL_SERVANT">
+				<xs:annotation>
+					<xs:documentation>Fonctionnaire international.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="C_13_NOT_ASSIGNED">
+				<xs:annotation>
+					<xs:documentation>Non attribuée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

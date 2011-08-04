@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="propertiesLogger" class="ch.vd.uniregctb.common.SpringPropertiesLogger">
+		<constructor-arg value="Business - Properties provenant de la config Maven" />
+		<property name="hibernateDialect" ref="hibernateDialect"/>
+		<property name="jdbcDriverClassName">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${oracle.jdbc.driverClassName}" />
+				<property name="postgresqlProperty" value="${postgresql.jdbc.driverClassName}" />
+			</bean>
+		</property>
+		<property name="jdbcUrl">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${testprop.oracle.jdbc.url}" />
+				<property name="postgresqlProperty" value="${testprop.postgresql.jdbc.url}" />
+			</bean>
+		</property>
+		<property name="jdbcUsername">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${testprop.oracle.jdbc.username}" />
+				<property name="postgresqlProperty" value="${testprop.postgresql.jdbc.username}" />
+			</bean>
+		</property>
+		<property name="properties"
+			value="
+                | DB2 proxy               : ${testprop.db2.proxy}
+                | DB2 user                : ${testprop.db2.username}
+                | DB2 schema              : ${testprop.db2.schema}
+                | Host Interfaces URL     : ${testprop.host-interfaces.url}
+                | Host Interfaces user    : ${testprop.host-interfaces.username}
+                | Index path UT           : ${testprop.indexer.globalIndexPath}
+                | Docs repository UT      : ${testprop.documents.repository}
+                " />
+	</bean>
+
+	<!-- File based -->
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.fs.FSDirectoryProvider" lazy-init="true">
+		<constructor-arg value="${testprop.indexer.globalIndexPath}" />
+	</bean>
+
+	<bean id="docService" class="ch.vd.uniregctb.document.DocumentServiceImpl" lazy-init="true">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="repository" value="${testprop.documents.repository}" />
+	</bean>
+
+    <!-- Override du tache service défini dans unireg-business-service.xml pour éviter de devoir
+    ajouter toutes les collectivités administratives (oids) et devoir modifier tous les tests -->
+    <bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService"/>
+
+	<!-- Validateur de test qui permet de tester la classe abstraite ForFiscalValitator -->
+	<bean id="concreteTestForFiscalValidator" class="ch.vd.uniregctb.validation.fors.ConcreteForFiscalValidator" parent="forFiscalValidator"/>
+</beans>
