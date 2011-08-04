@@ -66,24 +66,27 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 
 		// les identifiants des contribuables à lister sont d'abord répartis en groupes de
 		// 200 (voir constante "tailleLot" plus bas), et ces lots sont alors traités sur
-		// 20 threads (voir constante "nbThreads" plus bas également)
+		// n threads (voir paramètre "nbThreads")
 
-		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+		final AtomicInteger compteur = new AtomicInteger(0);
+		final LinkedBlockingQueue<List<Long>> queue = new LinkedBlockingQueue<List<Long>>();
+		final List<T> threads = new ArrayList<T>(nbThreads);
+		for (int i = 0; i < nbThreads; i++) {
+			final T thread = customizer.createThread(queue, dateTraitement, status, compteur, hibernateTemplate);
+			threads.add(thread);
+
+			// on enlève la partie "Thread" finale du nom de la classe pour avoir un peu plus de lisibilité dans les logs (toutes les classes de threads ont un nom qui se termine par "Thread")
+			final String threadName = String.format("%s-%d", thread.getClass().getSimpleName().replaceFirst("Thread$", ""), i);
+			thread.setName(threadName);
+			thread.start();
+		}
+
+		final int nbEltsTrouves = hibernateTemplate.executeWithNewSession(new HibernateCallback<Integer>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final Iterator<Long> idIterator = customizer.getIdIterator(session);
 				final int tailleLot = 200;
-				final AtomicInteger compteur = new AtomicInteger(0);
-
-				final LinkedBlockingQueue<List<Long>> queue = new LinkedBlockingQueue<List<Long>>();
-				final List<T> threads = new ArrayList<T>(nbThreads);
-				for (int i = 0; i < nbThreads; i++) {
-					final T thread = customizer.createThread(queue, dateTraitement, status, compteur, hibernateTemplate);
-					threads.add(thread);
-					thread.setName(String.format("%s-%d", thread.getClass().getSimpleName(), i));
-					thread.start();
-				}
 
 				// on bourre dans la queue des lots de "tailleLot" identifiants
 				int size = 0;
@@ -97,63 +100,63 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 					status.setMessage(String.format("Décompte du nombre de %s : %d", getDenominationContribuablesComptes(), size));
 				}
 
-				// on dit à tout le monde que la queue est remplie (donc la prochaine
-				// fois qu'ils voient qu'il n'y a plus rien dans la queue, c'est que tout
-				// est fini)
-				for (T t : threads) {
-					t.onQueueFilled();
-				}
-
-				status.setMessage(String.format("Traitement des %d %s", size, getDenominationContribuablesComptes()));
-
-				// attente "active" de la fin des threads
-				while (threads.size() > 0) {
-
-					// tous les threads terminés sont enlevés de la liste
-					final Iterator<T> iterator = threads.iterator();
-					while (iterator.hasNext()) {
-						final T thread = iterator.next();
-						if (!thread.isAlive()) {
-							iterator.remove();
-							results.addAll(thread.getResults());
-						}
-					}
-
-					try {
-						Thread.sleep(1000);
-					}
-					catch (InterruptedException e) {
-
-						// le thread a été interrompu : collecte des résultats courants
-						for (T thread : threads) {
-							try {
-								thread.join();
-							}
-							catch (InterruptedException ie) {
-								// pas bien grave... il est déjà mort...
-							}
-							finally {
-								results.addAll(thread.getResults());
-							}
-						}
-
-						break;
-					}
-
-					final int valeurCompteur = compteur.intValue();
-					if (status.interrupted()) {
-						final String message = String.format("Interruption en cours... (%d de %d)", valeurCompteur, size);
-						status.setMessage(message);
-					}
-					else {
-						final String message = String.format("Analyse des %s : %d de %d", getDenominationContribuablesComptes(), valeurCompteur, size);
-						status.setMessage(message, size == 0 ? 0 : valeurCompteur * 100 / size);
-					}
-				}
-
-				return null;
+				return size;
 			}
 		});
+
+		// on dit à tout le monde que la queue est remplie (donc la prochaine
+		// fois qu'ils voient qu'il n'y a plus rien dans la queue, c'est que tout
+		// est fini)
+		for (T t : threads) {
+			t.onQueueFilled();
+		}
+
+		status.setMessage(String.format("Traitement des %d %s", nbEltsTrouves, getDenominationContribuablesComptes()));
+
+		// attente "active" de la fin des threads
+		while (threads.size() > 0) {
+
+			// tous les threads terminés sont enlevés de la liste
+			final Iterator<T> iterator = threads.iterator();
+			while (iterator.hasNext()) {
+				final T thread = iterator.next();
+				if (!thread.isAlive()) {
+					iterator.remove();
+					results.addAll(thread.getResults());
+				}
+			}
+
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {
+
+				// le thread a été interrompu : collecte des résultats courants
+				for (T thread : threads) {
+					try {
+						thread.join();
+					}
+					catch (InterruptedException ie) {
+						// pas bien grave... il est déjà mort...
+					}
+					finally {
+						results.addAll(thread.getResults());
+					}
+				}
+
+				break;
+			}
+
+			final int valeurCompteur = compteur.intValue();
+			if (status.interrupted()) {
+				final String message = String.format("Interruption en cours... (%d de %d)", valeurCompteur, nbEltsTrouves);
+				status.setMessage(message);
+			}
+			else {
+				final String message = String.format("Analyse des %s : %d de %d", getDenominationContribuablesComptes(), valeurCompteur, nbEltsTrouves);
+				status.setMessage(message, nbEltsTrouves == 0 ? 0 : valeurCompteur * 100 / nbEltsTrouves);
+			}
+		}
 
 		results.sort();
 		results.setInterrompu(status.interrupted());
