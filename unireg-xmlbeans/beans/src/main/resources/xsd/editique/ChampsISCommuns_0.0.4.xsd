@@ -23,10 +23,18 @@ typDatAAAAMMJJ
 	</xs:simpleType>
 	<xs:simpleType name="typDat">
 		<xs:annotation>
-			<xs:documentation> format permettant uniqueme les date en chiffre Ex: 02.12.2008</xs:documentation>
+			<xs:documentation> format permettant uniquement les dates en chiffre Ex: 02.12.2008</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typDatIncplte">
+		<xs:annotation>
+			<xs:documentation> format permettant uniquement les dates (potentiellement incomplètes) en chiffre Ex: 02.12.2008</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})|([0-9]{1,2}\.[0-9]{4})|([0-9]{4})"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typDatAAAAMMJJ">

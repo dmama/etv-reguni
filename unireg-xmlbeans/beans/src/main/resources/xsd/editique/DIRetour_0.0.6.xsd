@@ -3,7 +3,7 @@
 <!--Version  0.0.1  - 03.12.08 : MSN - Factorisé les éléments communs des DIs -->
 <!--Version  0.0.2  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIBase_0.0.4.xsd" />
+	<xs:include schemaLocation="DIBase_0.0.5.xsd" />
 
 	<xs:complexType name="DIRetour">
 		<!-- Attributs communs aux DIs avec adresses de retour -->

@@ -30,20 +30,20 @@ New -> DIVDTAX_0.0.4.xsd-->
 
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.5.xsd"/>
-	<xs:include schemaLocation="DI_0.0.8.xsd"/>
-	<xs:include schemaLocation="DIVDTAX_0.0.7.xsd"/>
-	<xs:include schemaLocation="DIHC_0.0.8.xsd"/>
-	<xs:include schemaLocation="DIDP_0.1.5.xsd"/>
-	<xs:include schemaLocation="FicheOuvertureDossier_0.0.8.xsd"/>
-	<xs:include schemaLocation="SommationDI_0.0.4.xsd"/>
-	<xs:include schemaLocation="ConfirmationDelai_0.0.5.xsd"/>
-	<xs:include schemaLocation="BordereauEnvoi_0.0.6.xsd"/>
-	<xs:include schemaLocation="ChemiseTO_0.0.5.xsd"/>
-	<xs:include schemaLocation="is/BVRDouble_4.0.3.xsd"/>
-	<xs:include schemaLocation="is/BVR_STD_4.0.4.xsd"/>
-	<xs:include schemaLocation="is/LRLCBVR_0.0.7.xsd"/>
-	<xs:include schemaLocation="is/SLRLCBVR_0.0.7.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.6.xsd"/>
+	<xs:include schemaLocation="DI_0.0.9.xsd"/>
+	<xs:include schemaLocation="DIVDTAX_0.0.8.xsd"/>
+	<xs:include schemaLocation="DIHC_0.0.9.xsd"/>
+	<xs:include schemaLocation="DIDP_0.1.6.xsd"/>
+	<xs:include schemaLocation="FicheOuvertureDossier_0.0.9.xsd"/>
+	<xs:include schemaLocation="SommationDI_0.0.5.xsd"/>
+	<xs:include schemaLocation="ConfirmationDelai_0.0.6.xsd"/>
+	<xs:include schemaLocation="BordereauEnvoi_0.0.7.xsd"/>
+	<xs:include schemaLocation="ChemiseTO_0.0.6.xsd"/>
+	<xs:include schemaLocation="is/BVRDouble_4.0.4.xsd"/>
+	<xs:include schemaLocation="is/BVR_STD_4.0.5.xsd"/>
+	<xs:include schemaLocation="is/LRLCBVR_0.0.8.xsd"/>
+	<xs:include schemaLocation="is/SLRLCBVR_0.0.8.xsd"/>
 	<xs:group name="typDocument">
 		<xs:choice>
 			<xs:group ref="typDocumentDI"/>
