@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -283,7 +284,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	 * @param name  le nom de la méthode
 	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
 	 */
-	public void end(long start, String name, Object params) {
+	public void end(long start, String name, @Nullable Object params) {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);

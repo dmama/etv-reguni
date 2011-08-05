@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.indexer;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -40,7 +38,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.flush();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "flush", null);
 		}
 	}
 
@@ -52,7 +50,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			result = target.getApproxDocCount();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getApproxDocCount", null);
 		}
 		return result;
 	}
@@ -65,7 +63,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			result = target.getExactDocCount();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getExactDocCount", null);
 		}
 		return result;
 	}
@@ -78,30 +76,40 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			result = target.getIndexPath();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndexPath", null);
 		}
 		return result;
 	}
 
 	@Override
-	public void indexEntity(IndexableData data) {
+	public void indexEntity(final IndexableData data) {
 		long time = tracing.start();
 		try {
 			target.indexEntity(data);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "indexEntity", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType());
+				}
+			});
 		}
 	}
 
 	@Override
-	public void indexEntities(List<IndexableData> data) {
+	public void indexEntities(final List<IndexableData> data) {
 		long time = tracing.start();
 		try {
 			target.indexEntities(data);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "indexEntities", new Object() {
+				@Override
+				public String toString() {
+					return String.format("data=%s", ServiceTracing.toString(data));
+				}
+			});
 		}
 	}
 
@@ -112,7 +120,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.optimize();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "optimize", null);
 		}
 	}
 
@@ -123,40 +131,55 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.overwriteIndex();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "overwriteIndex", null);
 		}
 	}
 
 	@Override
-	public void removeEntity(Long id, String type) throws IndexerException {
+	public void removeEntity(final Long id, final String type) throws IndexerException {
 		long time = tracing.start();
 		try {
 			target.removeEntity(id, type);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "removeEntity", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d, type=%s", id, type);
+				}
+			});
 		}
 	}
 
 	@Override
-	public void removeThenIndexEntity(IndexableData data) {
+	public void removeThenIndexEntity(final IndexableData data) {
 		long time = tracing.start();
 		try {
 			target.removeThenIndexEntity(data);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "removeThenIndexEntity", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType());
+				}
+			});
 		}
 	}
 
 	@Override
-	public void removeThenIndexEntities(List<IndexableData> data) {
+	public void removeThenIndexEntities(final List<IndexableData> data) {
 		long time = tracing.start();
 		try {
 			target.removeThenIndexEntities(data);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "removeThenIndexEntities", new Object() {
+				@Override
+				public String toString() {
+					return String.format("data=%s", ServiceTracing.toString(data));
+				}
+			});
 		}
 	}
 
@@ -167,29 +190,39 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			return target.deleteDuplicate();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "deleteDuplicate", null);
 		}
 	}
 
 	@Override
-	public void search(Query query, int maxHits, SearchCallback callback) throws IndexerException {
+	public void search(final Query query, final int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
 			target.search(query, maxHits, callback);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "search", new Object() {
+				@Override
+				public String toString() {
+					return String.format("query='%s', maxHits=%d", query, maxHits);
+				}
+			});
 		}
 	}
 
 	@Override
-	public void search(String query, int maxHits, SearchCallback callback) throws IndexerException {
+	public void search(final String query, final int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
 			target.search(query, maxHits, callback);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "search", new Object() {
+				@Override
+				public String toString() {
+					return String.format("queryString='%s', maxHits=%d", query, maxHits);
+				}
+			});
 		}
 	}
 
@@ -200,7 +233,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.searchAll(query, callback);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "searchAll", null);
 		}
 	}
 
@@ -216,9 +249,5 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);
 		}
-	}
-
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-		return null;
 	}
 }
