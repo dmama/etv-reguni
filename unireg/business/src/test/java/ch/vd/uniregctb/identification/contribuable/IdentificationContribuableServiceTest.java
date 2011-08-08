@@ -91,6 +91,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		public void setThrowExceptionOnSend(boolean throwExceptionOnSend) {
 			this.throwExceptionOnSend = throwExceptionOnSend;
 		}
+
+		public void reset() {
+			sentMessages.clear();
+			throwExceptionOnSend = false;
+		}
 	}
 
 	private final class PPComparator implements Comparator<PersonnePhysique> {
@@ -1914,6 +1919,155 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMenageCommunRetourneAvantMariage() throws Exception {
+
+		final long noIndividu = 13624325642L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
+				ind.setNouveauNoAVS("7569613127861");
+			}
+		});
+
+		class Ids {
+			final long ppId;
+			final long mcId;
+
+			Ids(long ppId, long mcId) {
+				this.ppId = ppId;
+				this.mcId = mcId;
+			}
+		}
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// avant 2000, on doit toujours trouver Maya seule, sans ménage commun
+		{
+			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			demande.getDemande().setPeriodeFiscale(1999);
+			service.handleDemande(demande);
+
+			assertNotNull(messageHandler.getSentMessages());
+			assertEquals(1, messageHandler.getSentMessages().size());
+
+			final IdentificationContribuable msg = messageHandler.getSentMessages().get(0);
+			assertNotNull(msg);
+			assertEquals((Long) ids.ppId, msg.getReponse().getNoContribuable());
+			assertNull(msg.getReponse().getNoMenageCommun());
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMenageCommunRetournePendantValiditeMariage() throws Exception {
+
+		final long noIndividu = 13624325642L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
+				ind.setNouveauNoAVS("7569613127861");
+			}
+		});
+
+		class Ids {
+			final long ppId;
+			final long mcId;
+
+			Ids(long ppId, long mcId) {
+				this.ppId = ppId;
+				this.mcId = mcId;
+			}
+		}
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// depuis 2000 jusqu'à 2003, on doit renvoyer le numéro de ménage commun aussi
+		for (int i = 2000 ; i <= 2003 ; ++ i)
+		{
+			messageHandler.reset();
+
+			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			demande.getDemande().setPeriodeFiscale(i);
+			service.handleDemande(demande);
+
+			assertNotNull("Année " + i, messageHandler.getSentMessages());
+			assertEquals("Année " + i, 1, messageHandler.getSentMessages().size());
+
+			final IdentificationContribuable msg = messageHandler.getSentMessages().get(0);
+			assertNotNull("Année " + i, msg);
+			assertEquals("Année " + i, (Long) ids.ppId, msg.getReponse().getNoContribuable());
+			assertEquals("Année " + i, (Long) ids.mcId, msg.getReponse().getNoMenageCommun());
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMenageCommunRetourneApresValiditeMariage() throws Exception {
+
+		final long noIndividu = 13624325642L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 5, 12), "Labeille", "Maya", false);
+				ind.setNouveauNoAVS("7569613127861");
+			}
+		});
+
+		class Ids {
+			final long ppId;
+			final long mcId;
+
+			Ids(long ppId, long mcId) {
+				this.ppId = ppId;
+				this.mcId = mcId;
+			}
+		}
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// depuis 2004, on ne doit à nouveau plus retourner de ménage commun dans la réponse
+		{
+			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			demande.getDemande().setPeriodeFiscale(2004);
+			service.handleDemande(demande);
+
+			assertNotNull(messageHandler.getSentMessages());
+			assertEquals(1, messageHandler.getSentMessages().size());
+
+			final IdentificationContribuable msg = messageHandler.getSentMessages().get(0);
+			assertNotNull(msg);
+			assertEquals((Long) ids.ppId, msg.getReponse().getNoContribuable());
+			assertNull(msg.getReponse().getNoMenageCommun());
+		}
+	}
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom) {
 

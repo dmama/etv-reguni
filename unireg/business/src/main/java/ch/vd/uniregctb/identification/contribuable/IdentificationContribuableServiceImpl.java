@@ -395,8 +395,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		Assert.notNull(personne);
 
 		// [UNIREG-1911] On retourne le numéro du ménage-commun associé s'il existe
+		// [SIFISC-1725] La date de référence pour le couple doit être en rapport avec la période fiscale du message
+		final RegDate dateReferenceMenage = RegDate.get(message.getDemande().getPeriodeFiscale(), 12, 31);
 		Long mcId = null;
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(personne, null);
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(personne, dateReferenceMenage);
 		if (ensemble != null) {
 			mcId = ensemble.getMenage().getNumero();
 		}
