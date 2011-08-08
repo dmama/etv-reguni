@@ -822,10 +822,21 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
 	}
 
-	protected void assertSourcierMixte(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+	protected void assertSourcierMixteArt137Al1(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
-		assertInstanceOf(SourcierMixte.class, assujettissement);
-		final SourcierMixte a = (SourcierMixte) assujettissement;
+		assertInstanceOf(SourcierMixteArt137Al1.class, assujettissement);
+		final SourcierMixteArt137Al1 a = (SourcierMixteArt137Al1) assujettissement;
+		assertEquals(debut, assujettissement.getDateDebut());
+		assertEquals(fin, assujettissement.getDateFin());
+		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
+		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+	}
+
+	protected void assertSourcierMixteArt137Al2(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+		assertNotNull(assujettissement);
+		assertInstanceOf(SourcierMixteArt137Al2.class, assujettissement);
+		final SourcierMixteArt137Al2 a = (SourcierMixteArt137Al2) assujettissement;
 		assertEquals(debut, assujettissement.getDateDebut());
 		assertEquals(fin, assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());

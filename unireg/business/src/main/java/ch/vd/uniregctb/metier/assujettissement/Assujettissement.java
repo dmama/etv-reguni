@@ -1098,7 +1098,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 	private enum Type {
 		VaudoisOrdinaire,
 		VaudoisDepense,
-		SourcierMixte,
+		SourcierMixte1,
+		SourcierMixte2,
 		SourcierPur,
 		Indigent,
 		HorsSuisse,
@@ -1429,8 +1430,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 			case SourcierPur:
 				assujettissement = new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
 				break;
-			case SourcierMixte:
-				assujettissement = new SourcierMixte(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+			case SourcierMixte1:
+				assujettissement = new SourcierMixteArt137Al1(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				break;
+			case SourcierMixte2:
+				assujettissement = new SourcierMixteArt137Al2(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
 				break;
 			case DiplomateSuisse:
 				assujettissement = new DiplomateSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
@@ -1465,8 +1469,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 			type = Type.VaudoisOrdinaire;
 			break;
 		case MIXTE_137_1:
+			type = Type.SourcierMixte1;
+			break;
 		case MIXTE_137_2:
-			type = Type.SourcierMixte;
+			type = Type.SourcierMixte2;
 			break;
 		case INDIGENT:
 			type = Type.Indigent;

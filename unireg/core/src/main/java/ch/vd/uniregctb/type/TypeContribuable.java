@@ -20,47 +20,40 @@ public enum TypeContribuable {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_fE4DkDfHEd2EkOqealhanQ"
 	 */
-	VAUDOIS_ORDINAIRE("ordinaire", "OR"),
+	VAUDOIS_ORDINAIRE("ordinaire"),
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lNYS4DfHEd2EkOqealhanQ"
 	 */
-	VAUDOIS_DEPENSE("à la dépense", "DE"),
+	VAUDOIS_DEPENSE("à la dépense"),
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nTylwDfHEd2EkOqealhanQ"
 	 */
-	HORS_CANTON("hors canton", "HC"),
+	HORS_CANTON("hors canton"),
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pQEsQDfHEd2EkOqealhanQ"
 	 */
-	HORS_SUISSE("hors suisse", "HS"),
+	HORS_SUISSE("hors suisse"),
 	/**
 	 * Diplomate Suisse basé à l'étranger [UNIREG-1976]
 	 */
-	DIPLOMATE_SUISSE("diplomate suisse", "DS");
+	DIPLOMATE_SUISSE("diplomate suisse");
 
 	private final String description;
 
-	private final String descriptionAcomptes;
-
-	private TypeContribuable(String description, String descriptionAcomptes) {
+	private TypeContribuable(String description) {
 		this.description = description;
-		this.descriptionAcomptes = descriptionAcomptes;
 	}
 
 	public String description() {
 		return description;
-	}
-
-	public String descriptionAcomptes() {
-		return descriptionAcomptes;
 	}
 }

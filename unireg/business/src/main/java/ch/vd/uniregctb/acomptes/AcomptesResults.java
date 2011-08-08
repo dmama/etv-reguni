@@ -19,6 +19,7 @@ import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -32,7 +33,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
 
 public class AcomptesResults extends ListesResults<AcomptesResults> {
 
@@ -187,14 +187,33 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
         }
     }
 
+	public static enum TypeContribuableAcompte {
+		VAUDOIS_ORDINAIRE("OR"),
+		VAUDOIS_DEPENSE("DE"),
+		VAUDOIS_MIXTE_137_1("SM1"),
+		HORS_CANTON("HC"),
+		HORS_SUISSE("HS"),
+		DIPLOMATE_SUISSE("DS");
+
+		private final String display;
+
+		private TypeContribuableAcompte(String display) {
+			this.display = display;
+		}
+
+		public String getDisplay() {
+			return display;
+		}
+	}
+
 	public static class InfoAssujettissementContribuable {
-		public final TypeContribuable typeContribuable;
+		public final TypeContribuableAcompte typeContribuable;
 		public final Integer noOfsForPrincipal;
 		public final Integer noOfsForGestion;
 		public final Set<Integer> ofsForsSecondaires;
 		public final int anneeFiscale;
 
-		private InfoAssujettissementContribuable(TypeContribuable typeContribuable, Integer noOfsForPrincipal, Integer noOfsForGestion, Set<Integer> ofsForsSecondaires, int anneeFiscale) {
+		private InfoAssujettissementContribuable(TypeContribuableAcompte typeContribuable, Integer noOfsForPrincipal, Integer noOfsForGestion, Set<Integer> ofsForsSecondaires, int anneeFiscale) {
 			this.typeContribuable = typeContribuable;
 			this.noOfsForPrincipal = noOfsForPrincipal;
 			this.noOfsForGestion = noOfsForGestion;
@@ -205,7 +224,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
 	protected InfoAssujettissementContribuable calculerInfoAssujettissement(Contribuable ctb, int anneeFiscale) {
 
-		TypeContribuable typeContribuable;
+		TypeContribuableAcompte typeContribuable;
 		Integer noOfsForPrincipal = null;
 		final Integer noOfsForGestion;
 
@@ -233,19 +252,22 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 				if (assujettissements != null) {
 					final Assujettissement assujettissement = assujettissements.get(assujettissements.size() - 1);
 					if ((assujettissement instanceof VaudoisOrdinaire) || (assujettissement instanceof Indigent)) {
-						typeContribuable = TypeContribuable.VAUDOIS_ORDINAIRE;
+						typeContribuable = TypeContribuableAcompte.VAUDOIS_ORDINAIRE;
 					}
 					else if (assujettissement instanceof HorsSuisse) {
-						typeContribuable = TypeContribuable.HORS_SUISSE;
+						typeContribuable = TypeContribuableAcompte.HORS_SUISSE;
 					}
 					else if (assujettissement instanceof HorsCanton) {
-						typeContribuable = TypeContribuable.HORS_CANTON;
+						typeContribuable = TypeContribuableAcompte.HORS_CANTON;
 					}
 					else if (assujettissement instanceof VaudoisDepense) {
-						typeContribuable = TypeContribuable.VAUDOIS_DEPENSE;
+						typeContribuable = TypeContribuableAcompte.VAUDOIS_DEPENSE;
 					}
 					else if (assujettissement instanceof DiplomateSuisse && assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
-						typeContribuable = TypeContribuable.DIPLOMATE_SUISSE;
+						typeContribuable = TypeContribuableAcompte.DIPLOMATE_SUISSE;
+					}
+					else if (assujettissement instanceof SourcierMixteArt137Al1) {
+						typeContribuable = TypeContribuableAcompte.VAUDOIS_MIXTE_137_1;
 					}
 					else {
 						addContribuableIgnoreNonSoumisAuxAcomptes(ctb, anneeFiscale, assujettissement.getDescription());
@@ -285,7 +307,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
 		// IFD : attention, les HC ne sont pas soumis à l'IFD
 	    InfoAssujettissementContribuable ifd = calculerInfoAssujettissement(ctb, anneeFiscale - 1);
-		if (ifd != null && ifd.typeContribuable == TypeContribuable.HORS_CANTON) {
+		if (ifd != null && ifd.typeContribuable == TypeContribuableAcompte.HORS_CANTON) {
 			ifd = null;
 		}
 

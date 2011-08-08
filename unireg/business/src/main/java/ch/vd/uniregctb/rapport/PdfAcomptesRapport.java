@@ -213,7 +213,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 		b.append(COMMA);
 
 		if (assujettissement.typeContribuable != null) {
-			b.append(assujettissement.typeContribuable.descriptionAcomptes());
+			b.append(assujettissement.typeContribuable.getDisplay());
 		}
 		b.append(COMMA);
 

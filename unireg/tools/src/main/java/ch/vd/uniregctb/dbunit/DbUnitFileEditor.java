@@ -84,7 +84,6 @@ public class DbUnitFileEditor {
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/tiers/TiersServiceTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/acomptes/AcomptesProcessorTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
 		
 //		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";

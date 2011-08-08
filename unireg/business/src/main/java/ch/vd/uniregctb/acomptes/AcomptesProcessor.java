@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -48,7 +49,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 	/**
 	 * Appel principal de génération des populations pour les bases acomptes
 	 */
-	public AcomptesResults run(RegDate dateTraitement, final int nbThreads, final Integer annee, StatusManager s) {
+	public AcomptesResults run(RegDate dateTraitement, final int nbThreads, final Integer annee, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -89,8 +90,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 									+ "    AND fors.annulationDate IS null                                           	"
 									+ "    AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'                   	"
 									+ "    AND (fors.class = ForFiscalPrincipal OR fors.class = ForFiscalSecondaire) 	"
-									+ "    AND (fors.modeImposition IS null OR fors.modeImposition = 'ORDINAIRE'     	"
-									+ "         OR fors.modeImposition = 'INDIGENT' OR fors.modeImposition = 'DEPENSE') "
+									+ "    AND (fors.modeImposition IS null OR fors.modeImposition IN ('ORDINAIRE', 'INDIGENT', 'DEPENSE', 'MIXTE_137_1')) "
 									+ "    AND fors.motifRattachement != 'DIPLOMATE_ETRANGER'							"
 									+ "    AND (fors.dateDebut IS null OR fors.dateDebut <= :finAnnee)               	"
 									+ "    AND                                                                       	"

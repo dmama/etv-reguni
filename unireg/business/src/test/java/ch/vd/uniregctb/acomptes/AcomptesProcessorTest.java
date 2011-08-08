@@ -30,19 +30,20 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAOImpl;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersServiceImpl;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 public class AcomptesProcessorTest extends BusinessTest {
 
 	public static final Logger LOGGER = Logger.getLogger(AcomptesProcessorTest.class);
-
-	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/acomptes/AcomptesProcessorTest.xml";
 
 	private HibernateTemplate hibernateTemplate;
 	private AcomptesProcessor processor;
@@ -65,27 +66,112 @@ public class AcomptesProcessorTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateIteratorOnIDsOfCtbs() throws Exception {
-		loadDatabase(DB_UNIT_DATA_FILE);
-		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-		@Override
-		public Object doInHibernate(Session session) throws HibernateException {
-			final Iterator<Long> idIterator = processor.createIteratorOnIDsOfCtbs(session, 2010);
-			assertNotNull(idIterator);
-			//12600004 à la source ne fait pas partie de la population pour les bases acomptes
-			//12600003 qui a un for fermé en 2010 ne fait pas partie de la population pour les bases acomptes
-			//12600001 qui a un for principal à l'étranger avec motif de rattachement 'Diplômate étranger' ne fait pas partie de la population pour les bases acomptes
-			//For principal vaudois, mode d'imposition ordinaire
-			assertNextCtb(idIterator, 12600009L);
-			//For principal vaudois, mode d'imposition à la dépense
-			assertNextCtb(idIterator, 12900001L);
-			//For principal hors canton, for secondaire immeuble
-			assertNextCtb(idIterator, 34807810L);
-			//For principal hors suisse, for secondaire 'Activité indépendante'
-			assertNextCtb(idIterator, 86006202L);
 
-			return null;
-		}
-	});
+		 class Ids {
+			 final long idOrdinaire;
+			 final long idDepense;
+			 final long idHcImmeuble;
+			 final long idHsActiviteIndependante;
+			 final long idSourcierPur;
+			 final long idOrdinaireParti2009;
+			 final long idOrdinaireParti2008;
+			 final long idDiplomateEtranger;
+			 final long idSourcierMixte1;
+			 final long idSourcierMixte2;
+
+			 private Ids(long idOrdinaire, long idDepense, long idHcImmeuble, long idHsActiviteIndependante, long idSourcierPur,
+			             long idOrdinaireParti2009, long idOrdinaireParti2008, long idDiplomateEtranger, long idSourcierMixte1, long idSourcierMixte2) {
+				 this.idOrdinaire = idOrdinaire;
+				 this.idDepense = idDepense;
+				 this.idHcImmeuble = idHcImmeuble;
+				 this.idHsActiviteIndependante = idHsActiviteIndependante;
+				 this.idSourcierPur = idSourcierPur;
+				 this.idOrdinaireParti2009 = idOrdinaireParti2009;
+				 this.idOrdinaireParti2008 = idOrdinaireParti2008;
+				 this.idDiplomateEtranger = idDiplomateEtranger;
+				 this.idSourcierMixte1 = idSourcierMixte1;
+				 this.idSourcierMixte2 = idSourcierMixte2;
+			 }
+		 }
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique ordinaire = addNonHabitant("Vaudois", "Ordinaire", null, Sexe.MASCULIN);
+				addForPrincipal(ordinaire, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				final PersonnePhysique depense = addNonHabitant("Vaudois", "Dépense", null, Sexe.FEMININ);
+				addForPrincipal(depense, date(2001, 4, 26), MotifFor.ARRIVEE_HS, null, null, MockCommune.VufflensLaVille, MotifRattachement.DOMICILE, ModeImposition.DEPENSE);
+
+				final PersonnePhysique hcImmeuble = addNonHabitant("Bernois", "Immeuble", null, Sexe.MASCULIN);
+				addForPrincipal(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique hsActiviteIndependante = addNonHabitant("Allemand", "Activité Indépendante", null, Sexe.FEMININ);
+				addForPrincipal(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
+				addForSecondaire(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				final PersonnePhysique sourcier = addNonHabitant("Vaudois", "Sourcier Pur", null, Sexe.MASCULIN);
+				addForPrincipal(sourcier, date(2004, 11, 24), MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+
+				final PersonnePhysique ordinaireParti2009 = addNonHabitant("Vaudois", "Ordinaire Parti 2009", null, Sexe.FEMININ);
+				addForPrincipal(ordinaireParti2009, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
+
+				final PersonnePhysique ordinaireParti2008 = addNonHabitant("Vaudois", "Ordinaire Parti 2008", null, Sexe.FEMININ);
+				addForPrincipal(ordinaireParti2008, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
+
+				final PersonnePhysique diplomateEtranger = addNonHabitant("Diplomate", "Etranger", null, Sexe.MASCULIN);
+				addForPrincipal(diplomateEtranger, date(2006, 6, 13), MotifFor.INDETERMINE, null, null, MockPays.Colombie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DIPLOMATE_ETRANGER);
+
+				final PersonnePhysique sourcierMixte1 = addNonHabitant("Vaudois", "Mixte 1", null, Sexe.FEMININ);
+				addForPrincipal(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
+				addForSecondaire(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique sourcierMixte2 = addNonHabitant("Vaudois", "Mixte 2", null, Sexe.MASCULIN);
+				addForPrincipal(sourcierMixte2, date(2008, 5, 23), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+
+				return new Ids(ordinaire.getNumero(), depense.getNumero(), hcImmeuble.getNumero(), hsActiviteIndependante.getNumero(),
+				               sourcier.getNumero(), ordinaireParti2009.getNumero(), ordinaireParti2008.getNumero(), diplomateEtranger.getNumero(),
+				               sourcierMixte1.getNumero(), sourcierMixte2.getNumero());
+			}
+		});
+
+		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				final Iterator<Long> idIterator = processor.createIteratorOnIDsOfCtbs(session, 2010);
+				assertNotNull(idIterator);
+
+				// les sourciers purs et les diplomates étrangers ne font pas partie de la base acompte
+
+				//For principal vaudois, mode d'imposition ordinaire
+				assertNextCtb(idIterator, ids.idOrdinaire);
+				//For principal vaudois, mode d'imposition à la dépense
+				assertNextCtb(idIterator, ids.idDepense);
+				//For principal hors canton, for secondaire immeuble
+				assertNextCtb(idIterator, ids.idHcImmeuble);
+				//For principal hors suisse, for secondaire 'Activité indépendante'
+				assertNextCtb(idIterator, ids.idHsActiviteIndependante);
+				//Contribuable parti en 2009, donc assujetti à l'IFD 2009
+				assertNextCtb(idIterator, ids.idOrdinaireParti2009);
+				//Sourcier mixte 1
+				assertNextCtb(idIterator, ids.idSourcierMixte1);
+
+				// un peu de log pour comprendre qui il y a en plus...
+				if (idIterator.hasNext()) {
+					final StringBuilder b = new StringBuilder();
+					while (idIterator.hasNext()) {
+						if (b.length() > 0) {
+							b.append(", ");
+						}
+						b.append(idIterator.next());
+					}
+					fail("Encore des contribuables trouvés ? (" + b.toString() + ")");
+				}
+				return null;
+			}
+		});
 	}
 
 	private void assertNextCtb(final Iterator<Long> iter, Long numeroCtbExpected) {
@@ -349,6 +435,53 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertNull(ctb.getAssujettissementIfd().noOfsForPrincipal);
 			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Lonay.getNoOFSEtendu()));
 			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Bussigny.getNoOFSEtendu()));
+		}
+	}
+
+	@Test
+	public void testSourcierMixte1() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
+				return pp.getId();
+			}
+		});
+
+		final AcomptesResults results = processor.run(RegDate.get(), 1, 2010, null);
+		Assert.assertNotNull(results);
+
+		final List<AcomptesResults.InfoContribuableAssujetti> assujettis = results.getListeContribuablesAssujettis();
+		Assert.assertNotNull(assujettis);
+		Assert.assertEquals(1, assujettis.size());
+
+		final AcomptesResults.InfoContribuableAssujetti assujetti = assujettis.get(0);
+		Assert.assertNotNull(assujetti);
+		Assert.assertEquals(id, assujetti.getNumeroCtb());
+		Assert.assertNotNull(assujetti.getAssujettissementIcc());
+		Assert.assertNotNull(assujetti.getAssujettissementIfd());
+
+		// ICC : 2010
+		{
+			final AcomptesResults.InfoAssujettissementContribuable a = assujetti.getAssujettissementIcc();
+			Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (long) a.noOfsForPrincipal);
+			Assert.assertEquals(2010, a.anneeFiscale);
+			Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_MIXTE_137_1, a.typeContribuable);
+		}
+		// IFD : 2009
+		{
+			final AcomptesResults.InfoAssujettissementContribuable a = assujetti.getAssujettissementIfd();
+			Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (long) a.noOfsForPrincipal);
+			Assert.assertEquals(2009, a.anneeFiscale);
+			Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_MIXTE_137_1, a.typeContribuable);
 		}
 	}
 }

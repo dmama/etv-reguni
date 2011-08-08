@@ -53,10 +53,16 @@ public abstract class TaxLiabilityBuilder {
 				return newIndigent((ch.vd.uniregctb.metier.assujettissement.Indigent) right);
 			}
 		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixte.class, new Builders() {
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1.class, new Builders() {
 			@Override
 			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newMixedWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierMixte) right);
+				return newMixedWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1) right);
+			}
+		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2.class, new Builders() {
+			@Override
+			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
+				return newMixedWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2) right);
 			}
 		});
 		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierPur.class, new Builders() {
