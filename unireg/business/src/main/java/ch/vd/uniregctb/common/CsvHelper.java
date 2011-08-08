@@ -105,31 +105,36 @@ public abstract class CsvHelper {
 	 * sont supprimés.
 	 */
 	public static String asCsvField(String[] lignes) {
-		final StringBuilder b = new StringBuilder();
-		b.append(DOUBLE_QUOTE);
-		final int length = lignes.length;
+		if (lignes != null) {
+			final StringBuilder b = new StringBuilder();
+			b.append(DOUBLE_QUOTE);
+			final int length = lignes.length;
 
-		// compte les lignes non-vides
-		int nbLignesNonVides = 0;
-		for (int i = 0 ; i < length ; ++ i) {
-			if (!StringUtils.isBlank(lignes[i])) {
-				++ nbLignesNonVides;
-			}
-		}
-
-		// construit la chaîne de caractères
-		for (int i = 0; i < length; ++i) {
-			final String ligne = lignes[i];
-			if (!StringUtils.isBlank(ligne)) {
-				b.append(escapeChars(ligne));
-				-- nbLignesNonVides;
-				if (nbLignesNonVides > 0) {
-					b.append(CR);
+			// compte les lignes non-vides
+			int nbLignesNonVides = 0;
+			for (int i = 0 ; i < length ; ++ i) {
+				if (!StringUtils.isBlank(lignes[i])) {
+					++ nbLignesNonVides;
 				}
 			}
+
+			// construit la chaîne de caractères
+			for (int i = 0; i < length; ++i) {
+				final String ligne = lignes[i];
+				if (!StringUtils.isBlank(ligne)) {
+					b.append(escapeChars(ligne));
+					-- nbLignesNonVides;
+					if (nbLignesNonVides > 0) {
+						b.append(CR);
+					}
+				}
+			}
+			b.append(DOUBLE_QUOTE);
+			return b.toString();
 		}
-		b.append(DOUBLE_QUOTE);
-		return b.toString();
+		else {
+			return EMPTY;
+		}
 	}
 
 	public static InputStream getInputStream(String csvContent) throws IOException {
