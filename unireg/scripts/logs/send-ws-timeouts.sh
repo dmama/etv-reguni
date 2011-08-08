@@ -18,11 +18,11 @@ elif [ "$DAY" -lt 20090713 -o "$DAY" -gt "$TODAY" ]; then
 	exit 1
 fi
 
+# on se place dans le bon répertoire
+cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws"
+
 # after that, the mail addresses are in $1, $2...
 shift 2
-
-# on se place dans le bon répertoire
-cd $ENVIRONMENT/unireg-ws
 
 WS_ACCESS_FILE=
 SRV_ACCESS_FILE=
