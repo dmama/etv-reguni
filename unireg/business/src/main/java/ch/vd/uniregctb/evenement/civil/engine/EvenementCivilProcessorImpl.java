@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -84,7 +85,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	 */
 	@Override
 	public Long recycleEvenementCivil(final Long evenementCivilId) {
-		traiteEvenements(Arrays.asList(evenementCivilId), false, false, null);
+		traiteEvenements(Arrays.asList(evenementCivilId), false, true, null);
 		return 0L;
 	}
 
@@ -354,7 +355,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	 * @param refreshCache   si <i>vrai</i> le cache individu des personnes concernées par l'événement doit être rafraîchi avant le traitement
 	 * @param status         un status manager (optionel, peut être nul)
 	 */
-	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, boolean refreshCache, StatusManager status) {
+	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, boolean refreshCache, @Nullable StatusManager status) {
 		final Set<Long> individusTraites = new HashSet<Long>();
 		// Traite les événements spécifiées
 		for (final Long id : ids) {
