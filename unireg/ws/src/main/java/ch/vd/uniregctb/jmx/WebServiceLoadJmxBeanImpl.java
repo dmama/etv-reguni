@@ -2,6 +2,7 @@ package ch.vd.uniregctb.jmx;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -86,7 +87,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	@Override
 	@ManagedAttribute
 	public Map<String, Integer> getLoad() {
-		final Map<String, Integer> map = new HashMap<String, Integer>(services.size());
+		final Map<String, Integer> map = new TreeMap<String, Integer>();
 		for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
 			map.put(entry.getKey(), entry.getValue().getLoad());
 		}
@@ -96,7 +97,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	@Override
 	@ManagedAttribute
 	public Map<String, Double> getAverageLoad() {
-		final Map<String, Double> map = new HashMap<String, Double>(averagers.size());
+		final Map<String, Double> map = new TreeMap<String, Double>();
 		for (Map.Entry<String, LoadAverager> entry : averagers.entrySet()) {
 			map.put(entry.getKey(), entry.getValue().getAverageLoad());
 		}
