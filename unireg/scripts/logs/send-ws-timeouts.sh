@@ -33,6 +33,22 @@ if [ "$DAY" -eq "$TODAY" ]; then
 else
 	WS_ACCESS_FILE=$(find . -name "ws-access-cat_unireg${ENVIRONMENT}01.log.$FORMATTED_DAY*")
 	SRV_ACCESS_FILE=$(find . -name "srv-access-ws-cat_unireg${ENVIRONMENT}01.log.$FORMATTED_DAY*")
+
+	if [ -z "$WS_ACCESS_FILE" ]; then
+		echo "Pas de fichier ws-access trouvé pour la date du $FORMATTED_DAY" >&2
+		exit 1
+	elif [ -z "$SRV_ACCESS_FILE" ]; then
+		echo "Pas de fichier srv-access-ws trouvé pour la date du $FORMATTED_DAY" >&2
+		exit 1
+	fi
+fi
+
+if [ ! -r "$WS_ACCESS_FILE" ]; then
+	echo "Le fichier $WS_ACCESS_FILE n'est pas accessible en lecture" >&2
+	exit 1
+elif [ ! -r "$SRV_ACCESS_FILE" ]; then
+	echo "Le fichier $SRV_ACCESS_FILE n'est pas accessible en lecture" >&2
+	exit 1
 fi
 
 function cat_file() {
