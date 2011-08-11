@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -168,15 +167,12 @@ public class ProduireRolesProcessor {
 
 	/**
 	 * Factorisation du code de processing indépendant de la variante
-	 * @param anneePeriode période fiscale pour les rôles
-	 * @param statusMessagePrefix [optionnel] préfixe utilisable pour le message d'avancement
-	 * @param status status manager
-	 * @param progressCalculator object qui pourra calculer le taux de progression à afficher dans les messages d'avancement
-	 * @param variante variante de construction des résultats
-	 * @return un rapport (technique) sur les rôles demandés
+	 * @param anneePeriode
+	 * @param statusMessagePrefix
+	 * @param status
+	 * @param variante   @return
 	 */
-	private <T extends ProduireRolesResults> T doRun(final int anneePeriode, final int nbThreads, @Nullable String statusMessagePrefix,
-	                                                 final StatusManager status, final ProgressCalculator progressCalculator, final VarianteProductionRole<T> variante) {
+	private <T extends ProduireRolesResults> T doRun(final int anneePeriode, final int nbThreads, String statusMessagePrefix, final StatusManager status, final VarianteProductionRole<T> variante) {
 
 		final RegDate today = RegDate.get();
 		final T rapportFinal = variante.creerRapport(anneePeriode, nbThreads, today, true);
@@ -197,11 +193,11 @@ public class ProduireRolesProcessor {
 			prefixe = String.format("%s. ", statusMessagePrefix);
 		}
 		else {
-			prefixe = StringUtils.EMPTY;
+			prefixe = "";
 		}
 
 		final String msgRechercheContribuables = String.format("%sRecherche des contribuables.", prefixe);
-		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
+		status.setMessage(msgRechercheContribuables);
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
 		final ParallelBatchTransactionTemplate<Long, T> template = new ParallelBatchTransactionTemplate<Long, T>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
@@ -213,10 +209,8 @@ public class ProduireRolesProcessor {
 
 				final List<Tiers> tierz = tiersDAO.getBatch(batch, parts);
 
-				final int size = list.size();
-				final int localPercent = size == 0 ? 0 : rapportFinal.ctbsTraites * 100 / size;
-				final String msg = String.format("%sTraitement des contribuables (%d traité(s), %d%%).", prefixe, rapportFinal.ctbsTraites, localPercent);
-				status.setMessage(msg, progressCalculator.getProgressPercentage(rapportFinal.ctbsTraites, size));
+				final String msg = String.format("%sTraitement des contribuables (%d traité(s)).", prefixe, rapportFinal.ctbsTraites);
+				status.setMessage(msg, rapportFinal.ctbsTraites * 100 / list.size());
 
 				// première boucle sur les tiers pour aller chercher en un bloc les individus du civil
 				// pour les habitants (nom, adresse, no-avs...)
@@ -302,7 +296,7 @@ public class ProduireRolesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
-		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+		return doRun(anneePeriode, nbThreads, null, status, new VarianteProductionRole<ProduireRolesCommunesResults>() {
 			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuables(anneePeriode);
@@ -337,7 +331,7 @@ public class ProduireRolesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
-		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+		return doRun(anneePeriode, nbThreads, null, status, new VarianteProductionRole<ProduireRolesCommunesResults>() {
 			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuablesSurCommunes(anneePeriode, Arrays.asList(noOfsCommune));
@@ -365,45 +359,13 @@ public class ProduireRolesProcessor {
 	 * @param oid l'id de l'office d'impôt concerné
 	 * @param nbThreads le nombre de threads de processing souhaité
 	 * @param s status manager
-	 * @return un rapport (technique) sur les rôles des contribuables de l'OID spécifié.
+	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
 	public ProduireRolesOIDsResults runPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager s) throws ServiceException {
-		return runPourUnOfficeImpot(anneePeriode, oid, nbThreads, null, s, false, DEFAULT_PROGRESS_CALCULATOR);
+		return runPourUnOfficeImpot(anneePeriode, oid, nbThreads, null, s, false);
 	}
 
-	/**
-	 * Interface utilisable pour calculer, à partir d'un nombre de cas traités et d'un nombre total de cas,
-	 * l'avancement de l'opération
-	 */
-	private static interface ProgressCalculator {
-		int getProgressPercentage(int nbTreated, int size);
-	}
-
-	/**
-	 * Implémentation par défault du {@link ProgressCalculator} qui ne considère que
-	 * les éléments fournis (nombre de cas traités et nombre total de cas)
-	 */
-	private final static ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
-		@Override
-		public int getProgressPercentage(int nbTreated, int size) {
-			return size == 0 ? 0 : nbTreated * 100 / size;
-		}
-	};
-
-	/**
-	 * Méthode interne qui produit le résultat des rôles pour un office d'impôt spécifique
-	 * @param anneePeriode période fiscale considérée
-	 * @param oid l'id de l'office d'impôt à traiter
-	 * @param nbThreads le nombre de threads de processing souhaité
-	 * @param statusMessagePrefixe [optionnel] préfixe à utiliser pour les messages d'avancement
-	 * @param s status manager
-	 * @param nullSiAucuneCommune si <code>true</code>, on ne renvoie aucun résultat si l'OID n'a pas de commune, alors qu'on renverra un résultat vide dans ce cas si <code>false</code>
-	 * @param progressCalculator object qui pourra calculer le taux de progression à afficher dans les messages d'avancement
-	 * @return un rapport (technique) sur les rôles des contribuables de l'OID spécifié
-	 * @throws ServiceException en cas de problème
-	 */
-	private ProduireRolesOIDsResults runPourUnOfficeImpot(int anneePeriode, final int oid, int nbThreads, @Nullable String statusMessagePrefixe, StatusManager s, boolean nullSiAucuneCommune,
-	                                                      ProgressCalculator progressCalculator) throws ServiceException {
+	private ProduireRolesOIDsResults runPourUnOfficeImpot(int anneePeriode, final int oid, int nbThreads, String statusMessagePrefixe, StatusManager s, boolean nullSiAucuneCommune) throws ServiceException {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		// récupère les numéros Ofs des communes gérées par l'office d'impôt spécifié
@@ -420,7 +382,7 @@ public class ProduireRolesProcessor {
 
 		if (nosOfsCommunes.size() > 0 || !nullSiAucuneCommune) {
 			final GroupementCommunes groupement = new GroupementCommunesPourOID(nosOfsCommunes);
-			return doRun(anneePeriode, nbThreads, statusMessagePrefixe, status, progressCalculator, new VarianteProductionRole<ProduireRolesOIDsResults>() {
+			return doRun(anneePeriode, nbThreads, statusMessagePrefixe, status, new VarianteProductionRole<ProduireRolesOIDsResults>() {
 
 				@Override
 				public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
@@ -449,7 +411,8 @@ public class ProduireRolesProcessor {
 	 * Note: le rapport peut contenir quelques résultats pour des communes autres que celles gérées par l'office d'impôt, en fonction des
 	 * déménagement des contribuables.
 	 *
-	 * @param anneePeriode l'année de la période fiscale considérée.
+	 * @param anneePeriode
+	 *            l'année de la période fiscale considérée.
 	 * @param nbThreads nombre de threads de traitement
 	 * @return les rapports (techniques) sur les rôles des contribuables pour chaque OID
 	 */
@@ -467,19 +430,10 @@ public class ProduireRolesProcessor {
 
 			// on commence enfin la boucle
 			int index = 0;
-			final int nbOids = oidsTries.size();
-			final List<ProduireRolesOIDsResults> liste = new ArrayList<ProduireRolesOIDsResults>(nbOids);
+			final List<ProduireRolesOIDsResults> liste = new ArrayList<ProduireRolesOIDsResults>(oidsTries.size());
 			for (OfficeImpot oid : oidsTries) {
-				final int zeroBasedIndex = index;
-				final ProgressCalculator progressCalculator = new ProgressCalculator() {
-					@Override
-					public int getProgressPercentage(int nbTreated, int size) {
-						final int inPhaseProgress = size == 0 ? 0 : nbTreated * 100 / size;
-						return (zeroBasedIndex * 100 + inPhaseProgress) / nbOids;
-					}
-				};
-				final String prefixe = String.format("%s (%d/%d)", oid.getNomCourt(), ++ index, nbOids);
-				final ProduireRolesOIDsResults results = runPourUnOfficeImpot(anneePeriode, oid.getNoColAdm(), nbThreads, prefixe, s, true, progressCalculator);
+				final String prefixe = String.format("%s (%d/%d)", oid.getNomCourt(), ++ index, oidsTries.size());
+				final ProduireRolesOIDsResults results = runPourUnOfficeImpot(anneePeriode, oid.getNoColAdm(), nbThreads, prefixe, s, true);
 				if (results != null) {
 					liste.add(results);
 				}
