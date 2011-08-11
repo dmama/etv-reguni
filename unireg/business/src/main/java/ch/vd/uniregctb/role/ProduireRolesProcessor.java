@@ -192,13 +192,7 @@ public class ProduireRolesProcessor {
 		final GroupementCommunes groupement = variante.getGroupementCommunes();
 
 		// préfixe pour les différentes phases du batch (s'il y en a)
-		final String prefixe;
-		if (!StringUtils.isBlank(statusMessagePrefix)) {
-			prefixe = String.format("%s. ", statusMessagePrefix);
-		}
-		else {
-			prefixe = StringUtils.EMPTY;
-		}
+		final String prefixe = StringUtils.isBlank(statusMessagePrefix) ? StringUtils.EMPTY : String.format("%s. ", statusMessagePrefix);
 
 		final String msgRechercheContribuables = String.format("%sRecherche des contribuables.", prefixe);
 		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
@@ -421,7 +415,8 @@ public class ProduireRolesProcessor {
 	private ProduireRolesOIDsResults runPourUnOfficeImpot(int anneePeriode, final int oid, int nbThreads, @Nullable String statusMessagePrefixe, StatusManager s, boolean nullSiAucuneCommune,
 	                                                      ProgressCalculator progressCalculator) throws ServiceException {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		status.setMessage("Récupération des correspondances entre communes et OID");
+		final String prefixe = StringUtils.isBlank(statusMessagePrefixe) ? StringUtils.EMPTY : String.format("%s. ", statusMessagePrefixe);
+		status.setMessage(String.format("%sRécupération des correspondances entre communes et OID.", prefixe), progressCalculator.getProgressPercentage(0, 0));
 
 		// récupère les numéros Ofs des communes gérées par l'office d'impôt spécifié
 		final Set<Integer> nosOfsCommunes = new HashSet<Integer>();
