@@ -2,7 +2,7 @@ package ch.vd.uniregctb.embedded;
 
 import java.io.File;
 
-import ch.vd.registre.warren.TomcatRunner;
+import ch.vd.registre.embedded.tomcat.TomcatRunner;
 
 /**
  * Cette application permet de démarrer l'application Unireg avec un Tomcat embeddé à l'intérieur d'Eclipse.
@@ -73,12 +73,14 @@ public class UniregTomcatRunner {
 		 * Paramètres:
 		 * <ul>
 		 * <li>1. Le context path de l'application (Ex: "/registre/regch")</li>
-		 * <li>2. Le repertoire de la webapp explosée (sans les classes et les libs) relative au repertoire courant Ex Reg-CH: "webapp" =>
+		 * <li>2. Le port TCP sur lequel l'application écoute</li>
+		 * <li>3. Le repertoire de la webapp explosée (sans les classes et les libs) relative au repertoire courant Ex Reg-CH: "webapp" =>
 		 * ..../04-Impl/regch/web/webapp Ex Unireg: "src/main/webapp" => ..../04-Impl/unireg/web/src/main/webapp</li>
-		 * <li>3. Le fichier context.xml pour la définition des data sources</li>
+		 * <li>4. Le fichier context.xml pour la définition des data sources</li>
+		 * <li>5. Le fichier tomcat-users.xml pour la définition des utilisateurs</li>
 		 * </ul>
 		 */
-		TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/web", "src/main/webapp", null);
+		final TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/web", 8080, "src/main/webapp", null, null);
 		runner.start();
 	}
 }
