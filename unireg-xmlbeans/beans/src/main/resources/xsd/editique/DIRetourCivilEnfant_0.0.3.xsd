@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
 <!--Version  0.0.1  - 10.06.2011 :  - BNM - Factorisé les éléments communs au DI ORDINAIRE et VDTAX  pour le moment que les enfants-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetourCivil_0.0.5.xsd" />
+	<xs:include schemaLocation="DIRetourCivil_0.0.6.xsd" />
 
 	<xs:complexType name="DIRetourCivilEnfant">
 		<!-- Attributs communs aux DIs avec Enfants -->
