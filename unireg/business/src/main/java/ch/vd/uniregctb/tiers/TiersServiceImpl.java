@@ -1739,9 +1739,9 @@ public class TiersServiceImpl implements TiersService {
 
 		PersonnePhysique mere = null;
 
-		final Individu individuPere = individu.getMere();
-		if (individuPere != null) {
-			mere = tiersDAO.getPPByNumeroIndividu(individuPere.getNoTechnique(), true);
+		final Individu individuMere = individu.getMere();
+		if (individuMere != null) {
+			mere = tiersDAO.getPPByNumeroIndividu(individuMere.getNoTechnique(), true);
 		}
 
 		return mere;
@@ -2886,6 +2886,9 @@ public class TiersServiceImpl implements TiersService {
 	public RegDate getDateNaissance(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp);
+			}
 			return individu.getDateNaissance();
 		}
 		else {
@@ -2901,8 +2904,8 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public RegDate getDateDebutVeuvage(PersonnePhysique pp, RegDate date) {
-		VueSituationFamille situation = situationFamilleService.getVue(pp, date,true);
-		if(situation!=null && EtatCivil.VEUF == situation.getEtatCivil()){
+		final VueSituationFamille situation = situationFamilleService.getVue(pp, date, true);
+		if (situation != null && EtatCivil.VEUF == situation.getEtatCivil()) {
 			return situation.getDateDebut();
 		}
 		return null;
@@ -2921,7 +2924,10 @@ public class TiersServiceImpl implements TiersService {
 				return pp.getDateDeces();
 			}
 			final Individu individu = getIndividu(pp);
-			return individu != null ? individu.getDateDeces() : null;
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp);
+			}
+			return individu.getDateDeces();
 		}
 		else {
 			return pp.getDateDeces();
@@ -2943,6 +2949,9 @@ public class TiersServiceImpl implements TiersService {
 	public String getNumeroAssureSocial(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp);
+			}
 			return individu.getNouveauNoAVS();
 		}
 		else {
@@ -2957,6 +2966,9 @@ public class TiersServiceImpl implements TiersService {
 	public String getAncienNumeroAssureSocial(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp);
+			}
 			return individu.getDernierHistoriqueIndividu().getNoAVS();
 		}
 		else {
