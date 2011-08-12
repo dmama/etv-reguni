@@ -15,4 +15,4 @@ for i in $(ls $dir); do
 done
 
 #echo "CLasspath: $cp"
-$JAVA_HOME/bin/java -cp $cp ch.vd.uniregctb.ubr.BatchRunnerApp $@
+$JAVA_HOME/bin/java -cp "$cp" ch.vd.uniregctb.ubr.BatchRunnerApp "$@"
