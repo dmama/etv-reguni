@@ -358,10 +358,24 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		remplitDIBase(declaration, di);
 		remplitAdresseRetour(declaration, di);
+		rempliFormuleAppel(declaration, di);
 		if (di instanceof DIRetourCivil) {
 			remplitContribuables(declaration, (DIRetourCivil) di);
 		}
 
+	}
+
+	private void rempliFormuleAppel(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
+		try {
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, TypeAdresseFiscale.COURRIER, false);
+			String formuleAppel = adresseEnvoiDetaillee.getFormuleAppel();
+			di.setFormuleAppel(formuleAppel);
+		}
+		catch (Exception e) {
+			String message = "Exception lors de la recherche de la formule d'appel";
+			LOGGER.error("Exception lors de la recherche de la formule d'appel " + declaration.getTiers().getNumero(), e);
+			throw new EditiqueException(message);
+		}
 	}
 
 	private void remplitAdresseRetour(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
@@ -611,8 +625,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			throw new EditiqueException(e);
 		}
 
-		infoDI.setANNEEFISCALE(Integer.toString(declaration.getPeriode().getAnnee()));
-		infoDI.setDESCOM(nomCommuneGestion);
+		final Integer anneeFiscale = declaration.getPeriode().getAnnee();
+		infoDI.setANNEEFISCALE(Integer.toString(anneeFiscale));
+		//SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
+		if(anneeFiscale < 2011){
+			infoDI.setDESCOM(nomCommuneGestion);
+		}
 		infoDI.setDELAIRETOUR(delaiRetour);
 		infoDI.setNOCANT(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 

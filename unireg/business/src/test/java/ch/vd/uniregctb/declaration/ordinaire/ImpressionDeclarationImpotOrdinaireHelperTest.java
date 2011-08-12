@@ -31,6 +31,7 @@ import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -41,6 +42,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -70,8 +72,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		adresseService = getBean(AdresseService.class, "adresseService");
 		tiersService = getBean(TiersService.class, "tiersService");
-		situationFamilleService =  getBean(SituationFamilleService.class, "situationFamilleService");
-		editiqueHelper =  getBean(EditiqueHelper.class, "editiqueHelper");
+		situationFamilleService = getBean(SituationFamilleService.class, "situationFamilleService");
+		editiqueHelper = getBean(EditiqueHelper.class, "editiqueHelper");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		impressionDIHelper = new ImpressionDeclarationImpotOrdinaireHelperImpl(serviceInfra, adresseService, tiersService, situationFamilleService, editiqueHelper);
 	}
@@ -90,7 +92,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("de Morges", adresseExpediteur.getAdresseCourrierLigne2());
 		assertEquals("rue de la Paix 1", adresseExpediteur.getAdresseCourrierLigne3());
 		assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
-		assertNull( adresseExpediteur.getAdresseCourrierLigne6());
+		assertNull(adresseExpediteur.getAdresseCourrierLigne6());
 
 		Date date = DateHelper.getCurrentDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -158,7 +160,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2008, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
-		addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEMENAGEMENT_VD, date(anneeCourante -1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+		addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEMENAGEMENT_VD, date(anneeCourante - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
 		addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Morges);
 
 		final String numCtb = String.format("%09d", pp.getNumero());
@@ -171,7 +173,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
 		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
 		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
-		final DeclarationImpotOrdinaire declarationCourante = addDeclarationImpot(pp, periodeCourante, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleCourant);
+		final DeclarationImpotOrdinaire declarationCourante =
+				addDeclarationImpot(pp, periodeCourante, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleCourant);
 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
@@ -181,14 +184,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null, false);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante,null, false);
+			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante, null, false);
 			assertNotNull(diCourante);
 
-			
+
 			//Adresse expedition 2008
 			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(declaration2008);
 			Expediteur expediteur2008 = infoEnteteDocument2008.getExpediteur();
@@ -197,7 +200,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("d'Aigle", adresseExpediteur2008.getAdresseCourrierLigne2());
 			assertEquals("rue de la Gare 27", adresseExpediteur2008.getAdresseCourrierLigne3());
 			assertEquals("1860 Aigle", adresseExpediteur2008.getAdresseCourrierLigne4());
-			assertNull( adresseExpediteur2008.getAdresseCourrierLigne6());
+			assertNull(adresseExpediteur2008.getAdresseCourrierLigne6());
 
 			//Adresse expedition 2009
 			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(declaration2009);
@@ -207,8 +210,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("de Nyon", adresseExpediteur2009.getAdresseCourrierLigne2());
 			assertEquals("Avenue Reverdil 4-6", adresseExpediteur2009.getAdresseCourrierLigne3());
 			assertEquals("1341 Nyon", adresseExpediteur2009.getAdresseCourrierLigne4());
-			assertNull( adresseExpediteur2009.getAdresseCourrierLigne6());
-			
+			assertNull(adresseExpediteur2009.getAdresseCourrierLigne6());
+
 			//Adresse expedition annee courante
 			InfoEnteteDocument infoEnteteDocumentCourant = impressionDIHelper.remplitEnteteDocument(declarationCourante);
 			Expediteur expediteurCourant = infoEnteteDocumentCourant.getExpediteur();
@@ -217,9 +220,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("de Morges", adresseExpediteurCourant.getAdresseCourrierLigne2());
 			assertEquals("rue de la Paix 1", adresseExpediteurCourant.getAdresseCourrierLigne3());
 			assertEquals("1110 Morges", adresseExpediteurCourant.getAdresseCourrierLigne4());
-			assertNull( adresseExpediteurCourant.getAdresseCourrierLigne6());
-			
-
+			assertNull(adresseExpediteurCourant.getAdresseCourrierLigne6());
 
 
 			// ... adresse retour pour 2008 2009
@@ -231,8 +232,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("1014 Lausanne Adm cant", retour2008.getADRES4RETOUR());
 
 			final DI.InfoDI infoDI2008 = di2008.getInfoDI();
-			assertEquals(oidNyon + "-1",infoDI2008.getNOOID());
-			assertEquals(numCtb + "200801" + oidNyon,infoDI2008.getCODBARR());
+			assertEquals(oidNyon + "-1", infoDI2008.getNOOID());
+			assertEquals(numCtb + "200801" + oidNyon, infoDI2008.getCODBARR());
 
 			final DI.AdresseRetour retour2009 = di2009.getAdresseRetour();
 			assertNotNull(retour2009);
@@ -243,10 +244,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 			final DI.InfoDI infoDI2009 = di2009.getInfoDI();
 
-			assertEquals(oidNyon + "-1",infoDI2009.getNOOID());
-			assertEquals(numCtb + "200901" + oidNyon,infoDI2009.getCODBARR());
+			assertEquals(oidNyon + "-1", infoDI2009.getNOOID());
+			assertEquals(numCtb + "200901" + oidNyon, infoDI2009.getCODBARR());
 
-				// ... adresse retour pour periode courante DI libre
+			// ... adresse retour pour periode courante DI libre
 			final DI.AdresseRetour retourCourante = diCourante.getAdresseRetour();
 			assertNotNull(retourCourante);
 			assertEquals("Centre d'enregistrement", retourCourante.getADRES1RETOUR());
@@ -256,15 +257,79 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 			final DI.InfoDI infoDICourante = diCourante.getInfoDI();
 
-			assertEquals(oidMorges + "-1",infoDICourante.getNOOID());
-			assertEquals(numCtb +anneeCourante+"01" + oidMorges,infoDICourante.getCODBARR());
+			assertEquals(oidMorges + "-1", infoDICourante.getNOOID());
+			assertEquals(numCtb + anneeCourante + "01" + oidMorges, infoDICourante.getCODBARR());
 
 		}
 
 
 	}
-	
-	 	//UNIREG-3059 Adresse de retour pour les DI sur deux periode fiscales différentes avec chacune un for differents
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testInfoCommune() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testInfoCommune SIFISC-1389");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+		final String oidNyon = String.format("%02d", nyon.getNumeroCollectiviteAdministrative());
+		final String oidMorges = String.format("%02d", morges.getNumeroCollectiviteAdministrative());
+		final int anneeCourante = RegDate.get().year();
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+		addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEMENAGEMENT_VD, date(anneeCourante - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+		addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Morges);
+
+		final String numCtb = String.format("%09d", pp.getNumero());
+		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+
+		final PeriodeFiscale periodeCourante = addPeriodeFiscale(anneeCourante);
+		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
+		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
+		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
+		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinaire declarationCourante =
+				addDeclarationImpot(pp, periodeCourante, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleCourant);
+
+		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFSEtendu());
+		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
+		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFSEtendu());
+		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
+		declarationCourante.setNumeroOfsForGestion(MockCommune.Morges.getNoOFSEtendu());
+		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
+		{
+
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+			assertNotNull(di2008);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			assertNotNull(di2009);
+			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante, null, false);
+			assertNotNull(diCourante);
+
+			DIBase.InfoDI info2008 = di2008.getInfoDI();
+			assertNotNull(info2008.getDESCOM());
+			assertEquals("Aigle",info2008.getDESCOM());
+			DIBase.InfoDI info2009 = di2009.getInfoDI();
+			assertNotNull(info2009.getDESCOM());
+			assertEquals("Nyon",info2009.getDESCOM());
+			DIBase.InfoDI infoCourante = diCourante.getInfoDI();
+			assertNull(infoCourante.getDESCOM());
+
+		}
+
+
+	}
+
+
+	//UNIREG-3059 Adresse de retour pour les DI sur deux periode fiscales différentes avec chacune un for differents
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -282,7 +347,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
-		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null,null, MockCommune.Nyon);
+		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
 
 		final String numCtb = String.format("%09d", pp.getNumero());
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -301,9 +366,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008,null, false);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009,null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
 			assertNotNull(di2009);
 
 
@@ -315,7 +380,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("d'Aigle", adresseExpediteur2008.getAdresseCourrierLigne2());
 			assertEquals("rue de la Gare 27", adresseExpediteur2008.getAdresseCourrierLigne3());
 			assertEquals("1860 Aigle", adresseExpediteur2008.getAdresseCourrierLigne4());
-			assertNull( adresseExpediteur2008.getAdresseCourrierLigne6());
+			assertNull(adresseExpediteur2008.getAdresseCourrierLigne6());
 
 			//Adresse expedition 2009
 			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(declaration2009);
@@ -325,7 +390,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("de Nyon", adresseExpediteur2009.getAdresseCourrierLigne2());
 			assertEquals("Avenue Reverdil 4-6", adresseExpediteur2009.getAdresseCourrierLigne3());
 			assertEquals("1341 Nyon", adresseExpediteur2009.getAdresseCourrierLigne4());
-			assertNull( adresseExpediteur2009.getAdresseCourrierLigne6());
+			assertNull(adresseExpediteur2009.getAdresseCourrierLigne6());
 
 
 			// ... adresse retour pour 2008 2009
@@ -344,11 +409,48 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertEquals("1014 Lausanne Adm cant", retour2009.getADRES4RETOUR());
 
 
+		}
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testFormuleAppel() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testFormuleAppel SIFISC-1989");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+
+		final int anneeCourante = RegDate.get().year();
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminCurzilles);
+		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
+
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+
+		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
+		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+
+		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFSEtendu());
+		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
+		{
+
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			assertNotNull(di2009);
+
+			final String formuleAppel = di2009.getFormuleAppel();
+			assertEquals("Monsieur", formuleAppel);
+
 
 		}
 
 
 	}
+
 	/**
 	 * [UNIREG-1257] l'office d'impôt expéditeur doit être celui du for fiscal valide durant la période couverte par la déclaration.
 	 */
@@ -359,7 +461,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		final CollectiviteAdministrative orbe = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
 		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-		
+
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2003, 1, 1), MotifFor.MAJORITE, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Vallorbe);
@@ -536,7 +638,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("Maria Dupont", adresseDestinataire.getAdresseCourrierLigne3());
 		assertEquals("Rue des terreaux 12", adresseDestinataire.getAdresseCourrierLigne4());
 		assertEquals("1350 Orbe", adresseDestinataire.getAdresseCourrierLigne5());
-		assertNull( adresseDestinataire.getAdresseCourrierLigne6());
+		assertNull(adresseDestinataire.getAdresseCourrierLigne6());
 
 	}
 
@@ -555,6 +657,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	/**
 	 * Remplit un objet pour l'impression de la partie spécifique DI
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -604,8 +707,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());
 		di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), true);
-	    assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
-	    assertEquals(1, di.getAnnexes().getAnnexe330());
+		assertEquals(1, di.getAnnexes().getAnnexe330());
 	}
 }
