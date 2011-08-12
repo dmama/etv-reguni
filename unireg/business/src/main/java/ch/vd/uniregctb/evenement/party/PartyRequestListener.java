@@ -77,9 +77,6 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 
 	private void onMessage(EsbMessage message) throws Exception {
 
-		final String businessId = message.getBusinessId();
-		final String replyTo = message.getServiceReplyTo();
-
 		// on décode la requête
 		final Request request = parse(message.getBodyAsSource());
 
@@ -97,7 +94,7 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 		}
 
 		// on répond
-		answer(response, businessId, replyTo);
+		answer(response, message);
 	}
 
 	private Request parse(Source message) throws JAXBException, SAXException, IOException {
@@ -139,24 +136,22 @@ public class PartyRequestListener extends EsbMessageListener implements Monitora
 		return handler.handle(request);
 	}
 
-	private void answer(Response response, String businessId, String replyTo) {
+	private void answer(Response response, EsbMessage query) {
 
 		try {
-			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-			Marshaller marshaller = context.createMarshaller();
+			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+			final Marshaller marshaller = context.createMarshaller();
 
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			final DocumentBuilder db = dbf.newDocumentBuilder();
 			final Document doc = db.newDocument();
 
 			marshaller.marshal(objectFactory.createResponse(response), doc);
 
-			final EsbMessage m = esbMessageFactory.createMessage();
-			m.setBusinessCorrelationId(businessId);
-			m.setBusinessId(businessId + "-answer");
+			final EsbMessage m = esbMessageFactory.createMessage(query);
+			m.setBusinessId(query.getBusinessId() + "-answer");
 			m.setBusinessUser("unireg");
-			m.setServiceDestination(replyTo);
 			m.setContext("party");
 			m.setBody(doc);
 

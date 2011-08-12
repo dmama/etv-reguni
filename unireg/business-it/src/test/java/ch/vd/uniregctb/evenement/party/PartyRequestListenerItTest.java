@@ -294,6 +294,48 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		assertNull(formatted.getLine5());
 	}
 
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testAddressRequestOkWithCustomHeader() throws Exception {
+
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		pushSecurityProvider(provider);
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+				return pp.getNumero();
+			}
+		});
+
+		final AddressRequest request = new AddressRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setPartyNumber(id.intValue());
+		request.getTypes().add(AddressType.RESIDENCE);
+
+		final String headerName = "spiritualFather";
+		final String headerValue = "John Lanonne";
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage m = buildTextMessage(INPUT_QUEUE, requestToString(request), OUTPUT_QUEUE);
+				m.addHeader(headerName, headerValue);
+				esbTemplate.send(m);
+				return null;
+			}
+		});
+
+		final EsbMessage answer = getEsbMessage(OUTPUT_QUEUE);
+		assertNotNull(answer);
+
+		final String foundHeaderValue = answer.getHeader(headerName);
+		assertEquals(headerValue, foundHeaderValue);
+	}
+
 	protected void assertTextMessage(String queueName, final String texte) throws Exception {
 
 		esbTemplate.setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
@@ -307,7 +349,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		assertNull(noMsg);
 	}
 
-	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+	private EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
@@ -315,7 +357,11 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
 		m.setServiceReplyTo(replyTo);
+		return m;
+	}
 
+	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		esbTemplate.send(m);
 	}
 
@@ -327,12 +373,16 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		return out.toString();
 	}
 
-	private AddressResponse getResponse(String queue) throws Exception {
-
+	private EsbMessage getEsbMessage(String queue) throws Exception {
 		esbTemplate.setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
 		final EsbMessage msg = esbTemplate.receive(queue);
 		assertNotNull("L'événement n'a pas été reçu.", msg);
+		return msg;
+	}
 
+	private AddressResponse getResponse(String queue) throws Exception {
+
+		final EsbMessage msg = getEsbMessage(queue);
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
