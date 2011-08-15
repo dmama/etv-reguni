@@ -117,6 +117,6 @@ testprop.webservice.fidor.username=
 testprop.webservice.fidor.password=
 
 # AciCom WebService
-testprop.webservice.acicom.message.url=http://acicom-in.etat-de-vaud.ch/fiscalite/int-acicom/services/meldewesenConsultationService
+testprop.webservice.acicom.message.url=http://ssv0213v:60102/fiscalite/int-acicom/services/meldewesenConsultationService
 testprop.webservice.acicom.message.username=
 testprop.webservice.acicom.message.password=
