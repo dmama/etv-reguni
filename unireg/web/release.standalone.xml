@@ -38,7 +38,7 @@
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-web-4.11-SNAPSHOT.war</source>
+			<source>target/uniregctb-web-4.11.1.1.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
 			<destName>uniregweb.war</destName>
