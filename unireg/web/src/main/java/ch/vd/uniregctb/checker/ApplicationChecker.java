@@ -45,26 +45,32 @@ public class ApplicationChecker {
 		return version;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setVersion(String version) {
 		this.version = version;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceHostInfraChecker(ServiceHostInfraChecker serviceHostInfraChecker) {
 		this.serviceHostInfraChecker = serviceHostInfraChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceFidorChecker(ServiceFidorChecker serviceFidorChecker) {
 		this.serviceFidorChecker = serviceFidorChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecuriteChecker(ServiceSecuriteChecker serviceSecuriteChecker) {
 		this.serviceSecuriteChecker = serviceSecuriteChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceBVRChecker(ServiceBVRChecker serviceBVRChecker) {
 		this.serviceBVRChecker = serviceBVRChecker;
 	}
