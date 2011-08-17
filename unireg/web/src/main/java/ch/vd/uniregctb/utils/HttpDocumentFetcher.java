@@ -30,14 +30,14 @@ public abstract class HttpDocumentFetcher {
 		/**
 		 * Longueur (en bytes) du contenu (si celle-ci est connue)
 		 */
-		private final Long contentLength;
+		private final Integer contentLength;
 
 		/**
 		 * Flux duquel on peut récupérer le contenu
 		 */
 		private InputStream content;
 
-		private HttpDocument(String contentType, @Nullable Long contentLength, InputStream content) {
+		private HttpDocument(String contentType, @Nullable Integer contentLength, InputStream content) {
 			this.contentType = contentType;
 			this.contentLength = contentLength;
 			this.content = content;
@@ -48,7 +48,7 @@ public abstract class HttpDocumentFetcher {
 		}
 
 		@Nullable
-		public Long getContentLength() {
+		public Integer getContentLength() {
 			return contentLength;
 		}
 
@@ -150,7 +150,7 @@ public abstract class HttpDocumentFetcher {
 			}
 
 			final String lengthHeader = httpCon.getHeaderField(HTTP_CONTENT_LENGTH);
-			final Long length = lengthHeader != null && !lengthHeader.isEmpty() ? Long.parseLong(lengthHeader) : null;
+			final Integer length = lengthHeader != null && !lengthHeader.isEmpty() ? Integer.parseInt(lengthHeader) : null;
 			final String contentType = httpCon.getHeaderField(HTTP_CONTENT_TYPE);
 			return new HttpDocument(contentType, length, httpCon.getInputStream());
 		}

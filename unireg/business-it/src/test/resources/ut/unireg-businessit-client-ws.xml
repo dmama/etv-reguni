@@ -8,10 +8,4 @@
 	    <property name="password" value="${testprop.webservice.sipf.bvrplus.password}" />
 	</bean>
 
-	<bean id="aciComClient" class="ch.vd.uniregctb.webservice.acicom.AciComClientImpl">
-		<property name="serviceUrl" value="${testprop.webservice.acicom.message.url}" />
-	    <property name="username" value="${testprop.webservice.acicom.message.username}" />
-	    <property name="password" value="${testprop.webservice.acicom.message.password}" />
-	</bean>
-	
 </beans>

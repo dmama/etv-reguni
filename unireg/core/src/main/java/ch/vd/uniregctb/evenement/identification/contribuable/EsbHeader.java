@@ -24,6 +24,11 @@ public class EsbHeader {
 	 */
 	private String replyTo;
 
+	/**
+	 * URL d'accès au document, si fournie par le demandeur
+	 */
+	private String documentUrl;
+
 	@Column(name = "BUSINESS_USER", length = 255, nullable = false)
 	public String getBusinessUser() {
 		return businessUser;
@@ -49,5 +54,14 @@ public class EsbHeader {
 
 	public void setReplyTo(String replyTo) {
 		this.replyTo = replyTo;
+	}
+
+	@Column(name="DOCUMENT_URL", length = 255, nullable = true)
+	public String getDocumentUrl() {
+		return documentUrl;
+	}
+
+	public void setDocumentUrl(String documentUrl) {
+		this.documentUrl = documentUrl;
 	}
 }

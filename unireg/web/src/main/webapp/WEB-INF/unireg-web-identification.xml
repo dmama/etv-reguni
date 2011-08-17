@@ -80,8 +80,6 @@
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="aciComService" ref="aciComService" />
-		<property name="viewableTypes" value="${extprop.identification.viewable.types}" />
 	</bean>
 	
 	<bean id="identificationMapHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationMapHelper" >

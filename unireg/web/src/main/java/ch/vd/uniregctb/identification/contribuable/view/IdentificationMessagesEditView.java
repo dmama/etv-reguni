@@ -3,9 +3,7 @@ package ch.vd.uniregctb.identification.contribuable.view;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
-public class IdentificationMessagesEditView extends TiersCriteriaView{
-
-	private static final long serialVersionUID = 4452122137786516242L;
+public class IdentificationMessagesEditView extends TiersCriteriaView {
 
 	private ErreurMessage erreurMessage;
 

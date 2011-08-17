@@ -33,6 +33,8 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
 
+	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
+
 	private String outputQueue;
 	private EsbMessageFactory esbMessageFactory;
 	private HibernateTemplate hibernateTemplate;
@@ -75,8 +77,8 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 			LOGGER.info(String.format("Arrivée d'une demande d'identification de contribuable (BusinessID='%s')", msg.getBusinessId()));
 		}
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("message=" + msg.getBodyAsString());
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("message=" + msg.getBodyAsString());
 		}
 
 		// Parse le message sous forme XML
@@ -107,6 +109,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 				header.setBusinessUser(msg.getBusinessUser());
 				header.setBusinessId(msg.getBusinessId());
 				header.setReplyTo(msg.getServiceReplyTo());
+				header.setDocumentUrl(msg.getHeader(DOCUMENT_URL_ATTRIBUTE_NAME));
 				message.setHeader(header);
 
 				Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");

@@ -17,6 +17,11 @@ public class MockServletService implements ServletService {
 	}
 
 	@Override
+	public void downloadAsFile(String fileName, String contentType, InputStream is, Integer contentLength, HttpServletResponse response) throws IOException {
+		// on ne fait rien ici
+	}
+
+	@Override
 	public void downloadAsFile(String fileName, byte[] bytes, HttpServletResponse response) throws IOException {
 		// on ne fait rien ici
 	}

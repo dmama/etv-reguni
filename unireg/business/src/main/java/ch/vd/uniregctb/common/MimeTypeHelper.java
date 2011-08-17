@@ -49,6 +49,13 @@ public abstract class MimeTypeHelper {
 	 */
 	public static String getFileExtensionForType(String mimeType) {
 		final String ext = fileSuffixes.get(mimeType);
-		return ext != null ? ext : StringUtils.EMPTY;
+		if (ext != null || mimeType == null || !mimeType.contains(";")) {
+			return StringUtils.trimToEmpty(ext);
+		}
+
+		// si on est ici, c'est qu'on n'a pas trouvé d'extension pour le mimeType donné et que
+		// le nom du mimetype contient un ";" (exemple : "text/plain; charset=UTF-8"
+		// -> dans ce cas, on refait la recherche de l'extension sur la première partie du mimetype seulement
+		return getFileExtensionForType(mimeType.substring(0, mimeType.indexOf(";")));
 	}
 }

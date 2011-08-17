@@ -25,11 +25,10 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIdentificationMessagesEditManager(IdentificationMessagesEditManager identificationMessagesEditManager) {
 		this.identificationMessagesEditManager = identificationMessagesEditManager;
 	}
-
-
 
 	public static final String PP_CRITERIA_NAME = "identCriteria";
 	public final static String BOUTON_EXPERTISER = "expertiser";
@@ -38,7 +37,6 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 	public final static String ID_PARAMETER_NAME = "id";
 	public final static String SOURCE_PARAMETER = "source";
 	public final static String UNLOCK_PARAMETER = "unlock";
-
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -68,17 +66,17 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			String idAsString = request.getParameter(ID_PARAMETER_NAME);
 			if (idAsString != null) {
 				Long id = Long.valueOf(idAsString);
-				if ((bean == null) || (bean != null && bean.getDemandeIdentificationView().getId().longValue() != id.longValue())) {
+				if (bean == null || bean.getDemandeIdentificationView().getId().longValue() != id.longValue()) {
 					identificationMessagesEditManager.verouillerMessage(id);
 					bean = identificationMessagesEditManager.getView(id);
 					//gestion des droits
 					if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
 						if (!SecurityProvider.isGranted(Role.VISU_LIMITE)) {
-							throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+							throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 						}
 						bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
 						if (LOGGER.isTraceEnabled()) {
-							LOGGER.trace("utilisateur avec visualisation limitée");
+							LOGGER.trace("Utilisateur avec visualisation limitée");
 						}
 					}
 				}
@@ -92,7 +90,6 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		if (parameter != null) {
 			session.setAttribute(SOURCE_PARAMETER, parameter);
 		}
-
 
 		return bean;
 	}
@@ -111,18 +108,14 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		IdentificationMessagesEditView bean = (IdentificationMessagesEditView) session.getAttribute(PP_CRITERIA_NAME);
 		ModelAndView mav = showFormForList(request, response, errors, model, PP_CRITERIA_NAME, TIERS_LIST_ATTRIBUTE_NAME, bean, true);
 
-
 		String parameter = request.getParameter(UNLOCK_PARAMETER);
 		if (parameter != null) {
 
 			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-
 			mav.setView(new RedirectView("listEnCours.do"));
-
 		}
-
 		return mav;
 	}
 
@@ -181,8 +174,6 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			return mav;
 		}
 
-
-
 		session.setAttribute(PP_CRITERIA_NAME, bean);
 		if (request.getParameter(BOUTON_EFFACER) != null) {
 			mav.setView(new RedirectView("edit.do?action=effacer&id=" + bean.getDemandeIdentificationView().getId()));
@@ -192,6 +183,4 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		}
 		return mav;
 	}
-
-
 }

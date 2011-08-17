@@ -25,13 +25,17 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 	 */
 	@Override
 	public void downloadAsFile(String fileName, InputStream is, Integer contentLength, HttpServletResponse response) throws IOException {
+		final String mimetype = servletContext.getMimeType(fileName);
+		downloadAsFile(fileName, mimetype, is, contentLength, response);
+	}
 
-		ServletOutputStream out = response.getOutputStream();
+	@Override
+	public void downloadAsFile(String fileName, String contentType, InputStream is, Integer contentLength, HttpServletResponse response) throws IOException {
+		final ServletOutputStream out = response.getOutputStream();
 		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
 		// On veut que la réponse provoque un téléchargement de fichier
-		String mimetype = servletContext.getMimeType(fileName);
-		response.setContentType(mimetype);
+		response.setContentType(contentType);
 		if (contentLength != null) {
 			response.setContentLength(contentLength);
 		}

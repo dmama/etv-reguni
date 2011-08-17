@@ -2,7 +2,9 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -396,8 +398,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils
-				.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -415,6 +416,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final EsbHeader header = m.getHeader();
 		assertNotNull(header);
 		assertEquals("EvenementTest", header.getBusinessUser());
+		assertNull(header.getDocumentUrl());
 
 		final Demande demande = m.getDemande();
 		assertNotNull(demande);
@@ -451,6 +453,42 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertNull(adresse.getRue());
 		assertNull(adresse.getTexteCasePostale());
 		assertNull(adresse.getTypeAdresse());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAvecUrlDocument() throws Exception {
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+
+		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
+			public void handleDemande(IdentificationContribuable message) {
+				messages.add(message);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final String url = "http://mamachine:3421/mondocument.pdf";
+		customAttributes.put(IdentificationContribuableMessageHandlerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (messages.isEmpty()) {
+			Thread.sleep(100);
+		}
+		assertEquals(1, messages.size());
+
+		final IdentificationContribuable m = messages.get(0);
+		assertNotNull(m);
+
+		final EsbHeader header = m.getHeader();
+		assertNotNull(header);
+		assertEquals("EvenementTest", header.getBusinessUser());
+		assertEquals(url, header.getDocumentUrl());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

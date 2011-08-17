@@ -29,7 +29,7 @@ public class DemandeIdentificationView implements Annulable {
 	private String npaEtranger;
 	private String noPolice;
 	private boolean annule;
-	private boolean viewable;
+	private String documentUrl;
 
 	public Long getId() {
 		return id;
@@ -159,11 +159,11 @@ public class DemandeIdentificationView implements Annulable {
 		this.navs11 = navs11;
 	}
 
-	public boolean isViewable() {
-		return viewable;
+	public String getDocumentUrl() {
+		return documentUrl;
 	}
 
-	public void setViewable(boolean viewable) {
-		this.viewable = viewable;
+	public void setDocumentUrl(String urlDocument) {
+		this.documentUrl = urlDocument;
 	}
 }
