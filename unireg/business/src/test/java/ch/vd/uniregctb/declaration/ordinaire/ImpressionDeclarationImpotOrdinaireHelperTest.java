@@ -317,10 +317,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 			DIBase.InfoDI info2008 = di2008.getInfoDI();
 			assertNotNull(info2008.getDESCOM());
-			assertEquals("Aigle",info2008.getDESCOM());
+			assertEquals("Aigle", info2008.getDESCOM());
 			DIBase.InfoDI info2009 = di2009.getInfoDI();
 			assertNotNull(info2009.getDESCOM());
-			assertEquals("Nyon",info2009.getDESCOM());
+			assertEquals("Nyon", info2009.getDESCOM());
 			DIBase.InfoDI infoCourante = diCourante.getInfoDI();
 			assertNull(infoCourante.getDESCOM());
 
@@ -707,7 +707,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());
-		di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration), buildDefaultAnnexes(declaration), true);
+		final InformationsDocumentAdapter informationsDocument = new InformationsDocumentAdapter(declaration);
+		informationsDocument.nbAnnexesImmeuble = 1;
+		di = impressionDIHelper.remplitSpecifiqueDI(informationsDocument, buildDefaultAnnexes(declaration), true);
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());

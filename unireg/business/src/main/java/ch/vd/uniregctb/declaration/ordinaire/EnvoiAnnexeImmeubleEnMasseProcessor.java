@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -59,9 +58,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	private final int tailleLot;
 
 
-	private HashMap<Long, ContribuableAvecImmeuble> mapCtb;
-
-
 	private static class Cache {
 		public final CollectiviteAdministrative cedi;
 		public final CollectiviteAdministrative aci;
@@ -94,36 +90,31 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiAnnexeImmeubleResults run(final int anneePeriode, final List<ContribuableAvecImmeuble> listCtbImmo, final int nbAnnexeMax,
+	public EnvoiAnnexeImmeubleResults run(final int anneePeriode, final List<ContribuableAvecImmeuble> listCtbImmo, final int nbMax,
 	                                      final RegDate dateTraitement, StatusManager s) throws DeclarationException {
-		final int nbMax = 0;
-		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
+		Assert.isTrue(rapport == null);
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbAnnexeMax);
-		mapCtb = getMapCtbImmeubleId(listCtbImmo);
+		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax);
 
-		final List<Long> ctbImmeubleIds = new ArrayList<Long>();
-		ctbImmeubleIds.addAll(mapCtb.keySet());
-		Collections.sort(ctbImmeubleIds);
 
 		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
 
 		status.setMessage("Récupération des contribuables à traiter...");
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, EnvoiAnnexeImmeubleResults> template =
-				new BatchTransactionTemplate<Long, EnvoiAnnexeImmeubleResults>(ctbImmeubleIds, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
+				new BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
 						transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, EnvoiAnnexeImmeubleResults>() {
+		template.execute(rapportFinal, new BatchCallback<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>() {
 
 			@Override
 			public EnvoiAnnexeImmeubleResults createSubRapport() {
-				return new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbAnnexeMax);
+				return new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax);
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, EnvoiAnnexeImmeubleResults r) throws Exception {
+			public boolean doInTransaction(List<ContribuableAvecImmeuble> batch, EnvoiAnnexeImmeubleResults r) throws Exception {
 				rapport = r;
 
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
@@ -135,7 +126,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 				}
 
 				if (batch.size() > 0) {
-					traiterBatch(batch, anneePeriode, dateTraitement, nbAnnexeMax);
+					traiterBatch(batch, anneePeriode, dateTraitement);
 				}
 
 				return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
@@ -166,57 +157,48 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	/**
 	 * Traite tout le batch des contribuables, un par un.
 	 *
-	 * @param ids            les ids des contribuables à traiter
-	 * @param anneePeriode   l'année fiscale considérée
-	 * @param dateTraitement la date de traitement
+	 * @param listCtbImmeuble les listCtbImmeuble des contribuables à traiter
+	 * @param anneePeriode    l'année fiscale considérée
+	 * @param dateTraitement  la date de traitement
 	 * @param nbAnnexeMax
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<Long> ids, int anneePeriode, RegDate dateTraitement, int nbAnnexeMax)
+	protected void traiterBatch(List<ContribuableAvecImmeuble> listCtbImmeuble, int anneePeriode, RegDate dateTraitement)
 			throws DeclarationException {
 		// pré-chauffage du cache des individus du civil
-
+		final List<Long> idsCtb = getIdCtb(listCtbImmeuble);
 		if (serviceCivilCacheWarmer != null) {
-			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, AttributeIndividu.ADRESSES);
+			serviceCivilCacheWarmer.warmIndividusPourTiers(idsCtb, null, AttributeIndividu.ADRESSES);
 		}
-		rapport.nbCtbsTotal += ids.size();
+		rapport.nbCtbsTotal += listCtbImmeuble.size();
 
 		initCache(anneePeriode);
 
-		for (Long id : ids) {
-			ContribuableAvecImmeuble ctbImmeuble = mapCtb.get(id);
-			Contribuable ctb = (Contribuable) tiersService.getTiers(id);
+		for (ContribuableAvecImmeuble ctbImmeuble : listCtbImmeuble) {
+			Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
 
 			if (!isAssujettiEnFinDePeriode(ctb, anneePeriode)) {
 				rapport.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
+			else {
+				int nombreAnnexeImeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeuble());
 
-			int nombreAnnexe = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeuble());
-			if (nombreAnnexe > nbAnnexeMax) {
-				nombreAnnexe = nbAnnexeMax;
-			}
-			InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter();
-			infoFormulaireImmeuble.setAnnee(anneePeriode);
-			infoFormulaireImmeuble.setNbAnnexes(nbAnnexeMax);
-			infoFormulaireImmeuble.setTiers(ctb);
-			infoFormulaireImmeuble.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-			infoFormulaireImmeuble.setCollId(cache.cedi.getId());
-			final RegDate dateReference = RegDate.get(anneePeriode, 12, 31);
-			infoFormulaireImmeuble.setDateReference(dateReference);
-			infoFormulaireImmeuble.setDeclarationImpotOrdinaire(false);
-			infoFormulaireImmeuble.setDelaiRetourImprime(dateReference);
-			infoFormulaireImmeuble.setDelaiAccorde(dateReference);
-			infoFormulaireImmeuble.setModifUser(EnvoiAnnexeImmeubleJob.NAME);
-			infoFormulaireImmeuble.setQualification(Qualification.MANUEL);
-			infoFormulaireImmeuble.setIdDocument(ctb.getId().intValue());
-			ForGestion forGestion = tiersService.getForGestionActif(ctb, dateReference);
-			if (forGestion != null) {
-				infoFormulaireImmeuble.setNoOfsCommune(forGestion.getNoOfsCommune());
+				final RegDate dateReference = RegDate.get(anneePeriode, 12, 31);
+				ForGestion forGestion = tiersService.getForGestionActif(ctb, dateReference);
+				int noOfsCommune = 0;
+				if (forGestion != null) {
+					noOfsCommune = forGestion.getNoOfsCommune();
+				}
+
+				InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, ctb.getId().intValue(), anneePeriode, dateReference,
+						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL,
+						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, nombreAnnexeImeuble);
+
+				imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement);
+				rapport.addCtbTraites(ctb.getId());
 			}
 
-			imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement);
-			rapport.addCtbTraites(ctb.getId());
 
 		}
 
@@ -237,12 +219,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			//ajouter erreur e calcul d'assujetissement
 		}
 		RegDate date = RegDate.get(periode, 12, 31);
-		if (list != null && !list.isEmpty()) {
-			for (Assujettissement a : list) {
-				if (a.isValidAt(date)) {
-					return true;
-				}
-			}
+		Assujettissement assujettissement = DateRangeHelper.rangeAt(list, date);
+		if (assujettissement != null) {
+			return true;
 		}
 		return false;
 	}
@@ -254,7 +233,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 * @return le nombre d'immeuble divisé par 2 arondi à l'entier supérieur
 	 */
 	protected int getNombreAnnexeAEnvoyer(int nombreImmeuble) {
-		return Double.valueOf(Math.ceil(nombreImmeuble / 2)).intValue();
+		return Double.valueOf(Math.ceil(nombreImmeuble / 2.0)).intValue();
 
 	}
 
@@ -296,15 +275,15 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	}
 
 
-	private HashMap<Long, ContribuableAvecImmeuble> getMapCtbImmeubleId(List<ContribuableAvecImmeuble> listeCtbImmeuble) {
+	private List<Long> getIdCtb(List<ContribuableAvecImmeuble> listeCtbImmeuble) {
 
-		HashMap<Long, ContribuableAvecImmeuble> mapCtb = new HashMap<Long, ContribuableAvecImmeuble>(listeCtbImmeuble.size());
+		final List<Long> idsCtb = new ArrayList<Long>();
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listeCtbImmeuble) {
 
-			mapCtb.put(ctbImmeuble.getNumeroContribuable(), ctbImmeuble);
+			idsCtb.add(ctbImmeuble.getNumeroContribuable());
 		}
-		return mapCtb;
+		return idsCtb;
 
 	}
 

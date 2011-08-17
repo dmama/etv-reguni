@@ -5,14 +5,13 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.LotContribuables;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> extends JobResults<Long, R> {
 
 	public static enum ErreurType {
-		EXCEPTION(EXCEPTION_DESCRIPTION), // --------------------------------------------------------------
-		ROLLBACK("Le traitement du lot a échoué et a été rollbacké"),
+		EXCEPTION(EXCEPTION_DESCRIPTION),
+		// --------------------------------------------------------------
 
 		FOR_GESTION_NUL("le contribuable ne possède pas de for de gestion");
 
@@ -28,7 +27,8 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	}
 
 	public static enum IgnoreType {
-		CTB_NON_ASSUJETTI("le ctb n'est pas assujétti pour la période fiscale"), // -----
+		CTB_NON_ASSUJETTI("le contribuable n'est pas assujétti pour la période fiscale"),
+		// -----
 		CTB_EXCLU("le contribuable est exclu des envois automatiques");
 
 		private final String description;
@@ -39,6 +39,21 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 
 		public String description() {
 			return description;
+		}
+	}
+
+	public static class InfoCtbImmeuble extends Info {
+		public final int nbAnnexeEnvoyee;
+
+		public InfoCtbImmeuble(Long noCtb, Integer officeImpotID, int nbAnnexe, String details) {
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+			this.nbAnnexeEnvoyee = nbAnnexe;
+		}
+
+
+		@Override
+		public String getDescriptionRaison() {
+			return null;
 		}
 	}
 
@@ -81,7 +96,6 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	public final List<Long> ctbsTraites = new ArrayList<Long>();
 	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
-	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public EnvoiAnnexeImmeubleResults(int annee, RegDate dateTraitement, String nomFichier, int nombreAnnexe) {
@@ -105,12 +119,6 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
 	}
 
-	public void addRollback(LotContribuables lot, Exception e) {
-		List<Long> ids = lot.ids;
-		for (Long id : ids) {
-			ctbsRollback.add(new Erreur(id, null, ErreurType.ROLLBACK, e.getMessage()));
-		}
-	}
 
 	public void addErrorForGestionNul(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.FOR_GESTION_NUL, details));
@@ -118,9 +126,8 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 
 
 	public void addIgnoreCtbNonAssujetti(Contribuable ctb, int periode) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_NON_ASSUJETTI,"Non assujetti pour la fin de période fiscale "+ periode));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_NON_ASSUJETTI, "Non assujetti pour la fin de période fiscale " + periode));
 	}
-
 
 
 	@Override
@@ -131,5 +138,10 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 			this.ctbsEnErrors.addAll(rapport.ctbsEnErrors);
 			this.ctbsIgnores.addAll(rapport.ctbsIgnores);
 		}
+	}
+
+	@Override
+	public void end() {
+
 	}
 }

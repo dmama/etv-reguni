@@ -168,18 +168,15 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 			String idEnvoi = "";
-			final boolean isDeclarationImpotOrdinaire = informationDocument.isDeclarationImpotOrdinaire();
-			if (isDeclarationImpotOrdinaire) {
-				if (adresseEnvoiDetaillee.isSuisse()) {
-					idEnvoi = "";
-				}
-				else {
-					// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-					final RegDate datePeriode = informationDocument.getDateReference();
-					final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, datePeriode);
-					if (officeImpotId != null) {
-						idEnvoi = officeImpotId.toString();
-					}
+			if (adresseEnvoiDetaillee.isSuisse()) {
+				idEnvoi = "";
+			}
+			else {
+				// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
+				final RegDate datePeriode = informationDocument.getDateReference();
+				final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, datePeriode);
+				if (officeImpotId != null) {
+					idEnvoi = officeImpotId.toString();
 				}
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
@@ -219,7 +216,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return infoEnteteDocument;
 
 	}
-
 
 
 	/**
@@ -289,15 +285,15 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
 
 		InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
-		return remplitEditiqueSpecifiqueDI(infoAdapter,typeFichierImpression,annexes,isFromBatch);
+		return remplitEditiqueSpecifiqueDI(infoAdapter, typeFichierImpression, annexes, isFromBatch);
 	}
 
 	/**
 	 * Alimente un objet Document pour l'impression des DI
 	 */
 	@Override
-	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression ,List<ModeleFeuilleDocumentEditique> annexes,
-	                                            boolean isFromBatch) throws EditiqueException {
+	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression, List<ModeleFeuilleDocumentEditique> annexes,
+	                                            boolean isFromBatchImmeuble) throws EditiqueException {
 
 
 		InfoDocument infoDocument = remplitInfoDocument(informationsDocument);
@@ -311,7 +307,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		Document document = typeFichierImpression.addNewDocument();
 		final TypeDocument typeDocument = informationsDocument.getTypeDocument();
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-			DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatch);
+			DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatchImmeuble);
 			document.setDI(di);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
@@ -333,14 +329,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 
-
 	/**
 	 * Alimente un objet DI
 	 */
-	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
 
 
-		final String avecCourrierExplicatif = (isFromBatch ? "O" : "N");
+		final String avecCourrierExplicatif = (isFromBatchImmeuble ? "O" : "N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
 		remplitDIRetour(informationsDocument, di);
 		final Tiers tiers = informationsDocument.getTiers();
@@ -351,7 +346,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final int nbAnnexes230 = getNbOfAnnexes(annexes, "230", 0, 0);
 		final int nbAnnexes240 = getNbOfAnnexes(annexes, "240", 0, 0);
 		final int nbAnnexes310 = getNbOfAnnexes(annexes, "310", 0, 0);
-		final int nbAnnexes320 = getNbOfAnnexes(annexes, "320", 0, 0);
+		final int nbAnnexes320 = (isFromBatchImmeuble ? informationsDocument.nbAnnexesImmeuble : getNbOfAnnexes(annexes, "320", 0, 0));
 		final int nbAnnexes330 = getNbOfAnnexes(annexes, "330", 0, 0);
 
 		// pour être certain d'imprimer toujours quelque chose!
@@ -561,7 +556,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 
-
 	/**
 	 * Alimente un objet DIVDTAX
 	 */
@@ -595,7 +589,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		return didp;
 	}
-
 
 
 	/**
@@ -683,7 +676,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final Integer anneeFiscale = informationsDocument.getAnnee();
 		infoDI.setANNEEFISCALE(Integer.toString(anneeFiscale));
 		//SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
-		if(anneeFiscale < 2011){
+		if (anneeFiscale < 2011) {
 			infoDI.setDESCOM(nomCommuneGestion);
 		}
 		infoDI.setDELAIRETOUR(delaiRetour);

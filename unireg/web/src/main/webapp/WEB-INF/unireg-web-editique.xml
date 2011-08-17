@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl" >
+	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl">
 		<property name="serviceDestination" value="${extprop.jms.queue.editique.output}" />
 		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />
@@ -16,8 +16,8 @@
 	</bean>
 
 	<bean id="retourImpressionStorageService" class="ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
-		<property name="cleanupPeriod" value="${editique.locale.sync.attente.timeout}"/>
-		<property name="statsService" ref="statsService"/>
+		<property name="cleanupPeriod" value="${editique.locale.sync.attente.timeout}" />
+		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
@@ -31,11 +31,11 @@
 	</bean>
 
 	<bean id="copieConformeService" class="ch.vd.uniregctb.editique.impl.EditiqueCopieConformeServiceImpl">
-		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation"/>
-		<property name="esbHttpTemplate" ref="esbHttpTemplate"/>
-		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}"/>
-		<property name="domain" value="fiscalite"/>
-		<property name="application" value="unireg"/>
+		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation" />
+		<property name="esbHttpTemplate" ref="esbHttpTemplate" />
+		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}" />
+		<property name="domain" value="fiscalite" />
+		<property name="application" value="unireg" />
 	</bean>
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">
@@ -49,6 +49,7 @@
 		<property name="impressionTaxationOfficeHelper" ref="impressionTaxationOfficeHelper" />
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="nombreMaxAnnexesImmeuble" value="${extprop.editique.annexes.immeuble.nombreMax}" />
 	</bean>
 
 </beans>

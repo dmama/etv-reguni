@@ -5,28 +5,25 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class InformationsDocumentAdapter {
+public class
+		InformationsDocumentAdapter {
 
-	private Tiers tiers;
-	private Integer idDocument;
-	private Integer annee;
-	private RegDate delaiRetourImprime;
-	private RegDate delaiAccorde;
-	private RegDate dateReference;
-	private int noOfsCommune;
-	private Long collId;
-	private Qualification qualification;
-	private String modifUser;
-	private TypeDocument typeDocument;
-	private boolean isDeclarationImpotOrdinaire;
-	private int nbAnnexes;
+	public final Tiers tiers;
+	public final Integer idDocument;
+	public final Integer annee;
+	public final RegDate delaiRetourImprime;
+	public final RegDate delaiAccorde;
+	public final RegDate dateReference;
+	public final int noOfsCommune;
+	public final Long collId;
+	public final Qualification qualification;
+	public final String modifUser;
+	public final TypeDocument typeDocument;
+	public int nbAnnexesImmeuble;
 
-
-	public InformationsDocumentAdapter() {
-	}
 
 	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, Integer annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
-	                                   Qualification qualification, String modifUser, TypeDocument typeDocument,int nbAnnexes, boolean isDeclarationImpotOrdinaire) {
+	                                   Qualification qualification, String modifUser, TypeDocument typeDocument, int nbAnnexesImmeuble) {
 		this.tiers = tiers;
 		this.idDocument = idDocument;
 		this.annee = annee;
@@ -38,8 +35,7 @@ public class InformationsDocumentAdapter {
 		this.qualification = qualification;
 		this.modifUser = modifUser;
 		this.typeDocument = typeDocument;
-		this.isDeclarationImpotOrdinaire = isDeclarationImpotOrdinaire;
-		this.nbAnnexes = nbAnnexes;
+		this.nbAnnexesImmeuble = nbAnnexesImmeuble;
 
 	}
 
@@ -55,10 +51,7 @@ public class InformationsDocumentAdapter {
 		collId = declaration.getRetourCollectiviteAdministrativeId();
 		qualification = declaration.getQualification();
 		modifUser = declaration.getLogModifUser();
-		if (declaration instanceof DeclarationImpotOrdinaire) {
-			isDeclarationImpotOrdinaire = true;
-		}
-		nbAnnexes =0 ;
+		nbAnnexesImmeuble = 0;
 	}
 
 
@@ -66,103 +59,59 @@ public class InformationsDocumentAdapter {
 		return tiers;
 	}
 
-	public void setTiers(Tiers tiers) {
-		this.tiers = tiers;
-	}
 
 	public Integer getIdDocument() {
 		return idDocument;
 	}
 
-	public void setIdDocument(Integer idDocument) {
-		this.idDocument = idDocument;
-	}
 
 	public Integer getAnnee() {
 		return annee;
 	}
 
-	public void setAnnee(Integer annee) {
-		this.annee = annee;
-	}
 
 	public RegDate getDelaiRetourImprime() {
 		return delaiRetourImprime;
 	}
 
-	public void setDelaiRetourImprime(RegDate delaiRetourImprime) {
-		this.delaiRetourImprime = delaiRetourImprime;
-	}
 
 	public RegDate getDelaiAccorde() {
 		return delaiAccorde;
 	}
 
-	public void setDelaiAccorde(RegDate delaiAccorde) {
-		this.delaiAccorde = delaiAccorde;
-	}
 
 	public RegDate getDateReference() {
 		return dateReference;
 	}
 
-	public void setDateReference(RegDate dateReference) {
-		this.dateReference = dateReference;
-	}
 
 	public int getNoOfsCommune() {
 		return noOfsCommune;
-	}
-
-	public void setNoOfsCommune(int noOfsCommune) {
-		this.noOfsCommune = noOfsCommune;
 	}
 
 	public Long getCollId() {
 		return collId;
 	}
 
-	public void setCollId(Long collId) {
-		this.collId = collId;
-	}
 
 	public Qualification getQualification() {
 		return qualification;
 	}
 
-	public void setQualification(Qualification qualification) {
-		this.qualification = qualification;
-	}
 
 	public String getModifUser() {
 		return modifUser;
 	}
 
-	public void setModifUser(String modifUser) {
-		this.modifUser = modifUser;
-	}
 
 	public TypeDocument getTypeDocument() {
 		return typeDocument;
 	}
 
-	public void setTypeDocument(TypeDocument typeDocument) {
-		this.typeDocument = typeDocument;
+
+	public int getNbAnnexesImmeuble() {
+		return nbAnnexesImmeuble;
 	}
 
-	public boolean isDeclarationImpotOrdinaire() {
-		return isDeclarationImpotOrdinaire;
-	}
 
-	public void setDeclarationImpotOrdinaire(boolean declarationImpotOrdinaire) {
-		isDeclarationImpotOrdinaire = declarationImpotOrdinaire;
-	}
-
-	public int getNbAnnexes() {
-		return nbAnnexes;
-	}
-
-	public void setNbAnnexes(int nbAnnexes) {
-		this.nbAnnexes = nbAnnexes;
-	}
 }

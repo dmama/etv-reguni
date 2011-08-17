@@ -32,7 +32,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	private static final String CATEGORIE = "DI";
 	public static final String LISTE_CTB = "LISTE_CTB";
 	public static final String PERIODE_FISCALE = "PERIODE";
-	public static final String NB_ANNEXE = "NB_ANNEXEE";
+	public static final String NB_MAX = "NB_MAX";
 
 
 	public EnvoiAnnexeImmeubleJob(int sortOrder, String description) {
@@ -49,12 +49,13 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		}
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("Nombre d'annexe");
-			param.setName(NB_ANNEXE);
-			param.setMandatory(true);
+			param.setDescription("Nombre maximum d'envois");
+			param.setName(NB_MAX);
+			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			addParameterDefinition(param, null);
+			addParameterDefinition(param, 100);
 		}
+
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Fichier CSV des contribuables");
@@ -81,10 +82,10 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		// Récupération des paramètres
 		final int annee = getIntegerValue(params, PERIODE_FISCALE);
 		final byte[] listeCtb = getFileContent(params, LISTE_CTB);
-		final List<ContribuableAvecImmeuble> listeCtbAcvecImmeuble = extractCtbFromCSV(listeCtb,status);
-		final int nbMax = getIntegerValue(params, NB_ANNEXE);
+		final List<ContribuableAvecImmeuble> listeCtbAcvecImmeuble = extractCtbFromCSV(listeCtb, status);
+		final int nbMax = getIntegerValue(params, NB_MAX);
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
-		final EnvoiAnnexeImmeubleResults results = service.envoyerAnnexeImmeubleEnMasse(annee,dateTraitement,listeCtbAcvecImmeuble,nbMax, status);
+		final EnvoiAnnexeImmeubleResults results = service.envoyerAnnexeImmeubleEnMasse(annee, dateTraitement, listeCtbAcvecImmeuble, nbMax, status);
 		final EnvoiAnnexeImmeubleRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -97,42 +98,43 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
 
 		builder.append(" est terminée.");
-		Audit.success(builder.toString());
 		Audit.success(builder.toString(), rapport);
 	}
 
 	/**
 	 * Extrait les numéros de contribuables et le nombre d'immeubles séparés par unpoint virgule
 	 *
-	 * @param csv
-	 *            le contenu d'un fichier CSV
+	 * @param csv le contenu d'un fichier CSV
 	 * @return une liste de ctb possédant un  ou plusieurs immeuble
 	 * @throws java.io.UnsupportedEncodingException
+	 *
 	 */
 	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
 
-
+		int previous_percent = 0;
+		int current_percent = 0;
 		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<ContribuableAvecImmeuble>();
-        final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)");
+		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)");
 
 		// on parse le fichier
-        final String csvString = new String(csv,"ISO-8859-1");
+		final String csvString = new String(csv, "ISO-8859-1");
+		final String[] lines = csvString.split("[\n]");
+		final int nombrectb = lines.length;
+		int CtbLu = 0;
 		Scanner s = new Scanner(csvString);
-
-        final String[] lines = csvString.split("[\n]");
-        final int nombrectb = lines.length;
-        int CtbLu = 0;
-
 		try {
 			while (s.hasNextLine()) {
-
 				final String line = s.nextLine();
-				  //Audit.info("nombre de propriétaire tratés "+CtbLu);
-                int percent = (CtbLu * 100) / nombrectb;
-                status.setMessage("Chargement des contribuables propriétaires d'immeuble",percent);
-                if (status.interrupted()) {
-                	break;
-                }
+				Audit.info("nombre de propriétaire tratés " + CtbLu);
+				current_percent = (CtbLu * 100) / nombrectb;
+				if (previous_percent != current_percent) {
+					status.setMessage("Chargement des contribuables propriétaires d'immeuble", current_percent);
+					previous_percent = current_percent;
+				}
+
+				if (status.interrupted()) {
+					break;
+				}
 
 				Matcher m = p.matcher(line);
 
@@ -148,7 +150,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 					nombreImmeuble = Integer.valueOf(m.group(2));
 
 					listeCtb.add(new ContribuableAvecImmeuble(numeroCtb, nombreImmeuble));
-                    CtbLu++;
+					CtbLu++;
 				}
 
 			}
@@ -156,7 +158,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		finally {
 			s.close();
 		}
-		  Audit.info("nombre de contribuable lus dans le fichier :"+CtbLu);
+		Audit.info("nombre de contribuable lus dans le fichier :" + CtbLu);
 		return listeCtb;
 	}
 

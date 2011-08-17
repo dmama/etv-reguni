@@ -212,10 +212,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
-	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbAnnexesMax, StatusManager status) throws DeclarationException {
+	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbMax, StatusManager status) throws DeclarationException {
 		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 				this, tailleLot, transactionManager, serviceCivilCacheWarmer);
-		return processor.run(anneePeriode, listeCtb, nbAnnexesMax, dateTraitement, status);
+		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
 
 	/**
@@ -476,7 +476,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public void envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement) throws DeclarationException {
 		try {
-			editiqueCompositionService.imprimeAnnexeForBatch(infoDocuments, listeModele, dateTraitement);
+			editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
