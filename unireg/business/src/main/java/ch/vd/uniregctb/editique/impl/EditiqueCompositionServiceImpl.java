@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperParams;
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperParams;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class EditiqueCompositionServiceImpl implements EditiqueCompositionService {
@@ -107,8 +109,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
-		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
+		return buildDefaultAnnexes(listFeuille);
+
+	}
+
+	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
 			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
 			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
@@ -117,6 +124,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			annexes.add(feuilleEditique);
 		}
 		return annexes;
+
 	}
 
 	@Override
@@ -156,7 +164,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final String typeDocument = impressionDIHelper.calculPrefixe(declaration);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration), true);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration), false);
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
@@ -170,6 +178,32 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 		editiqueDI.setDocumentArray(documents);
 		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
+	}
+
+	@Override
+	public void imprimeAnnexeForBatch(InformationsDocumentAdapter infosDocument,Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement) throws EditiqueException {
+		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
+		final TypeDocument typeDoc = infosDocument.getTypeDocument();
+		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildDefaultAnnexes(listeModele), true);
+		final TypFichierImpression.Document[] documents;
+		Assert.notNull(document);
+		if (typeDoc == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+			documents = new TypFichierImpression.Document[1];
+			documents[0] = document;
+		}
+		else {
+			documents = new TypFichierImpression.Document[2];
+			documents[0] = document;
+			documents[1] = document;
+		}
+		editiqueDI.setDocumentArray(documents);
+		final Integer annee = infosDocument.getAnnee();
+		final Integer idDoc = infosDocument.getIdDocument();
+		final Tiers tiers = infosDocument.getTiers();
+		final String nomDocument = impressionDIHelper.construitIdDocument(annee,idDoc,tiers);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
 	}
 

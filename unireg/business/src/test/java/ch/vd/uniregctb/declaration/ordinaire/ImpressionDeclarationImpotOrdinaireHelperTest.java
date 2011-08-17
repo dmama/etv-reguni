@@ -24,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -85,7 +86,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(declaration);
+		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration));
 		Expediteur expediteur = infoEnteteDocument.getExpediteur();
 		Adresse adresseExpediteur = expediteur.getAdresse();
 		assertEquals("Office d'impôt du district", adresseExpediteur.getAdresseCourrierLigne1());
@@ -125,7 +126,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
 		{
 
-			final DIHCDocument.DIHC di = impressionDIHelper.remplitSpecifiqueDIHC(declaration2010, null);
+			final DIHCDocument.DIHC di = impressionDIHelper.remplitSpecifiqueDIHC(new InformationsDocumentAdapter(declaration2010), null);
 			assertNotNull(di);
 
 			// ... sur l'adresse du CEDI
@@ -184,16 +185,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009), null, false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante, null, false);
+			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante), null, false);
 			assertNotNull(diCourante);
 
 
 			//Adresse expedition 2008
-			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(declaration2008);
+			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2008));
 			Expediteur expediteur2008 = infoEnteteDocument2008.getExpediteur();
 			Adresse adresseExpediteur2008 = expediteur2008.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteur2008.getAdresseCourrierLigne1());
@@ -203,7 +204,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresseExpediteur2008.getAdresseCourrierLigne6());
 
 			//Adresse expedition 2009
-			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(declaration2009);
+			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2009));
 			Expediteur expediteur2009 = infoEnteteDocument2009.getExpediteur();
 			Adresse adresseExpediteur2009 = expediteur2009.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteur2009.getAdresseCourrierLigne1());
@@ -213,7 +214,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresseExpediteur2009.getAdresseCourrierLigne6());
 
 			//Adresse expedition annee courante
-			InfoEnteteDocument infoEnteteDocumentCourant = impressionDIHelper.remplitEnteteDocument(declarationCourante);
+			InfoEnteteDocument infoEnteteDocumentCourant = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declarationCourante));
 			Expediteur expediteurCourant = infoEnteteDocumentCourant.getExpediteur();
 			Adresse adresseExpediteurCourant = expediteurCourant.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteurCourant.getAdresseCourrierLigne1());
@@ -307,11 +308,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009), null, false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(declarationCourante, null, false);
+			final DI diCourante = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante), null, false);
 			assertNotNull(diCourante);
 
 			DIBase.InfoDI info2008 = di2008.getInfoDI();
@@ -366,14 +367,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+			final DI di2008 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009), null, false);
 			assertNotNull(di2009);
 
 
 			//Adresse expedition 2008
-			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(declaration2008);
+			InfoEnteteDocument infoEnteteDocument2008 = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2008));
 			Expediteur expediteur2008 = infoEnteteDocument2008.getExpediteur();
 			Adresse adresseExpediteur2008 = expediteur2008.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteur2008.getAdresseCourrierLigne1());
@@ -383,7 +384,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresseExpediteur2008.getAdresseCourrierLigne6());
 
 			//Adresse expedition 2009
-			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(declaration2009);
+			InfoEnteteDocument infoEnteteDocument2009 = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2009));
 			Expediteur expediteur2009 = infoEnteteDocument2009.getExpediteur();
 			Adresse adresseExpediteur2009 = expediteur2009.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteur2009.getAdresseCourrierLigne1());
@@ -439,7 +440,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(declaration2009, null, false);
+			final DI di2009 = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009), null, false);
 			assertNotNull(di2009);
 
 			final String formuleAppel = di2009.getFormuleAppel();
@@ -489,7 +490,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final String oidAigle = String.format("%02d", aigle.getNumeroCollectiviteAdministrative());
 
 			// ... sur l'entête
-			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(declaration2007);
+			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2007));
 			assertNotNull(entete);
 			final Expediteur expediteur = entete.getExpediteur();
 			assertNotNull(expediteur);
@@ -502,7 +503,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2007, null, false);
+			final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2007), null, false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -523,7 +524,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final String oidAigle = String.format("%02d", aigle.getNumeroCollectiviteAdministrative());
 
 			// ... sur l'entête
-			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(declaration2008);
+			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2008));
 			assertNotNull(entete);
 			final Expediteur expediteur = entete.getExpediteur();
 			assertNotNull(expediteur);
@@ -536,7 +537,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+			final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -574,7 +575,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(vevey.getId());
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 		assertNotNull(di);
 
 		final DIRetour.AdresseRetour retour = di.getAdresseRetour();
@@ -606,7 +607,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
 		declaration2008.setRetourCollectiviteAdministrativeId(aci.getId());
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null, false);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008), null, false);
 		assertNotNull(di);
 
 		final DIBase.InfoDI infoDi = di.getInfoDI();
@@ -630,7 +631,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(declaration);
+		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration));
 		Destinataire destinataire = infoEnteteDocument.getDestinataire();
 		Adresse adresseDestinataire = destinataire.getAdresse();
 		assertEquals("Monsieur et Madame", adresseDestinataire.getAdresseCourrierLigne1());
@@ -665,7 +666,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testRempliQuelquesMachins() throws Exception {
 		loadDatabase("ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), false);
+		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration), buildDefaultAnnexes(declaration), false);
 		DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
 		assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
 		assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
@@ -702,11 +703,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testRemplitAnnexe320_Annexe_330() throws Exception {
 		loadDatabase("ImpressionDeclarationAnnexe_320_330.xml");
 		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), false);
+		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration), buildDefaultAnnexes(declaration), false);
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());
-		di = impressionDIHelper.remplitSpecifiqueDI(declaration, buildDefaultAnnexes(declaration), true);
+		di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration), buildDefaultAnnexes(declaration), true);
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());

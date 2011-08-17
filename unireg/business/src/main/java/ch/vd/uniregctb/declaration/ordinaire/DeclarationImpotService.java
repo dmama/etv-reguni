@@ -2,12 +2,15 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -52,6 +55,9 @@ public interface DeclarationImpotService {
 	EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, StatusManager status)
 			throws DeclarationException;
 
+
+	EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode,RegDate dateTraitement,List<ContribuableAvecImmeuble> listeCtb,
+	                                                        int nbAnnexesMax,StatusManager status) throws DeclarationException;
 	/**
 	 * Produit des statistiques sur les déclarations d'impôts ordinaires existantes.
 	 *
@@ -236,4 +242,6 @@ public interface DeclarationImpotService {
 	 */
 
 	ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
+
+	void envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments,Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement) throws DeclarationException;
 }

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique.mock;
 
 import javax.jms.JMSException;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MimeTypeHelper;
@@ -9,6 +10,8 @@ import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -87,5 +90,10 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	@Override
 	public EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereauMouvementDossier) throws EditiqueException, JMSException {
 		return dummyResultat();
+	}
+
+	@Override
+	public void imprimeAnnexeForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement) throws EditiqueException {
+
 	}
 }

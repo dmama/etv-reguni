@@ -2,11 +2,14 @@ package ch.vd.uniregctb.editique;
 
 import javax.jms.JMSException;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
@@ -160,5 +163,14 @@ public interface EditiqueCompositionService {
 	 * @return l'identifiant du document (pour le récupérer ensuite)
 	 */
 	EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereauMouvementDossier) throws EditiqueException, JMSException;
+
+	/**
+	 *Envoie à l'éditique le formulaire immeuble à imprimer en masse
+	 * @param infosDocument
+	 * @param listeModele
+	 * @param dateEvenement
+	 * @throws EditiqueException
+	 */
+	public void imprimeAnnexeForBatch(InformationsDocumentAdapter infosDocument,Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement) throws EditiqueException;
 
 }

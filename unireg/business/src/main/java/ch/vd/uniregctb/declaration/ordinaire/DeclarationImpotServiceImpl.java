@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import javax.jms.JMSException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,8 +19,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -85,9 +88,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
-			TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
-			TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
-			ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
+	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
+	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
+	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -198,12 +201,21 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, StatusManager status)
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
+	                                         StatusManager status)
 			throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
+	}
+
+	@Override
+	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
+	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbAnnexesMax, StatusManager status) throws DeclarationException {
+		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
+				this, tailleLot, transactionManager, serviceCivilCacheWarmer);
+		return processor.run(anneePeriode, listeCtb, nbAnnexesMax, dateTraitement, status);
 	}
 
 	/**
@@ -278,7 +290,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
+			DeclarationException {
 		final EditiqueResultat resultat;
 		try {
 			resultat = editiqueCompositionService.imprimeDuplicataDIOnline(declaration, dateEvenement, typeDocument, annexes);
@@ -294,6 +307,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @throws AdressesResolutionException
 	 */
 	@Override
@@ -313,7 +327,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
 		try {
-			editiqueCompositionService.imprimeSommationDIForBatch(declaration,miseSousPliImpossible, dateEvenement);
+			editiqueCompositionService.imprimeSommationDIForBatch(declaration, miseSousPliImpossible, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -329,7 +343,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
 		declaration.addEtat(etat);
-		evenementFiscalService.publierEvenementFiscalEcheanceDI((Contribuable)declaration.getTiers(), declaration, dateTraitement);
+		evenementFiscalService.publierEvenementFiscalEcheanceDI((Contribuable) declaration.getTiers(), declaration, dateTraitement);
 	}
 
 	/**
@@ -383,7 +397,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
-		InputStream pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
+		InputStream pdf =
+				editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDI(di);
 			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
@@ -396,8 +411,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	/**
-	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises
-	 * n'ont pas encore été imprimées
+	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises n'ont pas encore été imprimées
 	 */
 	@Override
 	public ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status) {
@@ -445,7 +459,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int annee, RegDate dateDelai,
-		RegDate dateTraitement, StatusManager s) {
+	                                                                   RegDate dateTraitement, StatusManager s) {
 		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager);
 		return processor.run(ids, annee, dateDelai, dateTraitement, s);
 	}
@@ -457,5 +471,16 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
 		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);
 		return processor.run(dateTraitement, annee, nbThreads, statusManager);
+	}
+
+	@Override
+	public void envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement) throws DeclarationException {
+		try {
+			editiqueCompositionService.imprimeAnnexeForBatch(infoDocuments, listeModele, dateTraitement);
+		}
+		catch (EditiqueException e) {
+			throw new DeclarationException(e);
+		}
+
 	}
 }

@@ -151,6 +151,7 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+
     <bean id="editiqueSommationDIJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueSommationDIJob">
         <constructor-arg value="402"/>
         <property name="declarationImpotService" ref="diService"/>
@@ -191,6 +192,12 @@
 		<property name="service" ref="diService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
+	<bean id="envoiAnnexeImmeubleJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleJob">
+        <constructor-arg value="408"/>
+        <constructor-arg value="Envoyer à l'impression les formulaires immeubles à envoyer avant les DI en masse"/>
+        <property name="service" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
 
     <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
         <constructor-arg value="500"/>

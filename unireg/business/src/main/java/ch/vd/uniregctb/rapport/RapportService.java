@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.document.DeterminationDIsRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
@@ -103,6 +105,15 @@ public interface RapportService {
 	 * @return un document de rapport
 	 */
 	EnvoiDIsRapport generateRapport(EnvoiDIsResults results, StatusManager s) throws DeclarationException;
+
+		/**
+	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs en masse.
+	 *
+	 * @param results
+	 *            le résultat de l'exécution du job d'envoi des DIs en masse
+	 * @return un document de rapport
+	 */
+	EnvoiAnnexeImmeubleRapport generateRapport(EnvoiAnnexeImmeubleResults results, StatusManager s) throws DeclarationException;
 
 	/**
 	 * Génère le rapport (PDF) de l'ouverture des fors des habitants majeurs.

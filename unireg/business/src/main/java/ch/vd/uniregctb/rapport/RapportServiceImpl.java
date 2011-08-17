@@ -17,6 +17,7 @@ import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
@@ -37,6 +38,7 @@ import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
@@ -154,6 +156,29 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(EnvoiDIsRapport doc, OutputStream os) throws Exception {
 					PdfEnvoiDIsRapport document = new PdfEnvoiDIsRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new DeclarationException(e);
+		}
+	}
+
+	@Override
+	public EnvoiAnnexeImmeubleRapport generateRapport(final EnvoiAnnexeImmeubleResults results, StatusManager s) throws DeclarationException {
+			final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportEnvoiAnnexeImmeuble" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'envoi des annexes immeubles en masse pour l'année %d. Date de traitement = %s.",
+				                                 results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(EnvoiAnnexeImmeubleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiAnnexeImmeubleRapport>() {
+				@Override
+				public void writeDoc(EnvoiAnnexeImmeubleRapport doc, OutputStream os) throws Exception {
+					PdfEnvoiAnnexeImmeubleRapport document = new PdfEnvoiAnnexeImmeubleRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

@@ -40,6 +40,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -55,6 +56,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper {
@@ -106,8 +108,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 */
 	@Override
 	public String calculPrefixe(Declaration declaration) {
-		String prefixe = RG + P + NO_PROJET;
 		TypeDocument typeDoc = declaration.getModeleDocument().getTypeDocument();
+		return calculPrefixe(typeDoc);
+	}
+
+	/**
+	 * Calcul le prefixe
+	 */
+	@Override
+	public String calculPrefixe(TypeDocument typeDoc) {
+		String prefixe = RG + P + NO_PROJET;
 		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 			prefixe += NO_DOCUMENT_CPLT;
 		}
@@ -127,14 +137,15 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente la partie infoDocument du Document
 	 */
-	protected InfoDocument remplitInfoDocument(Declaration declaration) throws EditiqueException {
+	protected InfoDocument remplitInfoDocument(InformationsDocumentAdapter informationDocument) throws EditiqueException {
+
 		InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		String prefixe = calculPrefixe(declaration);
+		final TypeDocument typeDoc = informationDocument.getTypeDocument();
+		String prefixe = calculPrefixe(typeDoc);
 		prefixe += DOCUM;
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(DI);
 		String codDoc = "";
-		TypeDocument typeDoc = declaration.getModeleDocument().getTypeDocument();
 		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 			codDoc += CODE_DOCUMENT_CPLT;
 		}
@@ -150,18 +161,22 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		infoDocument.setCodDoc(codDoc);
 
 		final CleRgp cleRgp = infoDocument.addNewCleRgp();
-		cleRgp.setAnneeFiscale(Integer.toString(declaration.getPeriode().getAnnee()));
+		final int annePeriode = informationDocument.getAnnee();
+		cleRgp.setAnneeFiscale(Integer.toString(annePeriode));
 
+		final Tiers tiers = informationDocument.getTiers();
 		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, TypeAdresseFiscale.COURRIER, false);
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 			String idEnvoi = "";
-			if (declaration instanceof DeclarationImpotOrdinaire) {
+			final boolean isDeclarationImpotOrdinaire = informationDocument.isDeclarationImpotOrdinaire();
+			if (isDeclarationImpotOrdinaire) {
 				if (adresseEnvoiDetaillee.isSuisse()) {
 					idEnvoi = "";
 				}
 				else {
 					// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-					final Integer officeImpotId = tiersService.getOfficeImpotIdAt(declaration.getTiers(), declaration.getDateFin());
+					final RegDate datePeriode = informationDocument.getDateReference();
+					final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, datePeriode);
 					if (officeImpotId != null) {
 						idEnvoi = officeImpotId.toString();
 					}
@@ -171,7 +186,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 		catch (Exception e) {
 			String message = "Exception lors de l'identification de la provenance de l'adresse";
-			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + declaration.getTiers().getNumero(), e);
+			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + tiers.getNumero(), e);
 			throw new EditiqueException(message);
 		}
 		infoDocument.setVersion(VERSION);
@@ -183,25 +198,29 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente l'entête du document
 	 */
-	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, ServiceInfrastructureException {
+	protected InfoEnteteDocument remplitEnteteDocument(InformationsDocumentAdapter informationDocument) throws AdresseException, ServiceInfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
-		String prefixe = calculPrefixe(declaration);
+		final TypeDocument typeDoc = informationDocument.getTypeDocument();
+		String prefixe = calculPrefixe(typeDoc);
 		prefixe += HAUT1;
 		infoEnteteDocument.setPrefixe(prefixe);
 
-		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
+		final Tiers tiers = informationDocument.getTiers();
+		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(tiers, infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = remplitExpediteur(declaration, infoEnteteDocument);
+		Expediteur expediteur = remplitExpediteur(informationDocument, infoEnteteDocument);
 		infoEnteteDocument.setExpediteur(expediteur);
 
-		Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
+		Destinataire destinataire = editiqueHelper.remplitDestinataire(tiers, infoEnteteDocument);
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;
 
 	}
+
+
 
 	/**
 	 * Alimente la partie expéditeur du document
@@ -212,13 +231,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * @throws ServiceInfrastructureException en cas de problème avec le service infrastructure
 	 * @throws AdresseException               en cas de problème avec les adresses
 	 */
-	private Expediteur remplitExpediteur(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws AdresseException, ServiceInfrastructureException {
+
+	private Expediteur remplitExpediteur(InformationsDocumentAdapter informationDocument, InfoEnteteDocument infoEnteteDocument) throws AdresseException, ServiceInfrastructureException {
 		//
 		// Expediteur
 		//
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
 		// [UNIREG-1857] passer par le service des adresses pour bâtir l'adresse de la collectivité administrative (manquait la case postale)
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
+		final Tiers tiers = informationDocument.getTiers();
+		final RegDate dateDeclaration = informationDocument.getDateReference();
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(tiers, dateDeclaration);
 		Assert.notNull(oid);
 
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, TypeAdresseFiscale.COURRIER, false);
@@ -234,20 +256,21 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		expediteur.setNumFax(collectivite.getNoFax());
 		expediteur.setNumCCP(collectivite.getNoCCP());
 
-		final String ideUti = declaration.getLogModifUser();
+		final String modifUser = informationDocument.getModifUser();
 		/*
 		 * List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesUtilisateur =
 		 * serviceSecuriteService.getCollectivitesUtilisateur(ideUti); ch.vd.infrastructure.model.CollectiviteAdministrative colUtil =
 		 * collectivitesUtilisateur.get(0); if (colUtil != null) { String traitePar = colUtil.getNomComplet1();
 		 * expediteur.setTraitePar(traitePar); }
 		 */
-		expediteur.setIdeUti(ideUti);
+		expediteur.setIdeUti(modifUser);
 
 		final String dateExpedition = RegDateHelper.toIndexString(RegDate.get());
 		expediteur.setDateExpedition(dateExpedition);
 
 		return expediteur;
 	}
+
 
 	private static void remplitAdresse(TypAdresse.Adresse adresseExpediteur, AdresseEnvoiDetaillee adresse) {
 		adresseExpediteur.setAdresseCourrierLigne1(adresse.getLigne1());
@@ -264,32 +287,43 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	@Override
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
 	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
-		InfoDocument infoDocument = remplitInfoDocument(declaration);
+
+		InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
+		return remplitEditiqueSpecifiqueDI(infoAdapter,typeFichierImpression,annexes,isFromBatch);
+	}
+
+	/**
+	 * Alimente un objet Document pour l'impression des DI
+	 */
+	@Override
+	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression ,List<ModeleFeuilleDocumentEditique> annexes,
+	                                            boolean isFromBatch) throws EditiqueException {
+
+
+		InfoDocument infoDocument = remplitInfoDocument(informationsDocument);
 		InfoEnteteDocument infoEnteteDocument;
 		try {
-			infoEnteteDocument = remplitEnteteDocument(declaration);
+			infoEnteteDocument = remplitEnteteDocument(informationsDocument);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
 		Document document = typeFichierImpression.addNewDocument();
-		if (typeDocument == null) {
-			typeDocument = declaration.getModeleDocument().getTypeDocument();
-		}
+		final TypeDocument typeDocument = informationsDocument.getTypeDocument();
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-			DI di = remplitSpecifiqueDI(declaration, annexes, isFromBatch);
+			DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatch);
 			document.setDI(di);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
-			DIDP didp = remplitSpecifiqueDIDP(declaration, annexes);
+			DIDP didp = remplitSpecifiqueDIDP(informationsDocument, annexes);
 			document.setDIDP(didp);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE) {
-			DIHC dihc = remplitSpecifiqueDIHC(declaration, annexes);
+			DIHC dihc = remplitSpecifiqueDIHC(informationsDocument, annexes);
 			document.setDIHC(dihc);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-			DIVDTAX divdtax = remplitSpecifiqueDIVDTAX(declaration, annexes);
+			DIVDTAX divdtax = remplitSpecifiqueDIVDTAX(informationsDocument, annexes);
 			document.setDIVDTAX(divdtax);
 		}
 
@@ -298,14 +332,19 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return document;
 	}
 
+
+
 	/**
 	 * Alimente un objet DI
 	 */
-	protected DI remplitSpecifiqueDI(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+
+
 		final String avecCourrierExplicatif = (isFromBatch ? "O" : "N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
-		remplitDIRetour(declaration, di);
-		remplitAdresseSuite(declaration, di);
+		remplitDIRetour(informationsDocument, di);
+		final Tiers tiers = informationsDocument.getTiers();
+		remplitAdresseSuite(tiers, di);
 
 		final int nbAnnexes210 = getNbOfAnnexes(annexes, "210", 0, 0);
 		final int nbAnnexes220 = getNbOfAnnexes(annexes, "220", 0, 0);
@@ -350,45 +389,48 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return di;
 	}
 
-	private void remplitDIBase(DeclarationImpotOrdinaire declaration, DIBase di) throws EditiqueException {
-		remplitInfoDI(declaration, di);
+	private void remplitDIBase(InformationsDocumentAdapter informationsDocument, DIBase di) throws EditiqueException {
+
+		remplitInfoDI(informationsDocument, di);
 	}
 
-	private void remplitDIRetour(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
+	private void remplitDIRetour(InformationsDocumentAdapter infoAdapter, DIRetour di) throws EditiqueException {
 
-		remplitDIBase(declaration, di);
-		remplitAdresseRetour(declaration, di);
-		rempliFormuleAppel(declaration, di);
+		remplitDIBase(infoAdapter, di);
+		remplitAdresseRetour(infoAdapter, di);
+		rempliFormuleAppel(infoAdapter, di);
 		if (di instanceof DIRetourCivil) {
-			remplitContribuables(declaration, (DIRetourCivil) di);
+			remplitContribuables(infoAdapter, (DIRetourCivil) di);
 		}
 
 	}
 
-	private void rempliFormuleAppel(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
+	private void rempliFormuleAppel(InformationsDocumentAdapter informationsDocument, DIRetour di) throws EditiqueException {
 		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, TypeAdresseFiscale.COURRIER, false);
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(informationsDocument.getTiers(), null, TypeAdresseFiscale.COURRIER, false);
 			String formuleAppel = adresseEnvoiDetaillee.getFormuleAppel();
 			di.setFormuleAppel(formuleAppel);
 		}
 		catch (Exception e) {
 			String message = "Exception lors de la recherche de la formule d'appel";
-			LOGGER.error("Exception lors de la recherche de la formule d'appel " + declaration.getTiers().getNumero(), e);
+			LOGGER.error("Exception lors de la recherche de la formule d'appel " + informationsDocument.getTiers().getNumero(), e);
 			throw new EditiqueException(message);
 		}
 	}
 
-	private void remplitAdresseRetour(DeclarationImpotOrdinaire declaration, DIRetour di) throws EditiqueException {
+
+	private void remplitAdresseRetour(InformationsDocumentAdapter informationsDocument, DIRetour di) throws EditiqueException {
 
 		final noNamespace.DIRetour.AdresseRetour adresseRetour = di.addNewAdresseRetour();
 
-		final CollectiviteAdministrative col = getRetourCollectiviteAdministrative(declaration);
+		final CollectiviteAdministrative col = getRetourCollectiviteAdministrative(informationsDocument);
 		if (col == null) {
-			throw new EditiqueException("Impossible de déterminer la collectivité administrative de retour sur la DI numéro=[" + declaration.getId() + "]");
+			final String numeroDoc = informationsDocument.getIdDocument().toString();
+			throw new EditiqueException("Impossible de déterminer la collectivité administrative de retour sur la DI numéro=[" + numeroDoc + "]");
 		}
 
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
-			final Integer officeImpot = getNumeroOfficeImpotRetour(declaration);
+			final Integer officeImpot = getNumeroOfficeImpotRetour(informationsDocument);
 
 
 			Assert.notNull(officeImpot);
@@ -421,21 +463,22 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * @param declaration
 	 * @return
 	 */
-	private Integer getNumeroOfficeImpotRetour(DeclarationImpotOrdinaire declaration) {
-
+	private Integer getNumeroOfficeImpotRetour(InformationsDocumentAdapter informationsDocument) {
 
 		final int anneeCourante = RegDate.get().year();
 
 		final RegDate finPeriodeCourante = RegDate.get(anneeCourante, 12, 31);
 		final RegDate finPeriodePrecedente = RegDate.get(anneeCourante - 1, 12, 31);
-		RegDate dateRecherche = null;
-		if (declaration.getPeriode().getAnnee() == anneeCourante) {
+		RegDate dateRecherche;
+		final int annee = informationsDocument.getAnnee();
+		if (annee == anneeCourante) {
 			dateRecherche = finPeriodeCourante;
 		}
 		else {
 			dateRecherche = finPeriodePrecedente;
 		}
-		return tiersService.getOfficeImpotIdAt(declaration.getTiers(), dateRecherche);
+		final Tiers tiers = informationsDocument.getTiers();
+		return tiersService.getOfficeImpotIdAt(tiers, dateRecherche);
 	}
 
 	private void remplitAdresseRetourCEDI(DIRetour.AdresseRetour adresseRetour, Integer officeImpotId) throws EditiqueException {
@@ -467,9 +510,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		adresseRetour.setADRES6RETOUR(adresse.getLigne6());
 	}
 
-	private CollectiviteAdministrative getRetourCollectiviteAdministrative(DeclarationImpotOrdinaire declaration) throws EditiqueException {
+	private CollectiviteAdministrative getRetourCollectiviteAdministrative(InformationsDocumentAdapter informationsDocument) {
 
-		final Long collId = declaration.getRetourCollectiviteAdministrativeId();
+
+		final Long collId = informationsDocument.getCollId();
 		CollectiviteAdministrative collAdm = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 		if (collAdm == null) {
 			// valeur par défaut
@@ -478,8 +522,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 
 		// [UNIREG-1741] les DIs dépenses ne peuvent pas être scannées au CEDI, elles doivent retourner directement aux OIDs (ou éventuellement à l'ACI en cas de décès)
-		if (collAdm.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI && declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
-			collAdm = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
+		final TypeDocument typeDoc = informationsDocument.getTypeDocument();
+		if (collAdm.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI && typeDoc == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
+			final Tiers tiers = informationsDocument.getTiers();
+			final RegDate dateDeclaration = informationsDocument.getDateReference();
+			collAdm = tiersService.getOfficeImpotAt(tiers, dateDeclaration);
 			Assert.notNull(collAdm);
 		}
 
@@ -513,13 +560,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return nbAnnexes;
 	}
 
+
+
 	/**
 	 * Alimente un objet DIVDTAX
 	 */
-	private DIVDTAX remplitSpecifiqueDIVDTAX(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	private DIVDTAX remplitSpecifiqueDIVDTAX(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+
 
 		final DIVDTAX divdtax = DIVDTAXDocument.Factory.newInstance().addNewDIVDTAX();
-		remplitDIRetour(declaration, divdtax);
+		remplitDIRetour(informationsDocument, divdtax);
 
 		// retrouve le nombre d'annexes 250 (seules autorisées par la DI VDTAX), au minimum une
 		final int nbAnnexes = getNbOfAnnexes(annexes, "250", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
@@ -532,10 +582,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	/**
 	 * Alimente un objet DIDP
 	 */
-	private DIDP remplitSpecifiqueDIDP(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	private DIDP remplitSpecifiqueDIDP(InformationsDocumentAdapter informationsDocument,
+	                                   List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIDP didp = DIDPDocument.Factory.newInstance().addNewDIDP();
-		remplitDIRetour(declaration, didp);
+		remplitDIRetour(informationsDocument, didp);
 
 		// retrouve le nombre d'annexes 270 (seules autorisées par la DI ICCD), au minimum une
 		final int nbAnnexes = getNbOfAnnexes(annexes, "270", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
@@ -545,13 +596,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return didp;
 	}
 
+
+
 	/**
 	 * Alimente un objet DIVDTAX
 	 */
-	protected DIHC remplitSpecifiqueDIHC(DeclarationImpotOrdinaire declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	protected DIHC remplitSpecifiqueDIHC(InformationsDocumentAdapter informationsDocument,
+	                                     List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		final DIHC dihc = DIHCDocument.Factory.newInstance().addNewDIHC();
-		remplitDIRetour(declaration, dihc);
+		remplitDIRetour(informationsDocument, dihc);
 
 		// retrouve le nombre d'annexes 200 (seules autorisées par la DI HC (immeuble)), au minimum une
 		final int nbAnnexes = getNbOfAnnexes(annexes, "200", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
@@ -562,9 +616,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 
-	private void remplitAdresseSuite(DeclarationImpotOrdinaire declaration, DI di) throws EditiqueException {
+	private void remplitAdresseSuite(Tiers tiers, DI di) throws EditiqueException {
 
-		final Tiers tiers = declaration.getTiers();
 		AdresseEnvoiDetaillee adresseEnvoi;
 		try {
 			adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
@@ -595,20 +648,22 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 	}
 
-	private void remplitInfoDI(DeclarationImpotOrdinaire declaration, DIBase di) throws EditiqueException {
 
-		final Tiers tiers = declaration.getTiers();
+	private void remplitInfoDI(InformationsDocumentAdapter informationsDocument, DIBase di) throws EditiqueException {
+
 
 		final noNamespace.DIBase.InfoDI infoDI = di.addNewInfoDI();
-		final String codbarr = calculCodeBarre(declaration);
-		final String delaiRetour = determineDelaiRetourImprime(declaration);
-		final Long collId = declaration.getRetourCollectiviteAdministrativeId();
+		final String codbarr = calculCodeBarre(informationsDocument);
+		final String delaiRetour = determineDelaiRetourImprime(informationsDocument);
+		final Long collId = informationsDocument.getCollId();
 		final CollectiviteAdministrative collectiviteAdministrative = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 
 		// [UNIREG-1655] Il faut recalculer la commune du for de gestion
 		final String nomCommuneGestion;
+		final Tiers tiers = informationsDocument.getTiers();
 		try {
-			final ForGestion forGestion = tiersService.getForGestionActif(declaration.getTiers(), declaration.getDateFin());
+			final RegDate dateDeclaration = informationsDocument.getDateReference();
+			final ForGestion forGestion = tiersService.getForGestionActif(tiers, dateDeclaration);
 			final int noOfsCommune;
 			if (forGestion != null) {
 				noOfsCommune = forGestion.getNoOfsCommune();
@@ -616,16 +671,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			else {
 				// au cas où on voudrait imprimer, je ne sais pas, moi, une DI annulée pour quelqu'un qui n'a
 				// plus de for de gestion, on prend le défaut sur la déclaration quand-même (c'est mieux qu'un crash, non ?)
-				noOfsCommune = declaration.getNumeroOfsForGestion();
+				noOfsCommune = informationsDocument.getNoOfsCommune();
 			}
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, declaration.getDateFin());
+			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, dateDeclaration);
 			nomCommuneGestion = commune.getNomMinuscule();
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EditiqueException(e);
 		}
 
-		final Integer anneeFiscale = declaration.getPeriode().getAnnee();
+		final Integer anneeFiscale = informationsDocument.getAnnee();
 		infoDI.setANNEEFISCALE(Integer.toString(anneeFiscale));
 		//SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
 		if(anneeFiscale < 2011){
@@ -638,7 +693,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		// [UNIREG-1741] le numéro d'OID doit être renseignée en cas de retour au CEDI *ou* au CEDI-22
 		if (numeroCA != null) {
 			if (numeroCA == ServiceInfrastructureService.noCEDI) {
-				final String nooid = calculNooid(declaration, tiers);
+				final String nooid = calculNooid(informationsDocument);
 				infoDI.setNOOID(nooid);
 			}
 			else if (numeroCA == ServiceInfrastructureService.noACI) {
@@ -660,24 +715,26 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 * @param declaration une déclaration
 	 * @return une chaîne de caractères représentant la date du délai de retour.
 	 */
-	private static String determineDelaiRetourImprime(DeclarationImpotOrdinaire declaration) {
-		RegDate dateRetour = declaration.getDelaiRetourImprime();
+	private static String determineDelaiRetourImprime(InformationsDocumentAdapter infoAdapter) {
+		RegDate dateRetour = infoAdapter.getDelaiRetourImprime();
 		if (dateRetour == null) {
-			dateRetour = declaration.getDelaiAccordeAu();
+			dateRetour = infoAdapter.getDelaiAccorde();
 		}
 		return RegDateHelper.dateToDisplayString(dateRetour);
 	}
 
-	private String calculNooid(DeclarationImpotOrdinaire declaration, Tiers tiers) {
+	private String calculNooid(InformationsDocumentAdapter infoAdapter) {
 
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = getNumeroOfficeImpotRetour(declaration);
+
+		final Integer officeImpotId = getNumeroOfficeImpotRetour(infoAdapter);
 		Assert.notNull(officeImpotId);
 
 		// [UNIREG-2965] nouveau mapping A, SA et SM (c'est lui le nouveau) -> XX-0, les autres : XX-1)
 		final int suffixe;
-		if (declaration.getQualification() != null) {
-			switch (declaration.getQualification()) {
+		final Qualification qualification = infoAdapter.getQualification();
+		if (qualification != null) {
+			switch (qualification) {
 			case AUTOMATIQUE:
 			case SEMI_AUTOMATIQUE:
 			case SEMI_MANUEL:
@@ -694,12 +751,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return String.format("%02d-%d", officeImpotId, suffixe);
 	}
 
-	private void remplitContribuables(DeclarationImpotOrdinaire declaration, DIRetourCivil didp) throws EditiqueException {
+	private void remplitContribuables(InformationsDocumentAdapter informationsDocument, DIRetourCivil didp) throws EditiqueException {
 
 		final PersonnePhysique principal;
 		final PersonnePhysique conjoint;
 
-		final Tiers tiers = declaration.getTiers();
+		final Tiers tiers = informationsDocument.getTiers();
+		final RegDate dateDeclaration = informationsDocument.getDateReference();
 		if (tiers instanceof PersonnePhysique) {
 			principal = (PersonnePhysique) tiers;
 			conjoint = null;
@@ -707,16 +765,17 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		else {
 			Assert.isTrue(tiers instanceof MenageCommun);
 			final MenageCommun menage = (MenageCommun) tiers;
-			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, declaration.getDateFin());
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, dateDeclaration);
 			principal = ensembleTiersCouple.getPrincipal();
 			conjoint = ensembleTiersCouple.getConjoint();
 		}
 
+		final int anneeDeclaration = informationsDocument.getAnnee();
 		if (principal != null) {
 			final String displayDateNaissance = calculDateNaissance(principal);
-			final EtatCivil etatCivil = calculEtatCivil(principal, declaration.getDateFin());
-			final String indnomprenom = calculIndividuNomPrenom(declaration, principal);
-			final String noavs = calculAVS(declaration, principal);
+			final EtatCivil etatCivil = calculEtatCivil(principal, dateDeclaration);
+			final String indnomprenom = calculIndividuNomPrenom(principal);
+			final String noavs = calculAVS(anneeDeclaration, principal);
 
 			final noNamespace.DIRetourCivil.Contrib1 contrib1 = didp.addNewContrib1();
 			contrib1.setINDETATCIVIL1(etatCivil != null ? etatCivil.format() : null);
@@ -727,9 +786,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		if (conjoint != null) {
 			final String displayDateNaissance = calculDateNaissance(conjoint);
-			final EtatCivil etatCivil = calculEtatCivil(conjoint, declaration.getDateFin());
-			final String indnomprenom = calculIndividuNomPrenom(declaration, conjoint);
-			final String noavs = calculAVS(declaration, conjoint);
+			final EtatCivil etatCivil = calculEtatCivil(conjoint, dateDeclaration);
+			final String indnomprenom = calculIndividuNomPrenom(conjoint);
+			final String noavs = calculAVS(anneeDeclaration, conjoint);
 
 			final noNamespace.DIRetourCivil.Contrib2 contrib2 = didp.addNewContrib2();
 			contrib2.setINDETATCIVIL2(etatCivil != null ? etatCivil.format() : null);
@@ -739,13 +798,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 	}
 
-	private String calculCodeBarre(DeclarationImpotOrdinaire declaration) {
-		Tiers tiers = declaration.getTiers();
+	private String calculCodeBarre(InformationsDocumentAdapter informationsDocument) {
+
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = getNumeroOfficeImpotRetour(declaration);
+		final Integer anneeDeclaration = informationsDocument.getAnnee();
+		final Tiers tiers = informationsDocument.getTiers();
+		final Integer officeImpotId = getNumeroOfficeImpotRetour(informationsDocument);
 		Assert.notNull(officeImpotId);
-		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + declaration.getPeriode().getAnnee().toString()
-				+ StringUtils.leftPad(declaration.getNumero().toString(), 2, "0")
+		final Integer idDocument = informationsDocument.getIdDocument();
+		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration.toString()
+				+ StringUtils.leftPad(idDocument.toString(), 2, "0")
 				+ StringUtils.leftPad(officeImpotId.toString(), 2, "0");
 		return codbarr;
 	}
@@ -755,7 +817,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return etatCivil;
 	}
 
-	private String calculIndividuNomPrenom(DeclarationImpotOrdinaire declaration, PersonnePhysique pp) throws EditiqueException {
+	private String calculIndividuNomPrenom(PersonnePhysique pp) throws EditiqueException {
 		try {
 			List<String> noms = adresseService.getNomCourrier(pp, null, false);
 			Assert.isTrue(noms.size() == 1);
@@ -771,13 +833,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		return dateNaissance != null ? RegDateHelper.dateToDisplayString(dateNaissance) : null;
 	}
 
-	private String calculAVS(DeclarationImpotOrdinaire declaration, PersonnePhysique pp) {
+	private String calculAVS(int annee, PersonnePhysique pp) {
 		String noavs = null;
 		/*
 		 * if (declaration.getPeriode().getAnnee().intValue() < 2009) { noavs = tiersService.getAncienNumeroAssureSocial(pp); if (noavs !=
 		 * null) { noavs = FormatNumeroHelper.formatAncienNumAVS(noavs); } } else {
 		 */
-		if (declaration.getPeriode().getAnnee() >= 2009) {
+		if (annee >= 2009) {
 			noavs = tiersService.getNumeroAssureSocial(pp);
 			if (noavs != null) {
 				noavs = FormatNumeroHelper.formatNumAVS(noavs);
@@ -791,11 +853,23 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	 */
 	@Override
 	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
+		final Integer annee = declaration.getPeriode().getAnnee();
+		final Integer numeroDoc = declaration.getNumero();
+		final Tiers tiers = declaration.getTiers();
+		return construitIdDocument(annee, numeroDoc, tiers);
+
+	}
+
+	/**
+	 * Construit le champ idDocument
+	 */
+	@Override
+	public String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers) {
 		return String.format(
 				"%s %s %s %s",
-				declaration.getPeriode().getAnnee().toString(),
-				StringUtils.leftPad(declaration.getNumero().toString(), 2, '0'),
-				StringUtils.leftPad(declaration.getTiers().getNumero().toString(), 9, '0'),
+				annee.toString(),
+				StringUtils.leftPad(numeroDoc.toString(), 2, '0'),
+				StringUtils.leftPad(tiers.getNumero().toString(), 9, '0'),
 				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 
