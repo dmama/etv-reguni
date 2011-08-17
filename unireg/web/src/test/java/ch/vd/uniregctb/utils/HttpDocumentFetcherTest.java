@@ -17,7 +17,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 			HttpDocumentFetcher.fetch(bidon);
 			Assert.fail("Cette URL existe mainenant ?");
 		}
-		catch (HttpDocumentFetcher.HttpDocumentException e) {
+		catch (HttpDocumentFetcher.HttpDocumentClientException e) {
 			Assert.assertEquals(404, e.getErrorCode());
 		}
 	}

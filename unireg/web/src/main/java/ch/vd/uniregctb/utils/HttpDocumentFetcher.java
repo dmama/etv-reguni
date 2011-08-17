@@ -76,6 +76,29 @@ public abstract class HttpDocumentFetcher {
 		public String getErrorMessage() {
 			return errorMessage;
 		}
+
+		@Override
+		public String getMessage() {
+			return String.format("%s (%d)", errorMessage, errorCode);
+		}
+	}
+
+	/**
+	 * Exception lancée pour les erreurs 4xx
+	 */
+	public static class HttpDocumentClientException extends HttpDocumentException {
+		public HttpDocumentClientException(int errorCode, String errorMessage) {
+			super(errorCode, errorMessage);
+		}
+	}
+
+	/**
+	 * Exception lancée pour les erreurs 5xx
+	 */
+	public static class HttpDocumentServerException extends HttpDocumentException {
+		public HttpDocumentServerException(int errorCode, String errorMessage) {
+			super(errorCode, errorMessage);
+		}
 	}
 
 	/**
@@ -112,8 +135,18 @@ public abstract class HttpDocumentFetcher {
 	private static HttpDocument fetch(URLConnection con) throws IOException, HttpDocumentException {
 		if (con instanceof HttpURLConnection) {
 			final HttpURLConnection httpCon = (HttpURLConnection) con;
-			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new HttpDocumentException(httpCon.getResponseCode(), httpCon.getResponseMessage());
+			final int responseCode = httpCon.getResponseCode();
+			if (responseCode != HttpURLConnection.HTTP_OK) {
+				final String responseMessage = httpCon.getResponseMessage();
+				if (responseCode / 100 == 4) {
+					throw new HttpDocumentClientException(responseCode, responseMessage);
+				}
+				else if (responseCode / 100 == 5) {
+					throw new HttpDocumentServerException(responseCode, responseMessage);
+				}
+				else {
+					throw new HttpDocumentException(responseCode, responseMessage);
+				}
 			}
 
 			final String lengthHeader = httpCon.getHeaderField(HTTP_CONTENT_LENGTH);
