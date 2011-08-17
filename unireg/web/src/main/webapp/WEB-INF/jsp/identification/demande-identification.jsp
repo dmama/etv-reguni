@@ -76,7 +76,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td>
 				<c:if test="${message.documentUrl != null}">
-					<input type="button" name="fichier_acicom" onclick="voirMessage(${message.id})" value="<fmt:message key="label.bouton.identification.acicom" />"/>
+					<input type="button" name="visualisation_message" onclick="voirMessage(${message.id})" value="<fmt:message key="label.bouton.identification.visualiser" />"/>
 				</c:if>
 				&nbsp;
 			</td>
