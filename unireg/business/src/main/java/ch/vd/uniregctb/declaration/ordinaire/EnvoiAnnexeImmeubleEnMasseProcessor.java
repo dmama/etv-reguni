@@ -219,10 +219,13 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			//ajouter erreur e calcul d'assujetissement
 		}
 		RegDate date = RegDate.get(periode, 12, 31);
-		Assujettissement assujettissement = DateRangeHelper.rangeAt(list, date);
-		if (assujettissement != null) {
-			return true;
+		if (list != null) {
+			Assujettissement assujettissement = DateRangeHelper.rangeAt(list, date);
+			if (assujettissement != null) {
+				return true;
+			}
 		}
+
 		return false;
 	}
 
