@@ -5,7 +5,7 @@ import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.export.MBeanExportOperations;
 
 import ch.vd.uniregctb.inbox.InboxManagementListener;
 import ch.vd.uniregctb.inbox.InboxService;
@@ -19,7 +19,7 @@ public class InboxContentJmxBeanContainer implements InboxManagementListener, In
 
 	private InboxService inboxService;
 
-	private MBeanExporter exporter;
+	private MBeanExportOperations exporter;
 
 	private String objectNamePrefix;
 
@@ -29,7 +29,7 @@ public class InboxContentJmxBeanContainer implements InboxManagementListener, In
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setExporter(MBeanExporter exporter) {
+	public void setExporter(MBeanExportOperations exporter) {
 		this.exporter = exporter;
 	}
 
