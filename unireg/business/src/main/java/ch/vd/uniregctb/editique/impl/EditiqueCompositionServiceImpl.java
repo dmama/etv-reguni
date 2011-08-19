@@ -208,7 +208,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
 			EditiqueException {
 		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
 		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
@@ -236,6 +236,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final Tiers tiers = infosDocument.getTiers();
 		final String nomDocument = impressionDIHelper.construitIdDocument(annee, idDoc, tiers);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
+		return nombreAnnexesImmeubleAImprimer;
 	}
 
 	@Override

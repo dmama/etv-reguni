@@ -474,14 +474,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
+	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
 			DeclarationException {
+		int nombreAnnexesImmeubleImprimés;
 		try {
-			editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
+			nombreAnnexesImmeubleImprimés = editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-
+		return nombreAnnexesImmeubleImprimés;
 	}
 }

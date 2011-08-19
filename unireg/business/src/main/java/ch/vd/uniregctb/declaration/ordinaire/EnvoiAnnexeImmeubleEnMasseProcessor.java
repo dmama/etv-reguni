@@ -197,7 +197,8 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL,
 						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 
-				imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement, nombreAnnexesImmeuble);
+				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement, nombreAnnexesImmeuble);
+				rapport.addInfoCtbTraites(ctb, nombreAnnexesImprimees);
 				rapport.addCtbTraites(ctb.getId());
 			}
 
@@ -208,9 +209,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	}
 
 
-	private void imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
+	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
 			DeclarationException {
-		diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
+		return diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 	}
 
 	protected boolean isAssujettiEnFinDePeriode(Contribuable ctb, int periode) {

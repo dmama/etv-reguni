@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -10,10 +11,9 @@ import ch.vd.uniregctb.tiers.Contribuable;
 public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> extends JobResults<Long, R> {
 
 	public static enum ErreurType {
-		EXCEPTION(EXCEPTION_DESCRIPTION),
+		EXCEPTION(EXCEPTION_DESCRIPTION);
 		// --------------------------------------------------------------
 
-		FOR_GESTION_NUL("le contribuable ne possède pas de for de gestion");
 
 		private final String description;
 
@@ -27,9 +27,7 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	}
 
 	public static enum IgnoreType {
-		CTB_NON_ASSUJETTI("le contribuable n'est pas assujétti pour la période fiscale"),
-		// -----
-		CTB_EXCLU("le contribuable est exclu des envois automatiques");
+		CTB_NON_ASSUJETTI("le contribuable n'est pas assujétti pour la période fiscale");
 
 		private final String description;
 
@@ -45,8 +43,8 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	public static class InfoCtbImmeuble extends Info {
 		public final int nbAnnexeEnvoyee;
 
-		public InfoCtbImmeuble(Long noCtb, Integer officeImpotID, int nbAnnexe, String details) {
-			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+		public InfoCtbImmeuble(Long noCtb, Integer officeImpotID, int nbAnnexe) {
+			super((noCtb == null ? 0 : noCtb), officeImpotID, "Impression OK");
 			this.nbAnnexeEnvoyee = nbAnnexe;
 		}
 
@@ -93,6 +91,7 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 
 	// Données de processing
 	public int nbCtbsTotal;
+	public final List<InfoCtbImmeuble> infoCtbTraites = new ArrayList<InfoCtbImmeuble>();
 	public final List<Long> ctbsTraites = new ArrayList<Long>();
 	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
@@ -120,8 +119,8 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	}
 
 
-	public void addErrorForGestionNul(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.FOR_GESTION_NUL, details));
+	public void addInfoCtbTraites(Contribuable ctb, int nbAnnexes) {
+		infoCtbTraites.add(new InfoCtbImmeuble(ctb.getNumero(), ctb.getOfficeImpotId(), nbAnnexes));
 	}
 
 
@@ -137,11 +136,18 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 			this.ctbsTraites.addAll(rapport.ctbsTraites);
 			this.ctbsEnErrors.addAll(rapport.ctbsEnErrors);
 			this.ctbsIgnores.addAll(rapport.ctbsIgnores);
+			this.infoCtbTraites.addAll(rapport.infoCtbTraites);
 		}
 	}
 
 	@Override
 	public void end() {
+		super.end();
+		Collections.sort(ctbsTraites);
+		Collections.sort(infoCtbTraites, new CtbComparator<InfoCtbImmeuble>());
+		// tri des erreurs et des contribuables ignorés
+		Collections.sort(ctbsEnErrors, new CtbComparator<Erreur>());
+		Collections.sort(ctbsIgnores, new CtbComparator<Ignore>());
 
 	}
 }

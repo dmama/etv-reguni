@@ -2,12 +2,14 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 
@@ -67,13 +69,14 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 			});
 		}
 
-		// CTBs traités
+
+		// CTBs ignorés
 		{
 			String filename = "contribuables_traites.csv";
-			String contenu = ctbIdsAsCsvFile(results.ctbsTraites, filename, status);
+			String contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status);
 			String titre = "Liste des contribuables traités";
-			String listVide = "(aucun contribuable traité)";
-			addListeDetaillee(writer, results.ctbsTraites.size(), titre, listVide, filename, contenu);
+			String listVide = "(aucun contribuable traités)";
+			addListeDetaillee(writer, results.infoCtbTraites.size(), titre, listVide, filename, contenu);
 		}
 
 		// CTBs ignorés
@@ -99,4 +102,26 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 
 		status.setMessage("Génération du rapport terminée.");
 	}
+
+	/**
+	 * Traduit la liste d'infos en un fichier CSV
+	 */
+	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> String asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvFile(list, filename, status, AVG_LINE_LEN, new CsvHelper.Filler<T>() {
+			@Override
+			public void fillHeader(StringBuilder b) {
+				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
+						.append(COMMA).append("NOMBRE ANNEXES IMMEUBLE IMPRIMMEES");
+			}
+
+			@Override
+			public void fillLine(StringBuilder b, T elt) {
+				b.append(elt.officeImpotID).append(COMMA);
+				b.append(elt.noCtb).append(COMMA);
+				b.append(escapeChars(elt.nomCtb)).append(COMMA);
+				b.append(elt.nbAnnexeEnvoyee);
+			}
+		});
+	}
+
 }
