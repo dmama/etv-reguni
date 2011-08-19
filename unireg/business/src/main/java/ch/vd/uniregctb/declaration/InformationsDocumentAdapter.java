@@ -19,11 +19,10 @@ public class
 	public final Qualification qualification;
 	public final String modifUser;
 	public final TypeDocument typeDocument;
-	public int nbAnnexesImmeuble;
 
 
 	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, Integer annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
-	                                   Qualification qualification, String modifUser, TypeDocument typeDocument, int nbAnnexesImmeuble) {
+	                                   Qualification qualification, String modifUser, TypeDocument typeDocument) {
 		this.tiers = tiers;
 		this.idDocument = idDocument;
 		this.annee = annee;
@@ -35,7 +34,6 @@ public class
 		this.qualification = qualification;
 		this.modifUser = modifUser;
 		this.typeDocument = typeDocument;
-		this.nbAnnexesImmeuble = nbAnnexesImmeuble;
 
 	}
 
@@ -51,7 +49,6 @@ public class
 		collId = declaration.getRetourCollectiviteAdministrativeId();
 		qualification = declaration.getQualification();
 		modifUser = declaration.getLogModifUser();
-		nbAnnexesImmeuble = 0;
 	}
 
 
@@ -107,11 +104,5 @@ public class
 	public TypeDocument getTypeDocument() {
 		return typeDocument;
 	}
-
-
-	public int getNbAnnexesImmeuble() {
-		return nbAnnexesImmeuble;
-	}
-
 
 }

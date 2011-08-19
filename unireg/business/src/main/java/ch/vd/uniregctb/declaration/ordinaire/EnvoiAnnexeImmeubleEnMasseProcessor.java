@@ -176,13 +176,15 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		initCache(anneePeriode);
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listCtbImmeuble) {
+			int nombreAnnexesImmeuble;
+			nombreAnnexesImmeuble = 0;
 			Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
 
 			if (!isAssujettiEnFinDePeriode(ctb, anneePeriode)) {
 				rapport.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
 			else {
-				int nombreAnnexeImeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeuble());
+				nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeuble());
 
 				final RegDate dateReference = RegDate.get(anneePeriode, 12, 31);
 				ForGestion forGestion = tiersService.getForGestionActif(ctb, dateReference);
@@ -193,9 +195,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 				InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, ctb.getId().intValue(), anneePeriode, dateReference,
 						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL,
-						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, nombreAnnexeImeuble);
+						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 
-				imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement);
+				imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement, nombreAnnexesImmeuble);
 				rapport.addCtbTraites(ctb.getId());
 			}
 
@@ -206,8 +208,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	}
 
 
-	private void imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement) throws DeclarationException {
-		diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement);
+	private void imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
+			DeclarationException {
+		diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 	}
 
 	protected boolean isAssujettiEnFinDePeriode(Contribuable ctb, int periode) {

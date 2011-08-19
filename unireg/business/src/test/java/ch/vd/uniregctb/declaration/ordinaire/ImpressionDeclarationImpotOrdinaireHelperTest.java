@@ -708,7 +708,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());
 		final InformationsDocumentAdapter informationsDocument = new InformationsDocumentAdapter(declaration);
-		informationsDocument.nbAnnexesImmeuble = 1;
 		di = impressionDIHelper.remplitSpecifiqueDI(informationsDocument, buildDefaultAnnexes(declaration), true);
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());

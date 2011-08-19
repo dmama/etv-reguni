@@ -346,7 +346,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final int nbAnnexes230 = getNbOfAnnexes(annexes, "230", 0, 0);
 		final int nbAnnexes240 = getNbOfAnnexes(annexes, "240", 0, 0);
 		final int nbAnnexes310 = getNbOfAnnexes(annexes, "310", 0, 0);
-		final int nbAnnexes320 = (isFromBatchImmeuble ? informationsDocument.nbAnnexesImmeuble : getNbOfAnnexes(annexes, "320", 0, 0));
+		final int nbAnnexes320 = getNbOfAnnexes(annexes, "320", 0, 0);
 		final int nbAnnexes330 = getNbOfAnnexes(annexes, "330", 0, 0);
 
 		// pour être certain d'imprimer toujours quelque chose!

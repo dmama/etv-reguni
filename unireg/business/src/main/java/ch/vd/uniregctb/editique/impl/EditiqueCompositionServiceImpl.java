@@ -134,14 +134,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	}
 
-	private static List<ModeleFeuilleDocumentEditique> buildAnnexesImmeuble(Set<ModeleFeuilleDocument> listFeuille) {
+	private static List<ModeleFeuilleDocumentEditique> buildAnnexesImmeuble(Set<ModeleFeuilleDocument> listFeuille, int nombreAnnexes) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
 			if (ModeleFeuille.ANNEXE_320.getCode().equals(feuille.getNumeroFormulaire())) {
 				ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
 				feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
 				feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
-				feuilleEditique.setNbreIntituleFeuille(1);
+				feuilleEditique.setNbreIntituleFeuille(nombreAnnexes);
 				annexes.add(feuilleEditique);
 			}
 
@@ -208,16 +208,17 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
+			EditiqueException {
 		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
-		if (infosDocument.nbAnnexesImmeuble > nombreMaxAnnexesImmeuble) {
-			infosDocument.nbAnnexesImmeuble = nombreMaxAnnexesImmeuble;
-		}
+		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
+
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele), true);
+		final TypFichierImpression.Document document =
+				impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (typeDoc == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {

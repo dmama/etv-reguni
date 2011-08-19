@@ -171,8 +171,10 @@ public interface EditiqueCompositionService {
 	 * @param infosDocument
 	 * @param listeModele
 	 * @param dateEvenement
+	 * @param nombreAnnexesImmeuble
 	 * @throws EditiqueException
 	 */
-	public void imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement) throws EditiqueException;
+	public void imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
+			EditiqueException;
 
 }
