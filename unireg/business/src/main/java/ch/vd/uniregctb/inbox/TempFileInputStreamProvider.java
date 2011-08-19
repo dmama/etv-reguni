@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.StreamUtils;
 public final class TempFileInputStreamProvider {
 
 	private final File tempFile;
+	private final long size;
 
 	/**
 	 * Constructeur. L'intégralité du flux passé en paramètre est consommé à la sortie de cet appel et le flux est fermé
@@ -31,6 +32,7 @@ public final class TempFileInputStreamProvider {
 		finally {
 			src.close();
 		}
+		size = tempFile.length();
 	}
 
 	private static void copyStreamToFile(InputStream in, File dest) throws IOException {
@@ -45,6 +47,10 @@ public final class TempFileInputStreamProvider {
 
 	public InputStream getInputStream() throws IOException {
 		return new FileInputStream(tempFile);
+	}
+
+	public long getFileSize() {
+		return size;
 	}
 
 	@SuppressWarnings({"ResultOfMethodCallIgnored"})

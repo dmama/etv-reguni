@@ -53,4 +53,10 @@ public interface InboxService {
 	 * @param visa visa du propriétaire de la boîte de réception de laquelle le document doit être effacé
 	 */
 	void removeDocument(UUID uuid, String visa);
+
+	/**
+	 * Enregistre l'entité passée en paramètre pour les notifications de gestion des inboxes
+	 * @param listener entité qui sera notifiée des actions de gestion des inboxes
+	 */
+	void registerInboxManagementListener(InboxManagementListener listener);
 }

@@ -26,7 +26,6 @@
 	<bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="autodetect" value="false" />
 		<property name="assembler" ref="jmxAssembler" />
-		<property name="namingStrategy" ref="jmxNamingStrategy" />
 		<property name="beans">
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
@@ -68,6 +67,13 @@
 				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
+	</bean>
+
+	<!-- bean qui exporte les contenus des inboxes par JMX -->
+	<bean id="inboxContentJmxBeanContainer" class="ch.vd.uniregctb.jmx.InboxContentJmxBeanContainer">
+		<property name="inboxService" ref="inboxService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-web:type=Monitoring,resourceName=Inboxes,name="/>
 	</bean>
 
 	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">

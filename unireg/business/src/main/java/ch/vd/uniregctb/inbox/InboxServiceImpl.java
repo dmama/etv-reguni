@@ -108,4 +108,9 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 		// on efface tout
 		container.cleanup(false);
 	}
+
+	@Override
+	public void registerInboxManagementListener(InboxManagementListener listener) {
+		container.registerInboxManagementListener(listener);
+	}
 }

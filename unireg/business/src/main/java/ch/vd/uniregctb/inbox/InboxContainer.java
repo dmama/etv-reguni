@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,11 @@ public class InboxContainer {
 	 * Map de tous les éléments connus, indexés par leur identifiant
 	 */
 	private final Map<UUID, Pair<String, InboxElement>> byUuid = new HashMap<UUID, Pair<String, InboxElement>>();
+
+	/**
+	 * Listeners des opérations de gestion des inboxes
+	 */
+	private final List<InboxManagementListener> listeners = new LinkedList<InboxManagementListener>();
 
 	/**
 	 * Ajoute l'élément donné au contenu de l'inbox déterminée par le visa
@@ -138,7 +144,26 @@ public class InboxContainer {
 		if (set == null && createIfNecessary) {
 			set = new HashSet<InboxElement>();
 			byUser.put(visa, set);
+			notifyListenersOnNewInbox(visa);
 		}
 		return set;
+	}
+
+	/**
+	 * Enregistrement d'un nouveau listener pour les opérations de créations/destruction (?) d'inboxes
+	 * @param listener la nouvelle entité à notifier
+	 */
+	public synchronized void registerInboxManagementListener(InboxManagementListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+	 * Doit être appelé dans un contexte synchronisé
+	 * @param visa visa de l'inbox qui vient d'être créée
+	 */
+	private void notifyListenersOnNewInbox(String visa) {
+		for (InboxManagementListener listener : listeners) {
+			listener.onNewInbox(visa);
+		}
 	}
 }

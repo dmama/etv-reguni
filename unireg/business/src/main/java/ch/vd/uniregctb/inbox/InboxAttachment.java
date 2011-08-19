@@ -38,6 +38,10 @@ public class InboxAttachment {
 		return filenameRadical;
 	}
 
+	public long getSize() {
+		return contentProvider.getFileSize();
+	}
+
 	/**
 	 * Appelé lorsque l'élément est envoyé aux oubliettes (pour d'éventuels nettoyages)
 	 */
