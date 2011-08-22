@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.security;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,13 +38,17 @@ public class ChooseOIDController extends CommonSimpleFormController {
 		}
 
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
-		final List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
-		Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
-			@Override
-			public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
-				return o1.getNomCourt().compareTo(o2.getNomCourt());
-			}
-		});
+		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+		if (list.size() > 1) {
+			// recopie dans une autre liste, au cas où host-interface choisi un jour de nous renvoyer une collection immutable
+			list = new ArrayList<CollectiviteAdministrative>(list);
+			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
+				@Override
+				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
+					return o1.getNomCourt().compareTo(o2.getNomCourt());
+				}
+			});
+		}
 		view.setOfficesImpot(list);
 
 		return view;
