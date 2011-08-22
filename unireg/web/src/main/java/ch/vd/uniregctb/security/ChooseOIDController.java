@@ -39,8 +39,8 @@ public class ChooseOIDController extends CommonSimpleFormController {
 
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
 		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
-		if (list.size() > 1) {
-			// recopie dans une autre liste, au cas où host-interface choisi un jour de nous renvoyer une collection immutable
+		if (list != null && list.size() > 1) {
+			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
 			list = new ArrayList<CollectiviteAdministrative>(list);
 			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
 				@Override
