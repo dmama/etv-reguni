@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.security;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
@@ -34,7 +36,14 @@ public class ChooseOIDController extends CommonSimpleFormController {
 			details.setIfoSecProfil(null);
 		}
 
+		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
 		final List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+		Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
+			@Override
+			public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
+				return o1.getNomCourt().compareTo(o2.getNomCourt());
+			}
+		});
 		view.setOfficesImpot(list);
 
 		return view;
