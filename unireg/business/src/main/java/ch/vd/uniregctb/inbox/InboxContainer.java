@@ -154,7 +154,9 @@ public class InboxContainer {
 	 * @param listener la nouvelle entité à notifier
 	 */
 	public synchronized void registerInboxManagementListener(InboxManagementListener listener) {
-		listeners.add(listener);
+		if (listener != null) {
+			listeners.add(listener);
+		}
 	}
 
 	/**
@@ -163,7 +165,12 @@ public class InboxContainer {
 	 */
 	private void notifyListenersOnNewInbox(String visa) {
 		for (InboxManagementListener listener : listeners) {
-			listener.onNewInbox(visa);
+			try {
+				listener.onNewInbox(visa);
+			}
+			catch (Exception e) {
+				LOGGER.warn("La notification du listener " + listener + " a échoué", e);
+			}
 		}
 	}
 }
