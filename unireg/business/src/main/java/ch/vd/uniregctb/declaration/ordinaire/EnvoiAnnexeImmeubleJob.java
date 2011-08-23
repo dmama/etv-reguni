@@ -8,6 +8,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
@@ -27,9 +30,10 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	private DeclarationImpotService service;
 	private RapportService rapportService;
 
+	private static final Logger LOGGER = Logger.getLogger(EnvoiAnnexeImmeubleJob.class);
 
 	public static final String NAME = "EnvoiAnnexeImmeubleJob";
-	private static final String CATEGORIE = "DI";
+	public static final String CATEGORIE = "DI";
 	public static final String LISTE_CTB = "LISTE_CTB";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_MAX = "NB_MAX";
@@ -91,8 +95,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		setLastRunReport(rapport);
 
 		final StringBuilder builder = new StringBuilder();
-		builder.append("L'envoi des annexes immeubles en masse ");
-		builder.append("pour l'année ");
+		builder.append("L'envoi des annexes immeubles en masse pour l'année ");
 		builder.append(annee);
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
@@ -102,64 +105,57 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	}
 
 	/**
-	 * Extrait les numéros de contribuables et le nombre d'immeubles séparés par unpoint virgule
+	 * Extrait les numéros de contribuables et le nombre d'immeubles séparés par un point-virgule
 	 *
 	 * @param csv le contenu d'un fichier CSV
+	 * @param status status manager
 	 * @return une liste de ctb possédant un  ou plusieurs immeuble
-	 * @throws java.io.UnsupportedEncodingException
-	 *
+	 * @throws java.io.UnsupportedEncodingException si l'encodage ISO-8859-1 n'est pas supporté par la JVM
 	 */
 	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
 
-		int previous_percent = 0;
-		int current_percent = 0;
 		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<ContribuableAvecImmeuble>();
-		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)");
+		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
 		// on parse le fichier
-		final String csvString = new String(csv, "ISO-8859-1");
+		final String csvString = csv != null ? new String(csv, "ISO-8859-1") : StringUtils.EMPTY;
 		final String[] lines = csvString.split("[\n]");
 		final int nombrectb = lines.length;
-		int CtbLu = 0;
-		Scanner s = new Scanner(csvString);
+		int ctbsLus = 0;
+		int previousPercent = 0;
+		final Scanner s = new Scanner(csvString);
 		try {
 			while (s.hasNextLine()) {
+
 				final String line = s.nextLine();
-				Audit.info("nombre de propriétaire tratés " + CtbLu);
-				current_percent = (CtbLu * 100) / nombrectb;
-				if (previous_percent != current_percent) {
-					status.setMessage("Chargement des contribuables propriétaires d'immeuble", current_percent);
-					previous_percent = current_percent;
+				final int currentPercent = (ctbsLus * 100) / nombrectb;
+				if (previousPercent != currentPercent) {
+					status.setMessage("Chargement des contribuables propriétaires d'immeuble", currentPercent);
+					previousPercent = currentPercent;
 				}
 
 				if (status.interrupted()) {
 					break;
 				}
 
-				Matcher m = p.matcher(line);
+				final Matcher m = p.matcher(line);
 
 				// on a un numero de ctb
 				if (m.matches()) {
-
-					Long numeroCtb = null;
-					int nombreImmeuble;
-
-
-					numeroCtb = Long.valueOf(m.group(1));
-
-					nombreImmeuble = Integer.valueOf(m.group(2));
-
-					listeCtb.add(new ContribuableAvecImmeuble(numeroCtb, nombreImmeuble));
-					CtbLu++;
+					final Long numeroCtb = Long.valueOf(m.group(1));
+					final int nombreImmeubles = Integer.valueOf(m.group(2));
+					listeCtb.add(new ContribuableAvecImmeuble(numeroCtb, nombreImmeubles));
+					++ ctbsLus;
 				}
-
+				else {
+					LOGGER.warn(String.format("Ligne ignorée dans le fichier d'entrée : '%s'", line));
+				}
 			}
 		}
 		finally {
 			s.close();
 		}
-		Audit.info("nombre de contribuable lus dans le fichier :" + CtbLu);
+		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
 		return listeCtb;
 	}
-
 }
