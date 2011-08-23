@@ -27,9 +27,6 @@ public final class ContribuableAvecImmeuble {
 
 	@Override
 	public String toString() {
-		return "Contribuable Avec Immeuble{" +
-				"numero Contribuable=" + numeroContribuable +
-				", nombre Immeuble=" + nombreImmeuble +
-				'}';
+		return String.format("%d (%d)", numeroContribuable, nombreImmeuble);
 	}
 }

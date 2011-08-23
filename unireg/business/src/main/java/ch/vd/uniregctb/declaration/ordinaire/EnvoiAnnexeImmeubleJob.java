@@ -2,6 +2,8 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -156,6 +158,15 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 			s.close();
 		}
 		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
+
+		// tri dans l'ordre croissant des numéros de contribuables
+		Collections.sort(listeCtb, new Comparator<ContribuableAvecImmeuble>() {
+			@Override
+			public int compare(ContribuableAvecImmeuble o1, ContribuableAvecImmeuble o2) {
+				return o1.getNumeroContribuable() < o2.getNumeroContribuable() ? -1 : (o1.getNumeroContribuable() > o2.getNumeroContribuable() ? 1 : 0);
+			}
+		});
+
 		return listeCtb;
 	}
 }

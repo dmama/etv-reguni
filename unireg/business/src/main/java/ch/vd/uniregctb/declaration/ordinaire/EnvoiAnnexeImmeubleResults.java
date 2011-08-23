@@ -27,7 +27,7 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	}
 
 	public static enum IgnoreType {
-		CTB_NON_ASSUJETTI("le contribuable n'est pas assujétti pour la période fiscale");
+		CTB_NON_ASSUJETTI("Le contribuable n'est pas assujetti à la fin de la période fiscale");
 
 		private final String description;
 

@@ -26,8 +26,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -204,28 +204,31 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 
 		}
-
-
 	}
 
-
-	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
-			DeclarationException {
+	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException {
 		return diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 	}
 
+	/**
+	 * On ne prend que les contribuables qui ont une période d'imposition qui va
+	 * jusqu'à la fin de l'année (pour éliminer les sourciers purs, pour lesquels on ne trouvera pas d'OID de gestion)
+	 * @param ctb contribuable à tester
+	 * @param periode année fiscale
+	 * @return <code>true</code> si le contribuable a une période d'imposition en fin d'année fiscale, <code>false</code> sinon
+	 */
 	protected boolean isAssujettiEnFinDePeriode(Contribuable ctb, int periode) {
-		List<Assujettissement> list = null;
+		List<PeriodeImposition> list = null;
 		try {
-			list = Assujettissement.determine(ctb, periode);
+			list = PeriodeImposition.determine(ctb, periode);
 		}
 		catch (AssujettissementException e) {
 			//ajouter erreur e calcul d'assujetissement
 		}
-		RegDate date = RegDate.get(periode, 12, 31);
+		final RegDate date = RegDate.get(periode, 12, 31);
 		if (list != null) {
-			Assujettissement assujettissement = DateRangeHelper.rangeAt(list, date);
-			if (assujettissement != null) {
+			final PeriodeImposition periodeImposition = DateRangeHelper.rangeAt(list, date);
+			if (periodeImposition != null) {
 				return true;
 			}
 		}
