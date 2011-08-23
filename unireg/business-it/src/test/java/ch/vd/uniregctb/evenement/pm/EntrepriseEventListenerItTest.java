@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.Serializable;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -34,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 public class EntrepriseEventListenerItTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private DefaultMessageListenerContainer container;
 	private MockDataEventService dataEventService;
 	private MockTiersIndexer indexer;
 
@@ -87,17 +84,7 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(jmsConnectionManager);
-		container.setMessageListener(listener);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
-	}
-
-	@After
-	public void tearDown() {
-		container.destroy();
+		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

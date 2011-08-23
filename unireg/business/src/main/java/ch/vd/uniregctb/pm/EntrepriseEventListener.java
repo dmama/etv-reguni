@@ -13,7 +13,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EntrepriseEventListener extends EsbMessageListener implements MonitorableMessageListener {
+public class EntrepriseEventListener extends TransactionalEsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EntrepriseEventListener.class);
 

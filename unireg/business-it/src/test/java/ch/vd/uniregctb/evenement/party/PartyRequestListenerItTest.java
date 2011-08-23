@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.party;
 
-import javax.jms.ConnectionFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -11,14 +10,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
@@ -32,7 +28,6 @@ import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
 import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
@@ -42,8 +37,8 @@ import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
@@ -64,7 +59,8 @@ import static org.junit.Assert.fail;
  */
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml"
+		"classpath:ut/unireg-businessit-jms.xml",
+		"classpath:ut/unireg-businessit-jms-evt-party.xml"
 })
 public class PartyRequestListenerItTest extends BusinessItTest {
 
@@ -72,15 +68,12 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
-	private DefaultMessageListenerContainer container;
 	private EsbMessageFactory esbMessageFactory;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		final ConnectionFactory connectionFactory = getBean(ConnectionFactory.class, "jmsConnectionFactory");
-		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
@@ -92,39 +85,13 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		OUTPUT_QUEUE = INPUT_QUEUE + ".response";
 
-		clearQueue(INPUT_QUEUE);
-		clearQueue(OUTPUT_QUEUE);
-
-		final AddressRequestHandler handler = new AddressRequestHandler();
-		handler.setTiersDAO(tiersDAO);
-		handler.setAdresseService(adresseService);
-
-		final Map<Class<? extends Request>, PartyRequestHandler> handlers = new HashMap<Class<? extends Request>, PartyRequestHandler>();
-		handlers.put(AddressRequest.class, handler);
-
-		final PartyRequestListener listener = new PartyRequestListener();
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHandlers(handlers);
-		listener.afterPropertiesSet();
-
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setTransactionManager(transactionManager);
-		container.setMessageListener(listener);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
+		EvenementHelper.clearQueue(esbTemplate, INPUT_QUEUE);
+		EvenementHelper.clearQueue(esbTemplate, OUTPUT_QUEUE);
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		container.destroy();
 		popSecurityProvider();
-	}
-
-	protected void clearQueue(String queueName) throws Exception {
-		while (esbTemplate.receive(queueName) != null) {
-		}
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -334,19 +301,6 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 
 		final String foundHeaderValue = answer.getHeader(headerName);
 		assertEquals(headerValue, foundHeaderValue);
-	}
-
-	protected void assertTextMessage(String queueName, final String texte) throws Exception {
-
-		esbTemplate.setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
-		final EsbMessage msg = esbTemplate.receive(queueName);
-		assertNotNull("L'événement n'a pas été reçu.", msg);
-		String actual = msg.getBodyAsString();
-		actual = actual.replaceAll(" standalone=\"(no|yes)\"", ""); // on ignore l'attribut standalone s'il existe
-		assertEquals(texte, actual);
-
-		final EsbMessage noMsg = esbTemplate.receive(queueName);
-		assertNull(noMsg);
 	}
 
 	private EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {

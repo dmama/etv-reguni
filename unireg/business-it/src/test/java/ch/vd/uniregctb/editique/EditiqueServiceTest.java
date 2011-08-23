@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.editique;
 
-import javax.jms.ConnectionFactory;
+import javax.resource.spi.ResourceAdapter;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -21,6 +21,7 @@ import ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
+import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -50,7 +51,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 	private EditiqueCompositionServiceImpl composition;
 	private EditiqueRetourImpressionStorageServiceImpl storageService;
-	private DefaultMessageListenerContainer container;
+	private EsbMessageEndpointManager manager;
 	private static final int RECEIVE_TIMEOUT = 60;
 
 	@Override
@@ -64,7 +65,6 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final SituationFamilleService sfService = getBean(SituationFamilleService.class, "situationFamilleService");
 		final EsbJmsTemplate noTxEsbTemplate = getBean(EsbJmsTemplate.class, "noTxEsbJmsTemplate");
 		final EsbMessageFactory esbMessageFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
-		final ConnectionFactory connectionFactory = getBean(ConnectionFactory.class, "noTxConnectionFactory");
 		final StatsService statsService = getBean(StatsService.class, "statsService");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
@@ -89,12 +89,8 @@ public class EditiqueServiceTest extends BusinessItTest {
 			((InitializingBean) listener).afterPropertiesSet();
 		}
 
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setMessageListener(listener);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
+		final ResourceAdapter resourceAdapter = getBean(ResourceAdapter.class, "jmsResourceAdapter");
+		manager = EvenementHelper.initEndpointManager(resourceAdapter, INPUT_QUEUE, listener);
 
 		final EditiqueServiceImpl service = new EditiqueServiceImpl();
 		service.setSender(sender);
@@ -121,7 +117,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 	@Override
 	public void onTearDown() throws Exception {
 		AuthenticationHelper.popPrincipal();
-		container.destroy();
+		manager.destroy();
 		storageService.destroy();
 		super.onTearDown();
 	}

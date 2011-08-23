@@ -45,10 +45,6 @@
 		<level value="ERROR" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
-		<level value="INFO" />
-	</logger>
-
 	<logger name="org.apache">
 		<level value="WARN" />
 	</logger>

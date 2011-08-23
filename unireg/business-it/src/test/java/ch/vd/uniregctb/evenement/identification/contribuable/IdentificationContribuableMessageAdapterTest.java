@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -47,7 +45,6 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
 	private IdentificationContribuableMessageHandlerImpl handler;
-	private DefaultMessageListenerContainer container;
 	private EsbTemplateWithErrorCollector esbTemplateWithErrorCollector;
 
 	private static class EsbTemplateWithErrorCollector extends EsbJmsTemplate {
@@ -118,17 +115,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.setEsbMessageFactory(esbMessageFactory);
 		handler.setHibernateTemplate(hibernateTemplate);
 
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(jmsConnectionManager);
-		container.setMessageListener(handler);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
-	}
-
-	@After
-	public void tearDown() {
-		container.destroy();
+		initEndpointManager(INPUT_QUEUE, handler);
 	}
 
 	@Test

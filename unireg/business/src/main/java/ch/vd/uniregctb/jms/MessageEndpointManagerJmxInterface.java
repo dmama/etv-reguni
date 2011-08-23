@@ -2,10 +2,10 @@ package ch.vd.uniregctb.jms;
 
 /**
  * Interface qui définit les attributs qui doivent être exposés par JMX
- * sur une instance de {@link org.springframework.jms.listener.DefaultMessageListenerContainer}
+ * sur une instance de {@link ch.vd.technical.esb.jms.EsbMessageEndpointManager}
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public interface MessageListenerContainerJmxInterface {
+public interface MessageEndpointManagerJmxInterface {
 
 	/**
 	 * @return le nom de la queue connectée aux listeners de ce container

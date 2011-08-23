@@ -17,7 +17,7 @@ import ch.vd.fiscalite.registre.databaseEvent.DatabaseLoadEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DataEventJmsListener extends EsbMessageListener implements MonitorableMessageListener {
+public class DataEventJmsListener extends TransactionalEsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(DataEventJmsListener.class);
 

@@ -15,11 +15,11 @@ import ch.vd.fiscalite.cedi.DossierElectroniqueDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementCediListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
+public class EvenementCediListenerImpl extends TransactionalEsbMessageListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCediListenerImpl.class);
 

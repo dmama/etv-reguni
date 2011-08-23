@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
-	xmlns:jms="http://www.springframework.org/schema/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
         					http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
-							http://www.springframework.org/schema/jms
-							http://www.springframework.org/schema/jms/spring-lang.xsd">
+							http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="jmsConnectionFactory" class="ch.vd.technical.esb.util.ConnectionFactoryFactoryBean">
 		<property name="connectionManager" ref="jmsConnectionManager"/>
@@ -28,15 +23,20 @@
 	</bean>
 
 	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
-	   <property name="resourceAdapter">
-		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-			 <property name="serverUrl" value="${extprop.esb.jms.url}" />
-			 <property name="userName" value="${extprop.esb.jms.username}" />
-			 <property name="password" value="${extprop.esb.jms.password}" />
-			 <property name="maximumRedeliveries" value="1"/>
-			 <property name="allPrefetchValues" value="1"/>
-		 </bean>
-	  </property>
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+	</bean>
+
+	<bean id="jmsResourceAdapter" class="org.springframework.jca.support.ResourceAdapterFactoryBean">
+		<property name="resourceAdapter">
+			<bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
+				<property name="serverUrl" value="${extprop.esb.jms.url}" />
+				<property name="userName" value="${extprop.esb.jms.username}" />
+				<property name="password" value="${extprop.esb.jms.password}" />
+			</bean>
+		</property>
+		<property name="workManager">
+			<bean class="org.springframework.jca.work.SimpleTaskWorkManager"/>
+		</property>
 	</bean>
 
 	<bean id="esbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">

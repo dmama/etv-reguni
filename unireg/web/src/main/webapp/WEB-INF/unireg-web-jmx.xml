@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
         					http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
+							http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Read management interface from annotations -->
 	<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
@@ -42,29 +40,29 @@
 	</bean>
 
 	<!-- Liste des beans containers de message listeners exportés par JMX -->
-	<bean id="jmxMessageListenerContainerExporter" class="org.springframework.jmx.export.MBeanExporter">
+	<bean id="jmxEndpointManagerExporter" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="autodetect" value="false"/>
-		<property name="assembler" ref="jmxMessageListenerContainerAssembler"/>
+		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivils" value-ref="evtCivilListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueListernerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExternelistenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestListenerContainer"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationListenerContainer"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivils" value-ref="evtCivilEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
 			</map>
 		</property>
 	</bean>
 
-	<bean id="jmxMessageListenerContainerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+	<bean id="jmxMessageEndpointManagerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
+				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
 			</list>
 		</property>
 	</bean>
@@ -91,7 +89,7 @@
 
 	<bean name="evenementsCivilsJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsJmxBeanImpl">
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor"/>
-		<property name="evtCivilListenerContainer" ref="evtCivilListenerContainer"/>
+		<property name="evtCivilEndpointManager" ref="evtCivilEndpointManager"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">

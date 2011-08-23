@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -36,7 +34,6 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private EvenementCediListenerImpl listener;
-	private DefaultMessageListenerContainer container;
 
 	@Before
 	public void setUp() throws Exception {
@@ -72,17 +69,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(jmsConnectionManager);
-		container.setMessageListener(listener);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
-	}
-
-	@After
-	public void tearDown() {
-		container.destroy();
+		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

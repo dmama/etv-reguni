@@ -7,12 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -36,7 +34,6 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private EvenementEditiqueListenerImpl listener;
-	private DefaultMessageListenerContainer container;
 
 	private static final String DI_ID = "2004 01 062901707 20100817145346417";
 
@@ -66,17 +63,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(null);
 
-		container = new DefaultMessageListenerContainer();
-		container.setConnectionFactory(jmsConnectionManager);
-		container.setMessageListener(listener);
-		container.setDestinationName(INPUT_QUEUE);
-		container.afterPropertiesSet();
-		container.start();
-	}
-
-	@After
-	public void tearDown() {
-		container.destroy();
+		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

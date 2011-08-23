@@ -18,7 +18,7 @@
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.party.service}"/>
+				<property name="destination" value="${testprop.jms.queue.party.service}"/>
 				<property name="destinationType" value="javax.jms.Queue"/>
 				<property name="maxSessions" value="1"/>
 				<property name="maxMessagesPerSessions" value="1"/>
@@ -26,7 +26,7 @@
 		</property>
 		<property name="messageListener" ref="partyRequestListener" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
+		<property name="autoStartup" value="true" />
 	</bean>
 
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">

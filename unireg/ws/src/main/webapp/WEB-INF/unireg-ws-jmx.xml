@@ -40,21 +40,21 @@
 	</bean>
 
 	<!-- Liste des beans containers de message listeners exportés par JMX -->
-	<bean id="jmxMessageListenerContainerExporter" class="org.springframework.jmx.export.MBeanExporter">
+	<bean id="jmxEndpointManagerExporter" class="org.springframework.jmx.export.MBeanExporter">
 		<property name="autodetect" value="false"/>
-		<property name="assembler" ref="jmxMessageListenerContainerAssembler"/>
+		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListenerContainer"/>
+				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsEndpointManager"/>
 			</map>
 		</property>
 	</bean>
 
-	<bean id="jmxMessageListenerContainerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+	<bean id="jmxMessageEndpointManagerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
+				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
 			</list>
 		</property>
 	</bean>

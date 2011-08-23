@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="evenementCediListener" class="ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl" parent="esbMessageListener">
 		<property name="handler" ref="evenementCediService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="evenementCediListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="destinationName" value="${extprop.jms.queue.evtCedi}" />
-		<property name="messageListener" ref="evenementCediListener" />
-		<property name="transactionManager" ref="transactionManager" />
+	<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCedi}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementCediListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
 	</bean>
 

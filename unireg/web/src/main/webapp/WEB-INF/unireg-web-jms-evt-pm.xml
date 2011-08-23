@@ -12,12 +12,18 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="entrepriseEventListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
-		<property name="concurrentConsumers" value="${extprop.jms.queue.pm.event.consumers}" />
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="messageListener" ref="entrepriseEventListener" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="destinationName" value="${extprop.jms.queue.pm.event.input}" />
+	<bean id="entrepriseEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.pm.event.input}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.pm.event.consumers}"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="entrepriseEventListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.pm.event.enabled}" />
 	</bean>
 

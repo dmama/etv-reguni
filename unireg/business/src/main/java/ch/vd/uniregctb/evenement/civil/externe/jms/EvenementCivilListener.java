@@ -14,7 +14,7 @@ import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument.EvtRegCivil;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -27,7 +27,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 /**
  * Listener des évéments civils envoyés par le registre civil (REG-PP ou RCPers) et reçus à travers l'ESB.
  */
-public class EvenementCivilListener extends EsbMessageListener implements ErrorMonitorableMessageListener {
+public class EvenementCivilListener extends TransactionalEsbMessageListener implements ErrorMonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 

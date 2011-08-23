@@ -75,9 +75,7 @@
 	<logger name="org.springframework">
 		<level value="INFO" />
 	</logger>
-	<logger name="org.springframework.jms.listener.DefaultMessageListenerContainer102">
-		<level value="INFO" />
-	</logger>
+
 	<logger name="org.springmodules.xt.ajax">
 		<level value="WARN" />
 	</logger>

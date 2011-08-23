@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
@@ -41,7 +41,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 /**
  * Listener qui écoute les requêtes de données de tiers et qui répond en conséquence.
  */
-public class PartyRequestListener extends EsbMessageListener implements MonitorableMessageListener, InitializingBean {
+public class PartyRequestListener extends TransactionalEsbMessageListener implements MonitorableMessageListener, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(PartyRequestListener.class);
 

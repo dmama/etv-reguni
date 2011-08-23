@@ -13,11 +13,18 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="evenementDeclarationListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration}" />
+	<bean id="evenementDeclarationEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtDeclaration}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
 		<property name="messageListener" ref="evenementDeclarationListener" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.enabled}" />
 	</bean>
 

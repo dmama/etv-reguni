@@ -16,7 +16,7 @@ import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocu
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
@@ -29,7 +29,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IdentificationContribuableMessageHandlerImpl extends EsbMessageListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
+public class IdentificationContribuableMessageHandlerImpl extends TransactionalEsbMessageListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
 

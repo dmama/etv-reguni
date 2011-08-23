@@ -1,19 +1,19 @@
 package ch.vd.uniregctb.jmx;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
+import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
 
 @ManagedResource
 public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, InitializingBean {
 
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
-	private DefaultMessageListenerContainer evtCivilListenerContainer;
+	private JmxAwareEsbMessageEndpointManager evtCivilEndpointManager;
 
 	private ErrorMonitorableMessageListener listener;
 
@@ -56,7 +56,7 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 	@Override
 	@ManagedAttribute
 	public int getNbConsumers() {
-		return evtCivilListenerContainer.getConcurrentConsumers();
+		return evtCivilEndpointManager.getConcurrentConsumers();
 	}
 
 	@Override
@@ -77,17 +77,17 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvtCivilListenerContainer(DefaultMessageListenerContainer evtCivilListenerContainer) {
-		this.evtCivilListenerContainer = evtCivilListenerContainer;
+	public void setEvtCivilEndpointManager(JmxAwareEsbMessageEndpointManager evtCivilEndpointManager) {
+		this.evtCivilEndpointManager = evtCivilEndpointManager;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (evtCivilListenerContainer == null) {
-			throw new IllegalArgumentException("La propriété evtCivilListenerContainer est nulle");
+		if (evtCivilEndpointManager == null) {
+			throw new IllegalArgumentException("La propriété evtCivilEndpointManager est nulle");
 		}
 
-		final Object listener = evtCivilListenerContainer.getMessageListener();
+		final Object listener = evtCivilEndpointManager.getMessageListener();
 		if (listener == null || !(listener instanceof ErrorMonitorableMessageListener)) {
 			throw new IllegalArgumentException("Le listener d'événements civils doit implémenter l'interface " + ErrorMonitorableMessageListener.class.getName());
 		}

@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
-	xmlns:jms="http://www.springframework.org/schema/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
         					http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
-							http://www.springframework.org/schema/jms
-							http://www.springframework.org/schema/jms/spring-jms.xsd">
+							http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
 	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandlerImpl" parent="esbMessageListener" lazy-init="true">
@@ -18,11 +13,18 @@
 		<property name="demandeHandler" ref="identCtbService" />
 	</bean>
 
-	<bean id="jmsIdentCtbListenerContainer" class="ch.vd.uniregctb.jms.JmxAwareDefaultMessageListenerContainer">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="messageListener" ref="identCtbMessageHandler" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="destinationName" value="${extprop.jms.queue.ident.ctb.input}" />
+	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
 	</bean>
 

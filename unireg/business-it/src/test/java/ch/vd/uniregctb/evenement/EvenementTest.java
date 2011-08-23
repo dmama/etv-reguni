@@ -1,17 +1,18 @@
 package ch.vd.uniregctb.evenement;
 
-import java.io.FileNotFoundException;
+import javax.jms.MessageListener;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.Log4jConfigurer;
+import org.junit.After;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
@@ -28,46 +29,30 @@ public abstract class EvenementTest {
 	protected EsbMessageFactory esbMessageFactory;
 	protected UniregProperties uniregProperties;
 	protected ActiveMQConnectionFactory jmsConnectionManager;
+	protected ActiveMQResourceAdapter resourceAdapter;
+	protected EsbMessageEndpointManager manager;
 
 	protected EvenementTest() {
-		initLog4j();
-		initProps();
-		initConnectionManager();
+		EvenementHelper.initLog4j();
+		uniregProperties = EvenementHelper.initProps();
+		jmsConnectionManager = EvenementHelper.initConnectionManager(uniregProperties);
+		resourceAdapter = EvenementHelper.initResourceAdapter(uniregProperties);
 	}
 
-	private void initLog4j() {
-		try {
-			Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
-		}
-		catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void initProps() {
-		try {
-			uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("file:../base/unireg-ut.properties");
-			uniregProperties.afterPropertiesSet();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
+	@After
+	public void tearDown() {
+		if (manager != null) {
+			manager.destroy();
+			manager = null;
 		}
 	}
 
-	private void initConnectionManager() {
-		final String url = uniregProperties.getProperty("testprop.esb.jms.url");
-		final String username = uniregProperties.getProperty("testprop.esb.jms.username");
-		final String password = uniregProperties.getProperty("testprop.esb.jms.password");
-
-		jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL(url);
-		jmsConnectionManager.setUserName(username);
-		jmsConnectionManager.setPassword(password);
+	protected void initEndpointManager(String queueName, MessageListener listener) {
+		manager = EvenementHelper.initEndpointManager(resourceAdapter, queueName, listener);
 	}
 
 	protected void clearQueue(String queueName) throws Exception {
-		while (esbTemplate.receive(queueName) != null) {}
+		EvenementHelper.clearQueue(esbTemplate, queueName);
 	}
 
 	protected void assertTextMessage(String queueName, final String texte) throws Exception {
@@ -109,10 +94,7 @@ public abstract class EvenementTest {
 	 * @return une date initialisée au jour, mois et année spécifiés.
 	 */
 	protected static Date newUtilDate(int year, int month, int day) {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.clear();
-		cal.set(year, month - 1, day);
-		return cal.getTime();
+		return EvenementHelper.newUtilDate(year, month, day);
 	}
 }
 
