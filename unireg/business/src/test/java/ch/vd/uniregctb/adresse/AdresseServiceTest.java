@@ -38,7 +38,9 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdressePM;
@@ -6975,6 +6977,39 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2010, 1, 1), date(2010, 4, 30), "Lausanne", SourceType.FISCALE, true, adresses.poursuite.get(0));
 		assertAdresse(date(2010, 5, 1), date(2010, 5, 22), "Echallens", SourceType.FISCALE, false, adresses.poursuite.get(1));
 		assertAdresse(date(2010, 5, 23), null, "Lausanne", SourceType.FISCALE, true, adresses.poursuite.get(2));
+	}
+
+	/**
+	 * [SIFISC-1868] Vérifie que les éventuelles adresses de surcharge <b>annulées</b> sont bien ignores.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAdresseDomicileAvecSurchargeAnnulee() throws Exception {
+
+		final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+		dpi.setNom1("Ma petite entreprise");
+		addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Aubonne.RueTrevelin);
+		final AdresseSuisse dom = addAdresseSuisse(dpi, TypeAdresseTiers.DOMICILE, date(2010, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
+		dom.setAnnule(true);
+
+		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(dpi, true);
+		assertNotNull(adresses);
+
+		assertNotNull(adresses.courrier);
+		assertEquals(1, adresses.courrier.size());
+		assertAdresse(date(2009, 1, 1), null, "Aubonne", SourceType.FISCALE, false, adresses.courrier.get(0));
+
+		assertNotNull(adresses.domicile);
+		assertEquals(2, adresses.domicile.size());
+		assertAdresse(date(2009, 1, 1), null, "Aubonne", SourceType.FISCALE, true, adresses.domicile.get(0));
+		assertTrue(adresses.domicile.get(1).isAnnule());
+		assertAdresse(date(2010, 1, 1), null, "Bussigny-près-Lausanne", SourceType.FISCALE, false, adresses.domicile.get(1));
+
+		assertNotNull(adresses.poursuite);
+		assertEquals(1, adresses.poursuite.size());
+		assertAdresse(date(2009, 1, 1), null, "Aubonne", SourceType.FISCALE, true, adresses.poursuite.get(0));
+
+		assertEmpty(adresses.poursuiteAutreTiers);
 	}
 
 	/**

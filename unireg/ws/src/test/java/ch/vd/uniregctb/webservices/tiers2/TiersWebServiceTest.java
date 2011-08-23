@@ -8,12 +8,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -30,12 +32,15 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -49,6 +54,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.Debiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.DeclarationImpotOrdinaireKey;
 import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
@@ -245,6 +251,52 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressesPoursuite.get(0)); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
 
 			assertEmpty(menage.adressesPoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+		}
+	}
+
+	/**
+	 * [SIFISC-1868], cas des débiteurs IS 12.941.04 et 12.926.19<br/>
+	 * Le débiteur a une surcharge annulée sur son adresse de domicile (ces adresses fiscales de domicile sont maintenant interdites...)
+	 * -> l'appel à la méthode GetTiers ne renvoie pas d'adresse de domicile correcte (qui aurait dû être recopiée de la seule adresse connue : l'adresse courrier)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAdresseDomicileSiSurchargeAnnuleeExiste() throws Exception {
+
+		final long idDpi = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				dpi.setNom1("Ma petite entreprise");
+				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Aubonne.RueTrevelin);
+				final AdresseSuisse dom = addAdresseSuisse(dpi, TypeAdresseTiers.DOMICILE, date(2009, 1, 1), null, MockRue.Aubonne.CheminCurzilles);
+				dom.setAnnule(true);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// appel à GetTiers
+		{
+			final GetTiers params = new GetTiers();
+			params.login = login;
+			params.tiersNumber = idDpi;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+
+			final Debiteur dpi = (Debiteur) service.getTiers(params);
+			assertNotNull(dpi);
+
+			assertNotNull(dpi.adresseCourrier);
+			assertAdresse(new Date(2009, 1, 1), null, "Rue de Trévelin", "Aubonne", dpi.adresseCourrier);
+
+			assertNotNull(dpi.adresseDomicile);
+			assertAdresse(new Date(2009, 1, 1), null, "Rue de Trévelin", "Aubonne", dpi.adresseDomicile);
+
+			assertNotNull(dpi.adressePoursuite);
+			assertAdresse(new Date(2009, 1, 1), null, "Rue de Trévelin", "Aubonne", dpi.adressePoursuite);
+
+			assertNull(dpi.adressePoursuiteAutreTiers);
 		}
 	}
 
@@ -837,7 +889,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 	}
 
-	private static void assertAdresse(Date dateDebut, Date dateFin, String rue, String localite, Adresse adresse) {
+	private static void assertAdresse(Date dateDebut, @Nullable Date dateFin, String rue, String localite, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.dateDebut);
 		assertEquals(dateFin, adresse.dateFin);
