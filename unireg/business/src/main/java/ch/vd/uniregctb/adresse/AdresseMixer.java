@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -262,6 +263,12 @@ public class AdresseMixer {
 			return null;
 		}
 
+		final boolean annulee = hasAdresseAnnulee(adresses);
+		if (annulee) {
+			// [SIFISC-1868] Si on a des adresses annulées, il faut les supprimer de la liste avant de déterminer les trous
+			adresses = extractAdressesNonAnnulees(adresses);
+		}
+
 		if (DateRangeHelper.isFull(adresses)) {
 			// il n'y a pas de trou dans le sandwich -> inutile d'essayer d'appliquer des valeurs par défaut
 			return null;
@@ -300,6 +307,22 @@ public class AdresseMixer {
 				return new AdresseGeneriqueAdapter(range, debut, fin, null, null);
 			}
 		});
+	}
+
+	/**
+	 * Crée une nouvelle liste avec les adresses non-annulées.
+	 *
+	 * @param adresses une liste d'adresse avec potentiellement des adresses annulées.
+	 * @return une nouvelle liste qui ne contient que des adresses non-annulées.
+	 */
+	public static List<AdresseGenerique> extractAdressesNonAnnulees(@NotNull List<AdresseGenerique> adresses) {
+		final List<AdresseGenerique> nonAnnulees = new ArrayList<AdresseGenerique>(adresses.size());
+		for (AdresseGenerique a : adresses) {
+			if (!a.isAnnule()) {
+				nonAnnulees.add(a);
+			}
+		}
+		return nonAnnulees;
 	}
 
 	/**

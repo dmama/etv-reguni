@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -261,7 +260,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * -> l'appel à la méthode GetTiers ne renvoie pas d'adresse de domicile correcte (qui aurait dû être recopiée de la seule adresse connue : l'adresse courrier)
 	 */
 	@Test
-	@Ignore("En attendant la correction du SIFISC-1868")
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseDomicileSiSurchargeAnnuleeExiste() throws Exception {
 
