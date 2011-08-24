@@ -144,10 +144,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 				feuilleEditique.setNbreIntituleFeuille(nombreAnnexes);
 				annexes.add(feuilleEditique);
 			}
-
 		}
 		return annexes;
-
 	}
 
 	@Override
@@ -208,8 +206,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
-			EditiqueException {
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException {
 		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
 		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
 
@@ -217,19 +214,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
-		final TypFichierImpression.Document document =
-				impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
-		final TypFichierImpression.Document[] documents;
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
 		Assert.notNull(document);
-		if (typeDoc == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-			documents = new TypFichierImpression.Document[1];
-			documents[0] = document;
-		}
-		else {
-			documents = new TypFichierImpression.Document[2];
-			documents[0] = document;
-			documents[1] = document;
-		}
+		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[] {document};
 		editiqueDI.setDocumentArray(documents);
 		final Integer annee = infosDocument.getAnnee();
 		final Integer idDoc = infosDocument.getIdDocument();

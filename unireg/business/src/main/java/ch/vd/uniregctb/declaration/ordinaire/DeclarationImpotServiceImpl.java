@@ -469,20 +469,17 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);
+		final ListeNoteProcessor processor = new ListeNoteProcessor(hibernateTemplate, transactionManager, tiersService, adresseService, infraService);
 		return processor.run(dateTraitement, annee, nbThreads, statusManager);
 	}
 
 	@Override
-	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
-			DeclarationException {
-		int nombreAnnexesImmeubleImprimés;
+	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException {
 		try {
-			nombreAnnexesImmeubleImprimés = editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
+			return editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		return nombreAnnexesImmeubleImprimés;
 	}
 }
