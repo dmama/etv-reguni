@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -3127,7 +3126,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
-		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+		assertHorsCanton(date(2000, 6, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
 		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
@@ -3153,7 +3152,6 @@ public class AssujettissementTest extends MetierTest {
 	 *
 	 *  -> le calcul de l'assujettissement sur la commune du for secondaire explose avec un chevauchement d'assujettissements trouvé
 	 */
-	@Ignore(value = "Voir cas jira SIFISC-1769")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneSuivantArriveeHSAvecForSecondaireImmeubleDeMixte2() throws Exception {
@@ -3176,7 +3174,7 @@ public class AssujettissementTest extends MetierTest {
 		// c'est ici que cela explose !
 		final List<Assujettissement> listeVevey = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
 		assertEquals(1, listeVevey.size());
-		assertSourcierMixte(date(2008, 7, 7), null, MotifFor.ACHAT_IMMOBILIER, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
+		assertSourcierMixte(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
 
 	@Test
