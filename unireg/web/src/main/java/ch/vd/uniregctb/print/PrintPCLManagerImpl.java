@@ -13,25 +13,23 @@ import org.apache.commons.codec.binary.Base64InputStream;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.StreamUtils;
 
-public class PrintPCLManagerImpl implements PrintPCLManager{
+public class PrintPCLManagerImpl implements PrintPCLManager {
 
-	private static boolean localApp;
+	private boolean localApp;
 
-	public static boolean isLocalApp() {
+	private boolean isLocalApp() {
 		return localApp;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setLocalApp(String localApp) {
-		PrintPCLManagerImpl.localApp = "true".equalsIgnoreCase(localApp) || "1".equals(localApp) || "yes".equalsIgnoreCase(localApp);
+		this.localApp = "true".equalsIgnoreCase(localApp) || "1".equals(localApp) || "yes".equalsIgnoreCase(localApp);
 	}
 
 	/**
-	 * Ouvre un flux X-CHVD ou PCL
-	 * en fonction du boolean localApp
-	 *
-	 * @param response
-	 * @param pcl
+	 * Ouvre un flux X-CHVD ou PCL en fonction du booléen localApp
+	 * @param response Réponse HTTP dans laquelle bourrer le contenu du PCL
+	 * @param pcl contenu PCL de la réponse
 	 * @throws IOException
 	 */
 	@Override
@@ -63,21 +61,8 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 		}
 	}
 
-	private String construitDebutCorpsLocalApp() {
-		return "<?xml version=\"1.0\" encoding='" + Charset.defaultCharset().name() + "'?>" +
-				"<tasklist name=\"printPCLList\">" +
-				"	<task name=\"printPCL\" action=\"print\">" +
-				"		<print>" +
-				"			<parameter>";
-	}
-
-	private String construitFinCorpsLocalApp() {
-		return  "			</parameter>" +
-				"		</print>" +
-				"	</task>" +
-				"</tasklist>";
-	}
-
+	private static final byte[] DEBUT_LOCALAPP = String.format("<?xml version=\"1.0\" encoding='%s'?><tasklist name=\"printPCLList\"><task name=\"printPCL\" action=\"print\"><print><parameter>", Charset.defaultCharset().name()).getBytes();
+	private static final byte[] FIN_LOCALAPP = String.format("</parameter></print></task></tasklist>").getBytes();
 
 	@Override
 	public boolean isAttachmentContent() {
@@ -93,12 +78,10 @@ public class PrintPCLManagerImpl implements PrintPCLManager{
 	@Override
 	public void copyToOutputStream(InputStream in, OutputStream out) throws IOException {
 		if (isLocalApp()) {
-			out.write(construitDebutCorpsLocalApp().getBytes());
-
+			out.write(DEBUT_LOCALAPP);
 			final InputStream base64Encoder = new Base64InputStream(in, true);
 			StreamUtils.copy(base64Encoder, out);
-
-			out.write(construitFinCorpsLocalApp().getBytes());
+			out.write(FIN_LOCALAPP);
 		}
 		else {
 			StreamUtils.copy(in, out);
