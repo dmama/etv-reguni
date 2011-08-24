@@ -7,12 +7,12 @@ install
 --printPCL.bat
 lib
 --log4j-1.2.14.jar
---uniregctb-print-pcl-1.0.jar
+--uniregctb-print-pcl-2.0.jar
 
-Procédure d'installation:
+Procï¿½dure d'installation:
 -------------------------
-1. Installer si besoin jre1.5.0_16
-2. Mettre à jour le Path pour Java
+1. Installer si besoin jre 1.6
+2. Mettre ï¿½ jour le Path pour Java
 3. Importer pcl-local.reg dans la registry
-4. Créer le répertoire C:\Program Files\PrintPCL
-5. Copier dedans les fichiers uniregctb-print-pcl-1.0.jar, log4j-1.2.14.jar et printPCL.bat
+4. Crï¿½er le rï¿½pertoire C:\Program Files\PrintPCL
+5. Copier dedans les fichiers uniregctb-print-pcl-2.0.jar, log4j-1.2.14.jar et printPCL.bat

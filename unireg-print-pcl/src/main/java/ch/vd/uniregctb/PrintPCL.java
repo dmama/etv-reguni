@@ -1,14 +1,5 @@
 package ch.vd.uniregctb;
 
-import java.awt.Graphics;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -22,106 +13,130 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.PrintServiceAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.PrinterName;
+import java.awt.Graphics;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterAbortException;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterIOException;
+import java.awt.print.PrinterJob;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
 /**
  * Classe qui ouvre la boîte de dialogue d'impression et permet à l'utilisateur d'imprimer directement le flux en PCL par exemple
- *
- * @author xcifde
- *
  */
-public class PrintPCL implements Printable {
+public class PrintPCL {
 
 	private static final Logger LOGGER = Logger.getLogger(PrintPCL.class);
 
-	private String nomImprimante;
-	private static String cheminFichierTemporaire = "";
+	private final String cheminFichierTemporaire;
 
 	public static void main(String[] args) {
-		LOGGER.debug("Debut de l'impression");
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Debut de l'impression");
+		}
+
+		final String cheminFichierTemporaire;
 		if (args != null && args.length > 0) {
 			cheminFichierTemporaire = args[0];
 		}
-		PrintPCL printPCL = new PrintPCL();
-		System.exit(0);
+		else {
+			cheminFichierTemporaire = null;
+		}
+
+		try {
+			final PrintPCL printPCL = new PrintPCL(cheminFichierTemporaire);
+			printPCL.print();
+
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Fin de l'impression");
+			}
+
+			System.exit(0);
+		}
+		catch (Exception e) {
+			LOGGER.error("Erreur du traitement de l'impression", e);
+			System.exit(1);
+		}
 	}
 
 	/**
-	 * Constructeur: PrintPCL
-	 * <p>
-	 *
+	 * @param cheminFichierTemporaire chemin du fichier contenant le flux PCL à imprimer
 	 */
-	public PrintPCL() {
+	public PrintPCL(String cheminFichierTemporaire) {
+		this.cheminFichierTemporaire = cheminFichierTemporaire;
+	}
 
-		PrinterJob printJob = PrinterJob.getPrinterJob();
-		printJob.setPrintable(this);
+	/**
+	 * Point d'entrée de l'impression depuis la méthode {@link #main}
+	 * @throws PrinterException en cas de souci à l'impression
+	 * @throws IOException en cas de problème avec le fichier d'entrée
+	 */
+	private void print() throws PrinterException, IOException {
+
+		final PrinterJob printJob = PrinterJob.getPrinterJob();
 
 		// Affiche la boîte de dialogue d'impression
 		// Lance la méthode print si on clicke sur 'OK'
 		// Annule le job sinon
 		if (printJob.printDialog()) {
-			try {
-				System.out.println("Nom imprimante:" + printJob.getPrintService().getName() + "--");
-				nomImprimante = printJob.getPrintService().getName();
-				printJob.print();
+			final String nomImprimante = printJob.getPrintService().getName();
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info(String.format("Nom imprimante : '%s'", nomImprimante));
 			}
-			catch (Exception PrintException) {
-				PrintException.printStackTrace();
-			}
+			printJob.setPrintable(new Job(nomImprimante, new FileInputStream(cheminFichierTemporaire)));
+			printJob.print();
 		}
-
 	}
 
 	/**
-	 * Methode: print
-	 * <p>
-	 * Cette classe est responsable de l'impression en PCL
-	 *
-	 * @param g
-	 * @param pageFormat
-	 * @param page
-	 *
-	 * @return NO_SUCH_PAGE qui signifie d'arrêter l'impression
+	 * Job d'impression
 	 */
-	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-		InputStream inputStream = null;
+	private static class Job implements Printable {
 
-		try {
-			inputStream = new FileInputStream(cheminFichierTemporaire);
+		private final String nomImprimante;
+		private final InputStream in;
+
+		private Job(String nomImprimante, InputStream in) {
+			this.nomImprimante = nomImprimante;
+			this.in = in;
 		}
-		catch (FileNotFoundException e) {
-			LOGGER.error("Erreur au chargement du fichier --" + cheminFichierTemporaire + "--", e);
-			System.exit(0);
-		}
 
-		final DocFlavor oFlavor = DocFlavor.INPUT_STREAM.AUTOSENSE; // defini un type de document
-		final Doc oDoc = new SimpleDoc(inputStream, oFlavor, null); // defini le document a imprimer
-		final PrintRequestAttributeSet oRset = new HashPrintRequestAttributeSet(); // defini des attributs de format de page
-		final PrintServiceAttributeSet oSset = new HashPrintServiceAttributeSet(); // defini l'imprimante sur laquelle on veux imprimer
+		public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
 
-		oRset.add(new Copies(1));
-		//oRset.add(MediaSizeName.ISO_A4);
-		//oRset.add(Sides.DUPLEX);
-		oSset.add(new PrinterName(nomImprimante, null));
-		final PrintService[] tabServices = PrintServiceLookup.lookupPrintServices(oFlavor, oSset);
+			final DocFlavor oFlavor = DocFlavor.INPUT_STREAM.AUTOSENSE;                 // definit un type de document
+			final Doc oDoc = new SimpleDoc(in, oFlavor, null);                          // definit le document a imprimer
+			final PrintRequestAttributeSet oRset = new HashPrintRequestAttributeSet();  // definit des attributs de format de page
+			final PrintServiceAttributeSet oSset = new HashPrintServiceAttributeSet();  // definit l'imprimante sur laquelle on veux imprimer
 
-		if (tabServices.length > 0) {
-			final DocPrintJob oJob = tabServices[0].createPrintJob();
-			try {
-				oJob.print(oDoc, oRset);
+			oRset.add(new Copies(1));
+			oSset.add(new PrinterName(nomImprimante, null));
+			final PrintService[] tabServices = PrintServiceLookup.lookupPrintServices(oFlavor, oSset);
+
+			if (tabServices.length > 0) {
+				final DocPrintJob oJob = tabServices[0].createPrintJob();
+				try {
+					oJob.print(oDoc, oRset);
+				}
+				catch (PrintException e) {
+					LOGGER.error("Erreur à l'impression", e);
+					throw new PrinterAbortException(e.getMessage());
+				}
 			}
-			catch (PrintException printException) {
-				LOGGER.error("Erreur à l'impression--", printException);
-				System.exit(0);
+			else {
+				final String msg = String.format("Impossible de trouver l'imprimante '%s'", nomImprimante);
+				LOGGER.error(msg);
+				throw new PrinterIOException(new IOException(msg));
 			}
-		}
-		else {
-			LOGGER.error("Erreur avec le nom de l'imprimante --" + nomImprimante + "--");
-			System.exit(0);
-		}
 
-		LOGGER.debug("Fin de l'impression");
-		return (NO_SUCH_PAGE);
+			// pour une raison que je ne comprends pas, si je mets autre chose
+			// que ça, je choppe une page A4 blanche en fin d'impression...
+			return NO_SUCH_PAGE;
+		}
 	}
 }
