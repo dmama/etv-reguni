@@ -2,9 +2,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +21,6 @@ import ch.vd.uniregctb.common.TripletIterator;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -171,18 +168,15 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return null;
 		}
 
-		return determine(ctb, fpt);
+		return determine(ctb, fpt, null);
 	}
 
 	/**
-	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS
-	 * étendus sont donnés en paramètre
-	 * <p/><p/>
-	 * <b>ATTENTION:</b> cette méthode n'est pas capable de faire la différence entre un vaudois avec for secondaire sur une commune (celle donnée en paramètre) différente
-	 * de la commune de domicile et un hors-canton qui a le même for secondaire... (en d'autres termes : l'assujettissement du vaudois vu de la commune où il a son
-	 * for secondaire sera HorsCanton !!)
+	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS étendus sont donnés en paramètre
+	 * <p/><p/> <b>ATTENTION:</b> cette méthode n'est pas capable de faire la différence entre un vaudois avec for secondaire sur une commune (celle donnée en paramètre) différente de la commune de
+	 * domicile et un hors-canton qui a le même for secondaire... (en d'autres termes : l'assujettissement du vaudois vu de la commune où il a son for secondaire sera HorsCanton !!)
 	 *
-	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
+	 * @param ctb                    le contribuable dont on veut déterminer l'assujettissement
 	 * @param noOfsCommunesVaudoises les numéros OFS des communes vaudoises dont on veut le point de vue
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
@@ -202,47 +196,17 @@ public abstract class Assujettissement implements CollatableDateRange {
 		// l'assujettissement ne considère que les fors principaux et secondaires pour le moment
 		// (peut-être un jour y aura-t-il aussi les fors autres éléments imposables)
 
-		// pour les fors secondaires (et autres éléments imposables, du coup), c'est facile, tout ce qui n'est
-		// pas sur les communes qui nous intéressent peut être enlevé
-		retirerForsHorsCommunes(fpt.secondaires, noOfsCommunesVaudoises);
-		retirerForsHorsCommunes(fpt.autreElementImpot, noOfsCommunesVaudoises);
-
-		// les fors principaux vaudois qui ne sont pas sur les communes vaudoises qui nous intéressent vont être remplacés par
-		// des fors hors-canton bidons (commune -1)
-		filtrerForsPrincipauxHorsCommune(fpt.principaux, noOfsCommunesVaudoises);
-
-		return determine(ctb, fpt);
+		return determine(ctb, fpt, noOfsCommunesVaudoises);
 	}
 
-	private static void filtrerForsPrincipauxHorsCommune(List<ForFiscalPrincipal> liste, Set<Integer> noOfsCommunesVaudoises) {
-		final ListIterator<ForFiscalPrincipal> iterPrn = liste.listIterator();
-		while (iterPrn.hasNext()) {
-			final ForFiscalPrincipal ffp = iterPrn.next();
-			if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())) {
-				final ForFiscalPrincipal remplacement = new ForFiscalPrincipal(ffp.getDateDebut(), ffp.getDateFin(), -1, TypeAutoriteFiscale.COMMUNE_HC, ffp.getMotifRattachement(), ModeImposition.ORDINAIRE);
-				iterPrn.set(remplacement);
-			}
-		}
-	}
-
-	private static <T extends ForFiscalRevenuFortune> void retirerForsHorsCommunes(List<T> liste, Set<Integer> noOfsCommunesVaudoises) {
-		final Iterator<T> iter = liste.iterator();
-		while (iter.hasNext()) {
-			final T ff = iter.next();
-			if (ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || !noOfsCommunesVaudoises.contains(ff.getNumeroOfsAutoriteFiscale())) {
-				iter.remove();
-			}
-		}
-	}
-
-	private static List<Assujettissement> determine(Contribuable ctb, ForsParType fors) throws AssujettissementException {
+	private static List<Assujettissement> determine(Contribuable ctb, ForsParType fors, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		try {
 			ajouteForsPrincipauxFictifs(fors.principaux);
 
 			// Détermination des données d'assujettissement brutes
 			final List<Fraction> fractionnements = new ArrayList<Fraction>();
-			final List<Data> domicile = determineAssujettissementDomicile(fors.principaux, fractionnements);
-			final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements);
+			final List<Data> domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, noOfsCommunesVaudoises);
+			final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
 			fusionne(domicile, economique);
 
 			// Création des assujettissements finaux
@@ -403,12 +367,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine les données d'assujettissements brutes pour les rattachements de type domicile.
 	 *
-	 * @param principaux      les fors principaux d'un contribuable
-	 * @param fractionnements une liste vide qui contiendra les fractionnements calculés après l'exécution de la méthode
+	 * @param principaux             les fors principaux d'un contribuable
+	 * @param fractionnements        une liste vide qui contiendra les fractionnements calculés après l'exécution de la méthode
+	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static List<Data> determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements) throws AssujettissementException {
+	private static List<Data> determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
+			AssujettissementException {
 
 		final List<Data> domicile = new ArrayList<Data>();
 
@@ -437,12 +403,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 
 			// on détermine l'assujettissement pour le for principal courant
-			final Data a = determine(forPrincipal);
+			final Data a = determine(forPrincipal, noOfsCommunesVaudoises);
 			if (a != null) {
 
 				if (fraction != null && fraction.isAfterOrEqual(a.debut)) {
 					a.debut = fraction;
-					a.motifDebut = motifFraction;
+					if (a.type != Type.NonAssujetti) { // on ne s'intéresse pas au motif d'un non-assujettissement: c'est le motif de début d'un éventuel for secondaire qui nous intéressera.
+						a.motifDebut = motifFraction;
+					}
 				}
 
 				domicile.add(a);
@@ -463,16 +431,18 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine les données d'assujettissements brutes pour les rattachements de type économique.
 	 *
-	 * @param secondaires     les fors secondaires d'un contribuable
-	 * @param fractionnements la liste des fractionnements d'assujettissement calculés lors de l'analyse des fors principaux
+	 * @param secondaires            les fors secondaires d'un contribuable
+	 * @param fractionnements        la liste des fractionnements d'assujettissement calculés lors de l'analyse des fors principaux
+	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, List<Fraction> fractionnements) throws AssujettissementException {
+	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
+			AssujettissementException {
 		List<Data> economique = new ArrayList<Data>();
 		// Détermine les assujettissements pour le rattachement de type économique
 		for (ForFiscalSecondaire f : secondaires) {
-			final Data a = determine(f, fractionnements);
+			final Data a = determine(f, fractionnements, noOfsCommunesVaudoises);
 			if (a != null) {
 				economique.add(a);
 			}
@@ -1230,11 +1200,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine les données d'assujettissement pour un for fiscal principal.
 	 *
-	 * @param forPrincipal le for fiscal dont on veut calculer l'assujettissement (plus ceux qui précèdent et suivent immédiatement)
+	 * @param forPrincipal           le for fiscal dont on veut calculer l'assujettissement (plus ceux qui précèdent et suivent immédiatement)
+	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return les données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Data determine(ForFiscalPrincipalContext forPrincipal) throws AssujettissementException {
+	private static Data determine(ForFiscalPrincipalContext forPrincipal, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final Data data;
 		final ForFiscalPrincipal current = forPrincipal.current;
@@ -1247,7 +1218,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 				final MotifRattachement motifRattachement = current.getMotifRattachement();
-				if (motifRattachement == MotifRattachement.DIPLOMATE_SUISSE) {
+
+				if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(forPrincipal.current.getNumeroOfsAutoriteFiscale())) {
+					// [SIFISC-1769] le for principal est sur une autre commune : non-assujetti du point de vue des communes vaudoises spécifiées.
+					data = new Data(adebut, afin, null, null, Type.NonAssujetti, current.getTypeAutoriteFiscale());
+				}
+				else if (motifRattachement == MotifRattachement.DIPLOMATE_SUISSE) {
 					// cas particulier du diplomate suisse basé à l'étranger
 					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.DiplomateSuisse, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				}
@@ -1269,7 +1245,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 		case COMMUNE_HC:
 		case PAYS_HS: {
 
-			if (isSource(current.getModeImposition())) {
+			// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
+			if (isSource(current.getModeImposition()) && noOfsCommunesVaudoises == null) {
 
 				final Type type = getAType(current.getModeImposition());
 				final RegDate adebut = determineDateDebutAssujettissement(forPrincipal);
@@ -1309,10 +1286,15 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_1 || modeImposition == ModeImposition.MIXTE_137_2;
 	}
 
-	private static Data determine(ForFiscalSecondaire ffs, List<Fraction> fractionnements) throws AssujettissementException {
+	private static Data determine(ForFiscalSecondaire ffs, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final RegDate debut = ffs.getDateDebut();
 		final RegDate fin = ffs.getDateFin();
+
+		if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(ffs.getNumeroOfsAutoriteFiscale())) {
+			// [SIFISC-1769] le for secondaire n'est pas sur une des communes vaudoises spécifiées : pas d'assujettissement.
+			return null;
+		}
 
 		// La période d'assujettissement en raison d'un rattachement économique s'étend à toute l'année pour tous les types de
 		// rattachement (art. 8 al. 6 LI). Sauf en cas de décès, veuvage, départ ou arrivée hors-Suisse, où la durée
