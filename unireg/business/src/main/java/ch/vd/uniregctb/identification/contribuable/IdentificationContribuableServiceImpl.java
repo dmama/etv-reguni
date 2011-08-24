@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -45,6 +47,7 @@ import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Canton;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -446,7 +449,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
 			throws ServiceInfrastructureException {
 		if (!personne.isHabitantVD() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
-				&& messageFromCanton(message)) {
+				&& isAdresseFromCantonEmetteur(message)) {
 			CriteresPersonne criteres = message.getDemande().getPersonne();
 
 			if (criteres.getNAVS13() != null) {
@@ -523,28 +526,32 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
-	private boolean messageFromCanton(IdentificationContribuable message) throws ServiceInfrastructureException {
-		String emetteur = message.getDemande().getEmetteurId();
-		Integer npa = null;
-		if (message.getDemande().getPersonne().getAdresse() != null) {
-			npa = message.getDemande().getPersonne().getAdresse().getNpaSuisse();
+	protected boolean isAdresseFromCantonEmetteur(IdentificationContribuable message) throws ServiceInfrastructureException {
+		final CriteresAdresse adresse = message.getDemande().getPersonne().getAdresse();
+		if (adresse != null) {
+			final String emetteur = message.getDemande().getEmetteurId();
+			final String sigle = getSigleCantonEmetteur(emetteur);
+			final Integer npa = adresse.getNpaSuisse();
+			if (npa != null && sigle != null) {
+				final Localite localite = infraService.getLocaliteByNPA(npa);
+				if (localite != null) {
+					final Commune commune = localite.getCommuneLocalite();
+					return commune != null && sigle.equals(commune.getSigleCanton());
+				}
+			}
 		}
-		String sigle = StringUtils.substring(emetteur, 2, 4);
+		return false;
+	}
 
-		if (npa != null) {
-			Localite localite = infraService.getLocaliteByNPA(npa);
-			if (sigle.equals(localite.getCommuneLocalite().getSigleCanton())) {
-				return true;
-			}
-			else {
-				return false;
-			}
-
+	protected static String getSigleCantonEmetteur(String emetteurId) {
+		final Pattern pattern = Pattern.compile("[0-9]-([A-Z]{2})-[0-9]");
+		final Matcher matcher = pattern.matcher(emetteurId == null ? StringUtils.EMPTY : emetteurId);
+		if (matcher.matches()) {
+			return matcher.group(1);
 		}
 		else {
-			return false;
+			return null;
 		}
-
 	}
 
 	/**
@@ -1200,16 +1207,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public String getNomCantonFromEmetteurId(String emetteurId) {
 
-		String sigle = StringUtils.substring(emetteurId, 2, 4);
+		final String sigle = getSigleCantonEmetteur(emetteurId);
 		Canton canton = null;
 
-		try {
-			canton = infraService.getCantonBySigle(sigle);
-		}
-		catch (ServiceInfrastructureException e) {
-			// On a pas réussi a resoudre le canton,
-			//on renvoie l'emetteur id telquel
-			canton = null;
+		if (sigle != null) {
+			try {
+				canton = infraService.getCantonBySigle(sigle);
+			}
+			catch (ServiceInfrastructureException e) {
+				// On n'a pas réussi à résoudre le canton,
+				// on renvoie l'emetteur id telquel
+				canton = null;
+			}
 		}
 
 		if (canton != null && canton.getNomMinuscule() != null) {

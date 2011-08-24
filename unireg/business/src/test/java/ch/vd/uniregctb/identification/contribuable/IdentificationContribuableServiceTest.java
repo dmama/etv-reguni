@@ -335,7 +335,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 					criteres.setDateNaissance(date(1953, 12, 3));
 					criteres.setAdresse(adresse);
 					criteres.setSexe(Sexe.MASCULIN);
-					IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+					IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
 					message.setLogCreationDate(RegDate.get().asJavaDate());
 					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
 					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
@@ -414,7 +414,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setDateNaissance(date(1900, 1, 1));
 		criteres.setAdresse(adresse);
 
-		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 		doInTransaction(new TxCallback<Object>() {
 			@Override
@@ -497,7 +497,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setNAVS11("97750420110");
 
 
-		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 		doInTransaction(new TxCallback<Object>() {
 			@Override
@@ -566,7 +566,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setNAVS11("97750420110");
 
 
-		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 		doInTransaction(new TxCallback<Object>() {
 			@Override
@@ -658,7 +658,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 					criteres.setDateNaissance(date(1953, 12, 3));
 					criteres.setAdresse(adresse);
 					criteres.setSexe(Sexe.MASCULIN);
-					IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+					IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
 					message.setLogCreationDate(RegDate.get().asJavaDate());
 					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
 					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
@@ -856,19 +856,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setDateNaissance(date(1953, 12, 3));
 		criteres.setAdresse(adresse);
 		criteres.setSexe(Sexe.MASCULIN);
-		IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+		IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
 
 		String nomCanton = service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
 		assertEquals("Berne", nomCanton);
 
-		message = createDemandeFromCanton(criteres, "2-SS-5");
+		message = createDemandeWithEmetteurId(criteres, "2-SS-5");
 		nomCanton = service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
 		assertEquals("2-SS-5", nomCanton);
-
-
 	}
-
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2094,7 +2091,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 
-	private static IdentificationContribuable createDemandeFromCanton(CriteresPersonne personne, String emetteurId) {
+	private static IdentificationContribuable createDemandeWithEmetteurId(CriteresPersonne personne, String emetteurId) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
 		header.setBusinessUser("Test");
@@ -2154,5 +2151,55 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testExtractionCantonEmetteur() throws Exception {
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur(null));
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur(""));
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur("12367124567"));
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur("12VD34"));
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur("1-VD-60"));
+		Assert.assertNull(IdentificationContribuableServiceImpl.getSigleCantonEmetteur("12-VD-6"));
+		Assert.assertEquals("VD", IdentificationContribuableServiceImpl.getSigleCantonEmetteur("1-VD-6"));
+		Assert.assertEquals("VS", IdentificationContribuableServiceImpl.getSigleCantonEmetteur("3-VS-4"));
+	}
+
+	@Test
+	public void testAdresseFromCantonEmetteur() throws Exception {
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNom("Tartempion");
+		personne.setPrenoms("Toto");
+		final CriteresAdresse adresse = new CriteresAdresse();
+		adresse.setNpaSuisse(MockLocalite.Bumpliz.getNPA());
+		personne.setAdresse(adresse);
+		{
+			final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "2-BE-3");
+			Assert.assertTrue(service.isAdresseFromCantonEmetteur(ident));
+		}
+		{
+			final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "2-VS-3");
+			Assert.assertFalse(service.isAdresseFromCantonEmetteur(ident));
+		}
+		{
+			final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "CABETO");
+			Assert.assertFalse(service.isAdresseFromCantonEmetteur(ident));
+		}
+	}
+
+	@Test
+	public void testNpaFarfelu() throws Exception {
+		// SIFISC-2104 : on imagine une identification manuelle d'un message du canton de Berne avec une localité dont le NPA est farfelu (9999, ça s'est vu) ;
+		// lors du test pour savoir si le canton émetteur de la demande est bien celui de domicile du contribuable, il ne faut pas que cela explose
+		// sous prétexte que le NPA ne correspond à rien...
+
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNom("Toto");
+		final CriteresAdresse adresse = new CriteresAdresse();
+		adresse.setNpaSuisse(9999);
+		personne.setAdresse(adresse);
+		final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "2-BE-3");
+
+		Assert.assertFalse(service.isAdresseFromCantonEmetteur(ident));
 	}
 }
