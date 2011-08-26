@@ -69,21 +69,7 @@ public class ParamPeriodeController extends AbstractController {
 		model.put("modeleSelectionne", modeleSelectionne);
 		if (modeleSelectionne != null) {
 			List<ModeleFeuilleDocument> feuilles = new ArrayList<ModeleFeuilleDocument>(modeleSelectionne.getModelesFeuilleDocument());
-			Collections.sort(feuilles, new Comparator<ModeleFeuilleDocument>() {
-				@Override
-				public int compare(ModeleFeuilleDocument o1, ModeleFeuilleDocument o2) {
-					if (o1.getNumeroFormulaire() == null && o2.getNumeroFormulaire() == null) {
-						return 0;
-					}
-					if (o1.getNumeroFormulaire() == null) {
-						return -1;
-					}
-					if (o2.getNumeroFormulaire() == null) {
-						return 1;
-					}
-					return o1.getNumeroFormulaire().compareTo(o2.getNumeroFormulaire());
-				}
-			});
+			Collections.sort(feuilles, new ModeleFeuilleDocumentComparator());
 			model.put("feuilles", feuilles);			
 		} else {
 			model.put("feuilles", null);
@@ -166,9 +152,4 @@ public class ParamPeriodeController extends AbstractController {
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
 	}
-	
-	
-	
-
-
 }

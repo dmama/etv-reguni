@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-public class ModeleFeuilleDocumentEditique implements Comparable<ModeleFeuilleDocumentEditique>{
+public class ModeleFeuilleDocumentEditique {
 
 	private String intituleFeuille;
 	private Integer nbreIntituleFeuille;
@@ -25,19 +25,4 @@ public class ModeleFeuilleDocumentEditique implements Comparable<ModeleFeuilleDo
 	public void setNumeroFormulaire(String numeroFormulaire) {
 		this.numeroFormulaire = numeroFormulaire;
 	}
-
-	/**
-	 * Compare d'apres le numeroFormulaire de ModeleFeuilleDocumentView
-	 *
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(ModeleFeuilleDocumentEditique modeleFeuilleDocumentView) {
-		String numeroFormulaire = getNumeroFormulaire();
-		String autreNumeroFormulaire = modeleFeuilleDocumentView.getNumeroFormulaire();
-
-		int value = numeroFormulaire.compareTo(autreNumeroFormulaire);
-		return value;
-	}
-
 }

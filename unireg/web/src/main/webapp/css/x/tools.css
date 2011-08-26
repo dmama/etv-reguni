@@ -36,6 +36,9 @@ a.selectionner,
 a.correction,
 a.notes,
 a.replay,
+a.moveUp,
+a.moveDown,
+a.padding,
 a.pdf,
 span.pdf-grayed,
 a.key,
@@ -65,6 +68,9 @@ a.selectionner:hover,
 a.correction:hover,
 a.notes:hover,
 a.replay:hover,
+a.moveUp:hover,
+a.moveDown:hover,
+a.padding:hover,
 a.pdf:hover,
 span.pdf-grayed:hover
 a.key:hover,
@@ -251,4 +257,12 @@ a.replay {
 }
 a.replay:hover {
 	background-image: url(replay_button_on.gif);
+}
+
+a.moveUp {
+	background-image: url(moveup.gif);
+}
+
+a.moveDown {
+	background-image: url(movedown.gif);
 }

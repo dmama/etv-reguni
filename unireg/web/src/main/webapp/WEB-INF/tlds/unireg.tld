@@ -701,6 +701,80 @@
 	</tag>
 
 	<tag>
+		<name>raccourciMoveUp</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$MoveUp</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône pour monter d'un cran une ressource</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciMoveDown</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$MoveDown</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône pour descendre d'un cran une ressource</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>callstack</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagCallstack</tag-class>
 		<body-content>JSP</body-content>

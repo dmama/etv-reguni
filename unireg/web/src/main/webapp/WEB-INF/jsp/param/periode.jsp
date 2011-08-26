@@ -229,7 +229,7 @@
 						<th class="colonneFeuille">&nbsp;</th>
 						<th class="colonneFeuilleAction" ><fmt:message key="title.param.action"/></th>
 					</tr>
-					<c:forEach var="feuille" items="${feuilles}">
+					<c:forEach var="feuille" varStatus="i" items="${feuilles}">
 						<tr class="odd">
 							<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
 							<td class="colonneFeuille">${feuille.numeroFormulaire}</td>
@@ -240,6 +240,15 @@
 								</c:if>&nbsp;
 							</td>
 							<td class="colonneFeuilleAction" class="colonneAction">
+								<c:if test="${i.index > 0}">
+									<unireg:raccourciMoveUp link="feuille/move.do?mfd=${feuille.id}&dir=UP" tooltip="Monte d'un cran la feuille"/>
+									<c:if test="${i.index == fn:length(feuilles) - 1}">
+										<a href="#" class="padding noprint">&nbsp;</a>
+									</c:if>
+								</c:if>
+								<c:if test="${i.index < fn:length(feuilles) - 1}">
+									<unireg:raccourciMoveDown link="feuille/move.do?mfd=${feuille.id}&dir=DOWN" tooltip="Descend d'un cran la feuille"/>
+								</c:if>
 								<unireg:raccourciModifier link="feuille/edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
 								<unireg:raccourciAnnuler link="feuille/suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
 							</td>

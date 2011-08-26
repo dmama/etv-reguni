@@ -36,7 +36,7 @@ create table MIGREG_ERROR (id number(19,0) not null, FOR_PRINCIPAL_CTB nvarchar2
 
 create table MODELE_DOCUMENT (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), TYPE_DOCUMENT nvarchar2(32), PERIODE_ID number(19,0), primary key (id));
 
-create table MODELE_FEUILLE_DOC (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), INTITULE_FEUILLE nvarchar2(255), NO_FORMULAIRE nvarchar2(255), MODELE_ID number(19,0), primary key (id));
+create table MODELE_FEUILLE_DOC (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), SORT_INDEX number(10,0), INTITULE_FEUILLE nvarchar2(255), NO_FORMULAIRE nvarchar2(255), MODELE_ID number(19,0), primary key (id));
 
 create table MOUVEMENT_DOSSIER (MVT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_MOUVEMENT number(10,0), ETAT nvarchar2(15) not null, NUMERO_INDIVIDU number(19,0), CTB_ID number(19,0), COLL_ADMIN_EMETTRICE_ID number(19,0), BORDEREAU_ID number(19,0), COLL_ADMIN_DEST_ID number(19,0), COLL_ADMIN_RECEPTRICE_ID number(19,0), primary key (id));
 

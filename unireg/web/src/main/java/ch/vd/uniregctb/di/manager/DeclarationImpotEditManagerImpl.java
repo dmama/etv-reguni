@@ -60,6 +60,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
@@ -1043,8 +1044,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		for (ModeleDocument modele : modelesDocument) {
 			if (modele.getTypeDocument() != TypeDocument.LISTE_RECAPITULATIVE && modele.getTypeDocument() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
 
+				// [SIFISC-2066] on trie les feuilles dans l'ordre spécifié dans la paramétrisation
+				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<ModeleFeuilleDocument>(modele.getModelesFeuilleDocument());
+				Collections.sort(modelesFeuilleDocument, new ModeleFeuilleDocumentComparator());
+
 				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<ModeleFeuilleDocumentEditique>();
-				for (ModeleFeuilleDocument modeleFeuilleDocument : modele.getModelesFeuilleDocument()) {
+				for (ModeleFeuilleDocument modeleFeuilleDocument : modelesFeuilleDocument) {
 
 					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 					final int nbreFeuilles;
@@ -1066,9 +1071,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
 					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
 				}
+				
 				final ModeleDocumentView modeleView = new ModeleDocumentView();
 				modeleView.setTypeDocument(modele.getTypeDocument());
-				Collections.sort(modelesFeuilleDocumentView);
 				modeleView.setModelesFeuilles(modelesFeuilleDocumentView);
 				modelesDocumentView.add(modeleView);
 			}

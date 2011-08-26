@@ -45,6 +45,11 @@ public class ModeleFeuilleDocument extends HibernateEntity {
 	 */
 	private ModeleDocument modeleDocument;
 
+	/**
+	 * Index qui permet d'ordonner les feuilles pour un modèle donné (SIFISC-2066).
+	 */
+	private Integer index;
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -143,5 +148,14 @@ public class ModeleFeuilleDocument extends HibernateEntity {
 		// begin-user-code
 		modeleDocument = theModeleDocument;
 		// end-user-code
+	}
+
+	@Column(name = "SORT_INDEX")
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 }

@@ -92,6 +92,7 @@
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="modeleFeuilleDocumentDAO" ref = "modeleFeuilleDocumentDAO"/>
 	</bean>
 
 	<bean id="abstractParamModeleFeuilleDocumentController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.param.AbstractParamModeleFeuilleDocumentController">

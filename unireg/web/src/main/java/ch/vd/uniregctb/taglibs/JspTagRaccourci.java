@@ -249,4 +249,26 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		}
 	}
 
+	/**
+	 * Monte d'un cran
+	 */
+	public static class MoveUp extends JspTagRaccourci {
+
+		@Override
+		protected String getCssClass() {
+			return "moveUp";
+		}
+	}
+
+	/**
+	 * Descend d'un cran
+	 */
+	public static class MoveDown extends JspTagRaccourci {
+
+		@Override
+		protected String getCssClass() {
+			return "moveDown";
+		}
+	}
+
 }
