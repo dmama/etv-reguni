@@ -135,9 +135,6 @@
 				<entry key="/param/parametres-pf-edit.do" value-ref="paramParametrePeriodeFiscaleEditController" />
 				<entry key="/param/modele-add.do" value-ref="paramModeleDocumentAddController" />
 				<entry key="/param/modele-suppr.do" value-ref="paramModeleDocumentSupprController" />
-				<entry key="/param/feuille-add.do" value-ref="paramModeleFeuilleDocumentAddController" />
-				<entry key="/param/feuille-suppr.do" value-ref="paramModeleFeuilleDocumentSupprController" />
-				<entry key="/param/feuille-edit.do" value-ref="paramModeleFeuilleDocumentEditController" />
 
 				<!-- Tiers - display -->
 				<entry key="/tiers/list.do" value-ref="tiersListController" />

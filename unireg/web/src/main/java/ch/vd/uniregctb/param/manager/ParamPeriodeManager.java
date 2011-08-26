@@ -11,6 +11,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
+import ch.vd.uniregctb.type.ModeleFeuille;
 
 public interface ParamPeriodeManager {
 
@@ -161,17 +162,20 @@ public interface ParamPeriodeManager {
 
 	/**
 	 * Sauvegarde le formulaire contenant un {@link ModeleFeuilleDocument} en Ajout
-	 *  
-	 * @param command
+	 *
+	 * @param idModele
+	 * @param modeleFeuille
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void saveModeleFeuilleDocumentViewAdd (ModeleFeuilleDocumentView mfdv);
+	void addFeuille(Long idModele, ModeleFeuille modeleFeuille);
 	
 	/**
 	 * Sauvegarde le formulaire contenant un {@link ModeleFeuilleDocument} en Edition
 	 *  
+	 * @param idFeuille
+	 * @param modeleFeuille
 	 * @param command
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void saveModeleFeuilleDocumentViewEdit (ModeleFeuilleDocumentView mfdv);
+	void updateFeuille(Long idFeuille, ModeleFeuille modeleFeuille);
 }

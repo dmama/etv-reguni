@@ -213,7 +213,7 @@
 								<fmt:param value="${periodeSelectionnee.annee}" />
 								<fmt:param value="${libTypeDocument}" />
 						</fmt:message>
-						<a href="feuille-add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
+						<a href="feuille/add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
 						</td>
 						<td width="25%">&nbsp;</td>
 						<td width="25%">&nbsp;</td>
@@ -240,8 +240,8 @@
 								</c:if>&nbsp;
 							</td>
 							<td class="colonneFeuilleAction" class="colonneAction">
-								<unireg:raccourciModifier link="feuille-edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
-								<unireg:raccourciAnnuler link="feuille-suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
+								<unireg:raccourciModifier link="feuille/edit.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}" tooltip="${periodeEtModele}"/>
+								<unireg:raccourciAnnuler link="feuille/suppr.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}&mfd=${feuille.id}"/>
 							</td>
 						</tr>
 					</c:forEach>

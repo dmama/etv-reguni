@@ -88,29 +88,8 @@
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
 	</bean>
-	
-	<bean id="paramModeleFeuilleDocumentAddController"
-			class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentAddController"
-			parent="abstractParamModeleFeuilleDocumentController">
-		<property name="sessionForm" value="false" />
-		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="param/feuille-add" />
-		<property name="successView" value="param/refresh-parent-periode" />
-		<property name="validator" ref="modeleFeuilleDocumentValidator" />
-	</bean>
-	
-	<bean 	id="paramModeleFeuilleDocumentEditController"
-			class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentEditController"
-			parent="abstractParamModeleFeuilleDocumentController">
-		<property name="sessionForm" value="false" />
-		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="param/feuille-edit" />
-		<property name="validator" ref="modeleFeuilleDocumentValidator"/>
-	</bean>
-		
-	<bean id="paramModeleFeuilleDocumentSupprController" class="ch.vd.uniregctb.param.ParamModeleFeuilleDocumentSupprController">
+
+	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
 	</bean>

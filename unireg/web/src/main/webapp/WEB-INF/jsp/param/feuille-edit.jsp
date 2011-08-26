@@ -11,9 +11,12 @@
 			<legend><fmt:message key="label.param.feuille-edit" /></legend>
 			<jsp:include page="feuille.jsp"/>
 		</fieldset>
+		<form:hidden path="idPeriode" value="${command.idPeriode}"/>
+		<form:hidden path="idModele" value="${command.idModele}"/>
+		<form:hidden path="idFeuille" value="${command.idFeuille}"/>
 		<div>
 			<input type="submit" value="<fmt:message key="label.bouton.mettre.a.jour" />">
-			<input type="button" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='periode.do?pf=${command.idPeriode}&md=${command.idModele}'">
+			<input type="button" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='../periode.do?pf=${command.idPeriode}&md=${command.idModele}'">
 		</div>
 	</form:form>	
 	</tiles:put>

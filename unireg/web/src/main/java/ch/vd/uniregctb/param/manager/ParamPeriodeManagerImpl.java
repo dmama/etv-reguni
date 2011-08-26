@@ -257,20 +257,20 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveModeleFeuilleDocumentViewAdd(ModeleFeuilleDocumentView mfdv) {
+	public void addFeuille(Long idModele, ModeleFeuille modeleFeuille) {
+		ModeleDocument md = modeleDocumentDAO.get(idModele);
 		ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
-		mfd.setNumeroFormulaire(mfdv.getModeleFeuille().getCode());
-		mfd.setIntituleFeuille(mfdv.getModeleFeuille().getDescription());
-		ModeleDocument md = modeleDocumentDAO.get(mfdv.getIdModele());
+		mfd.setNumeroFormulaire(modeleFeuille.getCode());
+		mfd.setIntituleFeuille(modeleFeuille.getDescription());
 		md.addModeleFeuilleDocument(mfd);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveModeleFeuilleDocumentViewEdit(ModeleFeuilleDocumentView mfdv) {
-		ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(mfdv.getIdFeuille());
-		mfd.setNumeroFormulaire(mfdv.getModeleFeuille().getCode());
-		mfd.setIntituleFeuille(mfdv.getModeleFeuille().getDescription());
+	public void updateFeuille(Long idFeuille, ModeleFeuille modeleFeuille) {
+		final ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(idFeuille);
+		mfd.setNumeroFormulaire(modeleFeuille.getCode());
+		mfd.setIntituleFeuille(modeleFeuille.getDescription());
 	}
 
 	@Override
