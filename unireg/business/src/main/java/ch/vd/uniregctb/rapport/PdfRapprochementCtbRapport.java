@@ -158,7 +158,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
 	}
 
 	private static String convertNullToEmpty(RegDate data) {
-		return data == null ? StringUtils.EMPTY : data.toString();
+		return data == null ? StringUtils.EMPTY : RegDateHelper.dateToDisplayString(data);
 	}
 
 	private static String convertNullToEmpty(Long data) {

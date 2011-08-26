@@ -45,6 +45,22 @@ public class RapprocherCtbRegistreFoncierJobTest extends BusinessTest {
 	}
 
 	@Test
+	public void testDateOfBirthWithSlashes() throws Exception {
+		final byte[] csv = "1234;Tartempion;Amédée;12/4/1976;10000421".getBytes(ENCODING);
+		final List<ProprietaireFoncier> proprios = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(csv, new LoggingStatusManager(LOGGER));
+		Assert.assertNotNull(proprios);
+		Assert.assertEquals(1, proprios.size());
+
+		final ProprietaireFoncier p = proprios.get(0);
+		Assert.assertNotNull(p);
+		Assert.assertEquals(1234L, p.getNumeroRegistreFoncier());
+		Assert.assertEquals("Tartempion", p.getNom());
+		Assert.assertEquals("Amédée", p.getPrenom());
+		Assert.assertEquals(date(1976, 4, 12), p.getDateNaissance());
+		Assert.assertEquals(10000421L, (long) p.getNumeroContribuable());
+	}
+
+	@Test
 	public void testExtractWithoutNoCtb() throws Exception {
 		final byte[] csv = "1234;Tartempion;Amédée;12.4.1976;".getBytes(ENCODING);
 		final List<ProprietaireFoncier> proprios = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(csv, new LoggingStatusManager(LOGGER));
