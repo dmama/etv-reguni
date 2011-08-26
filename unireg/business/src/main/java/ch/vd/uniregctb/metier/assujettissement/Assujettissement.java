@@ -981,8 +981,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 				afin = getDernier31Decembre(fin);
 			}
 		}
-		else if (next != null && ((roleSourcierPur(next) && roleSourcierMixte(current)) || (roleSourcierMixte(next) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement.
+		// [SIFISC-1769] on applique la même distinction sur le type d'autorité fiscale en cas de passage pur/ordinaire/mixte que dans la méthode isFractionFermeture()
+		else if (next != null && ((roleSourcierPur(current) && roleOrdinaireNonMixte(next)) || (roleOrdinaireNonMixte(current) && roleSourcierPur(next)))) {
+			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
+			afin = fin;
+		}
+		else if (next != null && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
+				((roleSourcierPur(current) && roleSourcierMixte(next)) || (roleSourcierMixte(current) && roleSourcierPur(next)))) {
+			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
 			afin = fin;
 		}
 		else if (isArriveeHCApresDepartHSMemeAnnee(current) && !roleSourcierPur(current)) {

@@ -2889,7 +2889,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement
 		// au 31 décembre pour motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré
-		addForPrincipal(paul, date(2005,10, 1), MotifFor.ARRIVEE_HC, date(2005, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(2005, 10, 1), MotifFor.ARRIVEE_HC, date(2005, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2006,1, 1), MotifFor.INDETERMINE, date(2006, 12, 31), MotifFor.DEPART_HC, MockCommune.Cossonay);
 
 		// 2004
@@ -3142,7 +3142,7 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	/**
-	 * Cas trouvé en testant le batch des rôles
+	 * [SIFISC-1769] Cas trouvé en testant le batch des rôles
 	 * Exemple apparemment qui revient à chaque fois :
 	 *  - for HS
 	 *  - arrivée principale VD (mixte 2) avec for secondaire (et oui, mixte 2 quand-même !)dans autre commune (déjà présent ou débutant à l'arrivée, peu importe, apparemment)
@@ -3171,10 +3171,30 @@ public class AssujettissementTest extends MetierTest {
 		final List<Assujettissement> listeBussigny = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFSEtendu()));
 		assertNull(listeBussigny);
 
-		// c'est ici que cela explose !
+		// c'est ici que cela explosait !
 		final List<Assujettissement> listeVevey = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
 		assertEquals(1, listeVevey.size());
 		assertSourcierMixte(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
+	}
+
+	/**
+	 * [SIFISC-1769] Autre cas trouvé en testant le batch des rôles
+	 *
+	 * Vérifie que le calcul de l'assujettissement pour une commune ne provoque par de chevauchement en cas de passage de hors-canton source pur à vaudois mixte.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePourCommunePassageHCSourcePurAVaudoisMixte() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2007, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2007, 8, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
+		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
+		assertEquals(1, liste.size());
+		assertSourcierMixte(date(2007, 1, 1), null, MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@Test
