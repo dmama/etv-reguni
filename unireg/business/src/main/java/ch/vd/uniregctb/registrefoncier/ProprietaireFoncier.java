@@ -8,10 +8,9 @@ public class ProprietaireFoncier {
     private String nom;
     private String prenom;
     private RegDate dateNaissance;
-    private long numeroContribuable;
+    private Long numeroContribuable;
 
-
-    public ProprietaireFoncier(long numeroRegistreFoncier, String nom, String prenom, RegDate dateNaissance, long numeroContribuable) {
+    public ProprietaireFoncier(long numeroRegistreFoncier, String nom, String prenom, RegDate dateNaissance, Long numeroContribuable) {
         this.numeroRegistreFoncier = numeroRegistreFoncier;
         this.nom = nom;
         this.prenom = prenom;
@@ -19,13 +18,12 @@ public class ProprietaireFoncier {
         this.numeroContribuable = numeroContribuable;
     }
 
-    public ProprietaireFoncier(ProprietaireFoncier proprio){
+    protected ProprietaireFoncier(ProprietaireFoncier proprio) {
     	this.dateNaissance = proprio.getDateNaissance();
     	this.nom = proprio.getNom();
     	this.prenom = proprio.getPrenom();
     	this.numeroContribuable = proprio.getNumeroContribuable();
     	this.numeroRegistreFoncier = proprio.getNumeroRegistreFoncier();
-
     }
 
     public long getNumeroRegistreFoncier() {
@@ -60,11 +58,16 @@ public class ProprietaireFoncier {
         this.dateNaissance = dateNaissance;
     }
 
-    public long getNumeroContribuable() {
+    public Long getNumeroContribuable() {
         return numeroContribuable;
     }
 
-    public void setNumeroContribuable(long numeroContribuable) {
+    public void setNumeroContribuable(Long numeroContribuable) {
         this.numeroContribuable = numeroContribuable;
     }
+
+	@Override
+	public String toString() {
+		return String.valueOf(numeroRegistreFoncier);
+	}
 }

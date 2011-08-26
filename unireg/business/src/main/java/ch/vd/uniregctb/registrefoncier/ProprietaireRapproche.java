@@ -7,12 +7,41 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 	private String nom1;
 	private String prenom1;
 	private RegDate dateNaissance1;
-	private long numeroContribuable1;
+	private Long numeroContribuable1;
+
 	private String nom2;
 	private String prenom2;
 	private RegDate dateNaissance2;
-	private long numeroContribuable2;
+	private Long numeroContribuable2;
+
 	private String formulePolitesse;
+	private String nomCourrier1;
+	private String nomCourrier2;
+	private CodeRetour resultat;
+
+	public static enum CodeRetour {
+		INDIVIDU_TROUVE_EXACT("00"),
+		INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE("10"),
+		INDIVIDU_TROUVE_NON_EXACT("20"),
+		INDIVIDUS_TROUVE_NON_EXACT("21"),
+		CTB_NON_TROUVE("30"),
+		INDIVIDU_NON_TROUVE("31"),
+		PLUS_DE_DEUX_INDIV_TROUVES("32");
+
+		private final String valeur;
+
+		private CodeRetour(String valeur) {
+			this.valeur = valeur;
+		}
+
+		public String getValeur() {
+			return valeur;
+		}
+	}
+
+	public ProprietaireRapproche(ProprietaireFoncier proprio) {
+		super(proprio);
+	}
 
 	public String getFormulePolitesse() {
 		return formulePolitesse;
@@ -36,19 +65,6 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 
 	public void setNomCourrier2(String nomCourrier2) {
 		this.nomCourrier2 = nomCourrier2;
-	}
-
-	private String nomCourrier1;
-	private String nomCourrier2;
-	private String resultat;
-
-	public ProprietaireRapproche(long numeroRegistreFoncier, String nom, String prenom, RegDate dateNaissance, long numeroContribuable) {
-		super(numeroRegistreFoncier, nom, prenom, dateNaissance, numeroContribuable);
-
-	}
-
-	public ProprietaireRapproche(ProprietaireFoncier proprio) {
-		super(proprio);
 	}
 
 	public String getNom1() {
@@ -75,11 +91,11 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 		this.dateNaissance1 = dateNaissance1;
 	}
 
-	public long getNumeroContribuable1() {
+	public Long getNumeroContribuable1() {
 		return numeroContribuable1;
 	}
 
-	public void setNumeroContribuable1(long numeroContribuable1) {
+	public void setNumeroContribuable1(Long numeroContribuable1) {
 		this.numeroContribuable1 = numeroContribuable1;
 	}
 
@@ -107,20 +123,19 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 		this.dateNaissance2 = dateNaissance2;
 	}
 
-	public long getNumeroContribuable2() {
+	public Long getNumeroContribuable2() {
 		return numeroContribuable2;
 	}
 
-	public void setNumeroContribuable2(long numeroContribuable2) {
+	public void setNumeroContribuable2(Long numeroContribuable2) {
 		this.numeroContribuable2 = numeroContribuable2;
 	}
 
-	public String getResultat() {
+	public CodeRetour getResultat() {
 		return resultat;
 	}
 
-	public void setResultat(String resultat) {
+	public void setResultat(CodeRetour resultat) {
 		this.resultat = resultat;
 	}
-
 }

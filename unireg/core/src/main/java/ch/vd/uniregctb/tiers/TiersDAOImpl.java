@@ -755,7 +755,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
     @Override
     public Contribuable getContribuableByNumero(Long numeroContribuable) {
-        LOGGER.debug("Recherche du contribuable dont le numéro est:" + numeroContribuable);
+	    if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Recherche du contribuable dont le numéro est:" + numeroContribuable);
+	    }
         return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
     }
 
@@ -764,7 +766,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
      */
     @Override
     public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
-        LOGGER.debug("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
+	    if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
+	    }
         return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
     }
 
@@ -779,7 +783,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     @Override
     @SuppressWarnings("unchecked")
     public List<PersonnePhysique> getSourciers(int noSourcier) {
-        LOGGER.debug("Recherche d'un sourcier dont le numéro est:" + noSourcier);
+	    if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Recherche d'un sourcier dont le numéro est:" + noSourcier);
+	    }
         Object[] criteria = {noSourcier};
         String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = ?";
         return (List<PersonnePhysique>) getHibernateTemplate().find(query, criteria);
@@ -788,7 +794,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     @Override
     @SuppressWarnings("unchecked")
     public List<PersonnePhysique> getAllMigratedSourciers() {
-        LOGGER.debug("Recherche de tous les sourciers migrés");
+	    if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Recherche de tous les sourciers migrés");
+	    }
         String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
         return (List<PersonnePhysique>) getHibernateTemplate().find(query);
     }

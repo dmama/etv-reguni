@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,18 +16,21 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -48,95 +50,69 @@ public class RapprocherCtbProcessor {
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
-	private HashMap<Long, ProprietaireFoncier> mapProprio;
+	private final ServiceCivilService serviceCivil;
 
-	private final String INDIVIDU_TROUVE_EXACT = "00";
-	private final String INDIVIDU_TROUVE_SANS_NAISSANCE = "10";
-	private final String INDIVIDU_TROUVE_NON_EXACT = "20";
-	private final String INDIVIDUS_TROUVE_NON_EXACT = "21";
-	private final String CTB_NON_TROUVE = "30";
-	private final String INDIVIDU_NON_TROUVE = "31";
-	private final String PLUS_DE_DEUX_INDIV_TROUVE = "32";
-
-	private RapprocherCtbResults rapport;
-
-	public RapprocherCtbProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersDAO tiersDAO,
-			AdresseService adresseService, TiersService tiersService) {
+	public RapprocherCtbProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
-
+		this.serviceCivil = serviceCivil;
 	}
 
-	public RapprocherCtbResults run(List<ProprietaireFoncier> listeProprietaireFoncier, StatusManager s, RegDate dateTraitement) {
+	public RapprocherCtbResults run(List<ProprietaireFoncier> listeProprietairesFonciers, StatusManager s, final RegDate dateTraitement, int nbThreads) {
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
 		status.setMessage("Début du Rapprochement ...");
 
 		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement);
-		mapProprio = getMapRFIds(listeProprietaireFoncier);
-
-		final List<Long> registreFoncierIds = new ArrayList<Long>();
-		registreFoncierIds.addAll(mapProprio.keySet());
-		Collections.sort(registreFoncierIds);
-
-		final BatchTransactionTemplate<Long, RapprocherCtbResults> template = new BatchTransactionTemplate<Long, RapprocherCtbResults>(registreFoncierIds, BATCH_SIZE,
-				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template = new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
+		                                                                                                                                                             nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
+		                                                                                                                                                             status, hibernateTemplate);
 		template.setReadonly(true);
-		template.execute(rapportFinal, new BatchCallback<Long, RapprocherCtbResults>() {
+		template.execute(rapportFinal, new BatchCallback<ProprietaireFoncier, RapprocherCtbResults>() {
 
 			@Override
 			public RapprocherCtbResults createSubRapport() {
-				return new RapprocherCtbResults();
+				return new RapprocherCtbResults(dateTraitement);
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, RapprocherCtbResults r) throws Exception {
-
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch);
-				return true;
+			public boolean doInTransaction(List<ProprietaireFoncier> batch, RapprocherCtbResults r) throws Exception {
+				status.setMessage("Traitement du batch [" + batch.get(0).getNumeroRegistreFoncier() + "; " + batch.get(batch.size() - 1).getNumeroRegistreFoncier() + "] ...", percent);
+				traiterBatch(batch, r);
+				return !status.interrupted();
 			}
 		});
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();
 		return rapportFinal;
-
 	}
 
-	private HashMap<Long, ProprietaireFoncier> getMapRFIds(List<ProprietaireFoncier> listeProprietaireFoncier) {
+	private void traiterBatch(List<ProprietaireFoncier> batch, RapprocherCtbResults rapport) throws AdresseException {
 
-		HashMap<Long, ProprietaireFoncier> mapProprio = new HashMap<Long, ProprietaireFoncier>(listeProprietaireFoncier.size());
-
-		for (ProprietaireFoncier proprietaireFoncier : listeProprietaireFoncier) {
-
-			mapProprio.put(proprietaireFoncier.getNumeroRegistreFoncier(), proprietaireFoncier);
+		// pré-chargement des tiers et individus concernés par ce lot
+		final List<Long> idCtbs = new ArrayList<Long>(batch.size());
+		for (ProprietaireFoncier p : batch) {
+			if (p.getNumeroContribuable() != null) {
+				idCtbs.add(p.getNumeroContribuable());
+			}
 		}
-		return mapProprio;
 
-	}
+		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>();
+		parts.add(TiersDAO.Parts.ADRESSES);
+		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 
-	public void traiterBatch(List<Long> batch) throws AdresseException {
+		final List<Tiers> tierz = tiersDAO.getBatch(idCtbs, parts);
+		preloadIndividus(tierz, RegDate.get().year());
 
-		/*
-		 * final Set<Parts> parts = new HashSet<Parts>(); parts.add(Parts.ADRESSES); parts.add(Parts.RAPPORTS_ENTRE_TIERS);
-		 *
-		 * final List<Tiers> tiers = tiersDAO.getBatch(batch, parts); final Map<Long, Tiers> map = new HashMap<Long, Tiers>(tiers.size());
-		 * for (Tiers t : tiers) { map.put(t.getNumero(), t); }
-		 */
+		// maintenant, le boulot d'extraction proprement dit...
+		for (ProprietaireFoncier proprietaireFoncier : batch) {
 
-		for (Long registreFoncierId : batch) {
-			ProprietaireFoncier proprietaireFoncier = mapProprio.get(registreFoncierId);
-			// Pour Chaque propriétaire, on crée la réponse
-			ProprietaireRapproche proprietaireRapproche = new ProprietaireRapproche(proprietaireFoncier);
-			Contribuable ctb = tiersDAO.getContribuableByNumero(proprietaireFoncier.getNumeroContribuable());
-
-			// (Contribuable) map.get(ctbId);
+			final ProprietaireRapproche proprietaireRapproche = new ProprietaireRapproche(proprietaireFoncier);
+			final Contribuable ctb = proprietaireFoncier.getNumeroContribuable() != null ? tiersDAO.getContribuableByNumero(proprietaireFoncier.getNumeroContribuable()) : null;
 
 			// 2.Si le contribuable est trouvé, remplir les champs FormulePolitesse NomCourrier1,
 			// NomCourrier2 avec les valeurs du contribuable et lire le ou les individus par le regroupement.
@@ -145,13 +121,11 @@ public class RapprocherCtbProcessor {
 
 			if (ctb != null) {
 
-				AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
+				final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
+				final String formuleAppel = adresseEnvoi.getFormuleAppel();
+				final List<String> nomCourrier = adresseEnvoi.getNomsPrenomsOuRaisonsSociales();
 
-				String salutations = adresseEnvoi.getSalutations();
-
-				List<String> nomCourrier = adresseEnvoi.getNomsPrenomsOuRaisonsSociales();
-
-				proprietaireRapproche.setFormulePolitesse(salutations);
+				proprietaireRapproche.setFormulePolitesse(formuleAppel);
 
 				if (nomCourrier.size() == 1) {
 					proprietaireRapproche.setNomCourrier1(nomCourrier.get(0));
@@ -162,97 +136,111 @@ public class RapprocherCtbProcessor {
 				}
 
 				if (ctb instanceof PersonnePhysique) {
-					PersonnePhysique principal = (PersonnePhysique) ctb;
-					traiterIndividu(proprietaireRapproche, principal);
-
+					final PersonnePhysique principal = (PersonnePhysique) ctb;
+					traiterPersonnePhysique(proprietaireRapproche, principal);
 				}
 				else if (ctb instanceof MenageCommun) {
-					MenageCommun menage = (MenageCommun) ctb;
+					final MenageCommun menage = (MenageCommun) ctb;
 					traiterMenageCommun(proprietaireRapproche, menage);
-
 				}
-
+				else {
+					// ni une personne physique, ni un ménage commun ?
+					// je ne crois pas que nous soyons supposés accepter ce cas, ou bien ?
+					rapport.addError(proprietaireFoncier, RapprocherCtbResults.ErreurType.CTB_NON_PP_NI_MC, null);
+					proprietaireRapproche.setResultat(ProprietaireRapproche.CodeRetour.CTB_NON_TROUVE);
+				}
 			}
 			else {
-				// 1. Si le contribuable n'est pas trouvé, mettre "Pas de contribuable trouvé" dans Résultat,
-				proprietaireRapproche.setResultat(CTB_NON_TROUVE);
-				rapport.incrementNbCtbInconnu();
+				// Si le contribuable n'est pas trouvé, mettre "Pas de contribuable trouvé" dans Résultat,
+				proprietaireRapproche.setResultat(ProprietaireRapproche.CodeRetour.CTB_NON_TROUVE);
 			}
 
 			rapport.addProprietaireRapproche(proprietaireRapproche);
 		}
-
 	}
 
-	public void traiterIndividu(ProprietaireRapproche proprietaireRapproche, PersonnePhysique personne) {
+	private void preloadIndividus(List<Tiers> tierz, int anneePeriode) {
+		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tierz.size() * 2);
+		final RegDate date = RegDate.get(anneePeriode, 12, 31);
+		for (Tiers tiers : tierz) {
+			if (tiers instanceof PersonnePhysique) {
+				final PersonnePhysique pp = (PersonnePhysique) tiers;
+				if (pp.isConnuAuCivil()) {
+					final Long noIndividu = pp.getNumeroIndividu();
+					ppByNoIndividu.put(noIndividu, pp);
+				}
+			}
+			else if (tiers instanceof MenageCommun) {
+				final Set<PersonnePhysique> membres = tiersService.getComposantsMenage((MenageCommun) tiers, date);
+				if (membres != null) {
+					for (PersonnePhysique pp : membres) {
+						if (pp.isConnuAuCivil()) {
+							ppByNoIndividu.put(pp.getNumeroIndividu(), pp);
+						}
+					}
+				}
+			}
+		}
 
-		if (personne.isHabitantVD()) {
+		if (ppByNoIndividu.size() > 0) {
+			// remplit le cache des individus...
+			final List<Individu> individus = serviceCivil.getIndividus(ppByNoIndividu.keySet(), 2400, AttributeIndividu.ADRESSES);
+
+			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
+			for (Individu individu : individus) {
+				final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
+				pp.setIndividuCache(individu);
+			}
+		}
+	}
+
+	private void traiterPersonnePhysique(ProprietaireRapproche proprietaireRapproche, PersonnePhysique personne) {
+		if (personne.isConnuAuCivil()) {
 			final Long numeroCtb = personne.getNumero();
 			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
 			final String nom = nomPrenom.getNom();
 			final String prenom = nomPrenom.getPrenom();
 			final RegDate dateNaissance = tiersService.getDateNaissance(personne);
-			final String resultat = determineResultat(proprietaireRapproche, numeroCtb, nom, prenom, dateNaissance);
+			final ProprietaireRapproche.CodeRetour resultat = determineResultat(proprietaireRapproche, nom, prenom, dateNaissance);
 			setValuesProprietaireRapproche(proprietaireRapproche, numeroCtb, nom, prenom, dateNaissance, resultat, true);
-
-			//increment des valeurs de processing
-			if (INDIVIDU_TROUVE_EXACT.equals(resultat)) {
-
-				rapport.incrementNbIndividuTrouvesExact();
-			}
-
-			else if (INDIVIDU_TROUVE_SANS_NAISSANCE.equals(resultat)) {
-
-				rapport.incrementNbIndividuTrouvesSaufDateNaissance();
-
-			}
-			else if (INDIVIDU_TROUVE_NON_EXACT.equals(resultat)) {
-
-				rapport.incrementNbIndividuTrouvesSansCorrespondance();
-
-			}
 		}
 		else {
-			proprietaireRapproche.setResultat(INDIVIDU_NON_TROUVE);
-			rapport.incrementNbIndviduInconnu();
+			proprietaireRapproche.setResultat(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE);
 		}
 	}
 
+	private void traiterMenageCommun(ProprietaireRapproche proprietaireRapproche, MenageCommun menage) {
 
-
-	public void traiterMenageCommun(ProprietaireRapproche proprietaireRapproche, MenageCommun menage) {
-
-		PersonnePhysique principal = tiersService.getEnsembleTiersCouple(menage, RegDate.get().year()).getPrincipal();
-		PersonnePhysique conjoint = tiersService.getEnsembleTiersCouple(menage, RegDate.get().year()).getConjoint();
-		if (principal==null && conjoint==null) {
-			proprietaireRapproche.setResultat(INDIVIDU_NON_TROUVE);
-			rapport.incrementNbIndviduInconnu();
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, RegDate.get().year());
+		final PersonnePhysique principal = couple.getPrincipal();
+		final PersonnePhysique conjoint = couple.getConjoint();
+		if (principal == null && conjoint == null) {
+			proprietaireRapproche.setResultat(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE);
 		}
-		else if(principal!=null && conjoint==null) {
-			traiterIndividu(proprietaireRapproche, principal);
+		else if (principal != null && conjoint == null) {
+			traiterPersonnePhysique(proprietaireRapproche, principal);
 		}
-		else if(principal==null && conjoint!=null){
-			traiterIndividu(proprietaireRapproche, conjoint);
+		else if (principal == null) {
+			traiterPersonnePhysique(proprietaireRapproche, conjoint);
 		}
-		else if (principal!=null && conjoint!=null){
+		else {
 			traiterMembresMenageCommun(proprietaireRapproche, principal, conjoint);
 		}
-
-
 	}
 
-	public void traiterMembresMenageCommun(ProprietaireRapproche proprietaireRapproche, PersonnePhysique principal, PersonnePhysique conjoint){
-		if (!principal.isHabitantVD() && !conjoint.isHabitantVD()) {
-			proprietaireRapproche.setResultat(INDIVIDU_NON_TROUVE);
-			rapport.incrementNbIndviduInconnu();
+	private void traiterMembresMenageCommun(ProprietaireRapproche proprietaireRapproche, PersonnePhysique principal, PersonnePhysique conjoint) {
+		final boolean principalConnuAuCivil = principal.isConnuAuCivil();
+		final boolean conjointConnuAuCivil = conjoint.isConnuAuCivil();
+		if (!principalConnuAuCivil && !conjointConnuAuCivil) {
+			proprietaireRapproche.setResultat(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE);
 		}
-		else if(principal.isHabitantVD() && !conjoint.isHabitantVD()) {
-			traiterIndividu(proprietaireRapproche, principal);
+		else if (principalConnuAuCivil && !conjointConnuAuCivil) {
+			traiterPersonnePhysique(proprietaireRapproche, principal);
 		}
-		else if(!principal.isHabitantVD() && conjoint.isHabitantVD()){
-			traiterIndividu(proprietaireRapproche, conjoint);
+		else if (!principalConnuAuCivil) {
+			traiterPersonnePhysique(proprietaireRapproche, conjoint);
 		}
-		else if (principal.isHabitantVD() && conjoint.isHabitantVD()){
+		else {
 
 			final Long numeroCtbPrincipal = principal.getNumero();
 			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
@@ -267,53 +255,33 @@ public class RapprocherCtbProcessor {
 			final String prenomConjoint = nomPrenomConjoint.getPrenom();
 			final RegDate dateNaissanceConjoint = tiersService.getDateNaissance(conjoint);
 
-			final String resultatPrincipal = determineResultat(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal);
-			final String resultatConjoint = determineResultat(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint);
+			final ProprietaireRapproche.CodeRetour resultatPrincipal = determineResultat(proprietaireRapproche, nomPrincipal, prenomPrincipal, dateNaissancePrincipal);
+			final ProprietaireRapproche.CodeRetour resultatConjoint = determineResultat(proprietaireRapproche, nomConjoint, prenomConjoint, dateNaissanceConjoint);
 
-			if (INDIVIDU_TROUVE_EXACT.equals(resultatPrincipal)) {
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal,
-						dateNaissancePrincipal, resultatPrincipal, true);
-				rapport.incrementNbIndividuTrouvesExact();
+			if (resultatPrincipal == ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT) {
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal, resultatPrincipal, true);
 			}
-			else if (INDIVIDU_TROUVE_EXACT.equals(resultatConjoint)) {
-
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint,
-						dateNaissanceConjoint, resultatConjoint, true);
-				rapport.incrementNbIndividuTrouvesExact();
-
+			else if (resultatConjoint == ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT) {
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint, resultatConjoint, true);
 			}
-			else if (INDIVIDU_TROUVE_SANS_NAISSANCE.equals(resultatPrincipal)) {
-
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal,
-						dateNaissancePrincipal, resultatPrincipal, true);
-				rapport.incrementNbIndividuTrouvesSaufDateNaissance();
-
+			else if (resultatPrincipal == ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE) {
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal, resultatPrincipal, true);
 			}
-			else if (INDIVIDU_TROUVE_SANS_NAISSANCE.equals(resultatConjoint)) {
-
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint,
-						dateNaissanceConjoint, resultatConjoint, true);
-				rapport.incrementNbIndividuTrouvesSaufDateNaissance();
-
+			else if (resultatConjoint == ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE) {
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint, resultatConjoint, true);
 			}
 			else {
-
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal,
-						dateNaissancePrincipal, null, true);
-
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint,
-						dateNaissanceConjoint, INDIVIDUS_TROUVE_NON_EXACT, false);
-				rapport.incrementNbIndividuTrouvesSansCorrespondance();
-
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal, ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, true);
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint, ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, false);
 			}
 		}
 	}
 
-	public String determineResultat(ProprietaireFoncier proprio, long numeroCtb, String nom, String prenom, RegDate dateNaissance) {
+	private ProprietaireRapproche.CodeRetour determineResultat(ProprietaireFoncier proprio, String nom, String prenom, RegDate dateNaissance) {
 
 		boolean nomIdentique = false;
 		boolean prenomIdentique = false;
-		boolean dateNaissaneIdentique = false;
+		boolean dateNaissanceIdentique = false;
 
 		if (nom.equalsIgnoreCase(proprio.getNom())) {
 			nomIdentique = true;
@@ -322,55 +290,35 @@ public class RapprocherCtbProcessor {
 			prenomIdentique = true;
 		}
 
-		RegDate dateNaissanceProprio = proprio.getDateNaissance();
-
+		final RegDate dateNaissanceProprio = proprio.getDateNaissance();
 		if (dateNaissance != null && dateNaissanceProprio != null) {
 			if (dateNaissance.equals(dateNaissanceProprio)) {
-				dateNaissaneIdentique = true;
+				dateNaissanceIdentique = true;
 			}
 		}
 		else if (dateNaissance == null && dateNaissanceProprio == null) {
-			dateNaissaneIdentique = true;
+			dateNaissanceIdentique = true;
 		}
 
-		if (nomIdentique && prenomIdentique && dateNaissaneIdentique) {
-			return INDIVIDU_TROUVE_EXACT;
+		if (nomIdentique && prenomIdentique) {
+			if (dateNaissanceIdentique) {
+				return ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT;
+			}
+			else {
+				return ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE;
+			}
 		}
-
-		if (nomIdentique && prenomIdentique && !dateNaissaneIdentique) {
-			return INDIVIDU_TROUVE_SANS_NAISSANCE;
+		else {
+			return ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_NON_EXACT;
 		}
-
-		if (!nomIdentique || !prenomIdentique) {
-			return INDIVIDU_TROUVE_NON_EXACT;
-		}
-
-		return null;
-
 	}
 
-	public Map<Long, Tiers> getListeTiers(List<Long> batch) {
-		final Set<Parts> parts = new HashSet<Parts>();
-		parts.add(Parts.ADRESSES);
-		parts.add(Parts.RAPPORTS_ENTRE_TIERS);
-
-		final List<Tiers> tiers = tiersDAO.getBatch(batch, parts);
-		final Map<Long, Tiers> map = new HashMap<Long, Tiers>(tiers.size());
-		for (Tiers t : tiers) {
-			map.put(t.getNumero(), t);
-		}
-		return map;
-	}
-
-	private void setValuesProprietaireRapproche(ProprietaireRapproche proprietaireRapproche, long numeroCtb, String nom, String prenom,
-			RegDate dateNaissance, String resultat, boolean isPrincipal) {
-
+	private void setValuesProprietaireRapproche(ProprietaireRapproche proprietaireRapproche, Long numeroCtb, String nom, String prenom, RegDate dateNaissance, ProprietaireRapproche.CodeRetour resultat, boolean isPrincipal) {
 		if (isPrincipal) {
 			proprietaireRapproche.setNumeroContribuable1(numeroCtb);
 			proprietaireRapproche.setNom1(nom);
 			proprietaireRapproche.setPrenom1(prenom);
 			proprietaireRapproche.setDateNaissance1(dateNaissance);
-
 		}
 		else {
 			proprietaireRapproche.setNumeroContribuable2(numeroCtb);
@@ -380,5 +328,4 @@ public class RapprocherCtbProcessor {
 		}
 		proprietaireRapproche.setResultat(resultat);
 	}
-
 }

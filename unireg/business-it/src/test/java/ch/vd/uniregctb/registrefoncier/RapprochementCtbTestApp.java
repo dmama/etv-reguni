@@ -4,17 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
 import ch.vd.uniregctb.common.StatusManager;
@@ -52,95 +47,18 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 
 		LOGGER.info("==> chargement du fichier des proprio");
 
-		byte[] byteFile = loadFile(RAPPROCHEMENT_FILE);
-		List<ProprietaireFoncier> listeProprietaireFoncier = extractProprioFromCSV(byteFile, status);
+		final byte[] byteFile = loadFile(RAPPROCHEMENT_FILE);
+		final List<ProprietaireFoncier> listeProprietaireFoncier = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(byteFile, status);
 
 		LOGGER.info("==> Rapprochement des ctb et proprio");
 
-		final RapprocherCtbResults results = registreFoncierService.rapprocherCtbRegistreFoncier(listeProprietaireFoncier, status, RegDate.get());
+		final RapprocherCtbResults results = registreFoncierService.rapprocherCtbRegistreFoncier(listeProprietaireFoncier, status, RegDate.get(), 1);
 		final RapprocherCtbRapport rapport = rapportService.generateRapport(results, status);
 
 		AuthenticationHelper.resetAuthentication();
 
 
 		LOGGER.info("***** END RapprochementCtbTestApp Main *****");
-	}
-
-	/**
-	 * Extrait les ids d'un fichier CSV contenant des ids séparés par des virgules, des points-virgules ou des retours de ligne.
-	 *
-	 * @param csv
-	 *            le contenu d'un fichier CSV
-	 * @return une liste d'ids
-	 */
-	protected static List<ProprietaireFoncier> extractProprioFromCSV(byte[] csv, StatusManager status) {
-
-
-		final List<ProprietaireFoncier> listeProprio = new ArrayList<ProprietaireFoncier>();
-        final Pattern p = Pattern.compile("^([0-9]+);(.*?);(.*?);(.*?);(.*)");
-
-		// on parse le fichier
-        final String csvString = new String(csv);
-		Scanner s = new Scanner(csvString);
-
-        final String[] lines = csvString.split("[\n]");
-        final int nombreProprio = lines.length;
-        int proprioLu = 0;
-        LOGGER.info("nombre de propriétaire "+nombreProprio);
-		try {
-			while (s.hasNextLine()) {
-
-				final String line = s.nextLine();
-				  //Audit.info("nombre de propriétaire tratés "+proprioLu);
-                int percent = (proprioLu * 100) / nombreProprio;
-                status.setMessage("Chargement des propriétaires fonciers",percent);
-                if (status.interrupted()) {
-                	break;
-                }
-
-				Matcher m = p.matcher(line);
-
-				// on a un numero du registre foncier
-				if (m.matches()) {
-
-					Long numeroRegistreFoncier = null;
-					String nom = null;
-					String prenom = null;
-					RegDate dateNaissance = null;
-					Long numeroContribuable = null;
-
-					// String[] tokens = line.split(";");
-
-					numeroRegistreFoncier = Long.valueOf(m.group(1));
-
-					nom = String.valueOf(m.group(2));
-					prenom = String.valueOf(m.group(3));
-					String stringDateNaissance = String.valueOf(m.group(4));
-					//FIXME (BNM) Traiter les date de naissance null
-					if (!"".equals(stringDateNaissance)) {
-                      if(stringDateNaissance.contains("/")){
-                       stringDateNaissance = stringDateNaissance.replace("/",".");
-                       }
-
-						try {
-							dateNaissance = RegDateHelper.displayStringToRegDate(stringDateNaissance, true);
-						}
-						catch (Exception e) {
-							LOGGER.error("Exception dan sla lecture de la date de naissance pour le proprio "+numeroRegistreFoncier+": " + e.getMessage());
-						}
-					}
-					numeroContribuable = Long.valueOf(m.group(5));
-					listeProprio.add(new ProprietaireFoncier(numeroRegistreFoncier, nom, prenom, dateNaissance, numeroContribuable));
-                    proprioLu++;
-				}
-
-			}
-		}
-		finally {
-			s.close();
-		}
-
-		return listeProprio;
 	}
 
 	protected byte[] loadFile(final String filename) throws Exception {

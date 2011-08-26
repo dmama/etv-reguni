@@ -3,13 +3,16 @@ package ch.vd.uniregctb.rapport;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.registrefoncier.ProprietaireRapproche;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
@@ -17,13 +20,12 @@ import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
  */
-public class PdfRapprochementCtbRapport extends PdfRapport{
+public class PdfRapprochementCtbRapport extends PdfRapport {
 
 	/**
      * Génère un rapport au format PDF à partir des résultats de job.
      */
-    public void write(final RapprocherCtbResults results, final String nom, final String description, final Date dateGeneration,
-                          OutputStream os, StatusManager status) throws Exception {
+    public void write(final RapprocherCtbResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
         Assert.notNull(status);
 
@@ -42,7 +44,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
                 @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+                    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
                 }
             });
         }
@@ -55,44 +57,44 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+            addTableSimple(new float[] {70f, 30f}, new PdfRapport.TableSimpleCallback() {
                 @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
-                    table.addLigne("Nombre d'Individu trouvés avec correspondance exacte:", String.valueOf(results.nbIndividuTrouvesExact));
-                    table.addLigne("Nombre d'Individu trouvés avec correspondance sauf date de naissance:", String.valueOf(results.nbIndividuTrouvesSaufDateNaissance));
-                    table.addLigne("Nombre d'Individu trouvé sans correspondance exacte:", String.valueOf(results.nbIndividuTrouvesSansCorrespondance));
-                    table.addLigne("Pas de contribuable trouvé:", String.valueOf(results.nbCtbInconnu));
-                    table.addLigne("Pas d'individu trouvé:", String.valueOf(results.nbIndviduInconnu));
-                    table.addLigne("Plus de deux individus trouvés:", String.valueOf(results.nbPlusDeDeuxIndividu));
-                    table.addLigne("Nombre d'erreurs:", String.valueOf(results.ctbsEnErrors.size()));
-	                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+                    table.addLigne("Nombre total de contribuables inspectés", String.valueOf(results.nbCtbsTotal));
+
+	                final Map<ProprietaireRapproche.CodeRetour, Integer> stats = results.getStats();
+                    table.addLigne("Individus trouvés avec correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT)));
+	                table.addLigne("Individus trouvés avec correspondance sauf date de naissance :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE)));
+                    table.addLigne("Individus trouvés sans correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT) + stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_NON_EXACT)));
+                    table.addLigne("Pas de contribuable trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.CTB_NON_TROUVE)));
+                    table.addLigne("Pas d'individu trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE)));
+                    table.addLigne("Plus de deux individus trouvés :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.PLUS_DE_DEUX_INDIV_TROUVES)));
+                    table.addLigne("Nombre d'erreurs :", String.valueOf(results.ctbsEnErreur.size()));
+	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+                    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
                 }
             });
         }
 
         // CTBs rapprochés
         {
-            String filename = "contribuables_rapproches.csv";
-            String contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
-            String titre = "Liste des contribuables rapprochés";
-            String listVide = "(aucun contribuable rapprocher)";
+            final String filename = "contribuables_rapproches.csv";
+            final String contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
+            final String titre = "Liste des contribuables rapprochés";
+            final String listVide = "(aucun)";
             addListeDetaillee(writer, results.listeRapproche.size(), titre, listVide, filename, contenu);
         }
 
-     // les erreur
+        // les erreurs
         {
-            String filename = "erreurs.csv";
-            String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
-            String titre = "Liste des erreurs";
-            String listVide = "(aucune erreur)";
-            addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+            final String filename = "erreurs.csv";
+            final String contenu = asCsvFile(results.ctbsEnErreur, filename, status);
+            final String titre = "Liste des erreurs";
+            final String listVide = "(aucune)";
+            addListeDetaillee(writer, results.ctbsEnErreur.size(), titre, listVide, filename, contenu);
         }
 
-
         close();
-
         status.setMessage("Génération du rapport terminée.");
     }
 
@@ -100,50 +102,49 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
      * Construit le contenu du fichier détaillé des contribuables rapprochés
      */
 	private String ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
-		String contenu = null;
-		int size = listeRapprochee.size();
-		if (size > 0) {
-			StringBuilder b = new StringBuilder("NumeroFoncier;");
-			b.append("Nom;");
-			b.append("Prénom;");
-			b.append("DateNaissance;");
-			b.append("NoCTB;");
-			b.append("NoCTB1;");
-			b.append("Nom1;");
-			b.append("Prénom1;");
-			b.append("DateNaissance1;");
-			b.append("NoCTB2;");
-			b.append("Nom2;");
-			b.append("Prénom2;");
-			b.append("DateNaissance2;");
-			b.append("FormulePolitesse;");
-			b.append("NomCourrier1;");
-			b.append("NomCourrier2;");
-			b.append("Résultat\n");
-			for (ProprietaireRapproche proprietaireRapproche : listeRapprochee) {
-				b.append(proprietaireRapproche.getNumeroRegistreFoncier()).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance())).append(COMMA);
-				b.append(proprietaireRapproche.getNumeroContribuable()).append(COMMA);
-				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable1()))).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom1())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom1())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance1())).append(COMMA);
-				b.append(convertNullToEmpty(String.valueOf(proprietaireRapproche.getNumeroContribuable2()))).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getNom2())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getPrenom2())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getDateNaissance2())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getFormulePolitesse())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier1())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getNomCourrier2())).append(COMMA);
-				b.append(convertNullToEmpty(proprietaireRapproche.getResultat())).append(COMMA);
-				b.append("\n");
+		return CsvHelper.asCsvFile(listeRapprochee, filename, status, 100, new CsvHelper.Filler<ProprietaireRapproche>() {
+			@Override
+			public void fillHeader(StringBuilder b) {
+				b.append("NumeroFoncier").append(COMMA);
+				b.append("Nom").append(COMMA);
+				b.append("Prénom").append(COMMA);
+				b.append("DateNaissance").append(COMMA);
+				b.append("NoCTB").append(COMMA);
+				b.append("NoCTB1").append(COMMA);
+				b.append("Nom1").append(COMMA);
+				b.append("Prénom1").append(COMMA);
+				b.append("DateNaissance1").append(COMMA);
+				b.append("NoCTB2").append(COMMA);
+				b.append("Nom2").append(COMMA);
+				b.append("Prénom2").append(COMMA);
+				b.append("DateNaissance2").append(COMMA);
+				b.append("FormulePolitesse").append(COMMA);
+				b.append("NomCourrier1").append(COMMA);
+				b.append("NomCourrier2").append(COMMA);
+				b.append("Résultat");
 			}
-			contenu = b.toString();
 
-		}
-		return contenu;
+			@Override
+			public void fillLine(StringBuilder b, ProprietaireRapproche elt) {
+				b.append(elt.getNumeroRegistreFoncier()).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNom())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getPrenom())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getDateNaissance())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNumeroContribuable())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNumeroContribuable1())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNom1())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getPrenom1())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getDateNaissance1())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNumeroContribuable2())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNom2())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getPrenom2())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getDateNaissance2())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getFormulePolitesse())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNomCourrier1())).append(COMMA);
+				b.append(convertNullToEmpty(elt.getNomCourrier2())).append(COMMA);
+				b.append(elt.getResultat().getValeur()).append(COMMA);
+			}
+		});
 	}
 	
 	/**
@@ -152,16 +153,15 @@ public class PdfRapprochementCtbRapport extends PdfRapport{
 	 * @param data
 	 * @return chaine vide
 	 */
-	public static String convertNullToEmpty(final String data) {
-		String maChaine;
-		maChaine = (data == null) ? "" : data;
-		return maChaine;
-
+	private static String convertNullToEmpty(String data) {
+		return StringUtils.trimToEmpty(data);
 	}
-	public static String convertNullToEmpty(final RegDate data) {
-		String maChaine;
-		maChaine = (data == null) ? "" : data.toString();
-		return maChaine;
 
+	private static String convertNullToEmpty(RegDate data) {
+		return data == null ? StringUtils.EMPTY : data.toString();
+	}
+
+	private static String convertNullToEmpty(Long data) {
+		return data == null ? StringUtils.EMPTY : data.toString();
 	}
 }
