@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class EvenementTest {
-	protected static final String ACTION = "action";
 	protected EsbJmsTemplate esbTemplate;
 
 	protected EsbMessageFactory esbMessageFactory;
