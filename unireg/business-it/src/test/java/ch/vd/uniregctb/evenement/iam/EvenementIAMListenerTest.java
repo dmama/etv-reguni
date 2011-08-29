@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.ModeCommunication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Classe de test du listener d'événements IAM. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -105,7 +106,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, "Create", texte);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -138,7 +139,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, "Create", texte);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -176,7 +177,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, "Create", texte);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -190,6 +191,165 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertEquals(1038580L, q1.getNoEmployeur());
 		assertEquals(null, q1.getLogicielId());
 		assertEquals(null, q1.getModeCommunication());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveEnregistrementMinimal() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeurMinimal.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, "Update", texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur1 = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur1);
+		assertNull(enregistrementEmployeur1.getEmployeursAMettreAJour());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveEnregistrementMinimalAvecInfoMetier() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur_infoMetier_minimal.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, "Update", texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur1 = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur1);
+		assertNotNull(enregistrementEmployeur1.getEmployeursAMettreAJour());
+		final InfoEmployeur q1 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q1.getNoEmployeur());
+		assertEquals(null, q1.getLogicielId());
+		assertEquals(null, q1.getModeCommunication());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionCreate() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, "Create", texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur);
+		final InfoEmployeur q = enregistrementEmployeur.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q.getNoEmployeur());
+		assertEquals(20L, q.getLogicielId().longValue());
+		assertEquals(ModeCommunication.SITE_WEB, q.getModeCommunication());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionDelete() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, "Delete", texte);
+
+		// On attend .un hypothétique message
+		Thread.sleep(1000);
+		Assert.assertEquals(0, events.size());
+
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionUpdate() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, "Update", texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur);
+		final InfoEmployeur q = enregistrementEmployeur.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q.getNoEmployeur());
+		assertEquals(20L, q.getLogicielId().longValue());
+		assertEquals(ModeCommunication.SITE_WEB, q.getModeCommunication());
 	}
 
 

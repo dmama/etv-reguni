@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNull;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class EvenementTest {
-
+	protected static final String ACTION = "action";
 	protected EsbJmsTemplate esbTemplate;
 
 	protected EsbMessageFactory esbMessageFactory;
@@ -65,7 +65,8 @@ public abstract class EvenementTest {
 	}
 
 	protected void clearQueue(String queueName) throws Exception {
-		while (esbTemplate.receive(queueName) != null) {}
+		while (esbTemplate.receive(queueName) != null) {
+		}
 	}
 
 	protected void assertTextMessage(String queueName, final String texte) throws Exception {
@@ -82,12 +83,21 @@ public abstract class EvenementTest {
 	}
 
 	protected void sendTextMessage(String queueName, String texte) throws Exception {
+		sendTextMessage(queueName, null, texte);
+	}
+
+
+	protected void sendTextMessage(String queueName, String action, String texte) throws Exception {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setContext("test");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
+		if (action != null) {
+			m.addHeader(ACTION, action);
+		}
+
 
 		esbTemplate.send(m);
 	}
