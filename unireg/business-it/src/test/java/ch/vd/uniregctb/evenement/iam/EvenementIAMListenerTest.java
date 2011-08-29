@@ -2,15 +2,18 @@ package ch.vd.uniregctb.evenement.iam;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -24,6 +27,7 @@ import ch.vd.uniregctb.type.ModeCommunication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Classe de test du listener d'événements IAM. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -34,6 +38,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private EvenementIAMListenerImpl listener;
+	private DefaultMessageListenerContainer container;
 
 	@Before
 	public void setUp() throws Exception {
@@ -69,7 +74,20 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 
-		initEndpointManager(INPUT_QUEUE, listener);
+		container = new DefaultMessageListenerContainer();
+		container.setConnectionFactory(jmsConnectionManager);
+		container.setMessageListener(listener);
+		container.setDestinationName(INPUT_QUEUE);
+		container.afterPropertiesSet();
+		container.start();
+	}
+
+	@After
+	public void tearDown() {
+		// si le setup saute avant la fin... container peut encore être null
+		if (container != null) {
+			container.destroy();
+		}
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -89,7 +107,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -122,7 +142,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -160,7 +182,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -174,6 +198,175 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		assertEquals(1038580L, q1.getNoEmployeur());
 		assertEquals(null, q1.getLogicielId());
 		assertEquals(null, q1.getModeCommunication());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveEnregistrementMinimal() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeurMinimal.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur1 = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur1);
+		assertNull(enregistrementEmployeur1.getEmployeursAMettreAJour());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveEnregistrementMinimalAvecInfoMetier() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur_infoMetier_minimal.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur1 = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur1);
+		assertNotNull(enregistrementEmployeur1.getEmployeursAMettreAJour());
+		final InfoEmployeur q1 = enregistrementEmployeur1.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q1.getNoEmployeur());
+		assertEquals(null, q1.getLogicielId());
+		assertEquals(null, q1.getModeCommunication());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionCreate() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur);
+		final InfoEmployeur q = enregistrementEmployeur.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q.getNoEmployeur());
+		assertEquals(20L, q.getLogicielId().longValue());
+		assertEquals(ModeCommunication.SITE_WEB, q.getModeCommunication());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionDelete() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.DELETE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend .un hypothétique message
+		Thread.sleep(1000);
+		Assert.assertEquals(0, events.size());
+
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveActionUpdate() throws Exception {
+
+		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+
+		listener.setHandler(new EvenementIAMHandler() {
+			@Override
+			public void onEvent(EvenementIAM event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/iam/enregistrement_employeur.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final EnregistrementEmployeur enregistrementEmployeur = (EnregistrementEmployeur) events.get(0);
+		assertNotNull(enregistrementEmployeur);
+		final InfoEmployeur q = enregistrementEmployeur.getEmployeursAMettreAJour().get(0);
+		assertEquals(1038580L, q.getNoEmployeur());
+		assertEquals(20L, q.getLogicielId().longValue());
+		assertEquals(ModeCommunication.SITE_WEB, q.getModeCommunication());
 	}
 
 

@@ -24,6 +24,12 @@ public class EvenementIAMListenerImpl extends TransactionalEsbMessageListener im
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementIAMListenerImpl.class);
 
+	protected static final String ACTION = "action";
+	protected static final String CREATE = "Create";
+	protected static final String UPDATE = "Update";
+	protected static final String DELETE = "Delete";
+	protected static final String REVOKE = "revoke";
+
 	private EvenementIAMHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
@@ -51,8 +57,14 @@ public class EvenementIAMListenerImpl extends TransactionalEsbMessageListener im
 		try {
 			final String businessId = message.getBusinessId();
 			LOGGER.info("Arrivée du message IAM n°" + businessId);
-			final String body = message.getBodyAsString();
-			onMessage(body, businessId);
+			final String action = message.getHeader(ACTION);
+			if (CREATE.equals(action) || UPDATE.equals(action)) {
+				final String body = message.getBodyAsString();
+				onMessage(body, businessId);
+			}
+			else {
+				LOGGER.info(" message IAM n°" + businessId + " est de type " + action + " il est ignoré.");
+			}
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
@@ -117,27 +129,29 @@ public class EvenementIAMListenerImpl extends TransactionalEsbMessageListener im
 			final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
 			enregistrementEmployeur.setBusinessId(businessId);
 			enregistrementEmployeur.setDateTraitement(DateHelper.getCurrentDate());
-
 			final List<InfoEmployeur> employeursAMettreAJour = new ArrayList<InfoEmployeur>();
 			final DemandeUtilisateurDocument.DemandeUtilisateur demandeUtilisateur = ((DemandeUtilisateurDocument) evt).getDemandeUtilisateur();
 			final DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier infoMetier = demandeUtilisateur.getInfoMetier();
-			final DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs employeurs = infoMetier.getEmployeurs();
-			List<DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs.Employeur> listeEmployeurs = Arrays.asList(employeurs.getEmployeurArray());
-			for (DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs.Employeur employeur : listeEmployeurs) {
-				final InfoEmployeur infoEmployeurFromIAM = new InfoEmployeur();
-				infoEmployeurFromIAM.setNoEmployeur(employeur.getNoEmployeur().longValue());
+			if (infoMetier != null) {
+				final DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs employeurs = infoMetier.getEmployeurs();
+				List<DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs.Employeur> listeEmployeurs = Arrays.asList(employeurs.getEmployeurArray());
+				for (DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier.Employeurs.Employeur employeur : listeEmployeurs) {
+					final InfoEmployeur infoEmployeurFromIAM = new InfoEmployeur();
+					infoEmployeurFromIAM.setNoEmployeur(employeur.getNoEmployeur().longValue());
 
-				if (employeur.getIdLogiciel() != null) {
-					infoEmployeurFromIAM.setLogicielId(employeur.getIdLogiciel().longValue());
+					if (employeur.getIdLogiciel() != null) {
+						infoEmployeurFromIAM.setLogicielId(employeur.getIdLogiciel().longValue());
+					}
+					if (employeur.getTypeAcces() != null) {
+						infoEmployeurFromIAM.setModeCommunication(InfoEmployeur.fromTypeSaisie(employeur.getTypeAcces().toString()));
+					}
+
+					employeursAMettreAJour.add(infoEmployeurFromIAM);
+
 				}
-				if (employeur.getTypeAcces() != null) {
-					infoEmployeurFromIAM.setModeCommunication(InfoEmployeur.fromTypeSaisie(employeur.getTypeAcces().toString()));
-				}
-
-				employeursAMettreAJour.add(infoEmployeurFromIAM);
-
+				enregistrementEmployeur.setEmployeursAMettreAJour(employeursAMettreAJour);
 			}
-			enregistrementEmployeur.setEmployeursAMettreAJour(employeursAMettreAJour);
+
 			LOGGER.info("Contenu du message : " + enregistrementEmployeur);
 
 			return enregistrementEmployeur;
