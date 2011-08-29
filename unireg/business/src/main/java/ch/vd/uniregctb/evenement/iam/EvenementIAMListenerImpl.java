@@ -24,11 +24,11 @@ public class EvenementIAMListenerImpl extends EsbMessageListener implements Moni
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementIAMListenerImpl.class);
 
-	private static final String ACTION = "action";
-	private static final String CREATE = "Create";
-	private static final String UPDATE = "Update";
-	private static final String DELETE = "Delete";
-	private static final String REVOKE = "revoke";
+	protected static final String ACTION = "action";
+	protected static final String CREATE = "Create";
+	protected static final String UPDATE = "Update";
+	protected static final String DELETE = "Delete";
+	protected static final String REVOKE = "revoke";
 
 	private EvenementIAMHandler handler;
 

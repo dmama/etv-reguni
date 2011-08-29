@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.iam;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -106,7 +107,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Create", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -139,7 +142,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Create", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -177,7 +182,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Create", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -210,7 +217,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Update", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -241,7 +250,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Update", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -276,7 +287,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Create", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {
@@ -310,7 +323,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Delete", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.DELETE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend .un hypothétique message
 		Thread.sleep(1000);
@@ -336,7 +351,9 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, "Update", texte);
+		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
 		while (events.isEmpty()) {

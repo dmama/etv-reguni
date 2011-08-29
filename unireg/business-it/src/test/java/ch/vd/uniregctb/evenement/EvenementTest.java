@@ -3,8 +3,10 @@ package ch.vd.uniregctb.evenement;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -83,22 +85,22 @@ public abstract class EvenementTest {
 	}
 
 	protected void sendTextMessage(String queueName, String texte) throws Exception {
-		sendTextMessage(queueName, null, texte);
+		sendTextMessage(queueName, texte, null);
 	}
 
 
-	protected void sendTextMessage(String queueName, String action, String texte) throws Exception {
+	protected void sendTextMessage(String queueName, String texte, @Nullable Map<String, String> customAttributes) throws Exception {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setContext("test");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
-		if (action != null) {
-			m.addHeader(ACTION, action);
+		if (customAttributes != null) {
+			for (Map.Entry<String, String> attr : customAttributes.entrySet()) {
+				m.addHeader(attr.getKey(), attr.getValue());
+			}
 		}
-
-
 		esbTemplate.send(m);
 	}
 
