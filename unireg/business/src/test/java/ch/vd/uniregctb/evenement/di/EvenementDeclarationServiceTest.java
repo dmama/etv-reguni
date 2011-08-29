@@ -96,7 +96,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 
 				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2011);
+				final List<Declaration> list = eric.getDeclarationsForPeriode(2011, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 				

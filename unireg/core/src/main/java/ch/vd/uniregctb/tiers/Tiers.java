@@ -934,18 +934,18 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * Retourne la liste des déclarations correspondantes à la période fiscale (= année) spécifiée.
 	 *
-	 * @param annee
-	 *            l'année correspondant à la période fiscale
+	 * @param annee        l'année correspondant à la période fiscale
+	 * @param avecAnnulees <b>vrai</b> s'il faut inclure les déclarations annulées; <b>faux</b> s'il faut les exclure.
 	 * @return une liste de déclaration, ou <b>null</b> si le tiers ne possède pas de déclaration pour la période spécifiée.
 	 */
-	public List<Declaration> getDeclarationsForPeriode(int annee) {
+	public List<Declaration> getDeclarationsForPeriode(int annee, boolean avecAnnulees) {
 		if (declarations == null) {
 			return null;
 		}
 
-		List<Declaration> result = new ArrayList<Declaration>();
+		final List<Declaration> result = new ArrayList<Declaration>();
 		for (Declaration declaration : getDeclarationsSorted()) {
-			if (!declaration.isAnnule() && declaration.getPeriode().getAnnee() == annee) {
+			if ((avecAnnulees || !declaration.isAnnule()) && declaration.getPeriode().getAnnee() == annee) {
 				result.add(declaration);
 			}
 		}

@@ -257,7 +257,7 @@ public class DataHelper {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
 		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut()
-				.year());
+				.year(), false);
 		if (dis == null) {
 			return null;
 		}

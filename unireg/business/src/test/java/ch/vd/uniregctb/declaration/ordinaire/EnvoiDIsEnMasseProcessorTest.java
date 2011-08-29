@@ -1407,7 +1407,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 

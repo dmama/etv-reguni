@@ -103,7 +103,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				assertEquals("0215478936", eric.getNumeroTelephonePrive());
 				assertEquals("0789651243", eric.getNumeroTelephonePortable());
 
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2008);
+				final List<Declaration> list = eric.getDeclarationsForPeriode(2008, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 				
@@ -178,7 +178,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				assertEquals("Rez: 0215478936 A l'étage tout en h", eric.getNumeroTelephonePrive());
 				assertEquals("Moi 0789651243 Ma copine 0791234567", eric.getNumeroTelephonePortable());
 
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2008);
+				final List<Declaration> list = eric.getDeclarationsForPeriode(2008, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 

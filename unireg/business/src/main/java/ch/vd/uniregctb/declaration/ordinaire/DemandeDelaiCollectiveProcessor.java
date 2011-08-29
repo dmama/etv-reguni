@@ -155,7 +155,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 		final RegDate nouveauDelai = delai.getDelaiAccordeAu();
 
-		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee);
+		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
 			rapport.addErrorCtbSansDI(ctb);
 			return;

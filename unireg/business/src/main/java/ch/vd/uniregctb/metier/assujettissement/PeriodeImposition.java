@@ -449,7 +449,7 @@ public class PeriodeImposition implements CollatableDateRange {
 
 	private static DeclarationImpotOrdinaire getDeclarationPrecedente(Contribuable contribuable, int anneePrecedente) {
 		DeclarationImpotOrdinaire precedenteDI = null;
-		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente);
+		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente, false);
 		if (declarations != null && !declarations.isEmpty()) {
 			Declaration precedenteDeclaration = declarations.get(declarations.size() - 1);
 			if (precedenteDeclaration instanceof DeclarationImpotOrdinaire) {

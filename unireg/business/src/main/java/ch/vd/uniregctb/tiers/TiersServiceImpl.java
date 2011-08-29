@@ -1843,7 +1843,7 @@ public class TiersServiceImpl implements TiersService {
 		if (TypeAutoriteFiscale.PAYS_HS == typeAutoriteFiscale && MotifFor.DEPART_HS == motifOuverture) {
 			if (forFiscalPrincipal.getDateDebut().year() == RegDate.get().year()) {
 				// Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
-				final List<Declaration> dis = contribuable.getDeclarationsForPeriode(RegDate.get().year());
+				final List<Declaration> dis = contribuable.getDeclarationsForPeriode(RegDate.get().year(), false);
 				if (dis != null && dis.size() > 0) {
 					Collections.sort(dis, new DateRangeComparator<Declaration>());
 					final Declaration di = dis.get(dis.size() - 1);

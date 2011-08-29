@@ -499,7 +499,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 
 			// [UNIREG-2110] Détermine les LRs émises et celles manquantes
-			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsForPeriode(params.getTaxPeriod());
+			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsForPeriode(params.getTaxPeriod(), false);
 			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(debiteur, RegDate.get(params.getTaxPeriod(), 12, 31), new ArrayList<DateRange>());
 
 			return DebtorInfoBuilder.newDebtorInfo(params, lrEmises, lrManquantes);

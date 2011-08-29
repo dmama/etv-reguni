@@ -854,7 +854,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertEquals(2, taches.size()); // 2006 et 2007
 
 			// la date de fin de la déclaration 2005 doit avoir été mis-à-jour
-			final List<Declaration> declarations2005 = raoul.getDeclarationsForPeriode(2005);
+			final List<Declaration> declarations2005 = raoul.getDeclarationsForPeriode(2005, false);
 			assertNotNull(declarations2005);
 			assertEquals(1, declarations2005.size());
 
@@ -1085,7 +1085,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(1, taches.size()); // 2007
 
 		// la date de fin dela déclaration 2006 doit avoir été mise-à-jour
-		final List<Declaration> declarations2006 = pp.getDeclarationsForPeriode(2006);
+		final List<Declaration> declarations2006 = pp.getDeclarationsForPeriode(2006, false);
 		assertNotNull(declarations2006);
 		assertEquals(1, declarations2006.size());
 
@@ -1937,7 +1937,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// les types de contribuables doivent avoir été mis-à-jour
 		for (int i = 2005; i < RegDate.get().year(); ++i) {
-			final List<Declaration> declarations = simon.getDeclarationsForPeriode(i);
+			final List<Declaration> declarations = simon.getDeclarationsForPeriode(i, false);
 			assertNotNull(declarations);
 			assertEquals(1, declarations.size());
 			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
@@ -3895,7 +3895,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				final List<Declaration> declarations = pp.getDeclarationsForPeriode(2008);
+				final List<Declaration> declarations = pp.getDeclarationsForPeriode(2008, false);
 				assertNotNull(declarations);
 				assertEquals(1, declarations.size());
 
@@ -4648,7 +4648,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final List<Declaration> dis = pp.getDeclarationsForPeriode(anneeCourante);
+				final List<Declaration> dis = pp.getDeclarationsForPeriode(anneeCourante, false);
 				assertNotNull(dis);
 				assertEquals(1, dis.size());
 
@@ -5317,7 +5317,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				final List<Declaration> di = pp.getDeclarationsForPeriode(anneeCourante);
+				final List<Declaration> di = pp.getDeclarationsForPeriode(anneeCourante, false);
 				assertNotNull(di);
 				assertEquals(1, di.size());
 				assertFalse(di.get(0).isAnnule());      // pas annulée, mais une tâche d'annulation doit être présente

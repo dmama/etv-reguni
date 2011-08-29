@@ -552,7 +552,7 @@ public class ActivationServiceTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				final List<Declaration> declarations2008 = pp.getDeclarationsForPeriode(2008);
+				final List<Declaration> declarations2008 = pp.getDeclarationsForPeriode(2008, false);
 				Assert.assertNotNull(declarations2008);
 				Assert.assertEquals(1, declarations2008.size());
 				declarations2008.get(0).setAnnule(true);
