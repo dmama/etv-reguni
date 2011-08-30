@@ -15,15 +15,6 @@ import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7a2SYOqeEdySTq6PFlf9jQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7a2SYOqeEdySTq6PFlf9jQ"
- */
 @Entity
 @DiscriminatorValue("DI")
 public class DeclarationImpotOrdinaire extends Declaration {
@@ -31,44 +22,21 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	private static final long serialVersionUID = -4869699873165367700L;
 
 	/**
-	 * <!-- begin-user-doc -->
+	 * [SIFISC-1368] première année où le retour par courrier électronique des déclarations d'impôt est possible.
+	 */
+	public static final int PREMIERE_ANNEE_RETOUR_ELECTRONIQUE = 2011;
+
+	/**
 	 * Numéro de séquence de la déclaration pour une période fiscale. La première déclaration prends le numéro 1.
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_wnJNUOqgEdySTq6PFlf9jQ"
 	 */
 	private Integer numero;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_po8_IAI5Ed2twI8L5z7uGQ"
-	 */
 	private Integer numeroOfsForGestion;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sGA-oDfHEd2EkOqealhanQ"
-	 */
 	private TypeContribuable typeContribuable;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ov4TEDJSEd2Q1vtOul__sQ"
-	 */
 	private Date dateImpressionChemiseTaxationOffice;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ov4TEDJSEd2Q1vtOul__sQ"
-	 */
 	private Qualification qualification;
 
 	private RegDate delaiRetourImprime;
@@ -76,10 +44,15 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	private Long retourCollectiviteAdministrativeId;
 
 	/**
-	 * <code>true</code> si la DI a été créée comme une "di libre", c'est-à-dire une DI sur la période courante (au moment de sa création)
-	 * sans fin d'assujettissement connue (comme un décès ou un départ HS)
+	 * <code>true</code> si la DI a été créée comme une "di libre", c'est-à-dire une DI sur la période courante (au moment de sa création) sans fin d'assujettissement connue (comme un décès ou un départ
+	 * HS)
 	 */
 	private boolean libre;
+
+	/**
+	 * [SIFISC-1368] Code pour le contrôle du retour électronique de la DI. Ce code est le même sur toutes les déclarations d'une période fiscale et d'un contribuable donné.
+	 */
+	private String codeControle;
 
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
@@ -91,100 +64,40 @@ public class DeclarationImpotOrdinaire extends Declaration {
 		this.retourCollectiviteAdministrativeId = retourCollectiviteAdministrativeId;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the numero
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_wnJNUOqgEdySTq6PFlf9jQ?GETTER"
-	 */
 	@Column(name = "NUMERO")
 	public Integer getNumero() {
-		// begin-user-code
 		return numero;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theNumero the numero to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_wnJNUOqgEdySTq6PFlf9jQ?SETTER"
-	 */
 	public void setNumero(Integer theNumero) {
-		// begin-user-code
 		numero = theNumero;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the typeContribuable
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sGA-oDfHEd2EkOqealhanQ?GETTER"
-	 */
 	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
 	public TypeContribuable getTypeContribuable() {
-		// begin-user-code
 		return typeContribuable;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theTypeContribuable the typeContribuable to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sGA-oDfHEd2EkOqealhanQ?SETTER"
-	 */
 	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
-		// begin-user-code
 		typeContribuable = theTypeContribuable;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the dateImpressionChemiseTaxationOffice
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ov4TEDJSEd2Q1vtOul__sQ?GETTER"
-	 */
 	@Column(name = "DATE_IMPR_CHEMISE_TO")
 	public Date getDateImpressionChemiseTaxationOffice() {
-		// begin-user-code
 		return dateImpressionChemiseTaxationOffice;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theDateImpressionChemiseTaxationOffice the dateImpressionChemiseTaxationOffice to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ov4TEDJSEd2Q1vtOul__sQ?SETTER"
-	 */
 	public void setDateImpressionChemiseTaxationOffice(Date theDateImpressionChemiseTaxationOffice) {
-		// begin-user-code
 		dateImpressionChemiseTaxationOffice = theDateImpressionChemiseTaxationOffice;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the qualification
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sGA-oDfHEd2EkOqealhanQ?GETTER"
-	 */
-	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF )
+	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF)
 	@Type(type = "ch.vd.uniregctb.hibernate.QualificationUserType")
 	public Qualification getQualification() {
 		return qualification;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param Qualification the qualification to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sGA-oDfHEd2EkOqealhanQ?SETTER"
-	 */
 	public void setQualification(Qualification qualification) {
 		this.qualification = qualification;
 	}
@@ -204,29 +117,13 @@ public class DeclarationImpotOrdinaire extends Declaration {
 		this.delaiRetourImprime = delaiRetourImprime;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the numeroOfsForGestion
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_po8_IAI5Ed2twI8L5z7uGQ?GETTER"
-	 */
 	@Column(name = "NO_OFS_FOR_GESTION")
 	public Integer getNumeroOfsForGestion() {
-		// begin-user-code
 		return numeroOfsForGestion;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theNumeroOfsForGestion the numeroOfsForGestion to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_po8_IAI5Ed2twI8L5z7uGQ?SETTER"
-	 */
 	public void setNumeroOfsForGestion(Integer theNumeroOfsForGestion) {
-		// begin-user-code
 		numeroOfsForGestion = theNumeroOfsForGestion;
-		// end-user-code
 	}
 
 	@Column(name = "LIBRE")
@@ -238,6 +135,15 @@ public class DeclarationImpotOrdinaire extends Declaration {
 		this.libre = libre;
 	}
 
+	@Column(name = "CODE_CONTROLE", length = LengthConstants.DI_CODE_CONTROLE)
+	public String getCodeControle() {
+		return codeControle;
+	}
+
+	public void setCodeControle(String codeControle) {
+		this.codeControle = codeControle;
+	}
+
 	@Transient
 	public TypeDocument getTypeDeclaration() {
 		final ModeleDocument modele = getModeleDocument();
@@ -245,5 +151,33 @@ public class DeclarationImpotOrdinaire extends Declaration {
 			return null;
 		}
 		return modele.getTypeDocument();
+	}
+
+	// Toutes les lettres, sauf le 'O' qui peut être confondu avec le '0'.
+	private static final char CODE_LETTERS[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+	/**
+	 * Génère un code de contrôle pour le retour des déclarations d'impôt sous forme électronique. Ce code de contrôle est une string de 6 caractères composée d'une lettre suivie de 5 chiffres pris au
+	 * hazard (voir spécification dans SIFISC-1368).
+	 * <p/>
+	 * <b>Exemples</b>:
+	 * <ul>
+	 *     <li>B62116</li>
+	 *     <li>U94624</li>
+	 *     <li>H57736</li>
+	 *     <li>E93590</li>
+	 *     <li>V34032</li>
+	 *     <li>N43118</li>
+	 *     <li>B98052</li>
+	 *     <li>S67086</li>
+	 *     <li>...</li>
+	 * </ul>
+	 *
+	 * @return un code de contrôle
+	 */
+	public static String generateCodeControle() {
+		final int letter_index = (int) (CODE_LETTERS.length * Math.random());
+		final int number = (int) (100000 * Math.random());
+		return String.format("%s%05d", CODE_LETTERS[letter_index], number);
 	}
 }

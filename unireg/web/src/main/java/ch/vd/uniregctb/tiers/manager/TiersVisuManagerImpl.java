@@ -249,6 +249,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				diView.setDateDebutPeriodeImposition(di.getDateDebut());
 				diView.setDateFinPeriodeImposition(di.getDateFin());
 				diView.setPeriodeFiscale(di.getPeriode() != null ? di.getPeriode().getAnnee() : null);
+				diView.setCodeControle(di.getCodeControle());
 				diView.setAnnule(di.isAnnule());
 				final EtatDeclaration dernierEtat = di.getDernierEtat();
 				diView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());

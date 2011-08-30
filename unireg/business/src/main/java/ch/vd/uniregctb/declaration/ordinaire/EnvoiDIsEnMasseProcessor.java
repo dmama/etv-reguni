@@ -12,6 +12,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -132,8 +133,8 @@ public class EnvoiDIsEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, final Long noCtbMin, final Long noCtbMax, final int nbMax,
-	                           final RegDate dateTraitement, final boolean exclureDecedes, StatusManager s) throws DeclarationException {
+	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
+	                           final RegDate dateTraitement, final boolean exclureDecedes, @Nullable StatusManager s) throws DeclarationException {
 
 		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
 
@@ -529,6 +530,32 @@ public class EnvoiDIsEnMasseProcessor {
 		final List<DeclarationImpotOrdinaire> decls = dcache.getDeclarationsInRange(contribuable, dcache.baseRange, true);
 		final int nbDecls = decls != null ? decls.size() : 0;
 
+		// [SIFISC-1368] récupération ou génération du code de contrôle
+		String codeControle = null;
+		if (cache.periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			if (decls == null) {
+				// pas de déclaration : on génère un nouveau code de contrôle
+				codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+			}
+			else {
+				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
+				for (DeclarationImpotOrdinaire d : decls) {
+					if (d.getCodeControle() != null) {
+						codeControle = d.getCodeControle();
+						break;
+					}
+				}
+				if (codeControle == null) {
+					// pas de code déjà généré : on en génère un nouveau
+					codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+					// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
+					for (DeclarationImpotOrdinaire d : decls) {
+						d.setCodeControle(codeControle);
+					}
+				}
+			}
+		}
+
 		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 		di.setDateDebut(tache.getDateDebut());
 		di.setDateFin(tache.getDateFin());
@@ -539,6 +566,7 @@ public class EnvoiDIsEnMasseProcessor {
 		di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
 		di.setTiers(contribuable);
 		di.setNumero(nbDecls + 1);
+		di.setCodeControle(codeControle);
 
 		di = hibernateTemplate.merge(di); // force le save de la DI pour s'assurer qu'elle reçoit un id
 

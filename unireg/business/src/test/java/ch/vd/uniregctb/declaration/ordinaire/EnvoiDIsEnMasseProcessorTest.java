@@ -55,6 +55,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
+import static ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireTest.assertCodeControleIsValid;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -1419,4 +1420,232 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-1368] Vérifie qu'aucun code de contrôle n'est générée ou assignée lors des différents scénarios d'ajout d'une déclaration d'impôt ordinaire à un tiers pour les périodes fiscales avant 2011.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGenerationCodeControleAvant2011() throws Exception {
+
+		final int annee = 2010;
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateTraitement = date(annee + 1, 1, 15);
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
+			@Override
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
+				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
+			}
+		});
+		assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				assertNotNull(di);
+				assertNull(di.getCodeControle());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1368] Vérifie que le code de contrôle d'une première déclaration pour une période fiscale (et pour un contribuable) est bien généré et attribué.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGenerationCodeControleSansDeclarationPreexistante() throws Exception {
+
+		final int annee = 2011;
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateTraitement = date(annee + 1, 1, 15);
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
+			@Override
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
+				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
+			}
+		});
+		assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				assertNotNull(di);
+				assertCodeControleIsValid(di.getCodeControle());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1368] Vérifie que le code de contrôle d'une deuxième déclaration dans la même période fiscale (et pour le même contribuable) est le même que celui de la première déclaration.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGenerationCodeControleAvecDeclarationPreexistante() throws Exception {
+
+		final int annee = 2011;
+		final String codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final DeclarationImpotOrdinaire decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				decl.setCodeControle(codeControle);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, colAdm);
+
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateTraitement = date(annee + 1, 1, 15);
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
+			@Override
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
+				return processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
+			}
+		});
+		assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				assertNotNull(decls);
+				assertEquals(2, decls.size());
+
+				final DeclarationImpotOrdinaire di0 = (DeclarationImpotOrdinaire) decls.get(0);
+				assertNotNull(di0);
+				assertEquals(codeControle, di0.getCodeControle());
+
+				// on vérifie que le code de contrôle de la deuxième DI est le même que celui de la première
+				final DeclarationImpotOrdinaire di1 = (DeclarationImpotOrdinaire) decls.get(1);
+				assertNotNull(di1);
+				assertEquals(codeControle, di1.getCodeControle());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-1368] Vérifie que le code de contrôle est bien généré et assigné sur toutes les déclarations d'une année fiscale (cas des déclarations préexistantes sans code de contrôle).
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGenerationCodeControleAvecDeclarationPreexistanteMaisSansCode() throws Exception {
+
+		final int annee = 2011;
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				// une déclaration sans code de contrôle
+				addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, colAdm);
+
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateTraitement = date(annee + 1, 1, 15);
+		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
+			@Override
+			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
+				return processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
+			}
+		});
+		assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		// on vérifie que les deux DIs ont reçu le même code de contrôle
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				assertNotNull(decls);
+				assertEquals(2, decls.size());
+
+				final DeclarationImpotOrdinaire di0 = (DeclarationImpotOrdinaire) decls.get(0);
+				assertNotNull(di0);
+				final String codeControle = di0.getCodeControle();
+				assertCodeControleIsValid(codeControle);
+
+				final DeclarationImpotOrdinaire di1 = (DeclarationImpotOrdinaire) decls.get(1);
+				assertNotNull(di1);
+				assertEquals(codeControle, di1.getCodeControle());
+				return null;
+			}
+		});
+	}
+
 }
