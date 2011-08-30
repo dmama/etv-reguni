@@ -240,7 +240,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
 		TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
 		return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFSEtendu(), type, MotifRattachement.DOMICILE);
 	}
@@ -279,7 +279,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays) {
 		return addForPrincipal(contribuable, ouverture, motifOuverture, pays, MotifRattachement.DOMICILE);
 	}
 
@@ -344,7 +344,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
-	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, String numeroPostalEtLocalite, Pays pays) {
+	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite, Pays pays) {
 		AdresseEtrangere adresse = new AdresseEtrangere();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);

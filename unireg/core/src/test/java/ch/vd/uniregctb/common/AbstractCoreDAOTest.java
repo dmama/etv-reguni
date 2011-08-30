@@ -500,8 +500,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
-	protected static void assertDI(RegDate debut, RegDate fin, TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, Long idCollRetour, RegDate dateRetourImprimee, List<Declaration> declarations) {
+	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
 		assertDI(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
@@ -1050,7 +1050,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return f;
 	}
 
-	protected ForFiscalAutreImpot addForAutreImpot(Contribuable tiers, RegDate ouverture, RegDate fermeture, Integer noOFS,
+	protected ForFiscalAutreImpot addForAutreImpot(Contribuable tiers, RegDate ouverture, @Nullable RegDate fermeture, Integer noOFS,
 			TypeAutoriteFiscale type, GenreImpot genre) {
 		ForFiscalAutreImpot f = new ForFiscalAutreImpot();
 		f.setDateDebut(ouverture);

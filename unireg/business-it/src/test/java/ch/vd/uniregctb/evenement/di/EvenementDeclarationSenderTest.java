@@ -51,7 +51,6 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		sender = new EvenementDeclarationSenderImpl();
 		sender.setEsbTemplate(esbTemplate);
 		sender.setEsbMessageFactory(esbMessageFactory);
-		sender.setBusinessUser("EvenementTest");
 		sender.setServiceDestination(OUTPUT_QUEUE);
 	}
 

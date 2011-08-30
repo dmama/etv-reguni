@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -28,6 +28,8 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -80,6 +82,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	private ValidationService validationService;
 
+	private EvenementDeclarationSender evenementDeclarationSender;
+
 	private int tailleLot = 100; // valeur par défaut
 
 	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationDI";
@@ -90,7 +94,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
-	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
+	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
+	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -104,6 +109,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
+		this.evenementFiscalService = evenementFiscalService;
+		this.evenementDeclarationSender = evenementDeclarationSender;
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -178,6 +185,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.validationService = validationService;
 	}
 
+	public void setEvenementDeclarationSender(EvenementDeclarationSender evenementDeclarationSender) {
+		this.evenementDeclarationSender = evenementDeclarationSender;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -189,7 +200,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status)
+	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, @Nullable StatusManager status)
 			throws DeclarationException {
 
 		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
@@ -201,8 +212,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
-	                                         StatusManager status)
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
+	                                         @Nullable StatusManager status)
 			throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
@@ -264,9 +275,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
+
+		final Contribuable ctb = (Contribuable) declaration.getTiers();
+
 		EditiqueResultat resultat;
 		try {
 			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
+			// TODO (msi) ajouter le code de routage
+			evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), "");
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -274,9 +291,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		catch (JMSException e) {
 			throw new DeclarationException(e);
 		}
-
-		final Contribuable ctb = (Contribuable) declaration.getTiers();
-		evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
+		catch (EvenementDeclarationException e) {
+			throw new DeclarationException(e);
+		}
 
 		// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents) 
 		final EtatDeclaration etatRetour = declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
@@ -305,20 +322,21 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return resultat;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws AdressesResolutionException
-	 */
 	@Override
 	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
+			final Contribuable tiers = (Contribuable) declaration.getTiers();
 			editiqueCompositionService.imprimeDIForBatch(declaration, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalEnvoiDI(tiers, declaration, dateEvenement);
+			// TODO (msi) ajouter le code de routage
+			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), "");
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		evenementFiscalService.publierEvenementFiscalEnvoiDI((Contribuable) declaration.getTiers(), declaration, dateEvenement);
+		catch (EvenementDeclarationException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	/**
@@ -372,15 +390,21 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * Annulation d'une DI
 	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
+	 * @param contribuable  le contribuable qui possède la déclaration à annuler
+	 * @param di            la déclaration qui doit être annulée
+	 * @param dateEvenement la date d'annulation
+	 * @return la déclaration nouvellement annulée
 	 */
 	@Override
 	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
 		di.setAnnule(true);
 		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
+		try {
+			evenementDeclarationSender.sendAnnulationEvent(contribuable.getNumero(), di.getPeriode().getAnnee(), dateEvenement);
+		}
+		catch (EvenementDeclarationException e) {
+			throw new RuntimeException(e);
+		}
 		return di;
 	}
 

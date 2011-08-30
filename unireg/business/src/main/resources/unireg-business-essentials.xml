@@ -133,6 +133,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="validationService" ref="validationService" />
+		<property name="evenementDeclarationSender" ref="evenementDeclarationSender" />
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl"/>

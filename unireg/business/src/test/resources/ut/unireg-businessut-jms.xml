@@ -51,6 +51,8 @@
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
 
+	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender"/>
+
 	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="1"/>
 		<property name="fetchAwaitingEventsOnStart" value="false"/>
