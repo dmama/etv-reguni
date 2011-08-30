@@ -119,7 +119,12 @@ public class OnTheFlyTiersIndexer {
 		LOGGER.trace("Sync des threads...");
 		synchronized (threads) {
 			for (AsyncTiersIndexerThread t : threads) {
-				t.sync();
+				try {
+					t.sync();
+				}
+				catch (AsyncTiersIndexerThread.DeadThreadException e) {
+					LOGGER.error(String.format("Thread %s n'a pas pu se synchroniser car il est déjà mort", t.getName()));
+				}
 			}
 		}
 		LOGGER.trace("Terminé.");
@@ -135,7 +140,13 @@ public class OnTheFlyTiersIndexer {
 		LOGGER.trace("Reset des threads...");
 		synchronized (threads) {
 			for (AsyncTiersIndexerThread t : threads) {
-				t.reset();
+				try {
+					t.reset();
+				}
+				catch (AsyncTiersIndexerThread.DeadThreadException e) {
+					// le thread est mort : il a donc arrêté son travail (c'est ce qu'on voulait, non ?)
+					// il sera redémarré si nécessaire
+				}
 			}
 		}
 		LOGGER.trace("Terminé.");
@@ -153,7 +164,12 @@ public class OnTheFlyTiersIndexer {
 		reset();
 		synchronized (threads) {
 			for (AsyncTiersIndexerThread t : threads) {
-				t.shutdown();
+				try {
+					t.shutdown();
+				}
+				catch (AsyncTiersIndexerThread.DeadThreadException e) {
+					// pas grave, de toute façon on voulait qu'il meure...
+				}
 			}
 			threads.clear();
 		}
@@ -175,7 +191,12 @@ public class OnTheFlyTiersIndexer {
 				final int last = threadSize - 1;
 				final AsyncTiersIndexerThread t = threads.remove(last);
 				LOGGER.info("Suppression d'un thread d'indexation " + t.getName() + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ")");
-				t.shutdown();
+				try {
+					t.shutdown();
+				}
+				catch (AsyncTiersIndexerThread.DeadThreadException e) {
+					LOGGER.warn(String.format("Le thread d'indexation %s était déjà mort", t.getName()));
+				}
 			}
 
 			if (queueSize > HIGH_LEVEL && threadSize < MAX_THREADS) {

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer.async;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +27,7 @@ public class MassTiersIndexer {
 	private boolean isInit = false;
 	private boolean enabled = true;
 
-	private ArrayList<AsyncTiersIndexerThread> threads;
+	private final List<AsyncTiersIndexerThread> threads;
 	private final BlockingQueue<Long> queue;
 
 	private long totalCpuTime;
@@ -39,11 +40,11 @@ public class MassTiersIndexer {
 		// Le flag doit etre setté avant le démarrage des threads sinon elles se terminent tout de suite...
 		isInit = true;
 
-		threads = new ArrayList<AsyncTiersIndexerThread>();
+		threads = new ArrayList<AsyncTiersIndexerThread>(nbThreads);
 		queue = new ArrayBlockingQueue<Long>(queueByThreadSize * nbThreads);
 
 		for (int i = 0; i < nbThreads; i++) {
-			AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect);
+			final AsyncTiersIndexerThread t = createIndexerThread(queue, indexer, transactionManager, sessionFactory, mode, dialect);
 			threads.add(t);
 			t.setName("Mass-" + i);
 			LOGGER.info("Démarrage du thread " + t.getName());
@@ -51,50 +52,75 @@ public class MassTiersIndexer {
 		}
 	}
 
+	/**
+	 * Surchargeable par les tests pour créer un thread custom et ainsi simuler des comportements particuliers
+	 * @param queue queue de réception des identifiants des tiers à indexer
+	 * @param indexer moteur d'indexation
+	 * @param transactionManager gestionnaire de transactions
+	 * @param sessionFactory session factory hibernate
+	 * @param mode mode d'indexation
+	 * @param dialect dialecte de la base de données
+	 * @return un thread pour l'indexation de masse
+	 */
+	protected AsyncTiersIndexerThread createIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory,
+	                                                      Mode mode, Dialect dialect) {
+		return new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect);
+	}
+
 	public void clearQueue() {
 		Assert.isTrue(isInit);
 		queue.clear();
 	}
 
-	public void terminate() throws Exception {
+	/**
+	 * Attend que les threads d'indexation soient terminés après avoir terminé le travail (= vidé la queue d'indexation)
+	 * @return <code>true</code> si tous les threads étaient déjà morts avant même qu'on leur demande de s'arrêter, <code>false</code> si au moins un tournait encore (ou que rien n'avait encore été lancé)
+	 */
+	public boolean terminate() {
 
 		if (!isInit) {
-			return;
+			return false;
 		}
 
 		isInit = false;
 
+		int nbDeadThreads = 0;
 		for (AsyncTiersIndexerThread thread : threads) {
-			thread.shutdown();
+			try {
+				thread.shutdown();
+			}
+			catch (AsyncTiersIndexerThread.DeadThreadException e) {
+				++ nbDeadThreads;
+			}
 		}
+		final boolean allDeadBeforeJoiningAttempt = (nbDeadThreads > 0 && nbDeadThreads == threads.size());
 
-		boolean interrupted = false;
-
-		ThreadMXBean mXBean = ManagementFactory.getThreadMXBean();
+		final ThreadMXBean mXBean = ManagementFactory.getThreadMXBean();
 		for (AsyncTiersIndexerThread thread : threads) {
-			long cpuTime = mXBean.getThreadCpuTime(thread.getId());
-			long userTime = mXBean.getThreadUserTime(thread.getId());
+			final long cpuTime = mXBean.getThreadCpuTime(thread.getId());
+			final long userTime = mXBean.getThreadUserTime(thread.getId());
 
-			thread.join(10000);
+			try {
+				thread.join(10000);
+			}
+			catch (InterruptedException e) {
+				// attente interrompue... pas grave, on aura attendu moins longtemps, c'est tout!
+			}
 			if (thread.isAlive()) {
 				LOGGER.warn("Interruption forcée du thread " + thread.getName() + " qui ne s'est pas arrêté après 10 secondes d'attente.");
 				thread.interrupt();
-				interrupted = true;
 			}
 
-			long execTime = thread.getExecutionTime();
+			final long execTime = thread.getExecutionTime();
 			totalCpuTime += cpuTime;
 			totalUserTime += userTime;
 			totalExecTime += execTime;
 		}
 
-		if (!interrupted) { // Si un thread a été interrompu, il va rester des tiers dans la queue, c'est certain. Inutile de faire sauter
-							// un assert pour rien.
-			Assert.isEqual(0, queue.size());
-		}
-
-		threads = null;
+		threads.clear();
 		queue.clear();
+
+		return allDeadBeforeJoiningAttempt;
 	}
 
 	/**
@@ -141,6 +167,17 @@ public class MassTiersIndexer {
 		Assert.isTrue(isInit);
 		Assert.isTrue(enabled, "L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
 		return queue.offer(id, timeout, unit);
+	}
+
+	/**
+	 * @return <code>true</code> si au moins un des threads lancés est toujours vivant
+	 */
+	public boolean isAlive() {
+		boolean alive = false;
+		for (Thread t : threads) {
+			alive |= (t != null && t.isAlive());
+		}
+		return alive;
 	}
 
 	/**

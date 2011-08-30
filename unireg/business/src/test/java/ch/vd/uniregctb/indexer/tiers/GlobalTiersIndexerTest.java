@@ -2,17 +2,29 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.GlobalIndex;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.async.AsyncTiersIndexerThread;
+import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.Sexe;
@@ -206,5 +218,96 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test(timeout = 60000)
+	public void testArretJobSiTousLesThreadsTombent() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		// "Bidouille" pour lancer une indexation pour laquelle les threads tombent avant d'avoir fini
+		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
+		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
+			@Override
+			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+				return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect) {
+					@Override
+					protected AsyncTiersIndexerThread createIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexerImpl indexer,
+					                                                      PlatformTransactionManager transactionManager, SessionFactory sessionFactory,
+					                                                      Mode mode, Dialect dialect) {
+						return new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect) {
+							@Override
+							protected void indexBatch(List<Long> batch) {
+								// boom au bout d'une seconde déjà...
+								try {
+									Thread.sleep(1000);
+									throw new RuntimeException("Boom ! (exception de test)");
+								}
+								catch (InterruptedException e) {
+									Assert.fail("Thread interrompu!");
+								}
+							}
+						};
+					}
+				};
+			}
+
+			@Override
+			protected int getOfferTimeoutInSeconds() {
+				return 2;       // pour accélérer un peu le mouvement dans les tests
+			}
+		};
+		indexer.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		indexer.setGlobalIndex(getBean(GlobalIndex.class, "globalIndex"));
+		indexer.setStatsService(getBean(StatsService.class, "statsService"));
+		indexer.setServiceCivilService(serviceCivil);
+		indexer.setServiceInfra(serviceInfra);
+		indexer.setSessionFactory(sessionFactory);
+		indexer.setTiersDAO(tiersDAO);
+		indexer.setTiersSearcher(globalTiersSearcher);
+		indexer.setTiersService(tiersService);
+		indexer.setTransactionManager(transactionManager);
+		indexer.afterPropertiesSet();
+
+		// initialisation de la DB avec plein de tiers à indexer
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// j'en mets beaucoup pour me placer dans la position où la queue est pleine
+				// alors que les threads d'indexation sont morts
+				for (int i = 0 ; i < 2000 ; ++ i) {
+					addNonHabitant(null, getNom(i), null, getSexe(i));
+				}
+				return null;
+			}
+
+			private String getNom(int i) {
+				final char[] value = Integer.toString(i).toCharArray();
+				for (int pos = 0 ; pos < value.length ; ++ pos) {
+					value[pos] += 'A' - '0';
+				}
+				return new String(value);
+			}
+
+			private Sexe getSexe(int i) {
+				return i % 2 == 0 ? Sexe.MASCULIN : Sexe.FEMININ;
+			}
+		});
+
+		try {
+			indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL, true);
+			Assert.fail("Comment ça, tout s'est bien passé ???");
+		}
+		catch (IndexerException e) {
+			Assert.assertTrue(e.getMessage().contains("Les threads d'indexation se sont tous arrêtés"));
+		}
+		finally {
+			indexer.destroy();
+		}
 	}
 }

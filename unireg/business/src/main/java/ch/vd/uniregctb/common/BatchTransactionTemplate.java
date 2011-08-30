@@ -10,6 +10,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,7 +30,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 	private final Logger LOGGER = Logger.getLogger(BatchTransactionTemplate.class);
 
-	public enum Behavior {
+	public static enum Behavior {
 		/**
 		 * En cas d'exception durant le processing d'un batch, considère le batch comme perdu (en erreur, transaction rollée-back) dans son ensemble et continue avec les batchs restants.
 		 */
@@ -117,7 +118,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		 *
 		 * @param batch   le lot à processer
 		 * @param rapport le rapport associé au lot courant tel que retourné par {@link #createSubRapport}.
-		 * @return true si le prochain lot doit être traiter, false si le batch doit être interrompu
+		 * @return true si le prochain lot doit être traité, false si le batch doit être interrompu
 		 * @throws Exception si le batch doit être rollé-back
 		 */
 		public abstract boolean doInTransaction(List<E> batch, R rapport) throws Exception;
@@ -169,7 +170,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 * @throws org.springframework.transaction.TransactionException
 	 *          en cas d'erreur de transaction
 	 */
-	public boolean execute(final R rapportFinal, final BatchCallback<E, R> action) throws TransactionException {
+	public boolean execute(@Nullable final R rapportFinal, final BatchCallback<E, R> action) throws TransactionException {
 
 		final boolean reprise = (behavior == Behavior.REPRISE_AUTOMATIQUE);
 		boolean processNextBatch = true;
@@ -265,7 +266,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 *
 	 * @return <code>true</code> si le processus s'est bien déroulé et que la transaction est committée; <code>false</code> si la transaction a été rollée-back.
 	 */
-	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, final R rapportFinal) {
+	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, @Nullable final R rapportFinal) {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Execution en transaction du batch = " + batch);

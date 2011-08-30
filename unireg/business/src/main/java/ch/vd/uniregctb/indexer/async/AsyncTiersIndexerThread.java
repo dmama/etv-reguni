@@ -92,9 +92,17 @@ public class AsyncTiersIndexerThread extends Thread {
 	}
 
 	/**
-	 * Demande au thread de s'arrêter. Le thread termine de vider la queue dans tous les cas.
+	 * Exception lancée par les méthodes {@link #sync()}, {@link #shutdown()} et {@link #reset()} si un arrêt propre
+	 * (i.e. avec complétion du boulot commencé) n'est pas possible car le thread est mort
 	 */
-	public void shutdown() {
+	public static class DeadThreadException extends Exception {
+	}
+
+	/**
+	 * Demande au thread de s'arrêter. Le thread termine de vider la queue dans tous les cas.
+	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
+	 */
+	public void shutdown() throws DeadThreadException {
 		if (!shutdown) {
 			shutdown = true;
 			sync();
@@ -102,14 +110,22 @@ public class AsyncTiersIndexerThread extends Thread {
 	}
 
 	/**
-	 * Attends que tous les tiers dont l'indexation a été demandée aient été indexés.
+	 * Attend que tous les tiers dont l'indexation a été demandée aient été indexés.
+	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
 	 */
-	public void sync() {
+	public void sync() throws DeadThreadException {
 		try {
 			synchronized (processingDone) {
 				processingDone.setValue(false);
 				while (!processingDone.booleanValue()) {
-					processingDone.wait();
+					processingDone.wait(1000L);         // attentes de 1s, pour vérifier périodiquement que tout va bien
+
+					// si le thread es mort, de deux choses l'une :
+					// 1. ou bien tout le traitement a été fait, auquel cas processingDone a changé d'état (donc la prochaine boucle se sera pas exécutée), et tout va bien
+					// 2. ou bien le thread a sauté, et processingDone ne changera JAMAIS PLUS d'état... pas la peine d'attendre la fin du monde...
+					if (!isAlive() && !processingDone.booleanValue()) {
+						throw new DeadThreadException();
+					}
 				}
 			}
 		}
@@ -120,8 +136,9 @@ public class AsyncTiersIndexerThread extends Thread {
 
 	/**
 	 * Interrompt l'indexation courante et retourne lorsque le thread est de nouveau en attente
+	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
 	 */
-	public void reset() {
+	public void reset() throws DeadThreadException {
 		// msi (12.05.2010) appeler 'interrupt' n'est pas une bonne idée: ça fout le bordel dans la gestion des locks de Lucene
 		// interrupt(); // on interrompt le poll sur la queue
 		sync(); // on attend que le thread soit de nouveau en attente
@@ -160,7 +177,7 @@ public class AsyncTiersIndexerThread extends Thread {
 		}
 	}
 
-	private void indexBatch(final List<Long> batch) {
+	protected void indexBatch(final List<Long> batch) {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("ASYNC indexation des tiers n° " + Arrays.toString(batch.toArray()) + " (La queue contient encore " + queue.size() + " tiers a indexer)");

@@ -52,7 +52,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
+		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 
 		gti = new GlobalTiersIndexerImpl(); // pour éviter le proxy
 		gti.setAdresseService(getBean(AdresseService.class, "adresseService"));

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer.tiers;
 import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -20,7 +21,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
@@ -171,8 +174,16 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
 					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
-					query.setParameterList("ids", ids);
-					query.executeUpdate();
+
+					final BatchIterator<Long> batchIterator = new StandardBatchIterator<Long>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
+					while (batchIterator.hasNext()) {
+						final Collection<Long> subSet = batchIterator.next();
+						if (subSet != null && subSet.size() > 0) {
+							query.setParameterList("ids", subSet);
+							query.executeUpdate();
+						}
+					}
+
 					session.flush();
 				}
 				finally {

@@ -290,19 +290,25 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode
 				+ (prefetchIndividus ? " avec" : " sans") + " préchargement des individus");
 
-		TimeLog timeLog = new TimeLog();
+		final TimeLog timeLog = new TimeLog();
 		timeLog.start();
 
 		final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
-		MassTiersIndexer asyncIndexer = new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect);
+		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread);
 
-		int size = list.size();
+		final int size = list.size();
 
 		// variables pour le log
 		int i = 0;
 
-		BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, CIVIL_BATCH_SIZE);
-		while (iter.hasNext() && !statusManager.interrupted()) {
+		// période de la boucle d'attente lors du remplissage complet de la queue de traitement
+		final int offerTimeout = getOfferTimeoutInSeconds();
+
+		// sera mis à "true" si on détecte que tous les threads sont morts prématurément
+		boolean deadThreads = false;
+
+		final BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, CIVIL_BATCH_SIZE);
+		while (iter.hasNext() && !statusManager.interrupted() && !deadThreads) {
 
 			final Set<Long> ids = new HashSet<Long>(iter.next());
 
@@ -324,21 +330,38 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 				// insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si
 				// plus personne ne prélève de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
-				while (!asyncIndexer.offerTiersForIndexation(id, 10, TimeUnit.SECONDS) && !statusManager.interrupted()) {
+				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout, TimeUnit.SECONDS) && !statusManager.interrupted()) {
+
+					// si tous les threads sont morts, il est temps de tout arrêter...
+					if (!asyncIndexer.isAlive()) {
+						deadThreads = true;
+						break;
+					}
+
 					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("La queue d'indexation est pleine, attente de 10 secondes...");
+						LOGGER.debug(String.format("La queue d'indexation est pleine, attente de %d secondes...", offerTimeout));
 					}
 				}
+
+				if (deadThreads) {
+					break;
+				}
+
 				++i;
 			}
 		}
 
-		asyncIndexer.terminate();
+		deadThreads = asyncIndexer.terminate() || deadThreads;
 
 		timeLog.end(asyncIndexer);
 		timeLog.logStats();
 
-		if (statusManager.interrupted()) {
+		if (deadThreads) {
+			final String msg = String.format("Les threads d'indexation se sont tous arrêtés. Nombre de tiers réindexés/total = %d/%d", i, size);
+			Audit.error(msg);
+			throw new IndexerException(msg);
+		}
+		else if (statusManager.interrupted()) {
 			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés/total = " + i + "/" + size);
 		}
 		else {
@@ -346,6 +369,25 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 
 		return size;
+	}
+
+	/**
+	 * Surchargeable dans les tests pour provoquer des situations spéciales
+	 * @param nbThreads le nombre de threads pour l'indexation en parallèle
+	 * @param mode le mode d'indexation
+	 * @param queueSizeByThread la taille maximale de la queue par thread
+	 * @return l'indexer de la classe {@link MassTiersIndexer}
+	 */
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect);
+	}
+
+	/**
+	 * Surchargeable dans les tests pour avoir des temps de latence plus faibles
+	 * @return la délai d'attente, en secondes, quand la queue est pleine
+	 */
+	protected int getOfferTimeoutInSeconds() {
+		return 10;
 	}
 
 	@SuppressWarnings({"unchecked"})
