@@ -56,14 +56,14 @@ public class EvenementIAMListenerImpl extends TransactionalEsbMessageListener im
 
 		try {
 			final String businessId = message.getBusinessId();
-			LOGGER.info("Arrivée du message IAM n°" + businessId);
+			LOGGER.info(String.format("Arrivée du message IAM n°%s", businessId));
 			final String action = message.getHeader(ACTION);
 			if (CREATE.equals(action) || UPDATE.equals(action)) {
 				final String body = message.getBodyAsString();
 				onMessage(body, businessId);
 			}
 			else {
-				LOGGER.info(" message IAM n°" + businessId + " est de type " + action + " il est ignoré.");
+				LOGGER.info(String.format("Le message IAM n°%s est de type '%s', il est ignoré.", businessId, action));
 			}
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
