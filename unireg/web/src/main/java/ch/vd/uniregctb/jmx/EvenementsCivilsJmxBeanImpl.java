@@ -56,7 +56,7 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 	@Override
 	@ManagedAttribute
 	public int getNbConsumers() {
-		return evtCivilEndpointManager.getConcurrentConsumers();
+		return evtCivilEndpointManager.getMaxConcurrentConsumers();
 	}
 
 	@Override

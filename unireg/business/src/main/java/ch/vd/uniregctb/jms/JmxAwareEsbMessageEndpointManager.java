@@ -26,16 +26,6 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 	}
 
 	@Override
-	public int getActiveConsumerCount() {
-		return -1;
-	}
-
-	@Override
-	public int getConcurrentConsumers() {
-		return -1;
-	}
-
-	@Override
 	public int getMaxConcurrentConsumers() {
 		return ((MessageActivationSpec)getActivationSpec()).getMaxSessionsIntValue();
 	}

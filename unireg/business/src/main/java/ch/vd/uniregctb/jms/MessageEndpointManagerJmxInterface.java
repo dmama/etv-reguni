@@ -13,16 +13,6 @@ public interface MessageEndpointManagerJmxInterface {
 	String getDestinationName();
 
 	/**
-	 * @return le nombre de consommateurs (= listeners) actifs
-	 */
-	int getActiveConsumerCount();
-
-	/**
-	 * @return le nombre de consommateurs (= listeners) concurrents
-	 */
-	int getConcurrentConsumers();
-
-	/**
 	 * @return le nombre maximal configuré de consommateurs (= listeners) concurrents
 	 */
 	int getMaxConcurrentConsumers();
