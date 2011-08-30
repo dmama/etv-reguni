@@ -538,6 +538,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
 			diView.setId(di.getId());
 			diView.setPeriodeFiscale(di.getPeriode().getAnnee());
+			diView.setCodeControle(di.getCodeControle());
 			diView.setDateDebutPeriodeImposition(di.getDateDebut());
 			diView.setDateFinPeriodeImposition(di.getDateFin());
 			diView.setDelaiAccorde(di.getDelaiAccordeAu());
@@ -574,6 +575,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final EtatDeclaration etatDI = di.getDernierEtat();
 		diEditView.setEtat(etatDI == null ? null : etatDI.getEtat());
 		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
+		diEditView.setCodeControle(di.getCodeControle());
 		diEditView.setTypeDeclarationImpot(di.getTypeDeclaration());
 		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
 		diEditView.setDateFinPeriodeImposition(di.getDateFin());
@@ -676,6 +678,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
+		diEditView.setCodeControle(di.getCodeControle());
 		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
 		diEditView.setDateFinPeriodeImposition(di.getDateFin());
 

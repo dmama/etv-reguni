@@ -28,6 +28,8 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 
 	private Integer periodeFiscale;
 
+	private String codeControle;
+
 	private RegDate dateDebutPeriodeImposition;
 
 	private RegDate dateFinPeriodeImposition;
@@ -232,6 +234,14 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 
 	public void setPeriodeFiscale(Integer periodeFiscale) {
 		this.periodeFiscale = periodeFiscale;
+	}
+
+	public String getCodeControle() {
+		return codeControle;
+	}
+
+	public void setCodeControle(String codeControle) {
+		this.codeControle = codeControle;
 	}
 
 	public boolean isAnnule() {

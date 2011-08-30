@@ -60,6 +60,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 		diView.setDateDebutPeriodeImposition(di.getDateDebut());
 		diView.setDateFinPeriodeImposition(di.getDateFin());
 		diView.setPeriodeFiscale(di.getPeriode().getAnnee());
+		diView.setCodeControle(di.getCodeControle());
 		diView.setTypeDeclarationImpot(di.getTypeDeclaration());
 		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
 		for (DelaiDeclaration delai : di.getDelais()) {
