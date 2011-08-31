@@ -10,6 +10,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
@@ -52,6 +53,14 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 		sender.setEsbTemplate(esbTemplate);
 		sender.setEsbMessageFactory(esbMessageFactory);
 		sender.setServiceDestination(OUTPUT_QUEUE);
+
+		AuthenticationHelper.pushPrincipal("EvenementTest");
+	}
+
+	@Override
+	public void tearDown() {
+		super.tearDown();
+		AuthenticationHelper.popPrincipal();
 	}
 
 	@Test
