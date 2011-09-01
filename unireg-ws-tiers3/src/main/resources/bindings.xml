@@ -22,13 +22,13 @@
 
 	<!-- unireg-jaxb2-ech -->
 
-	<jxb:bindings schemaLocation="eCH-0010-4-0f.xsd">
+	<jxb:bindings schemaLocation="eCH-0010-4-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0010.v4" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="eCH-0044-2-0f.xsd">
+	<jxb:bindings schemaLocation="eCH-0044-2-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0044.v2" />
 		</jxb:schemaBindings>
