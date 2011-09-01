@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,116 +33,130 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
-		List<CollectiviteAdministrative> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCollectivitesUtilisateur(visaOperateur);
+			return target.getCollectivitesUtilisateur(visaOperateur);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCollectivitesUtilisateur", new Object() {
+			tracing.end(time, t, "getCollectivitesUtilisateur", new Object() {
 				@Override
 				public String toString() {
 					return String.format("visaOperateur=%s", visaOperateur);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(final String codeFonction, final int noCollectivite) {
-		List<ProfilOperateur> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
+			return target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getListeOperateursPourFonctionCollectivite", new Object() {
+			tracing.end(time, t, "getListeOperateursPourFonctionCollectivite", new Object() {
 				@Override
 				public String toString() {
 					return String.format("codeFonction=%s, noCollectivite=%d", codeFonction, noCollectivite);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public Operateur getOperateur(final long individuNoTechnique) {
-		Operateur result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOperateur(individuNoTechnique);
+			return target.getOperateur(individuNoTechnique);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOperateur", new Object() {
+			tracing.end(time, t, "getOperateur", new Object() {
 				@Override
 				public String toString() {
 					return String.format("individuNoTechnique=%d", individuNoTechnique);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public Operateur getOperateur(final String visa) {
-		Operateur result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOperateur(visa);
+			return target.getOperateur(visa);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOperateur", new Object() {
+			tracing.end(time, t, "getOperateur", new Object() {
 				@Override
 				public String toString() {
 					return String.format("visa=%s", visa);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public ProfilOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
-		ProfilOperateur result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getProfileUtilisateur(visaOperateur, codeCollectivite);
+			return target.getProfileUtilisateur(visaOperateur, codeCollectivite);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getProfileUtilisateur", new Object() {
+			tracing.end(time, t, "getProfileUtilisateur", new Object() {
 				@Override
 				public String toString() {
 					return String.format("visaOperateur=%s, codeCollectivite=%d", visaOperateur, codeCollectivite);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<Operateur> getUtilisateurs(final List<EnumTypeCollectivite> typesCollectivite) {
-		List<Operateur> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getUtilisateurs(typesCollectivite);
+			return target.getUtilisateurs(typesCollectivite);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getUtilisateurs", new Object() {
+			tracing.end(time, t, "getUtilisateurs", new Object() {
 				@Override
 				public String toString() {
 					return String.format("typesCollectivites=%s", ServiceTracing.toString(typesCollectivite));
 				}
 			});
 		}
-		return result;
 	}
 	
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-		return null;
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {

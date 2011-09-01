@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,146 +46,166 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		}
 	}
 
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-		return null;
-	}
-
 	@Override
 	public List<Long> getAllIds() {
-		List<Long> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAllIds();
+			return target.getAllIds();
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAllIds", null);
+			tracing.end(time, t, "getAllIds", null);
 		}
-		return result;
 	}
 
 	@Override
 	public PersonneMorale getPersonneMorale(final Long id, final PartPM... parts) {
-		PersonneMorale result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPersonneMorale(id, parts);
+			return target.getPersonneMorale(id, parts);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPersonneMorale", new Object() {
+			tracing.end(time, t, "getPersonneMorale", new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d, parts=%s", id, ServiceTracing.toString(parts));
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<PersonneMorale> getPersonnesMorales(final List<Long> ids, final PartPM... parts) {
-		List<PersonneMorale> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPersonnesMorales(ids, parts);
+			return target.getPersonnesMorales(ids, parts);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPersonnesMorales", new Object() {
+			tracing.end(time, t, "getPersonnesMorales", new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, parts=%s", ServiceTracing.toString(ids), ServiceTracing.toString(parts));
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public Etablissement getEtablissement(final long id) {
-		Etablissement result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getEtablissement(id);
+			return target.getEtablissement(id);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getEtablissement", new Object() {
+			tracing.end(time, t, "getEtablissement", new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d", id);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<Etablissement> getEtablissements(final List<Long> ids) {
-		List<Etablissement> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getEtablissements(ids);
+			return target.getEtablissements(ids);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getEtablissements", new Object() {
+			tracing.end(time, t, "getEtablissements", new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s", ServiceTracing.toString(ids));
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public AdressesPM getAdresses(final long noEntreprise, final RegDate date) {
-		AdressesPM result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAdresses(noEntreprise, date);
+			return target.getAdresses(noEntreprise, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAdresses", new Object() {
+			tracing.end(time, t, "getAdresses", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noEntreprise=%d, date=%s", noEntreprise, ServiceTracing.toString(date));
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public AdressesPMHisto getAdressesHisto(final long noEntreprise) {
-		AdressesPMHisto result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAdressesHisto(noEntreprise);
+			return target.getAdressesHisto(noEntreprise);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAdressesHisto", new Object() {
+			tracing.end(time, t, "getAdressesHisto", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noEntreprise=%d", noEntreprise);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<EvenementPM> findEvenements(final long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
-		List<EvenementPM> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.findEvenements(numeroEntreprise, code, minDate, maxDate);
+			return target.findEvenements(numeroEntreprise, code, minDate, maxDate);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "findEvenements", new Object() {
+			tracing.end(time, t, "findEvenements", new Object() {
 				@Override
 				public String toString() {
 					return String.format("numeroEntreprise=%d, code=%s, minDate=%s, maxDate=%s", numeroEntreprise, code, ServiceTracing.toString(minDate), ServiceTracing.toString(maxDate));
 				}
 			});
 		}
-		return result;
 	}
 }

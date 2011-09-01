@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,386 +43,517 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
-		List<Canton> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAllCantons();
+			return target.getAllCantons();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAllCantons", null);
+			tracing.end(time, t, "getAllCantons", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
-		CollectiviteAdministrative result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCollectivite(noColAdm);
+			return target.getCollectivite(noColAdm);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCollectivite", new Object() {
+			tracing.end(time, t, "getCollectivite", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noColAdm=%d", noColAdm);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		List<CollectiviteAdministrative> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCollectivitesAdministratives();
+			return target.getCollectivitesAdministratives();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCollectivitesAdministratives", null);
+			tracing.end(time, t, "getCollectivitesAdministratives", null);
 		}
-
-		return result;
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite)
-			throws ServiceInfrastructureException {
-		List<CollectiviteAdministrative> result;
-		long time = tracing.start();
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCollectivitesAdministratives(typesCollectivite);
+			return target.getCollectivitesAdministratives(typesCollectivite);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCollectivitesAdministratives", new Object() {
+			tracing.end(time, t, "getCollectivitesAdministratives", new Object() {
 				@Override
 				public String toString() {
 					return String.format("typesCollectivite=%s", ServiceTracing.toString(typesCollectivite));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Integer getNoOfsCommuneByEgid(final int egid, final RegDate date) throws ServiceInfrastructureException {
-		Integer result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getNoOfsCommuneByEgid(egid, date);
+			return target.getNoOfsCommuneByEgid(egid, date);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getNoOfsCommuneByEgid", new Object() {
+			tracing.end(time, t, "getNoOfsCommuneByEgid", new Object() {
 				@Override
 				public String toString() {
 					return String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Commune getCommuneByLocalite(final Localite localite) throws ServiceInfrastructureException {
-		Commune result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCommuneByLocalite(localite);
+			return target.getCommuneByLocalite(localite);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCommuneByLocalite", new Object() {
+			tracing.end(time, t, "getCommuneByLocalite", new Object() {
 				@Override
 				public String toString() {
 					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws ServiceInfrastructureException {
-		List<Commune> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCommuneHistoByNumeroOfs(noOfsCommune);
+			return target.getCommuneHistoByNumeroOfs(noOfsCommune);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCommuneHistoByNumeroOfs", new Object() {
+			tracing.end(time, t, "getCommuneHistoByNumeroOfs", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noOfsCommune=%d", noOfsCommune);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
-		List<Commune> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getCommunes();
+			return target.getCommunes();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCommunes", null);
+			tracing.end(time, t, "getCommunes", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
-		List<Commune> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getListeCommunes(canton);
+			return target.getListeCommunes(canton);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getListeCommunes", new Object() {
+			tracing.end(time, t, "getListeCommunes", new Object() {
 				@Override
 				public String toString() {
 					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
-		List<Commune> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getListeFractionsCommunes();
+			return target.getListeFractionsCommunes();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getListeFractionsCommunes", null);
+			tracing.end(time, t, "getListeFractionsCommunes", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public Localite getLocaliteByONRP(final int onrp) throws ServiceInfrastructureException {
-		Localite result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getLocaliteByONRP(onrp);
+			return target.getLocaliteByONRP(onrp);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getLocaliteByONRP", new Object() {
+			tracing.end(time, t, "getLocaliteByONRP", new Object() {
 				@Override
 				public String toString() {
 					return String.format("onrp=%d", onrp);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
-		List<Localite> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getLocalites();
+			return target.getLocalites();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getLocalites", null);
+			tracing.end(time, t, "getLocalites", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public OfficeImpot getOfficeImpot(final int noColAdm) throws ServiceInfrastructureException {
-		OfficeImpot result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOfficeImpot(noColAdm);
+			return target.getOfficeImpot(noColAdm);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOfficeImpot", new Object() {
+			tracing.end(time, t, "getOfficeImpot", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noColAdm=%d", noColAdm);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws ServiceInfrastructureException {
-		OfficeImpot result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOfficeImpotDeCommune(noCommune);
+			return target.getOfficeImpotDeCommune(noCommune);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOfficeImpotDeCommune", new Object() {
+			tracing.end(time, t, "getOfficeImpotDeCommune", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noCommune=%d", noCommune);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		List<OfficeImpot> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOfficesImpot();
+			return target.getOfficesImpot();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOfficesImpot", null);
+			tracing.end(time, t, "getOfficesImpot", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
-		List<Pays> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPays();
+			return target.getPays();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPays", null);
+			tracing.end(time, t, "getPays", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public Pays getPays(final int numeroOFS) throws ServiceInfrastructureException {
-		Pays result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPays(numeroOFS);
+			return target.getPays(numeroOFS);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPays", new Object() {
+			tracing.end(time, t, "getPays", new Object() {
 				@Override
 				public String toString() {
 					return String.format("numeroOFS=%d", numeroOFS);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Rue getRueByNumero(final int numero) throws ServiceInfrastructureException {
-		Rue result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getRueByNumero(numero);
+			return target.getRueByNumero(numero);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getRueByNumero", new Object() {
+			tracing.end(time, t, "getRueByNumero", new Object() {
 				@Override
 				public String toString() {
 					return String.format("numero=%d", numero);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Rue> getRues(final Localite localite) throws ServiceInfrastructureException {
-		List<Rue> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getRues(localite);
+			return target.getRues(localite);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getRues", new Object() {
+			tracing.end(time, t, "getRues", new Object() {
 				@Override
 				public String toString() {
 					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Rue> getRues(final Canton canton) throws ServiceInfrastructureException {
-		List<Rue> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getRues(canton);
+			return target.getRues(canton);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getRues", new Object() {
+			tracing.end(time, t, "getRues", new Object() {
 				@Override
 				public String toString() {
 					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws ServiceInfrastructureException {
-		InstitutionFinanciere result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getInstitutionFinanciere(id);
+			return target.getInstitutionFinanciere(id);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getInstitutionFinanciere", new Object() {
+			tracing.end(time, t, "getInstitutionFinanciere", new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d", id);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws ServiceInfrastructureException {
-		List<InstitutionFinanciere> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getInstitutionsFinancieres(noClearing);
+			return target.getInstitutionsFinancieres(noClearing);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getInstitutionsFinancieres", new Object() {
+			tracing.end(time, t, "getInstitutionsFinancieres", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noClearing=%s", noClearing);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
@@ -440,145 +570,188 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 	}
 
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-		return null;
-	}
-
 	@Override
 	public Localite getLocaliteByNPA(final int npa) throws ServiceInfrastructureException {
-		Localite result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getLocaliteByNPA(npa);
+			return target.getLocaliteByNPA(npa);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getLocaliteByNPA", new Object() {
+			tracing.end(time, t, "getLocaliteByNPA", new Object() {
 				@Override
 				public String toString() {
 					return String.format("npa=%d", npa);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		List<TypeRegimeFiscal> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTypesRegimesFiscaux();
+			return target.getTypesRegimesFiscaux();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTypesRegimesFiscaux", null);
+			tracing.end(time, t, "getTypesRegimesFiscaux", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws ServiceInfrastructureException {
-		TypeRegimeFiscal result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTypeRegimeFiscal(code);
+			return target.getTypeRegimeFiscal(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTypeRegimeFiscal", new Object() {
+			tracing.end(time, t, "getTypeRegimeFiscal", new Object() {
 				@Override
 				public String toString() {
 					return String.format("code=%s", code);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		List<TypeEtatPM> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTypesEtatsPM();
+			return target.getTypesEtatsPM();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTypesEtatsPM", null);
+			tracing.end(time, t, "getTypesEtatsPM", null);
 		}
-
-		return result;
 	}
 
 	@Override
 	public TypeEtatPM getTypeEtatPM(final String code) throws ServiceInfrastructureException {
-		TypeEtatPM result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTypeEtatPM(code);
+			return target.getTypeEtatPM(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTypeEtatPM", new Object() {
+			tracing.end(time, t, "getTypeEtatPM", new Object() {
 				@Override
 				public String toString() {
 					return String.format("code=%s", code);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public String getUrlVers(final ApplicationFiscale application, final Long tiersId) {
-		String result;
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			result = target.getUrlVers(application, tiersId);
+			return target.getUrlVers(application, tiersId);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getUrlVers", new Object() {
+			tracing.end(time, t, "getUrlVers", new Object() {
 				@Override
 				public String toString() {
 					return String.format("application=%s, tiersId=%d", application.name(), tiersId);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Logiciel getLogiciel(final Long idLogiciel) throws ServiceInfrastructureException {
-		Logiciel result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getLogiciel(idLogiciel);
+			return target.getLogiciel(idLogiciel);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getLogiciel", new Object() {
+			tracing.end(time, t, "getLogiciel", new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d", idLogiciel);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
-		List<Logiciel> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTousLesLogiciels();
+			return target.getTousLesLogiciels();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTousLesLogiciels", null);
+			tracing.end(time, t, "getTousLesLogiciels", null);
 		}
-
-		return result;
 	}
 }
-

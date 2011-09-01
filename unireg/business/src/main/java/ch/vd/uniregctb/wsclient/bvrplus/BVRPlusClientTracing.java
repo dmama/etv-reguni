@@ -30,12 +30,21 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 
 	@Override
 	public BvrReponse getBVRDemande(final BvrDemande bvrDemande) throws BVRPlusClientException {
-		final long start = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
 			return target.getBVRDemande(bvrDemande);
 		}
+		catch (BVRPlusClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(start, "getBVRDemande", new Object() {
+			tracing.end(time, t, "getBVRDemande", new Object() {
 				@Override
 				public String toString() {
 					if (bvrDemande != null) {
@@ -51,12 +60,21 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 
 	@Override
 	public void ping() throws BVRPlusClientException {
-		final long start = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
 			target.ping();
 		}
+		catch (BVRPlusClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(start);
+			tracing.end(time, t, "ping", null);
 		}
 	}
 

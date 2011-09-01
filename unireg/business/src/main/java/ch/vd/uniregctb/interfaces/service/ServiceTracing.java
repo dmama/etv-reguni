@@ -285,6 +285,19 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
 	 */
 	public void end(long start, String name, @Nullable Object params) {
+		end(start, null, name, params);
+	}
+
+	/**
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO}),
+	 * en ajoutant, le cas échéant, la classe de l'exception levée par l'appel
+	 *
+	 * @param start la valeur retournée par la méthode {@link #start()}.
+	 * @param thrown l'exception éventuellement reçue dans l'appel
+	 * @param name  le nom de la méthode
+	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 */
+	public void end(long start, @Nullable Throwable thrown, String name, @Nullable Object params) {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
@@ -296,11 +309,18 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			else {
 				paramString = null;
 			}
-			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s", (nanoTime - start) / 1000000, name));
+			final String throwableString;
+			if (thrown != null) {
+				throwableString = String.format(", %s thrown", thrown.getClass().getName());
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s}", (nanoTime - start) / 1000000, name, paramString));
+				throwableString = StringUtils.EMPTY;
+			}
+			if (StringUtils.isBlank(paramString)) {
+				detailLogger.info(String.format("(%d ms) %s%s", (nanoTime - start) / 1000000, name, throwableString));
+			}
+			else {
+				detailLogger.info(String.format("(%d ms) %s{%s}%s", (nanoTime - start) / 1000000, name, paramString, throwableString));
 			}
 		}
 	}

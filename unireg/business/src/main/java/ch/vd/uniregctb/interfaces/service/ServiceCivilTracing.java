@@ -2,7 +2,6 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,370 +44,432 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 
 	@Override
 	public AdressesCivilesActives getAdresses(final long noIndividu, final RegDate date, final boolean strict) throws DonneesCivilesException {
-		AdressesCivilesActives result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAdresses(noIndividu, date, strict);
+			return target.getAdresses(noIndividu, date, strict);
+		}
+		catch (DonneesCivilesException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAdresses", new Object() {
+			tracing.end(time, t, "getAdresses", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s, strict=%s", noIndividu, ServiceTracing.toString(date), strict);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public Collection<Adresse> getAdresses(final long noIndividu, final int annee) {
-		Collection<Adresse> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAdresses(noIndividu, annee);
+			return target.getAdresses(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAdresses", new Object() {
+			tracing.end(time, t, "getAdresses", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public AdressesCivilesHistoriques getAdressesHisto(final long noIndividu, final boolean strict) throws DonneesCivilesException {
-		AdressesCivilesHistoriques result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getAdressesHisto(noIndividu, strict);
+			return target.getAdressesHisto(noIndividu, strict);
+		}
+		catch (DonneesCivilesException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getAdressesHisto", new Object() {
+			tracing.end(time, t, "getAdressesHisto", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, strict=%s", noIndividu, strict);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public EtatCivil getEtatCivilActif(final long noIndividu, final RegDate date) {
-		EtatCivil result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getEtatCivilActif(noIndividu, date);
+			return target.getEtatCivilActif(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getEtatCivilActif", new Object() {
+			tracing.end(time, t, "getEtatCivilActif", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Individu getIndividu(final long noIndividu, final int annee) {
-		Individu result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getIndividu(noIndividu, annee);
+			return target.getIndividu(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getIndividu", new Object() {
+			tracing.end(time, t, "getIndividu", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Individu getIndividu(final long noIndividu, final int annee, final AttributeIndividu... parties) {
-		Individu result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getIndividu(noIndividu, annee, parties);
+			return target.getIndividu(noIndividu, annee, parties);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getIndividu", new Object() {
+			tracing.end(time, t, "getIndividu", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d, parties=%s", noIndividu, annee, ServiceTracing.toString(parties));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Individu getIndividu(final long noIndividu, final RegDate date, final AttributeIndividu... parties) {
-		Individu result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getIndividu(noIndividu, date, parties);
+			return target.getIndividu(noIndividu, date, parties);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getIndividu", new Object() {
+			tracing.end(time, t, "getIndividu", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s, parties=%s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Individu getConjoint(final Long noIndividuPrincipal, final RegDate date) {
-		Individu result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getConjoint(noIndividuPrincipal,date);
+			return target.getConjoint(noIndividuPrincipal, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getConjoint", new Object() {
+			tracing.end(time, t, "getConjoint", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividuPrincipal=%d, date=%s", noIndividuPrincipal, ServiceTracing.toString(date));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Long getNumeroIndividuConjoint(final Long noIndividuPrincipal, final RegDate date) {
-		Long result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getNumeroIndividuConjoint(noIndividuPrincipal,date);
+			return target.getNumeroIndividuConjoint(noIndividuPrincipal, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getNumeroIndividuConjoint", new Object() {
+			tracing.end(time, t, "getNumeroIndividuConjoint", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividuPrincipal=%d, date=%s", noIndividuPrincipal, ServiceTracing.toString(date));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final RegDate date, final AttributeIndividu... parties) {
-		List<Individu> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getIndividus(nosIndividus, date, parties);
+			return target.getIndividus(nosIndividus, date, parties);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getIndividus", new Object() {
+			tracing.end(time, t, "getIndividus", new Object() {
 				@Override
 				public String toString() {
 					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final int annee, final AttributeIndividu... parties) {
-		List<Individu> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getIndividus(nosIndividus, annee, parties);
+			return target.getIndividus(nosIndividus, annee, parties);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getIndividus", new Object() {
+			tracing.end(time, t, "getIndividus", new Object() {
 				@Override
 				public String toString() {
 					return String.format("nosIndividus=%s, annee=%d, parties=%s", ServiceTracing.toString(nosIndividus), annee, ServiceTracing.toString(parties));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Collection<Nationalite> getNationalites(final long noIndividu, final int annee) {
-		Collection<Nationalite> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getNationalites(noIndividu, annee);
+			return target.getNationalites(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getNationalites", new Object() {
+			tracing.end(time, t, "getNationalites", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Origine getOrigine(final long noIndividu, final int annee) {
-		Origine result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getOrigine(noIndividu, annee);
+			return target.getOrigine(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getOrigine", new Object() {
+			tracing.end(time, t, "getOrigine", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Collection<Permis> getPermis(final long noIndividu, final int annee) {
-		Collection<Permis> result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPermis(noIndividu, annee);
+			return target.getPermis(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPermis", new Object() {
+			tracing.end(time, t, "getPermis", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Permis getPermisActif(final long noIndividu, final RegDate date) {
-		Permis result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getPermisActif(noIndividu, date);
+			return target.getPermisActif(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getPermisActif", new Object() {
+			tracing.end(time, t, "getPermisActif", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public Tutelle getTutelle(final long noIndividu, final int annee) {
-		Tutelle result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getTutelle(noIndividu, annee);
+			return target.getTutelle(noIndividu, annee);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getTutelle", new Object() {
+			tracing.end(time, t, "getTutelle", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public String getNomPrenom(final Individu individu) {
-		String result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getNomPrenom(individu);
+			return target.getNomPrenom(individu);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getNomPrenom", new Object() {
+			tracing.end(time, t, "getNomPrenom", new Object() {
 				@Override
 				public String toString() {
 					return String.format("individu=%s", individu != null ? individu.getNoTechnique() : null);
 				}
 			});
 		}
-
-		return result;
 	}
 
 	@Override
 	public NomPrenom getDecompositionNomPrenom(final Individu individu) {
-		NomPrenom result;
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
-			result = target.getDecompositionNomPrenom(individu);
+			return target.getDecompositionNomPrenom(individu);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getDecompositionNomPrenom", new Object() {
+			tracing.end(time, t, "getDecompositionNomPrenom", new Object() {
 				@Override
 				public String toString() {
 					return String.format("individu=%s", individu != null ? individu.getNoTechnique() : null);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(final RegDate depuis, final long noIndividu, final boolean strict, final boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
-		final List<HistoriqueCommune> result;
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			result = target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
+			return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
+		}
+		catch (DonneesCivilesException e) {
+			t = e;
+			throw e;
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
 		}
 		finally {
-			tracing.end(time, "getCommunesDomicileHisto", new Object() {
+			tracing.end(time, t, "getCommunesDomicileHisto", new Object() {
 				@Override
 				public String toString() {
 					return String.format("depuis=%s, noIndividu=%d, strict=%s, seulementVaud=%s", ServiceTracing.toString(depuis), noIndividu, strict, seulementVaud);
 				}
 			});
 		}
-		return result;
 	}
 
 	@Override
 	public boolean isWarmable() {
-		long time = tracing.start();
+		Throwable t = null;
+		final long time = tracing.start();
 		try {
 			return target.isWarmable();
 		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "isWarmable", null);
+			tracing.end(time, t, "isWarmable", null);
 		}
 	}
 
@@ -424,10 +485,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		if (statsService != null) {
 			statsService.unregisterService(SERVICE_NAME);
 		}
-	}
-
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
-		return null;
 	}
 
 	@Override
