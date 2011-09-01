@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-ws-tiers3</artifactId>
-			<version>3.0-beta0</version>
+			<version>3.0-beta1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dbunit</groupId>
