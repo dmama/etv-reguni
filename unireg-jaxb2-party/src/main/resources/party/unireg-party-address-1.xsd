@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta1 - 1 septembre 2011 - remplacé eCH-0010-4-0f.xsd par eCH-0010-4-0.xsd -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/address/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
 		   xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd" />
 
 	<xs:simpleType name="tariffZoneType">
 		<xs:annotation>
