@@ -23,7 +23,7 @@
 
 	<!-- unireg-jaxb2-ech -->
 
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd">
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0010.v4" />
 		</jxb:schemaBindings>
