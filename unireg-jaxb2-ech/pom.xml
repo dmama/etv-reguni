@@ -7,7 +7,7 @@
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-ech</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
 
 	<name>Unireg - ECH Beans JAXB2</name>
 	<description>Beans JAXB2 pour les eCH utilisés dans Unireg.</description>
@@ -33,9 +33,24 @@
 				<version>0.8.0</version>
 				<configuration>
 					<schemaDirectory>src/main/resources</schemaDirectory>
+					<catalog>src/main/resources/catalog.xml</catalog>
 					<schemaIncludes>
 						<include>*.xsd</include>
 					</schemaIncludes>
+					<schemaExcludes>
+						<!-- ces XSDs sont inclus explicitement par les autres XSDs -->
+						<exclude>eCH-0006-2-0.xsd</exclude>
+						<exclude>eCH-0007-3-0.xsd</exclude>
+						<exclude>eCH-0007-4-0.xsd</exclude>
+						<exclude>eCH-0008-2-0.xsd</exclude>
+						<exclude>eCH-0010-3-0.xsd</exclude>
+						<exclude>eCH-0010-4-0.xsd</exclude>
+						<exclude>eCH-0011-3-0.xsd</exclude>
+						<exclude>eCH-0044-1-0.xsd</exclude>
+						<exclude>eCH-0044-2-0.xsd</exclude>
+						<exclude>eCH-0071-1-0.xsd</exclude>
+						<exclude>eCH-0072-1-0.xsd</exclude>
+					</schemaExcludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
 						<include>bindings.xml</include>
@@ -59,7 +74,7 @@
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-pretty-classname</artifactId>
-						<version>1.0.0</version>
+						<version>1.1.0</version>
 					</dependency>
 					<dependency>
 						<groupId>org.apache.cxf.xjcplugins</groupId>
