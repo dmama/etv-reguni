@@ -83,7 +83,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 			final String contenu = buildContenuIgnores(results.getIgnores(), filename, status);
 			final String titre = "Liste des contribuables ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getAssujettis().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, results.getIgnores().size(), titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
