@@ -36,9 +36,9 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 		Assert.assertEquals(2, liste.size());
 
 		Assert.assertEquals(10010010L, liste.get(0).getNumeroContribuable());
-		Assert.assertEquals(2, liste.get(0).getNombreImmeuble());
+		Assert.assertEquals(2, liste.get(0).getNombreImmeubles());
 		Assert.assertEquals(10010011L, liste.get(1).getNumeroContribuable());
-		Assert.assertEquals(5, liste.get(1).getNombreImmeuble());
+		Assert.assertEquals(5, liste.get(1).getNombreImmeubles());
 	}
 
 	@Test
@@ -49,11 +49,11 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 		Assert.assertEquals(3, liste.size());
 
 		Assert.assertEquals(10010001L, liste.get(0).getNumeroContribuable());
-		Assert.assertEquals(65, liste.get(0).getNombreImmeuble());
+		Assert.assertEquals(65, liste.get(0).getNombreImmeubles());
 		Assert.assertEquals(10010010L, liste.get(1).getNumeroContribuable());
-		Assert.assertEquals(2, liste.get(1).getNombreImmeuble());
+		Assert.assertEquals(2, liste.get(1).getNombreImmeubles());
 		Assert.assertEquals(10010011L, liste.get(2).getNumeroContribuable());
-		Assert.assertEquals(5, liste.get(2).getNombreImmeuble());
+		Assert.assertEquals(5, liste.get(2).getNombreImmeubles());
 	}
 
 	@Test

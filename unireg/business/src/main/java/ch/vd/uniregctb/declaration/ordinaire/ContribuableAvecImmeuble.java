@@ -1,32 +1,25 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 public final class ContribuableAvecImmeuble {
-	long numeroContribuable;
-	int nombreImmeuble;
 
-	public ContribuableAvecImmeuble(long numeroContribuable, int nombreImmeuble) {
+	private final long numeroContribuable;
+	private final int nombreImmeubles;
+
+	public ContribuableAvecImmeuble(long numeroContribuable, int nombreImmeubles) {
 		this.numeroContribuable = numeroContribuable;
-		this.nombreImmeuble = nombreImmeuble;
+		this.nombreImmeubles = nombreImmeubles;
 	}
 
 	public long getNumeroContribuable() {
 		return numeroContribuable;
 	}
 
-	public void setNumeroContribuable(long numeroContribuable) {
-		this.numeroContribuable = numeroContribuable;
-	}
-
-	public int getNombreImmeuble() {
-		return nombreImmeuble;
-	}
-
-	public void setNombreImmeuble(int nombreImmeuble) {
-		this.nombreImmeuble = nombreImmeuble;
+	public int getNombreImmeubles() {
+		return nombreImmeubles;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%d (%d)", numeroContribuable, nombreImmeuble);
+		return String.format("%d (%d)", numeroContribuable, nombreImmeubles);
 	}
 }

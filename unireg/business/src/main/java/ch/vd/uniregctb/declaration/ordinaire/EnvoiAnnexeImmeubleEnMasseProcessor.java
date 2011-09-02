@@ -117,7 +117,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			public boolean doInTransaction(List<ContribuableAvecImmeuble> batch, EnvoiAnnexeImmeubleResults r) throws Exception {
 				rapport = r;
 
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+				status.setMessage("Traitement du batch [" + batch.get(0).getNumeroContribuable() + "; " + batch.get(batch.size() - 1).getNumeroContribuable() + "] ...", percent);
 
 				if (nbMax > 0 && rapportFinal.nbCtbsTotal + batch.size() >= nbMax) {
 					// limite le nombre de contribuable pour ne pas dépasser le nombre max
@@ -184,7 +184,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 				rapport.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
 			else {
-				nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeuble());
+				nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeubles());
 
 				final RegDate dateReference = RegDate.get(anneePeriode, 12, 31);
 				ForGestion forGestion = tiersService.getForGestionActif(ctb, dateReference);
