@@ -43,8 +43,8 @@ public class GetListeCtbModifies {
 	public String toString() {
 		return "GetListeCtbModifies{" +
 				"login=" + login +
-				", dateDebutRecherche=" + dateDebutRecherche +
-				", dateFinRecherche='" + dateFinRecherche +
+				", dateDebutRecherche='" + dateDebutRecherche + '\'' +
+				", dateFinRecherche='" + dateFinRecherche + '\'' +
 				'}';
 	}
 }
