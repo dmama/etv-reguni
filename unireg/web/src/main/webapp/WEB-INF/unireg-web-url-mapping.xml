@@ -28,26 +28,27 @@
 
 	<!-- ======== Config MVC Spring 2.x ======== -->
 
-	 <!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
-	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+	<!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
 
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="singleSession" value="false" /> <!-- [UNIREG-1521] -->
+		<property name="singleSession" value="false" />
+		<!-- [UNIREG-1521] -->
 	</bean>
 
 	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
 	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
-            <list>
-            	<ref bean="ajaxInterceptor"/>
-            </list>
-        </property>
+			<list>
+				<ref bean="ajaxInterceptor" />
+			</list>
+		</property>
 		<property name="urlMap">
 			<map>
 				<!-- SuperGra -->
-				<entry key="/supergra/entity.do" value-ref="superGraEntityController"/>
-				<entry key="/supergra/coll.do" value-ref="superGraCollectionController"/>
+				<entry key="/supergra/entity.do" value-ref="superGraEntityController" />
+				<entry key="/supergra/coll.do" value-ref="superGraCollectionController" />
 
 				<!-- Autocomplete -->
 				<entry key="/autocomplete/infra.do" value-ref="autoCompleteInfraController" />
@@ -57,16 +58,16 @@
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
 
 				<!-- Tiers -->
-				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController"/>
-				<entry key="/tiers/info.do" value-ref="tiersInfoController"/>
+				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController" />
+				<entry key="/tiers/info.do" value-ref="tiersInfoController" />
 
 				<!-- Accès à l'inbox -->
-				<entry key="/admin/inbox.do" value-ref="inboxController"/>
-				<entry key="/admin/inbox-content.do" value-ref="inboxContentController"/>
+				<entry key="/admin/inbox.do" value-ref="inboxController" />
+				<entry key="/admin/inbox-content.do" value-ref="inboxContentController" />
 
 				<!-- Identification de contribuable -->
-				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController"/>
-				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController"/>
+				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController" />
+				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController" />
 
 				<!-- Edition des débiteurs -->
 				<entry key="/debiteur/edit.do" value-ref="debiteurEditController" />
@@ -95,11 +96,11 @@
 	     contrôleurs il convient de les enregistrer dans le 'mainUrlMapping' url mapper. -->
 	<bean id="legacyUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
-            <list>
-            	<ref bean="ajaxInterceptor"/>
-                <ref bean="openSessionInViewInterceptor"/>
-            </list>
-        </property>
+			<list>
+				<ref bean="ajaxInterceptor" />
+				<ref bean="openSessionInViewInterceptor" />
+			</list>
+		</property>
 		<property name="urlMap">
 			<map>
 				<!-- Base -->
@@ -161,8 +162,8 @@
 				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
 				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
 
-				<!-- Impression de copie conforme de sommation de DI/LR -->
-				<entry key="/declaration/copie-sommation.do" value-ref="declarationCopieConfomeController" />
+				<!-- Impression de copie conforme de sommation de DI/LR/Delai -->
+				<entry key="/declaration/copie-conforme.do" value-ref="declarationCopieConfomeController" />
 
 				<!-- Tiers - edit -->
 				<entry key="/tiers/edit.do" value-ref="tiersEditController" />
@@ -199,12 +200,12 @@
 				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
 				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />
 				<!-- Mouvements de dossier de masse -->
-				<entry key="/mouvement/consulter.do" value-ref="mouvementMasseConsultationController"/>
-				<entry key="/mouvement/traiter.do" value-ref="mouvementMasseTraitementController"/>
-				<entry key="/mouvement/imprimer-bordereaux.do" value-ref="mouvementMasseImpressionBordereauxController"/>
-				<entry key="/mouvement/detail-bordereau.do" value-ref="mouvementMasseDetailBordereauController"/>
-				<entry key="/mouvement/receptionner-bordereaux.do" value-ref="mouvementMasseReceptionBordereauxController"/>
-				<entry key="/mouvement/detail-reception-bordereau.do" value-ref="mouvementMasseDetailReceptionBordereauController"/>
+				<entry key="/mouvement/consulter.do" value-ref="mouvementMasseConsultationController" />
+				<entry key="/mouvement/traiter.do" value-ref="mouvementMasseTraitementController" />
+				<entry key="/mouvement/imprimer-bordereaux.do" value-ref="mouvementMasseImpressionBordereauxController" />
+				<entry key="/mouvement/detail-bordereau.do" value-ref="mouvementMasseDetailBordereauController" />
+				<entry key="/mouvement/receptionner-bordereaux.do" value-ref="mouvementMasseReceptionBordereauxController" />
+				<entry key="/mouvement/detail-reception-bordereau.do" value-ref="mouvementMasseDetailReceptionBordereauController" />
 				<!-- Tâches en instance / Nouveaux dossiers -->
 				<entry key="/tache/list.do" value-ref="tacheListController" />
 				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />

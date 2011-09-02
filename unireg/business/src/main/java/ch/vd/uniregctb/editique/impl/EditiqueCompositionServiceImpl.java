@@ -206,7 +206,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException {
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
+			EditiqueException {
 		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
 		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
 
@@ -214,9 +215,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
+		final TypFichierImpression.Document document =
+				impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
 		Assert.notNull(document);
-		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[] {document};
+		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
 		final Integer annee = infosDocument.getAnnee();
 		final Integer idDoc = infosDocument.getIdDocument();
@@ -326,13 +328,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String typeDocument = impressionConfirmationDelaiHelper.calculPrefixe();
 		final String[] infoOperateur = getInfoOperateur();
 		final ImpressionConfirmationDelaiHelperParams params =
-				new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1]);
+				new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+						delai.getId(), delai.getLogCreationDate());
 		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
 		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
 
 		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
 				RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()), di.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, false, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, true);
 	}
 
 	@Override

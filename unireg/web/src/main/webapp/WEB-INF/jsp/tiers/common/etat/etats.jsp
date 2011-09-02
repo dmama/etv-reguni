@@ -18,7 +18,7 @@
 				<fmt:message key="option.etat.avancement.${etat.etat}" />
 			<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
 				&nbsp;
-				<a href="../declaration/copie-sommation.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onClick="Page_ImprimerCopieSommation(${etat.id})">&nbsp;</a>
+				<a href="../declaration/copie-conforme.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onClick="Page_ImprimerCopieSommation(${etat.id})">&nbsp;</a>
 				<span class="pdf-grayed" id="disabled-copie-sommation-${etat.id}" style="display: none;">&nbsp;</span>
 			</c:if>
 		</display:column>

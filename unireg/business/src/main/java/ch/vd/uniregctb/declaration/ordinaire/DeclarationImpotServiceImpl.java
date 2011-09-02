@@ -2,6 +2,9 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import javax.jms.JMSException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,12 +13,15 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -87,6 +93,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private int tailleLot = 100; // valeur par défaut
 
 	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationDI";
+
+	private static final String CONTEXTE_COPIE_CONFORME_DELAI = "ConfirmationDelai";
+
+	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
 
 	public DeclarationImpotServiceImpl() {
 	}
@@ -187,6 +197,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public void setEvenementDeclarationSender(EvenementDeclarationSender evenementDeclarationSender) {
 		this.evenementDeclarationSender = evenementDeclarationSender;
+	}
+
+	public void setImpressionConfirmationDelaiHelper(ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper) {
+		this.impressionConfirmationDelaiHelper = impressionConfirmationDelaiHelper;
 	}
 
 	/**
@@ -498,12 +512,113 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException {
+	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
+			DeclarationException {
 		try {
 			return editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
+	}
+
+
+	private static interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
+		Collection<E> getEntities(T declaration);
+
+		void addEntity(T declaration, E entity);
+
+		void assertSame(E entity1, E entity2);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private <T extends DeclarationImpotOrdinaire, E extends HibernateEntity> E addAndSave(T declaration, E entity, EntityAccessor<T, E> accessor) {
+		if (entity.getKey() == null) {
+			// pas encore persistée
+
+			// on mémorise les clés des entités existantes
+			final Set<Object> keys;
+			final Collection<E> entities = accessor.getEntities(declaration);
+			if (entities == null || entities.isEmpty()) {
+				keys = Collections.emptySet();
+			}
+			else {
+				keys = new HashSet<Object>(entities.size());
+				for (E d : entities) {
+					final Object key = d.getKey();
+					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
+					keys.add(key);
+				}
+			}
+
+			// on ajoute la nouvelle entité et on sauve le tout
+			accessor.addEntity(declaration, entity);
+			declaration = (T) diDAO.save(declaration);
+
+			// rebelotte pour trouver la nouvelle entité
+			E newEntity = null;
+			for (E d : accessor.getEntities(declaration)) {
+				if (!keys.contains(d.getKey())) {
+					newEntity = d;
+					break;
+				}
+			}
+
+			Assert.notNull(newEntity);
+			accessor.assertSame(entity, newEntity);
+			entity = newEntity;
+		}
+		else {
+			accessor.addEntity(declaration, entity);
+		}
+
+		Assert.notNull(entity.getKey());
+		return entity;
+	}
+
+	private static final EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration> DELAI_DECLARATION_ACCESSOR = new EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration>() {
+		@Override
+		public Collection<DelaiDeclaration> getEntities(DeclarationImpotOrdinaire declarationImpotOrdinaire) {
+			return declarationImpotOrdinaire.getDelais();
+		}
+
+		@Override
+		public void addEntity(DeclarationImpotOrdinaire declaration, DelaiDeclaration d) {
+			declaration.addDelai(d);
+		}
+
+		@Override
+		public void assertSame(DelaiDeclaration d1, DelaiDeclaration d2) {
+			Assert.isSame(d1.getDelaiAccordeAu(), d2.getDelaiAccordeAu());
+			Assert.isSame(d1.getDateDemande(), d2.getDateDemande());
+			Assert.isSame(d1.getDateTraitement(), d2.getDateTraitement());
+		}
+	};
+
+
+	@Override
+	public DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
+		return addAndSave(declaration, delai, DELAI_DECLARATION_ACCESSOR);
+	}
+
+	@Override
+	public InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
+		String nomDocument = construitIdArchivageConfirmationDelai(delai);
+		InputStream pdf =
+				editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(),
+						ImpressionConfirmationDelaiHelperImpl.TYPE_DOCUMENT_CONFIRMATION_DELAI, nomDocument, CONTEXTE_COPIE_CONFORME_DELAI);
+		return pdf;
+	}
+
+	/**
+	 * Construit l'ID du document pour l'archivage
+	 *
+	 * @param delaiDeclaration
+	 * @return
+	 */
+	private String construitIdArchivageConfirmationDelai(DelaiDeclaration delaiDeclaration) {
+		ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(delaiDeclaration.getDelaiAccordeAu(),
+				delaiDeclaration.getId(), delaiDeclaration.getLogCreationDate());
+		return impressionConfirmationDelaiHelper.construitIdArchivageDocument(params);
 	}
 }

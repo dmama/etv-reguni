@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 
-public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
+public class DelaiDeclarationView implements Comparable<DelaiDeclarationView> {
 
 	private Long id;
 
@@ -40,7 +40,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 
 	public DelaiDeclarationView() {
 	}
-	
+
 	public DelaiDeclarationView(DelaiDeclaration delai) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
@@ -50,6 +50,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 		this.delaiAccordeAu = delai.getDelaiAccordeAu();
 		this.logModifDate = delai.getLogModifDate();
 		this.logModifUser = delai.getLogModifUser();
+		this.idDeclaration = delai.getDeclaration().getId();
 	}
 
 	public Long getId() {
@@ -183,7 +184,6 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>  {
 		int value = (-1) * delaiAccordeAu.compareTo(autreDelaiAccordeAu);
 		return value;
 	}
-
 
 
 }

@@ -50,7 +50,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	public final static String TARGET_IMPRIMER_DI = "imprimerDI";
 	public final static String BUTTON_DUPLICATA_DI = "duplicataDI";
 	public final static String TARGET_ANNULER_DELAI = "annulerDelai";
-	public final static String TARGET_IMPRIMER_DELAI = "imprimerDelai";
 	public final static String TARGET_CREER_DI = "creerDI";
 	public final static String BUTTON_IMPRIMER_TO = "imprimerTO";
 	public final static String BUTTON_MAINTENIR_DI = "maintenir";
@@ -157,9 +156,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	}
 
 	/**
-	 * Exception lancée en interne par la méthode checkBean() pour signaler que le bean ne correspond pas du tout
-	 * à ce qui est attendu : ou bien il n'est carrément pas de la bonne classe, ou bien le contribuable n'y est
-	 * pas renseigné...
+	 * Exception lancée en interne par la méthode checkBean() pour signaler que le bean ne correspond pas du tout à ce qui est attendu : ou bien il n'est carrément pas de la bonne classe, ou bien le
+	 * contribuable n'y est pas renseigné...
 	 */
 	private static final class HighProbabilityThatBackWasUsedException extends Exception {
 	}
@@ -177,8 +175,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
@@ -201,9 +199,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 					}
 					else if (TARGET_CREER_DI.equals(target)) {
 						mav = creerDI(request, response, checkBean(DeclarationImpotSelectView.class, command, true), errors);
-					}
-					else if (TARGET_IMPRIMER_DELAI.equals(target)) {
-						mav = imprimerDelai(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
 					}
 				}
 				else {
@@ -339,8 +334,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			}
 
 			final NatureTiers natureTiers = diDetailView.getContribuable().getNatureTiers();
-			if(natureTiers == NatureTiers.Habitant || natureTiers == NatureTiers.MenageCommun || natureTiers == NatureTiers.NonHabitant){
-				if(!SecurityProvider.isGranted(Role.DI_EMIS_PP)){
+			if (natureTiers == NatureTiers.Habitant || natureTiers == NatureTiers.MenageCommun || natureTiers == NatureTiers.NonHabitant) {
+				if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
 					throw new AccessDeniedException("vous n'avez pas le droit d'émettre une DI");
 				}
 			}
@@ -404,7 +399,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			@Override
 			public ModelAndView doJob(EditiqueResultat resultat) {
 				final HttpSession session = request.getSession();
-				session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+				session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE,
+						String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 				return new ModelAndView("redirect:edit.do?action=listdis&numero=" + noCtb);
 			}
 		};
@@ -531,43 +527,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return mav;
 	}
 
-	/**
-	 * Ajoute juste une erreur globale de communication éditique dans les erreurs de binding
-	 */
-	private static final class ErreurGlobaleCommunicationEditique implements TraitementRetourEditique {
-
-		private final BindException errors;
-
-		public ErreurGlobaleCommunicationEditique(BindException errors) {
-			this.errors = errors;
-		}
-
-		@Override
-		public ModelAndView doJob(EditiqueResultat resultat) {
-			errors.reject("global.error.communication.editique");
-			return null;
-		}
-	}
-
-	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, final DeclarationImpotDetailView bean, BindException errors) throws Exception {
-
-		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
-			@Override
-			public ModelAndView doJob(EditiqueResultat resultat) {
-				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
-			}
-		};
-
-		final String delai = getEventArgument();
-		final Long idDelai = Long.parseLong(delai);
-		final TraitementRetourEditique erreurTimeout = new ErreurGlobaleCommunicationEditique(errors);
-		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
-		final ModelAndView mav = traiteRetourEditique(resultat, response, "delai", inbox, erreurTimeout, erreurTimeout);
-		if (mav == null && bean.getId() != null) {
-			diEditManager.refresh(bean);
-		}
-		return mav;
-	}
 
 	private ModelAndView ajouterDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotListView bean, BindException errors) throws Exception {
 

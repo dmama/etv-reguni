@@ -24,7 +24,6 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
  * Service offrant des methodes pour gérer le controller DeclarationImpotEditController
  *
  * @author xcifde
- *
  */
 public interface DeclarationImpotEditManager {
 
@@ -36,7 +35,7 @@ public interface DeclarationImpotEditManager {
 	 * @param id
 	 */
 	@Transactional(readOnly = true)
-	void controleDI(Long id) ;
+	void controleDI(Long id);
 
 	/**
 	 * Alimente la vue en fonction de l'ID de la DI
@@ -71,42 +70,32 @@ public interface DeclarationImpotEditManager {
 
 	/**
 	 * Retourne la vue de création d'une nouvelle DI sur le contribuable spécifié.
-	 * <p>
-	 * La nouvelle DI crée est la suivante dans l'ordre chronologique, ou - si le paramètre annee est renseigné - la DI pour l'année
-	 * spécifiée. Cette méthode vérifie si le contribuable est bien assujetti avant de créer une déclaration, et si ce n'est pas le cas lève
-	 * une exception de validation.
+	 * <p/>
+	 * La nouvelle DI crée est la suivante dans l'ordre chronologique, ou - si le paramètre annee est renseigné - la DI pour l'année spécifiée. Cette méthode vérifie si le contribuable est bien assujetti
+	 * avant de créer une déclaration, et si ce n'est pas le cas lève une exception de validation.
 	 *
-	 * @param numeroCtb
-	 *            le numéro de contribuable
-	 * @param range
-	 *            le plage de validité de la déclaration
-	 * @param view
-	 *            le form backing object a compléter
+	 * @param numeroCtb le numéro de contribuable
+	 * @param range     le plage de validité de la déclaration
+	 * @param view      le form backing object a compléter
 	 */
 	@Transactional(readOnly = true)
 	void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView view);
 
 	/**
-	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs
-	 * déclarations n'ont pas été envoyées durant les années précédentes, cette méthode retourne les dates de la déclaration non-envoyée la
-	 * plus ancienne.
-	 * <p>
-	 * <b>Note:</b> Si le contribuable n'est pas du tout assujetti, ou s'il n'est plus assujetti et que toutes ses déclarations ont été
-	 * envoyées, la méthode retourne <code>null</code>.
+	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs déclarations n'ont pas été envoyées durant les années précédentes,
+	 * cette méthode retourne les dates de la déclaration non-envoyée la plus ancienne.
+	 * <p/>
+	 * <b>Note:</b> Si le contribuable n'est pas du tout assujetti, ou s'il n'est plus assujetti et que toutes ses déclarations ont été envoyées, la méthode retourne <code>null</code>.
 	 *
-	 * @param numero
-	 *            le numéro de contribuable
-	 * @return une liste de périodes d'imposition à utiliser pour une nouvelle déclaration, <code>null</code> s'il n'est pas possible
-	 *         d'ajouter une déclaration d'impôt.
-	 * @throws ValidationException
-	 *             si le contribuable ne valide pas, ou s'il n'est pas possible de déterminer son assujettissement.
+	 * @param numero le numéro de contribuable
+	 * @return une liste de périodes d'imposition à utiliser pour une nouvelle déclaration, <code>null</code> s'il n'est pas possible d'ajouter une déclaration d'impôt.
+	 * @throws ValidationException si le contribuable ne valide pas, ou s'il n'est pas possible de déterminer son assujettissement.
 	 */
 	@Transactional(readOnly = true)
 	List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
 
 	/**
-	 * calcul l'année d'une nouvelle DI et vérifie que la période fiscale correspondante existe
-	 * utilisé par creerDI
+	 * calcul l'année d'une nouvelle DI et vérifie que la période fiscale correspondante existe utilisé par creerDI
 	 *
 	 * @param numero
 	 * @return une date dont l'année correspond à la période fiscale d'une nouvelle DI à créer ou null si la période fiscale n'existe pas
@@ -121,16 +110,16 @@ public interface DeclarationImpotEditManager {
 	 * @param delai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception ;
+	DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception;
 
 	/**
-	 * Imprime une DI vierge
-	 * Partie envoie
+	 * Imprime une DI vierge Partie envoie
+	 *
 	 * @param diEditView
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception  ;
+	EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception;
 
 	/**
 	 * Annule une DI
@@ -162,7 +151,7 @@ public interface DeclarationImpotEditManager {
 	 * @param delaiView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void saveDelai(DelaiDeclarationView delaiView);
+	Long saveDelai(DelaiDeclarationView delaiView);
 
 	/**
 	 * Alimente la vue contribuable pour la DI
@@ -191,7 +180,7 @@ public interface DeclarationImpotEditManager {
 	 * @param bean
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException;
 
 	/**
 	 * Imprimer la lettre de confirmation de délai
@@ -200,7 +189,17 @@ public interface DeclarationImpotEditManager {
 	 * @param idDelai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai) throws EditiqueException;
+
+	/**
+	 * Imprimer la lettre de confirmation de délai
+	 *
+	 * @param idDI
+	 * @param idDelai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
+
 
 	/**
 	 * Imprimer la chemise de taxation d'office
@@ -208,7 +207,7 @@ public interface DeclarationImpotEditManager {
 	 * @param bean
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException;
 
 	/**
 	 * Cree une vue pour le delai d'une declaration
@@ -226,6 +225,10 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException;
+
+
+	@Transactional(readOnly = true)
+	public DelaiDeclarationView getDelaiView(Long idDelai);
 
 }
 

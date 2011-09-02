@@ -32,19 +32,41 @@ public class CopieConformeController extends AbstractSimpleFormController {
 	}
 
 	private void fetchAndDownload(HttpServletRequest request, HttpServletResponse response) throws EditiqueException, IOException {
+
+		final String idDelaiStr = request.getParameter("idDelai");
 		final String idEtatStr = request.getParameter("idEtat");
-		try {
-			final Long idEtat = Long.valueOf(idEtatStr);
-			final InputStream pdf = copieConformeManager.getPdfCopieConformeSommation(idEtat);
-			if (pdf != null) {
-				servletService.downloadAsFile("copieSommation.pdf", pdf, null, response);
+
+		if (idDelaiStr != null) {
+			try {
+
+				final Long idDelai = Long.valueOf(idDelaiStr);
+				final InputStream pdf = copieConformeManager.getPdfCopieConformeDelai(idDelai);
+				if (pdf != null) {
+					servletService.downloadAsFile("copieDelai.pdf", pdf, null, response);
+				}
+				else {
+					throw new EditiqueException("Aucun archivage présent pour la confirmation de délai demandée");
+				}
 			}
-			else {
-				throw new EditiqueException("Aucun archivage présent pour la sommation de déclaration demandée");
+			catch (NumberFormatException ignored) {
+				// ignoré...
 			}
 		}
-		catch (NumberFormatException ignored) {
-			// ignoré...
+		else if (idEtatStr != null) {
+
+			try {
+				final Long idEtat = Long.valueOf(idEtatStr);
+				final InputStream pdf = copieConformeManager.getPdfCopieConformeSommation(idEtat);
+				if (pdf != null) {
+					servletService.downloadAsFile("copieSommation.pdf", pdf, null, response);
+				}
+				else {
+					throw new EditiqueException("Aucun archivage présent pour la sommation de déclaration demandée");
+				}
+			}
+			catch (NumberFormatException ignored) {
+				// ignoré...
+			}
 		}
 	}
 }

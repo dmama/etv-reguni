@@ -13,7 +13,9 @@
   		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form name="formAddDelai" id="formAddDelai">
+		<form:form method ="post" name="theForm" id="formAddDelai" action="delai.do">
+		<input type="hidden"  name="__TARGET__" value="">
+		<form:hidden path="idDeclaration" value="${command.idDeclaration}"/>
 		<fieldset><legend><span><fmt:message key="label.delais" /></span></legend>
 		<table border="0">
 			<unireg:nextRowClass reset="0"/>
@@ -45,7 +47,7 @@
 			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.confirmation.ecrite"/>&nbsp;:</td>
 				<td>
-					<form:checkbox path="confirmationEcrite" />
+					<form:checkbox path="confirmationEcrite" id="confirmation" onchange="toggleActionDelai();" onclick="toggleActionDelai();"/>
 				</td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
@@ -58,7 +60,9 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<input type="button" id="ajouter" value="Ajouter" onclick="javascript:ajouterDelaiDI('${command.dateExpedition}','${command}');">
+				<input type="button" name="actionDelai" id="imprimer" value="Imprimer" style="display:none;" onclick="javascript:ajouterDelaiAvecConfirmation('${command.dateExpedition}','${command}');">
+				<input type="button" name="actionDelai" id="ajouter" value="Ajouter" onclick="javascript:ajouterDelaiDI('${command.dateExpedition}','${command}');">
+				<input type="button" name="actionDelai" id="retour" value="Retour" style="display:none;" onclick="document.location.href='../di/edit.do?action=editdi&id=' + ${command.idDeclaration}">
 			</td>
 			<td width="25%">
 				<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../di/edit.do?action=editdi&id=' + ${command.idDeclaration}">
@@ -67,17 +71,58 @@
 	</table>
 	</form:form>
 	<script type="text/javascript" language="Javascript1.3">
-	function ajouterDelaiDI(dateExpedition) {
-		var formAddDelai = document.getElementById('formAddDelai');
+
+	function verifierDate(dateExpedition,formAddDelai){
 		var delaiAccordeAu = formAddDelai.delaiAccordeAu.value;
 		if (compare(addYear(dateExpedition, 1, 'yyyy.MM.dd' ), getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
 			if(!confirm('Ce délai est située plus d un an dans le futur à compter de la date d expédition de la DI. Voulez-vous le sauver ?')) {
 				return true;
 			}
 		}
-
-		formAddDelai.submit(); 	
 	}
+
+	function ajouterDelaiDI(dateExpedition) {
+		var formAddDelai = document.getElementById('formAddDelai');
+		verifierDate(dateExpedition,formAddDelai);
+	    Form.doPostBack("theForm","ajouter","");
+	}
+
+	function ajouterDelaiAvecConfirmation(dateExpedition) {
+		var formAddDelai = document.getElementById('formAddDelai');
+		verifierDate(dateExpedition,formAddDelai);
+	    Form.doPostBack("theForm","imprimer","");
+
+	    /*On desactive les boutons */
+
+	    var eltButtonImprime = document.getElementById('imprimer');
+    	var eltButtonAjout = document.getElementById('ajouter');
+    	var eltButtonAnnule = document.getElementById('annuler');
+    	var eltButtonRetour = document.getElementById('retour');
+    	var eltBoxConfirmation = document.getElementById('confirmation');
+
+    	eltButtonImprime.style.display = "none";
+    	eltButtonAjout.style.display = "none";
+    	eltButtonAnnule.style.display = "none";
+    	eltBoxConfirmation.disabled = true;
+    	eltButtonRetour.style.display = "";
+		formAddDelai.submit();
+	}
+
+
+    function toggleActionDelai() {
+    	var elt = document.getElementById('confirmation');
+    	var eltButtonImprime = document.getElementById('imprimer');
+    	var eltButtonAjout = document.getElementById('ajouter');
+    	if ($(elt).attr('checked')){
+    		eltButtonImprime.style.display = "";
+    		eltButtonAjout.style.display = "none";
+    	}
+    	else {
+    		eltButtonImprime.style.display = "none";
+    		eltButtonAjout.style.display = "";
+    	}
+    }
+
 	
 	</script>
 	</tiles:put>

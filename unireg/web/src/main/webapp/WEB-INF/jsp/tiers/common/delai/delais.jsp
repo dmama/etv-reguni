@@ -23,7 +23,7 @@
 			<c:if test="${command.allowedDelai}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${delai.confirmationEcrite}">
-						<a href="#" class="pdf" id="print-delai-${delai.id}" onClick="Page_ImprimerDelai(${delai.id})">&nbsp;</a>
+						<a href="../declaration/copie-conforme.do?idDelai=${delai.id}" class="pdf" id="print-delai-${delai.id}" onClick="Page_GetArchiveDelai(${delai.id})">&nbsp;</a>
 						<span class="pdf-grayed" id="disabled-print-delai-${delai.id}" style="display: none;">&nbsp;</span>
 					</c:if>
 				</c:if>
@@ -60,7 +60,7 @@
 			 	}
 	 	}
 
-	 	function Page_ActivationImpressionDelai(idDelai, actif) {
+	 	function Page_ActivationGetArchiveDelai(idDelai, actif) {
 	 		var eltActif = document.getElementById("print-delai-" + idDelai);
 	 		var eltInactif = document.getElementById("disabled-print-delai-" + idDelai);
 	 		if (actif) {
@@ -73,10 +73,9 @@
 			}
 	 	}
 
-		function Page_ImprimerDelai(idDelai) {
-			Page_ActivationImpressionDelai(idDelai, false);
-			setTimeout("Page_ActivationImpressionDelai(" + idDelai + ", true);", 2000);
-			Form.doPostBack("theForm", "imprimerDelai", idDelai);
+		function Page_GetArchiveDelai(idDelai) {
+			Page_ActivationGetArchiveDelai(idDelai, false);
+			setTimeout("Page_ActivationGetArchiveDelai(" + idDelai + ", true);", 2000);
 		}
 	</script>
 	

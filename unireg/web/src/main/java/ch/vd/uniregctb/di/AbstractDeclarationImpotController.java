@@ -4,7 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
+
 import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 public class AbstractDeclarationImpotController extends AbstractSimpleFormEditiqueAwareController {
@@ -12,6 +16,24 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormEditiq
 	private TiersMapHelper tiersMapHelper;
 
 	private DeclarationImpotMapHelper diMapHelper;
+
+	/**
+	 * Ajoute juste une erreur globale de communication éditique dans les erreurs de binding
+	 */
+	protected static final class ErreurGlobaleCommunicationEditique implements TraitementRetourEditique {
+
+		private final BindException errors;
+
+		public ErreurGlobaleCommunicationEditique(BindException errors) {
+			this.errors = errors;
+		}
+
+		@Override
+		public ModelAndView doJob(EditiqueResultat resultat) {
+			errors.reject("global.error.communication.editique");
+			return null;
+		}
+	}
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;

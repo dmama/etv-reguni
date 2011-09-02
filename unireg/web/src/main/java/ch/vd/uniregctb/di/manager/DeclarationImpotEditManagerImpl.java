@@ -91,7 +91,6 @@ import ch.vd.uniregctb.validation.ValidationService;
  * Service offrant des methodes pour gérer le controller DeclarationImpotEditController
  *
  * @author xcifde
- *
  */
 public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditManager, MessageSourceAware {
 
@@ -137,7 +136,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public void controleDI(Long id) {
 		DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 	}
 
@@ -150,7 +149,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerDI(DeclarationImpotDetailView diEditView) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		final Contribuable tiers = (Contribuable)di.getTiers();
+		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.annulationDI(tiers, di, RegDate.get());
 		//Mise à jour de l'état de la tâche si il y en a une
 		TacheCriteria criterion = new TacheCriteria();
@@ -177,7 +176,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
 		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		Set<DelaiDeclaration> delais = di.getDelais();
@@ -199,7 +198,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// on charge le tiers
 		final Tiers tiers = tiersDAO.get(numeroCtb);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		ValidationException error = null;
@@ -277,7 +276,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// on charge le tiers
 		final Contribuable contribuable = (Contribuable) tiersDAO.get(numero);
 		if (contribuable == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		return calculateRangesProchainesDIs(contribuable);
@@ -312,7 +311,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
 			}
 		});
-		
+
 		if (ranges.isEmpty()) {
 			return null;
 		}
@@ -324,10 +323,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Calcul et retourne la liste des périodes d'imposition devant servir de base à la création des déclarations d'impôt.
 	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param annee
-	 *            l'année concernée
+	 * @param contribuable le contribuable concerné
+	 * @param annee        l'année concernée
 	 * @return une liste de ranges (dans 95% des cas, un seul range), ou <b>null</b> s'il n'y a pas de déclarations à envoyer
 	 * @throws ValidationException
 	 */
@@ -372,13 +369,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * [UNIREG-832] Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.
 	 *
-	 * @param contribuable
-	 *            le contribuable
-	 * @param range
-	 *            le range de de validité de la déclaration à créer.
-	 * @throws ValidationException
-	 *             si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement
-	 *             calculé ou s'il existe déjà une déclaration.
+	 * @param contribuable le contribuable
+	 * @param range        le range de de validité de la déclaration à créer.
+	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
 	 */
 	protected PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) {
 
@@ -396,7 +389,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final List<PeriodeImposition> ranges = calculateRangesDIsPourAnnee(contribuable, annee);
 
 		if (ranges == null || ranges.isEmpty()) {
-			throw new ValidationException(contribuable, "Le contribuable n'est pas assujetti du tout sur l'année " + annee + ", ou son assujettissement pour cette année est déjà couvert par les déclarations émises");
+			throw new ValidationException(contribuable,
+					"Le contribuable n'est pas assujetti du tout sur l'année " + annee + ", ou son assujettissement pour cette année est déjà couvert par les déclarations émises");
 		}
 
 		// on vérifie que la range spécifié correspond parfaitement avec l'assujettissement calculé
@@ -441,8 +435,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * @return la plage de dates [debut; fin] couverte par la dernière déclaration (= la plus récente) existant sur le tiers spécifié; ou
-	 *         <code>null</code> si le tiers ne possède aucune déclaration valide.
+	 * @return la plage de dates [debut; fin] couverte par la dernière déclaration (= la plus récente) existant sur le tiers spécifié; ou <code>null</code> si le tiers ne possède aucune déclaration
+	 *         valide.
 	 */
 	public DateRange getDerniereDeclaration(Contribuable contribuable) {
 
@@ -467,7 +461,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	@Override
 	@Transactional(readOnly = true)
-	public RegDate getDateNewDi(Long numero){
+	public RegDate getDateNewDi(Long numero) {
 		RegDate dateNewDi = null;
 
 		//calcul de la date pour une nouvelle DI
@@ -482,7 +476,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		//vérification que la période fiscale correspondant existe
 		PeriodeFiscale periodFisc = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateNewDi.year());
-		if(periodFisc != null)
+		if (periodFisc != null)
 			return dateNewDi;
 		else
 			return null;
@@ -525,6 +519,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Alimente la vue DeclarationImpotListView en fonction d'un contribuable
+	 *
 	 * @throws AdressesResolutionException
 	 */
 	@Override
@@ -554,6 +549,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Alimente la vue DeclarationImpotEditView en fonction de l'ID de la DI
+	 *
 	 * @param id
 	 * @return une vue DeclarationImpotEditView
 	 * @throws AdressesResolutionException
@@ -564,7 +560,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 		Contribuable ctb = (Contribuable) di.getTiers();
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
@@ -630,6 +626,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * positionne les droits de l'utilisateur
+	 *
 	 * @param diEditView
 	 */
 	private void setDroitDI(DeclarationImpotDetailView diEditView, Tiers tiers) {
@@ -643,7 +640,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 		else {
 			//seuls les entreprise, les habitants, les non habitants et les ménages peuvent avoir une DI
-			if(tiers instanceof Entreprise){
+			if (tiers instanceof Entreprise) {
 				//les entreprise ne sont pas gérée pour le moment, il est interdit de créer une DI pour une entreprise
 				diEditView.setAllowedSommation(SecurityProvider.isGranted(Role.DI_SOM_PM));
 				diEditView.setAllowedDelai(SecurityProvider.isGranted(Role.DI_DELAI_PM));
@@ -671,7 +668,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
 		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		Contribuable ctb = (Contribuable) di.getTiers();
@@ -690,8 +687,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 
 	/**
-	 * Imprime une DI vierge
-	 * Partie envoie
+	 * Imprime une DI vierge Partie envoie
+	 *
 	 * @param diEditView
 	 * @throws Exception
 	 */
@@ -716,10 +713,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final Contribuable ctb = (Contribuable) tiersDAO.get(diEditView.getContribuable().getNumero());
 		DeclarationImpotOrdinaire di;
 		if (ctb == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		if (diEditView.getId() == null)	{
+		if (diEditView.getId() == null) {
 			di = new DeclarationImpotOrdinaire();
 
 			final RegDate dateDebut = diEditView.getRegDateDebutPeriodeImposition();
@@ -829,17 +826,18 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			final List<Tache> taches = tacheDAO.find(criterion);
 			if (taches != null && taches.size() != 0) {
 				for (Tache t : taches) {
-					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot)t;
+					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
 					if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
 						tache.setEtat(TypeEtatTache.TRAITE);
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			di = diDAO.get(diEditView.getId());
 			if (diEditView.getRegDateRetour() != null) {
 				if (!diEditView.getRegDateRetour().equals(di.getDateRetour())) {
-					if (di.getDateRetour() != null){
+					if (di.getDateRetour() != null) {
 						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 						etatRetournePrecedent.setAnnule(true);
 					}
@@ -872,8 +870,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Assigne le modèle de document à la DI en fonction du type de document trouvé dans la view
+	 *
 	 * @param diEditView view utilisée comme source du type de document ({@link ch.vd.uniregctb.di.view.DeclarationImpotDetailView#getTypeDeclarationImpot()}
-	 * @param di DI à laquelle le modèle de document sera assigné
+	 * @param di         DI à laquelle le modèle de document sera assigné
 	 */
 	private void assigneModeleDocument(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
 		final PeriodeFiscale periode = di.getPeriode();
@@ -893,11 +892,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public DelaiDeclarationView creerDelai(Long idDeclaration) {
-		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
+		DelaiDeclarationView delaiView = new DelaiDeclarationView();
 		delaiView.setIdDeclaration(idDeclaration);
 		DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 		delaiView.setTiersId(di.getTiers().getId());
 		delaiView.setDeclarationPeriode(di.getPeriode().getAnnee());
@@ -919,7 +918,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveDelai(DelaiDeclarationView delaiView) {
+	public Long saveDelai(DelaiDeclarationView delaiView) {
 		DeclarationImpotOrdinaire di = diDAO.get(delaiView.getIdDeclaration());
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
@@ -927,7 +926,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		delai.setConfirmationEcrite(delaiView.getConfirmationEcrite());
 		delai.setDateDemande(delaiView.getDateDemande());
 		delai.setDelaiAccordeAu(delaiView.getDelaiAccordeAu());
-		di.addDelai(delai);
+		delai = diService.addAndSave(di, delai);
+		return delai.getId();
 	}
 
 	/**
@@ -943,7 +943,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		Tiers tiers = tiersDAO.get(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 
@@ -961,13 +961,13 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		final RegDate dateDuJour = RegDate.get();
 		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour,dateDuJour);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour);
 		di.addEtat(etat);
 		diDAO.save(di);
 
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, dateDuJour);
-			evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable)di.getTiers(), di, etat.getDateObtention());
+			evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable) di.getTiers(), di, etat.getDateObtention());
 			return resultat;
 		}
 		catch (JMSException e) {
@@ -981,9 +981,19 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView diEditView, Long idDelai) throws EditiqueException {
+		return envoieImpressionLocalConfirmationDelai(diEditView.getId(), idDelai);
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
-			final DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
+			final DeclarationImpotOrdinaire di = diDAO.get(idDI);
 			return editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
 		}
 		catch (JMSException e) {
@@ -993,8 +1003,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Renvoie le modèle de document du type recherché présent dans la liste, ou <code>null</code> s'il n'y en a pas
+	 *
 	 * @param modeles les modèles à fouiller
-	 * @param type le type recherché
+	 * @param type    le type recherché
 	 * @return le premier modèle trouvé dans la liste correspondant au type recherché
 	 */
 	private static ModeleDocument findModeleOfType(Collection<ModeleDocument> modeles, TypeDocument type) {
@@ -1074,7 +1085,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
 					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
 				}
-				
+
 				final ModeleDocumentView modeleView = new ModeleDocumentView();
 				modeleView.setTypeDocument(modele.getTypeDocument());
 				modeleView.setModelesFeuilles(modelesFeuilleDocumentView);
@@ -1178,6 +1189,13 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		Tache tache = tacheDAO.get(idTache);
 		tache.setEtat(TypeEtatTache.TRAITE);
 
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public DelaiDeclarationView getDelaiView(Long idDelai) {
+		final DelaiDeclaration delaiDeclaration = delaiDeclarationDAO.get(idDelai);
+		return new DelaiDeclarationView(delaiDeclaration);
 	}
 
 }

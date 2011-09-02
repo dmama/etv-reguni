@@ -50,4 +50,11 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 			throw new IllegalArgumentException("La déclaration n'est ni une DI ni une LR (" + declaration.getClass().getName() + ")");
 		}
 	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public InputStream getPdfCopieConformeDelai(Long idDelai) throws EditiqueException {
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+		return diService.getCopieConformeConfirmationDelai(delai);
+	}
 }

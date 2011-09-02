@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.text.SimpleDateFormat;
+
 import noNamespace.ConfirmationDelaiDocument;
 import noNamespace.ConfirmationDelaiDocument.ConfirmationDelai;
 import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
 import noNamespace.InfoEnteteDocumentDocument1;
@@ -22,15 +25,22 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirmationDelaiHelper {
 
 	private static final String VERSION_XSD = "1.0";
+
+	/**
+	 * Le type de document à transmettre au service pour la sommation DI
+	 */
+	public static final String TYPE_DOCUMENT_CONFIRMATION_DELAI = "387";
 
 	private EditiqueHelper editiqueHelper;
 	private AdresseService adresseService;
@@ -46,13 +56,15 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
 			InfoDocument infoDocument = remplitInfoDocument(params);
+			InfoArchivageDocument.InfoArchivage infoArchivage = remplitInfoArchivage(params);
 			InfoEnteteDocument infoEnteteDocument;
 			infoEnteteDocument = remplitEnteteDocument(params);
 			Document document = typeFichierImpression.addNewDocument();
 			document.setConfirmationDelai(remplitSpecifiqueConfirmationDelai(params));
 			document.setInfoEnteteDocument(infoEnteteDocument);
 			document.setInfoDocument(infoDocument);
-			typeFichierImpression.setDocumentArray(new Document[]{ document });
+			document.setInfoArchivage(infoArchivage);
+			typeFichierImpression.setDocumentArray(new Document[]{document});
 			return mainDocument;
 		}
 		catch (Exception e) {
@@ -117,16 +129,55 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 	}
 
 	private InfoDocument remplitInfoDocument(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
-			final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-			final String prefixe = calculPrefixe() + "DOCUM";
-			infoDocument.setPrefixe(prefixe);
-			infoDocument.setTypDoc("CD");
-			infoDocument.setCodDoc("CONF_DEL");
-			infoDocument.setVersion(VERSION_XSD);
-			infoDocument.setLogo("CANT");
-			infoDocument.setPopulations("PP");
-			infoDocument.setIdEnvoi("");
-			return infoDocument;
+		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+		final String prefixe = calculPrefixe() + "DOCUM";
+		infoDocument.setPrefixe(prefixe);
+		infoDocument.setTypDoc("CD");
+		infoDocument.setCodDoc("CONF_DEL");
+		infoDocument.setVersion(VERSION_XSD);
+		infoDocument.setLogo("CANT");
+		infoDocument.setPopulations("PP");
+		infoDocument.setIdEnvoi("");
+		return infoDocument;
+	}
+
+	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionConfirmationDelaiHelperParams params) {
+		InfoArchivageDocument.InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
+		infoArchivage.setPrefixe(calculPrefixe() + "FOLDE");
+		infoArchivage.setNomApplication("FOLDERS");
+		infoArchivage.setTypDossier(EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
+		String numeroCTB = FormatNumeroHelper.numeroCTBToDisplay(params.getDi().getTiers().getNumero());
+		infoArchivage.setNomDossier(numeroCTB);
+		infoArchivage.setTypDocument(TYPE_DOCUMENT_CONFIRMATION_DELAI);
+		String idDocument = construitIdArchivageDocument(params);
+		infoArchivage.setIdDocument(idDocument);
+		infoArchivage.setDatTravail(String.valueOf(params.getDateAccord().index()));
+		return infoArchivage;
+	}
+
+	public String construitIdArchivageDocument(ImpressionConfirmationDelaiHelperParams params) {
+
+		final String idDelai = createStringIdDelai(params);
+		return String.format(
+				"%s %s %s",
+				idDelai,
+				StringUtils.rightPad("Confirmation Delai", 19, ' '),
+				new SimpleDateFormat("MMddHHmmssSSS").format(
+						params.getLogCreationDateDelai()
+				)
+		);
+	}
+
+	protected String createStringIdDelai(ImpressionConfirmationDelaiHelperParams params) {
+		final String stringId = params.getIdDelai().toString();
+		if (stringId.length() > 6) {
+			return StringUtils.substring(stringId, stringId.length() - 6, stringId.length());
+		}
+		else if (stringId.length() < 6) {
+			return StringUtils.leftPad(stringId, 6, '0');
+
+		}
+		return stringId;
 	}
 
 	@Override

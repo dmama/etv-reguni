@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -174,6 +175,15 @@ public interface DeclarationImpotService {
 	InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
 
 	/**
+	 * Récupère la copie conforme de la confirmation de delai
+	 *
+	 * @param delai
+	 * @return
+	 * @throws EditiqueException
+	 */
+	InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException;
+
+	/**
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises n'ont pas encore été imprimées
 	 *
 	 * @param noColOid si donné, limite l'envoi des chemises à cet OID
@@ -204,4 +214,13 @@ public interface DeclarationImpotService {
 	ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
 
 	int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException;
+
+	/**
+	 * Ajoute un delai à une declaration et renvoi le delai enregistré avec son id renseigné
+	 *
+	 * @param declaration
+	 * @param delai
+	 * @return
+	 */
+	DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai);
 }
