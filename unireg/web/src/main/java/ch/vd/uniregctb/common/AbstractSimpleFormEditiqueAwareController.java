@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -61,7 +59,7 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 		}
 		else if (resultat instanceof EditiqueResultatReroutageInbox) {
 			final String msg = getMessageSourceAccessor().getMessage(MESSAGE_REROUTAGE_INBOX);
-			flash(msg);
+			flashWarning(msg);
 			if (onReroutageInbox != null) {
 				return onReroutageInbox.doJob(resultat);
 			}
