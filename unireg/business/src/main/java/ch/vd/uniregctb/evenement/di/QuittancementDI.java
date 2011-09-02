@@ -54,9 +54,9 @@ public class QuittancementDI extends EvenementDeclaration {
 		return "QuittancementDI{" +
 				"businessId='" + businessId + '\'' +
 				", Date=" + date +
-				", noContribuable=" + numeroContribuable + '\'' +
-				", periodeFiscale=" + periodeFiscale + '\'' +
-				", source=" + source + '\'' +
+				", noContribuable=" + numeroContribuable +
+				", periodeFiscale=" + periodeFiscale +
+				", source='" + source + '\'' +
 				'}';
 	}
 }
