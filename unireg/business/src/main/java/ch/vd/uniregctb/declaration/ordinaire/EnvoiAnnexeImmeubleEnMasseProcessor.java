@@ -206,14 +206,15 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		}
 	}
 
-	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException {
+	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
+			DeclarationException {
 		return diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
 	}
 
 	/**
-	 * On ne prend que les contribuables qui ont une période d'imposition qui va
-	 * jusqu'à la fin de l'année (pour éliminer les sourciers purs, pour lesquels on ne trouvera pas d'OID de gestion)
-	 * @param ctb contribuable à tester
+	 * On ne prend que les contribuables qui ont une période d'imposition qui va jusqu'à la fin de l'année (pour éliminer les sourciers purs, pour lesquels on ne trouvera pas d'OID de gestion)
+	 *
+	 * @param ctb     contribuable à tester
 	 * @param periode année fiscale
 	 * @return <code>true</code> si le contribuable a une période d'imposition en fin d'année fiscale, <code>false</code> sinon
 	 */
@@ -223,7 +224,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			list = PeriodeImposition.determine(ctb, periode);
 		}
 		catch (AssujettissementException e) {
-			//ajouter erreur e calcul d'assujetissement
+			rapport.addErrorException(ctb, e);
 		}
 		final RegDate date = RegDate.get(periode, 12, 31);
 		if (list != null) {
