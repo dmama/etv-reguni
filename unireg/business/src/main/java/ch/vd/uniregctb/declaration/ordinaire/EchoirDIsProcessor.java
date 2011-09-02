@@ -170,10 +170,9 @@ public class EchoirDIsProcessor {
 								final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
 								if (dateTraitement.isAfter(echeanceReelle)) {
 									final long diId = ((Number) row[0]).longValue();
-									final Number numeroDi = ((Number) row[0]).longValue();
-									final Number numeroTiers = ((Number) row[2]).longValue();
-									final Number numeroOID = (row[3]==null?  0 :((Number) row[3]).intValue());
-									final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue(),numeroOID.intValue());
+									final long numeroTiers = ((Number) row[2]).longValue();
+									final Integer numeroOID = row[3] == null ? null : ((Number) row[3]).intValue();
+									final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(diId, numeroTiers, numeroOID);
 									identifiantDi.add(identifiantDeclaration);
 								}
 							}

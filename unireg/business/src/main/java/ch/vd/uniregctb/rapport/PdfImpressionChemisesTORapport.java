@@ -127,7 +127,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 
 			    @Override
 			    public void fillLine(StringBuilder b, ImpressionChemisesTOResults.ChemiseTO elt) {
-				    b.append(elt.officeImpotID).append(COMMA);
+				    b.append(elt.officeImpotID != null ? elt.officeImpotID : EMPTY).append(COMMA);
 				    b.append(elt.noCtb).append(COMMA);
 					b.append(escapeChars(elt.nomCtb)).append(COMMA);
 				    b.append(elt.getDateDebutDi().index()).append(COMMA);

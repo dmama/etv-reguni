@@ -2,6 +2,8 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.Comparator;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Cette structure permet de lier un couple déclaration-tiers et de faciliter la mise à disposition
  * de ces informations dans le traitement d'une exception
@@ -15,36 +17,19 @@ public final class IdentifiantDeclaration {
 		}
 	};
 
-	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_TIERS_ID = new Comparator<IdentifiantDeclaration>() {
-		@Override
-		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			return o1.numeroTiers < o2.numeroTiers ? -1 : (o1.numeroTiers > o2.numeroTiers ? 1 : 0);
-		}
-	};
-
-	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_OID_ID = new Comparator<IdentifiantDeclaration>() {
-		@Override
-		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			return o1.numeroOID < o2.numeroOID ? -1 : (o1.numeroOID > o2.numeroOID ? 1 : 0);
-		}
-	};
-
 	private final long idDeclaration;
 	private final long numeroTiers;
-	private final int numeroOID;
+	private final Integer numeroOID;
 
 	public IdentifiantDeclaration(long idDeclaration, long numeroTiers) {
-		this.numeroTiers = numeroTiers;
-		this.idDeclaration = idDeclaration;
-		this.numeroOID=0;
+		this(idDeclaration, numeroTiers, null);
 	}
 
-	public IdentifiantDeclaration(long idDeclaration, long numeroTiers,int numeroOID) {
+	public IdentifiantDeclaration(long idDeclaration, long numeroTiers, @Nullable Integer numeroOID) {
 		this.numeroTiers = numeroTiers;
 		this.idDeclaration = idDeclaration;
 		this.numeroOID = numeroOID;
 	}
-
 
 	public long getIdDeclaration() {
 		return idDeclaration;
@@ -54,7 +39,8 @@ public final class IdentifiantDeclaration {
 		return numeroTiers;
 	}
 
-	public int getNumeroOID() {
+	@Nullable
+	public Integer getNumeroOID() {
 		return numeroOID;
 	}
 }

@@ -86,7 +86,7 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 	@Override
 	public void addErrorException(IdentifiantDeclaration ident, Exception e) {
 		++nbDIsTotal;
-		disEnErrors.add(new Erreur(ident.getNumeroTiers(),ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(ident.getNumeroTiers(), ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage()));
 	}
 
 	@Override

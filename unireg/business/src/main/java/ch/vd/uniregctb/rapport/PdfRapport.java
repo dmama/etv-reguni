@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ import com.lowagie.text.pdf.PdfAnnotation;
 import com.lowagie.text.pdf.PdfFileSpecification;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.codec.PngImage;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.Assert;
@@ -40,7 +41,7 @@ public abstract class PdfRapport extends Document {
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static final int AVG_LINE_LEN = 384; // longueur moyenne d'une ligne d'un fichier CVS (d'après relevé sur le batch d'ouverture des fors)
 	public static final char COMMA = CsvHelper.COMMA;
-	public static final String EMPTY = "";
+	public static final String EMPTY = StringUtils.EMPTY;
 
 	private final Logger LOGGER = Logger.getLogger(PdfRapport.class);
 
@@ -265,7 +266,7 @@ public abstract class PdfRapport extends Document {
 
 			@Override
 			public void fillLine(StringBuilder b, T elt) {
-				b.append(elt.officeImpotID).append(COMMA);
+				b.append(elt.officeImpotID != null ? elt.officeImpotID : EMPTY).append(COMMA);
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.nomCtb)).append(COMMA);
 				b.append(escapeChars(elt.getDescriptionRaison()));
