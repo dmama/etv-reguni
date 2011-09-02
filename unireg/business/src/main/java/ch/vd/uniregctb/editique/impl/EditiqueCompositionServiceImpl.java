@@ -335,7 +335,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
 				RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()), di.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PDF, document, true);
+
+
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, true, description);
 	}
 
 	@Override
