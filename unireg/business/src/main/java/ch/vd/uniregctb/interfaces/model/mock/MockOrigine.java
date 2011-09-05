@@ -1,39 +1,35 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class MockOrigine implements Origine {
 
-	private Commune commune;
-
-	private RegDate debutValidite;
-
+	private String nomLieu;
+	private String sigleCanton;
 	private Pays pays;
 
 	@Override
-	public Commune getCommune() {
-		return commune;
-	}
-
-	public void setCommune(Commune commune) {
-		this.commune = commune;
+	public String getNomLieu() {
+		return nomLieu;
 	}
 
 	@Override
-	public RegDate getDebutValidite() {
-		return debutValidite;
-	}
-
-	public void setDebutValidite(RegDate debutValidite) {
-		this.debutValidite = debutValidite;
+	public String getSigleCanton() {
+		return sigleCanton;
 	}
 
 	@Override
 	public Pays getPays() {
 		return pays;
+	}
+
+	public void setNomLieu(String nomLieu) {
+		this.nomLieu = nomLieu;
+	}
+
+	public void setSigleCanton(String sigleCanton) {
+		this.sigleCanton = sigleCanton;
 	}
 
 	public void setPays(Pays pays) {

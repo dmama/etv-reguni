@@ -72,16 +72,16 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			MockIndividu roberto = addIndividu(NUMERO_INDIVIDU, dateNaissanceRoberto, "Martin", "Roberto", true);
 			addDefaultAdressesTo(roberto);
 			addOrigine(roberto, MockPays.Espagne, null, RegDate.get(1976, 1, 16));
-			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null, 0);
-			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), 0, false);
-			permisRoberto = (MockPermis) addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, 1, false);
+			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
+			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), false);
+			permisRoberto = (MockPermis) addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
 
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
 			addOrigine(rosa, MockPays.Espagne, null, dateNaissanceRosa);
-			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null, 0);
-			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, 1, false);
+			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
+			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
 		}
 	};
 

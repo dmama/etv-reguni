@@ -54,9 +54,9 @@ public class Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario extends Ev
 				MockIndividu indConceicao = addIndividu(noIndConceicao, RegDate.get(1976, 7, 24), "Conceiçao", "Aparecida Porto", false);
 
 				addOrigine(indConceicao, MockPays.Espagne, null, indConceicao.getDateNaissance());
-				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null, 0);
+				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
-				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
+				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());

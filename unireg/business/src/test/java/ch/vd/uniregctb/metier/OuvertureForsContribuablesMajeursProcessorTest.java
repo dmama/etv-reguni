@@ -76,7 +76,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -117,7 +117,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -182,7 +182,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -228,7 +228,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Tetram", "Ducik", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Albanie, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Albanie, dateNaissance, null);
 			}
 		});
 
@@ -290,7 +290,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -333,7 +333,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				// adresse courrier seulement -> l'adresse de domicile sera une adresse par défaut
 				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -469,7 +469,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -510,7 +510,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune de Gressy jusqu'à fin 2010
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 
@@ -572,7 +572,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune d'Yverdon-les-Bains dès 2011
-				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 

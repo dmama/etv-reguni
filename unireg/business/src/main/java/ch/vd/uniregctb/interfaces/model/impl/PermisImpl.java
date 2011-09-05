@@ -46,7 +46,6 @@ public class PermisImpl implements Permis, Serializable {
 		return dateAnnulation;
 	}
 
-	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}

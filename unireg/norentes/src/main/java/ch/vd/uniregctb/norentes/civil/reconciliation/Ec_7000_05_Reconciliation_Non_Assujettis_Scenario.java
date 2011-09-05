@@ -71,13 +71,13 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 
 				indMomo = addIndividu(noIndMomo, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
-				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1961, 3, 12), dateDepartHC.getOneDayBefore());
 
 				indBea = addIndividu(noIndBea, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
 				addOrigine(indBea, MockPays.Suisse, lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, RegDate.get(
 						1963, 8, 20), dateDepartHC.getOneDayBefore());
 

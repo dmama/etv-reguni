@@ -67,13 +67,13 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 			indMaria = addIndividu(noIndMaria, dateNaissanceMaria, "Nadalino", "Maria", false);
 
 			addOrigine(indRafa, MockPays.Espagne, null, dateNaissanceRafa);
-			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null, 0);
-			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2005, 10, 1), null, 0, false);
+			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null);
+			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2005, 10, 1), null, false);
 			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeRafa, null);
 
 			addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
-			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
-			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2005, 12, 1), null, 0, false);
+			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
+			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2005, 12, 1), null, false);
 			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeMaria, null);
 		}
 

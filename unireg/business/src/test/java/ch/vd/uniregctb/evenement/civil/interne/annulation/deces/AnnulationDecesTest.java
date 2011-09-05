@@ -62,7 +62,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 2, 25);
 				final MockIndividu andre = addIndividu(NO_INDIVIDU_CELIBATAIRE, dateNaissance, "Girard", "André", true);
-				addNationalite(andre, MockPays.Suisse, dateNaissance, null, 1);
+				addNationalite(andre, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 

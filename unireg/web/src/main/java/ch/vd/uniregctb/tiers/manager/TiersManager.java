@@ -316,54 +316,40 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		// parents
-		final Individu mere = ind.getMere();
-		if (mere != null) {
-			final RapportView rapportView = createRapportViewPourFilliation(ind, mere, SensRapportEntreTiers.SUJET);
-
-			final Individu mereAvecAdoptions = getServiceCivilService().getIndividu(mere.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
-			final AdoptionReconnaissance ar = getAdoptionPourEnfant(mereAvecAdoptions.getAdoptionsReconnaissances(), ind.getNoTechnique());
-			if (ar != null) {
-				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-				if (dateDebut != null) {
-					rapportView.setDateDebut(dateDebut);
-				}
-				if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
-					rapportView.setDateFin(ar.getDateDesaveu());
-				}
+		final List<Individu> parents = ind.getParents();
+		if (parents != null) {
+			for (Individu parent : parents) {
+				rapportsView.add(createRapportViewPourFilliation(ind, nomInd, parent, year));
 			}
-
-			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-			final String nomMere = tiersService.getNomPrenom(mere);
-			final String toolTipMessage = String.format("%s %s la mère de %s", nomMere, fermeOuAnnule ? "était" : "est", nomInd);
-			rapportView.setToolTipMessage(toolTipMessage);
-
-			rapportsView.add(rapportView);
-		}
-		final Individu pere = ind.getPere();
-		if (pere != null) {
-			final RapportView rapportView = createRapportViewPourFilliation(ind, pere, SensRapportEntreTiers.SUJET);
-
-			final Individu pereAvecAdoptions = getServiceCivilService().getIndividu(pere.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
-			final AdoptionReconnaissance ar = getAdoptionPourEnfant(pereAvecAdoptions.getAdoptionsReconnaissances(), ind.getNoTechnique());
-			if (ar != null) {
-				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-				if (dateDebut != null) {
-					rapportView.setDateDebut(dateDebut);
-				}
-				if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
-					rapportView.setDateFin(ar.getDateDesaveu());
-				}
-			}
-
-			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-			final String nomPere = tiersService.getNomPrenom(pere);
-			final String toolTipMessage = String.format("%s %s le père de %s", nomPere, fermeOuAnnule ? "était" : "est", nomInd);
-			rapportView.setToolTipMessage(toolTipMessage);
-
-			rapportsView.add(rapportView);
 		}
 
 		return rapportsView;
+	}
+
+	private RapportView createRapportViewPourFilliation(Individu individu, String nomIndividu, Individu parent, int year) {
+
+		final RapportView rapportView = createRapportViewPourFilliation(individu, parent, SensRapportEntreTiers.SUJET);
+
+		final Individu parentAvecAdoptions = getServiceCivilService().getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
+		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parentAvecAdoptions.getAdoptionsReconnaissances(), individu.getNoTechnique());
+		if (ar != null) {
+			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+			if (dateDebut != null) {
+				rapportView.setDateDebut(dateDebut);
+			}
+			if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
+				rapportView.setDateFin(ar.getDateDesaveu());
+			}
+		}
+
+		final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
+		final String nomParent = tiersService.getNomPrenom(parent);
+		final String verbe = fermeOuAnnule ? "était" : "est";
+		final String type = parent.isSexeMasculin() ? "le père" : "la mère";
+		final String toolTipMessage = String.format("%s %s %s de %s", nomParent, verbe, type, nomIndividu);
+		rapportView.setToolTipMessage(toolTipMessage);
+
+		return rapportView;
 	}
 
 	/**

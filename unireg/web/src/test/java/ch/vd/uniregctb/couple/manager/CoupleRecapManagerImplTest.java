@@ -80,9 +80,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
-				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null);
 				MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
-				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
 
@@ -162,9 +162,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu arnold = addIndividu(noIndOleg, date(1970, 1, 1), "Kulinich", "Oleg", true);
-				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null);
 				MockIndividu janine = addIndividu(noIndAgnes, date(1970, 1, 1), "Baubault", "Agnès", false);
-				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
 
@@ -245,9 +245,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
-				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null);
 				final MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
-				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
 
@@ -354,9 +354,9 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
-				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null);
 				MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
-				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
 		

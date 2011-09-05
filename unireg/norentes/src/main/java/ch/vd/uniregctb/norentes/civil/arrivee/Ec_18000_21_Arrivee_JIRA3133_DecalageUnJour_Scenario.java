@@ -67,8 +67,8 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true, dateArrivee);
 				individu.setDateNaissance(dateNaissance);
 				addAdresse(individu, TypeAdresseCivil.COURRIER, "Rue du Lac", "76", 1003, MockLocalite.Lausanne, null, dateArrivee, null);
-				addNationalite(individu, MockPays.France, dateArrivee, null, 1);
-				addPermis(individu, TypePermis.ANNUEL, datePermis, null, 1, false);
+				addNationalite(individu, MockPays.France, dateArrivee, null);
+				addPermis(individu, TypePermis.ANNUEL, datePermis, null, false);
 			}
 		});
 	}

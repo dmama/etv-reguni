@@ -81,11 +81,11 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 			protected void init() {
 				indJuliette = addIndividu(noIndJuliette, dateNaissanceJuliette, "Tell", "Juliette", false);
 				addOrigine(indJuliette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceJuliette);
-				addNationalite(indJuliette, MockPays.Suisse, dateNaissanceJuliette, null, 0);
+				addNationalite(indJuliette, MockPays.Suisse, dateNaissanceJuliette, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
 				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);
-				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null, 0);
+				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null);
 				addAdresse(indHeidi, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeVD, null);
 
 				marieIndividus(indJuliette, indHeidi, datePacs);

@@ -27,13 +27,6 @@ public interface Permis {
     RegDate getDateAnnulation();
 
     /**
-     * Retourne le numéro de séquence technique du permis.
-     *
-     * @return le numéro de séquence technique du permis.
-     */
-    int getNoSequence();
-
-    /**
      * Retourne le type du permis.
      *
      * @return le type du permis.

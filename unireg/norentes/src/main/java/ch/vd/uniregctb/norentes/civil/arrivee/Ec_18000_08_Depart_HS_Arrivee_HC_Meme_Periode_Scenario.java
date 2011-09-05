@@ -70,7 +70,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 			@Override
 			protected void init() {
 				indAlain = addIndividu(noIndAlain, dateNaissanceAlain, "Martin", "Alain", true);
-				addNationalite(indAlain, MockPays.Suisse, dateNaissanceAlain, null, 0);
+				addNationalite(indAlain, MockPays.Suisse, dateNaissanceAlain, null);
 				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
 				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null);
 			}

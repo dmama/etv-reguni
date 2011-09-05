@@ -8,7 +8,6 @@ public class MockNationalite implements Nationalite {
 
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
-	private int noSequence;
 	private Pays pays;
 
 	public MockNationalite() {
@@ -17,7 +16,6 @@ public class MockNationalite implements Nationalite {
 	public MockNationalite(RegDate dateDebutValidite, RegDate dateFinValidite, Pays pays, int noSequence) {
 		this.dateDebutValidite = dateDebutValidite;
 		this.dateFinValidite = dateFinValidite;
-		this.noSequence = noSequence;
 		this.pays = pays;
 	}
 
@@ -37,15 +35,6 @@ public class MockNationalite implements Nationalite {
 
 	public void setDateFinValidite(RegDate dateFinValidite) {
 		this.dateFinValidite = dateFinValidite;
-	}
-
-	@Override
-	public int getNoSequence() {
-		return noSequence;
-	}
-
-	public void setNoSequence(int noSequence) {
-		this.noSequence = noSequence;
 	}
 
 	@Override

@@ -17,8 +17,6 @@ public interface Individu extends EntiteCivile {
      */
     Collection<AdoptionReconnaissance> getAdoptionsReconnaissances();
 
-   
-
     /**
      * Retourne la date de décès de l'individu.
      *
@@ -114,11 +112,9 @@ public interface Individu extends EntiteCivile {
     String getNumeroRCE();
 
     /**
-     * Retourne la liste des permis de l'individu.
-     *
-     * @return la liste des permis de l'individu.
+     * @return la liste des permis de l'individu, triée par ordre croissant d'obtention.
      */
-    Collection<Permis> getPermis();
+    List<Permis> getPermis();
 
     /**
      * Retourne la liste des nationalités de l'individu.
@@ -135,25 +131,16 @@ public interface Individu extends EntiteCivile {
     boolean isSexeMasculin();
 
     /**
-     * Retourne la mère de l'individu étendu.
-     *
-     * @return la mère de l'individu étendu.
-     */
-    Individu getMere();
-
-    /**
      * Retourne l'origine de l'individu étendu.
      *
      * @return l'origine de l'individu étendu.
      */
     Origine getOrigine();
 
-    /**
-     * Retourne le père de l'individu étendu.
-     *
-     * @return le père de l'individu étendu.
-     */
-    Individu getPere();
+	/**
+	 * @return les parents de l'individu courant.
+	 */
+	List<Individu> getParents();
 
     /**
      * Retourne la tutelle à laquelle l'individu étendu est soumis.

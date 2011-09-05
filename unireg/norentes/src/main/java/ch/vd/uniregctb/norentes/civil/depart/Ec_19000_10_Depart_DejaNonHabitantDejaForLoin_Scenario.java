@@ -71,7 +71,7 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
-				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
+				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null);
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 			}

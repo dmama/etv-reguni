@@ -58,8 +58,8 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 				
 				indIan = addIndividu(noIndIan, dateNaissance, "Schuster", "Ian", true);
 				addOrigine(indIan, MockPays.Espagne, MockCommune.Neuchatel, dateNaissance);
-				addNationalite(indIan, MockPays.Espagne, dateNaissance, null, 1);
-				addPermis(indIan, TypePermis.ANNUEL, RegDate.get(2006, 7, 9), null, 1, false);
+				addNationalite(indIan, MockPays.Espagne, dateNaissance, null);
+				addPermis(indIan, TypePermis.ANNUEL, RegDate.get(2006, 7, 9), null, false);
 				
 				RegDate dateAmenagement = RegDate.get(2006, 7, 9);
 				addAdresse(indIan, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateAmenagement, null);

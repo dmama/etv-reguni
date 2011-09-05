@@ -78,7 +78,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 				marieIndividu(indPierre, dateMariage);
 
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
-				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
+				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 			}
 		});

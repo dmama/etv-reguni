@@ -84,7 +84,7 @@ public class Ec_18000_14_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 				indAntonio = addIndividu(noIndAntonio, date(1976, 4, 25) , "Lauria", "Antonio", true);
 				indAnneLaure = addIndividu(noIndAnneLaure, date(1976, 8, 6), "Lauria", "Anne-Laure", false);
 
-				addPermis(indAntonio, TypePermis.ETABLISSEMENT, date(2005, 1, 11), null, 1, false);
+				addPermis(indAntonio, TypePermis.ETABLISSEMENT, date(2005, 1, 11), null, false);
 
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 

@@ -66,18 +66,18 @@ public class FinPermisTest extends WithoutSpringTest {
 			MockIndividu roberto = addIndividu(NUMERO_INDIVIDU, dateNaissanceRoberto, "Martin", "Roberto", true);
 			addDefaultAdressesTo(roberto);
 			addOrigine(roberto, MockPays.Espagne, null, RegDate.get(1976, 1, 16));
-			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null, 0);
-			addNationalite(roberto, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null, 1);
-			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), 0, false);
-			addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_FIN_PERMIS.addYears(-5), DATE_FIN_PERMIS, 1, false);
+			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
+			addNationalite(roberto, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
+			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), false);
+			addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_FIN_PERMIS.addYears(-5), DATE_FIN_PERMIS, false);
 
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
 			addOrigine(rosa, MockPays.Espagne, null, dateNaissanceRosa);
-			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null, 0);
-			addPermis(rosa, TypePermis.COURTE_DUREE, RegDate.get(2003, 10, 25), null, 0, false);
-			addPermis(rosa, TypePermis.ETABLISSEMENT, DATE_FIN_PERMIS.addYears(-5), DATE_FIN_PERMIS, 1, false);
+			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
+			addPermis(rosa, TypePermis.COURTE_DUREE, RegDate.get(2003, 10, 25), null, false);
+			addPermis(rosa, TypePermis.ETABLISSEMENT, DATE_FIN_PERMIS.addYears(-5), DATE_FIN_PERMIS, false);
 		}
 	};
 

@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.interfaces.model.helper;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -18,22 +14,8 @@ public abstract class IndividuHelper {
 
 		Permis permis = null;
 
-		final Collection<Permis> coll = individu.getPermis();
-		if (coll != null) {
-
-			// tri des permis par leur date de début et numéro de séquence (utile si les dates de début sont nulles)
-			final List<Permis> liste = new ArrayList<Permis>(coll);
-			Collections.sort(liste, new Comparator<Permis>() {
-				@Override
-				public int compare(Permis o1, Permis o2) {
-					if (RegDateHelper.equals(o1.getDateDebutValidite(), o2.getDateDebutValidite())) {
-						return o1.getNoSequence() - o2.getNoSequence();
-					}
-					else {
-						return RegDateHelper.isBeforeOrEqual(o1.getDateDebutValidite(), o2.getDateDebutValidite(), NullDateBehavior.EARLIEST) ? -1 : 1;
-					}
-				}
-			});
+		final List<Permis> liste = individu.getPermis();
+		if (liste != null) {
 
 			// itération sur la liste des permis, dans l'ordre inverse de l'obtention
 			// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)

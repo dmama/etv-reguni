@@ -236,14 +236,8 @@ public class TiersServiceImpl implements TiersService {
 			if (sitFam != null) {
 				Individu ind = getIndividu(nonHabitant);
 				if (ind != null) {
-					Collection<ch.vd.uniregctb.interfaces.model.EtatCivil> colEtatCivil = ind.getEtatsCivils();
-					int numSeq = 0;
-					TypeEtatCivil etatCivilDuCivil = null;
-					for (ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil : colEtatCivil) {
-						if (etatCivil.getNoSequence() > numSeq) {
-							etatCivilDuCivil = etatCivil.getTypeEtatCivil();
-						}
-					}
+					ch.vd.uniregctb.interfaces.model.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
+					TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
 					if (etatCivilDuCivil != null && (
 							sitFam.getEtatCivil() != etatCivilDuCivil.asCore() ||
 									sitFam.getNombreEnfants() == 0)) {
@@ -654,7 +648,7 @@ public class TiersServiceImpl implements TiersService {
 
 		/* Si aucune nationalité, alors on se base sur l'origine */
 		boolean paysOrigineRenseigne = (individu.getOrigine() != null && individu.getOrigine().getPays() != null);
-		boolean origineSuisse = ((individu.getOrigine() != null && individu.getOrigine().getCommune() != null) || (individu.getOrigine() != null
+		boolean origineSuisse = ((individu.getOrigine() != null && individu.getOrigine().getNomLieu() != null) || (individu.getOrigine() != null
 				&& individu.getOrigine().getPays() != null && individu.getOrigine().getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse));
 
 		/* Si il a une origine suisse, il est suisse */
@@ -898,7 +892,7 @@ public class TiersServiceImpl implements TiersService {
 		boolean isRefugie = false;
 		final Collection<Permis> permiss = individu.getPermis();
 
-		// il faut ordonner les permis dans l'ordre chronologique (numéros de séquence), le dernier permis étant le permis actuel,
+		// on extrait les permis non-annulés, le dernier permis étant le permis actuel,
 		final List<Permis> permisNonAnnules = new ArrayList<Permis>(permiss.size());
 		for (Permis permis : permiss) {
 			if (permis.getDateAnnulation() == null && RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST)) {
@@ -908,15 +902,6 @@ public class TiersServiceImpl implements TiersService {
 
 		final int nbPermis = permisNonAnnules.size();
 		if (nbPermis > 0) {
-
-			// trions les permis de séjour non-annulés par leur numéro de séquence
-			Collections.sort(permisNonAnnules, new Comparator<Permis>() {
-				@Override
-				public int compare(Permis o1, Permis o2) {
-					return o1.getNoSequence() - o2.getNoSequence();
-				}
-			});
-
 			// maintenant, on vérifie la succession des permis
 			isRefugie = nbPermis > 2 &&
 					TypePermis.ANNUEL == permisNonAnnules.get(nbPermis - 1).getTypePermis() &&								// B
@@ -1715,9 +1700,14 @@ public class TiersServiceImpl implements TiersService {
 
 		PersonnePhysique pere = null;
 
-		final Individu individuPere = individu.getPere();
-		if (individuPere != null) {
-			pere = tiersDAO.getPPByNumeroIndividu(individuPere.getNoTechnique(), true);
+		final List<Individu> individusParents = individu.getParents();
+		if (individusParents != null) {
+			for (Individu individuParent : individusParents) {
+				if (individuParent.isSexeMasculin()) {
+					pere = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
+					break;
+				}
+			}
 		}
 
 		return pere;
@@ -1739,9 +1729,14 @@ public class TiersServiceImpl implements TiersService {
 
 		PersonnePhysique mere = null;
 
-		final Individu individuMere = individu.getMere();
-		if (individuMere != null) {
-			mere = tiersDAO.getPPByNumeroIndividu(individuMere.getNoTechnique(), true);
+		final List<Individu> individusParents = individu.getParents();
+		if (individusParents != null) {
+			for (Individu individuParent : individusParents) {
+				if (!individuParent.isSexeMasculin()) {
+					mere = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
+					break;
+				}
+			}
 		}
 
 		return mere;
@@ -1753,16 +1748,26 @@ public class TiersServiceImpl implements TiersService {
 			return Collections.emptyList();
 		}
 
-		final PersonnePhysique mere = getMere(pp, dateValidite);
-		final PersonnePhysique pere = getPere(pp, dateValidite);
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		Assert.notNull(numeroIndividu);
+
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
+		if (individu == null) {
+			throw new IndividuNotFoundException(numeroIndividu);
+		}
 
 		final List<PersonnePhysique> parents = new ArrayList<PersonnePhysique>(2);
-		if (mere != null) {
-			parents.add(mere);
+
+		final List<Individu> individusParents = individu.getParents();
+		if (individusParents != null) {
+			for (Individu individuParent : individusParents) {
+				final PersonnePhysique parent = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
+				if (parent != null) {
+					parents.add(parent);
+				}
+			}
 		}
-		if (pere != null) {
-			parents.add(pere); 
-		}
+
 		return parents;
 	}
 

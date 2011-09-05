@@ -76,14 +76,14 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 				final RegDate dateNaissanceSebastien = RegDate.get(1971, 6, 27);
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
-				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null, 1);
+				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null);
 				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateAmenagement, null);
 				addAdresse(indSebastien, TypeAdresseCivil.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, dateAmenagement, null);
 
 				final RegDate dateNaissanceGloria = RegDate.get(1973, 3, 7);
 				indGloria = addIndividu(noIndGloria, dateNaissanceGloria, "Fournier", "Gloria", false);
 				addOrigine(indGloria, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGloria);
-				addNationalite(indGloria, MockPays.Suisse, dateNaissanceGloria, null, 1);
+				addNationalite(indGloria, MockPays.Suisse, dateNaissanceGloria, null);
 				addAdresse(indGloria, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateAmenagement, null);
 				addAdresse(indGloria, TypeAdresseCivil.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, dateAmenagement, null);
 				

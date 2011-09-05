@@ -91,8 +91,8 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 				indMaria = addIndividu(noIndMaria, dateNaissanceMaria, "Nadalino", "Maria", false);
 
 				addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
-				addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
-				addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2006, 5, 3), null, 1, false);
+				addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
+				addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2006, 5, 3), null, false);
 				addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeMaria, null);
 			}
 		});

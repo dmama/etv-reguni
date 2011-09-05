@@ -74,11 +74,11 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 				marieIndividus(indMomo, indBea, dateReconciliation);
 
 				addOrigine(indBea, MockPays.Suisse, commune, RegDate.get(1963, 8, 20));
-				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indBea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(indBea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
-				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});
 	}

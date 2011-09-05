@@ -60,7 +60,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 				MockIndividu momo = addIndividu(54321, dateNaissanceOriginale, "Durant", "Maurice", true);
 				addDefaultAdressesTo(momo);
 				addOrigine(momo, MockPays.Suisse, null, dateNaissanceOriginale);
-				addNationalite(momo, MockPays.Suisse, dateNaissanceOriginale, null, 0);
+				addNationalite(momo, MockPays.Suisse, dateNaissanceOriginale, null);
 			}
 
 			@SuppressWarnings("deprecation")

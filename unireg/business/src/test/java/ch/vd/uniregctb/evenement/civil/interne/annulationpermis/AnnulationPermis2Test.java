@@ -79,16 +79,16 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 				// Complement d'informations sur Julie pour ces tests
 				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
 				addOrigine(julie, MockPays.France, null, RegDate.get(1976, 4, 19));
-				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null, 0);
-				addPermis(julie, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
+				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null);
+				addPermis(julie, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
 
 				// Nouveau individu pour les tests
 				MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, RegDate.get(1956, 2, 25), "Girard", "André", true);
 				addDefaultAdressesTo(andre);
 				marieIndividu(andre, RegDate.get(1982, 12, 4));
 				addOrigine(andre, MockPays.France, null, andre.getDateNaissance());
-				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null, 0);
-				addPermis(andre, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);
+				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null);
+				addPermis(andre, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
 
 				// Nouveau couple pour les tests
 				MockIndividu roger = addIndividu(NO_INDIVIDU_MARIE, RegDate.get(1943, 7, 3), "Dupont", "Roger", true);
@@ -100,11 +100,11 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 				marieIndividus(roger, laure, RegDate.get(1972, 2, 1));
 
 				addOrigine(laure, MockPays.Suisse, MockCommune.Orbe, laure.getDateNaissance());
-				addNationalite(laure, MockPays.Suisse, laure.getDateNaissance(), null, 0);
+				addNationalite(laure, MockPays.Suisse, laure.getDateNaissance(), null);
 
 				addOrigine(roger, MockPays.France, null, roger.getDateNaissance());
-				addNationalite(roger, MockPays.France, roger.getDateNaissance(), null, 0);
-				addPermis(roger, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, 0, false);
+				addNationalite(roger, MockPays.France, roger.getDateNaissance(), null);
+				addPermis(roger, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
 			}
 		});
 		loadDatabase(DB_UNIT_DATA_FILE);

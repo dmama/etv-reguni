@@ -13,7 +13,6 @@ public class NationaliteImpl implements Nationalite, Serializable {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final Pays pays;
-	private final int noSequence;
 
 	public static NationaliteImpl get(ch.vd.registre.civil.model.Nationalite target) {
 		if (target == null) {
@@ -25,7 +24,6 @@ public class NationaliteImpl implements Nationalite, Serializable {
 	private NationaliteImpl(ch.vd.registre.civil.model.Nationalite target) {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.noSequence = target.getNoSequence();
 		this.pays = PaysImpl.get(target.getPays());
 	}
 
@@ -37,11 +35,6 @@ public class NationaliteImpl implements Nationalite, Serializable {
 	@Override
 	public RegDate getDateFinValidite() {
 		return dateFin;
-	}
-
-	@Override
-	public int getNoSequence() {
-		return noSequence;
 	}
 
 	@Override

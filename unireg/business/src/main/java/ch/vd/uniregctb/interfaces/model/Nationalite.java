@@ -19,13 +19,6 @@ public interface Nationalite {
     RegDate getDateFinValidite();
 
     /**
-     * Retourne le numéro de séquence technique de la nationalité.
-     *
-     * @return le numéro de séquence technique de la nationalité.
-     */
-    int getNoSequence();
-
-    /**
      * Retourne le Pays de la nationalité.
      *
      * @return le Pays de la nationalité.

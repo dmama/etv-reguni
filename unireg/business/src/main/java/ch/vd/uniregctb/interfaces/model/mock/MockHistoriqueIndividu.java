@@ -7,16 +7,11 @@ import ch.vd.uniregctb.type.Sexe;
 public class MockHistoriqueIndividu implements HistoriqueIndividu {
 
 	private String autresPrenoms;
-	private String complementIdentification;
 	private RegDate dateDebutValidite;
 	private String noAVS;
-	private int noSequence;
 	private String nom;
-	private String nomCourrier1;
-	private String nomCourrier2;
 	private String nomNaissance;
 	private String prenom;
-	private String profession;
 	private Sexe sexe;
 
 	public MockHistoriqueIndividu() {
@@ -47,15 +42,6 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 	}
 
 	@Override
-	public String getComplementIdentification() {
-		return complementIdentification;
-	}
-
-	public void setComplementIdentification(String complementIdentification) {
-		this.complementIdentification = complementIdentification;
-	}
-
-	@Override
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
@@ -74,39 +60,12 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 	}
 
 	@Override
-	public int getNoSequence() {
-		return noSequence;
-	}
-
-	public void setNoSequence(int noSequence) {
-		this.noSequence = noSequence;
-	}
-
-	@Override
 	public String getNom() {
 		return nom;
 	}
 
 	public void setNom(String nom) {
 		this.nom = nom;
-	}
-
-	@Override
-	public String getNomCourrier1() {
-		return nomCourrier1;
-	}
-
-	public void setNomCourrier1(String nomCourrier1) {
-		this.nomCourrier1 = nomCourrier1;
-	}
-
-	@Override
-	public String getNomCourrier2() {
-		return nomCourrier2;
-	}
-
-	public void setNomCourrier2(String nomCourrier2) {
-		this.nomCourrier2 = nomCourrier2;
 	}
 
 	@Override
@@ -125,14 +84,5 @@ public class MockHistoriqueIndividu implements HistoriqueIndividu {
 
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
-	}
-
-	@Override
-	public String getProfession() {
-		return profession;
-	}
-
-	public void setProfession(String profession) {
-		this.profession = profession;
 	}
 }

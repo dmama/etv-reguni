@@ -151,6 +151,10 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 		}
 	}
 
+	protected EntiteCivileImpl(Collection<Adresse> adresses) {
+		this.adresses = adresses;
+	}
+
 	public EntiteCivileImpl(ch.vd.registre.civil.model.EntiteCivile target) {
 		this.adresses = new ArrayList<Adresse>();
 		if (target.getAdresses() != null) {

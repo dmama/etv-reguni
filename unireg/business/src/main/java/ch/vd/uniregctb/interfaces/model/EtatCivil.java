@@ -12,14 +12,6 @@ public interface EtatCivil {
     RegDate getDateDebutValidite();
 
     /**
-     * Retourne le numéro de séquence technique de l'état civil.
-     * Prendre toujours le plus grand (voir plus haut scenario de réconcialition)
-     *
-     * @return le numéro de séquence technique de l'état civil.
-     */
-    int getNoSequence();
-
-    /**
      * Retourne le type de l'état civil.
      *
      * @return le type de l'état civil.

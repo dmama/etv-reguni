@@ -71,14 +71,14 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 				
 				indSven = addIndividu(noIndSven, dateNaissanceSven, "Brise", "Sven", true);
 				addOrigine(indSven, MockPays.Danemark, null, dateNaissanceSven);
-				addNationalite(indSven, MockPays.Danemark, dateNaissanceSven, null, 1);
+				addNationalite(indSven, MockPays.Danemark, dateNaissanceSven, null);
 				addAdresse(indSven, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				addAdresse(indSven, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				
 				final RegDate dateNaissanceElly = RegDate.get(1973, 3, 7);
 				indElly = addIndividu(noIndElly, dateNaissanceElly, "Brise", "Elly", false);
 				addOrigine(indElly, MockPays.Danemark, null, dateNaissanceElly);
-				addNationalite(indElly, MockPays.Danemark, dateNaissanceElly, null, 1);
+				addNationalite(indElly, MockPays.Danemark, dateNaissanceElly, null);
 				addAdresse(indElly, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				addAdresse(indElly, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				

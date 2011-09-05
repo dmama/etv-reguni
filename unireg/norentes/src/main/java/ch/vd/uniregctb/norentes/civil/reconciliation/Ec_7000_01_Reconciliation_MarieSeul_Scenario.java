@@ -2,6 +2,7 @@ package ch.vd.uniregctb.norentes.civil.reconciliation;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -66,7 +67,7 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 				marieIndividu(indPierre, dateReconciliation);
 
 				addOrigine(indPierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
-				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
+				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 			}
 		});
 	}

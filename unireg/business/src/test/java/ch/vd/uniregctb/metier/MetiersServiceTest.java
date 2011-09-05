@@ -410,10 +410,10 @@ public class MetiersServiceTest extends BusinessTest {
 				marieIndividus(m, mme, dateMariage);
 				addAdresse(m, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
 				addAdresse(mme, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
-				addNationalite(m, MockPays.RoyaumeUni, dateNaissanceM, null, 1);
-				addNationalite(mme, MockPays.RoyaumeUni, dateNaissanceMme, null, 1);
-				addPermis(m, TypePermis.ETABLISSEMENT, dateMariage, null, 1, false);
-				addPermis(mme, TypePermis.ETABLISSEMENT, dateMariage, null, 1, false);
+				addNationalite(m, MockPays.RoyaumeUni, dateNaissanceM, null);
+				addNationalite(mme, MockPays.RoyaumeUni, dateNaissanceMme, null);
+				addPermis(m, TypePermis.ETABLISSEMENT, dateMariage, null, false);
+				addPermis(mme, TypePermis.ETABLISSEMENT, dateMariage, null, false);
 			}
 		});
 
@@ -1857,8 +1857,8 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu mr = addIndividu(noIndMr, date(1948, 1, 26), "Dupetipont", "Martin", true);
 				final MockIndividu mme = addIndividu(noIndMme, date(1948, 9, 4), "Dupetipont", "Martine", false);
-				addNationalite(mr, MockPays.Suisse, date(1948, 1, 26), null, 1);
-				addNationalite(mme, MockPays.Suisse, date(1948, 9, 4), null, 1);
+				addNationalite(mr, MockPays.Suisse, date(1948, 1, 26), null);
+				addNationalite(mme, MockPays.Suisse, date(1948, 9, 4), null);
 				marieIndividus(mr, mme, date(1971, 4, 17));
 				addEtatCivil(mme, dateDeces, TypeEtatCivil.VEUF);
 				mr.setDateDeces(dateDeces);
@@ -2414,9 +2414,9 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu m = addIndividu(noIndividuMonsieur, date(1972, 11, 4), "Favre", "Jean-Jacques", true);
 				final MockIndividu mme = addIndividu(noIndividuMadame, date(1977, 8, 16), "Favre", "Chrystèle", false);
 
-				addNationalite(m, MockPays.Suisse, date(1972, 11, 4), null, 1);
-				addNationalite(mme, MockPays.France, date(1977, 8, 16), null, 1);
-				addPermis(mme, TypePermis.ANNUEL, date(2002, 7, 18), null, 1, false);
+				addNationalite(m, MockPays.Suisse, date(1972, 11, 4), null);
+				addNationalite(mme, MockPays.France, date(1977, 8, 16), null);
+				addPermis(mme, TypePermis.ANNUEL, date(2002, 7, 18), null, false);
 				marieIndividus(m, mme, dateMariage);
 			}
 		});

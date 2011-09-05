@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -153,8 +154,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
 				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(2010, 2, 8), "Cognac", "Yvan", true);
-				fils.setMere(pere);
-				fils.setMere(mere);
+				fils.setParents(Arrays.<Individu>asList(pere, mere));
 			}
 		});
 

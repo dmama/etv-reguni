@@ -52,13 +52,11 @@ public class CorrectionFiliation extends ChangementBase {
 		Audit.info(getNumeroEvenement(), String.format("Correction de filiation de l'individu : %d", getNoIndividu()));
 
 		// [SIFISC-855] Il faut invalider les caches des individus civils parents de cet individu
-		final Individu pere = getIndividu().getPere();
-		if (pere != null) {
-			context.getDataEventService().onIndividuChange(pere.getNoTechnique());
-		}
-		final Individu mere = getIndividu().getMere();
-		if (mere != null) {
-			context.getDataEventService().onIndividuChange(mere.getNoTechnique());
+		final List<Individu> parents = getIndividu().getParents();
+		if (parents != null) {
+			for (Individu parent : parents) {
+				context.getDataEventService().onIndividuChange(parent.getNoTechnique());
+			}
 		}
 
 		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire

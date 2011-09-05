@@ -320,8 +320,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
-				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
-				addNationalite(julie, MockPays.Suisse, dateObtentionNationalite, null, 2);
+				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore());
+				addNationalite(julie, MockPays.Suisse, dateObtentionNationalite, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
 			}
 		});
@@ -382,8 +382,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			@Override
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
-				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
-				addNationalite(julie, MockPays.Allemagne, dateObtentionNationalite, null, 2);
+				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore());
+				addNationalite(julie, MockPays.Allemagne, dateObtentionNationalite, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
 			}
 		});

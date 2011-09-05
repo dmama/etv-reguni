@@ -290,7 +290,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				final RegDate dateNaissanceCharles = RegDate.get(1944, 8, 2);
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
-				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
+				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null);
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, dateDepart);
 				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, dateDepart);
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
@@ -298,7 +298,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
 				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
 				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
-				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null, 1);
+				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null);
 				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indGorgette, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);

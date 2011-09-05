@@ -2,6 +2,7 @@ package ch.vd.uniregctb.norentes.civil.annulation.separation;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -52,11 +53,11 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 
 				MockIndividu andrea = addIndividu(noIndAndrea, dateNaissanceAndrea, "Polari", "Andrea", true);
 				addOrigine(andrea, MockPays.Suisse, null, dateNaissanceAndrea);
-				addNationalite(andrea, MockPays.Suisse, dateNaissanceAndrea, null, 0);
+				addNationalite(andrea, MockPays.Suisse, dateNaissanceAndrea, null);
 
 				MockIndividu liliana = addIndividu(noIndLiliana, dateNaissanceLiliana, "Polari", "Liliana", false);
 				addOrigine(liliana, MockPays.Suisse, null, dateNaissanceLiliana);
-				addNationalite(liliana, MockPays.Suisse, dateNaissanceLiliana, null, 0);
+				addNationalite(liliana, MockPays.Suisse, dateNaissanceLiliana, null);
 
 				marieIndividus(andrea, liliana , dateMariage);
 				separeIndividus(andrea, liliana, dateSeparation);

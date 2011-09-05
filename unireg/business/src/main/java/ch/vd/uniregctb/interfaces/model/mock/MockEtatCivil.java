@@ -8,8 +8,6 @@ public class MockEtatCivil implements EtatCivil {
 
 	private RegDate dateDebutValidite;
 
-	private int noSequence;
-
 	private Long numeroConjoint;
 
 	private TypeEtatCivil typeEtatCivil;
@@ -21,15 +19,6 @@ public class MockEtatCivil implements EtatCivil {
 
 	public void setDateDebutValidite(RegDate dateDebutValidite) {
 		this.dateDebutValidite = dateDebutValidite;
-	}
-
-	@Override
-	public int getNoSequence() {
-		return noSequence;
-	}
-
-	public void setNoSequence(int noSequence) {
-		this.noSequence = noSequence;
 	}
 
 	@Override

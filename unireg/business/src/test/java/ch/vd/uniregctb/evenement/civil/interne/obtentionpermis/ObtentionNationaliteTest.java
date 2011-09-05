@@ -94,8 +94,8 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 			addDefaultAdressesTo(julie);
 
 			/* nationalites */
-			addNationalite(momo, MockPays.France, DATE_OBTENTION_NATIONALITE, null, 0);
-			addNationalite(julie, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null, 0);
+			addNationalite(momo, MockPays.France, DATE_OBTENTION_NATIONALITE, null);
+			addNationalite(julie, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
 		}
 	};
 

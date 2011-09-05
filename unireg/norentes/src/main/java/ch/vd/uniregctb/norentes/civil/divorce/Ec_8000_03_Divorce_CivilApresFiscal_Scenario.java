@@ -80,11 +80,11 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 			marieIndividus(indPierre, indKarina, dateDemenagement);
 
 			addOrigine(indPierre, MockPays.Suisse, MockCommune.Renens, dateNaissancePierre);
-			addNationalite(indPierre, MockPays.Suisse, dateNaissancePierre, null, 0);
+			addNationalite(indPierre, MockPays.Suisse, dateNaissancePierre, null);
 			addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, dateDemenagement, null);
 
 			addOrigine(indKarina, MockPays.Suisse, MockCommune.Lausanne, dateNaissanceKarina);
-			addNationalite(indKarina, MockPays.Suisse, dateNaissanceKarina, null, 0);
+			addNationalite(indKarina, MockPays.Suisse, dateNaissanceKarina, null);
 			addAdresse(indKarina, TypeAdresseCivil.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, dateDemenagement, null);
 		}
 

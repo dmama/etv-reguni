@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
+import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -29,17 +31,16 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private HistoriqueIndividu dernierHistoriqueIndividu;
+	private List<Individu> parents;
 	private Collection<Individu> enfants;
 	private EtatCivilList etatsCivils;
 	private Collection<HistoriqueIndividu> historiqueIndividu;
-	private Individu mere;
 	private List<Nationalite> nationalites;
 	private long noTechnique;
 	private String nouveauNoAVS;
 	private String numeroRCE;
 	private Origine origine;
-	private Individu pere;
-	private Collection<Permis> permis;
+	private List<Permis> permis;
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
 
@@ -112,6 +113,15 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
+	public List<Individu> getParents() {
+		return parents;
+	}
+
+	public void setParents(List<Individu> parents) {
+		this.parents = parents;
+	}
+
+	@Override
 	public Collection<Individu> getEnfants() {
 		return enfants;
 	}
@@ -127,18 +137,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	@Override
 	public EtatCivil getEtatCivilCourant() {
-
-		EtatCivil etatCivilCourant = null;
-
-		int noSequence = -1;
-		for (EtatCivil etatCivil : getEtatsCivils()) {
-			if (etatCivil.getNoSequence() > noSequence) {
-				etatCivilCourant = etatCivil;
-				noSequence = etatCivil.getNoSequence();
-			}
+		if (etatsCivils == null || etatsCivils.isEmpty()) {
+			return null;
 		}
-
-		return etatCivilCourant;
+		return etatsCivils.get(etatsCivils.size() - 1);
 	}
 
 	@Override
@@ -149,13 +151,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return etatsCivils.getEtatCivilAt(date);
 	}
 
-	public void setEtatsCivils(Collection<EtatCivil> etatsCivils) {
-		if (etatsCivils instanceof EtatCivilList) {
-			this.etatsCivils = (EtatCivilList) etatsCivils;
-		}
-		else {
-			this.etatsCivils = new EtatCivilList(getNoTechnique(), etatsCivils);
-		}
+	public void setEtatsCivils(EtatCivilList etatsCivils) {
+		this.etatsCivils = etatsCivils;
 	}
 
 	@Override
@@ -191,15 +188,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 		historiqueIndividu.add(h);
 		dernierHistoriqueIndividu = h;
-	}
-
-	@Override
-	public Individu getMere() {
-		return mere;
-	}
-
-	public void setMere(Individu mere) {
-		this.mere = mere;
 	}
 
 	@Override
@@ -248,21 +236,20 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Individu getPere() {
-		return pere;
-	}
-
-	public void setPere(Individu pere) {
-		this.pere = pere;
-	}
-
-	@Override
-	public Collection<Permis> getPermis() {
+	public List<Permis> getPermis() {
 		return permis;
 	}
 
-	public void setPermis(Collection<Permis> permis) {
+	public void setPermis(List<Permis> permis) {
 		this.permis = permis;
+		if (this.permis != null) {
+			Collections.sort(this.permis, new Comparator<Permis>() {
+				@Override
+				public int compare(Permis o1, Permis o2) {
+					return o1.getDateDebutValidite().compareTo(o2.getDateDebutValidite());
+				}
+			});
+		}
 	}
 
 	@Override
@@ -303,8 +290,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			origine = individu.getOrigine();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
-			pere = individu.getPere();
-			mere = individu.getMere();
+			parents = individu.getParents();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
@@ -390,7 +376,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	}
 
-	private static final class FreezableEtatCivilList extends EtatCivilList {
+	private static final class FreezableEtatCivilList extends EtatCivilListImpl {
 
 		private boolean frozen;
 
@@ -458,8 +444,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			}
 		}
 
-		public FreezableEtatCivilList(long numeroIndividu, Collection<EtatCivil> listHost, boolean frozen) {
-			super(numeroIndividu, listHost);
+		public FreezableEtatCivilList(Collection<EtatCivil> listHost, boolean frozen) {
+			super(listHost);
 			this.frozen = frozen;
 		}
 
@@ -561,7 +547,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			enfants = buildLimitedCollectionBeforeYear(enfants, annee, ENFANT_LIMITATOR);
 		}
 		if (etatsCivils != null && etatsCivils.size() > 0) {
-			final FreezableEtatCivilList etatsCivilsTemp = new FreezableEtatCivilList(etatsCivils.getNumeroIndividu(), etatsCivils, false);
+			final FreezableEtatCivilList etatsCivilsTemp = new FreezableEtatCivilList(etatsCivils, false);
 			final Iterator<EtatCivil> iterator = etatsCivilsTemp.iterator();
 			while (iterator.hasNext()) {
 				final EtatCivil etatCivil = iterator.next();

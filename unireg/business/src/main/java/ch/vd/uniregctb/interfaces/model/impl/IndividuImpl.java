@@ -3,16 +3,21 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
+import ch.vd.uniregctb.interfaces.model.EtatCivilListHost;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -34,13 +39,12 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final RegDate naissance;
 	private final HistoriqueIndividu dernierHistorique;
 	private final Collection<HistoriqueIndividu> historique;
+	private List<Individu> parents;
 	private Collection<Individu> enfants;
-	private final EtatCivilList etatsCivils;
-	private Individu mere;
+	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
 	private Origine origine;
-	private Individu pere;
-	private Collection<Permis> permis;
+	private List<Permis> permis;
 	private Tutelle tutelle;
 
 	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target) {
@@ -61,12 +65,11 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.naissance = RegDate.get(target.getDateNaissance());
 		this.dernierHistorique = HistoriqueIndividuImpl.get(target.getDernierHistoriqueIndividu());
 		this.historique = initHistorique(target.getHistoriqueIndividu());
+		this.parents = initParents(target.getPere(), target.getMere());
 		this.enfants = initEnfants(target.getEnfants());
 		this.etatsCivils = initEtatsCivils(target);
-		this.mere = IndividuImpl.get(target.getMere());
 		this.nationalites = initNationalites(target.getNationalites());
 		this.origine = OrigineImpl.get(target.getOrigine());
-		this.pere = IndividuImpl.get(target.getPere());
 		this.permis = initPermis(target.getPermis());
 		this.tutelle = TutelleImpl.get(target.getTutelle());
 	}
@@ -96,8 +99,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			origine = individuWrapper.origine;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
-			pere = individuWrapper.pere;
-			mere = individuWrapper.mere;
+			parents = individuWrapper.parents;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individuWrapper.permis;
@@ -145,6 +147,24 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
+	public List<Individu> getParents() {
+		return parents;
+	}
+
+	private static List<Individu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere) {
+		final Individu m = IndividuImpl.get(mere);
+		final Individu p = IndividuImpl.get(pere);
+		final List<Individu> parents = new ArrayList<Individu>(2);
+		if (p != null) {
+			parents.add(p);
+		}
+		if (m != null) {
+			parents.add(m);
+		}
+		return parents;
+	}
+
+	@Override
 	public Collection<Individu> getEnfants() {
 		return enfants;
 	}
@@ -165,7 +185,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return etatsCivils;
 	}
 
-	private static EtatCivilList initEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
+	private static EtatCivilListHost initEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
 		final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
 		final Collection<?> targetEtatsCivils = individu.getEtatsCivils();
 		if (targetEtatsCivils != null) {
@@ -178,28 +198,20 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 				etatsCivils.add(EtatCivilImpl.get(e));
 			}
 		}
-		return new EtatCivilList(individu.getNoTechnique(), etatsCivils);
+		return new EtatCivilListHost(individu.getNoTechnique(), etatsCivils);
 	}
 
 	@Override
 	public EtatCivil getEtatCivilCourant() {
-
-		EtatCivil etatCivilCourant = null;
-
-		int noSequence = -1;
-		for (EtatCivil etatCivil : getEtatsCivils()) {
-			if (etatCivil.getNoSequence() > noSequence) {
-				etatCivilCourant = etatCivil;
-				noSequence = etatCivil.getNoSequence();
-			}
+		if (etatsCivils == null || etatsCivils.isEmpty()) {
+			return null;
 		}
-
-		return etatCivilCourant;
+		return etatsCivils.get(etatsCivils.size() - 1);
 	}
 
 	@Override
 	public EtatCivil getEtatCivil(RegDate date) {
-		return getEtatsCivils().getEtatCivilAt(date);
+		return etatsCivils.getEtatCivilAt(date);
 	}
 
 	@Override
@@ -228,11 +240,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			}
 		}
 		return list;
-	}
-
-	@Override
-	public Individu getMere() {
-		return mere;
 	}
 
 	@Override
@@ -281,12 +288,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public Individu getPere() {
-		return pere;
-	}
-
-	@Override
-	public Collection<Permis> getPermis() {
+	public List<Permis> getPermis() {
 		return permis;
 	}
 
@@ -298,6 +300,10 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 				permis.add(PermisImpl.get(p));
 			}
 		}
+
+		// on trie immédiatement la liste par ordre croissant d'obtention des permis
+		Collections.sort(permis, new PermisComparator());
+
 		return permis;
 	}
 
@@ -330,8 +336,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			origine = individu.getOrigine();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
-			pere = individu.getPere();
-			mere = individu.getMere();
+			parents = individu.getParents();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
@@ -349,5 +354,19 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public Permis getPermisActif(RegDate date) {
 		return IndividuHelper.getPermisActif(this, date);
+	}
+
+	private static class PermisComparator implements Comparator<Permis> {
+		@Override
+		public int compare(Permis o1, Permis o2) {
+			final PermisImpl p1 = (PermisImpl) o1;
+			final PermisImpl p2 = (PermisImpl) o2;
+			if (RegDateHelper.equals(p1.getDateDebutValidite(), p2.getDateDebutValidite())) {
+				return p1.getNoSequence() - p2.getNoSequence();
+			}
+			else {
+				return RegDateHelper.isBeforeOrEqual(p1.getDateDebutValidite(), p2.getDateDebutValidite(), NullDateBehavior.EARLIEST) ? -1 : 1;
+			}
+		}
 	}
 }

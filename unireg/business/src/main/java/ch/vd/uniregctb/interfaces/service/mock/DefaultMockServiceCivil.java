@@ -64,31 +64,31 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		marieIndividu(pierre, RegDate.get(1986, 4, 8));
 
 		addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 		addOrigine(helene, MockPays.France, null, RegDate.get(1963, 8, 20));
-		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
+		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null);
+		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
 
 		addOrigine(sophie, MockPays.Suisse, null, RegDate.get(1973, 8, 20));
-		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null, 0);
-		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, 0, false);
+		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null);
+		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 
 		addOrigine(pierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
-		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
+		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 
 		addOrigine(momo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
-		addNationalite(momo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+		addNationalite(momo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 
 		addOrigine(julien, MockPays.Suisse, null, RegDate.get(1966, 11, 2));
-		addNationalite(julien, MockPays.Suisse, RegDate.get(1966, 11, 2), null, 0);
+		addNationalite(julien, MockPays.Suisse, RegDate.get(1966, 11, 2), null);
 
 		addOrigine(david, MockPays.Suisse, null, RegDate.get(1964, 1, 23));
-		addNationalite(david, MockPays.Suisse, RegDate.get(1964, 1, 23), null, 0);
+		addNationalite(david, MockPays.Suisse, RegDate.get(1964, 1, 23), null);
 
 		addOrigine(victor, MockPays.Espagne, null, RegDate.get(1956, 5, 12));
-		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null, 0);
+		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null);
 
 		// Individus du fichier tiers basic
 		addDefaultAdressesTo(addIndividu(320073, RegDate.get(1950, 1, 1), "Fuchs", "Philippe", true));

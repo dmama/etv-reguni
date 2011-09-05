@@ -358,7 +358,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				addNationalite(pierre, MockPays.Suisse, date(1953, 11, 2), null, 1);
+				addNationalite(pierre, MockPays.Suisse, date(1953, 11, 2), null);
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
@@ -866,7 +866,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 			}
 		});
 
@@ -951,8 +951,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 			}
 		});
@@ -1052,8 +1052,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 			}
 		});
 
@@ -1136,10 +1136,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, 2, false);
-				addPermis(pierre, TypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), 1, false);
-				addPermis(pierre, TypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), 0, false);
+				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), false);
+				addPermis(pierre, TypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), false);
+				addPermis(pierre, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, false);
 			}
 		});
 
@@ -1222,8 +1222,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 
 			}
 		});
@@ -1338,11 +1338,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1477,11 +1477,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1625,11 +1625,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 				addOrigine(julie, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(julie, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(julie, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -1754,8 +1754,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 			}
 		});
@@ -1863,11 +1863,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -2024,7 +2024,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						null);
 				
 				addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, dateNaissance);
-				addNationalite(bea, MockPays.Suisse, dateNaissance, null, 0);
+				addNationalite(bea, MockPays.Suisse, dateNaissance, null);
 			}
 		});
 		
@@ -2173,11 +2173,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
+				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -2340,8 +2340,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
-				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2405,8 +2405,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
-				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2464,8 +2464,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
-				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2571,9 +2571,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
@@ -2664,8 +2664,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
-				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
+				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2848,7 +2848,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Descombaz", "Louis", true);
-				addNationalite(ind, MockPays.Suisse, date(1950, 1, 1), null, 1);
+				addNationalite(ind, MockPays.Suisse, date(1950, 1, 1), null);
 			}
 		});
 
@@ -2911,7 +2911,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
-				addNationalite(roger, MockPays.France, date(1960, 1, 1), null, 1);
+				addNationalite(roger, MockPays.France, date(1960, 1, 1), null);
 			}
 		}
 

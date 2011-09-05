@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.filiation;
 
+import java.util.Arrays;
+
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -75,12 +77,10 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 					final MockIndividu enfant2 = addIndividu(veroNoInd, date(1975, 3, 2), "Jacquouille", "Véronique", false);       // soeur jumelle
 
 					final MockIndividu pere = addIndividu(jacquesNoInd, date(1948, 1, 26), "Jacquouille", "Jacques", true);
-					enfant.setPere(pere);
-					enfant2.setPere(pere);
-
 					final MockIndividu mere = addIndividu(martineNoInd, date(1948, 9, 4), "Jacquouille", "Martine", false);
-					enfant.setMere(mere);
-					enfant2.setMere(mere);
+
+					enfant.setParents(Arrays.<Individu>asList(pere, mere));
+					enfant2.setParents(Arrays.<Individu>asList(pere, mere));
 				}
 			});
 

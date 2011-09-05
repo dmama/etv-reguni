@@ -88,16 +88,16 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 				indStephanie = addIndividu(noIndStephanie, dateNaissanceStephanie, "Baud", "Stéphanie", false);
 				indJoseph = addIndividu(noIndJoseph, dateNaissanceJoseph, "Lucas", "Joseph", true);
 
-				addNationalite(indJeanMarc, MockPays.Suisse, dateNaissanceJeanMarc, null, 0);
+				addNationalite(indJeanMarc, MockPays.Suisse, dateNaissanceJeanMarc, null);
 				addAdresse(indJeanMarc, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceJeanMarc, null);
 
-				addNationalite(indAmelie, MockPays.Suisse, dateNaissanceAmelie, null, 0);
+				addNationalite(indAmelie, MockPays.Suisse, dateNaissanceAmelie, null);
 				addAdresse(indAmelie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceAmelie, null);
 
-				addNationalite(indJoseph, MockPays.France, dateNaissanceJoseph, null, 0);
+				addNationalite(indJoseph, MockPays.France, dateNaissanceJoseph, null);
 				addAdresse(indJoseph, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceJoseph, null);
 
-				addNationalite(indStephanie, MockPays.Suisse, dateNaissanceStephanie, null, 0);
+				addNationalite(indStephanie, MockPays.Suisse, dateNaissanceStephanie, null);
 				addAdresse(indStephanie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceStephanie, null);
 
 

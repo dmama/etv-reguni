@@ -378,7 +378,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
-				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
 

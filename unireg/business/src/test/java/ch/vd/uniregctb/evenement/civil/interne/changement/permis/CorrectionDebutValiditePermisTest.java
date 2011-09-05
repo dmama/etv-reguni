@@ -41,8 +41,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, false);
 			}
 		});
 
@@ -63,7 +63,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
 			}
 		});
 
@@ -93,8 +93,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ANNUEL, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ANNUEL, datePermis, null, false);
 			}
 		});
 
@@ -124,8 +124,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, false);
 			}
 		});
 
@@ -155,7 +155,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
 			}
 		});
 
@@ -186,8 +186,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ANNUEL, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ANNUEL, datePermis, null, false);
 			}
 		});
 
@@ -218,8 +218,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, false);
 			}
 		});
 
@@ -251,8 +251,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, false);
 				marieIndividu(ind, dateMariage);
 			}
 		});
@@ -289,9 +289,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			protected void init() {
 				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissance, "Granger", "Hermione", false);
 				final MockIndividu mr = addIndividu(noIndividuMr, dateNaissance, "Weasley", "Ronald", true);
-				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addNationalite(mr, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null);
+				addNationalite(mr, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, false);
 				marieIndividus(mme, mr, dateMariage);
 			}
 		});
@@ -329,9 +329,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			protected void init() {
 				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissance, "Granger", "Hermione", false);
 				final MockIndividu mr = addIndividu(noIndividuMr, dateNaissance, "Weasley", "Ronald", true);
-				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addNationalite(mr, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null);
+				addNationalite(mr, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, false);
 				marieIndividus(mme, mr, dateMariage);
 			}
 		});
@@ -369,9 +369,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 				final RegDate dateNaissanceMajeur = dateNaissance.addYears(-3);
 				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissance, "Granger", "Hermione", false);
 				final MockIndividu mr = addIndividu(noIndividuMr, dateNaissanceMajeur, "Weasley", "Ronald", true);
-				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addNationalite(mr, MockPays.RoyaumeUni, dateNaissanceMajeur, null, 1);
-				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(mme, MockPays.RoyaumeUni, dateNaissance, null);
+				addNationalite(mr, MockPays.RoyaumeUni, dateNaissanceMajeur, null);
+				addPermis(mme, TypePermis.ETABLISSEMENT, datePermis, null, false);
 				marieIndividus(mme, mr, dateMariage);
 			}
 		});
@@ -405,7 +405,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
 			}
 		});
 
@@ -435,8 +435,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ANNUEL, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ANNUEL, datePermis, null, false);
 			}
 		});
 
@@ -466,8 +466,8 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Granger", "Hermione", false);
-				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null, 1);
-				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, 1, false);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, datePermis, null, false);
 			}
 		});
 

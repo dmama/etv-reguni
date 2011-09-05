@@ -64,8 +64,8 @@ public class Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario extends EvenementC
 				indAndre = addIndividu(noIndAndre, dateNaissance, "Girard", "André", true);
 				marieIndividu(indAndre, dateMariage);
 				addOrigine(indAndre, MockPays.France, null, indAndre.getDateNaissance());
-				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null, 0);
-				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(1980, 3, 1), null, 0, false);
+				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null);
+				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(1980, 3, 1), null, false);
 			}
 		});
 	}

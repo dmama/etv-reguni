@@ -60,7 +60,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 				MockIndividu momo = addIndividu(noIndMomo, dateNaissance, "Durant", "Maurice", true);
 				addDefaultAdressesTo(momo);
 				addOrigine(momo, MockPays.Suisse, null, dateNaissance);
-				addNationalite(momo, MockPays.Suisse, dateNaissance, null, 0);
+				addNationalite(momo, MockPays.Suisse, dateNaissance, null);
 				momo.setNouveauNoAVS(avsOriginal);
 			}
 

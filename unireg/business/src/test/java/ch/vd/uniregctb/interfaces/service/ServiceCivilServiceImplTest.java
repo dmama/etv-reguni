@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
@@ -51,9 +52,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-
-				final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
-				momo.setEtatsCivils(etatsCivils);
+				momo.setEtatsCivils(new EtatCivilListImpl());
 			}
 		});
 
@@ -79,7 +78,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
 				etatsCivils.add(ec1);
 				momo.setEtatsCivils(etatsCivils);
 			}
@@ -111,18 +110,15 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec2 = new MockEtatCivil();
 		final MockEtatCivil ec3 = new MockEtatCivil();
 		ec1.setDateDebutValidite(RegDate.get(1930, 3, 1));
-		ec1.setNoSequence(1);
 		ec2.setDateDebutValidite(RegDate.get(1985, 4, 21));
-		ec2.setNoSequence(3);
 		ec3.setDateDebutValidite(RegDate.get(1973, 1, 8));
-		ec3.setNoSequence(2);
 
 		service.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
 				etatsCivils.add(ec1);
 				etatsCivils.add(ec2);
 				etatsCivils.add(ec3);
@@ -167,7 +163,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
 				etatsCivils.add(ec1);
 				momo.setEtatsCivils(etatsCivils);
 			}

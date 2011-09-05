@@ -62,8 +62,8 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 				indAndre = addIndividu(noIndAndre, RegDate.get(1956, 2, 25), "Girard", "André", true);
 				marieIndividu(indAndre, dateMariage);
 				addOrigine(indAndre, MockPays.France, null, indAndre.getDateNaissance());
-				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null, 0);
-				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, 0, false);
+				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null);
+				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, false);
 			}
 		});
 	}

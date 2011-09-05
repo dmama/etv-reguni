@@ -127,7 +127,6 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 				permis.setTypePermis(TypePermis.ETABLISSEMENT);
 				permis.setDateDebutValidite(dateArriveeBex);
 				permis.setDateFinValidite(null);
-				permis.setNoSequence(1);
 				individu.getPermis().add(permis);
 			}
 		});

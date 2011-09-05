@@ -80,9 +80,9 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 
 				indJulie = getIndividu(noIndJulie);
 				addOrigine(indJulie, MockPays.France, null, dateNaissance);
-				addNationalite(indJulie, MockPays.France, dateNaissance, null, 0);
-				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null, 1);
-				addPermis(indJulie, TypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), 0, false);
+				addNationalite(indJulie, MockPays.France, dateNaissance, null);
+				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null);
+				addPermis(indJulie, TypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), false);
 				addEtatCivil(indJulie, dateNaissance, TypeEtatCivil.CELIBATAIRE);
 				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermis, null);
 				addAdresse(indJulie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, new CasePostale(TexteCasePostale.CASE_POSTALE, 2133431), dateObtentionPermis, null);

@@ -75,8 +75,8 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 				addAdresse(indOlivier, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
 				addAdresse(indAlexandra, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
 
-				addNationalite(indOlivier, MockPays.Suisse, naissanceOlivier, null, 1);
-				addNationalite(indAlexandra, MockPays.Suisse, naissanceAlex, null, 1);
+				addNationalite(indOlivier, MockPays.Suisse, naissanceOlivier, null);
+				addNationalite(indAlexandra, MockPays.Suisse, naissanceAlex, null);
 
 				marieIndividus(indOlivier, indAlexandra, dateMariage);
 			}

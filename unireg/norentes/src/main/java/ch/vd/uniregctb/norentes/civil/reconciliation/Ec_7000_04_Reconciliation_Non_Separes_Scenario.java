@@ -71,10 +71,10 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 				marieIndividus(indMomo, indBea, dateMariage);
 
 				addOrigine(indBea, MockPays.Suisse, commune, RegDate.get(1963, 8, 20));
-				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
 				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
-				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});
 	}

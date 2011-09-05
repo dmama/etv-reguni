@@ -1307,12 +1307,12 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
-				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
-				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -1430,12 +1430,12 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
-				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
-				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -1586,12 +1586,12 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
-				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
-				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -1751,12 +1751,12 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
-				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
-				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -1881,7 +1881,7 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Duplot", "Simon", true);
 				addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
-				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -1969,7 +1969,7 @@ public class TacheServiceTest extends BusinessTest {
 						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
 				Contribuable raoul = addHabitant(100000);
@@ -2013,7 +2013,7 @@ public class TacheServiceTest extends BusinessTest {
 						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
 				Contribuable raoul = addHabitant(100000);
@@ -2064,7 +2064,7 @@ public class TacheServiceTest extends BusinessTest {
 						MockIndividu monsieur = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
 						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
+						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
 				Contribuable raoul = addHabitant(100000);
@@ -2104,7 +2104,7 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu raoul = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(raoul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
-				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -2147,7 +2147,7 @@ public class TacheServiceTest extends BusinessTest {
 				MockIndividu raoul = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
 				addAdresse(raoul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
-				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null, 0);
+				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null);
 			}
 		});
 
@@ -3779,7 +3779,7 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
 				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null);
 			}
 		});
 
@@ -3839,7 +3839,7 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Corbaz", "Magali", false);
 				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null);
 			}
 		});
 
@@ -3942,7 +3942,7 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
 				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
-				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null);
 			}
 		});
 
@@ -4142,7 +4142,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
-				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null, 1);
+				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null);
 			}
 		});
 
@@ -4292,7 +4292,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
-				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null, 1);
+				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null);
 				individu.setDateDeces(dateDeces);
 			}
 		});

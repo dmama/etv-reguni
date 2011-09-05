@@ -63,14 +63,14 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		protected void init() {
 			MockIndividu deborah = addIndividu(noIndDeborah, dateNaissanceDeborah, "Lopez", "Deborah", false);
 			addOrigine(deborah, MockPays.Suisse, null, dateNaissanceDeborah);
-			addNationalite(deborah, MockPays.Suisse, dateNaissanceDeborah, null, 0);
+			addNationalite(deborah, MockPays.Suisse, dateNaissanceDeborah, null);
 
 			addAdresse(deborah, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeDeborah, null);
 			addAdresse(deborah, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeDeborah, null);
 
 			MockIndividu jaime = addIndividu(noIndJaime, dateNaissanceJaime, "Lopez", "Jaime", true);
 			addOrigine(jaime, MockPays.Suisse, null, dateNaissanceJaime);
-			addNationalite(jaime, MockPays.Suisse, dateNaissanceJaime, null, 0);
+			addNationalite(jaime, MockPays.Suisse, dateNaissanceJaime, null);
 
 			addAdresse(jaime, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeJaime, null);
 			addAdresse(jaime, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeJaime, null);

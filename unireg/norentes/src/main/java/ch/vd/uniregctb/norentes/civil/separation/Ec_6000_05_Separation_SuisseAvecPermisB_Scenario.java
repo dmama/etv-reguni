@@ -81,13 +81,13 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
-				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indMomo, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, 0, false);
+				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
+				addPermis(indMomo, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeMomoVillars, dateAvantMariage);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
-				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}
 

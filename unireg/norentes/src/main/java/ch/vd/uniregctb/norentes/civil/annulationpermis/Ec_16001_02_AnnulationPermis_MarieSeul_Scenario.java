@@ -65,8 +65,8 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 				indJulie = addIndividu(noIndJulie, dateNaissance, "Goux", "Julie", false);
 				marieIndividu(indJulie, dateMariage);
 				addOrigine(indJulie, MockPays.Espagne, null, RegDate.get(1961, 3, 12));
-				addNationalite(indJulie, MockPays.Espagne, RegDate.get(1961, 3, 12), null, 0);
-				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, 0, false);
+				addNationalite(indJulie, MockPays.Espagne, RegDate.get(1961, 3, 12), null);
+				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}
 		});
 	}

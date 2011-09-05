@@ -80,7 +80,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 				marieIndividu(indPierre, dateMariage);
 
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
-				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
+				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}

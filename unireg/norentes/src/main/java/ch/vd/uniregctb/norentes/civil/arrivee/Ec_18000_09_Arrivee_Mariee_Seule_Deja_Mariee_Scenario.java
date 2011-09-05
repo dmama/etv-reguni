@@ -69,16 +69,16 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 			@Override
 			protected void init() {
 				MockIndividu jean = addIndividu(noIndJean, date(1941, 6, 6), "Nzikou", "Jean", true);
-				addPermis(jean, TypePermis.ETABLISSEMENT, date(2001, 7, 11), null, 0, false);
+				addPermis(jean, TypePermis.ETABLISSEMENT, date(2001, 7, 11), null, false);
 				addAdresse(jean, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
 				addEtatCivil(jean, date(2004, 1, 15), TypeEtatCivil.DIVORCE);
 				addEtatCivil(jean, date(2008, 7, 26), TypeEtatCivil.MARIE);
 
 				MockIndividu georgette = addIndividu(noIndGeorgette, date(1951, 11, 3), "Matala Bambi", "Georgette", false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), 0, false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2009, 6, 13), null, 1, false);
-				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null, 0);
+				addPermis(georgette, TypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), false);
+				addPermis(georgette, TypePermis.ANNUEL, date(2009, 6, 13), null, false);
+				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null);
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), date(2008, 8, 14));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(

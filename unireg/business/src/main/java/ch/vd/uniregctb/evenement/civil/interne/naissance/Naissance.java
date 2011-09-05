@@ -33,13 +33,8 @@ public class Naissance extends EvenementCivilInterne {
 
 		/* Récupération des parents du nouveau né */
 		final Individu bebe = getIndividu();
-		if (bebe != null) {
-			if (bebe.getPere() != null) {
-				parents.add(getIndividu().getPere());
-			}
-			if (bebe.getMere() != null) {
-				parents.add(getIndividu().getMere());
-			}
+		if (bebe != null && bebe.getParents() != null) {
+			parents.addAll(bebe.getParents());
 		}
 	}
 

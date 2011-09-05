@@ -1,22 +1,20 @@
 package ch.vd.uniregctb.interfaces.model;
 
-import ch.vd.registre.base.date.RegDate;
-
 public interface Origine {
 
 	/**
-	 * Retourne la commune de l'origine. Cette attribut peut être <code>null</code> si l'origine n'est pas suisse.
+	 * Retourne le nom du lieu d'origine. Cet attribut est obligatoire pour les citoyens suisses; il est <code>null</code> pour les étrangers.
 	 *
-	 * @return la commune de l'origine.
+	 * @return le nom du lieu (commune, localité, ...) d'origine.
 	 */
-	Commune getCommune();
+	String getNomLieu();
 
 	/**
-	 * Retourne la date de début de validité de l'origine.
+	 * Le sigle du canton d'origine. Cet attribut est obligatoire pour les citoyens suisses; il est <code>null</code> pour les étrangers.
 	 *
-	 * @return la date de début de validité de l'origine.
+	 * @return le sigle du canton d'origine.
 	 */
-	RegDate getDebutValidite();
+	String getSigleCanton();
 
 	/**
 	 * Retourne le pays de l'origine. Cette attribut peut être <code>null</code> si l'origine est suisse.

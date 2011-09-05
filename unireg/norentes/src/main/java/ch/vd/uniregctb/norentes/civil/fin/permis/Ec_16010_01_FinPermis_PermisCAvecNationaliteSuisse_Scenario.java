@@ -64,16 +64,16 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 			MockIndividu roberto = addIndividu(noIndRoberto, dateNaissanceRoberto, "Martin", "Roberto", true);
 			addDefaultAdressesTo(roberto);
 			addOrigine(roberto, MockPays.Espagne, null, dateNaissanceRoberto);
-			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null, 0);
+			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
 
-			addPermis(roberto, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), 0, false);
-			addPermis(roberto, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, 1, false);
+			addPermis(roberto, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), false);
+			addPermis(roberto, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, false);
 		}
 
 		public void setupForTest() {
 			((MockPermis) getPermisActif(noIndRoberto, dateFinPermisC)).setDateFinValidite(dateFinPermisC);
 			MockIndividu roberto = getIndividu(noIndRoberto);
-			addNationalite(roberto, MockPays.Suisse, dateObtentionNationalite, null, 1);
+			addNationalite(roberto, MockPays.Suisse, dateObtentionNationalite, null);
 		}
 
 	}
