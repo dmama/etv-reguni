@@ -34,7 +34,6 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 		return dateDebut;
 	}
 
-	@Override
 	public int getNoSequence() {
 		return noSequence;
 	}
