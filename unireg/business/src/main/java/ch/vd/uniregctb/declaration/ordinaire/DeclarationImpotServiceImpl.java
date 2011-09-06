@@ -621,4 +621,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				delaiDeclaration.getId(), delaiDeclaration.getLogCreationDate());
 		return impressionConfirmationDelaiHelper.construitIdArchivageDocument(params);
 	}
+	
+	@Override
+	public ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s) {
+		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService);
+		return processor.run(input, s);
+	}
 }

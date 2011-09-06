@@ -15,3 +15,9 @@ ALTER TABLE EVENEMENT_IDENTIFICATION_CTB ADD (DOCUMENT_URL nvarchar2(255) NULL);
 
 -- [SIFISC-2066] tri des modèles de feuilles de document
 ALTER TABLE MODELE_FEUILLE_DOC ADD (SORT_INDEX number(10,0) NULL);
+
+-- [SIFISC-1368] code de contrôle sur les déclarations d'impôt
+ALTER TABLE DECLARATION ADD (CODE_CONTROLE nvarchar2(6) NULL);
+
+-- [SIFISC-2100] code de segmentation sur les déclarations d'impôt
+ALTER TABLE DECLARATION ADD (CODE_SEGMENT number(10,0) NULL);

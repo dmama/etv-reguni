@@ -223,4 +223,12 @@ public interface DeclarationImpotService {
 	 * @return
 	 */
 	DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai);
+
+	/**
+	 * Modifie les données en base pour tenir compte des codes 'segment' fournis pas TAO
+	 * @param input données fournies par TAO
+	 * @param s status manager
+	 * @return les données pour construire un rapport d'exécution
+	 */
+	ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s);
 }

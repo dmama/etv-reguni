@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
@@ -986,6 +988,34 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ListeAssujettisRapport doc, OutputStream os) throws Exception {
 					final PdfListeAssujettisRapport document = new PdfListeAssujettisRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Génère le rapport d'exécution du batch d'import des codes de segmentation fournis par TAO
+	 * @param results les résultats du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	@Override
+	public ImportCodesSegmentRapport generateRapport(final ImportCodesSegmentResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportImportCodesSegment";
+		final String description = "Rapport d'exécution du job d'importation des codes de segmentation des déclarations d'impôt.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ImportCodesSegmentRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImportCodesSegmentRapport>() {
+				@Override
+				public void writeDoc(ImportCodesSegmentRapport doc, OutputStream os) throws Exception {
+					final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

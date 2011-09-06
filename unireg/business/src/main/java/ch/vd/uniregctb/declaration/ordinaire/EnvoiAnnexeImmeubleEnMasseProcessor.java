@@ -97,11 +97,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax);
 
-
-		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
-
-		status.setMessage("Récupération des contribuables à traiter...");
-
 		// Traite les contribuables par lots
 		final BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
 				new BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE,

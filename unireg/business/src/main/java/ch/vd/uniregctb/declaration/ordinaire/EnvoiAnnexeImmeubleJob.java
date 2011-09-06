@@ -119,23 +119,16 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<ContribuableAvecImmeuble>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
+		status.setMessage("Chargement du fichier d'entrée");
+
 		// on parse le fichier
 		final String csvString = csv != null ? new String(csv, "ISO-8859-1") : StringUtils.EMPTY;
-		final String[] lines = csvString.split("[\n]");
-		final int nombrectb = lines.length;
 		int ctbsLus = 0;
-		int previousPercent = 0;
 		final Scanner s = new Scanner(csvString);
 		try {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
-				final int currentPercent = (ctbsLus * 100) / nombrectb;
-				if (previousPercent != currentPercent) {
-					status.setMessage("Chargement des contribuables propriétaires d'immeuble", currentPercent);
-					previousPercent = currentPercent;
-				}
-
 				if (status.interrupted()) {
 					break;
 				}

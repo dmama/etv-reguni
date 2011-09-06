@@ -54,6 +54,11 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	 */
 	private String codeControle;
 
+	/**
+	 * [SIFISC-2100] Code de segmentation, ou Code Segment, fourni par TAO et utilisé lors de l'émission de la DI suivante
+	 */
+	private Integer codeSegment;
+
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
 	public Long getRetourCollectiviteAdministrativeId() {
@@ -100,6 +105,15 @@ public class DeclarationImpotOrdinaire extends Declaration {
 
 	public void setQualification(Qualification qualification) {
 		this.qualification = qualification;
+	}
+
+	@Column(name = "CODE_SEGMENT")
+	public Integer getCodeSegment() {
+		return codeSegment;
+	}
+
+	public void setCodeSegment(Integer codeSegment) {
+		this.codeSegment = codeSegment;
 	}
 
 	/**

@@ -192,10 +192,18 @@
 		<property name="service" ref="diService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
+
 	<bean id="envoiAnnexeImmeubleJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleJob">
         <constructor-arg value="408"/>
         <constructor-arg value="Envoyer à l'impression les formulaires immeubles à envoyer avant les DI en masse"/>
         <property name="service" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
+	<bean id="importCodesSegmentJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentJob">
+        <constructor-arg value="409"/>
+        <constructor-arg value="Importer les codes 'segment' fournis par TAO avant l'envoi des déclarations d'impôt en masse"/>
+        <property name="diService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 

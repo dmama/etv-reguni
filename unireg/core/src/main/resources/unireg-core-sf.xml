@@ -94,6 +94,7 @@
 		<value>ch.vd.uniregctb.mouvement.BordereauMouvementDossier</value>
 		<value>ch.vd.uniregctb.document.Document</value>
 		<value>ch.vd.uniregctb.document.DatabaseDump</value>
+		<value>ch.vd.uniregctb.document.ImportCodesSegmentRapport</value>
 		<value>ch.vd.uniregctb.document.DeterminationDIsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiDIsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport</value>
