@@ -8,7 +8,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class OrigineImpl implements Origine, Serializable {
 
-	private static final long serialVersionUID = -3210113924960027602L;
+	private static final long serialVersionUID = 6793876990036640079L;
 	
 	private final Commune commune;
 	private final Pays pays;

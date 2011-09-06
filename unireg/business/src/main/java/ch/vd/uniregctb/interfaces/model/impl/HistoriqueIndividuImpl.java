@@ -7,7 +7,7 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 
 public class HistoriqueIndividuImpl implements HistoriqueIndividu, Serializable {
 
-	private static final long serialVersionUID = 4030612779028440946L;
+	private static final long serialVersionUID = 3515685965456615515L;
 	
 	private final RegDate dateDebut;
 	private final String autresPrenoms;
