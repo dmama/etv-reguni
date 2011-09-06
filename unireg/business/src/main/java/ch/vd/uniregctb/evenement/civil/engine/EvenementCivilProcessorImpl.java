@@ -272,7 +272,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
 	                             final List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
-		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType().name());
+		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
 		Audit.info(evenementCivilExterne.getId(), message);
 
 		assertEvenement(evenementCivilExterne);
