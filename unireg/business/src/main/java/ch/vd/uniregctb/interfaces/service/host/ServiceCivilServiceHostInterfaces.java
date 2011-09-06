@@ -92,17 +92,4 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 	public boolean isWarmable() {
 		return false;
 	}
-
-	/**
-	 * Vérifie que l'id de l'individu retourné corresponds bien à celui demandé.
-	 *
-	 * @param expected la valeur attendue
-	 * @param actual   la valeur constatée
-	 */
-	private void assertCoherence(long expected, long actual) {
-		if (expected != actual) {
-			throw new IllegalArgumentException(String.format(
-					"Incohérence des données retournées détectées: tiers demandé = %d, tiers retourné = %d.", expected, actual));
-		}
-	}
 }

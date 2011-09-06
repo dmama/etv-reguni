@@ -11,7 +11,8 @@ public enum TypeEtatCivil {
 	PACS_ANNULE(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT),
 	PACS_INTERROMPU(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT),
 	SEPARE(ch.vd.uniregctb.type.EtatCivil.SEPARE),
-	VEUF(ch.vd.uniregctb.type.EtatCivil.VEUF);
+	VEUF(ch.vd.uniregctb.type.EtatCivil.VEUF),
+	NON_MARIE(ch.vd.uniregctb.type.EtatCivil.NON_MARIE);
 
 	private final ch.vd.uniregctb.type.EtatCivil core;
 

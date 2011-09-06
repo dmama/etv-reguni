@@ -13,6 +13,7 @@ import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
+import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -91,12 +92,12 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setOfficialName(personne.getNom());
 		identification.setFirstName(personne.getPrenom());
-		identification.setSex(EnumHelper.coreToEch44(personne.getSexe()));
-		identification.setVn(DataHelper.avs13ToEch44(personne.getNumeroAssureSocial()));
+		identification.setSex(EchHelper.sexeToEch44(personne.getSexe()));
+		identification.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
 		for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
 			identification.getOtherPersonId().add(new NamedPersonId(ident.getCategorieIdentifiant().name(), ident.getIdentifiant()));
 		}
-		identification.setDateOfBirth(DataHelper.coreToEch44(personne.getDateNaissance()));
+		identification.setDateOfBirth(EchHelper.partialDateToEch44(personne.getDateNaissance()));
 		return identification;
 	}
 
@@ -104,12 +105,12 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setOfficialName(data.getNom());
 		identification.setFirstName(data.getPrenom());
-		identification.setSex(EnumHelper.coreToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
-		identification.setVn(DataHelper.avs13ToEch44(individu.getNouveauNoAVS()));
+		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
+		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 		if (StringUtils.isNotBlank(data.getNoAVS())) {
 			identification.getOtherPersonId().add(new NamedPersonId(CategorieIdentifiant.CH_AHV_AVS.name(), data.getNoAVS()));
 		}
-		identification.setDateOfBirth(DataHelper.coreToEch44(individu.getDateNaissance()));
+		identification.setDateOfBirth(EchHelper.partialDateToEch44(individu.getDateNaissance()));
 		return identification;
 	}
 

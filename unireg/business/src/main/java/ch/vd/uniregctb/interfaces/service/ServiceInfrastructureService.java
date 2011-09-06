@@ -30,6 +30,7 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	final static int noCAT = 1341;
 
 	final static int noOfsSuisse = 8100;
+	public final static int noPaysApatride = 8998;
 	final static int noPaysInconnu = 8999;
 
 	/**

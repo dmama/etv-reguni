@@ -20,6 +20,11 @@ public class CasePostale {
 		this.numero = numero;
 	}
 
+	public CasePostale(String text, Number numero) {
+		this.type = TexteCasePostale.parse(text);
+		this.numero = (numero == null ? null : numero.intValue());
+	}
+
 	public TexteCasePostale getType() {
 		return type;
 	}

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers3.impl;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,7 +32,6 @@ import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
@@ -447,35 +445,6 @@ public class DataHelper {
 		else {
 			return null;
 		}
-	}
-
-	public static Long avs13ToEch44(String nAVS13) {
-		if (StringUtils.isBlank(nAVS13)) {
-			return null;
-		}
-		return Long.valueOf(nAVS13);
-	}
-
-	public static DatePartiallyKnown coreToEch44(RegDate from) {
-		if (from == null) {
-			return null;
-		}
-		final DatePartiallyKnown to = new DatePartiallyKnown();
-		final XMLGregorianCalendar cal = XmlUtils.regdate2xmlcal(from);
-
-		if (from.day() == RegDate.UNDEFINED) {
-			if (from.month() == RegDate.UNDEFINED) {
-				to.setYear(cal);
-			}
-			else {
-				to.setYearMonth(cal);
-			}
-		}
-		else {
-			to.setYearMonthDay(cal);
-		}
-
-		return to;
 	}
 
 	public static List<NamedPersonId> deepClone(List<NamedPersonId> list) {

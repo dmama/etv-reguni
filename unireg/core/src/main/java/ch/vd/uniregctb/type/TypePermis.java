@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.type;
 
+
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.civil.model.EnumTypePermis;
 
 public enum TypePermis {
@@ -64,6 +67,56 @@ public enum TypePermis {
 		}
 		else {
 			throw new IllegalArgumentException("Type de permis inconnu  = [" + right.getName() + "]");
+		}
+	}
+
+	public static TypePermis get(String evdPermisCode) {
+		if (StringUtils.isBlank(evdPermisCode)) {
+			return null;
+		}
+		// voir spécification RCPers "TEC-CatalogueOfficielCaracteres.doc"
+		final int code = Integer.parseInt(evdPermisCode.substring(0,4));
+		if (100 >= code && code < 200) {
+			// permis A, pas d'équivalence
+			return null;
+		}
+		else if (200 >= code && code < 300) {
+			// permis B
+			return ANNUEL;
+		}
+		else if (300 >= code && code < 500) {
+			// permis C
+			return ETABLISSEMENT;
+		}
+		else if (500 >= code && code < 600) {
+			// permis F
+			return PROVISOIRE;
+		}
+		else if (600 >= code && code < 700) {
+			// permis G
+			return FRONTALIER;
+		}
+		else if (700 >= code && code < 800) {
+			// permis L
+			return COURTE_DUREE;
+		}
+		else if (800 >= code && code < 900) {
+			// permis N
+			return REQUERANT_ASILE_AVANT_DECISION;
+		}
+		else if (900 >= code && code < 1000) {
+			// permis S
+			return PERSONNE_A_PROTEGER;
+		}
+		else if (code == 1107) {
+			return DIPLOMATE;
+		}
+		else if (code == 1208) {
+			return FONCTIONNAIRE_INTERNATIONAL;
+		}
+		else {
+			// hors-catégorie
+			return null;
 		}
 	}
 }

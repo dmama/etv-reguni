@@ -38,4 +38,20 @@ public enum TexteCasePostale {
 	public String format(int numeroCasePostale) {
 		return String.format(formatWithNumber, numeroCasePostale);
 	}
+
+	/**
+	 * Tente de trouver le type de case postale à partir du texte proposé,
+	 *
+	 * @param text un texte de boîte/case postale
+	 * @return le type de case postale correspondante; ou CASE_POSTALE si aucun type ne correspond réellement.
+	 */
+	public static TexteCasePostale parse(String text) {
+		for (TexteCasePostale t : values()) {
+			if (t.name().equalsIgnoreCase(text)) {
+				return t;
+			}
+		}
+		// valeur par défaut
+		return CASE_POSTALE;
+	}
 }

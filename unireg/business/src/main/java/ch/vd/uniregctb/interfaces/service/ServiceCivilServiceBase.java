@@ -28,7 +28,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceBase.class);
 
-	private ServiceInfrastructureService infraService;
+	protected ServiceInfrastructureService infraService;
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
@@ -267,5 +267,18 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		}
 
 		return DateRangeHelper.collate(result);
+	}
+
+	/**
+	 * Vérifie que l'id de l'individu retourné corresponds bien à celui demandé.
+	 *
+	 * @param expected la valeur attendue
+	 * @param actual   la valeur constatée
+	 */
+	protected void assertCoherence(long expected, long actual) {
+		if (expected != actual) {
+			throw new IllegalArgumentException(String.format(
+					"Incohérence des données retournées détectées: tiers demandé = %d, tiers retourné = %d.", expected, actual));
+		}
 	}
 }

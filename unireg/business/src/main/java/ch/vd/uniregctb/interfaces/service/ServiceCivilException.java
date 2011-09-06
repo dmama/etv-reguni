@@ -7,6 +7,10 @@ public class ServiceCivilException extends RuntimeException {
 
 	private static final long serialVersionUID = -5805216933957084601L;
 
+	public ServiceCivilException(String message) {
+		super(message);
+	}
+
 	public ServiceCivilException(Throwable e) {
 		super(e);
 	}

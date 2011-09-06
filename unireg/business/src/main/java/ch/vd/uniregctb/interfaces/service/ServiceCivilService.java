@@ -27,6 +27,8 @@ public interface ServiceCivilService {
 	/**
 	 * Retourne les adresses civiles valide à la date donnée.
 	 *
+	 * CHECK_RCPERS (msi) : utilisé à 10 endroits, un peu partout.
+	 *
 	 * @param noIndividu l'individu dont on recherche les adresses.
 	 * @param date       la date de référence (attention, la précision est l'année !), ou null pour obtenir toutes les adresses existantes.
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
@@ -40,6 +42,8 @@ public interface ServiceCivilService {
 	/**
 	 * Retourne l'historique des adresses civiles.
 	 *
+	 * CHECK_RCPERS (msi) : utilisé dans l'adresse service et dans le web (affichage)
+	 *
 	 * @param noIndividu l'individu dont on recherche les adresses.
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
@@ -52,6 +56,8 @@ public interface ServiceCivilService {
 	/**
 	 * Construit la liste des communes de domiciles connues pour l'individu donné, et ce depuis une date de référence
 	 *
+	 * CHECK_RCPERS (msi) : utilisé uniquement dans l'événement d'arrivée.
+	 *
 	 * @param depuis        date de référence à partir de laquelle on cherche les domiciles successifs de l'individu
 	 * @param noIndividu    l'individu dont on cherche les communes de domicile
 	 * @param strict        si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
@@ -60,7 +66,7 @@ public interface ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
-	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
 	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
@@ -71,6 +77,8 @@ public interface ServiceCivilService {
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
 	 * <p/>
 	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
+	 *
+	 * CHECK_RCPERS (msi) : utilisé en interne dans le service civil lui-même pour les méthodes getAdresses et getAdressesHisto
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
@@ -86,6 +94,8 @@ public interface ServiceCivilService {
 	 * <p/>
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
 	 *
+	 * CHECK_RCPERS (msi) : utilisé à 5 endroits
+	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
@@ -94,6 +104,8 @@ public interface ServiceCivilService {
 
 	/**
 	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
+	 *
+	 * CHECK_RCPERS (msi) : utilisé à plus de 20 endroits, un peu partout
 	 */
 	Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties);
 
@@ -104,6 +116,8 @@ public interface ServiceCivilService {
 	 * <li>La liste des états civils de l'individu.</li>
 	 * <p/>
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
+	 *
+	 * CHECK_RCPERS (msi) : utilisé à plus de 20 endroits, un peu partout
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de validité des individus
@@ -121,6 +135,8 @@ public interface ServiceCivilService {
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
 	 * autrement dit l'abscence de conjoint à la date renseignée
 	 *
+	 * CHECK_RCPERS (msi) : utilisé à plus de 10 endroits, principalement dans les événements civils
+	 *
 	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche le conjoint.
 	 * @param date à laquelle on veut savoir si l'indivdu a un conjoint valide.
 	 * @return l'individu conjoint populé avec les données valides à la date spécifiée.
@@ -130,6 +146,8 @@ public interface ServiceCivilService {
 	/**
 	 * Retourne le numéro de l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
 	 * <p/>
+	 *
+	 * CHECK_RCPERS (msi) : utilisé en interne dans le service civil lui-même pour la méthode getConjoint
 	 *
 	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche le conjoint.
 	 * @param date à laquelle on veut savoir si l'indivdu a un conjoint valide.
@@ -142,6 +160,8 @@ public interface ServiceCivilService {
 	 * <p/>
 	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.
 	 *
+	 * CHECK_RCPERS (msi) : utilisé à 7 endroits
+	 *
 	 * @param nosIndividus les numéros d'individus demandés
 	 * @param annee        l'année de validité.
 	 * @param parties      les parties optionnelles devant être renseignées
@@ -153,6 +173,8 @@ public interface ServiceCivilService {
 	 * Retourne un lot d'individu avec les parties spécifiées.
 	 * <p/>
 	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.
+	 *
+	 * CHECK_RCPERS (msi) : utilisé à 7 endroits
 	 *
 	 * @param nosIndividus les numéros d'individus demandés
 	 * @param date         la date de validité des individus
@@ -168,6 +190,8 @@ public interface ServiceCivilService {
 	 * <p/>
 	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
+	 * CHECK_RCPERS (msi) : historique pas nécessaire
+	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
 	 * @return la liste des nationalités de l'individu, valides jusqu'à l'année spécifiée.
@@ -180,6 +204,8 @@ public interface ServiceCivilService {
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
 	 * <p/>
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
+	 *
+	 * CHECK_RCPERS (msi) : uniquement pour l'affichage
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
@@ -194,6 +220,8 @@ public interface ServiceCivilService {
 	 * <p/>
 	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
+	 * CHECK_RCPERS (msi) : permis courant pour le processing, historique pour l'affichage
+	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
 	 * @return la liste des permis de l'individu, valides jusqu'à l'année spécifiée.
@@ -207,6 +235,8 @@ public interface ServiceCivilService {
 	 * <p/>
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
+	 * CHECK_RCPERS (msi) : utilisé uniquement pour le traitement de l'événement de tutelle
+	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
 	 * @return la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis.
@@ -214,6 +244,8 @@ public interface ServiceCivilService {
 	Tutelle getTutelle(long noIndividu, int annee);
 
 	/**
+	 * CHECK_RCPERS (msi) : utilisé à plus de 20 endroits
+	 *
 	 * @param noIndividu
 	 * @param date       la date de référence, ou null pour obtenir l'état-civil actif
 	 * @return l'état civil actif d'un individu à une date donnée.
@@ -221,13 +253,17 @@ public interface ServiceCivilService {
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
 
 	/**
+	 * CHECK_RCPERS (msi) : utilisé uniquement pour le testing
+	 *
 	 * @return le permis actif d'un individu à une date donnée.
-	 * @date date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
+	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
 	 */
 	public Permis getPermisActif(long noIndividu, RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.
+	 *
+	 * CHECK_RCPERS (msi) : utilisé à 4 endroits
 	 *
 	 * @param individu un individu
 	 * @return le prénom + le nom du l'individu
@@ -236,6 +272,9 @@ public interface ServiceCivilService {
 
 	/**
 	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
+	 *
+	 * CHECK_RCPERS (msi) : utilisé à 3 endroits
+	 *
 	 * @param individu un individu
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom.VIDE} si l'individu est inconnu)
 	 */
