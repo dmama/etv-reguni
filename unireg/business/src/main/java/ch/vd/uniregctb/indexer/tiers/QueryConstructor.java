@@ -162,18 +162,24 @@ public class QueryConstructor {
 			 * commune/pays pour cela.
 			 */
 
-			BooleanQuery query = new BooleanQuery();
+			final BooleanQuery query = new BooleanQuery();
+			final Query queryForPrincipal = LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor);
+			if (queryForPrincipal != null) {
+				query.add(queryForPrincipal, should);
+			}
 			if (criteria.isForPrincipalActif()) {
-				// Recherche sur les fors principaux actifs uniquement
-				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
+				// Recherche sur les fors principaux actifs uniquement -> rien d'autre à faire
 			}
 			else {
 				// Recherche sur tous les fors (principaux, secondaires, inactifs, ...)
-				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
-				query.add(LuceneEngine.getTermsContient(TiersIndexableData.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0), should);
+				final Query queryAutresFors = LuceneEngine.getTermsContient(TiersIndexableData.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0);
+				if (queryAutresFors != null) {
+					query.add(queryAutresFors, should);
+				}
 			}
-
-			fullQuery.add(query, BooleanClause.Occur.MUST);
+			if (query.clauses().size() > 0) {
+				fullQuery.add(query, BooleanClause.Occur.MUST);
+			}
 		}
 	}
 
@@ -183,7 +189,9 @@ public class QueryConstructor {
 		if (StringUtils.isNotBlank(criteria.getLocaliteOuPays())) { // [UNIREG-2592]
 			final String nomLocaliteOuPays = criteria.getLocaliteOuPays().toLowerCase();
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays, tokenMinLength);
-			fullQuery.add(q, must);
+			if (q != null) {
+				fullQuery.add(q, must);
+			}
 		}
 	}
 
@@ -193,7 +201,9 @@ public class QueryConstructor {
 		if (StringUtils.isNotBlank(criteria.getNpa())) { // [UNIREG-2592]
 			final String npa = criteria.getNpa();
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa, 0);
-			fullQuery.add(q, must);
+			if (q != null) {
+				fullQuery.add(q, must);
+			}
 		}
 	}
 
@@ -203,7 +213,9 @@ public class QueryConstructor {
 		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) { // [UNIREG-2592]
 			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
-			fullQuery.add(q, must);
+			if (q != null) {
+				fullQuery.add(q, must);
+			}
 		}
 	}
 

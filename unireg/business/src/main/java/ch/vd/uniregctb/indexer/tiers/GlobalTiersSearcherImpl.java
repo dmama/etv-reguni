@@ -132,7 +132,10 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			QueryConstructor.addTiersActif(query, filter);
 		}
 
-		query.add(LuceneEngine.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords), BooleanClause.Occur.SHOULD);
+		final Query queryNumeros = LuceneEngine.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords);
+		if (queryNumeros != null) {
+			query.add(queryNumeros, BooleanClause.Occur.SHOULD);
+		}
 
 		// critère sur le différents noms
 		final Query subQuery = LuceneEngine.getAnyTermsContient(TiersIndexableData.NOM_RAISON, keywords, tokenMinLength);
@@ -147,7 +150,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		// critère sur la localité ou le pays
 		final Query q = LuceneEngine.getAnyTermsCommence(TiersIndexableData.LOCALITE_PAYS, keywords, tokenMinLength);
-		query.add(q, BooleanClause.Occur.SHOULD);
+		if (q != null) {
+			query.add(q, BooleanClause.Occur.SHOULD);
+		}
 
 		// on effectue la recherche
 		final TopList<TiersIndexedData> list = new TopList<TiersIndexedData>();

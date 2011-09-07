@@ -12,8 +12,7 @@ import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-
-import ch.vd.registre.base.utils.Assert;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Classe aidant a transformer les criteres de recherche en Lucene Query
@@ -191,6 +190,7 @@ public abstract class LuceneEngine {
 	 * @return la query résultante
 	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	public static Query getTermsCommence(String field, String value, int minLength) throws IndexerException {
 		return getTermsCommence(field, value, minLength, BooleanClause.Occur.MUST);
 	}
@@ -204,10 +204,12 @@ public abstract class LuceneEngine {
 	 * @return la query résultante
 	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	public static Query getAnyTermsCommence(String field, String value, int minLength) throws IndexerException {
 		return getTermsCommence(field, value, minLength, BooleanClause.Occur.SHOULD);
 	}
 
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	private static Query getTermsCommence(String field, String value, int minLength, BooleanClause.Occur occur) {
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
@@ -240,7 +242,6 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
-		Assert.isTrue(simpleQuery != null || complexQuery != null);
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
@@ -252,6 +253,7 @@ public abstract class LuceneEngine {
 	 * @return la query résultante
 	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	public static Query getTermsExact(String field, String value) throws IndexerException {
 		return getTermsExact(field, value, BooleanClause.Occur.MUST);
 	}
@@ -264,10 +266,12 @@ public abstract class LuceneEngine {
 	 * @return la query résultante
 	 * @throws IndexerException en cas de problème dans l'indexer
 	 */
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	public static Query getAnyTermsExact(String field, String value) throws IndexerException {
 		return getTermsExact(field, value, BooleanClause.Occur.SHOULD);
 	}
 
+	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	private static Query getTermsExact(String field, String value, BooleanClause.Occur occur) {
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
@@ -298,7 +302,6 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
-		Assert.isTrue(simpleQuery != null || complexQuery != null);
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
