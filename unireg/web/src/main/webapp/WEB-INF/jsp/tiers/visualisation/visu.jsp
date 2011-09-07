@@ -87,27 +87,30 @@
 						<a href="#tabContent_dossiersApparentesTab"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<c:if test="${command.natureTiers != 'Entreprise'}">
-						<li id="diTab">
-							<a href="#tabContent_diTab""><fmt:message key="label.di" /></a>
-						</li>
-						<li id="mouvementTab">
-							<a href="#tabContent_mouvementTab""><fmt:message key="label.mouvement" /></a>
-						</li>
-					</c:if>
-					<c:if test="${command.natureTiers == 'Entreprise'}">
-						<li id="regimesFiscauxTab">
-							<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
-						</li>
-						<li id="etatsPMTab">
-							<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
-						</li>
-					</c:if>
+						<c:if test="${command.natureTiers != 'Entreprise'}">
+							<li id="diTab">
+								<a href="#tabContent_diTab""><fmt:message key="label.di" /></a>
+							</li>
+							<li id="mouvementTab">
+								<a href="#tabContent_mouvementTab""><fmt:message key="label.mouvement" /></a>
+							</li>
+						</c:if>
+						<c:if test="${command.natureTiers == 'Entreprise'}">
+							<li id="regimesFiscauxTab">
+								<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
+							</li>
+							<li id="etatsPMTab">
+								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
+							</li>
+						</c:if>
 					</authz:authorize>
 				</c:if>
-				<li id="remarqueTab">
-					<a id="remarqueTabAnchor" href="#tabContent_remarqueTab""><fmt:message key="label.remarques" /></a>
-				</li>
+
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<li id="remarqueTab">
+						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab""><fmt:message key="label.remarques" /></a>
+					</li>
+				</authz:authorize>
 			</ul>
 
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_FORS">
@@ -138,37 +141,40 @@
 					</div>
 				</c:if>
 			</authz:authorize>
-				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 
-					<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-						<jsp:include page="dossiers-apparentes.jsp"/>
-						<jsp:include page="debiteur.jsp"/>
-					</div>
-					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-						<c:if test="${command.natureTiers != 'Entreprise'}">
-							<div id="tabContent_diTab" class="visuTiers">
-								<jsp:include page="di/dis.jsp"/>
-							</div>
-							<div id="tabContent_mouvementTab" class="visuTiers">
-								<jsp:include page="mouvement/mouvements.jsp"/>
-							</div>
-						</c:if>
-						<c:if test="${command.natureTiers == 'Entreprise'}">
-							<div id="tabContent_regimesFiscauxTab" class="visuTiers">
-								<jsp:include page="pm/regimes-fiscaux.jsp"/>
-							</div>
-							<div id="tabContent_etatsPMTab" class="visuTiers">
-								<jsp:include page="pm/etats.jsp"/>
-							</div>
-						</c:if>
-					</authz:authorize>
-				</c:if>
+			<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 
-			<div id="tabContent_remarqueTab" class="visuTiers">
-					<jsp:include page="../common/remarque/remarques.jsp">
-						<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
-					</jsp:include>
-			</div>
+				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
+					<jsp:include page="dossiers-apparentes.jsp"/>
+					<jsp:include page="debiteur.jsp"/>
+				</div>
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<c:if test="${command.natureTiers != 'Entreprise'}">
+						<div id="tabContent_diTab" class="visuTiers">
+							<jsp:include page="di/dis.jsp"/>
+						</div>
+						<div id="tabContent_mouvementTab" class="visuTiers">
+							<jsp:include page="mouvement/mouvements.jsp"/>
+						</div>
+					</c:if>
+					<c:if test="${command.natureTiers == 'Entreprise'}">
+						<div id="tabContent_regimesFiscauxTab" class="visuTiers">
+							<jsp:include page="pm/regimes-fiscaux.jsp"/>
+						</div>
+						<div id="tabContent_etatsPMTab" class="visuTiers">
+							<jsp:include page="pm/etats.jsp"/>
+						</div>
+					</c:if>
+				</authz:authorize>
+			</c:if>
+
+			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<div id="tabContent_remarqueTab" class="visuTiers">
+						<jsp:include page="../common/remarque/remarques.jsp">
+							<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
+						</jsp:include>
+				</div>
+			</authz:authorize>
 		</div>
 		<script>
 			$(function() {
