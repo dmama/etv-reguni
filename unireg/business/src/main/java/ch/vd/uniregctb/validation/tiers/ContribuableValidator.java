@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -12,6 +13,8 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -41,6 +44,20 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 				vr.addError(String.format("Le for principal qui commence le %s chevauche le for précédent", RegDateHelper.dateToDisplayString(ffp.getDateDebut())));
 			}
 			lastFor = ffp;
+		}
+
+		// [SIFISC-57] pour les fors fiscaux principaux HC/HS avec le mode d'imposition "source", il est anormal d'avoir des fors secondaires
+		for (ForFiscalPrincipal ffp : fors.principaux) {
+			if (ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				final String typeName = ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC ? "hors-canton" : "hors-Suisse";
+				if (ffp.getModeImposition() == ModeImposition.SOURCE) {
+					final List<DateRange> intersections = DateRangeHelper.intersections(ffp, fors.secondaires);
+					if (intersections != null) {
+						vr.addWarning(String.format("Le mode d'imposition \"source\" du for principal %s " +
+								"qui commence le %s est anormal en présence de fors secondaires", typeName, RegDateHelper.dateToDisplayString(ffp.getDateDebut())));
+					}
+				}
+			}
 		}
 
 		// Pour chaque for secondaire il doit exister un for principal valide

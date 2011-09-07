@@ -483,6 +483,111 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	}
 
 	@Test
+	public void testValidateModeImposition() {
+
+		final PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumeroIndividu(1233L);
+
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		ffp.setDateDebut(RegDate.get(2000, 1, 1));
+		ffp.setDateFin(RegDate.get(2005, 12, 31));
+		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+		ffp.setMotifOuverture(MotifFor.ARRIVEE_HC);
+		ffp.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		hab.addForFiscal(ffp);
+
+		// Sans for secondaire
+		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
+
+			final String tafName = (taf == TypeAutoriteFiscale.COMMUNE_HC ? "hors-canton" : "hors-Suisse");
+			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFSEtendu() : MockPays.Allemagne.getNoOFS());
+			ffp.setTypeAutoriteFiscale(taf);
+
+			// Source sans fors secondaire : ok
+			{
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				final ValidationResults vr = validate(hab);
+				assertFalse(vr.hasWarnings());
+				assertFalse(vr.hasErrors());
+			}
+		}
+
+		// on deuxième fors principal pour couvrir le for secondaire dans certains cas ci-dessous
+		final ForFiscalPrincipal ffp2 = new ForFiscalPrincipal();
+		ffp2.setDateDebut(RegDate.get(2006, 1, 1));
+		ffp2.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp2.setMotifRattachement(MotifRattachement.DOMICILE);
+		ffp2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+		ffp2.setModeImposition(ModeImposition.SOURCE);
+		ffp2.setNumeroOfsAutoriteFiscale(MockCommune.Neuchatel.getNoOFSEtendu());
+		ffp2.setMotifOuverture(MotifFor.ARRIVEE_HC);
+		ffp2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		hab.addForFiscal(ffp2);
+
+		final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+		ffs.setMotifRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE);
+		ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ffs.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
+		ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+		ffs.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
+		hab.addForFiscal(ffs);
+
+		// Avec for secondaire
+		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
+
+			final String tafName = (taf == TypeAutoriteFiscale.COMMUNE_HC ? "hors-canton" : "hors-Suisse");
+			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFSEtendu() : MockPays.Allemagne.getNoOFS());
+			ffp.setTypeAutoriteFiscale(taf);
+
+			// Source avec fors secondaire (intersection complète) : warning
+			{
+				ffs.setDateDebut(RegDate.get(2000, 1, 1));
+				ffs.setDateFin(RegDate.get(2005, 12, 31));
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				final ValidationResults vr = validate(hab);
+				assertFalse(vr.hasErrors());
+				assertTrue(vr.hasWarnings());
+
+				final List<String> warnings = vr.getWarnings();
+				assertEquals(1, warnings.size());
+				assertEquals("Le mode d'imposition \"source\" du for principal " + tafName + " qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
+			}
+
+			// Source avec fors secondaire (intersection partielle) : warning
+			{
+				ffs.setDateDebut(RegDate.get(2000, 1, 1));
+				ffs.setDateFin(RegDate.get(2002, 12, 31));
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				final ValidationResults vr = validate(hab);
+				assertFalse(vr.hasErrors());
+				assertTrue(vr.hasWarnings());
+
+				final List<String> warnings = vr.getWarnings();
+				assertEquals(1, warnings.size());
+				assertEquals("Le mode d'imposition \"source\" du for principal " + tafName + " qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
+			}
+
+			// Source avec fors secondaire (pas d'intersection) : ok
+			{
+				ffp2.setModeImposition(ModeImposition.ORDINAIRE); // pour aller avec le for secondaire
+
+				ffs.setDateDebut(RegDate.get(2006, 1, 1));
+				ffs.setDateFin(null);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				final ValidationResults vr = validate(hab);
+				assertFalse(vr.hasWarnings());
+				assertFalse(vr.hasErrors());
+
+				ffp2.setModeImposition(ModeImposition.SOURCE);
+			}
+		}
+	}
+
+	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationAdresses() throws Exception {
 

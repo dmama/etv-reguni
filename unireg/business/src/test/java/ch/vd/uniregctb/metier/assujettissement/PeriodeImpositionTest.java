@@ -740,7 +740,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable ctb = createDepartHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
+		final Contribuable ctb = createDepartHorsCantonSourcierMixte137Al1_Invalide(date(2008, 9, 25));
 
 		// 2007
 		{
@@ -820,7 +820,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable ctb = createArriveeHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
+		final Contribuable ctb = createArriveeHorsCantonSourcierMixte137Al1_Invalide(date(2008, 9, 25));
 
 		// 2007
 		{

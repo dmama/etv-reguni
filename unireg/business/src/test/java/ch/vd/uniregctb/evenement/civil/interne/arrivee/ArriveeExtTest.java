@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -50,6 +51,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -60,6 +62,14 @@ import static junit.framework.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
+
+	private ValidationInterceptor validationInterceptor;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+	}
 
 	public ArriveeExtTest() {
 		setWantIndexation(true);
@@ -2410,17 +2420,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				return null;
-			}
-		});
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		try {
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					PersonnePhysique habitant = addHabitant(noTiers, noInd);
+					ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
+					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+					ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
+					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 
@@ -2437,21 +2453,16 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
 
-		// [UNIREG-2145] On vérifique que la for principal ouvert possède le mode d'imposition source, et non plus source-mixte
-		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
-		assertNotNull(hab);
-
-		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
-		assertEquals(3, fors.size());
-		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
-				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(date(2005, 7, 1), MotifFor.DEPART_HC, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFSEtendu(),
-				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
-		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
-				(ForFiscalPrincipal) fors.get(2));
+		try {
+			arrivee.handle(warnings);
+			fail();
+		}
+		catch (ValidationException e) {
+			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé
+			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 warning(s):\n" +
+					" [E] Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, les modes d'imposition possibles sont \"ordinaire\" ou \"source\".\n", e.getMessage());
+		}
 	}
 
 	@Test
@@ -2669,17 +2680,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				return null;
-			}
-		});
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		try {
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					PersonnePhysique habitant = addHabitant(noTiers, noInd);
+					ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+					ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
+					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 
@@ -2696,21 +2713,16 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
 
-		// [UNIREG-2145] On vérifique que la for principal ouvert possède le mode d'imposition source, et non plus source-mixte
-		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
-		assertNotNull(hab);
-
-		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
-		assertEquals(3, fors.size());
-		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
-				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(date(2005, 7, 1), MotifFor.DEPART_HS, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, MockPays.Colombie.getNoOFS(),
-				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
-		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
-				(ForFiscalPrincipal) fors.get(2));
+		try {
+			arrivee.handle(warnings);
+			fail();
+		}
+		catch (ValidationException e) {
+			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé
+			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 warning(s):\n" +
+					" [E] Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, les modes d'imposition possibles sont \"ordinaire\" ou \"source\".\n", e.getMessage());
+		}
 	}
 
 

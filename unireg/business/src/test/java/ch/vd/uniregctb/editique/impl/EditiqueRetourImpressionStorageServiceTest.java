@@ -86,7 +86,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		super.onTearDown();
 	}
 
-	@Test(timeout = 1100)
+	@Test(timeout = 1500) // 1000 milliseondes + 500 pour tenir compte du temps d'exécution du test lui-même et d'un éventuel garbage collection
 	public void testTimeout() throws Exception {
 
 		// je ne reçois rien, je vérifie que je sors au bout du temps requis : 1s

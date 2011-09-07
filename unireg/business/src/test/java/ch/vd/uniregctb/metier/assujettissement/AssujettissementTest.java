@@ -776,7 +776,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(10000024L, date(2008, 9, 25));
+		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1_Invalide(10000024L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -1022,7 +1022,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(10000029L, date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1_Invalide(10000029L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -2046,7 +2046,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineSourcierMixte137Al1HorsCanton() throws Exception {
 
 		final RegDate achatImmeuble = date(2007, 7, 1);
-		final Contribuable paul = createSourcierMixte137Al1HorsCanton(10000047L, achatImmeuble);
+		final Contribuable paul = createSourcierMixte137Al1HorsCanton_Invalide(10000047L, achatImmeuble);
 
 		// 2006
 		{
@@ -2092,7 +2092,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineSourcierMixte137Al1HorsSuisse() throws Exception {
 
 		final RegDate dateChangement = date(2007, 7, 1);
-		final Contribuable paul = createSourcierMixte137Al1HorsSuisse(10000048L, dateChangement);
+		final Contribuable paul = createSourcierMixte137Al1HorsSuisse_Invalide(10000048L, dateChangement);
 
 		// 2006
 		{
@@ -2403,7 +2403,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateAchat = date(2008, 1, 15);
 		final RegDate dateVente = date(2008, 3, 30);
-		final Contribuable ctb = createHorsSuisseSourcierAvecAchatEtVenteImmeuble(10000056L, dateAchat, dateVente);
+		final Contribuable ctb = createHorsSuisseSourcierAvecAchatEtVenteImmeuble_Invalide(10000056L, dateAchat, dateVente);
 
 		// 2007
 		{
@@ -2788,18 +2788,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10003348L);
-
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 5, 27), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.SOURCE);
-
-		fp = addForPrincipal(paul, date(2003, 5, 28), MotifFor.INDETERMINE, date(2003, 8, 30), MotifFor.DEMENAGEMENT_VD, MockPays.France);
-		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-
-		fp = addForPrincipal(paul, date(2003, 8, 31), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
-
-		addForSecondaire(paul, date(2003, 5, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		final Contribuable paul = createSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques_Invalide();
 
 		// 2002
 		{
@@ -2834,15 +2823,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFauxDemenagementVD() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10002080L);
-
-		// le motif de fermeture est incorrect, il devrait être ARRIVEE_HC
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 9, 9), MotifFor.INDETERMINE, date(2004, 7, 26), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
-		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-		fp = addForPrincipal(paul, date(2004, 7, 27), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
-
-		addForSecondaire(paul, date(2003, 9, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		final Contribuable paul = createFauxDemenagementVD_Invalide();
 
 		// 2002
 		{
@@ -2960,13 +2941,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierMixteHorsSuisseAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10015452L);
-
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 5, 6), MotifFor.INDETERMINE, date(2006, 7, 31), MotifFor.DEMENAGEMENT_VD, MockPays.Espagne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-		fp = addForPrincipal(paul, date(2006, 8, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
-		addForSecondaire(paul, date(2004, 5, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		final Contribuable paul = createSourcierMixteHorsSuisseAvecImmeuble_Invalide();
 
 		final List<Assujettissement> list = Assujettissement.determine(paul);
 		assertNotNull(list);

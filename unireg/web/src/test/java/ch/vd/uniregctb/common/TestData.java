@@ -56,7 +56,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 @Ignore
 @SuppressWarnings({"JavaDoc"})
@@ -1661,7 +1660,7 @@ public class TestData {
 		ffp0.setDateDebut(RegDate.get(2002, 2, 12));
 		ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp0.setLogModifDate(new Timestamp(1199142000000L));
-		ffp0.setModeImposition(ModeImposition.MIXTE_137_1);
+		ffp0.setModeImposition(ModeImposition.ORDINAIRE);
 		ffp0.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp0.setMotifRattachement(MotifRattachement.DOMICILE);
 		ffp0.setNumeroOfsAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());

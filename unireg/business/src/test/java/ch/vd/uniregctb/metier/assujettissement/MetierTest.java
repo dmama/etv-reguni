@@ -24,6 +24,7 @@ import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,6 +41,14 @@ public abstract class MetierTest extends BusinessTest {
 	protected static final Range RANGE_2002_2010 = new Range(date(2002, 1, 1), date(2010, 12, 31));
 	protected static final Range RANGE_2000_2008 = new Range(date(2000, 1, 1), date(2008, 12, 31));
 	protected static final Range RANGE_2006_2008 = new Range(date(2006, 1, 1), date(2008, 12, 31));
+
+	private ValidationInterceptor validationInterceptor;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+	}
 
 	/**
 	 * Diplomate suisse ayant vécu à Lausanne jusqu'à sa nomination comme diplomate en Albanie le 1er janvier 2000.
@@ -259,17 +268,24 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(RegDate dateDepart) throws Exception {
-		return createDepartHorsCantonSourcierMixte137Al1(null, dateDepart);
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al1_Invalide(RegDate dateDepart) throws Exception {
+		return createDepartHorsCantonSourcierMixte137Al1_Invalide(null, dateDepart);
 	}
 
-	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
-		Contribuable paul = createContribuableSansFor(noTiers);
-		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-		ffp = addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-		addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al1_Invalide(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(noTiers);
+			ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+			ffp = addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+			addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 		return paul;
 	}
 
@@ -373,19 +389,26 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createHorsSuisseSourcierAvecAchatEtVenteImmeuble(Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
-		Contribuable paul = createContribuableSansFor(noTiers);
+	protected Contribuable createHorsSuisseSourcierAvecAchatEtVenteImmeuble_Invalide(Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(noTiers);
 
-		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2000, 1, 1), null, dateAchat.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+			ForFiscalPrincipal ffp = addForPrincipal(paul, date(2000, 1, 1), null, dateAchat.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
+			ffp.setModeImposition(ModeImposition.SOURCE);
 
-		ffp = addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockPays.Espagne);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1); // TODO (msi) corriger le mode d'imposition en mixte 146 quand la spéc sera validée + ajout les fors AutreElementImposable.
+			ffp = addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockPays.Espagne);
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1); // TODO (msi) corriger le mode d'imposition en mixte 146 quand la spéc sera validée + ajout les fors AutreElementImposable.
 
-		ffp = addForPrincipal(paul, dateVente.getOneDayAfter(), MotifFor.VENTE_IMMOBILIER, MockPays.Espagne);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+			ffp = addForPrincipal(paul, dateVente.getOneDayAfter(), MotifFor.VENTE_IMMOBILIER, MockPays.Espagne);
+			ffp.setModeImposition(ModeImposition.SOURCE);
 
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 		return paul;
 	}
 
@@ -542,17 +565,24 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(RegDate dateArrivee) throws Exception {
-		return createArriveeHorsCantonSourcierMixte137Al1(null, dateArrivee);
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1_Invalide(RegDate dateArrivee) throws Exception {
+		return createArriveeHorsCantonSourcierMixte137Al1_Invalide(null, dateArrivee);
 	}
 
-	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
-		Contribuable paul = createContribuableSansFor(noTiers);
-		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-		ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-		addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1_Invalide(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(noTiers);
+			ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+			ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+			addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 		return paul;
 	}
 
@@ -593,29 +623,38 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createSourcierMixte137Al1HorsCanton(Long noTiers, RegDate achatImmeuble) throws Exception {
-		Contribuable paul = createContribuableSansFor(noTiers);
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, achatImmeuble.getOneDayBefore(),
-				MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
-		fp.setModeImposition(ModeImposition.SOURCE);
+	protected Contribuable createSourcierMixte137Al1HorsCanton_Invalide(Long noTiers, RegDate achatImmeuble) throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(noTiers);
+			ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, achatImmeuble.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
+			fp.setModeImposition(ModeImposition.SOURCE);
 
-		fp = addForPrincipal(paul, achatImmeuble, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
-		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-		addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
-				MotifRattachement.IMMEUBLE_PRIVE);
+			fp = addForPrincipal(paul, achatImmeuble, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
+			fp.setModeImposition(ModeImposition.MIXTE_137_1);
+			addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 		return paul;
 	}
 
-	/**
-	 * TODO (msi) corriger cela (mixte 149) en fonction de la nouvelle spéc. de Thierry en cours de validation
-	 */
-	protected Contribuable createSourcierMixte137Al1HorsSuisse(Long noTiers, RegDate dateAchat) throws Exception {
-		Contribuable paul = createContribuableSansFor(noTiers);
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, date(2007, 6, 30), MotifFor.CHGT_MODE_IMPOSITION, MockPays.France);
-		fp.setModeImposition(ModeImposition.SOURCE);
-		fp = addForPrincipal(paul, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockPays.France);
-		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+	protected Contribuable createSourcierMixte137Al1HorsSuisse_Invalide(Long noTiers, RegDate dateAchat) throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(noTiers);
+			ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, date(2007, 6, 30), MotifFor.CHGT_MODE_IMPOSITION, MockPays.France);
+			fp.setModeImposition(ModeImposition.SOURCE);
+			fp = addForPrincipal(paul, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockPays.France);
+			fp.setModeImposition(ModeImposition.MIXTE_137_1);
+			addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 		return paul;
 	}
 
@@ -855,5 +894,66 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(remplaceParNote, periode.isRemplaceeParNote());
 		assertEquals(fermetureCauseDeces, periode.isFermetureCauseDeces());
 		assertEquals(fermetureCauseFinAssujettissementHS, periode.isFermetureCauseFinAssujettissementHorsSuisse());
+	}
+
+	protected Contribuable createSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques_Invalide() throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(10003348L);
+
+			ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 5, 27), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+			fp.setModeImposition(ModeImposition.SOURCE);
+
+			fp = addForPrincipal(paul, date(2003, 5, 28), MotifFor.INDETERMINE, date(2003, 8, 30), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+			fp.setModeImposition(ModeImposition.MIXTE_137_1);
+
+			fp = addForPrincipal(paul, date(2003, 8, 31), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+			addForSecondaire(paul, date(2003, 5, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+		return paul;
+	}
+
+	protected Contribuable createFauxDemenagementVD_Invalide() throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(10002080L);
+
+			// le motif de fermeture est incorrect, il devrait être ARRIVEE_HC
+			ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 9, 9), MotifFor.INDETERMINE, date(2004, 7, 26), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+			fp.setModeImposition(ModeImposition.MIXTE_137_1);
+			fp = addForPrincipal(paul, date(2004, 7, 27), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+			addForSecondaire(paul, date(2003, 9, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+		return paul;
+	}
+
+	protected Contribuable createSourcierMixteHorsSuisseAvecImmeuble_Invalide() throws Exception {
+		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		Contribuable paul;
+		try {
+			paul = createContribuableSansFor(10015452L);
+
+			ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 5, 6), MotifFor.INDETERMINE, date(2006, 7, 31), MotifFor.DEMENAGEMENT_VD, MockPays.Espagne);
+			fp.setModeImposition(ModeImposition.MIXTE_137_1);
+			fp = addForPrincipal(paul, date(2006, 8, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			fp.setModeImposition(ModeImposition.MIXTE_137_2);
+			addForSecondaire(paul, date(2004, 5, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+		return paul;
 	}
 }

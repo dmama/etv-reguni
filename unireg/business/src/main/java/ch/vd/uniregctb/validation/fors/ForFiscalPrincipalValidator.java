@@ -24,9 +24,9 @@ public class ForFiscalPrincipalValidator extends ForFiscalRevenuFortuneValidator
 				vr.addError("Le mode d'imposition est obligatoire sur un for fiscal principal.");
 			}
 			else if (ff.getMotifRattachement() == MotifRattachement.DOMICILE && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				if (modeImposition != ModeImposition.ORDINAIRE && modeImposition != ModeImposition.SOURCE && modeImposition != ModeImposition.MIXTE_137_1) {
+				if (modeImposition != ModeImposition.ORDINAIRE && modeImposition != ModeImposition.SOURCE) {
 					vr.addError("Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, " +
-							"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\".");
+							"les modes d'imposition possibles sont \"ordinaire\" ou \"source\".");
 				}
 			}
 

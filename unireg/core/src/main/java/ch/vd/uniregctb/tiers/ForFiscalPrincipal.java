@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -80,7 +81,7 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 	 *            the modeImposition to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8iVx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setModeImposition(ModeImposition theModeImposition) {
+	public void setModeImposition(@Nullable ModeImposition theModeImposition) {
 		// begin-user-code
 		modeImposition = theModeImposition;
 		// end-user-code
