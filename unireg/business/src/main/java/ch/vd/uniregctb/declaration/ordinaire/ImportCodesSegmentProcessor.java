@@ -65,35 +65,42 @@ public class ImportCodesSegmentProcessor {
 
 	private void doBatch(List<ContribuableAvecCodeSegment> batch, ImportCodesSegmentResults rapport) {
 		for (ContribuableAvecCodeSegment ctb : batch) {
-			final Tiers tiers = tiersService.getTiers(ctb.getNoContribuable());
-			if (tiers == null) {
-				// contribuable inconnu...
-				rapport.addErrorCtbInconnu(ctb.getNoContribuable());
-			}
-			else if (!(tiers instanceof Contribuable)) {
-				// pas un contribuable -> pas de déclaration...
-				rapport.addErrorPasUnContribuable(ctb.getNoContribuable(), tiers.getNatureTiers());
+			if (ctb.getCodeSegment() < 0 || ctb.getCodeSegment() > 9) {
+				// un chiffre en base 10, et c'est tout (j'ai mis le test ici et pas dans l'import du fichier pour
+				// que cette erreur soit remontée dans le rapport d'exécution, et pas seulement dans les logs techniques)
+				rapport.addErrorCodeSegmentInvalide(ctb.getNoContribuable(), ctb.getCodeSegment());
 			}
 			else {
-				final Declaration derniereDeclaration = tiers.getDerniereDeclaration();
-				if (derniereDeclaration == null) {
-					// contribuable sans déclaration -> comment a-t-on fait pour assigner un code de segmentation (sensé être basé sur la taxation de l'année dernière...) ?
-					rapport.addErrorCtbSansDeclaration(ctb.getNoContribuable());
+				final Tiers tiers = tiersService.getTiers(ctb.getNoContribuable());
+				if (tiers == null) {
+					// contribuable inconnu...
+					rapport.addErrorCtbInconnu(ctb.getNoContribuable());
 				}
-				else if (derniereDeclaration instanceof DeclarationImpotOrdinaire) {
-						final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) derniereDeclaration;
-						final Integer ancienCodeSegment = di.getCodeSegment();
-						if (ancienCodeSegment == null || ancienCodeSegment != ctb.getCodeSegment()) {
-							setNewCodeSegment(di, ctb.getCodeSegment());
-							rapport.addCtbTraite(ctb.getNoContribuable(), ctb.getCodeSegment());
-						}
-						else {
-							rapport.addCtbIgnoreDejaBonCode(ctb.getNoContribuable());
-						}
+				else if (!(tiers instanceof Contribuable)) {
+					// pas un contribuable -> pas de déclaration...
+					rapport.addErrorPasUnContribuable(ctb.getNoContribuable(), tiers.getNatureTiers());
 				}
 				else {
-					// si ce ne sont pas des déclarations d'impôt ordinaires, que sont-ce ?
-					rapport.addErrorCtbAvecMauvaisTypeDeDeclaration(ctb.getNoContribuable(), derniereDeclaration.getClass().getName());
+					final Declaration derniereDeclaration = tiers.getDerniereDeclaration();
+					if (derniereDeclaration == null) {
+						// contribuable sans déclaration -> comment a-t-on fait pour assigner un code de segmentation (sensé être basé sur la taxation de l'année dernière...) ?
+						rapport.addErrorCtbSansDeclaration(ctb.getNoContribuable());
+					}
+					else if (derniereDeclaration instanceof DeclarationImpotOrdinaire) {
+							final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) derniereDeclaration;
+							final Integer ancienCodeSegment = di.getCodeSegment();
+							if (ancienCodeSegment == null || ancienCodeSegment != ctb.getCodeSegment()) {
+								setNewCodeSegment(di, ctb.getCodeSegment());
+								rapport.addCtbTraite(ctb.getNoContribuable(), ctb.getCodeSegment());
+							}
+							else {
+								rapport.addCtbIgnoreDejaBonCode(ctb.getNoContribuable());
+							}
+					}
+					else {
+						// si ce ne sont pas des déclarations d'impôt ordinaires, que sont-ce ?
+						rapport.addErrorCtbAvecMauvaisTypeDeDeclaration(ctb.getNoContribuable(), derniereDeclaration.getClass().getName());
+					}
 				}
 			}
 		}

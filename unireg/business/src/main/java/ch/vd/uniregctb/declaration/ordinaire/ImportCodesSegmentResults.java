@@ -33,7 +33,8 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 		CTB_INCONNU("Le contribuable est inconnu"),
 		TIERS_PAS_CONTRIBUABLE("Le tiers n'est pas un contribuable"),
 		CTB_SANS_DECLARATION("Le contribuable ne possède encore aucune déclaration"),
-		MAUVAIS_TYPE_DECLARATION("Les déclarations du contribuable ne sont pas du bon type");
+		MAUVAIS_TYPE_DECLARATION("Les déclarations du contribuable ne sont pas du bon type"),
+		CODE_SEGMENT_INVALIDE("Code segment invalide (doit être composé d'un seul chiffre)");
 
 		private final String description;
 
@@ -137,6 +138,10 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 
 	public void addCtbIgnoreDejaBonCode(long noCtb) {
 		ignores.add(new Ignore(noCtb, IGNORE_DEJA_BON_SEGMENT));
+	}
+
+	public void addErrorCodeSegmentInvalide(long ctbId, int codeSegment) {
+		erreurs.add(new Erreur(ctbId, ErreurType.CODE_SEGMENT_INVALIDE, Integer.toString(codeSegment)));
 	}
 
 	public boolean isInterrompu() {

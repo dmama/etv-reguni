@@ -75,6 +75,36 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		Assert.assertEquals(noCtb, erreur.noTiers);
 	}
 
+
+	@Test
+	public void testCodeSegmentInvalide() throws Exception {
+
+		// service civil vide
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final long noCtb = 10020040L;
+		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noCtb, 23));
+		final ImportCodesSegmentResults res = processor.run(coll, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(1, res.getNombreTiersAnalyses());
+		Assert.assertNotNull(res.getTraites());
+		Assert.assertEquals(0, res.getTraites().size());
+		Assert.assertNotNull(res.getIgnores());
+		Assert.assertEquals(0, res.getIgnores().size());
+		Assert.assertNotNull(res.getErreurs());
+		Assert.assertEquals(1, res.getErreurs().size());
+
+		final ImportCodesSegmentResults.Erreur erreur = res.getErreurs().get(0);
+		Assert.assertNotNull(erreur);
+		Assert.assertEquals(ImportCodesSegmentResults.ErreurType.CODE_SEGMENT_INVALIDE, erreur.type);
+		Assert.assertEquals("23", erreur.details);
+		Assert.assertEquals(noCtb, erreur.noTiers);
+	}
+
 	@Test
 	public void testTiersNonContribuable() throws Exception {
 
