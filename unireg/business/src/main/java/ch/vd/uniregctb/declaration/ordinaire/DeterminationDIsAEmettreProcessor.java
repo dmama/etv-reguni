@@ -13,6 +13,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -83,8 +84,7 @@ public class DeterminationDIsAEmettreProcessor {
 		this.validationService = validationService;
 	}
 
-	public DeterminationDIsResults run(final int anneePeriode, final RegDate dateTraitement, int nbThreads, final StatusManager s)
-			throws DeclarationException {
+	public DeterminationDIsResults run(final int anneePeriode, final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) throws DeclarationException {
 
 		checkParams(anneePeriode, dateTraitement);
 
@@ -512,7 +512,7 @@ public class DeterminationDIsAEmettreProcessor {
 		Assert.notNull(dateEcheance);
 
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
-				categorie.getTypeContribuable(), categorie.getTypeDocument(), details.getQualification(), details.getAdresseRetour(), oid);
+				categorie.getTypeContribuable(), categorie.getTypeDocument(), details.getQualification(), details.getCodeSegment(), details.getAdresseRetour(), oid);
 		if (rapport.get() != null) {
 			rapport.get().addTacheEnvoiCreee(contribuable, tache);
 		}

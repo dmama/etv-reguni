@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -21,8 +22,8 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
@@ -67,7 +68,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerNombreAnnexeImmeuble() {
 
-
 		// 1 immeuble => 1 annexe
 		assertEquals(1, processor.getNombreAnnexeAEnvoyer(1));
 		//2 immeubles => 1annexe
@@ -78,35 +78,37 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		assertEquals(2, processor.getNombreAnnexeAEnvoyer(4));
 		//5 immeubles => 3 annexes
 		assertEquals(3, processor.getNombreAnnexeAEnvoyer(5));
-
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testIsAssujettiEnFinPeriode() {
+	public void testPeriodeImpositionEnFinPeriode() {
 
 		// Contribuable sans for fiscal
-		Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-		assertFalse(processor.isAssujettiEnFinDePeriode(erich, 2011));
+		final Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(erich, 2011));
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
-		Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+		final Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
-		assertFalse(processor.isAssujettiEnFinDePeriode(maxwell, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011));
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne
-		Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+		final Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		assertTrue(processor.isAssujettiEnFinDePeriode(felicien, 2011));
+		final PeriodeImposition piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011);
+		assertNotNull(piFelicien);
+		assertEquals(date(2011, 1, 1), piFelicien.getDateDebut());
+		assertEquals(date(2011, 12, 31), piFelicien.getDateFin());
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
-		Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+		final Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		assertFalse(processor.isAssujettiEnFinDePeriode(bernard, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011));
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
-		Contribuable lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+		final Contribuable lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(lamda, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-		assertFalse(processor.isAssujettiEnFinDePeriode(lamda, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011));
 	}
 }

@@ -35,8 +35,8 @@ public class AddDI extends SynchronizeAction {
 
 		final TacheEnvoiDeclarationImpot tache =
 				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
-						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getAdresseRetour(),
-						collectivite);
+						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getCodeSegment(),
+						periodeImposition.getAdresseRetour(), collectivite);
 		context.tacheDAO.save(tache);
 	}
 

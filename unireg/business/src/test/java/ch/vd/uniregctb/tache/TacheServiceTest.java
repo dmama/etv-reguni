@@ -2186,7 +2186,7 @@ public class TacheServiceTest extends BusinessTest {
 				// tâche d'envoi de DI
 				final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
 						date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						raoul, null, colAdm);
+						raoul, null, null, colAdm);
 				ids.tacheEnvoi = tacheEnvoi.getId();
 
 				// annulation du tiers
@@ -2952,7 +2952,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// une tâche d'envoi en instance qui correspond parfaitement à la déclaration manquante
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, cedi);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie qu'aucune nouvelle tâche n'est créée
 		hibernateTemplate.flush();
@@ -2975,7 +2975,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// une tâche d'envoi en instance qui ne possède pas le bon type de contribuable
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
-				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, cedi);
+				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie que :
 		// - la tâche incorrecte est annulée
@@ -3002,7 +3002,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// une tâche d'envoi en instance qui est incorrect
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
-				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, cedi);
+				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie que la tâche est annulée
 		hibernateTemplate.flush();
@@ -3882,7 +3882,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNotNull(aci);
 				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), declaration2008, pp, aci);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,
-						Qualification.MANUEL, aci);
+						Qualification.MANUEL, 0, aci);
 
 				return pp.getId();
 			}
@@ -5122,7 +5122,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final CollectiviteAdministrative oi = tiersService.getCollectiviteAdministrative(15, true);
 				final TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2011, 6, 19), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON,
-						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.COMPLEXE_1, oi);
+						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.COMPLEXE_1, 1, oi);
 
 				ids.pp = pp.getNumero();
 				ids.tache = tache.getId();
@@ -5141,7 +5141,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNotNull(tache);
 				assertTrue(tache.isAnnule());
 
-				// il ne devrait pas y avoir de tâche d'émission de DI en 2009 malgré la vente du dernier immeuble (car la DI remplacée par une note)
+				// il ne devrait pas y avoir de tâche d'émission de DI en 2009 malgré la vente du dernier immeuble (car la DI est remplacée par une note)
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
 				criterion.setInclureTachesAnnulees(false);

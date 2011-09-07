@@ -512,9 +512,9 @@ public class TacheDAOTest extends CoreDAOTest {
 
 	private TacheEnvoiDeclarationImpot addTacheEnvoi(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDI(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, ca);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, 0, ca);
 		envoi.setAdresseRetour(TypeAdresseRetour.CEDI);
-		envoi = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(envoi);
+		envoi = hibernateTemplate.merge(envoi);
 		return envoi;
 	}
 

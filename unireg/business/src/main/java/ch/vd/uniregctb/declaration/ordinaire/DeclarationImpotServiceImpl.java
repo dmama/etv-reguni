@@ -342,8 +342,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			final Contribuable tiers = (Contribuable) declaration.getTiers();
 			editiqueCompositionService.imprimeDIForBatch(declaration, dateEvenement);
 			evenementFiscalService.publierEvenementFiscalEnvoiDI(tiers, declaration, dateEvenement);
-			// TODO (msi) ajouter le code de routage
-			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), "");
+
+			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
+			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);

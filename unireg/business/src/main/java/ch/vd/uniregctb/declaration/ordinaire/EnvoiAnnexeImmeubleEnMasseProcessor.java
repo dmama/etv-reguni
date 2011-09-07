@@ -171,15 +171,14 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		initCache(anneePeriode);
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listCtbImmeuble) {
-			int nombreAnnexesImmeuble;
-			nombreAnnexesImmeuble = 0;
-			Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
+			final Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
 
-			if (!isAssujettiEnFinDePeriode(ctb, anneePeriode)) {
+			final PeriodeImposition pi = getPeriodeImpositionEnFinDePeriodeFiscale(ctb, anneePeriode);
+			if (pi == null) {
 				rapport.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
 			else {
-				nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeubles());
+				final int nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeubles());
 
 				final RegDate dateReference = RegDate.get(anneePeriode, 12, 31);
 				ForGestion forGestion = tiersService.getForGestionActif(ctb, dateReference);
@@ -188,8 +187,8 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 					noOfsCommune = forGestion.getNoOfsCommune();
 				}
 
-				InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, ctb.getId().intValue(), anneePeriode, dateReference,
-						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL,
+				final InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, ctb.getId().intValue(), anneePeriode, dateReference,
+						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL, pi.getCodeSegment(),
 						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 
 				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement, nombreAnnexesImmeuble);
@@ -211,9 +210,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 *
 	 * @param ctb     contribuable à tester
 	 * @param periode année fiscale
-	 * @return <code>true</code> si le contribuable a une période d'imposition en fin d'année fiscale, <code>false</code> sinon
+	 * @return la période d'imposition en fin de période fiscale s'il y en a une, <code>null</code> dans le cas contraire
 	 */
-	protected boolean isAssujettiEnFinDePeriode(Contribuable ctb, int periode) {
+	protected PeriodeImposition getPeriodeImpositionEnFinDePeriodeFiscale(Contribuable ctb, int periode) {
 		List<PeriodeImposition> list = null;
 		try {
 			list = PeriodeImposition.determine(ctb, periode);
@@ -225,11 +224,11 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		if (list != null) {
 			final PeriodeImposition periodeImposition = DateRangeHelper.rangeAt(list, date);
 			if (periodeImposition != null) {
-				return true;
+				return periodeImposition;
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**

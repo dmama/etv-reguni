@@ -57,6 +57,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	private final CategorieEnvoiDI categorieEnvoiDI;
 	private final Contribuable contribuable;
 	private final Qualification qualification;
+	private final Integer codeSegment;  // [SIFISC-2100]
 	private final TypeAdresseRetour adresseRetour; // [UNIREG-1741]
 
 	/**
@@ -276,6 +277,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		}
 
 		final Qualification qualification = determineQualification(contribuable, annee);
+		final Integer codeSegment = determineCodeSegment(contribuable, annee);
 		final TypeAdresseRetour adresseRetour = determineAdresseRetour(assujettissement);
 
 		/*
@@ -286,11 +288,11 @@ public class PeriodeImposition implements CollatableDateRange {
 				// [UNIREG-1976] diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles => déclaration ordinaire
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee);
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, optionnelle, false, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, optionnelle, false, causeFermeture);
 			}
 			else {
 				// Les diplomates Suisses basés à l'étranger ne reçoivent pas de déclaration, mais la période d'imposition existe bel et bien.
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.DIPLOMATE_SUISSE, contribuable, null, null, false, false, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.DIPLOMATE_SUISSE, contribuable, null, null, null, false, false, causeFermeture);
 			}
 		}
 
@@ -332,17 +334,17 @@ public class PeriodeImposition implements CollatableDateRange {
 				if (forsPeriode.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 					// Sourcier mixte hc avec activité indépendante => déclaration ordinaire
 					final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee);
-					return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, optionnelle, remplaceeParNote, causeFermeture);
+					return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, optionnelle, remplaceeParNote, causeFermeture);
 				}
 				else {
 					// Sourciers mixtes hors-canton avec immeuble => déclaration HC immeuble
-					return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.HC_IMMEUBLE, contribuable, qualification, TypeAdresseRetour.ACI, causeFermeture);
+					return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.HC_IMMEUBLE, contribuable, qualification, codeSegment, TypeAdresseRetour.ACI, causeFermeture);
 				}
 			}
 			else {
 				// Sourcier mixte vaudois => déclaration ordinaire
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, optionnelle, remplaceeParNote, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, optionnelle, remplaceeParNote, causeFermeture);
 			}
 		}
 
@@ -350,7 +352,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		 * Vaudois à la dépense
 		 */
 		if (assujettissement instanceof VaudoisDepense) {
-			return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.VAUDOIS_DEPENSE, contribuable, qualification, adresseRetour, causeFermeture);
+			return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.VAUDOIS_DEPENSE, contribuable, qualification, codeSegment, adresseRetour, causeFermeture);
 		}
 
 		/*
@@ -359,7 +361,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		if (assujettissement instanceof VaudoisOrdinaire || assujettissement instanceof Indigent) {
 			// Vaudois ordinaire => déclaration ordinaire
 			final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee);
-			return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, causeFermeture);
+			return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, causeFermeture);
 		}
 
 		/*
@@ -383,11 +385,11 @@ public class PeriodeImposition implements CollatableDateRange {
 			if (fors.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaires
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, false, remplaceeParNote, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, false, remplaceeParNote, causeFermeture);
 			}
 			else {
 				// Immeuble dans le canton => déclaration HC immeuble
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.HC_IMMEUBLE, contribuable, qualification, adresseRetour, false, remplaceeParNote, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.HC_IMMEUBLE, contribuable, qualification, codeSegment, adresseRetour, false, remplaceeParNote, causeFermeture);
 			}
 		}
 
@@ -400,14 +402,14 @@ public class PeriodeImposition implements CollatableDateRange {
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaire
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, causeFermeture);
 			}
 
 			final ForFiscalPrincipal dernierPrincipal = assujettissement.getFors().principauxDansLaPeriode.last();
 			if (dernierPrincipal.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
 				// Fonctionnaire international ou diplomate étranger propriétaire d'immeuble dans le canton => déclaration ordinaire
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, causeFermeture);
 			}
 
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
@@ -416,7 +418,7 @@ public class PeriodeImposition implements CollatableDateRange {
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
 				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee);
-				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, optionnelle, false, causeFermeture);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, codeSegment, adresseRetour, optionnelle, false, causeFermeture);
 			}
 
 			return null; // pas d'envoi de DI dans ce cas
@@ -447,6 +449,15 @@ public class PeriodeImposition implements CollatableDateRange {
 		return qualification;
 	}
 
+	private static Integer getCodeSegment(Contribuable contribuable, int anneePrecedente) {
+		Integer codeSegment = null;
+		final DeclarationImpotOrdinaire precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
+		if (precedente != null) {
+			codeSegment = precedente.getCodeSegment();
+		}
+		return codeSegment;
+	}
+
 	private static DeclarationImpotOrdinaire getDeclarationPrecedente(Contribuable contribuable, int anneePrecedente) {
 		DeclarationImpotOrdinaire precedenteDI = null;
 		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente, false);
@@ -467,6 +478,14 @@ public class PeriodeImposition implements CollatableDateRange {
 		}
 
 		return qualification;
+	}
+
+	public static Integer determineCodeSegment(Contribuable contribuable, int annee) {
+		Integer codeSegment = getCodeSegment(contribuable, annee - 1);
+		if (codeSegment == null) {
+			codeSegment = getCodeSegment(contribuable, annee - 2);
+		}
+		return codeSegment;
 	}
 
 	/**
@@ -546,19 +565,20 @@ public class PeriodeImposition implements CollatableDateRange {
 		return results;
 	}
 
-	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, TypeAdresseRetour adresseRetour,
-	                          CauseFermeture causeFermeture) {
-		this(dateDebut, dateFin, categorieEnvoiDI, contribuable, qualification, adresseRetour, false, false, causeFermeture);
+	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, Integer codeSegment,
+	                          TypeAdresseRetour adresseRetour, CauseFermeture causeFermeture) {
+		this(dateDebut, dateFin, categorieEnvoiDI, contribuable, qualification, codeSegment, adresseRetour, false, false, causeFermeture);
 	}
 
-	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, TypeAdresseRetour adresseRetour,
-	                          boolean optionnelle, boolean remplaceeParNote, CauseFermeture causeFermeture) {
+	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, Integer codeSegment,
+	                          TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceeParNote, CauseFermeture causeFermeture) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.debut = dateDebut;
 		this.fin = dateFin;
 		this.categorieEnvoiDI = categorieEnvoiDI;
 		this.contribuable = contribuable;
 		this.qualification = qualification;
+		this.codeSegment = codeSegment;
 		this.adresseRetour = adresseRetour;
 		this.optionnelle = optionnelle;
 		this.remplaceeParNote = remplaceeParNote;
@@ -618,6 +638,10 @@ public class PeriodeImposition implements CollatableDateRange {
 		return qualification;
 	}
 
+	public Integer getCodeSegment() {
+		return codeSegment;
+	}
+
 	public TypeAdresseRetour getAdresseRetour() {
 		return adresseRetour;
 	}
@@ -627,7 +651,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		final PeriodeImposition next = (PeriodeImposition) n;
 		final TypeAdresseRetour adresseRetour = next.adresseRetour; // [UNIREG-1741] en prenant le second type, on est aussi correct en cas de décès. 
 		Assert.isTrue(isCollatable(next));
-		return new PeriodeImposition(debut, next.getDateFin(), collateCategorieEnvoi(categorieEnvoiDI, next.categorieEnvoiDI), contribuable, qualification, adresseRetour,
+		return new PeriodeImposition(debut, next.getDateFin(), collateCategorieEnvoi(categorieEnvoiDI, next.categorieEnvoiDI), contribuable, qualification, codeSegment, adresseRetour,
 				optionnelle && next.optionnelle, remplaceeParNote && next.remplaceeParNote, next.causeFermeture);
 	}
 

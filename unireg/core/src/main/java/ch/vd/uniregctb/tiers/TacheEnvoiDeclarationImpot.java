@@ -80,6 +80,11 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	 */
 	private Qualification qualification;
 
+	/**
+	 * [SIFISC-2100] introduction des codes "segment" dès la DI 2011
+	 */
+	private Integer codeSegment;
+
 	private TypeAdresseRetour adresseRetour;
 
 	// Ce constructeur est requis par Hibernate
@@ -87,13 +92,14 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	}
 
 	public TacheEnvoiDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable,
-	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite) {
+	                                  TypeDocument typeDocument, Qualification qualification, Integer codeSegment, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite) {
 		super(etat, dateEcheance, contribuable, collectivite);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
 		this.qualification = qualification;
+		this.codeSegment = codeSegment;
 		this.adresseRetour = adresseRetour;
 	}
 
@@ -225,6 +231,15 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange {
 	 */
 	public void setQualification(Qualification theQualification) {
 		this.qualification = theQualification;
+	}
+
+	@Column(name = "CODE_SEGMENT")
+	public Integer getCodeSegment() {
+		return codeSegment;
+	}
+
+	public void setCodeSegment(Integer codeSegment) {
+		this.codeSegment = codeSegment;
 	}
 
 	@Column(name = "DECL_ADRESSE_RETOUR", length = LengthConstants.DI_ADRESSE_RETOUR)

@@ -258,7 +258,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.ctb = contribuable.getNumero();
 
 				TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 				ids.tache = tache.getId();
 				return null;
 			}
@@ -412,10 +412,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.marcId = marc.getNumero();
 
 				final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.tache1Id = tache1.getId();
 				final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.tache2Id = tache2.getId();
 				return null;
 			}
@@ -501,15 +501,15 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.jacquesId = jacques.getNumero();
 
 				final TacheEnvoiDeclarationImpot tacheMarc = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.tacheMarcId = tacheMarc.getId();
 
 				final TacheEnvoiDeclarationImpot tacheJean = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, colAdm);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, null, colAdm);
 				ids.tacheJeanId = tacheJean.getId();
 
 				final TacheEnvoiDeclarationImpot tacheJacques = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1,
-						1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques, null, colAdm);
+						1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques, null, null, colAdm);
 				ids.tacheJacquesId = tacheJacques.getId();
 
 				return null;
@@ -588,14 +588,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année 2008
 				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.premiereTacheId = premiereTache.getId();
 
 				// arrivée d'un événement de décès en retard -> fermeture du for principal au milieu 2008 et génération d'une nouvelle tâche correspondante
 				ffp.setDateFin(dateDeces);
 				ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
 				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.secondeTacheId = secondeTache.getId();
 
 				return null;
@@ -709,14 +709,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
 				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.premiereTacheId = premiereTache.getId();
 
 				// arrivée d'un événement d'annulation de décès en retard -> réouverture du for principal et génération d'une nouvelle tâche sur toute l'année 2008
 				ffp.setDateFin(null);
 				ffp.setMotifFermeture(null);
 				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.secondeTacheId = secondeTache.getId();
 
 				return null;
@@ -801,7 +801,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				return null;
 			}
 		});
@@ -864,7 +864,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						marc, null, colAdm);
+						marc, null, null, colAdm);
 				return null;
 			}
 		});
@@ -1129,7 +1129,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
@@ -1196,7 +1196,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
@@ -1262,7 +1262,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
@@ -1326,7 +1326,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// simulation du traitement du batch de détermination des DIs
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
@@ -1388,7 +1388,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 				final TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON,
-						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}
@@ -1441,7 +1441,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}
@@ -1493,7 +1493,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, colAdm);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}
@@ -1550,7 +1550,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				decl.setCodeControle(codeControle);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, colAdm);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}
@@ -1610,7 +1610,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 				// une déclaration sans code de contrôle
 				addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, colAdm);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}

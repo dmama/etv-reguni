@@ -284,7 +284,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
 	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
 
-		InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
+		final InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
 		return remplitEditiqueSpecifiqueDI(infoAdapter, typeFichierImpression, annexes, isFromBatch);
 	}
 
@@ -385,12 +385,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 	private void remplitDIBase(InformationsDocumentAdapter informationsDocument, DIBase di) throws EditiqueException {
-
 		remplitInfoDI(informationsDocument, di);
 	}
 
 	private void remplitDIRetour(InformationsDocumentAdapter infoAdapter, DIRetour di) throws EditiqueException {
-
 		remplitDIBase(infoAdapter, di);
 		remplitAdresseRetour(infoAdapter, di);
 		rempliFormuleAppel(infoAdapter, di);
@@ -644,7 +642,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 	private void remplitInfoDI(InformationsDocumentAdapter informationsDocument, DIBase di) throws EditiqueException {
 
-
 		final noNamespace.DIBase.InfoDI infoDI = di.addNewInfoDI();
 		final String codbarr = calculCodeBarre(informationsDocument);
 		final String delaiRetour = determineDelaiRetourImprime(informationsDocument);
@@ -673,10 +670,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			throw new EditiqueException(e);
 		}
 
-		final Integer anneeFiscale = informationsDocument.getAnnee();
+		final int anneeFiscale = informationsDocument.getAnnee();
 		infoDI.setANNEEFISCALE(Integer.toString(anneeFiscale));
-		//SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
-		if (anneeFiscale < 2011) {
+		// SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
+		if (anneeFiscale < DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			infoDI.setDESCOM(nomCommuneGestion);
 		}
 		infoDI.setDELAIRETOUR(delaiRetour);
@@ -697,8 +694,20 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		infoDI.setCODBARR(codbarr);
 
-		// TODO BNM (affecter une valeur sensée à ce code trame, qui est obligatoire)
-		infoDI.setCODETRAME("T");       // T comme TEST
+		// [SIFISC-2100] Le code trame doit être déduit du code "segment" de TAO et du type de la DI
+        final String codeTrame;
+		switch (informationsDocument.getTypeDocument()) {
+			case DECLARATION_IMPOT_HC_IMMEUBLE:
+				codeTrame = "H";
+		        break;
+		    case DECLARATION_IMPOT_DEPENSE:
+			    codeTrame = "D";
+			    break;
+		    default:
+			    codeTrame = Integer.toString(informationsDocument.codeSegment != null ? informationsDocument.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+			    break;
+		}
+		infoDI.setCODETRAME(codeTrame);
 	}
 
 	/**
@@ -719,28 +728,34 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private String calculNooid(InformationsDocumentAdapter infoAdapter) {
 
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-
 		final Integer officeImpotId = getNumeroOfficeImpotRetour(infoAdapter);
 		Assert.notNull(officeImpotId);
 
-		// [UNIREG-2965] nouveau mapping A, SA et SM (c'est lui le nouveau) -> XX-0, les autres : XX-1)
+		// [SIFISC-2100] Dès la DI 2011, la chaîne ne doit plus être déduite de la qualification, mais d'un code "segment" directement fourni par TAO
 		final int suffixe;
-		final Qualification qualification = infoAdapter.getQualification();
-		if (qualification != null) {
-			switch (qualification) {
-			case AUTOMATIQUE:
-			case SEMI_AUTOMATIQUE:
-			case SEMI_MANUEL:
-				suffixe = 0;
-				break;
-			default:
-				suffixe = 1;
-				break;
-			}
+		if (infoAdapter.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			suffixe = infoAdapter.codeSegment != null ? infoAdapter.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT;
 		}
 		else {
-			suffixe = 1;
+			// [UNIREG-2965] nouveau mapping A, SA et SM (c'est lui le nouveau) -> XX-0, les autres : XX-1)
+			final Qualification qualification = infoAdapter.getQualification();
+			if (qualification != null) {
+				switch (qualification) {
+				case AUTOMATIQUE:
+				case SEMI_AUTOMATIQUE:
+				case SEMI_MANUEL:
+					suffixe = 0;
+					break;
+				default:
+					suffixe = 1;
+					break;
+				}
+			}
+			else {
+				suffixe = 1;
+			}
 		}
+
 		return String.format("%02d-%d", officeImpotId, suffixe);
 	}
 
@@ -794,12 +809,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private String calculCodeBarre(InformationsDocumentAdapter informationsDocument) {
 
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer anneeDeclaration = informationsDocument.getAnnee();
+		final int anneeDeclaration = informationsDocument.getAnnee();
 		final Tiers tiers = informationsDocument.getTiers();
 		final Integer officeImpotId = getNumeroOfficeImpotRetour(informationsDocument);
 		Assert.notNull(officeImpotId);
 		final Integer idDocument = informationsDocument.getIdDocument();
-		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration.toString()
+		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration
 				+ StringUtils.leftPad(idDocument.toString(), 2, "0")
 				+ StringUtils.leftPad(officeImpotId.toString(), 2, "0");
 		return codbarr;

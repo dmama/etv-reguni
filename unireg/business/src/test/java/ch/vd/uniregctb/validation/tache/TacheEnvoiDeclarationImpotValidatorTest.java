@@ -29,7 +29,7 @@ public class TacheEnvoiDeclarationImpotValidatorTest extends AbstractValidatorTe
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, null, null, TypeAdresseRetour.CEDI, null);
+		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, null, null, null, TypeAdresseRetour.CEDI, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{

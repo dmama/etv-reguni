@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -33,6 +35,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -53,9 +56,9 @@ import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
 
 @SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
@@ -155,7 +158,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				eric, Qualification.AUTOMATIQUE, colAdm);
+				eric, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		/*
 		 * Contribuable devant être ignorés
@@ -187,12 +190,12 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt traitée
 		Contribuable tom = addNonHabitant("Tom", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				tom, Qualification.AUTOMATIQUE, colAdm);
+				tom, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance mais annulée
 		Contribuable tommy = addNonHabitant("Tommy", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
 		tache.setAnnule(true);
 
 		final List<Long> list = service.createListeIdsContribuables(2007);
@@ -753,7 +756,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2010, 1, 15), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		final List<PeriodeImposition> periodes = PeriodeImposition.determine(eric, 2009);
@@ -786,7 +789,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal ffp = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 15), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		// Nouvelle tâches avec assujettissement sur toute l'année 2007
@@ -1028,7 +1031,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 
 			Range range = new Range(date(2007, 7, 1), date(2007, 12, 31));
 			assertNull(service.checkExistenceTache(contribuable, range));
@@ -1038,7 +1041,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
-					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
+					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1053,7 +1056,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1069,7 +1072,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1243,7 +1246,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				eric, Qualification.AUTOMATIQUE, colAdm);
+				eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
@@ -1283,9 +1286,9 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				arnold, Qualification.AUTOMATIQUE, colAdm);
+				arnold, Qualification.AUTOMATIQUE, 0, colAdm);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, arnold,
-				Qualification.AUTOMATIQUE, colAdm);
+				Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
@@ -1326,7 +1329,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante déjà traitée
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
@@ -1366,7 +1369,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2007, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
@@ -1405,7 +1408,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, colAdm);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
@@ -1527,5 +1530,102 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		taches = tacheDAO.find(criterion);
 		assertEmpty(taches);
 
+	}
+
+	/**
+	 * On vérifie que le code de segmentation est bien transmis d'une ancienne DI vers la tâche d'émission de la DI suivante
+	 */
+	@Test
+	public void testCodeSegmentation() throws Exception {
+
+		// service civil vide
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		class Ids {
+			final long idSansDeclaration;
+			final long idAvecDeclarationSansCodeAssigne;
+			final long idAvecDeclarationEtCodeAssigne;
+
+			Ids(long idSansDeclaration, long idAvecDeclarationSansCodeAssigne, long idAvecDeclarationEtCodeAssigne) {
+				this.idSansDeclaration = idSansDeclaration;
+				this.idAvecDeclarationSansCodeAssigne = idAvecDeclarationSansCodeAssigne;
+				this.idAvecDeclarationEtCodeAssigne = idAvecDeclarationEtCodeAssigne;
+			}
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ppSansDeclaration = addNonHabitant("Turlu", "Tutu", null, Sexe.MASCULIN);
+				addForPrincipal(ppSansDeclaration, date(2011, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+
+				final PeriodeFiscale pf2010 = addPeriodeFiscale(2010);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2010);
+
+				final PersonnePhysique ppAvecDeclarationSansCodeAssigne = addNonHabitant("Tarla", "Tata", null, Sexe.FEMININ);
+				addForPrincipal(ppAvecDeclarationSansCodeAssigne, date(2010, 7, 1), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+				addDeclarationImpot(ppAvecDeclarationSansCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+
+				final PersonnePhysique ppAvecDeclarationEtCodeAssigne = addNonHabitant("Torlo", "Toto", null, Sexe.MASCULIN);
+				addForPrincipal(ppAvecDeclarationEtCodeAssigne, date(2010, 11, 7), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(ppAvecDeclarationEtCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				di.setCodeSegment(2);
+
+				addPeriodeFiscale(2011);
+				addCollAdm(MockOfficeImpot.OID_AIGLE);
+				addCollAdm(MockOfficeImpot.OID_MORGES);
+
+				return new Ids(ppSansDeclaration.getNumero(), ppAvecDeclarationSansCodeAssigne.getNumero(), ppAvecDeclarationEtCodeAssigne.getNumero());
+			}
+		});
+
+		final DeterminationDIsResults results = service.run(2011, date(2012, 1, 5), 1, null);
+		assertNotNull(results);
+		assertEquals(3, results.traites.size());
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// sans déclaration préalable
+				{
+					final List<Tache> taches = tacheDAO.find(ids.idSansDeclaration);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
+					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertNull(tacheDi.getCodeSegment());
+				}
+
+				// avec déclaration préalable, mais qui n'a pas de code segment
+				{
+					final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationSansCodeAssigne);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
+					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertNull(tacheDi.getCodeSegment());
+				}
+
+				// avec déclaration préalable, qui a un code segment assigné
+				{
+					final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationEtCodeAssigne);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
+					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertEquals(2, (int) tacheDi.getCodeSegment());
+				}
+
+				return null;
+			}
+		});
 	}
 }

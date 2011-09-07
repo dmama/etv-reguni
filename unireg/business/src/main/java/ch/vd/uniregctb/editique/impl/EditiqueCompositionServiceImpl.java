@@ -206,8 +206,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
-			EditiqueException {
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException {
 		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
 		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
 
@@ -215,12 +214,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
-		final TypFichierImpression.Document document =
-				impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
 		Assert.notNull(document);
 		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
-		final Integer annee = infosDocument.getAnnee();
+		final int annee = infosDocument.getAnnee();
 		final Integer idDoc = infosDocument.getIdDocument();
 		final Tiers tiers = infosDocument.getTiers();
 		final String nomDocument = impressionDIHelper.construitIdDocument(annee, idDoc, tiers);

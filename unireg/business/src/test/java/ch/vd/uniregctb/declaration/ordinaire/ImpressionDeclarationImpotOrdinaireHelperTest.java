@@ -258,7 +258,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 			final DI.InfoDI infoDICourante = diCourante.getInfoDI();
 
-			assertEquals(oidMorges + "-1", infoDICourante.getNOOID());
+			// à partir de 2011, le défaut pour le suffixe du code routage est 0, et plus 1 comme avant
+			assertEquals(oidMorges + "-0", infoDICourante.getNOOID());
 			assertEquals(numCtb + anneeCourante + "01" + oidMorges, infoDICourante.getCODBARR());
 
 		}

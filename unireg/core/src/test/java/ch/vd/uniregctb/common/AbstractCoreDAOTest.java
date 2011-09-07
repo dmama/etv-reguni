@@ -709,9 +709,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
 	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                     Contribuable contribuable, @Nullable Qualification qualification, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpot tache =
-				new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI, colAdm);
+	                                                     Contribuable contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
 		tache = hibernateTemplate.merge(tache);
 		return tache;
 	}

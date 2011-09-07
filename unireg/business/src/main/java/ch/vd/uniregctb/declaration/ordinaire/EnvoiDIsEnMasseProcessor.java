@@ -562,6 +562,7 @@ public class EnvoiDIsEnMasseProcessor {
 		di.setPeriode(cache.periode);
 		di.setTypeContribuable(tache.getTypeContribuable());
 		di.setQualification(tache.getQualification());
+		di.setCodeSegment(tache.getCodeSegment());
 		di.setModeleDocument(cache.modele);
 		di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
 		di.setTiers(contribuable);
