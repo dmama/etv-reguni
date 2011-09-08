@@ -30,9 +30,9 @@ TMP_DIR=$(mktemp -d)
 
 MACHINE=logapp.etat-de-vaud.ch
 URL="https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/$LUCENE_DIR/"
-wget --no-check-certificate "$URL" -O - | grep "<a href=" | grep -v "Parent Directory" | while IFS="<>" read DUMMY1 HREF DUMMY2; do
+wget --no-proxy --no-check-certificate "$URL" -O - | grep "<a href=" | grep -v "Parent Directory" | while IFS="<>" read DUMMY1 HREF DUMMY2; do
 	FILENAME=$(echo "$HREF" | sed -e 's/^.*href=.\(.*\).$/\1/')
-	(cd "$TMP_DIR" && wget --no-check-certificate "$URL$FILENAME")
+	(cd "$TMP_DIR" && wget --no-proxy --no-check-certificate "$URL$FILENAME")
 done
 
 echo "Génération du fichier d'archive $DEST_FILE..." >&2

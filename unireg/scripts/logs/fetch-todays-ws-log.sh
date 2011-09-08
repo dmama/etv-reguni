@@ -39,7 +39,7 @@ function fetch() {
 		fi
 	fi
 
-	wget --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/$FILE
+	wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/$FILE
 }
 
 for LOG in $FILES; do

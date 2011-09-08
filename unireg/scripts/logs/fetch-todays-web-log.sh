@@ -54,9 +54,9 @@ function fetch() {
         fi
 
 	if [ -n "$UNE_SEULE_WEB_APP" ]; then
-		wget --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/logs/$FILE
+		wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/logs/$FILE
 	else
-		wget --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/$FILE
+		wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/$FILE
 	fi
 }
 

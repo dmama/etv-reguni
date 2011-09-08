@@ -24,7 +24,7 @@ fi
 
 # l'url du répertoire dont il faut récupérer les noms de fichiers doit être en premier paramètre
 function fetch-filenames() {
-	wget --no-check-certificate "$1" -O - 2> /dev/null | grep "<a href=" | grep -v "Parent Directory" | while IFS="<>" read DUMMY1 HREF DUMMY2; do
+	wget --no-proxy --no-check-certificate "$1" -O - 2> /dev/null | grep "<a href=" | grep -v "Parent Directory" | while IFS="<>" read DUMMY1 HREF DUMMY2; do
 		echo "$HREF"
 	done | sed -e 's/^.*href=.\(.*\).$/\1/'
 }
@@ -51,7 +51,7 @@ recursive-filenames "$URL" | while read FILE; do
 		mkdir -p "$RELATIVE_DIR"
 	fi
 	if [ ! -e "$RELATIVE_FILENAME" ]; then
-		wget --no-check-certificate "$FILE" -O "$RELATIVE_FILENAME"
+		wget --no-proxy --no-check-certificate "$FILE" -O "$RELATIVE_FILENAME"
 		echo "Fichier $RELATIVE_FILENAME récupéré"
 	else
 		echo "Fichier $RELATIVE_FILENAME déjà connu" >&2

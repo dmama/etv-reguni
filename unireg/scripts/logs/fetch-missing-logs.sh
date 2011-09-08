@@ -38,7 +38,7 @@ function fetch-logs() {
 		FILE=$PREFIXE_FILE$SUFFIXE_DATE_COURANTE
 		if [ ! -e "$FILE" -a ! -e "$FILE.lzma" ]; then
 			echo "Fichier $FILE n'existe pas encore, allons le chercher"
-			wget --no-check-certificate $PREFIXE_URL$FILE -O "$FILE"
+			wget --no-proxy --no-check-certificate $PREFIXE_URL$FILE -O "$FILE"
 			if [ "$?" -ne 0 ]; then
 				rm -f "$FILE"
 			fi
