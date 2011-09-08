@@ -66,6 +66,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -97,6 +98,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected GlobalTiersIndexer globalTiersIndexer;
 	protected GlobalTiersSearcher globalTiersSearcher;
 	private TacheSynchronizerInterceptor tacheSynchronizer;
+	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -106,6 +108,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
 		tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
 		tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		super.runOnSetUp();
 	}
 
@@ -151,20 +154,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		globalTiersIndexer.overwriteIndex();
 	}
 
-	protected abstract class TestHibernateCallback<T> implements HibernateCallback<T> {
-		public abstract T testInHibernate(Session session) throws Exception;
-
-		@Override
-		public final T doInHibernate(Session session) throws HibernateException, SQLException {
-			try {
-				return testInHibernate(session);
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
 	protected <T> T doInTransactionAndSession(final TransactionCallback<T> action) throws Exception {
 		return doInTransaction(new TransactionCallback<T>() {
 			@Override
@@ -191,6 +180,58 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 				});
 			}
 		});
+	}
+
+	protected static interface ExecuteCallback<T> {
+		T execute() throws Exception;
+	}
+
+	/**
+	 * Exécute une portion de code avec la validation des objets métiers désactivée. Cette méthode permet typiquement de stocker des données dans le base de données qui ne valident plus avec les règles
+	 * de validation actuelles, mais qui validaient par le passé, et donc qui peuvent encore exister actuellement sous cette forme dans la base de données.
+	 *
+	 * @param action l'action qui à effecuter
+	 * @param <T>    le type d'objet retourné par l'action
+	 * @return l'objet retourné par l'action
+	 * @throws Exception en case d'exception
+	 */
+	protected <T> T doWithoutValidation(final ExecuteCallback<T> action) throws Exception {
+		validationInterceptor.setEnabled(false);
+		try {
+			return action.execute();
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
+	}
+
+	/**
+	 * Exécute une portion de code dans une nouvelle transaction et une nouvelle session hibernate tout en désactivant la validation des objets métiers. Cette méthode combine donc les méthodes
+	 * #doInNewTransactionAndSession et #doWithoutValidation en une.
+	 *
+	 * @param action l'action à effectuer
+	 * @param <T>    le type d'objet retourné par l'action
+	 * @return l'objet retourné par l'action
+	 * @throws Exception en case d'exception
+	 */
+	protected <T> T doInNewTransactionAndSessionWithoutValidation(final TransactionCallback<T> action) throws Exception {
+		validationInterceptor.setEnabled(false);
+		try {
+			return doInNewTransaction(new TransactionCallback<T>() {
+				@Override
+				public T doInTransaction(final TransactionStatus status) {
+					return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+						@Override
+						public T doInHibernate(Session session) throws HibernateException, SQLException {
+							return action.doInTransaction(status);
+						}
+					});
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 	}
 
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {

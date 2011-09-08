@@ -32,7 +32,6 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -41,17 +40,9 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<PersonnePhysique> {
 
-	private ValidationInterceptor validationInterceptor;
-
 	@Override
 	protected String getValidatorBeanName() {
 		return "personnePhysiqueValidator";
-	}
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 	}
 
 	@Test
@@ -911,32 +902,26 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			}
 		});
 
-		validationInterceptor.setEnabled(false);
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));
-					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
+				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));
+				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
 
-					final ValidationResults vr = validate(pupille);
-					assertTrue(vr.hasErrors());
+				final ValidationResults vr = validate(pupille);
+				assertTrue(vr.hasErrors());
 
-					assertEquals(1, vr.getErrors().size());
-					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+				assertEquals(1, vr.getErrors().size());
+				assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
 
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -967,35 +952,29 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			}
 		});
 
-		validationInterceptor.setEnabled(false);
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-					final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
-					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+				final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));         // |-----------------------|
-					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));           //                      |-----------------|
-					addConseilLegal(pupille, conseiller, date(2001, 6, 1), null);                   //                                     |---------------...
+				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));         // |-----------------------|
+				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));           //                      |-----------------|
+				addConseilLegal(pupille, conseiller, date(2001, 6, 1), null);                   //                                     |---------------...
 
-					final ValidationResults vr = validate(pupille);
-					assertTrue(vr.hasErrors());
+				final ValidationResults vr = validate(pupille);
+				assertTrue(vr.hasErrors());
 
-					assertEquals(2, vr.getErrors().size());
-					assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
-					assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
+				assertEquals(2, vr.getErrors().size());
+				assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+				assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
 
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -1026,36 +1005,30 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			}
 		});
 
-		validationInterceptor.setEnabled(false);
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-					final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-					final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
-					final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+				final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-					addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));                 // |----------------------------|
-					addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));                   //                          |--------------------|
-					addConseilLegal(pupille, conseiller, date(2000, 6, 1), date(2001, 3, 31));              //                |---------------------|
-					addConseilLegal(pupille, tuteur, date(2001, 5, 1), null);                               //                                            |-----------...
+				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));                 // |----------------------------|
+				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));                   //                          |--------------------|
+				addConseilLegal(pupille, conseiller, date(2000, 6, 1), date(2001, 3, 31));              //                |---------------------|
+				addConseilLegal(pupille, tuteur, date(2001, 5, 1), null);                               //                                            |-----------...
 
-					final ValidationResults vr = validate(pupille);
-					assertTrue(vr.hasErrors());
+				final ValidationResults vr = validate(pupille);
+				assertTrue(vr.hasErrors());
 
-					assertEquals(2, vr.getErrors().size());
-					assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
-					assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
+				assertEquals(2, vr.getErrors().size());
+				assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+				assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
 
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return null;
+			}
+		});
 	}
 
 	// [SIFISC-719] on vérifie que les rapports de représentation conventionnels ne se chevauchent pas

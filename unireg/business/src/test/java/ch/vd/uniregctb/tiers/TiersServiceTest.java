@@ -58,7 +58,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
@@ -78,7 +77,6 @@ public class TiersServiceTest extends BusinessTest {
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
-	private ValidationInterceptor validationInterceptor;
 	private ValidationService validationService;
 	private EvenementFiscalDAO evenementFiscalDAO;
 
@@ -89,7 +87,6 @@ public class TiersServiceTest extends BusinessTest {
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		validationService = getBean(ValidationService.class, "validationService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
@@ -3220,30 +3217,24 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		try {
-			// on désactive temporairement la validation pour permettre de sauver un ménage-commun qui ne valide pas (manque les rapports d'appartenance ménage)
-			validationInterceptor.setEnabled(false);
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		// on désactive temporairement la validation pour permettre de sauver un ménage-commun qui ne valide pas (manque les rapports d'appartenance ménage)
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					// Crée un non-habitant tout nu
-					PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
-					ids.paul = paul.getId();
+				// Crée un non-habitant tout nu
+				PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
+				ids.paul = paul.getId();
 
-					// Crée un ménage commun avec un for principal ouvert
-					MenageCommun mc = new MenageCommun();
-					mc = hibernateTemplate.merge(mc);
-					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-					ids.mc = mc.getId();
+				// Crée un ménage commun avec un for principal ouvert
+				MenageCommun mc = new MenageCommun();
+				mc = hibernateTemplate.merge(mc);
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				ids.mc = mc.getId();
 
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return null;
+			}
+		});
 
 		// On vérifie l'état initial : paul doit valider mais pas le ménage commun
 		final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paul);

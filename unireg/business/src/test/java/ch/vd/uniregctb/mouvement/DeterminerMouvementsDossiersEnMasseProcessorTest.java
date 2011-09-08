@@ -24,14 +24,12 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 @SuppressWarnings({"JavaDoc"})
 public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTest {
 
 	private TiersDAO tiersDAO;
 	private MouvementDossierDAO mouvementDossierDAO;
-	private ValidationInterceptor validationInterceptor;
 
 	private static final long noIndMarieParlotte = 1235125L;
 	private static final RegDate dateNaissance = RegDate.get(1970, 3, 12);
@@ -53,7 +51,6 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		mouvementDossierDAO = getBean(MouvementDossierDAO.class, "mouvementDossierDAO");
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -489,25 +486,19 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 
-		final long numero;
-		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-		try {
-			numero = doInNewTransactionAndSession(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
-					pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+		// [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+		final long numero = doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
+				pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
 
-					final ForFiscalPrincipal ffp = addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie);
-					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
 
-					return pp.getNumero();
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return pp.getNumero();
+			}
+		});
 
 		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, archivesSeulement, null);
 

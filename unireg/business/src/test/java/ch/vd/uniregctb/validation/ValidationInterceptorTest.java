@@ -30,13 +30,11 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class ValidationInterceptorTest extends BusinessTest {
 
-	private ValidationInterceptor validationInterceptor;
 	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		validationService = getBean(ValidationService.class, "validationService");
 	}
 
@@ -206,27 +204,21 @@ public class ValidationInterceptorTest extends BusinessTest {
 	 */
 	private Long addInvalidePP() throws Exception {
 
-		try {
-			validationInterceptor.setEnabled(false); // on désactive temporairement l'interception pour permettre de sauver un tiers invalide
+		// on désactive temporairement l'interception pour permettre de sauver un tiers invalide
+		return doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
+				jean.setNom(null); // le nom est obligatoire
 
-			return doInNewTransaction(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
-					jean.setNom(null); // le nom est obligatoire
+				// On s'assure que le tiers est bien invalide
+				final ValidationResults results = validationService.validate(jean);
+				Assert.assertEquals(1, results.errorsCount());
+				Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
 
-					// On s'assure que le tiers est bien invalide
-					final ValidationResults results = validationService.validate(jean);
-					Assert.assertEquals(1, results.errorsCount());
-					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
-
-					return jean.getId();
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return jean.getId();
+			}
+		});
 	}
 
 	@Test

@@ -31,7 +31,6 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
@@ -39,7 +38,6 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 	private DeclarationImpotOrdinaireDAO diDao;
 	private DeclarationImpotService diService;
 	private DelaisService delaisService;
-	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -48,7 +46,6 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		delaisService = getBean(DelaisService.class, "delaisService");
 		diService = getBean(DeclarationImpotService.class, "diService");
 		diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager);
 	}
 
@@ -607,37 +604,31 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 			}
 		}
 
-		final Ids ids;
-		validationInterceptor.setEnabled(false); // nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
-		try {
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
+		// pas de validation : nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
 
-					addCollAdm(MockCollectiviteAdministrative.CEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-					final MenageCommun mc = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
-					addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
+				final MenageCommun mc = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
+				addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
 
-					final RegDate dateEmission = RegDate.get(2009, 1, 15);
-					final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
-					final PeriodeFiscale periode = addPeriodeFiscale(2008);
-					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					declaration.addEtat(new EtatDeclarationEmise(dateEmission));
+				final RegDate dateEmission = RegDate.get(2009, 1, 15);
+				final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+				final PeriodeFiscale periode = addPeriodeFiscale(2008);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
 
-					final DelaiDeclaration delai = new DelaiDeclaration();
-					delai.setDateDemande(dateEmission);
-					delai.setDelaiAccordeAu(dateDelaiInitial);
-					declaration.addDelai(delai);
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(dateDelaiInitial);
+				declaration.addDelai(delai);
 
-					return new Ids(mc.getId(), declaration.getId());
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+				return new Ids(mc.getId(), declaration.getId());
+			}
+		});
 
 		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
 		Assert.assertNotNull(results);

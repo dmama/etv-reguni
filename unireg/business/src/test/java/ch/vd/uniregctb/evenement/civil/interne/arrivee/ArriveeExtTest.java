@@ -51,7 +51,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -62,14 +61,6 @@ import static junit.framework.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
-
-	private ValidationInterceptor validationInterceptor;
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
-	}
 
 	public ArriveeExtTest() {
 		setWantIndexation(true);
@@ -2420,23 +2411,17 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-		try {
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique habitant = addHabitant(noTiers, noInd);
-					ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
-					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-					ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
-					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				return null;
+			}
+		});
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 
@@ -2680,23 +2665,17 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		validationInterceptor.setEnabled(false); // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-		try {
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique habitant = addHabitant(noTiers, noInd);
-					ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-					ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
-					ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				return null;
+			}
+		});
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 

@@ -58,7 +58,6 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -72,13 +71,11 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 	private PartyWebService service;
 	private UserLogin login;
-	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		service = getBean(PartyWebService.class, "tiersService3Impl");
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		login = new UserLogin("iamtestuser", 22);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 	}
@@ -335,24 +332,19 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					ch.vd.uniregctb.tiers.PersonnePhysique tiia = addHabitant(noIndividuTiia);
-					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-					ids.tiia = tiia.getId();
-					ch.vd.uniregctb.tiers.PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-					ids.sylvie = sylvie.getId();
-					addCuratelle(tiia, sylvie, null, null);
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+		// pas de validation : pour permettre l'ajout d'une curatelle avec date de début nulle
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				ch.vd.uniregctb.tiers.PersonnePhysique tiia = addHabitant(noIndividuTiia);
+				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+				ids.tiia = tiia.getId();
+				ch.vd.uniregctb.tiers.PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+				ids.sylvie = sylvie.getId();
+				addCuratelle(tiia, sylvie, null, null);
+				return null;
+			}
+		});
 
 		{
 			final GetPartyRequest params = new GetPartyRequest();
@@ -486,46 +478,39 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final int annee = 2010;
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
-		validationInterceptor.setEnabled(false);
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					final RegDate debutAnnee = date(annee, 1, 1);
-					final RegDate finAnnee = date(annee, 12, 31);
+				final RegDate debutAnnee = date(annee, 1, 1);
+				final RegDate finAnnee = date(annee, 12, 31);
 
-					final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
-					pp.setNom(null);        // <-- c'est là le problème de validation
+				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				pp.setNom(null);        // <-- c'est là le problème de validation
 
-					addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-					addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
-							MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
+				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
+						MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
 
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-					addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-					final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, finAnnee, TypeContribuable.HORS_SUISSE, md);
-					final RegDate dateEmission = date(annee + 1, 1, 11);
-					di.addEtat(new EtatDeclarationEmise(dateEmission));
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, finAnnee, TypeContribuable.HORS_SUISSE, md);
+				final RegDate dateEmission = date(annee + 1, 1, 11);
+				di.addEtat(new EtatDeclarationEmise(dateEmission));
 
-					final DelaiDeclaration delai = new DelaiDeclaration();
-					delai.setDateTraitement(dateEmission);
-					delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
-					di.addDelai(delai);
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateTraitement(dateEmission);
+				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+				di.addDelai(delai);
 
-					ids.ppId = pp.getNumero();
-					ids.diId = di.getId();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
 
-					return null;
-				}
-			});
-		}
-		finally {
-			// maintenant, on peut réactiver la validation
-			validationInterceptor.setEnabled(true);
-		}
+				return null;
+			}
+		});
 
 		// quittancement de la DI
 		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
@@ -590,51 +575,44 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final List<Ids> liste = new ArrayList<Ids>();
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
-		validationInterceptor.setEnabled(false);
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-					addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-					final ch.vd.uniregctb.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
-					final ch.vd.uniregctb.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.uniregctb.type.Sexe.FEMININ);
+				final ch.vd.uniregctb.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.uniregctb.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.uniregctb.type.Sexe.FEMININ);
 
-					final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, finAnnee, pf, md);
-					final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, finAnnee, pf, md);
+				final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, finAnnee, pf, md);
+				final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, finAnnee, pf, md);
 
-					liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
-					liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
-					return null;
-				}
+				liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
+				liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
+				return null;
+			}
 
-				private ch.vd.uniregctb.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.uniregctb.type.Sexe sexe) {
-					final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
-					addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-					addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
-							MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
-					return pp;
-				}
+			private ch.vd.uniregctb.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.uniregctb.type.Sexe sexe) {
+				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
+				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
+						MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
+				return pp;
+			}
 
-				private DeclarationImpotOrdinaire addDi(ch.vd.uniregctb.tiers.Contribuable ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
-					final DeclarationImpotOrdinaire di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
-					final RegDate dateEmission = date(annee + 1, 1, 11);
-					di.addEtat(new EtatDeclarationEmise(dateEmission));
-					final DelaiDeclaration delai = new DelaiDeclaration();
-					delai.setDateTraitement(dateEmission);
-					delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
-					di.addDelai(delai);
-					return di;
-				}
-			});
-		}
-		finally {
-			// maintenant, on peut réactiver la validation
-			validationInterceptor.setEnabled(true);
-		}
+			private DeclarationImpotOrdinaire addDi(ch.vd.uniregctb.tiers.Contribuable ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
+				final RegDate dateEmission = date(annee + 1, 1, 11);
+				di.addEtat(new EtatDeclarationEmise(dateEmission));
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateTraitement(dateEmission);
+				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+				di.addDelai(delai);
+				return di;
+			}
+		});
 
 		// quittancement des DI
 		final ReturnTaxDeclarationsRequest quittances = new ReturnTaxDeclarationsRequest();

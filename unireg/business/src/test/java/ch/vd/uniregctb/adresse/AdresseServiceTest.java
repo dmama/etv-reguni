@@ -45,7 +45,6 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
 import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdressesEquals;
@@ -62,7 +61,6 @@ public class AdresseServiceTest extends BusinessTest {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
-	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -70,7 +68,6 @@ public class AdresseServiceTest extends BusinessTest {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 
 		// Pas d'indexation parce qu'on teste des cas qui font peter l'indexation
 		// et qui pourrissent les logs!
@@ -7049,24 +7046,18 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
-		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					PersonnePhysique tiia = addHabitant(noIndividuTiia);
-					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-					ids.tiia = tiia.getId();
-					PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-					ids.sylvie = sylvie.getId();
-					addCuratelle(tiia, sylvie, null, null);
-					return null;
-				}
-			});
-		}
-		finally {
-			validationInterceptor.setEnabled(true);
-		}
+		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() { // pas de validation : pour permettre l'ajout d'une curatelle avec date de début nulle
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique tiia = addHabitant(noIndividuTiia);
+				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+				ids.tiia = tiia.getId();
+				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+				ids.sylvie = sylvie.getId();
+				addCuratelle(tiia, sylvie, null, null);
+				return null;
+			}
+		});
 
 		final PersonnePhysique tiia = (PersonnePhysique) tiersDAO.get(ids.tiia);
 		assertNotNull(tiia);
