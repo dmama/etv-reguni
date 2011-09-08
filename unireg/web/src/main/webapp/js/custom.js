@@ -94,6 +94,14 @@ var Modifier = {
 	 	var count = theForm.elements.length;
 	    var element;
 	    var self = this;
+
+	    $(theForm).submit(function(ev) {
+			ev = ev || window.event;
+			if (!self.submitSaveConfirmation(this)) {
+				return Event.stop(ev);
+			}
+	    });
+
 	    for (var i = 0; i < count; i++) {	
 	    	var element =  theForm.elements[i];        
 	        var tagName = element.tagName.toLowerCase();
@@ -118,12 +126,6 @@ var Modifier = {
 	            else if (type == "submit") {
 	            	if (element.name === this.submitSaveName) {
 	            		element.disabled = true;
-		            	$(element).click(function(ev) {
-							ev = ev || window.event;
-							if (!self.submitSaveConfirmation(this)) {
-								return Event.stop(ev);
-							}
-		                });
 	                }
 	            }
 	            else if (type == "reset") {
@@ -187,13 +189,12 @@ var Modifier = {
 			var elementName = "__confirmed_" + this.submitSaveName;
 			var confirmedSave = form.elements[elementName];
 			if (confirmedSave == null) {
-				confirmedSave = document.createElement("INPUT");
-				confirmedSave.type = "hidden";
-				confirmedSave.name = elementName;
-				form.appendChild(confirmedSave);
+				confirmedSave = $("<input name='" + elementName + "' type='hidden' value='yes'/>");
+				$(confirmedSave).appendTo(form);
 			}
-			confirmedSave.value = "yes";
-			form.submit();
+			else {
+				confirmedSave.value = "yes";
+			}
 			return true;
 	  	}
 	  	else {
