@@ -67,8 +67,8 @@ SRV_LONG="$TMP_DIR/srv-access.log"
 # sur le fichier ws-access, on cherche les temps de réponse supérieurs à la minute
 cat_file "$WS_ACCESS_FILE" | grep "(\([6-9][0-9]\{4\}\|[1-9][0-9]\{5,\}\) ms)" > "$WS_LONG"
 
-# sur le fichier srv-access, on cherche les temps de réponse supérieurs à 30 secondes
-cat_file "$SRV_ACCESS_FILE" | grep "(\([3-9][0-9]\{4\}\|[1-9][0-9]\{5,\}\) ms)" > "$SRV_LONG"
+# sur le fichier srv-access, on cherche les temps de réponse supérieurs à 10 secondes
+cat_file "$SRV_ACCESS_FILE" | grep "(\([1-9][0-9]\{4\}\|[1-9][0-9]\{5,\}\) ms)" > "$SRV_LONG"
 
 if [ -s "$WS_LONG" -o -s "$SRV_LONG" ]; then
 
@@ -85,7 +85,7 @@ if [ -s "$WS_LONG" -o -s "$SRV_LONG" ]; then
 
 			$(cat "$WS_LONG")
 
-			2. Partie services externes (temps supérieurs à la demi-minute)
+			2. Partie services externes (temps supérieurs à 10 secondes)
 
 			$(cat "$SRV_LONG")
 			
