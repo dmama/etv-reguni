@@ -81,10 +81,10 @@
 
 	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
-			<unireg:regdate regdate="${sieges.dateDebut}"/>
+			<unireg:regdate regdate="${formesJuridiques.dateDebut}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.date.fin">
-			<unireg:regdate regdate="${sieges.dateFin}"/>
+			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.forme.juridique" property="code"/>
 	</display:table>
