@@ -358,16 +358,24 @@ public class Depart extends Mouvement {
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-		/*
-		 * Validation des adresses
-		 */
-		if (getType() == TypeEvenementCivil.DEPART_COMMUNE) {
-			Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
-			validateDepartAdressePrincipale(this, erreurs);
+
+		// [SIFISC-1918] Pour un départ, si la date est à la date du jour, on doit partir en erreur (l'événement sera re-traité plus tard)
+		// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)
+		if (getDate().equals(RegDate.get())) {
+			erreurs.add(new EvenementCivilExterneErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet"));
 		}
-		else { // depart.getType() == TypeEvenementCivil.DEPART_SECONDAIRE
-			Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
-			validateDepartAdresseSecondaire(this, erreurs);
+		else {
+			/*
+			 * Validation des adresses
+			 */
+			if (getType() == TypeEvenementCivil.DEPART_COMMUNE) {
+				Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
+				validateDepartAdressePrincipale(this, erreurs);
+			}
+			else { // depart.getType() == TypeEvenementCivil.DEPART_SECONDAIRE
+				Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
+				validateDepartAdresseSecondaire(this, erreurs);
+			}
 		}
 
 		/*

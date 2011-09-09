@@ -47,6 +47,7 @@ import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
@@ -1315,11 +1316,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(ff);
 		assertEquals(3, ff.size());
 		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
-				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
+		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
 		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
-				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
+		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
 		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, ff.get(2));
+		                   ModeImposition.ORDINAIRE, ff.get(2));
 	}
 
 	/**
@@ -1414,6 +1415,108 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				ModeImposition.ORDINAIRE, ff.get(1));
 	}
 
+	@Test
+	public void testDepartAujourdhui() throws Exception {
+
+		final long noIndividu = 167452347546L;
+		final RegDate dateOuvertureFor = date(1999, 9, 12);
+		final RegDate today = RegDate.get();
+
+		// préparation civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1970, 4, 12), "Petipoint", "Justin", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, dateOuvertureFor, today);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, today.getOneDayAfter(), null);
+			}
+		});
+
+		// préparation fiscale
+		final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateOuvertureFor, MotifFor.INDETERMINE, MockCommune.Aubonne);
+				return pp.getNumero();
+			}
+		});
+
+		// envoi de l'événement de départ (aujourd'hui)
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFSEtendu());
+				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				handleDepart(depart, erreurs, warnings);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilExterneErreur erreur = erreurs.get(0);
+				assertEquals("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateOuvertureFor, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartHier() throws Exception {
+
+		final long noIndividu = 167452347546L;
+		final RegDate dateDepart = RegDate.get().getOneDayBefore();
+
+		// préparation civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1970, 4, 12), "Petipoint", "Justin", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1999, 9, 12), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		// préparation fiscale
+		final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(1999, 9, 12), MotifFor.INDETERMINE, MockCommune.Aubonne);
+				return pp.getNumero();
+			}
+		});
+
+		// envoi de l'événement de départ (hier)
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFSEtendu());
+				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
+				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				handleDepart(depart, erreurs, warnings);
+				assertEquals(0, erreurs.size());
+				assertEquals(0, warnings.size());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
 	/**
 	 * vérifie et traite un depart
 	 *
@@ -1463,8 +1566,12 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		depart.checkCompleteness(erreurs, warnings);
-		depart.validate(erreurs, warnings);
-		depart.handle(warnings);
+		if (erreurs.size() == 0) {
+			depart.validate(erreurs, warnings);
+			if (erreurs.size() == 0) {
+				depart.handle(warnings);
+			}
+		}
 	}
 
 	public static boolean findEvenementFermetureFor(Collection<EvenementFiscal> lesEvenements, Depart depart) {
