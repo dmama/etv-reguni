@@ -141,14 +141,14 @@ public interface DeclarationImpotService {
 	void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement);
 
 	/**
-	 * Retour d'une DI
+	 * Quittancement d'une DI
 	 *
 	 * @param contribuable
 	 * @param di
 	 * @param dateEvenement
 	 * @return
 	 */
-	DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
 	 * Annulation d'une DI

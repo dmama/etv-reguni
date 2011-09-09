@@ -665,8 +665,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
 		}
 
+		// TODO JDE : envoi du message de quittance au BAM
+
 		// La déclaration est correcte, on la quittance
-		context.diService.retourDI(ctb, declaration, dateRetour);
+		context.diService.quittancementDI(ctb, declaration, dateRetour);
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.OK);

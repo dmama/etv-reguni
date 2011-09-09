@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.cedi;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -79,7 +80,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementCediHandler() {
 			@Override
-			public void onEvent(EvenementCedi event) {
+			public void onEvent(EvenementCedi event, Map<String, String> customHeaders) {
 				events.add(event);
 			}
 		});
@@ -121,7 +122,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementCediHandler() {
 			@Override
-			public void onEvent(EvenementCedi event) {
+			public void onEvent(EvenementCedi event, Map<String, String> customHeaders) {
 				events.add(event);
 			}
 		});

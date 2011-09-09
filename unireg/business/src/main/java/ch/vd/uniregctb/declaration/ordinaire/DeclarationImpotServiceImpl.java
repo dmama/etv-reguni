@@ -380,7 +380,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	/**
-	 * Retour d'une DI
+	 * Quittancement d'une DI
 	 *
 	 * @param contribuable
 	 * @param di
@@ -388,7 +388,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @return
 	 */
 	@Override
-	public DeclarationImpotOrdinaire retourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement) {
+	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement) {
 		if (!dateEvenement.equals(di.getDateRetour())) {
 			if (di.getDateRetour() != null) {
 				di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).setAnnule(true);

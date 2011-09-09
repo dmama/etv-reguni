@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.cedi;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.BamEventSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.MotifFor;
@@ -40,6 +42,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		service.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
 		service.setPeriodeFiscaleDAO(getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"));
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
+		service.setBamEventSender(getBean(BamEventSender.class, "bamEventSender"));
 	}
 
 	@Test
@@ -86,7 +89,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan);
+				service.onRetourDI(scan, Collections.<String, String>emptyMap());
 				return null;
 			}
 		});
@@ -161,7 +164,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan);
+				service.onRetourDI(scan, Collections.<String, String>emptyMap());
 				return null;
 			}
 		});

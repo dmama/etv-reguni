@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -17,6 +18,7 @@ import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 public class EvenementCediListenerImpl extends TransactionalEsbMessageListener implements MonitorableMessageListener {
@@ -50,7 +52,7 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 			final String businessId = message.getBusinessId();
 			LOGGER.info("Arrivée du message CEDI n°" + businessId);
 			final String body = message.getBodyAsString();
-			onMessage(body, businessId);
+			onMessage(body, businessId, EsbMessageHelper.extractCustomHeaders(message));
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
@@ -79,9 +81,9 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 		}
 	}
 
-	private void onMessage(String message, String businessId) throws XmlException, EvenementCediException {
+	private void onMessage(String message, String businessId, Map<String, String> customHeaders) throws XmlException, EvenementCediException {
 		final EvenementCedi event = parse(message, businessId);
-		handler.onEvent(event);
+		handler.onEvent(event, customHeaders);
 	}
 
 	private EvenementCedi parse(String message, String businessId) throws XmlException {

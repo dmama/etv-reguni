@@ -9,6 +9,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageListener implements MonitorableMessageListener {
@@ -60,7 +62,7 @@ public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageLis
 		try {
 			final String businessId = message.getBusinessId();
 			LOGGER.info("Arrivée de l'évènement de Déclaration n°" + businessId);
-			onMessage(message);
+			onMessage(message, EsbMessageHelper.extractCustomHeaders(message));
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
@@ -89,9 +91,9 @@ public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageLis
 		}
 	}
 
-	private void onMessage(EsbMessage message) throws Exception {
+	private void onMessage(EsbMessage message, Map<String, String> customHeaders) throws Exception {
 		final EvenementDeclaration event = parse(message.getBodyAsSource(), message.getBusinessId());
-		handler.onEvent(event);
+		handler.onEvent(event, customHeaders);
 	}
 
 	private EvenementDeclaration parse(Source message, String businessId) throws JAXBException, SAXException, IOException {

@@ -365,7 +365,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testRetourDI() throws Exception {
+	public void testQuittancementDI() throws Exception {
 		class Ids {
 			public long ericId;
 		}
@@ -407,7 +407,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = RegDate.get(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.retourDI(eric, di, dateEvenement));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement));
 				return null;
 			}
 		});
@@ -433,7 +433,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = RegDate.get(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.retourDI(eric, di, dateEvenement));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement));
 				return null;
 			}
 		});

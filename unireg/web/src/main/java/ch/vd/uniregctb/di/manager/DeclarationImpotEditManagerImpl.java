@@ -845,6 +845,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					etat.setDateObtention(RegDate.get(diEditView.getDateRetour()));
 					di.addEtat(etat);
 					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, RegDate.get(diEditView.getDateRetour()));
+
+					// TODO JDE : envoi du message de quittance au BAM
 				}
 			}
 			else {

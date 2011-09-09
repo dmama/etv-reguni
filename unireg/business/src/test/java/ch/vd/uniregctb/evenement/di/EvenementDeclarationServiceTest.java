@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.di;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.BamEventSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.MotifFor;
@@ -41,6 +43,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		service.setDiService(getBean(DeclarationImpotService.class,"diService"));
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
+		service.setBamEventSender(getBean(BamEventSender.class, "bamEventSender"));
 	}
 
 	@Test
@@ -84,7 +87,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 				quittance.setPeriodeFiscale(2011);
 				quittance.setBusinessId("1245633");
 
-				service.onEvent(quittance);
+				service.onEvent(quittance, Collections.<String, String>emptyMap());
 				return null;
 			}
 		});
@@ -94,7 +97,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 
 				final List<Declaration> list = eric.getDeclarationsForPeriode(2011, false);
 				assertNotNull(list);

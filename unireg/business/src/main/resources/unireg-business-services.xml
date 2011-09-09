@@ -119,6 +119,7 @@
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 		<property name="validationService" ref="validationService"/>
+		<property name="bamEventSender" ref="bamEventSender"/>
 	</bean>
 
 	<bean id="evenementIAMService" class="ch.vd.uniregctb.evenement.iam.EvenementIAMServiceImpl">
@@ -131,6 +132,7 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="diService" ref="diService"/>
 		<property name="validationService" ref="validationService"/>
+		<property name="bamEventSender" ref="bamEventSender"/>
 	</bean>
 
 

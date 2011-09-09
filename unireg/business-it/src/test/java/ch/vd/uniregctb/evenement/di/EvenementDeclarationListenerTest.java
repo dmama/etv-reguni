@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.di;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -79,7 +80,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementDeclarationHandler() {
 			@Override
-			public void onEvent(EvenementDeclaration event) {
+			public void onEvent(EvenementDeclaration event, Map<String, String> customHeaders) {
 				events.add(event);
 			}
 
