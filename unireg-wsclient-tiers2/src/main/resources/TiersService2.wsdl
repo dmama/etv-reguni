@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- version 2.14 -->
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- version 2.15 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -628,6 +628,7 @@
 				<xs:sequence>
 					<xs:element name="key" type="tns:DeclarationImpotOrdinaireKey" />
 					<xs:element name="dateRetour" type="tns:Date" />
+					<xs:element minOccurs="0" name="source" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="DeclarationImpotOrdinaireKey">
@@ -1042,12 +1043,12 @@
 	</wsdl:message>
 	<wsdl:message name="setTiersBlocRembAutoResponse">
 	</wsdl:message>
-	<wsdl:message name="getTiersHisto">
-		<wsdl:part element="tns:GetTiersHisto" name="params">
-		</wsdl:part>
-	</wsdl:message>
 	<wsdl:message name="getTiersResponse">
 		<wsdl:part element="tns:getTiersResponse" name="getTiersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getTiersHisto">
+		<wsdl:part element="tns:GetTiersHisto" name="params">
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="doNothingResponse">
