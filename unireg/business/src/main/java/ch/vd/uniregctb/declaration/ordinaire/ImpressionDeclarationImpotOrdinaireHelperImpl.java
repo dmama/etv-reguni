@@ -730,10 +730,22 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			codeTrame = "D";
 			break;
 		default:
-			codeTrame = Integer.toString(informationsDocument.codeSegment != null ? informationsDocument.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+			codeTrame = getCodeSegment(informationsDocument);
 			break;
 		}
 		infoDI.setCODETRAME(codeTrame);
+
+		final String codeSegment = getCodeSegment(informationsDocument);
+		infoDI.setCODESEGMENT(codeSegment);
+	}
+
+	/** retourne le code Segment de la DI stocké dans les informations documents.
+	 *
+	 * @param informationsDocument
+	 * @return le code segment
+	 */
+	private String getCodeSegment(InformationsDocumentAdapter informationsDocument) {
+		return Integer.toString(informationsDocument.codeSegment != null ? informationsDocument.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
 	}
 
 	/**
