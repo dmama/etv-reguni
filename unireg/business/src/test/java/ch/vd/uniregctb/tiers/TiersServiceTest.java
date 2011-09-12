@@ -4687,6 +4687,7 @@ public class TiersServiceTest extends BusinessTest {
 
 	// un couple avec une fille  majeur et un enfant mineur
 	@Test
+	@Transactional
 	public void testGetEnfantsForDeclarationMenage() throws Exception {
 
 		final long indMere = 1;
@@ -4723,14 +4724,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
-
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -4752,22 +4745,17 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
-				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclaration);
-				assertEquals(1, enfantsForDeclaration.size());
-				assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
-				return null;
-			}
-		});
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(1, enfantsForDeclaration.size());
+		assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
 	}
 
 
 	//Couple avec Enfant décédé et 1 enfant mineur
 	@Test
+	@Transactional
 	public void testGetEnfantsForDeclarationEnfantDecede() throws Exception {
 
 		final long indMere = 1;
@@ -4804,14 +4792,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
-
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -4833,21 +4813,16 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
-				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclaration);
-				assertEquals(1, enfantsForDeclaration.size());
-				assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
-				return null;
-			}
-		});
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(1, enfantsForDeclaration.size());
+		assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
 	}
 
 	//Couple avec Enfant possédant 1 seul lien de filiation
 	@Test
+	@Transactional
 	public void testGetEnfantsForDeclaration1Filiation() throws Exception {
 
 		final long indMere = 1;
@@ -4884,13 +4859,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -4913,21 +4881,16 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
-				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclaration);
-				assertEquals(2, enfantsForDeclaration.size());
-				return null;
-			}
-		});
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(2, enfantsForDeclaration.size());
 	}
 
 
 	//Couple avec Enfant  ayant des EGID different
 	@Test
+	@Transactional
 	public void testGetEnfantsForDeclarationEGIDDifferent() throws Exception {
 
 		final long indMere = 1;
@@ -4963,13 +4926,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -4992,20 +4948,15 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
-				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclaration);
-				assertEquals(0, enfantsForDeclaration.size());
-				return null;
-			}
-		});
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(0, enfantsForDeclaration.size());
 	}
 
 	//2 parents non en couple avec le même EGID.
 	@Test
+	@Transactional
 	public void testGetEnfantsForDeclarationMemeEGID() throws Exception {
 
 		final long indMere = 1;
@@ -5041,13 +4992,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
 
 		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -5066,25 +5010,20 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable ctbPere = (Contribuable) tiersDAO.get(ids.pere);
-				List<PersonnePhysique> enfantsForDeclarationPere = tiersService.getEnfantsForDeclaration(ctbPere, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclarationPere);
-				assertEquals(0, enfantsForDeclarationPere.size());
+		final Contribuable ctbPere = (Contribuable) tiersDAO.get(ids.pere);
+		List<PersonnePhysique> enfantsForDeclarationPere = tiersService.getEnfantsForDeclaration(ctbPere, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclarationPere);
+		assertEquals(0, enfantsForDeclarationPere.size());
 
-				final Contribuable ctbMere = (Contribuable) tiersDAO.get(ids.mere);
-				List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
-				assertNotNull(enfantsForDeclarationMere);
-				assertEquals(0, enfantsForDeclarationMere.size());
-				return null;
-			}
-		});
+		final Contribuable ctbMere = (Contribuable) tiersDAO.get(ids.mere);
+		List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclarationMere);
+		assertEquals(0, enfantsForDeclarationMere.size());
 	}
 
 	//l'egid des 2 parents est identiques
 	@Test
+	@Transactional
 	public void testIsEgidAutreParentDifferent() throws Exception {
 
 		final long indMere = 1;
@@ -5120,14 +5059,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
-
 		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -5145,21 +5076,16 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
-				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-				assertFalse(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
-				return null;
-			}
-		});
+		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+		assertFalse(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 	//l'egid des 2 parents est differents
 
 	@Test
+	@Transactional
 	public void testIsEgidAutreParentDifferent2() throws Exception {
 
 		final long indMere = 1;
@@ -5195,13 +5121,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
 
 		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -5219,20 +5138,15 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
-				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-				assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
-				return null;
-			}
-		});
+		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+		assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
 	}
 	//un parent à un egid, l'autre non
 
 	@Test
+	@Transactional
 	public void testIsEgidAutreParentDifferent3() throws Exception {
 
 		final long indMere = 1;
@@ -5268,13 +5182,6 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				return null;
-			}
-		});
 
 		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -5292,16 +5199,10 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
-				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-				assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
-				return null;
-			}
-		});
+		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+		assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 }
