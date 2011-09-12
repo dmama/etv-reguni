@@ -6,7 +6,8 @@ import java.util.Map;
 import ch.vd.unireg.xml.party.taxresidence.v1.ExpenditureBased;
 import ch.vd.unireg.xml.party.taxresidence.v1.ForeignCountry;
 import ch.vd.unireg.xml.party.taxresidence.v1.Indigent;
-import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding;
+import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par1;
+import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par2;
 import ch.vd.unireg.xml.party.taxresidence.v1.OrdinaryResident;
 import ch.vd.unireg.xml.party.taxresidence.v1.OtherCanton;
 import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
@@ -56,13 +57,13 @@ public abstract class TaxLiabilityBuilder {
 		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1.class, new Builders() {
 			@Override
 			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newMixedWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1) right);
+				return newMixedWithholding137Par1((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1) right);
 			}
 		});
 		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2.class, new Builders() {
 			@Override
 			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newMixedWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2) right);
+				return newMixedWithholding137Par2((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2) right);
 			}
 		});
 		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierPur.class, new Builders() {
@@ -109,8 +110,14 @@ public abstract class TaxLiabilityBuilder {
 		return left;
 	}
 
-	private static MixedWithholding newMixedWithholding(ch.vd.uniregctb.metier.assujettissement.SourcierMixte right) {
-		MixedWithholding left = new MixedWithholding();
+	private static MixedWithholding137Par1 newMixedWithholding137Par1(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1 right) {
+		MixedWithholding137Par1 left = new MixedWithholding137Par1();
+		fillWithholding(left, right);
+		return left;
+	}
+
+	private static MixedWithholding137Par2 newMixedWithholding137Par2(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2 right) {
+		MixedWithholding137Par2 left = new MixedWithholding137Par2();
 		fillWithholding(left, right);
 		return left;
 	}

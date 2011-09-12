@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-ws-tiers3</artifactId>
-			<version>3.0-beta1</version>
+			<version>3.0-beta2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

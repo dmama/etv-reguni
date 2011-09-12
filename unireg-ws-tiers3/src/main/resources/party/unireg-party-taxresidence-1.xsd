@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.0beta - 9 septembre 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
@@ -568,14 +568,39 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="mixedWithholdingType">
+	<xs:complexType abstract="true" name="mixedWithholdingType">
 		<xs:annotation>
-			<xs:documentation>Assujettissement de type sourcier mixte; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt car il possède un revenu
-				suffisamment élevé, ou il est en ménage avec un contribuable qui possède un permis C.
+			<xs:documentation>Assujettissement de type sourcier mixte; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt pour une raison ou une autre.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="taxresidence:withholdingType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="mixedWithholding137Par1Type">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier mixte article 137 alinéa 1; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt car il possède
+				un immeuble ou une activité indépendante dans le canton.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:mixedWithholdingType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="mixedWithholding137Par2Type">
+		<xs:annotation>
+			<xs:documentation>Assujettissement de type sourcier mixte article 137 alinéa 2; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt car il possède
+				une fortune ou un revenu qui dépasse un certain seuil.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxresidence:mixedWithholdingType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>

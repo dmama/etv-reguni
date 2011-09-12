@@ -50,8 +50,11 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
+import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par1;
+import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
@@ -1357,4 +1360,38 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLine5()));
 		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLine6()));
 	}
+
+	// [SIFISC-2057]
+	@Test
+	public void testGetPartyTaxLiaibilities() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(12900001); // Michel Lederet
+		params.getParts().add(PartyPart.ORDINARY_TAX_LIABILITIES);
+
+		final NaturalPerson np = (NaturalPerson) service.getParty(params);
+		assertNotNull(np);
+
+		final List<TaxLiability> list = np.getOrdinaryTaxLiabilities();
+		assertNotNull(list);
+		assertEquals(2, list.size());
+
+		final TaxLiability t0 = list.get(0);
+		assertNotNull(t0);
+		assertTrue(t0 instanceof PureWithholding);
+
+		final PureWithholding p0 = (PureWithholding) t0;
+		assertEquals(newDate(2000, 1, 1), p0.getDateFrom());
+		assertEquals(newDate(2001, 12, 31), p0.getDateTo());
+
+		final TaxLiability t1 = list.get(1);
+		assertNotNull(t1);
+		assertTrue(t1 instanceof MixedWithholding137Par1);
+
+		final MixedWithholding137Par1 m1 = (MixedWithholding137Par1) t1;
+		assertEquals(newDate(2002, 1, 1), m1.getDateFrom());
+		assertNull(m1.getDateTo());
+	}
+
 }

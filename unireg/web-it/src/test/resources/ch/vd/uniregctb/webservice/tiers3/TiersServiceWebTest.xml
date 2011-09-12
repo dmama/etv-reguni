@@ -848,6 +848,59 @@
       <value>Alfred</value>
       <value>MASCULIN</value>
     </row>
+	  <row>
+		<value>PersonnePhysique</value>
+		<value>12900001</value>
+		<null/>
+		<null/>
+		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+		<value>tiers-basic</value>
+		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+		<value>tiers-basic</value>
+		<null/>
+		<null/>
+		<value>0</value>
+		<null/>
+		<value>0</value>
+		<null/>
+		<value>CH9308440717427290198</value>
+		<null/>
+		<value>0764537812</value>
+		<value>032&apos;897&apos;45&apos;32</value>
+		<null/>
+		<value>10</value>
+		<null/>
+		<null/>
+		<value><![CDATA[Lederet Michel]]></value>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<value>19520123</value>
+		<value>0</value>
+		<null/>
+		<value>Lederet</value>
+		<value>7561234567897</value>
+		<null/>
+		<null/>
+		<value>8100</value>
+		<value>Michel</value>
+		<value>MASCULIN</value>
+	  </row>
   </table>
   <table name="SITUATION_FAMILLE">
     <column>SITUATION_FAMILLE_TYPE</column>
@@ -2226,6 +2279,106 @@
       <null/>
       <value>87654321</value>
     </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>13</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20020212</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>6412</value>
+      <value>COMMUNE_HC</value>
+      <null/>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>MIXTE_137_1</value>
+      <value>12900001</value>
+    </row>
+    <row>
+      <value>ForFiscalSecondaire</value>
+      <value>14</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20020212</value>
+      <value>20071231</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5407</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>VENTE_IMMOBILIER</value>
+      <value>ACHAT_IMMOBILIER</value>
+      <value>IMMEUBLE_PRIVE</value>
+      <null/>
+      <value>12900001</value>
+    </row>
+	<row>
+		<value>ForFiscalSecondaire</value>
+		<value>15</value>
+		<null/>
+		<null/>
+		<value><![CDATA[2011-04-27 14:11:41.0]]></value>
+		<value>tiers-basic</value>
+		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+		<value>tiers-basic</value>
+		<value>20040701</value>
+		<null/>
+		<value>REVENU_FORTUNE</value>
+		<value>5890</value>
+		<value>COMMUNE_OU_FRACTION_VD</value>
+		<null/>
+		<value>ACHAT_IMMOBILIER</value>
+		<value>IMMEUBLE_PRIVE</value>
+		<null/>
+		<value>12900001</value>
+	</row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>16</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20010212</value>
+      <value>20020211</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5591</value>
+      <value>COMMUNE_HC</value>
+      <null/>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>SOURCE</value>
+      <value>12900001</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>17</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20000212</value>
+      <value>20010211</value>
+      <value>REVENU_FORTUNE</value>
+      <value>6412</value>
+      <value>COMMUNE_HC</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>SOURCE</value>
+      <value>12900001</value>
+    </row>
   </table>
   <table name="EVENEMENT_IDENTIFICATION_CTB">
     <column>ID</column>
@@ -2921,6 +3074,35 @@
       <value>160</value>
       <null/>
       <value>20602603</value>
+    </row>
+    <row>
+      <value>AdresseSuisse</value>
+      <value>10</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20020212</value>
+      <null/>
+      <value>COURRIER</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>23</value>
+      <value>19</value>
+      <value>0</value>
+      <null/>
+      <value>CASE_POSTALE</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>104</value>
+      <value>83404</value>
+      <value>12900001</value>
     </row>
   </table>
 </dataset>
