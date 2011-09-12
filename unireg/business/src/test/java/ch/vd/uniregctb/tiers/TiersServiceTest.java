@@ -21,6 +21,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -75,6 +77,7 @@ public class TiersServiceTest extends BusinessTest {
 
 	private static final long NUMERO_INDIVIDU = 12345L;
 	private TiersService tiersService;
+	private AdresseService adresseService;
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private ValidationService validationService;
@@ -89,6 +92,7 @@ public class TiersServiceTest extends BusinessTest {
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 		validationService = getBean(ValidationService.class, "validationService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+		adresseService = getBean(AdresseService.class, "adresseService");
 	}
 
 	@Test
@@ -3033,7 +3037,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2011, 1, 1), null);
-				return  dpi.getNumero();
+				return dpi.getNumero();
 			}
 		});
 
@@ -3156,27 +3160,27 @@ public class TiersServiceTest extends BusinessTest {
 	//absence de LR sur l'année en cours
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testAddPeriodicitesAbsencesLR() throws Exception{
+	public void testAddPeriodicitesAbsencesLR() throws Exception {
 		//Ajout d'une première periodicite'
 		final int anneeReference = RegDate.get().year();
-		final int anneeSuivante = anneeReference +1;
+		final int anneeSuivante = anneeReference + 1;
 		final int anneePrecedente = anneeReference - 1;
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M11, date(anneeSuivante, 1, 1),null);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M11, date(anneeSuivante, 1, 1), null);
 
-				addForDebiteur(dpi,date(anneeReference-1, 1, 1),null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference - 1, 1, 1), null, MockCommune.Bex);
 
-				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference-1);
+				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference - 1);
 
-				addLR(dpi, date(anneePrecedente,1,1),date(anneePrecedente,3,31), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente,4,1),date(anneePrecedente,6,30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente,7,1),date(anneePrecedente,9,30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente,10,1),date(anneePrecedente,12,31), fiscale2009, TypeEtatDeclaration.EMISE);
-				return  dpi.getNumero();
+				addLR(dpi, date(anneePrecedente, 1, 1), date(anneePrecedente, 3, 31), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 4, 1), date(anneePrecedente, 6, 30), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 7, 1), date(anneePrecedente, 9, 30), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 10, 1), date(anneePrecedente, 12, 31), fiscale2009, TypeEtatDeclaration.EMISE);
+				return dpi.getNumero();
 			}
 		});
 
@@ -3185,11 +3189,11 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				RegDate dateDebut = tiersService.getDateDebutNouvellePeriodicite(dpi);
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M12, dateDebut,null);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M12, dateDebut, null);
 				Periodicite periodicite = dpi.getDernierePeriodicite();
-				assertEquals(dateDebut,periodicite.getDateDebut());
-				assertEquals(PeriodiciteDecompte.UNIQUE,periodicite.getPeriodiciteDecompte());
-				assertEquals(PeriodeDecompte.M12,periodicite.getPeriodeDecompte());
+				assertEquals(dateDebut, periodicite.getDateDebut());
+				assertEquals(PeriodiciteDecompte.UNIQUE, periodicite.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.M12, periodicite.getPeriodeDecompte());
 
 
 				return null;
@@ -3199,11 +3203,8 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-3011] Vérifie que la méthode addRapport ne provoque pas des erreurs de validation lorsque:
-	 * <ul>
-	 * <li>on ajoute un rapport entre deux tiers qui ne valident pas, et</li>
-	 * <li>le rapport ajouté fait que les deux tiers sont ensuite valides</li>
-	 * </ul>
+	 * [UNIREG-3011] Vérifie que la méthode addRapport ne provoque pas des erreurs de validation lorsque: <ul> <li>on ajoute un rapport entre deux tiers qui ne valident pas, et</li> <li>le rapport ajouté
+	 * fait que les deux tiers sont ensuite valides</li> </ul>
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -3276,7 +3277,7 @@ public class TiersServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testAddPeriodiciteBeforAddFor() throws Exception{
+	public void testAddPeriodiciteBeforAddFor() throws Exception {
 
 		//Ajout d'une première periodicite et d'un for à la même date
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -3284,8 +3285,8 @@ public class TiersServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
-				addForDebiteur(dpi,date(2010, 1, 1),null, MockCommune.Bex);
-				return  dpi.getNumero();
+				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Bex);
+				return dpi.getNumero();
 			}
 		});
 
@@ -3296,7 +3297,7 @@ public class TiersServiceTest extends BusinessTest {
 				Periodicite periodicite = dpi.getDernierePeriodicite();
 				assertNotNull(periodicite);
 				ForDebiteurPrestationImposable forDebiteur = dpi.getDernierForDebiteur();
-				assertEquals(periodicite.getDateDebut(),forDebiteur.getDateDebut());
+				assertEquals(periodicite.getDateDebut(), forDebiteur.getDateDebut());
 				return null;
 			}
 		});
@@ -3307,21 +3308,20 @@ public class TiersServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
-				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
-				return  dpi.getNumero();
+				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
+				return dpi.getNumero();
 			}
 		});
-
 
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);			
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
 				Periodicite periodicite = dpi.getDernierePeriodicite();
 				assertNotNull(periodicite);
 				ForDebiteurPrestationImposable forDebiteur = dpi.getDernierForDebiteur();
-				assertEquals(forDebiteur.getDateDebut(),periodicite.getDateDebut());
+				assertEquals(forDebiteur.getDateDebut(), periodicite.getDateDebut());
 				return null;
 			}
 		});
@@ -3333,13 +3333,13 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLR() throws Exception {
 
-			//Ajout d'une première periodicite'
+		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
-				return  dpi.getNumero();
+				return dpi.getNumero();
 			}
 		});
 
@@ -3347,10 +3347,10 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-			RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
-			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
-			return null;
+				RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
+				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				return null;
 			}
 		});
 
@@ -3360,16 +3360,16 @@ public class TiersServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteAvecLR() throws Exception {
 
-			//Ajout d'une première periodicite'
+		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi,date(2009, 6, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
 
-				addLR(dpi, date(2009,7,1),date(2009,9,30), fiscale, TypeEtatDeclaration.EMISE);
-				return  dpi.getNumero();
+				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), fiscale, TypeEtatDeclaration.EMISE);
+				return dpi.getNumero();
 			}
 		});
 
@@ -3377,26 +3377,27 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-			RegDate dateDebutPeriodicite = RegDate.get(2010, 1, 1);
-			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
-			return null;
+				RegDate dateDebutPeriodicite = RegDate.get(2010, 1, 1);
+				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				return null;
 			}
 		});
 
 	}
-		@Test
-		@Transactional(rollbackFor = Throwable.class)
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLRSansFor() throws Exception {
 
-			//Ajout d'une première periodicite'
+		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 
 
-				return  dpi.getNumero();
+				return dpi.getNumero();
 			}
 		});
 
@@ -3404,11 +3405,11 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-			int anneeCourante = RegDate.get().year();
-			RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
-			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
-			return null;
+				int anneeCourante = RegDate.get().year();
+				RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
+				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				return null;
 			}
 		});
 
@@ -3793,7 +3794,8 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(),
+						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -3830,7 +3832,8 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(),
+						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -4100,8 +4103,9 @@ public class TiersServiceTest extends BusinessTest {
 			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
 		}
 		catch (ValidationException e) {
-			final String message = String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
-												f, MockCommune.LeLieu.getNomMinuscule(), MockCommune.LeLieu.getNoOFSEtendu());
+			final String message =
+					String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
+							f, MockCommune.LeLieu.getNomMinuscule(), MockCommune.LeLieu.getNoOFSEtendu());
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}
 	}
@@ -4299,8 +4303,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-3168] problème à la création d'un couple qui reprend exactement les mêmes
-	 * éléments qu'un couple annulé
+	 * [UNIREG-3168] problème à la création d'un couple qui reprend exactement les mêmes éléments qu'un couple annulé
 	 */
 	@Test
 	public void testAjoutNouveauRapportMenageIdentiqueARapportAnnule() throws Exception {
@@ -4681,4 +4684,624 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	// un couple avec une fille  majeur et un enfant mineur
+	@Test
+	public void testGetEnfantsForDeclarationMenage() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(1988, 2, 8), "Cognac", "Eva", false);
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclaration);
+				assertEquals(1, enfantsForDeclaration.size());
+				assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
+				return null;
+			}
+		});
+	}
+
+
+	//Couple avec Enfant décédé et 1 enfant mineur
+	@Test
+	public void testGetEnfantsForDeclarationEnfantDecede() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fille.setDateDeces(date(2011, 2, 2));
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclaration);
+				assertEquals(1, enfantsForDeclaration.size());
+				assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
+				return null;
+			}
+		});
+	}
+
+	//Couple avec Enfant possédant 1 seul lien de filiation
+	@Test
+	public void testGetEnfantsForDeclaration1Filiation() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere));
+				fille.setParents(Arrays.<Individu>asList(mere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclaration);
+				assertEquals(2, enfantsForDeclaration.size());
+				return null;
+			}
+		});
+	}
+
+
+	//Couple avec Enfant  ayant des EGID different
+	@Test
+	public void testGetEnfantsForDeclarationEGIDDifferent() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+				List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclaration);
+				assertEquals(0, enfantsForDeclaration.size());
+				return null;
+			}
+		});
+	}
+
+	//2 parents non en couple avec le même EGID.
+	@Test
+	public void testGetEnfantsForDeclarationMemeEGID() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				return ids.mere;
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable ctbPere = (Contribuable) tiersDAO.get(ids.pere);
+				List<PersonnePhysique> enfantsForDeclarationPere = tiersService.getEnfantsForDeclaration(ctbPere, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclarationPere);
+				assertEquals(0, enfantsForDeclarationPere.size());
+
+				final Contribuable ctbMere = (Contribuable) tiersDAO.get(ids.mere);
+				List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
+				assertNotNull(enfantsForDeclarationMere);
+				assertEquals(0, enfantsForDeclarationMere.size());
+				return null;
+			}
+		});
+	}
+
+	//l'egid des 2 parents est identiques
+	@Test
+	public void testIsEgidAutreParentDifferent() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				return ids.mere;
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+				assertFalse(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+				return null;
+			}
+		});
+	}
+
+	//l'egid des 2 parents est differents
+
+	@Test
+	public void testIsEgidAutreParentDifferent2() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDesGranges, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+				return ids.mere;
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+				assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+				return null;
+			}
+		});
+	}
+	//un parent à un egid, l'autre non
+
+	@Test
+	public void testIsEgidAutreParentDifferent3() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				return null;
+			}
+		});
+
+		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+				return ids.mere;
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
+				final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
+				final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
+				assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+				return null;
+			}
+		});
+	}
+
 }

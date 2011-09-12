@@ -15,6 +15,7 @@ import noNamespace.DIHCDocument;
 import noNamespace.DIHCDocument.DIHC;
 import noNamespace.DIRetour;
 import noNamespace.DIRetourCivil;
+import noNamespace.DIRetourCivilEnfant;
 import noNamespace.DIVDTAXDocument;
 import noNamespace.DIVDTAXDocument.DIVDTAX;
 import noNamespace.InfoDocumentDocument1;
@@ -38,6 +39,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
@@ -49,6 +51,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -395,6 +398,29 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		if (di instanceof DIRetourCivil) {
 			remplitContribuables(infoAdapter, (DIRetourCivil) di);
 		}
+		if (di instanceof DIRetourCivilEnfant) {
+			remplitEnfants(infoAdapter, (DIRetourCivilEnfant) di);
+
+		}
+
+	}
+
+	private void remplitEnfants(InformationsDocumentAdapter informationsDocument, DIRetourCivilEnfant di) {
+		if (informationsDocument.tiers instanceof Contribuable) {
+			final List<PersonnePhysique> enfants = tiersService.getEnfantsForDeclaration((Contribuable) informationsDocument.tiers, informationsDocument.dateReference);
+			DIRetourCivilEnfant.Enfants diEnfants = di.addNewEnfants();
+			final int anneeDeclaration = informationsDocument.getAnnee();
+			for (PersonnePhysique enfant : enfants) {
+				final String navs13 = calculAVS(anneeDeclaration, enfant);
+				final String dateNaissance = calculDateNaissance(enfant);
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(enfant);
+				DIRetourCivilEnfant.Enfants.Enfant diEnfant = diEnfants.addNewEnfant();
+				diEnfant.setNAVS13(navs13);
+				diEnfant.setPRENOM(nomPrenom.getPrenom());
+				diEnfant.setNOM(nomPrenom.getNom());
+				diEnfant.setDATENAISSANCE(dateNaissance);
+			}
+		}
 
 	}
 
@@ -695,17 +721,17 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		infoDI.setCODBARR(codbarr);
 
 		// [SIFISC-2100] Le code trame doit être déduit du code "segment" de TAO et du type de la DI
-        final String codeTrame;
+		final String codeTrame;
 		switch (informationsDocument.getTypeDocument()) {
-			case DECLARATION_IMPOT_HC_IMMEUBLE:
-				codeTrame = "H";
-		        break;
-		    case DECLARATION_IMPOT_DEPENSE:
-			    codeTrame = "D";
-			    break;
-		    default:
-			    codeTrame = Integer.toString(informationsDocument.codeSegment != null ? informationsDocument.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
-			    break;
+		case DECLARATION_IMPOT_HC_IMMEUBLE:
+			codeTrame = "H";
+			break;
+		case DECLARATION_IMPOT_DEPENSE:
+			codeTrame = "D";
+			break;
+		default:
+			codeTrame = Integer.toString(informationsDocument.codeSegment != null ? informationsDocument.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+			break;
 		}
 		infoDI.setCODETRAME(codeTrame);
 	}
