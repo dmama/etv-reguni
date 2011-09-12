@@ -719,10 +719,18 @@
 	</xs:simpleType>
 	<xs:simpleType name="typCodeTrame">
 		<xs:annotation>
-			<xs:documentation>de type Code Trame qui determine les pliures sur les DI électroniques</xs:documentation>
+			<xs:documentation>de type Code Trame qui determine les pliures sur les DI </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
 			<xs:pattern value="[0-9a-zA-Z]{1}" />
 		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typCodeSegment">
+		<xs:annotation>
+			<xs:documentation>de type Code Segment qui determine le type de contribuable (0 = Normal, 1 = indépendant, 2 = avec Titre imporant) sur la DI</xs:documentation>
+		</xs:annotation>
+			<xs:restriction base="xs:token">
+				<xs:pattern value="0|1|2" />
+			</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

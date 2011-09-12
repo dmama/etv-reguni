@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
 <!--Version  0.0.1  - 03.12.08 : MSN - Factorisé les éléments communs des DIs -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.6.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques_0.0.7.xsd" />
 
 	<xs:complexType name="DIBase">
 		<!-- Attributs communs à toutes les DIs -->
@@ -32,27 +32,32 @@
 						</xs:element>
 						<xs:element name="NOOID" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>no office  (prendre les 4 dernières positions pour l'impression)  </xs:documentation>
+								<xs:documentation>no office (prendre les 4 dernières positions pour l'impression)</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
-									<xs:pattern value="\d{2}(-\d)?"/>
+									<xs:pattern value="\d{2}(-\d)?" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
 						<xs:element name="CODBARR" type="typEntier">
 							<xs:annotation>
-								<xs:documentation>Code à barres (128) :  no ctb(9), AAAA, no ordinal(2), No OID(2)</xs:documentation>
+								<xs:documentation>Code à barres (128) : no ctb(9), AAAA, no ordinal(2), No OID(2)</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="NIP" type="typCodeNip" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Code NIP :  6 caractères alphanumériques identifiant la DI</xs:documentation>
+								<xs:documentation>Code NIP : 6 caractères alphanumériques identifiant la DI</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="CODETRAME" type="typCodeTrame">
 							<xs:annotation>
-								<xs:documentation>Code TRAME :  1 caractère alphanumérique utilisé pour déterminer le type de pliure</xs:documentation>
+								<xs:documentation>Code TRAME : 1 caractère alphanumérique utilisé pour déterminer le type de pliure</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CODESEGMENT" type="typCodeSegment">
+							<xs:annotation>
+								<xs:documentation>Code segment : 0,1 ou 2  qui determine le type de contribuable</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
