@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.inbox.InboxService;
 /**
  * Implémentation standard de {@link EditiqueService}.
  */
-public final class EditiqueServiceImpl implements EditiqueService {
+public final class EditiqueServiceImpl implements EditiqueService, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(EditiqueServiceImpl.class);
 
@@ -193,5 +194,12 @@ public final class EditiqueServiceImpl implements EditiqueService {
 			throw new IllegalArgumentException("La valeur doit être positive ou zéro (= pas d'expiration)");
 		}
 		this.hoursRetourImpressionExpiration = hoursRetourImpressionExpiration;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info(String.format("Service de demandes d'impression initialisé (time-out synchrone : %ds, time-out asynchrone : %ds)", syncReceiveTimeout, asyncReceiveDelay));
+		}
 	}
 }
