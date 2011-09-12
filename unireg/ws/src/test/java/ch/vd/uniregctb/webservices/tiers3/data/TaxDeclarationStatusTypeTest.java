@@ -65,7 +65,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 		{
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 
-			final EtatDeclarationRetournee retournee = new EtatDeclarationRetournee(dateObtention);
+			final EtatDeclarationRetournee retournee = new EtatDeclarationRetournee(dateObtention, "TEST");
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(retournee);
 
 			assertEquals(DataHelper.coreToWeb(dateObtention), etatWeb.getDateFrom());

@@ -65,7 +65,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(obtentionRetour));
+				lr.addEtat(new EtatDeclarationRetournee(obtentionRetour, "TEST"));
 
 				final QuittanceLR quittance = new QuittanceLR();
 				quittance.setTiers(dpi);
@@ -262,7 +262,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(RegDate.get(premierQuittancement)));      // premier quittancement
+				lr.addEtat(new EtatDeclarationRetournee(RegDate.get(premierQuittancement), "TEST"));      // premier quittancement
 
 				final QuittanceLR quittance = new QuittanceLR();
 				quittance.setTiers(dpi);

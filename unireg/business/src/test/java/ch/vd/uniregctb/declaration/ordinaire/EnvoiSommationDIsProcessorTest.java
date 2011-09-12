@@ -68,7 +68,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5)));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
 				delai.setDateDemande(dateEmission);
@@ -524,7 +524,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateEmission.addDays(-5)));
+				declaration.addEtat(new EtatDeclarationRetournee(dateEmission.addDays(-5), "TEST"));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
 				delai.setDateDemande(dateEmission);

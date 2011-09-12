@@ -143,12 +143,13 @@ public interface DeclarationImpotService {
 	/**
 	 * Quittancement d'une DI
 	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
+	 * @param contribuable  un contribuable
+	 * @param di            la déclaration qui doit être quittancée
+	 * @param dateEvenement la date de quittancement de la déclaration d'impôt
+	 * @param source        la source (= le nom de l'application) de quittancement
+	 * @return la déclaration nouvellement quittancée
 	 */
-	DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement, String source);
 
 	/**
 	 * Annulation d'une DI

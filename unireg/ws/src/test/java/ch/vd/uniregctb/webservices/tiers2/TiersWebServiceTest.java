@@ -557,7 +557,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				assertNull(di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
 
-				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get());
+				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);
 
 				final Ids ids = new Ids();
@@ -934,5 +934,159 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final ReponseQuittancementDeclaration reponse = result.get(0);
 		assertNotNull(reponse);
 		assertEquals(CodeQuittancement.OK, reponse.code);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testQuittancementAvecSourceRenseignee() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// On quittance la DI en précisant la source
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+				demande.dateRetour = new Date(RegDate.get());
+				demande.source = "TEST_QUITTANCEMENT";
+				demande.key = new DeclarationImpotOrdinaireKey();
+				demande.key.ctbId = ids.ppId;
+				demande.key.numeroSequenceDI = 1;
+				demande.key.periodeFiscale = annee;
+
+				final QuittancerDeclarations params = new QuittancerDeclarations();
+				params.login = login;
+				params.demandes = Arrays.asList(demande);
+
+				final List<ReponseQuittancementDeclaration> result = service.quittancerDeclarations(params);
+				assertNotNull(result);
+				assertEquals(1, result.size());
+
+				final ReponseQuittancementDeclaration reponse = result.get(0);
+				assertNotNull(reponse);
+				assertEquals(CodeQuittancement.OK, reponse.code);
+				return null;
+			}
+		});
+
+		// On vérifie que la DI a été quittancée par le CEDI (= valeur par défaut)
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				assertNotNull(di);
+				assertEquals(RegDate.get(), di.getDateRetour());
+
+				final EtatDeclaration etat = di.getDernierEtat();
+				assertNotNull(etat);
+				assertInstanceOf(EtatDeclarationRetournee.class, etat);
+
+				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+				assertEquals(RegDate.get(), retour.getDateObtention());
+				assertEquals("TEST_QUITTANCEMENT", retour.getSource());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testQuittancementSansSourceRenseignee() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// On quittance la DI sans préciser la source
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+				demande.dateRetour = new Date(RegDate.get());
+				demande.source = null;
+				demande.key = new DeclarationImpotOrdinaireKey();
+				demande.key.ctbId = ids.ppId;
+				demande.key.numeroSequenceDI = 1;
+				demande.key.periodeFiscale = annee;
+
+				final QuittancerDeclarations params = new QuittancerDeclarations();
+				params.login = login;
+				params.demandes = Arrays.asList(demande);
+
+				final List<ReponseQuittancementDeclaration> result = service.quittancerDeclarations(params);
+				assertNotNull(result);
+				assertEquals(1, result.size());
+
+				final ReponseQuittancementDeclaration reponse = result.get(0);
+				assertNotNull(reponse);
+				assertEquals(CodeQuittancement.OK, reponse.code);
+				return ids;
+			}
+		});
+
+		// On vérifie que la DI a été quittancée par le CEDI (= valeur par défaut)
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				assertNotNull(di);
+				assertEquals(RegDate.get(), di.getDateRetour());
+
+				final EtatDeclaration etat = di.getDernierEtat();
+				assertNotNull(etat);
+				assertInstanceOf(EtatDeclarationRetournee.class, etat);
+
+				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+				assertEquals(RegDate.get(), retour.getDateObtention());
+				assertEquals("CEDI", retour.getSource());
+				return null;
+			}
+		});
 	}
 }

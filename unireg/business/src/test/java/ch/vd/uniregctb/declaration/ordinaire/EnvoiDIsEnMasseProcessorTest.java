@@ -23,6 +23,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -1361,7 +1362,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		final EtatDeclaration etat1 = etats.get(1);
 		assertEquals(TypeEtatDeclaration.RETOURNEE, etat1.getEtat());
-		assertEquals(dateTraitement, etat1.getDateObtention());
+
+		final EtatDeclarationRetournee retour1 = (EtatDeclarationRetournee) etat1;
+		assertEquals(dateTraitement, retour1.getDateObtention());
+		assertEquals("INDIGENT", retour1.getSource());
 
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				ids.oidCedi, date(2009, 3, 31), decl);

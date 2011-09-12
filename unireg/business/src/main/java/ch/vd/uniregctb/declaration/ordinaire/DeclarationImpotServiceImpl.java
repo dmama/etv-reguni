@@ -379,22 +379,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		evenementFiscalService.publierEvenementFiscalEcheanceDI((Contribuable) declaration.getTiers(), declaration, dateTraitement);
 	}
 
-	/**
-	 * Quittancement d'une DI
-	 *
-	 * @param contribuable
-	 * @param di
-	 * @param dateEvenement
-	 * @return
-	 */
 	@Override
-	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement) {
+	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement, String source) {
 		if (!dateEvenement.equals(di.getDateRetour())) {
 			if (di.getDateRetour() != null) {
 				di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
 			}
-			final EtatDeclaration etat = new EtatDeclarationRetournee();
-			etat.setDateObtention(dateEvenement);
+			final EtatDeclaration etat = new EtatDeclarationRetournee(dateEvenement, source);
 			di.addEtat(etat);
 
 			evenementFiscalService.publierEvenementFiscalRetourDI(contribuable, di, dateEvenement);

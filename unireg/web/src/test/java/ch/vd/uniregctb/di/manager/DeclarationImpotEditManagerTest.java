@@ -3,6 +3,7 @@ package ch.vd.uniregctb.di.manager;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -12,13 +13,19 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
+import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
@@ -47,17 +54,17 @@ import static org.junit.Assert.fail;
 public class DeclarationImpotEditManagerTest extends WebTest {
 
 	protected DeclarationImpotOrdinaireDAO diDAO;
-	private ParametreAppService parametres;
 	protected DeclarationImpotEditManagerImpl manager;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
-		parametres = getBean(ParametreAppService.class, "parametreAppService");
 		manager = new DeclarationImpotEditManagerImpl();
 		manager.setDiDAO(diDAO);
-		manager.setParametres(parametres);
+		manager.setTiersDAO(tiersDAO);
+		manager.setEvenementFiscalService(new MockEvenementFiscalService());
+		manager.setParametres(getBean(ParametreAppService.class, "parametreAppService"));
 		manager.setValidationService(getBean(ValidationService.class, "validationService"));
 	}
 
@@ -529,4 +536,64 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		assertEquals(fin, range.getDateFin());
 		assertEquals(optionnel, range.isOptionnelle());
 	}
+
+	@Test
+	public void testQuittanceDI() throws Exception {
+
+		class Ids {
+			long pp;
+			long di;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PersonnePhysique pp = addNonHabitant("Arnold", "Stäpäld", date(1978, 9, 23), Sexe.MASCULIN);
+				final PeriodeFiscale periode = addPeriodeFiscale(2010);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(2010, 1, 1), date(2010, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+				ids.pp = pp.getId();
+				ids.di = di.getId();
+				return null;
+			}
+		});
+
+		// Quittancement de la DI par l'interface web
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+				view.setContribuable(new TiersGeneralView(ids.pp));
+				view.setId(ids.di);
+				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+				view.setDateRetour(date(2011, 4, 12));
+				manager.save(view);
+				return null;
+			}
+		});
+
+		// On vérifie que la source du quittancement est bien "WEB"
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+				assertNotNull(di);
+
+				assertEquals(date(2011, 4, 12), di.getDateRetour());
+
+				final EtatDeclaration dernier = di.getDernierEtat();
+				assertNotNull(dernier);
+				assertInstanceOf(EtatDeclarationRetournee.class, dernier);
+
+				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) dernier;
+				assertEquals(date(2011, 4, 12), retour.getDateObtention());
+				assertEquals("WEB", retour.getSource());
+				return null;
+			}
+		});
+	}
+
 }

@@ -478,13 +478,17 @@ public class EnvoiDIsEnMasseProcessor {
 		return RegDate.get(anneePeriode, momentExclusion[1], momentExclusion[0]);
 
 	}
+
 	/**
 	 * Cas spécial indigent : une déclaration d'impôt retournée le jour même est enregistrée dans l'application sans impression.
 	 *
-	 * @param tache
-	 *            la tâche à traiter
-	 * @param dateTraitement
-	 * @param dcache
+	 * @param tache          la tâche à traiter
+	 * @param dateTraitement la date d'émission et de retour de la déclaration d'impôt
+	 * @param dcache         la cache des données qui vont bien
+	 * @param simul          <b>vrai</b> s'il s'agit d'une simulation; <b>faux</b> dans le cas normal.
+	 * @return <b>vrai</b> si la tâche a été traitée, c'est-à-dire que la déclaration a été envoyée; <b>faux</b> en cas de problème.
+	 * @throws ch.vd.uniregctb.declaration.DeclarationException
+	 *          en cas d'exception
 	 */
 	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
@@ -501,8 +505,7 @@ public class EnvoiDIsEnMasseProcessor {
 		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
 
 		// Les déclarations d'indigent sont marquées comme déjà retournées
-		final EtatDeclaration etatRetour = new EtatDeclarationRetournee();
-		etatRetour.setDateObtention(dateExpedition);
+		final EtatDeclaration etatRetour = new EtatDeclarationRetournee(dateExpedition, EtatDeclarationRetournee.SOURCE_INDIGENT);
 		di.addEtat(etatRetour);
 
 		rapport.addCtbIndigent(tache.getContribuable().getNumero());

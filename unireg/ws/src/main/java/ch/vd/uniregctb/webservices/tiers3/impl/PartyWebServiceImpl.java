@@ -668,7 +668,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		// TODO JDE : envoi du message de quittance au BAM
 
 		// La déclaration est correcte, on la quittance
-		context.diService.quittancementDI(ctb, declaration, dateRetour);
+		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource());
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.OK);

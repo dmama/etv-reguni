@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,6 +18,8 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -407,7 +410,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = RegDate.get(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST"));
 				return null;
 			}
 		});
@@ -418,9 +421,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				Assert.assertNotNull(di);
+
+				final EtatDeclaration dernierEtat = di.getDernierEtat();
+				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertEquals(RegDate.get(2007, 5, 12), di.getDateRetour());
+
+				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
+				assertEquals(RegDate.get(2007, 5, 12), etatRetourne.getDateObtention());
+				assertEquals("TEST", etatRetourne.getSource());
 				return null;
 			}
 		});
@@ -433,7 +444,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = RegDate.get(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST2"));
 				return null;
 			}
 		});
@@ -445,8 +456,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+
+				final EtatDeclaration dernierEtat = di.getDernierEtat();
+				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertEquals(RegDate.get(2007, 8, 8), di.getDateRetour());
+
+				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
+				assertEquals(RegDate.get(2007, 8, 8), etatRetourne.getDateObtention());
+				assertEquals("TEST2", etatRetourne.getSource());
 				return null;
 			}
 		});

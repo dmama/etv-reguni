@@ -217,7 +217,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	public void testNonSommationLrRetourneeAvantEmission() throws Exception {
 		final PeriodeFiscale pf = addPeriodeFiscale(2007);
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
-		lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12)));
+		lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12), "TEST"));
 
 		final RegDate dateEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention();
 		final RegDate dateRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).getDateObtention();

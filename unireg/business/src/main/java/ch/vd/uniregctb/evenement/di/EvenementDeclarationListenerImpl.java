@@ -114,7 +114,7 @@ public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageLis
 			final QuittancementDI quittancementDI = new QuittancementDI();
 			ch.vd.unireg.xml.common.v1.Date dateEvt = contextQuittancement.getDate();
 			RegDate dateQuittancement = RegDate.get(dateEvt.getYear(), dateEvt.getMonth(), dateEvt.getDay());
-			quittancementDI.setNumeroContribuable(new Long(contextQuittancement.getNumeroContribuable()));
+			quittancementDI.setNumeroContribuable((long) contextQuittancement.getNumeroContribuable());
 			quittancementDI.setDate(dateQuittancement);
 			quittancementDI.setPeriodeFiscale(contextQuittancement.getPeriodeFiscale());
 			quittancementDI.setSource(evtQuittancement.getSource());

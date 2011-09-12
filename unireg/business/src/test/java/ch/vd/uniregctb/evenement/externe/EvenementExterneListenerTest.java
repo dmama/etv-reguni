@@ -264,7 +264,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
 				lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
 
-				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement);
+				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement, "TEST");
 				etatRetourne.setAnnule(true);
 				lr.addEtat(etatRetourne);
 
@@ -318,7 +318,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
 			}
@@ -392,7 +392,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
 			}
@@ -476,8 +476,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
+				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
 			}

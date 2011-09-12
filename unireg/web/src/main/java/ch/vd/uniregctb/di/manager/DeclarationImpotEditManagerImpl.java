@@ -804,7 +804,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
 				}
 
-				final EtatDeclaration retour = new EtatDeclarationRetournee(diEditView.getRegDateRetour());
+				final EtatDeclaration retour = new EtatDeclarationRetournee(diEditView.getRegDateRetour(), EtatDeclarationRetournee.SOURCE_WEB);
 				di.addEtat(retour);
 			}
 
@@ -841,10 +841,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 						etatRetournePrecedent.setAnnule(true);
 					}
-					final EtatDeclaration etat = new EtatDeclarationRetournee();
-					etat.setDateObtention(RegDate.get(diEditView.getDateRetour()));
+					final RegDate dateQuittance = RegDate.get(diEditView.getDateRetour());
+					final EtatDeclaration etat = new EtatDeclarationRetournee(dateQuittance, EtatDeclarationRetournee.SOURCE_WEB);
 					di.addEtat(etat);
-					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, RegDate.get(diEditView.getDateRetour()));
+					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateQuittance);
 
 					// TODO JDE : envoi du message de quittance au BAM
 				}

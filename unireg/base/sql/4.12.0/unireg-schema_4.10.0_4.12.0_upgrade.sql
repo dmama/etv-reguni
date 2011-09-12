@@ -22,3 +22,6 @@ ALTER TABLE DECLARATION ADD (CODE_CONTROLE nvarchar2(6) NULL);
 -- [SIFISC-2100] code de segmentation sur les déclarations d'impôt
 ALTER TABLE DECLARATION ADD (CODE_SEGMENT number(10,0) NULL);
 ALTER TABLE TACHE ADD (CODE_SEGMENT number(10,0) NULL);
+
+-- [SIFISC-1782] source de quittancement des DIs
+ALTER TABLE ETAT_DECLARATION ADD (SOURCE nvarchar2(255) NULL);

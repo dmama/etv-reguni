@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -813,7 +815,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 		// TODO JDE : envoi du message de quittance au BAM
 
 		// La déclaration est correcte, on la quittance
-		context.diService.quittancementDI(ctb, declaration, dateRetour);
+		final String source = StringUtils.isBlank(demande.source) ? EtatDeclarationRetournee.SOURCE_CEDI : demande.source; // [SIFISC-1782] historiquement, seul le CEDI quittance par le web-service.
+		context.diService.quittancementDI(ctb, declaration, dateRetour, source);
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return new ReponseQuittancementDeclaration(demande.key, CodeQuittancement.OK);

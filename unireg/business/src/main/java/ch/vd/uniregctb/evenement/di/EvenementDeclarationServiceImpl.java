@@ -70,7 +70,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		sendQuittancementToBam(ctbId, annee, customHeaders);
 
 		// et finalement on quittance les déclarations
-		quittancerDeclarations(ctb, declarations, quittance);
+		quittancerDeclarations(ctb, declarations, quittance, quittance.getSource());
 	}
 
 	private void sendQuittancementToBam(long ctbId, int annee, Map<String, String> customHeaders) throws EvenementDeclarationException {
@@ -94,10 +94,10 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		}
 	}
 
-	private void quittancerDeclarations(Contribuable ctb, List<Declaration> declarations, QuittancementDI quittance) {
+	private void quittancerDeclarations(Contribuable ctb, List<Declaration> declarations, QuittancementDI quittance, String source) {
 		for (Declaration declaration : declarations) {
 			if (!declaration.isAnnule()) {
-				diService.quittancementDI(ctb, (DeclarationImpotOrdinaire) declaration, quittance.getDate());
+				diService.quittancementDI(ctb, (DeclarationImpotOrdinaire) declaration, quittance.getDate(), source);
 			}
 		}
 	}

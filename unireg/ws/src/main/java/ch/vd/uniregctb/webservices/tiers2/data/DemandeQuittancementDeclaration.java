@@ -32,11 +32,18 @@ public class DemandeQuittancementDeclaration {
 	@XmlElement(required = true)
 	public Date dateRetour;
 
+	/**
+	 * La source du quittancement (= nom de l'application à l'origine du quittancement : CEDI, ADDI, ...)
+	 */
+	@XmlElement(required = false) // [SIFISC-1782] optionel pour permettre une transition en douceur des anciens clients
+	public String source;
+
 	@Override
 	public String toString() {
-		return "QuittanceDeclarationDemande{" +
+		return "DemandeQuittancementDeclaration{" +
 				"key=" + key +
 				", dateRetour=" + dateRetour +
+				", source='" + source + '\'' +
 				'}';
 	}
 }

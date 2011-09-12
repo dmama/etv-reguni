@@ -4633,7 +4633,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), date(anneeCourante, 1, 2), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				di.addEtat(new EtatDeclarationEmise(aujourdhui));
-				di.addEtat(new EtatDeclarationRetournee(aujourdhui));
+				di.addEtat(new EtatDeclarationRetournee(aujourdhui, "TEST"));
 				di.setLibre(true);
 
 				return pp.getNumero();

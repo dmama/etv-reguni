@@ -102,11 +102,14 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 				final List<Declaration> list = eric.getDeclarationsForPeriode(2011, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
-				
+
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				EtatDeclaration etat  = declaration.getDernierEtat();
+				final EtatDeclaration etat = declaration.getDernierEtat();
 				assertTrue(etat instanceof EtatDeclarationRetournee);
-				assertEquals(date(2012,5,26),etat.getDateObtention());
+
+				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+				assertEquals(date(2012, 5, 26), retour.getDateObtention());
+				assertEquals("ADDI", retour.getSource());
 
 				return null;
 			}
