@@ -38,6 +38,11 @@
 					<xs:documentation>La date de retour (= date de quittancement) de la déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="source" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La source du quittancement (= nom de l'application à la source du quittancement : CEDI, ADDI, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ordinaryTaxDeclarationKeyType">
