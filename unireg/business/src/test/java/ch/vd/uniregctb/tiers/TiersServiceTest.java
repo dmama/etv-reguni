@@ -21,9 +21,11 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -5021,6 +5023,60 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(0, enfantsForDeclarationMere.size());
 	}
 
+	//2 parents non en couple avec le même EGID.
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationMereSeule() throws Exception {
+
+		final long indMere = 1;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+
+		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				return ids.mere;
+			}
+		});
+
+
+		final Contribuable ctbMere = (Contribuable) tiersDAO.get(ids.mere);
+		List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclarationMere);
+		assertEquals(2, enfantsForDeclarationMere.size());
+	}
+
 	//l'egid des 2 parents est identiques
 	@Test
 	@Transactional
@@ -5079,7 +5135,8 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-		assertFalse(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
+		assertFalse(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 	//l'egid des 2 parents est differents
@@ -5141,7 +5198,8 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-		assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
+		assertTrue(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 	//un parent à un egid, l'autre non
 
@@ -5202,7 +5260,8 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
-		assertTrue(TiersHelper.isParentsAvecEgidDifferent(pere, fille, date(2011, 12, 31), adresseService, tiersService));
+		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
+		assertTrue(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 }

@@ -47,7 +47,6 @@ import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -1727,6 +1726,7 @@ public class TiersServiceImpl implements TiersService {
 		return enfants;
 	}
 
+	@Override
 	public List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
 		EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple(mc, dateValidite);
 		PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
@@ -1739,6 +1739,7 @@ public class TiersServiceImpl implements TiersService {
 		return new ArrayList<PersonnePhysique>(setEnfantsMenage);
 	}
 
+	@Override
 	public List<PersonnePhysique> getEnfants(Contribuable ctb, RegDate dateValidite) {
 		if (ctb instanceof MenageCommun) {
 			return getEnfants((MenageCommun) ctb, dateValidite);
@@ -1759,10 +1760,13 @@ public class TiersServiceImpl implements TiersService {
 		final List<PersonnePhysique> listeRecherche = getEnfants(ctb, finPeriodeImposition);
 		if (!listeRecherche.isEmpty()) {
 			for (PersonnePhysique enfant : listeRecherche) {
-				Individu individuEnfant = getIndividu(enfant);
-				if (individuEnfant != null && individuEnfant.getDateDeces() == null) {
+				// warm-up du cache individu avec adresses
+				getIndividu(enfant, 2400, new AttributeIndividu[]{AttributeIndividu.ADRESSES});
+				final RegDate dateDeces = getDateDeces(enfant);
+				//enfant non Décédé
+				if (dateDeces == null) {
 					//Enfant mineur à la date de fin de la periode d'imposition
-					if (!FiscalDateHelper.isMajeurAt(individuEnfant, finPeriodeImposition)) {
+					if (isMineur(enfant, finPeriodeImposition)) {
 						//L'adresse de domicile (EGID) doit être la même entre l'enfant et le contribuable
 						if (isEgidCoherent(ctb, enfant, finPeriodeImposition)) {
 							listeEnfants.add(enfant);
@@ -1776,15 +1780,26 @@ public class TiersServiceImpl implements TiersService {
 		return listeEnfants;
 	}
 
-	private Boolean isEgidCoherent(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
+	/** L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition.
+	 * Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant. Si
+	 * deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI.
+	 * Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
+	 *
+	 * @param parent  le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
+	 * @param enfant   qui est succeptible d'être rajouter sur la DI
+	 * @param finPeriodeImposition   date de fin de période d'imposition
+	 * @return     <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
+	 */
+	private boolean isEgidCoherent(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
 		try {
-			final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE,
-					finPeriodeImposition, false);
-			final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE,
-					finPeriodeImposition, false);
+			final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+			final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 			if (parent instanceof PersonnePhysique) {
-				final boolean isparentsAvecEgidDifferent = TiersHelper.isParentsAvecEgidDifferent((PersonnePhysique) parent, enfant, finPeriodeImposition, adresseService, this);
-				if (adresseDomicileParent != null && adresseDomicileEnfant != null && isparentsAvecEgidDifferent) {
+				//Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
+				final boolean hasParentsAvecEgidDifferent =
+						TiersHelper.hasParentsAvecEgidDifferent(enfant, (PersonnePhysique) parent, adresseDomicileParent, finPeriodeImposition, adresseService, this);
+				if (adresseDomicileParent != null && adresseDomicileEnfant != null && hasParentsAvecEgidDifferent) {
+					//On compare l'egid du parent et de l'enfant
 					return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 				}
 
@@ -1794,16 +1809,15 @@ public class TiersServiceImpl implements TiersService {
 				PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
 				PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 				if (conjoint != null) {
-					final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE,
-							finPeriodeImposition, false);
-					final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE,
-							finPeriodeImposition, false);
+					final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+					final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+					//Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant.
 					if (TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
 						return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 
 					}
 					else {
-						//deux membres d'un ménage commun habitent a deux endroits différents
+						//les deux membres du ménage commun habitent a deux endroits différents
 						return false;
 					}
 				}

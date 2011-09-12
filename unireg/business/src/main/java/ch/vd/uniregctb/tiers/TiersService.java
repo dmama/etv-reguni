@@ -174,7 +174,8 @@ public interface TiersService {
 	public List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite);
 
 	/**
-	 * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du contribuable spécifié.
+	 * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du ménage commun spcécifié.
+	 *  Il sagit de l'union <i>au sens emsembliste</i> des enfants des deux composantes du ménage commun  .
 	 * <p/>
 	 * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les enfants qui sont eux-mêmes contribuables.
 	 *
@@ -199,7 +200,7 @@ public interface TiersService {
 	/**
 	 * Permet de recupérer la liste des enfants à faire figurer sur la DI  d'un contribuable
 	 *
-	 * @param ctb                  dont on recherche les enfants
+	 * @param ctb   dont on recherche les enfants
 	 * @param finPeriodeImposition
 	 * @return la liste des enfants, vide sinon.
 	 */

@@ -248,26 +248,42 @@ public class TiersHelper {
 		return results;
 	}
 
+	/**Cette fonction permet de  trouver l'autre parent d'un enfant passé en paramètre
+	 *
+	 * @param enfant    dont on recherche l'autre parent
+	 * @param parent     Premier parent connu
+	 * @param dateValidite   date de validité du lien parental
+	 * @param tiersService
+	 * @return l'autre parent de l'enfant
+	 */
 	public static PersonnePhysique getAutreParent(PersonnePhysique enfant, PersonnePhysique parent, RegDate dateValidite, TiersService tiersService) {
 		List<PersonnePhysique> lesParents = tiersService.getParents(enfant, dateValidite);
 		if (lesParents.size() > 1) {
-			final PersonnePhysique autreParent = parent.getNumero() != lesParents.get(0).getNumero() ? lesParents.get(0) : lesParents.get(1);
+			final PersonnePhysique autreParent = !parent.getNumero().equals(lesParents.get(0).getNumero()) ? lesParents.get(0) : lesParents.get(1);
 			return autreParent;
 		}
 		return null;
 
 	}
 
-	public static boolean isParentsAvecEgidDifferent(PersonnePhysique parent, PersonnePhysique enfant, RegDate finPeriodeImposition,
-	                                                 AdresseService adresseService, TiersService tiersService) throws AdresseException {
+	/** Determine si les deux parents d'un contribuable enfant  ont un domicile(EGID) différent
+	 *
+	 * @param enfant pour qui on compare l'egid des parents
+	 * @param parent   connu de l'enfant
+	 * @param  adresseParent adresse du parent connu
+	 * @param finPeriodeImposition   date de validitéde l'adresse du second parent
+	 * @param adresseService       service des adresses
+	 * @param tiersService service des tiers
+	 * @return True si les 2 parents ont un egid différent, False sinon
+	 * @throws AdresseException
+	 */
+	public static boolean hasParentsAvecEgidDifferent(PersonnePhysique enfant, PersonnePhysique parent, AdresseGenerique adresseParent, RegDate finPeriodeImposition,
+	                                                  AdresseService adresseService, TiersService tiersService) throws AdresseException {
 		final PersonnePhysique parentConjoint = TiersHelper.getAutreParent(enfant, parent, finPeriodeImposition, tiersService);
 		if (parentConjoint != null) {
-			final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE,
-					finPeriodeImposition, false);
-			final AdresseGenerique adresseDomicileParentConjoint = adresseService.getAdresseFiscale(parentConjoint, TypeAdresseFiscale.DOMICILE,
-					finPeriodeImposition, false);
-			if (adresseDomicileParentConjoint != null && adresseDomicileParent != null) {
-				return !isSameEgid(adresseDomicileParentConjoint.getEgid(), adresseDomicileParent.getEgid());
+			final AdresseGenerique adresseDomicileParentConjoint = adresseService.getAdresseFiscale(parentConjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+			if (adresseDomicileParentConjoint != null && adresseParent != null) {
+				return !isSameEgid(adresseDomicileParentConjoint.getEgid(), adresseParent.getEgid());
 			}
 			else {
 				return false;
