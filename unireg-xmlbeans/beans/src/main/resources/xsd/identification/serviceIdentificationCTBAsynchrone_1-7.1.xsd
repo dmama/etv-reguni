@@ -21,7 +21,7 @@
 										<xs:element name="typeMessage" type="xs:string"/>
 										<xs:element name="periodeFiscale" type="xs:gYear"/>
 										<xs:element name="prioriteEmetteur" type="xs:boolean"/>
-										<xs:element name="prioriteUtilisateur" type="xs:boolean"/>
+										<xs:element name="prioriteUtilisateur" type="prioriteUtilisateurType"/>
 										<xs:element name="modeIdentification" type="ModeIdentificationType"/>
 										<xs:element name="transmetteur" type="xs:string" minOccurs="0"/>
 										<xs:element name="montant" type="xs:nonNegativeInteger" minOccurs="0"/>
