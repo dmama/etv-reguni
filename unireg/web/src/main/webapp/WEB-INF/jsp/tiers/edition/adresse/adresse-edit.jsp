@@ -196,6 +196,10 @@
 											$('#numeroRue').val(null);
 											// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
 										}
+										if ($('#div_pays').is(":visible")) {
+											// [SIFISC-832] on ne valide pas les rues pour les adresses étrangères
+											$('#rue').removeClass('error');
+										}
 									});
 								});
 							</script>
