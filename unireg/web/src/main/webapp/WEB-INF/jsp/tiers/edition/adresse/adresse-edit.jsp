@@ -72,37 +72,41 @@
 				<div id="adresse_saisie" >
 					<table border="0">
 					<tr class="odd">
-						<td width="25%"><fmt:message key="label.complements" />:</td>
-						<td colspan="3" width="75%">
+						<td width="30em"></td>
+						<td>
+							<div style="margin-left:1em">
+								<c:if test="${command.id != null}">
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
+								</c:if>
+								<c:if test="${command.id == null}">
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
+								</c:if>
+								<label for="typeLocalite1"><fmt:message key="label.suisse" /></label><br>
+
+								<c:if test="${command.id != null}">
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
+								</c:if>
+								<c:if test="${command.id == null}">
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
+								</c:if>
+								<label for="typeLocalite2"><fmt:message key="label.etranger" /></label>
+							</div>
+						</td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr class="even">
+						<td><fmt:message key="label.complements" />:</td>
+						<td colspan="3">
 						<form:input path="complements" cssErrorClass="input-with-errors"
 						size ="100" maxlength="${lengthadrnom}" /></td>
 					</tr>
-					<tr class="even">
-						<td colspan="2" width="50%">
-						<c:if test="${command.id != null}">
-							<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
-						</c:if>
-						<c:if test="${command.id == null}">
-							<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
-						</c:if>
-							<label for="typeLocalite1"><fmt:message key="label.suisse" /></label>
-						</td>
-						<td colspan="2" width="50%">
-							<c:if test="${command.id != null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
-							</c:if>
-							<c:if test="${command.id == null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
-							</c:if>
-							<label for="typeLocalite2"><fmt:message key="label.etranger" /></label>
-						</td>
-					</tr>
 					<tr class="odd">
-						<td width="25%">
+						<td>
 							<div id="div_label_localite_suisse"><fmt:message key="label.localite.suisse" />:</div>
 							<div id="div_label_pays_npa" style="display:none;"><fmt:message key="label.npa.localite" /> :</div>
 						</td>
-						<td width="25%">
+						<td>
 							<div id="div_input_localite_suisse">
 								<form:input path="localiteSuisse" id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
 								<form:hidden path="numeroOrdrePoste" id="numeroOrdrePoste"  />
@@ -148,11 +152,11 @@
 								<form:errors path="localiteNpa" cssClass="error"/>
 							</div>
 						</td>
-						<td width="25%">
+						<td>
 							<div id="div_label_lieu" style="display:none;">
 							<fmt:message key="label.complement.localite" />:</div>
 						</td>
-						<td width="35%">
+						<td>
 							<div id="div_input_lieu" style="display:none;">
 								<form:input path="complementLocalite" id="complementLocalite" cssErrorClass="input-with-errors"
 								size ="20" maxlength="${lengthadrnom}" />
@@ -161,8 +165,8 @@
 						</td>
 					</tr>
 					<tr class="even" id="div_pays" style="display:none;">
-						<td width="25%"><fmt:message key="label.paysEtranger" />:</td>
-						<td colspan="3"  width="75%">
+						<td><fmt:message key="label.paysEtranger" />:</td>
+						<td colspan="3" >
 								<form:hidden path="paysOFS" id="tiers_numeroOfsNationalite"/>
 								<form:input path="paysNpa" id="pays" cssErrorClass="input-with-errors" size ="20" />
 								<form:errors path="paysNpa" cssClass="error"/>
@@ -176,8 +180,8 @@
 						</td>
 					</tr>
 					<tr class="even">
-						<td width="25%"><fmt:message key="label.rue" />&nbsp;:</td>
-						<td width="25%">
+						<td><fmt:message key="label.rue" />&nbsp;:</td>
+						<td>
 							<form:input path="rue" id="rue" size ="25" cssErrorClass="input-with-errors" maxlength="${lengthadrnom}" />
 							<form:errors path="rue" cssClass="error"/>
 							<form:hidden path="numeroRue" id="numeroRue"/>
@@ -196,38 +200,38 @@
 								});
 							</script>
 						</td>
-						<td width="25%"><fmt:message key="label.numero.maison" />:</td>
-						<td width="25%">
+						<td><fmt:message key="label.numero.maison" />:</td>
+						<td>
 							<form:input path="numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors"
 							size ="5" maxlength="${lengthadrnum}" />
 							<form:errors path="numeroMaison" cssClass="error"/>
 						</td>
 					</tr>
 					<tr class="odd">
-						<td width="25%"><fmt:message key="label.numero.appartement" />&nbsp;:</td>
-						<td width="75%" colspan="3">
+						<td><fmt:message key="label.numero.appartement" />&nbsp;:</td>
+						<td colspan="3">
 							<form:input path="numeroAppartement" id="numeroAppartement" cssErrorClass="input-with-errors"
 							size ="5" maxlength="${lengthadrnum}" />
 							<form:errors path="numeroAppartement" cssClass="error"/>
 						</td>
 					</tr>
 					<tr class="even">
-						<td width="25%"><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
-						<td width="25%">
+						<td><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
+						<td>
 							<form:select path="texteCasePostale" id="texteCasePostale">
 								<form:option value="" ></form:option>
 								<form:options items="${textesCasePostale}" />
 							</form:select>
 						</td>
-						<td width="25%" id="td_case_postale_label"><fmt:message key="label.case.postale" /> :</td>
-						<td width="25%"	id="td_case_postale">
+						<td id="td_case_postale_label"><fmt:message key="label.case.postale" /> :</td>
+						<td	id="td_case_postale">
 							<form:input path="numeroCasePostale" id="numeroCasePostale" cssErrorClass="input-with-errors" size ="5" />
 							<form:errors path="numeroCasePostale" cssClass="error"/>
 						</td>
 					</tr>
 					<tr class="odd">
-						<td width="25%"><fmt:message key="label.adresse.permanente" />&nbsp;:</td>
-						<td width="75%" colspan="3">
+						<td><fmt:message key="label.adresse.permanente" />&nbsp;:</td>
+						<td colspan="3">
 							<form:checkbox path="permanente" id="adressePermanente" cssErrorClass="input-with-errors" />
 							<form:errors path="permanente" cssClass="error"/>
 						</td>
