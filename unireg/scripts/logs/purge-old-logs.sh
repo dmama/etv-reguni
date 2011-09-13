@@ -3,10 +3,10 @@
 ENVIRONMENT="$1"
 LIMIT="$2"
 if [ -z "$ENVIRONMENT" ]; then
-        echo "Syntaxe : $(basename "$0") <env> <days> avec <env> l'un de PR, PO, VA, PP, FO et <days> l'âge maximal de conservation des logs dans cet environnement" >&2
+        echo "Syntaxe : $(basename "$0") <env> <days> avec <env> l'un de PR, PO, VA, PP, FO, IN et <days> l'âge maximal de conservation des logs dans cet environnement" >&2
         exit 1
-elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
-        echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
+elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO|IN)$ ]]; then
+        echo "Pour l'environnement, seuls PR, PO, VA, PP, FO et IN sont acceptés (trouvé : '$ENVIRONMENT')" >&2
         exit 1
 elif [[ ! "$LIMIT" =~ ^0*[1-9][0-9]*$ ]]; then
 	echo "L'âge maximal de conservation des logs doit être un entier positif (trouvé : '$LIMIT')" >&2
