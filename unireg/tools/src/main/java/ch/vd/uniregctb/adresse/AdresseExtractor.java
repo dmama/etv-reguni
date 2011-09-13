@@ -2,8 +2,10 @@ package ch.vd.uniregctb.adresse;
 
 import javax.xml.ws.BindingProvider;
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class AdresseExtractor {
 
 	private static final int TAILLE_LOT = 100;
 	private static final String nomFichier = "tiers.csv";
+	private static final String fichierDestination = "/tmp/tiers-avec-adresse.csv";
 	
 	public static void main(String[] args) throws Exception {
 
@@ -83,6 +86,18 @@ public class AdresseExtractor {
 			}
 		}
 
+		final boolean closeStream;
+		final PrintStream ps;
+		if (fichierDestination == null) {
+			ps = System.out;
+			closeStream = false;
+		}
+		else {
+			final FileOutputStream stream = new FileOutputStream(fichierDestination);
+			ps = new PrintStream(stream);
+			closeStream = true;
+		}
+
 		// et on boucle sur les lots
 		for (List<Long> lot : lots) {
 			batchTiers.getTiersNumbers().clear();
@@ -99,7 +114,7 @@ public class AdresseExtractor {
 				}
 				else {
 					final AdresseEnvoi adr = tiers.getAdresseEnvoi();
-					System.out.println(String.format("%d;%s;%s;%s;%s;%s;%s", entry.getNumber(),
+					ps.println(String.format("%d;%s;%s;%s;%s;%s;%s", entry.getNumber(),
 							StringUtils.trimToEmpty(adr.getLigne1()),
 							StringUtils.trimToEmpty(adr.getLigne2()),
 							StringUtils.trimToEmpty(adr.getLigne3()),
@@ -108,6 +123,10 @@ public class AdresseExtractor {
 							StringUtils.trimToEmpty(adr.getLigne6())));
 				}
 			}
+		}
+
+		if (closeStream) {
+			ps.close();
 		}
 	}
 
