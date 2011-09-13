@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -57,23 +50,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(di.getTiers(), true);
 		diView.setContribuable(tiersGeneralView);
-		diView.setDateDebutPeriodeImposition(di.getDateDebut());
-		diView.setDateFinPeriodeImposition(di.getDateFin());
-		diView.setPeriodeFiscale(di.getPeriode().getAnnee());
-		diView.setCodeControle(di.getCodeControle());
-		diView.setTypeDeclarationImpot(di.getTypeDeclaration());
-		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
-		for (DelaiDeclaration delai : di.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
-			delaiView.setFirst(di.getPremierDelai() == delai.getDelaiAccordeAu());
-			delaisView.add(delaiView);
-		}
-		Collections.sort(delaisView);
-		diView.setDelais(delaisView);
-		Collections.sort(diView.getDelais());
-		diView.setEtats(new ArrayList<EtatDeclaration>(di.getEtats()));
-		Collections.sort(diView.getEtats());
-		diView.setId(di.getId());
+		diView.fill(di);
 
 		return diView;
 	}

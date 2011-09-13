@@ -59,25 +59,33 @@
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.retour" />&nbsp;:</td>
+				<td width="25%">
 				<c:if test="${command.allowedQuittancement}">
-					<td width="25%">
-						<c:if test="${depuisTache == null}">
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateRetour" />
-								<jsp:param name="id" value="dateRetour" />
-							</jsp:include>
-						</c:if>
-						<c:if test="${depuisTache != null}">
-							<fmt:formatDate value="${command.dateRetour}" pattern="dd.MM.yyyy" />
-						</c:if>
-					</td>
-
+					<c:if test="${depuisTache == null}">
+						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+							<jsp:param name="path" value="dateRetour" />
+							<jsp:param name="id" value="dateRetour" />
+						</jsp:include>
+					</c:if>
+					<c:if test="${depuisTache != null}">
+						<fmt:formatDate value="${command.dateRetour}" pattern="dd.MM.yyyy" />
+					</c:if>
 				</c:if>
 				<c:if test="${!command.allowedQuittancement}">
-					<td width="25%"><fmt:formatDate value="${command.dateRetour}" pattern="dd.MM.yyyy"/></td>
+					<fmt:formatDate value="${command.dateRetour}" pattern="dd.MM.yyyy"/>
 				</c:if>
-				<td width="25%">&nbsp;</td>
-				<td width="25%">&nbsp;</td>
+				</td>
+				<td width="25%"><fmt:message key="label.source"/>&nbsp;:</td>
+				<td width="25%">
+					<c:if test="${command.dateRetour != null}">
+						<c:if test="${command.sourceRetour == null}">
+							<fmt:message key="option.source.quittancement.UNKNOWN" />
+						</c:if>
+						<c:if test="${command.sourceRetour != null}">
+							<fmt:message key="option.source.quittancement.${command.sourceRetour}" />
+						</c:if>
+					</c:if>
+				</td>
 			</tr>
 		</c:if>
 		<c:if test="${command.id == null}">

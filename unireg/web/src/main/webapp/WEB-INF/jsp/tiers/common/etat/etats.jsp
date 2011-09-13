@@ -22,6 +22,16 @@
 				<span class="pdf-grayed" id="disabled-copie-sommation-${etat.id}" style="display: none;">&nbsp;</span>
 			</c:if>
 		</display:column>
+ 		<display:column titleKey="label.source">
+			<c:if test="${etat.etat == 'RETOURNEE'}">
+				<c:if test="${etat.source == null}">
+					<fmt:message key="option.source.quittancement.UNKNOWN" />
+				</c:if>
+				<c:if test="${etat.source != null}">
+					<fmt:message key="option.source.quittancement.${etat.source}" />
+				</c:if>
+			</c:if>
+		</display:column>
 		<display:column style="action">
 			<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
 		</display:column>

@@ -530,17 +530,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		List<DeclarationImpotDetailView> disView = new ArrayList<DeclarationImpotDetailView>();
 		List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(numero);
 		for (DeclarationImpotOrdinaire di : dis) {
-			DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
-			diView.setId(di.getId());
-			diView.setPeriodeFiscale(di.getPeriode().getAnnee());
-			diView.setCodeControle(di.getCodeControle());
-			diView.setDateDebutPeriodeImposition(di.getDateDebut());
-			diView.setDateFinPeriodeImposition(di.getDateFin());
-			diView.setDelaiAccorde(di.getDelaiAccordeAu());
-			diView.setDateRetour(di.getDateRetour());
-			final EtatDeclaration etat = di.getDernierEtat();
-			diView.setEtat(etat == null ? null : etat.getEtat());
-			diView.setAnnule(di.isAnnule());
+			DeclarationImpotDetailView diView = new DeclarationImpotDetailView(di);
 			disView.add(diView);
 		}
 		Collections.sort(disView, new DeclarationImpotDetailComparator());
@@ -566,22 +556,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
 		diEditView.setImprimable(true);
 		diEditView.setContribuable(tiersGeneralView);
-		diEditView.setId(id);
+		diEditView.fill(di);
 
-		final EtatDeclaration etatDI = di.getDernierEtat();
-		diEditView.setEtat(etatDI == null ? null : etatDI.getEtat());
-		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
-		diEditView.setCodeControle(di.getCodeControle());
-		diEditView.setTypeDeclarationImpot(di.getTypeDeclaration());
-		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
-		diEditView.setDateFinPeriodeImposition(di.getDateFin());
-		diEditView.setDateRetour(di.getDateRetour());
-
-		setDelais(diEditView, di);
-
-		diEditView.setAnnule(di.isAnnule());
 		setDroitDI(diEditView, di.getTiers());
+
 		boolean isSommable = false;
+		final EtatDeclaration etatDI = di.getDernierEtat();
 		if (etatDI != null && etatDI.getEtat() == TypeEtatDeclaration.EMISE) {
 			if (di.getDelaiAccordeAu() == null || RegDate.get().isAfter(di.getDelaiAccordeAu())) {
 				isSommable = true;
@@ -611,17 +591,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			return null;
 		}
 		return di.getTiers().getNumero();
-	}
-
-	private void setDelais(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
-		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
-		for (DelaiDeclaration delai : di.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
-			delaiView.setFirst(di.getPremierDelai() == delai.getDelaiAccordeAu());
-			delaisView.add(delaiView);
-		}
-		Collections.sort(delaisView);
-		diEditView.setDelais(delaisView);
 	}
 
 	/**
@@ -674,14 +643,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		Contribuable ctb = (Contribuable) di.getTiers();
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
 		diEditView.setContribuable(tiersGeneralView);
-		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
-		diEditView.setCodeControle(di.getCodeControle());
-		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
-		diEditView.setDateFinPeriodeImposition(di.getDateFin());
-
-		setDelais(diEditView, di);
-
-		diEditView.setAnnule(di.isAnnule());
+		diEditView.fill(di);
 		return diEditView;
 	}
 

@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.di.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
@@ -35,6 +40,7 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 	private RegDate dateFinPeriodeImposition;
 
 	private RegDate dateRetour;
+	private String sourceRetour;
 
 	/**
 	 * VRAI si la date de retour {@link #dateRetour} est non nulle en création
@@ -89,7 +95,50 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 	private String errorMessage;
 	
 	private boolean ouverte;
-	
+
+	public DeclarationImpotDetailView() {
+
+	}
+
+	public DeclarationImpotDetailView(DeclarationImpotOrdinaire di) {
+		fill(di);
+	}
+
+	public void fill(DeclarationImpotOrdinaire di) {
+		
+		this.id = di.getId();
+		this.periodeFiscale = di.getPeriode() == null ? null : di.getPeriode().getAnnee();
+		this.codeControle = di.getCodeControle();
+		this.dateDebutPeriodeImposition = di.getDateDebut();
+		this.dateFinPeriodeImposition = di.getDateFin();
+		this.typeDeclarationImpot = di.getTypeDeclaration();
+		this.delaiAccorde = di.getDelaiAccordeAu();
+		this.dateRetour = di.getDateRetour();
+		this.annule = di.isAnnule();
+
+		// les états
+		final ArrayList<EtatDeclaration> etats = new ArrayList<EtatDeclaration>(di.getEtats());
+		Collections.sort(etats);
+		this.setEtats(etats);
+
+		final EtatDeclaration etat = di.getDernierEtat();
+		this.etat = (etat == null ? null : etat.getEtat());
+
+		if (etat instanceof EtatDeclarationRetournee) {
+			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
+		}
+
+		// les délais
+		final List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
+		for (DelaiDeclaration delai : di.getDelais()) {
+			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			delaiView.setFirst(di.getPremierDelai() == delai.getDelaiAccordeAu());
+			delaisView.add(delaiView);
+		}
+		Collections.sort(delaisView);
+		this.delais = delaisView;
+	}
+
 
 	public boolean isAllowedSommation() {
 		return isAllowedSommation;
@@ -161,6 +210,10 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 
 	public void setDateRetour(RegDate dateRetour) {
 		this.dateRetour = dateRetour;
+	}
+
+	public String getSourceRetour() {
+		return sourceRetour;
 	}
 
 	public boolean isDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste() {

@@ -28,7 +28,6 @@ import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -245,16 +244,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			if (declaration instanceof DeclarationImpotOrdinaire) {
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 				DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
-				diView.setId(di.getId());
-				diView.setDateDebutPeriodeImposition(di.getDateDebut());
-				diView.setDateFinPeriodeImposition(di.getDateFin());
-				diView.setPeriodeFiscale(di.getPeriode() != null ? di.getPeriode().getAnnee() : null);
-				diView.setCodeControle(di.getCodeControle());
-				diView.setAnnule(di.isAnnule());
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
-				diView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());
-				diView.setDelaiAccorde(di.getDelaiAccordeAu());
-				diView.setDateRetour(di.getDateRetour());
+				diView.fill(di);
 				disView.add(diView);
 			}
 		}

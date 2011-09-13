@@ -42,6 +42,15 @@
 		<display:column sortable ="true" titleKey="label.etat.avancement" >
 			<c:if test="${di.annule}"><strike></c:if>
 				<fmt:message key="option.etat.avancement.${di.etat}" />
+				<c:if test="${di.dateRetour != null}">
+					<c:if test="${di.sourceRetour == null}">
+						(<fmt:message key="option.source.quittancement.UNKNOWN" />)
+					</c:if>
+					<c:if test="${di.sourceRetour != null}">
+						(<fmt:message key="option.source.quittancement.${di.sourceRetour}" />)
+					</c:if>
+				</c:if>
+			</td>
 			<c:if test="${di.annule}"></strike></c:if>
 		</display:column>
 		<display:column style="action">
