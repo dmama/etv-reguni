@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.jms;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,30 +36,6 @@ public abstract class EsbMessageHelper {
 			if (overwrite || message.getHeader(name) == null) {
 				message.addHeader(name, headers.get(name));
 			}
-		}
-	}
-
-	/**
-	 * Renvoie une map dans laquelle seules les clés présentes dans le tableau 'toKeep' sont reprises de la map 'src'
-	 * @param src map de laquelle les valeurs seront extraites
-	 * @param toKeep tableau des clés à reprendre de la map source
-	 * @return map reprenant le contenu de la map 'src' pour les clés fournies dans 'toKeep'
-	 */
-	public static Map<String, String> filterHeaders(Map<String, String> src, String[] toKeep) {
-		if (src == null || src.size() == 0) {
-			return src;
-		}
-		else if (toKeep == null || toKeep.length == 0) {
-			return Collections.emptyMap();
-		}
-		else {
-			final Map<String, String> dest = new HashMap<String, String>(Math.min(toKeep.length, src.size()));
-			for (String key : toKeep) {
-				if (src.containsKey(key)) {
-					dest.put(key, src.get(key));
-				}
-			}
-			return dest;
 		}
 	}
 

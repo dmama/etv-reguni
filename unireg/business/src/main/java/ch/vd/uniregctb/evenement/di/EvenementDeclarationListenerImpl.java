@@ -91,9 +91,9 @@ public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageLis
 		}
 	}
 
-	private void onMessage(EsbMessage message, Map<String, String> customHeaders) throws Exception {
+	private void onMessage(EsbMessage message, Map<String, String> incomingHeaders) throws Exception {
 		final EvenementDeclaration event = parse(message.getBodyAsSource(), message.getBusinessId());
-		handler.onEvent(event, customHeaders);
+		handler.onEvent(event, incomingHeaders);
 	}
 
 	private EvenementDeclaration parse(Source message, String businessId) throws JAXBException, SAXException, IOException {

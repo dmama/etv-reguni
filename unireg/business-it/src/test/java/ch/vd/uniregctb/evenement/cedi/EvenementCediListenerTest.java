@@ -80,7 +80,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementCediHandler() {
 			@Override
-			public void onEvent(EvenementCedi event, Map<String, String> customHeaders) {
+			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
 				events.add(event);
 			}
 		});
@@ -122,7 +122,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementCediHandler() {
 			@Override
-			public void onEvent(EvenementCedi event, Map<String, String> customHeaders) {
+			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
 				events.add(event);
 			}
 		});

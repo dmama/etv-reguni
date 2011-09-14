@@ -81,9 +81,9 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 		}
 	}
 
-	private void onMessage(String message, String businessId, Map<String, String> customHeaders) throws XmlException, EvenementCediException {
+	private void onMessage(String message, String businessId, Map<String, String> incomingHeaders) throws XmlException, EvenementCediException {
 		final EvenementCedi event = parse(message, businessId);
-		handler.onEvent(event, customHeaders);
+		handler.onEvent(event, incomingHeaders);
 	}
 
 	private EvenementCedi parse(String message, String businessId) throws XmlException {

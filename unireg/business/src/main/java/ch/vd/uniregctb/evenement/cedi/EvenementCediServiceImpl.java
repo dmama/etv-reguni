@@ -27,12 +27,6 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCediServiceImpl.class);
 
-	/**
-	 * Liste des attributs customs du message entrant qu'il faut transmettre au BAM
-	 * (en plus des attributs vraiment obligatoires du style processDefinitionId et processInstanceId...)
-	 */
-	private static final String[] CUSTOM_HEADERS_TO_PASS_ON_TO_BAM = { "periodeFiscale", "numeroContribuable", "numeroVersion", "numeroSequence" };
-
 	private TiersDAO tiersDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
@@ -40,17 +34,17 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private BamEventSender bamEventSender;
 
 	@Override
-	public void onEvent(EvenementCedi event, Map<String, String> customHeaders) throws EvenementCediException {
+	public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) throws EvenementCediException {
 
 		if (event instanceof RetourDI) {
-			onRetourDI((RetourDI) event, customHeaders);
+			onRetourDI((RetourDI) event, incomingHeaders);
 		}
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + event.getClass());
 		}
 	}
 
-	protected void onRetourDI(RetourDI scan, Map<String, String> customHeaders) throws EvenementCediException {
+	protected void onRetourDI(RetourDI scan, Map<String, String> incomingHeaders) throws EvenementCediException {
 
 		// On récupère le contribuable correspondant
 		final long ctbId = scan.getNoContribuable();
@@ -82,7 +76,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		}
 
 		// on envoie l'information au BAM
-		sendRetourDiToBAM(ctbId, annee, customHeaders);
+		sendRetourDiToBAM(ctbId, annee, incomingHeaders);
 
 		// On met-à-jour les informations personnelles
 		updateInformationsPersonnelles(ctb, scan);
@@ -91,13 +85,12 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		updateTypeDocument(declaration, scan);
 	}
 
-	private void sendRetourDiToBAM(long ctbId, int annee, Map<String, String> customHeaders) throws EvenementCediException {
-		final String processDefinitionId = EsbMessageHelper.getProcessDefinitionId(customHeaders);
-		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(customHeaders);
+	private void sendRetourDiToBAM(long ctbId, int annee, Map<String, String> incomingHeaders) throws EvenementCediException {
+		final String processDefinitionId = EsbMessageHelper.getProcessDefinitionId(incomingHeaders);
+		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
-				final Map<String, String> headers = EsbMessageHelper.filterHeaders(customHeaders, CUSTOM_HEADERS_TO_PASS_ON_TO_BAM);
-				bamEventSender.sendEventBamRetourDi(processDefinitionId, processInstanceId, String.format("%d-%d", ctbId, annee), headers);
+				bamEventSender.sendEventBamRetourDi(processDefinitionId, processInstanceId, String.format("%d-%d", ctbId, annee), ctbId, annee, null);
 			}
 			catch (RuntimeException e) {
 				throw e;

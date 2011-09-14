@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 public class MockBamEventSender implements BamEventSender {
 
 	@Override
-	public void sendEventBamRetourDi(String processDefinitionId, String processInstanceId, String businessId, @Nullable Map<String, String> additionalHeaders) throws Exception {
+	public void sendEventBamRetourDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
 	}
 
 	@Override
-	public void sendEventBamQuittancementDi(String processDefinitionId, String processInstanceId, String businessId, @Nullable Map<String, String> additionalHeaders) throws Exception {
+	public void sendEventBamQuittancementDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
 	}
 }

@@ -80,7 +80,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 
 		listener.setHandler(new EvenementDeclarationHandler() {
 			@Override
-			public void onEvent(EvenementDeclaration event, Map<String, String> customHeaders) {
+			public void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) {
 				events.add(event);
 			}
 

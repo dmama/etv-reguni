@@ -15,5 +15,5 @@ public interface EvenementCediHandler {
 	 * @param event un événement CEDI (non-persisté).
 	 * @throws EvenementCediException en cas d'erreur métieur dans le traitement de l'événement.
 	 */
-	public void onEvent(EvenementCedi event, Map<String, String> customHeaders) throws EvenementCediException;
+	public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) throws EvenementCediException;
 }
