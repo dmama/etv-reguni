@@ -33,7 +33,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-tools-4.11.2.jar</source>
+			<source>target/uniregctb-tools-4.11.3-SNAPSHOT.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>lib</outputDirectory>
 			<destName>uniregctb-tools.jar</destName>
