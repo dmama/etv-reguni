@@ -676,7 +676,7 @@
 		<spring-modules.version>0.9</spring-modules.version>
 		<cxf.version>2.3.3-fuse-01-09</cxf.version>
 		<lucene.version>3.0.1</lucene.version>
-		<activemq.version>5.4.2-fuse-02-00</activemq.version>
+		<activemq.version>5.5.0-fuse-00-53</activemq.version>
 		<jencks.version>2.2</jencks.version>
 
 		<!-- Testing dependency versions -->
