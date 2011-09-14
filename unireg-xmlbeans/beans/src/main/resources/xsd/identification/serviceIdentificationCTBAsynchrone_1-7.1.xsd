@@ -25,6 +25,7 @@
 										<xs:element name="modeIdentification" type="ModeIdentificationType"/>
 										<xs:element name="transmetteur" type="xs:string" minOccurs="0"/>
 										<xs:element name="montant" type="xs:nonNegativeInteger" minOccurs="0"/>
+										<xs:element name="dateMessage" type="xs:date" minOccurs="0"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
