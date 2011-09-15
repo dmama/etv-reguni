@@ -179,6 +179,18 @@
 		<script>
 			$(function() {
 				$("#tiersTabs").tabs({cookie:{}});
+
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				// [SIFISC-2337] chargement différé (ajax) de la liste des immeubles (si nécessaire seulement)
+				$.get('../rf/immeuble/count.do?ctb=${command.tiersGeneral.numero}', function(data) {
+					if (parseInt(data) > 0) { // si le contribuable possède au moins un immeuble
+						var len = $("#tiersTabs").tabs("length");
+						// ajoute un tab avec la liste des immeubles en avant dernière position (le tab des remarques doit rester le dernier)
+						$("#tiersTabs").tabs("add", '../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}', "Immeubles", len - 1);
+						$('#ui-tabs-2').addClass('ui-tabs-hide'); // work-around pour un bug dans jQuery qui fait qu'une div surnuméraire est créée et qu'elle n'est pas masquée correctement.
+					}
+				});
+				</authz:authorize>
 			});
 		</script>
 

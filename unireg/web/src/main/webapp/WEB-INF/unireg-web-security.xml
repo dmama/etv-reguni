@@ -90,7 +90,9 @@
 	</bean>
 
 	<!-- Handles any AccessDeniedException and AuthenticationException thrown within the filter chain -->
-	<bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+	<bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<property name="forceEagerSessionCreation" value="true"/> <!-- à vrai pour éviter un warning du context persistence storage lors du retour de requêtes JSON -->
+	</bean>
 
 	<!-- Allow the use of getRemoteUser(), getUserPrincipal(), etc on request for Spring Security -->
 	<bean id="contextHolderAwareRequestFilter" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter"/>

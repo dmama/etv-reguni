@@ -15,6 +15,18 @@
 
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<!-- [SIFISC-2337] ajouté le JSON message converter (+ explicité les autres) -->
+		<property name="messageConverters">
+			<array>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="writeAcceptCharset" value="false"/>
+				</bean>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+			</array>
+		</property>
 	</bean>
 
 	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->

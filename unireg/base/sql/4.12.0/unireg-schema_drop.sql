@@ -30,6 +30,8 @@ drop table FOR_FISCAL cascade constraints;
 
 drop table IDENTIFICATION_PERSONNE cascade constraints;
 
+drop table IMMEUBLE cascade constraints;
+
 drop table MIGREG_ERROR cascade constraints;
 
 drop table MODELE_DOCUMENT cascade constraints;

@@ -9607,4 +9607,48 @@
       <value>12600009</value>
     </row>
   </table>
+	<table name="IMMEUBLE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>DATE_MUTATION</column>
+		<column>NO_OFS_COMMUNE</column>
+		<column>NO_PARCELLE</column>
+		<column>NO_LOT</column>
+		<column>NO_SOUSLOT</column>
+		<column>NATURE_IMMEUBLE</column>
+		<column>ESTIMATION_FISCALE</column>
+		<column>GENRE_PROPRIETE</column>
+		<column>PART_PROPRIETE_NUMERATEUR</column>
+		<column>PART_PROPRIETE_DENOMINATEUR</column>
+		<column>CTB_ID</column>
+		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>tiers-basic</value>
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>tiers-basic</value>
+			<value>20000101</value>
+			<null />
+			<value>19991116</value>
+			<value>5586</value>
+			<value>158</value>
+			<value>1</value>
+			<value>1</value>
+			<value>VILLA</value>
+			<value>1325000</value>
+			<value>INDIVIDUELLE</value>
+			<value>1</value>
+			<value>2</value>
+			<value>86006202</value>
+		</row>
+	</table>
 </dataset>

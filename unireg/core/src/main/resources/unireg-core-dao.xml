@@ -73,6 +73,7 @@
 
 	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDaoSupport"/>
 
+	<bean id="immeubleDAO" class="ch.vd.uniregctb.rf.ImmeubleDAOImpl" parent="hibernateDaoSupport"/>
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">
