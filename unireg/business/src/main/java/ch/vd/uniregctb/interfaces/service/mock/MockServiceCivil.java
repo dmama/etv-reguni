@@ -26,6 +26,7 @@ import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -419,14 +420,19 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return permis;
 	}
 
-	protected void addOrigine(MockIndividu individu, @Nullable Pays pays, @Nullable Commune commune, RegDate debut) {
+	protected void addOrigine(MockIndividu individu, Commune commune) {
+		addOrigine(individu, commune.getNomMinuscule());
+	}
+
+	protected void addOrigine(MockIndividu individu, String nomLieu) {
 		final MockOrigine origine = new MockOrigine();
-		if (commune != null) {
-			origine.setNomLieu(commune.getNomMinuscule());
-			origine.setSigleCanton(commune.getSigleCanton());
+		origine.setNomLieu(nomLieu);
+		Collection<Origine> origines = individu.getOrigines();
+		if (origines == null) {
+			origines = new ArrayList<Origine>();
+			individu.setOrigines(origines);
 		}
-		origine.setPays(pays);
-		individu.setOrigine(origine);
+		origines.add(origine);
 	}
 
 	protected void addNationalite(MockIndividu individu, Pays pays, RegDate debut, @Nullable RegDate fin) {

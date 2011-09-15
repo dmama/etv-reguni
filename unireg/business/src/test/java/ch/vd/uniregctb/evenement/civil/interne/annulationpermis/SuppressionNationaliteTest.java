@@ -75,7 +75,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 				super.init();
 
 				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
-				addOrigine(julie, MockPays.France, null, RegDate.get(1976, 4, 19));
+				addOrigine(julie, MockPays.France.getNomMinuscule());
 				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null);
 				addNationalite(julie, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
 			}

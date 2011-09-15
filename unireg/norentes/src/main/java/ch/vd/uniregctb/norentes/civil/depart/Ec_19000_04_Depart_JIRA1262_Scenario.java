@@ -85,7 +85,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 				final RegDate dateNaissanceSebastien = date(1971, 6, 27);
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
-				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
+				addOrigine(indSebastien, MockCommune.Neuchatel);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null);
 				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
 

@@ -219,8 +219,8 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			marieIndividu(pierre, RegDate.get(1986, 4, 8));
 
 			/* origines */
-			addOrigine(bea, null, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
-			addOrigine(julien, null, MockCommune.Lausanne, RegDate.get(1966, 11, 2));
+			addOrigine(bea, MockCommune.Lausanne);
+			addOrigine(julien, MockCommune.Lausanne);
 		}
 	};
 

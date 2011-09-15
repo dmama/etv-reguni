@@ -59,7 +59,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndMomo, dateNaissance, "Durant", "Maurice", true);
 				addDefaultAdressesTo(momo);
-				addOrigine(momo, MockPays.Suisse, null, dateNaissance);
+				addOrigine(momo, MockPays.Suisse.getNomMinuscule());
 				addNationalite(momo, MockPays.Suisse, dateNaissance, null);
 				momo.setNouveauNoAVS(avsOriginal);
 			}

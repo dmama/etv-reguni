@@ -39,7 +39,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private long noTechnique;
 	private String nouveauNoAVS;
 	private String numeroRCE;
-	private Origine origine;
+	private Collection<Origine> origines;
 	private List<Permis> permis;
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
@@ -227,12 +227,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Origine getOrigine() {
-		return origine;
+	public Collection<Origine> getOrigines() {
+		return origines;
 	}
 
-	public void setOrigine(Origine origine) {
-		this.origine = origine;
+	public void setOrigines(Collection<Origine> origines) {
+		this.origines = origines;
 	}
 
 	@Override
@@ -287,7 +287,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			nationalites = individu.getNationalites();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
-			origine = individu.getOrigine();
+			origines = individu.getOrigines();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individu.getParents();

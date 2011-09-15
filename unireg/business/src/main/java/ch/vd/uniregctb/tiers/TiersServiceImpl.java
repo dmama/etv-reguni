@@ -634,22 +634,7 @@ public class TiersServiceImpl implements TiersService {
 			return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, false, date);
 		}
 
-		/* Si aucune nationalité, alors on se base sur l'origine */
-		boolean paysOrigineRenseigne = (individu.getOrigine() != null && individu.getOrigine().getPays() != null);
-		boolean origineSuisse = ((individu.getOrigine() != null && individu.getOrigine().getNomLieu() != null) || (individu.getOrigine() != null
-				&& individu.getOrigine().getPays() != null && individu.getOrigine().getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse));
-
-		/* Si il a une origine suisse, il est suisse */
-		if (origineSuisse) {
-			return false;
-		}
-
-		/* Sinon on vérifie que le pays d'origine est renseigné, si oui alors il est étranger, reste à vérifier les permis */
-		if (paysOrigineRenseigne) {
-			return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, false, date);
-		}
-
-		/* Si le pays d'origine n'est pas renseigné, on regarde les permis en cours (il doit forcément en avoir un) */
+		/* Nationalité inconnue, on regarde les permis en cours (il doit forcément en avoir un) */
 		return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, true, date);
 	}
 

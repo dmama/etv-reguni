@@ -172,15 +172,16 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * Origine
 	 */
 	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
-		Origine origine = getServiceCivilService().getOrigine(numeroIndividu, DateHelper.getCurrentYear());
-		if (origine != null) {
-			String lieu = origine.getNomLieu();
-			if (lieu != null) {
-				indCible.setOrigine(String.format("%s (%s)", lieu, origine.getSigleCanton()));
-			} else if (origine.getPays() != null) {
-				//TODO [xcifde] A supprimer quand le rapprochement pays origine nationalite sera fini sur le Host
-				indCible.setOrigine(origine.getPays().getNomMinuscule());
+		final Collection<Origine> origines = getServiceCivilService().getOrigines(numeroIndividu, DateHelper.getCurrentYear());
+		if (origines != null && origines.size() > 0) {
+			final StringBuilder b = new StringBuilder();
+			for (Origine origine : origines) {
+				if (b.length() > 0) {
+					b.append(", ");
+				}
+				b.append(origine.getNomLieu());
 			}
+			indCible.setOrigine(b.toString());
 		}
 	}
 
@@ -190,14 +191,17 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
 
 		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, DateHelper.getCurrentYear());
-		if (nationalites == null) {
-			return;
-		}
-
-		for (Nationalite nationalite : nationalites) {
-			if (nationalite.getDateFinValidite() == null) {
-				indCible.setNationalite(nationalite.getPays().getNomMinuscule());
+		if (nationalites != null && nationalites.size() > 0) {
+			final StringBuilder b = new StringBuilder();
+			for (Nationalite nationalite : nationalites) {
+				if (nationalite.getDateFinValidite() == null) {
+					if (b.length() > 0) {
+						b.append(", ");
+					}
+					b.append(nationalite.getPays().getNomMinuscule());
+				}
 			}
+			indCible.setNationalite(b.toString());
 		}
 	}
 

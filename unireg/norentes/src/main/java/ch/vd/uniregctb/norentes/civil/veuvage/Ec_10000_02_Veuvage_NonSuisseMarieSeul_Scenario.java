@@ -71,7 +71,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 
 				marieIndividu(indMikkel, RegDate.get(1986, 4, 8));
 
-				addOrigine(indMikkel, MockPays.Danemark, null, RegDate.get(1961, 3, 12));
+				addOrigine(indMikkel, MockPays.Danemark.getNomMinuscule());
 				addNationalite(indMikkel, MockPays.Danemark, RegDate.get(1961, 3, 12), null);
 				addEtatCivil(indMikkel, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indMikkel, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);

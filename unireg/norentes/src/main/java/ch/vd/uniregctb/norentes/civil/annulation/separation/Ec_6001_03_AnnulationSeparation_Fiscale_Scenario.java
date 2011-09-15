@@ -52,11 +52,11 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 			protected void init() {
 
 				MockIndividu andrea = addIndividu(noIndAndrea, dateNaissanceAndrea, "Polari", "Andrea", true);
-				addOrigine(andrea, MockPays.Suisse, null, dateNaissanceAndrea);
+				addOrigine(andrea, MockPays.Suisse.getNomMinuscule());
 				addNationalite(andrea, MockPays.Suisse, dateNaissanceAndrea, null);
 
 				MockIndividu liliana = addIndividu(noIndLiliana, dateNaissanceLiliana, "Polari", "Liliana", false);
-				addOrigine(liliana, MockPays.Suisse, null, dateNaissanceLiliana);
+				addOrigine(liliana, MockPays.Suisse.getNomMinuscule());
 				addNationalite(liliana, MockPays.Suisse, dateNaissanceLiliana, null);
 
 				marieIndividus(andrea, liliana , dateMariage);

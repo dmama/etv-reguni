@@ -63,7 +63,7 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 			RegDate dateNaissanceRoberto = RegDate.get(1961, 3, 12);
 			MockIndividu roberto = addIndividu(noIndRoberto, dateNaissanceRoberto, "Martin", "Roberto", true);
 			addDefaultAdressesTo(roberto);
-			addOrigine(roberto, MockPays.Espagne, null, dateNaissanceRoberto);
+			addOrigine(roberto, MockPays.Espagne.getNomMinuscule());
 			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
 
 			addPermis(roberto, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), false);

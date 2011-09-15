@@ -303,18 +303,18 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Origine getOrigine(final long noIndividu, final int annee) {
+	public Collection<Origine> getOrigines(final long noIndividu, final int annee) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getOrigine(noIndividu, annee);
+			return target.getOrigines(noIndividu, annee);
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrigine", new Object() {
+			tracing.end(time, t, "getOrigines", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);

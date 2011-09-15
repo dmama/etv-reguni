@@ -91,13 +91,13 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 				marieIndividus(indMomo, indBea, dateMariage);
 				separeIndividus(indMomo, indBea, dateSeparation);
 
-				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
+				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeMomoVillars, dateAvantMariage);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 
-				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
+				addOrigine(indBea, MockCommune.Lausanne);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}

@@ -2,16 +2,15 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.interfaces.model.Commune;
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.uniregctb.interfaces.model.Origine;
-import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class OrigineImpl implements Origine, Serializable {
 
-	private static final long serialVersionUID = 6793876990036640079L;
-	
-	private final Commune commune;
-	private final Pays pays;
+	private static final long serialVersionUID = -4733215913274172897L;
+
+	private final String nomLieu;
 
 	public static OrigineImpl get(ch.vd.registre.civil.model.Origine target) {
 		if (target == null) {
@@ -21,23 +20,24 @@ public class OrigineImpl implements Origine, Serializable {
 	}
 
 	private OrigineImpl(ch.vd.registre.civil.model.Origine target) {
-		this.commune = CommuneImpl.get(target.getCommune());
-		this.pays = PaysImpl.get(target.getPays());
+		this.nomLieu = StringUtils.trimToEmpty(target.getNomCommune());
 	}
 
 	@Override
 	public String getNomLieu() {
-		return commune == null ? null : commune.getNomMinuscule();
+		return nomLieu;
 	}
 
 	@Override
-	public String getSigleCanton() {
-		return commune == null ? null : commune.getSigleCanton();
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		final OrigineImpl origine = (OrigineImpl) o;
+		return !(nomLieu != null ? !nomLieu.equals(origine.nomLieu) : origine.nomLieu != null);
 	}
 
 	@Override
-	public Pays getPays() {
-		return pays;
+	public int hashCode() {
+		return nomLieu != null ? nomLieu.hashCode() : 0;
 	}
-
 }

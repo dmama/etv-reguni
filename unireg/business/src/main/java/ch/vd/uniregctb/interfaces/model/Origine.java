@@ -3,23 +3,9 @@ package ch.vd.uniregctb.interfaces.model;
 public interface Origine {
 
 	/**
-	 * Retourne le nom du lieu d'origine. Cet attribut est obligatoire pour les citoyens suisses; il est <code>null</code> pour les étrangers.
-	 *
-	 * @return le nom du lieu (commune, localité, ...) d'origine.
+	 * Retourne le nom du lieu d'origine. Il s'agit d'un texte libre qui ne doit servir qu'à l'affichage et en aucun cas
+	 * à des décisions métier automatiques
+	 * @return le nom du lieu (commune, localité, pays ?...) d'origine.
 	 */
 	String getNomLieu();
-
-	/**
-	 * Le sigle du canton d'origine. Cet attribut est obligatoire pour les citoyens suisses; il est <code>null</code> pour les étrangers.
-	 *
-	 * @return le sigle du canton d'origine.
-	 */
-	String getSigleCanton();
-
-	/**
-	 * Retourne le pays de l'origine. Cette attribut peut être <code>null</code> si l'origine est suisse.
-	 *
-	 * @return le pays de l'origine.
-	 */
-	Pays getPays();
 }

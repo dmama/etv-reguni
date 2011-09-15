@@ -131,11 +131,11 @@ public interface Individu extends EntiteCivile {
     boolean isSexeMasculin();
 
     /**
-     * Retourne l'origine de l'individu étendu.
+     * Retourne les origines de l'individu étendu.
      *
-     * @return l'origine de l'individu étendu.
+     * @return les origines de l'individu étendu.
      */
-    Origine getOrigine();
+    Collection<Origine> getOrigines();
 
 	/**
 	 * @return les parents de l'individu courant.

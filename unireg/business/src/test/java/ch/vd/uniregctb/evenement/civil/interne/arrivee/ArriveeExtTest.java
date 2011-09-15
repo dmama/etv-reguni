@@ -951,7 +951,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -1052,7 +1052,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
-				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 			}
@@ -1136,7 +1136,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
-				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), false);
 				addPermis(pierre, TypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), false);
@@ -1222,7 +1222,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
-				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 
@@ -1338,10 +1338,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
-				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -1477,10 +1477,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
-				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -1625,10 +1625,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
-				addOrigine(julie, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(julie, TypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, false);
 
@@ -1754,7 +1754,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						dateArrivee, null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -1863,10 +1863,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
-				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -2024,7 +2024,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(bea, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
 				
-				addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, dateNaissance);
+				addOrigine(bea, MockCommune.Lausanne);
 				addNationalite(bea, MockPays.Suisse, dateNaissance, null);
 			}
 		});
@@ -2173,10 +2173,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
-				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(julie, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
@@ -2566,9 +2566,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateRetour, null);
 
 				// nationalité
-				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
-				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addOrigine(julie, MockCommune.Lausanne);
 				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
 				// marie les individus

@@ -66,7 +66,7 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, RegDate.get(1956, 2, 25), "Girard", "André", true);
 				addDefaultAdressesTo(andre);
 				marieIndividu(andre, dateMariageAndre);
-				addOrigine(andre, MockPays.France, null, andre.getDateNaissance());
+				addOrigine(andre, MockPays.France.getNomMinuscule());
 				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null);
 				addPermis(andre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, false);
 			}

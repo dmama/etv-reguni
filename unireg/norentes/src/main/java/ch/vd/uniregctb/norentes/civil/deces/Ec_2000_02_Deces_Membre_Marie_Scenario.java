@@ -80,11 +80,11 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 			@Override
 			protected void init() {
 				indGuillaume = addIndividu(noIndGuillaume, dateNaissanceGuillaume, "Tell", "Guillaume", true);
-				addOrigine(indGuillaume, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGuillaume);
+				addOrigine(indGuillaume, MockCommune.Neuchatel);
 				addNationalite(indGuillaume, MockPays.Suisse, dateNaissanceGuillaume, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
-				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);
+				addOrigine(indHeidi, MockCommune.Bern);
 				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null);
 				addAdresse(indHeidi, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 

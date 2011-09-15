@@ -80,11 +80,11 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 			@Override
 			protected void init() {
 				indHamlet = addIndividu(noIndHamlet, dateNaissanceHamlet, "du Danemark", "Hamlet", true);
-				addOrigine(indHamlet, MockPays.Danemark, null, dateNaissanceHamlet);
+				addOrigine(indHamlet, MockPays.Danemark.getNomMinuscule());
 				addNationalite(indHamlet, MockPays.Danemark, dateNaissanceHamlet, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
-				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);
+				addOrigine(indHeidi, MockCommune.Bern);
 				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null);
 				addAdresse(indHeidi, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, null);
 

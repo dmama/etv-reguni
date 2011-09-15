@@ -76,12 +76,12 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 				marieIndividus(indMomo, indBea, dateMariage);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
+				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 
-				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
+				addOrigine(indBea, MockCommune.Lausanne);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}

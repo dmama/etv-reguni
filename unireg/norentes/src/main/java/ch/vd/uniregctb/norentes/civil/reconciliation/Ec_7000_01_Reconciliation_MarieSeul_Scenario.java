@@ -66,7 +66,7 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 				separeIndividu(indPierre, null, dateSeparation);
 				marieIndividu(indPierre, dateReconciliation);
 
-				addOrigine(indPierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
+				addOrigine(indPierre, MockPays.Suisse.getNomMinuscule());
 				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 			}
 		});

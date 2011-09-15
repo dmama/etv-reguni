@@ -59,7 +59,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 			@Override
 			protected void init() {
 				indJulie = addIndividu(noIndJulie, dateNaissance, "Goux", "Julie", false);
-				addOrigine(indJulie, MockPays.France, null, RegDate.get(1961, 3, 12));
+				addOrigine(indJulie, MockPays.France.getNomMinuscule());
 				addNationalite(indJulie, MockPays.France, RegDate.get(1961, 3, 12), null);
 				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}

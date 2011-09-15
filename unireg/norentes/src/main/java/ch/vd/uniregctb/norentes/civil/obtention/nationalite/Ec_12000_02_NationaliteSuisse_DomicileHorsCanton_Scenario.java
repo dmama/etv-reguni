@@ -79,7 +79,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				super.init();
 
 				indJulie = getIndividu(noIndJulie);
-				addOrigine(indJulie, MockPays.France, null, dateNaissance);
+				addOrigine(indJulie, MockPays.France.getNomMinuscule());
 				addNationalite(indJulie, MockPays.France, dateNaissance, null);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null);
 				addPermis(indJulie, TypePermis.ANNUEL, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), false);

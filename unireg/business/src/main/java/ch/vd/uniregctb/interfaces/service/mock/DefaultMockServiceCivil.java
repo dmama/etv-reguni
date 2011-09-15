@@ -63,31 +63,31 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		marieIndividus(leon, helene, RegDate.get(1986, 4, 8));
 		marieIndividu(pierre, RegDate.get(1986, 4, 8));
 
-		addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+		addOrigine(bea, MockCommune.Lausanne);
 		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
-		addOrigine(helene, MockPays.France, null, RegDate.get(1963, 8, 20));
+		addOrigine(helene, MockPays.France.getNomMinuscule());
 		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null);
 		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
 
-		addOrigine(sophie, MockPays.Suisse, null, RegDate.get(1973, 8, 20));
+		addOrigine(sophie, MockPays.Suisse.getNomMinuscule());
 		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null);
 		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 
-		addOrigine(pierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
+		addOrigine(pierre, MockPays.Suisse.getNomMinuscule());
 		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 
-		addOrigine(momo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
+		addOrigine(momo, MockPays.Suisse.getNomMinuscule());
 		addNationalite(momo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 
-		addOrigine(julien, MockPays.Suisse, null, RegDate.get(1966, 11, 2));
+		addOrigine(julien, MockPays.Suisse.getNomMinuscule());
 		addNationalite(julien, MockPays.Suisse, RegDate.get(1966, 11, 2), null);
 
-		addOrigine(david, MockPays.Suisse, null, RegDate.get(1964, 1, 23));
+		addOrigine(david, MockPays.Suisse.getNomMinuscule());
 		addNationalite(david, MockPays.Suisse, RegDate.get(1964, 1, 23), null);
 
-		addOrigine(victor, MockPays.Espagne, null, RegDate.get(1956, 5, 12));
+		addOrigine(victor, MockPays.Espagne.getNomMinuscule());
 		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null);
 
 		// Individus du fichier tiers basic

@@ -45,7 +45,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private boolean isMasculin;
 	private RegDate deces;
 	private RegDate naissance;
-	private Origine origine; // TODO (msi) transformer en collection pour gérer l'historique
+	private Collection<Origine> origines;
 	private Tutelle tutelle;
 	private Collection<AdoptionReconnaissance> adoptions;
 	private Collection<Adresse> adresses;
@@ -72,7 +72,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.isMasculin = initIsMasculin(personInformation);
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
 		this.naissance = EchHelper.partialDateFromEch44(personInformation.getDateOfBirth());
-		this.origine = initOrigin(person);
+		this.origines = initOrigins(person);
 		this.tutelle = null; // TODO (rcpers)
 		this.adoptions = null; // TODO (rcpers)
 		this.adresses = initAdresses(person.getContact(), person.getResidence(), infraService);
@@ -158,12 +158,18 @@ public class IndividuRCPers implements Individu, Serializable {
 		return null;
 	}
 
-	private static Origine initOrigin(Person person) {
+	private static Collection<Origine> initOrigins(Person person) {
 		final List<PlaceOfOrigin> origins = person.getIdentity().getOrigin();
 		if (origins == null || origins.isEmpty()) {
 			return null;
 		}
-		return OrigineRCPers.get(origins.get(origins.size() - 1));
+		else {
+			final List<Origine> liste = new ArrayList<Origine>(origins.size());
+			for (PlaceOfOrigin origin : origins) {
+				liste.add(OrigineRCPers.get(origin));
+			}
+			return liste;
+		}
 	}
 
 	@Override
@@ -257,8 +263,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public Origine getOrigine() {
-		return origine;
+	public Collection<Origine> getOrigines() {
+		return origines;
 	}
 
 	@Override

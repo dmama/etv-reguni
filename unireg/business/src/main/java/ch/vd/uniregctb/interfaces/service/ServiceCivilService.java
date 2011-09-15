@@ -199,7 +199,7 @@ public interface ServiceCivilService {
 	Collection<Nationalite> getNationalites(long noIndividu, int annee);
 
 	/**
-	 * Retourne l'origine, valides <b>jusqu'à</b> l'année en paramètre, d'un individu identifié par le numéro en paramètre.
+	 * Retourne les origines, valides <b>jusqu'à</b> l'année en paramètre, d'un individu identifié par le numéro en paramètre.
 	 * <p/>
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
 	 * <p/>
@@ -209,9 +209,9 @@ public interface ServiceCivilService {
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
-	 * @return l'origine de l'individu, valides jusqu'à l'année spécifiée.
+	 * @return les origines de l'individu, valides jusqu'à l'année spécifiée.
 	 */
-	Origine getOrigine(long noIndividu, int annee);
+	Collection<Origine> getOrigines(long noIndividu, int annee);
 
 	/**
 	 * Retourne la liste des permis, valides <b>jusqu'à</b> l'année en paramètre, de l'individu identifié par le numéro en paramètre.

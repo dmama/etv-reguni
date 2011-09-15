@@ -79,14 +79,14 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 				marieIndividus(indMomo, indBea, dateMariage);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
+				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateArriveeVillars, avantDateMariage);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateMariage, dateDivorce.getOneDayBefore());
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDivorce, null);
 
-				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
+				addOrigine(indBea, MockCommune.Lausanne.getNomMinuscule());
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateNaissanceBea, null);
 			}

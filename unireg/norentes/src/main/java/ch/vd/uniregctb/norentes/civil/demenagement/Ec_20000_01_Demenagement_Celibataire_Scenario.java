@@ -60,7 +60,7 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 			protected void init() {
 				MockIndividu indConceicao = addIndividu(noIndConceicao, RegDate.get(1976, 7, 24), "Conceiçao", "Aparecida Porto", false);
 
-				addOrigine(indConceicao, MockPays.Espagne, null, indConceicao.getDateNaissance());
+				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
 				addPermis(indConceicao, TypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, false);

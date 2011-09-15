@@ -73,10 +73,10 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 				separeIndividus(indMomo, indBea, dateSeparation);
 				marieIndividus(indMomo, indBea, dateReconciliation);
 
-				addOrigine(indBea, MockPays.Suisse, commune, RegDate.get(1963, 8, 20));
+				addOrigine(indBea, commune);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
-				addOrigine(indMomo, MockPays.Suisse, null, RegDate.get(1961, 3, 12));
+				addOrigine(indMomo, MockPays.Suisse.getNomMinuscule());
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});

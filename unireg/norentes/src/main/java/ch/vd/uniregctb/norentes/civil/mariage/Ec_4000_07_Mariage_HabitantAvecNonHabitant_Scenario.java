@@ -82,7 +82,7 @@ public class Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 
 				indMaria = addIndividu(noIndMaria, dateNaissanceMaria, "Nadalino", "Maria", false);
 
-				addOrigine(indMaria, MockPays.Suisse, null, dateNaissanceMaria);
+				addOrigine(indMaria, MockPays.Suisse.getNomMinuscule());
 				addNationalite(indMaria, MockPays.Suisse, dateNaissanceMaria, null);
 				addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceMaria, null);
 			}

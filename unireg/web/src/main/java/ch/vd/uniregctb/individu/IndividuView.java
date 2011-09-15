@@ -78,7 +78,7 @@ public class IndividuView {
 	private String numeroRCE;
 
 	/**
-	 * Origine
+	 * Origine(s) (texte libre...)
 	 */
 	private String origine;
 
@@ -259,7 +259,7 @@ public class IndividuView {
 	}
 
 	/**
-	 * @return the origine
+	 * @return the origine(s)
 	 */
 	public String getOrigine() {
 		return origine;

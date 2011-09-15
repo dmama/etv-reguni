@@ -72,7 +72,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 				separeIndividu(indJulie, null, dateSeparation);
 				divorceIndividu(indJulie, dateDivorce);
 
-				addOrigine(indJulie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
+				addOrigine(indJulie, MockCommune.Lausanne);
 				addNationalite(indJulie, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indJulie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminPrazBerthoud, null, RegDate.get(1961, 3, 12), null);
 			}

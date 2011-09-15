@@ -67,12 +67,12 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 
 				marieIndividus(indMomo, indBea, dateMariage);
 
-				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
+				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 
-				addOrigine(indBea, MockPays.France, null, RegDate.get(1961, 3, 12));
+				addOrigine(indBea, MockPays.France.getNomMinuscule());
 				addPermis(indMomo, TypePermis.ANNUEL, dateMariage, null, false);
 				addNationalite(indBea, MockPays.France, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);

@@ -103,9 +103,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Origine getOrigine(long noTechniqueIndividu, int anneeValidite) {
+	public Collection<Origine> getOrigines(long noTechniqueIndividu, int anneeValidite) {
 		assertTargetNotNull();
-		return target.getOrigine(noTechniqueIndividu, anneeValidite);
+		return target.getOrigines(noTechniqueIndividu, anneeValidite);
 	}
 
 	@Override

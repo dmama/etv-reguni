@@ -78,7 +78,7 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 
 				marieIndividu(indPierre, dateMariage);
 
-				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
+				addOrigine(indPierre, MockPays.Suisse.getNomMinuscule());
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);

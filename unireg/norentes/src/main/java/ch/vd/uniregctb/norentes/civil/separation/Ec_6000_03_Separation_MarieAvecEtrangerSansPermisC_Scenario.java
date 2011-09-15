@@ -81,13 +81,13 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 				separeIndividus(indMomo, indBea, dateSeparation);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France, null, dateNaissanceMomo);
+				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null);
 				addPermis(indMomo, TypePermis.COURTE_DUREE, dateNaissanceMomo, null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateSeparation, null);
 
-				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, dateNaissanceBea);
+				addOrigine(indBea, MockCommune.Lausanne);
 				addNationalite(indBea, MockPays.Suisse, dateNaissanceBea, null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissanceBea, null);
 			}

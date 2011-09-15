@@ -78,14 +78,14 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 
 				final RegDate dateNaissanceCharles = RegDate.get(1944, 8, 2);
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
-				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
+				addOrigine(indCharles, MockCommune.Neuchatel);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null);
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 
 				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
 				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
-				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
+				addOrigine(indGorgette, MockCommune.Neuchatel);
 				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null);
 				addAdresse(indGorgette, TypeAdresseCivil.PRINCIPALE,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indGorgette, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);

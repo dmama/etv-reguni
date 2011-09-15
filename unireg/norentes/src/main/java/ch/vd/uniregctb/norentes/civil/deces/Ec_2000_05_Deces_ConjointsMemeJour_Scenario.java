@@ -80,12 +80,12 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 			@Override
 			protected void init() {
 				indHamlet = addIndividu(noIndHamlet, dateNaissanceHamlet, "du Danemark", "Hamlet", true);
-				addOrigine(indHamlet, MockPays.Danemark, null, dateNaissanceHamlet);
+				addOrigine(indHamlet, MockPays.Danemark.getNomMinuscule());
 				addNationalite(indHamlet, MockPays.Danemark, dateNaissanceHamlet, null);
 				addAdresse(indHamlet, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminPrazBerthoud, null, dateArriveeVD, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);
-				addOrigine(indHeidi, MockPays.Suisse, MockCommune.Bern, dateNaissanceHeidi);
+				addOrigine(indHeidi, MockCommune.Bern);
 				addNationalite(indHeidi, MockPays.Suisse, dateNaissanceHeidi, null);
 
 				marieIndividus(indHamlet, indHeidi, dateMariage);

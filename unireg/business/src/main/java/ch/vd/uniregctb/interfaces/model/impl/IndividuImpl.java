@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private Collection<Individu> enfants;
 	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
-	private Origine origine;
+	private Collection<Origine> origines;
 	private List<Permis> permis;
 	private Tutelle tutelle;
 
@@ -69,7 +70,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.enfants = initEnfants(target.getEnfants());
 		this.etatsCivils = initEtatsCivils(target);
 		this.nationalites = initNationalites(target.getNationalites());
-		this.origine = OrigineImpl.get(target.getOrigine());
+		this.origines = initOrigines(target.getOrigines());
 		this.permis = initPermis(target.getPermis());
 		this.tutelle = TutelleImpl.get(target.getTutelle());
 	}
@@ -96,7 +97,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			nationalites = individuWrapper.nationalites;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
-			origine = individuWrapper.origine;
+			origines = individuWrapper.origines;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individuWrapper.parents;
@@ -115,13 +116,28 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return adoptions;
 	}
 
-	private List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions) {
+	private static List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions) {
 		final List<AdoptionReconnaissance> list = new ArrayList<AdoptionReconnaissance>();
 		if (targetAdoptions != null) {
 			for (Object o : targetAdoptions) {
 				ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
 				list.add(AdoptionReconnaissanceImpl.get(a));
 			}
+		}
+		return list;
+	}
+
+	private static List<Origine> initOrigines(Collection<ch.vd.registre.civil.model.Origine> targetOrigines) {
+		final List<Origine> list;
+		if (targetOrigines != null) {
+			final Set<Origine> set = new LinkedHashSet<Origine>();
+			for (ch.vd.registre.civil.model.Origine origine : targetOrigines) {
+				set.add(OrigineImpl.get(origine));
+			}
+			list = new ArrayList<Origine>(set);     // pour éliminer les doublons...
+		}
+		else {
+			list = Collections.emptyList();
 		}
 		return list;
 	}
@@ -169,7 +185,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return enfants;
 	}
 
-	private List<Individu> initEnfants(Collection<?> targetEnfants) {
+	private static List<Individu> initEnfants(Collection<?> targetEnfants) {
 		final List<Individu> list = new ArrayList<Individu>();
 		if (targetEnfants != null) {
 			for (Object o : targetEnfants) {
@@ -247,7 +263,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return nationalites;
 	}
 
-	private List<Nationalite> initNationalites(Collection<?> targetNationalites) {
+	private static List<Nationalite> initNationalites(Collection<?> targetNationalites) {
 		final List<Nationalite> list = new ArrayList<Nationalite>();
 		if (targetNationalites != null) {
 			for (Object o : targetNationalites) {
@@ -283,8 +299,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public Origine getOrigine() {
-		return origine;
+	public Collection<Origine> getOrigines() {
+		return origines;
 	}
 
 	@Override
@@ -333,7 +349,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			nationalites = individu.getNationalites();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
-			origine = individu.getOrigine();
+			origines = individu.getOrigines();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individu.getParents();

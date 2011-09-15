@@ -70,7 +70,7 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 				final RegDate dateAmenagement = RegDate.get(1977, 1, 6);
 
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
-				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
+				addOrigine(indCharles, MockCommune.Neuchatel);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null);
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);
 				addAdresse(indCharles, TypeAdresseCivil.COURRIER,  MockRue.Chamblon.RueDesUttins, null, dateAmenagement, null);

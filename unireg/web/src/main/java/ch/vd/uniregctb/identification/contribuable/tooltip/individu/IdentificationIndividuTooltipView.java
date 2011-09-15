@@ -48,8 +48,14 @@ public class IdentificationIndividuTooltipView {
 				this.nationalite = null;
 			}
 			else {
-				final Nationalite last = nationalites.get(nationalites.size() - 1);
-				this.nationalite = last.getPays().getNomMinuscule();
+				final StringBuilder b = new StringBuilder();
+				for (Nationalite nationalite : nationalites) {
+					if (b.length() > 0) {
+						b.append(", ");
+					}
+					b.append(nationalite.getPays().getNomMinuscule());
+				}
+				this.nationalite = b.toString();
 			}
 		}
 	}

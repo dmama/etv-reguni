@@ -90,14 +90,14 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Origine getOrigine(long noIndividu, int annee) {
+	public final Collection<Origine> getOrigines(long noIndividu, int annee) {
 
 		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ORIGINE);
 		if (individu == null) {
 			return null;
 		}
 
-		return individu.getOrigine();
+		return individu.getOrigines();
 	}
 
 	@Override
