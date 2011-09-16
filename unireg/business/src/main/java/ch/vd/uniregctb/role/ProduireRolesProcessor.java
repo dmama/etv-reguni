@@ -526,7 +526,7 @@ public class ProduireRolesProcessor {
 		}
 		else {
 
-			// ajoute les assujettissements du contribuable de l'année spécifiée dans le rapprot
+			// ajoute les assujettissements du contribuable de l'année spécifiée dans le rapport
 			try {
 				processAssujettissements(anneePeriode, ctb, rapport, groupement);
 			}
@@ -695,7 +695,7 @@ public class ProduireRolesProcessor {
 	 * @param forFiscal le for fiscal déterminant de l'assujettissement
 	 * @param typeCtb le type de contribuable, ou <b>null</b> si le contribuable n'est pas assujetti
 	 * @param groupement
-     * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
+     * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiquement renseigné dans le rapport)
 	 */
 	protected void processForFiscal(Assujettissement assujettissement, ForFiscalRevenuFortune forFiscal, TypeContribuable typeCtb, AssujettissementContainer assujettissementContainer,
 	                                GroupementCommunes groupement) throws TraitementException {
@@ -724,10 +724,17 @@ public class ProduireRolesProcessor {
 			}
 			else {
 				final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode, type);
-				final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
-				final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
-				final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, type, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
-				infoCtb.addFor(infoFor);
+				if (type == TypeAssujettissement.TERMINE_DANS_PF && tiersService.isSourcierGris(contribuable, debutFin.dateFermeture)) {
+					// [SIFISC-1797] Il ne faut pas tout d'un coup afficher à la commune le départ d'un contribuable qu'elle ne connait pas
+					rapport.addCtbIgnoreSourcierGris(contribuable);
+					throw new TraitementException();
+				}
+				else {
+					final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
+					final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
+					final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, type, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
+					infoCtb.addFor(infoFor);
+				}
 			}
 		}
 		catch (AssujettissementException e) {

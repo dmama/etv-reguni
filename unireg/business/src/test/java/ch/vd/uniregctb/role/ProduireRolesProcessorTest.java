@@ -1075,4 +1075,34 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(ppId, ignore.noCtb);
 		assertEquals(ProduireRolesResults.IgnoreType.SOURCIER_GRIS, ignore.raison);
 	}
+
+	/**
+	 * SIFISC-1797
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testSourcierGrisCelibataireDepartHSAvecForHSRenseigne() throws Exception {
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2008, 9, 11), MotifFor.DEPART_HS, MockPays.PaysInconnu);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(1, results.ctbsIgnores.size());
+		assertEquals(0, results.infosCommunes.size());
+
+		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
+		assertNotNull(ignore);
+		assertEquals(ppId, ignore.noCtb);
+		assertEquals(ProduireRolesResults.IgnoreType.SOURCIER_GRIS, ignore.raison);
+	}
 }
