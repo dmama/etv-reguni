@@ -64,6 +64,7 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -292,14 +293,29 @@ public class TiersServiceImpl implements TiersService {
 			habitant.setSexe(Sexe.FEMININ);
 		}
 
-		//nationalité
+		// nationalité (on ne garde qu'une nationalité au hasard, sachant que si l'une est Suisse, elle a priorité)
 		final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(habitant.getNumeroIndividu(), DateHelper.getCurrentYear());
 		if (nationalites != null) {
+			Pays pays = null;
 			for (Nationalite nationalite : nationalites) {
 				if (nationalite.getDateFinValidite() == null) {
-					habitant.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+					if (pays == null) {
+						pays = nationalite.getPays();
+					}
+					else if (!pays.isSuisse()) {
+						pays = nationalite.getPays();
+					}
 				}
 			}
+			if (pays != null) {
+				habitant.setNumeroOfsNationalite(pays.getNoOFS());
+			}
+			else {
+				habitant.setNumeroOfsNationalite(null);
+			}
+		}
+		else {
+			habitant.setNumeroOfsNationalite(null);
 		}
 
 		//permis
@@ -318,6 +334,10 @@ public class TiersServiceImpl implements TiersService {
 		if (dernierPermis != null) {
 			habitant.setCategorieEtranger(CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()));
 			habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebutValidite());
+		}
+		else {
+			habitant.setCategorieEtranger(null);
+			habitant.setDateDebutValiditeAutorisation(null);
 		}
 
 		// indentification navs11 et numRCE

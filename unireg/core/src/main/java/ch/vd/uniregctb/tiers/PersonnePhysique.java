@@ -427,7 +427,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theNumeroOfsNationalite the numeroOfsNationalite to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setNumeroOfsNationalite(Integer theNumeroOfsNationalite) {
+	public void setNumeroOfsNationalite(@Nullable Integer theNumeroOfsNationalite) {
 		numeroOfsNationalite = theNumeroOfsNationalite;
 	}
 
@@ -466,7 +466,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theTypeAutorisation the typeAutorisation to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi0jVx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setCategorieEtranger(CategorieEtranger theCategorieEtranger) {
+	public void setCategorieEtranger(@Nullable CategorieEtranger theCategorieEtranger) {
 		categorieEtranger = theCategorieEtranger;
 	}
 
@@ -486,7 +486,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theDateDebutValiditeAutorisation the dateDebutValiditeAutorisation to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_RfBlkFyUEdyz_5BS6IxMlQ?SETTER"
 	 */
-	public void setDateDebutValiditeAutorisation(RegDate theDateDebutValiditeAutorisation) {
+	public void setDateDebutValiditeAutorisation(@Nullable RegDate theDateDebutValiditeAutorisation) {
 		dateDebutValiditeAutorisation = theDateDebutValiditeAutorisation;
 	}
 
