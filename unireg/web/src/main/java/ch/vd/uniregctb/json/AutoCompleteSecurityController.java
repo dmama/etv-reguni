@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.json;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
@@ -17,7 +21,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 /**
  * Contrôleur qui expose des données du service sécurité dans un format Json (utilisé ensuite dans le mécanisme d'autocompletion).
  */
-public class AutoCompleteSecurityController extends JsonController {
+@Controller
+public class AutoCompleteSecurityController {
 
 	protected final Logger LOGGER = Logger.getLogger(AutoCompleteSecurityController.class);
 
@@ -27,6 +32,7 @@ public class AutoCompleteSecurityController extends JsonController {
 		USER
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	private static class Item {
 		/**
 		 * Chaîne de caractères utilisée dans le champ d'autocompletion
@@ -45,17 +51,6 @@ public class AutoCompleteSecurityController extends JsonController {
 		 */
 		private String id2;
 
-		private Item(String label, String desc) {
-			this.label = label;
-			this.desc = desc;
-		}
-
-		private Item(String label, String desc, String id1) {
-			this.label = label;
-			this.desc = desc;
-			this.id1 = id1;
-		}
-
 		private Item(String label, String desc, String id1, String id2) {
 			this.label = label;
 			this.desc = desc;
@@ -63,46 +58,45 @@ public class AutoCompleteSecurityController extends JsonController {
 			this.id2 = id2;
 		}
 
-		public String toJson() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("{\"label\":\"").append(label).append("\",");
-			sb.append("\"desc\":\"").append(desc).append("\",");
-			sb.append("\"id1\":\"").append(id1).append("\",");
-			sb.append("\"id2\":\"").append(id2).append("\"}");
-			return sb.toString();
+		public String getLabel() {
+			return label;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public String getId1() {
+			return id1;
+		}
+
+		public String getId2() {
+			return id2;
 		}
 	}
 
-	private static class ListItem extends ArrayList<Item> {
-		public String toJson() {
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
-			for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-				final Item item = this.get(i);
-				sb.append(item.toJson());
-				if (i < thisSize - 1) {
-					sb.append(',');
-				}
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-	}
+	/**
+	 * Retourne des données du service de sécurité sous forme JSON (voir http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/)
+	 *
+	 * @param category le catégorie de données désirée
+	 * @param term     un critère de recherche des données
+	 * @return le nombre d'immeubles du contribuable spécifié.
+	 * @throws Exception en cas de problème
+	 */
+	@RequestMapping(value = "/autocomplete/security.do", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Item> security(@RequestParam("category") String category, @RequestParam("term") String term) throws Exception {
 
-	@Override
-	protected String buildJsonResponse(HttpServletRequest request) throws Exception {
-		final String category = request.getParameter("category");
 		final Set<Category> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
-		String term = request.getParameter("term");
 		final byte[] bytes = term.getBytes("ISO-8859-1");
 		term = new String(bytes, "UTF-8");
 
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final ListItem list = new ListItem();
+		final List<Item> list = new ArrayList<Item>();
 
 		if (categories.contains(Category.USER)) {
 			final List<EnumTypeCollectivite> colls = Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD,
@@ -122,7 +116,7 @@ public class AutoCompleteSecurityController extends JsonController {
 			}
 		}
 
-		return list.toJson();
+		return list;
 	}
 
 	private static Set<Category> parseCategories(String category) {

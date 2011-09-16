@@ -19,12 +19,10 @@
 	</bean>
 
 	<bean id="autoCompleteInfraController" class="ch.vd.uniregctb.json.AutoCompleteInfraController">
-		<property name="viewName" value="autocomplete/infra" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="autoCompleteSecurityController" class="ch.vd.uniregctb.json.AutoCompleteSecurityController">
-		<property name="viewName" value="autocomplete/security" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
@@ -34,9 +32,7 @@
 	</bean>
 
 	<bean id="tiersInfoController" class="ch.vd.uniregctb.json.TiersInfoController">
-		<property name="viewName" value="tiers/info" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 </beans>

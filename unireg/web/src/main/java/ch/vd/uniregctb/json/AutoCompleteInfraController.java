@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.json;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.uniregctb.common.StringComparator;
@@ -26,7 +29,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 /**
  * Contrôleur qui expose des données d'infrastructure dans un format Json (utilisé ensuite dans le mécanisme d'autocompletion).
  */
-public class AutoCompleteInfraController extends JsonController {
+@Controller
+public class AutoCompleteInfraController {
 
 	protected final Logger LOGGER = Logger.getLogger(AutoCompleteInfraController.class);
 
@@ -45,6 +49,7 @@ public class AutoCompleteInfraController extends JsonController {
 		OFFICES_IMPOT
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	private static class Item {
 		/**
 		 * Chaîne de caractères utilisée dans le champ d'autocompletion
@@ -81,54 +86,53 @@ public class AutoCompleteInfraController extends JsonController {
 			this.id2 = id2;
 		}
 
-		public String toJson() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("{\"label\":\"").append(label).append("\",");
-			sb.append("\"desc\":\"").append(desc).append("\",");
-			sb.append("\"id1\":\"").append(id1).append("\",");
-			sb.append("\"id2\":\"").append(id2).append("\"}");
-			return sb.toString();
+		public String getLabel() {
+			return label;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public String getId1() {
+			return id1;
+		}
+
+		public String getId2() {
+			return id2;
 		}
 	}
 
-	private static class ListItem extends ArrayList<Item> {
-		public String toJson() {
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
-			for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-				final Item item = this.get(i);
-				sb.append(item.toJson());
-				if (i < thisSize - 1) {
-					sb.append(',');
-				}
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-	}
+	/**
+	 * Retourne des données du service d'infrastructure sous forme JSON (voir http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/)
+	 *
+	 * @param category   le catégorie de données désirée
+	 * @param term       un critère de recherche des données
+	 * @param numCommune le numéro Ofs d'une commune (optionel)
+	 * @return le nombre d'immeubles du contribuable spécifié.
+	 * @throws Exception en cas de problème
+	 */
+	@RequestMapping(value = "/autocomplete/infra.do", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Item> infra(@RequestParam("category") String category, @RequestParam("term") String term, @RequestParam(value = "numCommune", required = false) Integer numCommune) throws Exception {
 
-	@Override
-	protected String buildJsonResponse(HttpServletRequest request) throws Exception {
-		final String category = request.getParameter("category");
 		final Set<Category> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
-		String term = request.getParameter("term");
 		final byte[] bytes = term.getBytes("ISO-8859-1");
 		term = new String(bytes, "UTF-8");
 
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final ListItem list = new ListItem();
+		final List<Item> list = new ArrayList<Item>();
 
 		if (categories.contains(Category.RUE)) {
-			final String commune = request.getParameter("numCommune");
-			if (StringUtils.isBlank(commune)) {
+			if (numCommune == null) {
 				list.add(new Item("#error: pas de localité renseignée", "#error: pas de localité renseignée"));
 			}
 			else {
-				final List<Localite> localites = serviceInfrastructureService.getLocaliteByCommune(Integer.parseInt(commune));
+				final List<Localite> localites = serviceInfrastructureService.getLocaliteByCommune(numCommune);
 				final List<Rue> rues = serviceInfrastructureService.getRues(localites);
 				final Map<Integer, Localite> mapLocalites = buildLocaliteMap(localites);
 				if (rues != null) {
@@ -250,7 +254,7 @@ public class AutoCompleteInfraController extends JsonController {
 			}
 		}
 
-		return list.toJson();
+		return list;
 	}
 
 	private Map<Integer, Localite> buildLocaliteMap(List<Localite> localites) {

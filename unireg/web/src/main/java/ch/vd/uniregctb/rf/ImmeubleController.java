@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -56,6 +57,8 @@ public class ImmeubleController {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
+
+		ControllerUtils.checkAccesDossierEnLecture(ctbId);
 
 		final List<ImmeubleView> views = new ArrayList<ImmeubleView>();
 		final List<Immeuble> list = immeubleDAO.find(ctbId);

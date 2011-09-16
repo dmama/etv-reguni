@@ -62,16 +62,11 @@
 				<entry key="/supergra/entity.do" value-ref="superGraEntityController" />
 				<entry key="/supergra/coll.do" value-ref="superGraCollectionController" />
 
-				<!-- Autocomplete -->
-				<entry key="/autocomplete/infra.do" value-ref="autoCompleteInfraController" />
-				<entry key="/autocomplete/security.do" value-ref="autoCompleteSecurityController" />
-
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
 
 				<!-- Tiers -->
 				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController" />
-				<entry key="/tiers/info.do" value-ref="tiersInfoController" />
 
 				<!-- Accès à l'inbox -->
 				<entry key="/admin/inbox.do" value-ref="inboxController" />
