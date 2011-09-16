@@ -178,7 +178,7 @@
 		</div>
 		<script>
 			$(function() {
-				$("#tiersTabs").tabs({cookie:{}});
+				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});
 
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 				// [SIFISC-2337] chargement différé (ajax) de la liste des immeubles (si nécessaire seulement)
