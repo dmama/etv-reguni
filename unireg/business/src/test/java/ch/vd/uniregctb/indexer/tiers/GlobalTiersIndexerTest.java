@@ -2,17 +2,14 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.dialect.Dialect;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -21,13 +18,13 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.async.AsyncTiersIndexerThread;
 import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.worker.BatchWorker;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -235,26 +232,29 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
 			@Override
 			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
-				return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect) {
+				return new MassTiersIndexer(nbThreads, queueSizeByThread, new BatchWorker<Long>() {
 					@Override
-					protected AsyncTiersIndexerThread createIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexerImpl indexer,
-					                                                      PlatformTransactionManager transactionManager, SessionFactory sessionFactory,
-					                                                      Mode mode, Dialect dialect) {
-						return new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect) {
-							@Override
-							protected void indexBatch(List<Long> batch) {
-								// boom au bout d'une seconde déjà...
-								try {
-									Thread.sleep(1000);
-									throw new RuntimeException("Boom ! (exception de test)");
-								}
-								catch (InterruptedException e) {
-									Assert.fail("Thread interrompu!");
-								}
-							}
-						};
+					public void process(List<Long> data) throws Exception {
+						// boom au bout d'une seconde déjà...
+						try {
+							Thread.sleep(1000);
+							throw new RuntimeException("Boom ! (exception de test)");
+						}
+						catch (InterruptedException e) {
+							Assert.fail("Thread interrompu!");
+						}
 					}
-				};
+
+					@Override
+					public int maxBatchSize() {
+						return 100;
+					}
+
+					@Override
+					public String getName() {
+						return "TestMass";
+					}
+				});
 			}
 
 			@Override
@@ -262,6 +262,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 				return 2;       // pour accélérer un peu le mouvement dans les tests
 			}
 		};
+
 		indexer.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		indexer.setGlobalIndex(getBean(GlobalIndex.class, "globalIndex"));
 		indexer.setStatsService(getBean(StatsService.class, "statsService"));

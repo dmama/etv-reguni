@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.indexer.async;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -14,6 +11,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.uniregctb.worker.DeadThreadException;
+import ch.vd.uniregctb.worker.WorkingQueue;
 
 /**
  * Tiers indexer utilisé pour l'indexation ou fil-de-l'eau des tiers de la base de données.
@@ -34,9 +33,7 @@ public class OnTheFlyTiersIndexer {
 	private final SessionFactory sessionFactory;
 	private final Dialect dialect;
 
-	private int count = 0;
-	private final ArrayList<AsyncTiersIndexerThread> threads = new ArrayList<AsyncTiersIndexerThread>();
-	private final BlockingQueue<Long> queue;
+	private final WorkingQueue<Long> queue;
 
 	private final Timer timer = new Timer();
 	private final TimerTask monitoring = new TimerTask() {
@@ -54,16 +51,8 @@ public class OnTheFlyTiersIndexer {
 		this.dialect = dialect;
 
 		// Un queue bloquante de longueur illimitée
-		this.queue = new LinkedBlockingQueue<Long>();
-
-		// Crée le nombre minimal de threads
-		this.count = 0;
-		for (; count < MIN_THREADS; count++) {
-			final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager, dialect);
-			t.setName("OnTheFly-" + count);
-			t.start();
-			this.threads.add(t);
-		}
+		this.queue = new WorkingQueue<Long>(MIN_THREADS, new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly"));
+		this.queue.start();
 
 		// Démarre le monitoring de la queue
 		this.timer.schedule(monitoring, WATCH_PERIODE, WATCH_PERIODE);
@@ -102,30 +91,15 @@ public class OnTheFlyTiersIndexer {
 	/**
 	 * Attends que tous les tiers dont l'indexation a été demandée aient été indexés. Cette méthode bloque donc tant que la queue d'indexation est pleine.
 	 * <p/>
-	 * <p/>
 	 * <b>Note:</b> cette méthode n'empêche pas d'autres threads de scheduler l'indexation de nouveau tiers. En d'autres termes, le temps d'attente peu s'allonger indéfiniment.
 	 */
 	public void sync() {
+		LOGGER.trace("Sync de la queue...");
 		try {
-			LOGGER.trace("Vidange de la queue...");
-			while (!queue.isEmpty()) {
-				Thread.sleep(10);
-			}
+			queue.sync();
 		}
-		catch (InterruptedException e) {
+		catch (DeadThreadException e) {
 			throw new IndexerException(e);
-		}
-
-		LOGGER.trace("Sync des threads...");
-		synchronized (threads) {
-			for (AsyncTiersIndexerThread t : threads) {
-				try {
-					t.sync();
-				}
-				catch (AsyncTiersIndexerThread.DeadThreadException e) {
-					LOGGER.error(String.format("Thread %s n'a pas pu se synchroniser car il est déjà mort", t.getName()));
-				}
-			}
 		}
 		LOGGER.trace("Terminé.");
 	}
@@ -135,20 +109,7 @@ public class OnTheFlyTiersIndexer {
 	 */
 	public void reset() {
 		LOGGER.trace("Clear de la queue...");
-		queue.clear();
-
-		LOGGER.trace("Reset des threads...");
-		synchronized (threads) {
-			for (AsyncTiersIndexerThread t : threads) {
-				try {
-					t.reset();
-				}
-				catch (AsyncTiersIndexerThread.DeadThreadException e) {
-					// le thread est mort : il a donc arrêté son travail (c'est ce qu'on voulait, non ?)
-					// il sera redémarré si nécessaire
-				}
-			}
-		}
+		queue.reset();
 		LOGGER.trace("Terminé.");
 	}
 
@@ -162,17 +123,7 @@ public class OnTheFlyTiersIndexer {
 
 		// Vide la queue et arrête les threads
 		reset();
-		synchronized (threads) {
-			for (AsyncTiersIndexerThread t : threads) {
-				try {
-					t.shutdown();
-				}
-				catch (AsyncTiersIndexerThread.DeadThreadException e) {
-					// pas grave, de toute façon on voulait qu'il meure...
-				}
-			}
-			threads.clear();
-		}
+		queue.shutdown();
 	}
 
 	/**
@@ -180,43 +131,29 @@ public class OnTheFlyTiersIndexer {
 	 */
 	private void monitor() {
 
-		synchronized (threads) {
-			purgeDeadThreads();
+		synchronized (queue) {
+
+			queue.purgeDeadWorkers();
 
 			final int queueSize = queue.size();
-			final int threadSize = threads.size();
+			final int threadSize = queue.workersCount();
 
 			if (queueSize < LOW_LEVEL && threadSize > MIN_THREADS) {
 				// on enlève un thread
 				final int last = threadSize - 1;
-				final AsyncTiersIndexerThread t = threads.remove(last);
-				LOGGER.info("Suppression d'un thread d'indexation " + t.getName() + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ")");
 				try {
-					t.shutdown();
+					final String name = queue.removeLastWorker();
+					LOGGER.info("Supprimé le thread d'indexation " + name + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ")");
 				}
-				catch (AsyncTiersIndexerThread.DeadThreadException e) {
-					LOGGER.warn(String.format("Le thread d'indexation %s était déjà mort", t.getName()));
+				catch (DeadThreadException e) {
+					LOGGER.warn(String.format("Le thread d'indexation %s était déjà mort", e.getThreadName()));
 				}
 			}
 
 			if (queueSize > HIGH_LEVEL && threadSize < MAX_THREADS) {
 				// on ajoute un thread
-				final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager, dialect);
-				t.setName("OnTheFly-" + (count++));
-
-				LOGGER.info("Ajout d'un thread d'indexation " + t.getName() + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ")");
-				t.start();
-				threads.add(t);
-			}
-		}
-	}
-
-	private void purgeDeadThreads() {
-		for (int i = threads.size() - 1; i >= 0; i--) {
-			final AsyncTiersIndexerThread t = threads.get(i);
-			if (!t.isAlive()) {
-				LOGGER.warn("Détecté un thread d'indexation mort : il sera redémarré si nécessaire");
-				threads.remove(i);
+				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly"));
+				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ")");
 			}
 		}
 	}

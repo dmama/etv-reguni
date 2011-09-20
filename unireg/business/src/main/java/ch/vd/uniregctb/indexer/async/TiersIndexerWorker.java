@@ -6,10 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
@@ -25,17 +22,17 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.worker.BatchWorker;
 
 
-public class AsyncTiersIndexerThread extends Thread {
+public class TiersIndexerWorker implements BatchWorker<Long> {
 
-	private static final Logger LOGGER = Logger.getLogger(AsyncTiersIndexerThread.class);
+	private static final Logger LOGGER = Logger.getLogger(TiersIndexerWorker.class);
 
 	private static final int BATCH_SIZE = 100;
 
@@ -45,142 +42,47 @@ public class AsyncTiersIndexerThread extends Thread {
 	private final Dialect dialect;
 
 	private final GlobalTiersIndexer.Mode mode;
-	private boolean shutdown = false;
-	private final BlockingQueue<Long> queue;
 
-	private final MutableBoolean processingDone = new MutableBoolean(false);
-
-	private long executionTime = 0;
+	private String name;
 
 	/**
 	 * Construit un thread d'indexation qui consomme les ids des tiers à indexer à partir d'une queue.
 	 *
-	 * @param queue              la queue dans laquelle les ids des tiers à indexer doivent être insérés.
 	 * @param mode               le mode d'indexation voulu. Renseigné dans le cas d'une réindexation complète ou partielle; ou <b>null</b> dans le cas d'une indexation au fil de l'eau des tiers.
 	 * @param globalTiersIndexer l'indexer des tiers
 	 * @param sessionFactory     la session factory hibernate
 	 * @param transactionManager le transaction manager
 	 * @param dialect            le dialect hibernate utilisé
+	 * @param name               le nom du thread
 	 */
-	public AsyncTiersIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory,
-	                               PlatformTransactionManager transactionManager, Dialect dialect) {
+	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
+	                          String name) {
 		this.indexer = globalTiersIndexer;
-		this.queue = queue;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
 		this.mode = mode;
 		this.dialect = dialect;
+		this.name = name;
 		Assert.notNull(this.indexer);
-		Assert.notNull(this.queue);
 		Assert.notNull(this.transactionManager);
 		Assert.notNull(this.sessionFactory);
 	}
 
 	@Override
-	public void run() {
-		long start = System.nanoTime();
-		try {
-			delegateRun();
-		}
-		catch (Exception e) {
-			LOGGER.error(e);
-		}
-		finally {
-			executionTime = System.nanoTime() - start;
-			LOGGER.info("Arrêt du thread.");
-		}
+	public int maxBatchSize() {
+		return BATCH_SIZE;
 	}
 
-	/**
-	 * Exception lancée par les méthodes {@link #sync()}, {@link #shutdown()} et {@link #reset()} si un arrêt propre
-	 * (i.e. avec complétion du boulot commencé) n'est pas possible car le thread est mort
-	 */
-	public static class DeadThreadException extends Exception {
+	@Override
+	public String getName() {
+		return name;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	/**
-	 * Demande au thread de s'arrêter. Le thread termine de vider la queue dans tous les cas.
-	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
-	 */
-	public void shutdown() throws DeadThreadException {
-		if (!shutdown) {
-			shutdown = true;
-			sync();
-		}
-	}
-
-	/**
-	 * Attend que tous les tiers dont l'indexation a été demandée aient été indexés.
-	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
-	 */
-	public void sync() throws DeadThreadException {
-		try {
-			synchronized (processingDone) {
-				processingDone.setValue(false);
-				while (!processingDone.booleanValue()) {
-					processingDone.wait(1000L);         // attentes de 1s, pour vérifier périodiquement que tout va bien
-
-					// si le thread es mort, de deux choses l'une :
-					// 1. ou bien tout le traitement a été fait, auquel cas processingDone a changé d'état (donc la prochaine boucle se sera pas exécutée), et tout va bien
-					// 2. ou bien le thread a sauté, et processingDone ne changera JAMAIS PLUS d'état... pas la peine d'attendre la fin du monde...
-					if (!isAlive() && !processingDone.booleanValue()) {
-						throw new DeadThreadException();
-					}
-				}
-			}
-		}
-		catch (InterruptedException e) {
-			// on ignore cette exception
-		}
-	}
-
-	/**
-	 * Interrompt l'indexation courante et retourne lorsque le thread est de nouveau en attente
-	 * @throws DeadThreadException si la synchronisation n'est pas possible car le thread est mort sans finir son travail
-	 */
-	public void reset() throws DeadThreadException {
-		// msi (12.05.2010) appeler 'interrupt' n'est pas une bonne idée: ça fout le bordel dans la gestion des locks de Lucene
-		// interrupt(); // on interrompt le poll sur la queue
-		sync(); // on attend que le thread soit de nouveau en attente
-	}
-
-	private void delegateRun() {
-		try {
-			AuthenticationHelper.setPrincipal("[ASYNC Indexer]");
-
-			// Indexe tous les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
-			while (!shutdown || !queue.isEmpty()) {
-				final List<Long> batch = nextBatch();
-				if (batch != null) {
-					indexBatch(batch);
-				}
-				else {
-					// le batch est null, on continue à boucler. Il n'y a pas besoin d'attendre car la méthode nextBatch le fait déjà.
-					notifyProcessingDone();
-				}
-			}
-		}
-		catch (Exception e) {
-			LOGGER.error("Exception catchée au niveau du thread d'indexation. Ce thread est interrompu !", e);
-			throw new RuntimeException(e);
-		}
-		finally {
-			notifyProcessingDone();
-			AuthenticationHelper.resetAuthentication();
-		}
-	}
-
-	private void notifyProcessingDone() {
-		synchronized (processingDone) {
-			processingDone.setValue(true);
-			processingDone.notifyAll(); // notifie les threads en attente sur 'sync' qu'on a fini (momentanément) d'indexer tous les tiers de la queue
-		}
-	}
-
-	protected void indexBatch(final List<Long> batch) {
+	@Override
+	public void process(final List<Long> batch) throws Exception {
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("ASYNC indexation des tiers n° " + Arrays.toString(batch.toArray()) + " (La queue contient encore " + queue.size() + " tiers a indexer)");
+			LOGGER.trace("ASYNC indexation des tiers n° " + Arrays.toString(batch.toArray()));
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -226,42 +128,6 @@ public class AsyncTiersIndexerThread extends Thread {
 				return null;
 			}
 		});
-	}
-
-	/**
-	 * @return le prochain lot d'ids à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 0.1 seconde)
-	 */
-	private List<Long> nextBatch() {
-
-		List<Long> batch = null;
-
-		for (int i = 0; i < BATCH_SIZE; i++) {
-			final Long id = nextId();
-			if (id == null) {
-				// la queue est vide (peut-être momentanément), on va comme ça avec ce batch
-				break;
-			}
-			if (batch == null) {
-				batch = new ArrayList<Long>(BATCH_SIZE);
-			}
-			batch.add(id);
-		}
-
-		return batch;
-	}
-
-	/**
-	 * @return le prochain id à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 0.1 seconde)
-	 */
-	private Long nextId() {
-		try {
-			return queue.poll(100, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException e) {
-			interrupted(); // reset le flag
-			//LOGGER.error(e, e);
-			return null;
-		}
 	}
 
 	private void indexTiers(List<Tiers> tiers, Session session) {
@@ -361,12 +227,5 @@ public class AsyncTiersIndexerThread extends Thread {
 		}
 		builder.append("}");
 		return builder.toString();
-	}
-
-	/**
-	 * @return le temps d'exécution en nano-secondes
-	 */
-	public long getExecutionTime() {
-		return executionTime;
 	}
 }

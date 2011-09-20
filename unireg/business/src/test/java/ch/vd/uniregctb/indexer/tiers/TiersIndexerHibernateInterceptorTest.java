@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.async.AsyncTiersIndexerThread;
 import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
+import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -286,7 +286,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		// On force le à TRACE pour déugger ce test qui fail de temps en temps avec Hudson
 		Logger.getLogger(OnTheFlyTiersIndexer.class).setLevel(Level.TRACE);
-		Logger.getLogger(AsyncTiersIndexerThread.class).setLevel(Level.TRACE);
+		Logger.getLogger(TiersIndexerWorker.class).setLevel(Level.TRACE);
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 1 ====");
 		final long id = doInNewTransaction(new TxCallback<Long>() {
