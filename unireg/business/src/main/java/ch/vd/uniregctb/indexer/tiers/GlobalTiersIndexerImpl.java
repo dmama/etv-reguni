@@ -108,38 +108,43 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private class TimeLog {
         public long startTime;
         public long startTimeInfra;
-        public long startTimeCivil;
-        public long startTimeIndex;
+	    public long startTimeCivil;
+	    public long startTimePM;
+	    public long startTimeIndex;
         public long endTime;
         public long endTimeInfra;
-        public long endTimeCivil;
-        public long endTimeIndex;
+	    public long endTimeCivil;
+	    public long endTimePM;
+	    public long endTimeIndex;
         public long indexerCpuTime;
         public long indexerExecTime;
 
-        public void start() {
-            startTime = System.nanoTime() / NANO_TO_MILLI;
-            startTimeInfra = getNanoInfra() / NANO_TO_MILLI;
-            startTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-            startTimeIndex = getNanoIndex() / NANO_TO_MILLI;
-        }
+	    public void start() {
+		    startTime = System.nanoTime() / NANO_TO_MILLI;
+		    startTimeInfra = getNanoInfra() / NANO_TO_MILLI;
+		    startTimeCivil = getNanoCivil() / NANO_TO_MILLI;
+		    startTimePM = getNanoPM() / NANO_TO_MILLI;
+		    startTimeIndex = getNanoIndex() / NANO_TO_MILLI;
+	    }
 
-        public void end(MassTiersIndexer asyncIndexer) {
-            endTime = System.nanoTime() / NANO_TO_MILLI;
-            endTimeInfra = getNanoInfra() / NANO_TO_MILLI;
-            endTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-            endTimeIndex = getNanoIndex() / NANO_TO_MILLI;
-            indexerCpuTime = asyncIndexer.getTotalCpuTime() / NANO_TO_MILLI;
-            indexerExecTime = asyncIndexer.getTotalExecTime() / NANO_TO_MILLI;
-        }
+	    public void end(MassTiersIndexer asyncIndexer) {
+		    endTime = System.nanoTime() / NANO_TO_MILLI;
+		    endTimeInfra = getNanoInfra() / NANO_TO_MILLI;
+		    endTimeCivil = getNanoCivil() / NANO_TO_MILLI;
+		    endTimePM = getNanoPM() / NANO_TO_MILLI;
+		    endTimeIndex = getNanoIndex() / NANO_TO_MILLI;
+		    indexerCpuTime = asyncIndexer.getTotalCpuTime() / NANO_TO_MILLI;
+		    indexerExecTime = asyncIndexer.getTotalExecTime() / NANO_TO_MILLI;
+	    }
 
-        public void logStats() {
+	    public void logStats() {
 
             // détermine les différents statistiques de temps en millisecondes
             long timeTotal = endTime - startTime;
             long timeWait = indexerExecTime - indexerCpuTime;
             long timeWaitInfra = endTimeInfra - startTimeInfra;
             long timeWaitCivil = endTimeCivil - startTimeCivil;
+            long timeWaitPM = endTimePM - startTimePM;
             long timeWaitIndex = endTimeIndex - startTimeIndex;
             long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitIndex;
 
@@ -152,6 +157,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             int percentWait = 100 - percentCpu;
             int percentWaitInfra = (int) (100 * timeWaitInfra / timeWait);
             int percentWaitCivil = (int) (100 * timeWaitCivil / timeWait);
+            int percentWaitPM = (int) (100 * timeWaitPM / timeWait);
             int percentWaitIndex = (int) (100 * timeWaitIndex / timeWait);
             int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitIndex;
 
@@ -161,6 +167,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	        log += "Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)\n";
 	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>\n" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
 	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>\n" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
+	        log += " - service pm                   : " + (timeWaitPM == 0 ? "<indisponible>\n" : timeWaitPM + " ms" + " (" + percentWaitPM + "%)\n");
 	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>\n" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
 	        log += " - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)";
 	        LOGGER.info(log);
@@ -169,6 +176,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         private long getNanoCivil() {
             long timecivil = 0;
 	        final ServiceStats stats = statsService.getServiceStats(ServiceCivilService.SERVICE_NAME);
+            if (stats != null) {
+                timecivil = stats.getTotalTime();
+            }
+            return timecivil;
+        }
+
+        private long getNanoPM() {
+            long timecivil = 0;
+	        final ServiceStats stats = statsService.getServiceStats(ServicePersonneMoraleService.SERVICE_NAME);
             if (stats != null) {
                 timecivil = stats.getTotalTime();
             }
