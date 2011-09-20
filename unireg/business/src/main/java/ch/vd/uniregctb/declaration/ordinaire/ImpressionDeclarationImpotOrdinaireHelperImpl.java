@@ -408,17 +408,19 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private void remplitEnfants(InformationsDocumentAdapter informationsDocument, DIRetourCivilEnfant di) {
 		if (informationsDocument.tiers instanceof Contribuable) {
 			final List<PersonnePhysique> enfants = tiersService.getEnfantsForDeclaration((Contribuable) informationsDocument.tiers, informationsDocument.dateReference);
-			DIRetourCivilEnfant.Enfants diEnfants = di.addNewEnfants();
-			final int anneeDeclaration = informationsDocument.getAnnee();
-			for (PersonnePhysique enfant : enfants) {
-				final String navs13 = calculAVS(anneeDeclaration, enfant);
-				final String dateNaissance = calculDateNaissance(enfant);
-				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(enfant);
-				DIRetourCivilEnfant.Enfants.Enfant diEnfant = diEnfants.addNewEnfant();
-				diEnfant.setNAVS13(navs13);
-				diEnfant.setPRENOM(nomPrenom.getPrenom());
-				diEnfant.setNOM(nomPrenom.getNom());
-				diEnfant.setDATENAISSANCE(dateNaissance);
+			if (!enfants.isEmpty()) {
+				DIRetourCivilEnfant.Enfants diEnfants = di.addNewEnfants();
+				final int anneeDeclaration = informationsDocument.getAnnee();
+				for (PersonnePhysique enfant : enfants) {
+					final String navs13 = calculAVS(anneeDeclaration, enfant);
+					final String dateNaissance = calculDateNaissance(enfant);
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(enfant);
+					DIRetourCivilEnfant.Enfants.Enfant diEnfant = diEnfants.addNewEnfant();
+					diEnfant.setNAVS13(navs13);
+					diEnfant.setPRENOM(nomPrenom.getPrenom());
+					diEnfant.setNOM(nomPrenom.getNom());
+					diEnfant.setDATENAISSANCE(dateNaissance);
+				}
 			}
 		}
 

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -29,12 +31,16 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -43,6 +49,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -713,5 +720,102 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
 		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
 		assertEquals(1, di.getAnnexes().getAnnexe330());
+	}
+
+	/**[SIFISC-2367] Contribuables sans enfants
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCtbSansEnfant() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+		// Crée une personne physique décédé
+		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+		final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+		final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+		declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+		declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011), null, false);
+		assertNotNull(di);
+		//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
+		assertNull(di.getEnfants());
+
+	}
+
+	/**[SIFISC-2367] Contribuables sans enfants
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCtbAvecEnfant() throws Exception {
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2005, 2, 8), "Cognac", "Eva", false);
+
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+
+				fils.setParents(Arrays.<Individu>asList(pere));
+				fille.setParents(Arrays.<Individu>asList(pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+			}
+		});
+
+		class Ids {
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		final long idDi2011 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+				// Crée une for
+				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pere, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+
+				return declaration2011.getId();
+			}
+		});
+
+		final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011), null, false);
+		assertNotNull(di);
+
+		assertNotNull(di.getEnfants());
+		assertEquals(2, di.getEnfants().getEnfantArray().length);
 	}
 }
