@@ -35,12 +35,13 @@
 		diskPersistent="true" 
 		diskExpiryThreadIntervalSeconds="120" />
 
-    <cache name="serviceCivil"
-        maxElementsInMemory="20000"
-        eternal="true"
-        diskPersistent="true" 
-        overflowToDisk="true"
-        />
+	<cache name="serviceCivil"
+		maxElementsInMemory="20000"
+		eternal="false"
+		timeToIdleSeconds="500"
+		timeToLiveSeconds="500"
+		overflowToDisk="false"
+		/>
 
 	<cache name="servicePM"
 		maxElementsInMemory="2500"
