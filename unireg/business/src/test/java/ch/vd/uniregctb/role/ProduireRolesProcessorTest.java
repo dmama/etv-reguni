@@ -1080,7 +1080,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * SIFISC-1797
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisCelibataireDepartHSAvecForHSRenseigne() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -1088,7 +1087,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 9, 11), MotifFor.DEPART_HS, MockPays.PaysInconnu);
+				addForPrincipal(pp, date(2008, 9, 11), MotifFor.DEPART_HS, null, null, MockPays.PaysInconnu, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -1104,5 +1103,81 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertNotNull(ignore);
 		assertEquals(ppId, ignore.noCtb);
 		assertEquals(ProduireRolesResults.IgnoreType.SOURCIER_GRIS, ignore.raison);
+	}
+
+	/**
+	 * SIFISC-1717 : pas de motif/date de fermeture alors que l'assujettissement est indiqué comme "terminé dans PF"
+	 */
+	@Test
+	public void testMixtePasseOrdinaireAnneeApresRoles() throws Exception {
+
+		final RegDate arrivee = date(2006, 1, 1);
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+				final RegDate obtentionPermisC = date(2009, 9, 11);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, obtentionPermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, obtentionPermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFSEtendu());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+		}
+	}
+
+	/**
+	 * SIFISC-1717 : pas de motif/date de fermeture alors que l'assujettissement est indiqué comme "terminé dans PF"
+	 */
+	@Test
+	public void testVaudoisPartiHCavecImmeubleDansCommuneDeDepart() throws Exception {
+
+		final RegDate achat = date(2006, 1, 1);
+		final RegDate arrivee = date(2007, 1, 1);
+		final RegDate departHc = date(2009, 10, 12);
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Albanie);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHc, MotifFor.DEPART_HC, MockCommune.Cossonay);
+				addForPrincipal(pp, departHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Cossonay.getNoOFSEtendu());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+		}
 	}
 }
