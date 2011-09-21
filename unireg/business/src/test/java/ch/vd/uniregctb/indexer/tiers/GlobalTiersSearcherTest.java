@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +53,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	//private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "GlobalTiersSearcherTest.xml";
+	private ConsoleAppender console;
 
 	public GlobalTiersSearcherTest() {
 		setWantIndexation(true);
@@ -62,6 +66,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
+
+		// temp hack pour débugger un problème qui arrive de temps en temps sur Hudson
+		console = (ConsoleAppender) Logger.getRootLogger().getAppender("CONSOLE");
+		console.setThreshold(Level.DEBUG);
 
 		servicePM.setUp(new DefaultMockServicePM());
 
@@ -98,6 +106,12 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				addAdresse(individu, TypeAdresseCivil.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, new CasePostale(TexteCasePostale.CASE_POSTALE, 5252), RegDate.get(1980, 11, 2), null);
 			}
 		});
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		console.setThreshold(Level.WARN);
+		super.onTearDown();
 	}
 
 	@Test
