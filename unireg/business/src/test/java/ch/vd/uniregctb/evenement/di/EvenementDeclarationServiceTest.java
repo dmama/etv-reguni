@@ -18,7 +18,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.BamEventSender;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.MotifFor;
@@ -43,7 +43,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		service.setDiService(getBean(DeclarationImpotService.class,"diService"));
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
-		service.setBamEventSender(getBean(BamEventSender.class, "bamEventSender"));
+		service.setBamMessageSender(getBean(BamMessageSender.class, "bamMessageSender"));
 	}
 
 	@Test

@@ -11,9 +11,9 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
-public class BamEventSenderImpl implements BamEventSender {
+public class BamMessageSenderImpl implements BamMessageSender {
 
-	private static final Logger LOGGER = Logger.getLogger(BamEventSenderImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(BamMessageSenderImpl.class);
 
 	private static final String RECEIVE_EVENT_TYPE = "RECEIVE";
 
@@ -22,9 +22,6 @@ public class BamEventSenderImpl implements BamEventSender {
 
 	private static final String CONTEXT_QUITTANCEMENT_DI = "quittancementDi";
 	private static final String CONTEXT_RECEPTION_DONNEES_DI = "receptionDonneesDi";
-
-	private static final String QUITTANCE_DI_TASK_DEFINITION_ID = "E_DI_DI_RECEIPT_RECEIVED";
-	private static final String RETOUR_DI_TASK_DEFINITION_ID = "E_DI_UPDATE_UNIREG_RECEIVED";
 
 	private static final String N_A_TASK_INSTANCE_ID = null;
 	private static final String BODY = null;
@@ -95,14 +92,16 @@ public class BamEventSenderImpl implements BamEventSender {
 	}
 
 	@Override
-	public void sendEventBamRetourDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
+	public void sendBamMessageRetourDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
 		final Map<String, String> headers = mergeHeaderMap(noCtb, periodeFiscale, additionalHeaders);
-		sendEventToBAM(RECEIVE_EVENT_TYPE, processDefinitionId, processInstanceId, RETOUR_DI_TASK_DEFINITION_ID, N_A_TASK_INSTANCE_ID, businessId, getBusinessUser(), CONTEXT_RECEPTION_DONNEES_DI, headers);
+		final String taskDefinitionId = BamMessageHelper.getTaskDefinitionIdPourRetourDeclaration(processDefinitionId);
+		sendEventToBAM(RECEIVE_EVENT_TYPE, processDefinitionId, processInstanceId, taskDefinitionId, N_A_TASK_INSTANCE_ID, businessId, getBusinessUser(), CONTEXT_RECEPTION_DONNEES_DI, headers);
 	}
 
 	@Override
-	public void sendEventBamQuittancementDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
+	public void sendBamMessageQuittancementDi(String processDefinitionId, String processInstanceId, String businessId, long noCtb, int periodeFiscale, @Nullable Map<String, String> additionalHeaders) throws Exception {
 		final Map<String, String> headers = mergeHeaderMap(noCtb, periodeFiscale, additionalHeaders);
-		sendEventToBAM(RECEIVE_EVENT_TYPE, processDefinitionId, processInstanceId, QUITTANCE_DI_TASK_DEFINITION_ID, N_A_TASK_INSTANCE_ID, businessId, getBusinessUser(), CONTEXT_QUITTANCEMENT_DI, headers);
+		final String taskDefinitionId = BamMessageHelper.getTaskDefinitionIdPourQuittanceDeclaration(processDefinitionId);
+		sendEventToBAM(RECEIVE_EVENT_TYPE, processDefinitionId, processInstanceId, taskDefinitionId, N_A_TASK_INSTANCE_ID, businessId, getBusinessUser(), CONTEXT_QUITTANCEMENT_DI, headers);
 	}
 }

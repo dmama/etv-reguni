@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,8 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.BamMessageHelper;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -168,6 +171,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiService(DeclarationImpotService service) {
 		context.diService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setBamMessageSender(BamMessageSender service) {
+		context.bamSender = service;
 	}
 
 	/**
@@ -812,7 +820,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
 		}
 
-		// TODO JDE : envoi du message de quittance au BAM
+		// envoie le quittancement au BAM
+		sendQuittancementToBam(declaration);
 
 		// La déclaration est correcte, on la quittance
 		final String source = StringUtils.isBlank(demande.source) ? EtatDeclarationRetournee.SOURCE_CEDI : demande.source; // [SIFISC-1782] historiquement, seul le CEDI quittance par le web-service.
@@ -820,6 +829,25 @@ public class TiersWebServiceImpl implements TiersWebService {
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return new ReponseQuittancementDeclaration(demande.key, CodeQuittancement.OK);
+	}
+
+	private void sendQuittancementToBam(DeclarationImpotOrdinaire di) {
+		final long ctbId = di.getTiers().getNumero();
+		final int annee = di.getPeriode().getAnnee();
+		final int noSequence = di.getNumero();
+		try {
+			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di);
+			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
+			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
+			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
+			context.bamSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
+		}
+		catch (RuntimeException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(String.format("Erreur à la notification au BAM du quittancement de la DI %d (%d) du contribuable %d", annee, noSequence, ctbId), e);
+		}
 	}
 
 	/**

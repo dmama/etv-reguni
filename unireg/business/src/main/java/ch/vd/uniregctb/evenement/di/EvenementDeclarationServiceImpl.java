@@ -1,20 +1,20 @@
 package ch.vd.uniregctb.evenement.di;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.jms.BamEventSender;
+import ch.vd.uniregctb.jms.BamMessageHelper;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -24,13 +24,10 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationServiceImpl.class);
 
-	private static final String NUMERO_SEQUENCE = "numeroSequenceFourre";
-	private static final String PERIODE_IMPOSITION = "periodeImposition";
-
 	private TiersDAO tiersDAO;
 	private ValidationService validationService;
 	private DeclarationImpotService diService;
-	private BamEventSender bamEventSender;
+	private BamMessageSender bamMessageSender;
 
 	@Override
 	public void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) throws EvenementDeclarationException {
@@ -78,8 +75,9 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
-				final Map<String, String> bamHeaders = buildCustomBamHeadersForQuittancement(declarations);
-				bamEventSender.sendEventBamQuittancementDi(processDefinitionId, processInstanceId, String.format("%d-%d", ctbId, annee), ctbId, annee, bamHeaders);
+				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclarations(declarations);
+				final String businessId = String.format("%d-%d-%s", ctbId, annee, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
+				bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 			}
 			catch (RuntimeException e) {
 				throw e;
@@ -92,37 +90,6 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 			LOGGER.warn(String.format("ProcessDefinitionId (%s) et/ou processInstanceId (%s) manquant : pas de notification au BAM du quittancement de la DI %d du contribuable %d.",
 			                          processDefinitionId, processInstanceId, annee, ctbId));
 		}
-	}
-
-	@Nullable
-	private Map<String, String> buildCustomBamHeadersForQuittancement(List<Declaration> declarations) {
-		final StringBuilder bNoSequences = new StringBuilder();
-		final StringBuilder bPeriodes = new StringBuilder();
-		for (Declaration d : declarations) {
-			if (!d.isAnnule()) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-				if (bNoSequences.length() > 0) {
-					bNoSequences.append(";");
-				}
-				bNoSequences.append(String.format("%02d", di.getNumero()));
-
-				if (bPeriodes.length() > 0) {
-					bPeriodes.append(";");
-				}
-				bPeriodes.append(String.format("%s-%s", RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin())));
-			}
-		}
-
-		final Map<String, String> bamHeaders;
-		if (bNoSequences.length() > 0 || bPeriodes.length() > 0) {
-			bamHeaders = new HashMap<String, String>(2);
-			bamHeaders.put(NUMERO_SEQUENCE, bNoSequences.toString());
-			bamHeaders.put(PERIODE_IMPOSITION, bPeriodes.toString());
-		}
-		else {
-			bamHeaders = null;
-		}
-		return bamHeaders;
 	}
 
 	private void quittancerDeclarations(Contribuable ctb, List<Declaration> declarations, QuittancementDI quittance, String source) {
@@ -145,8 +112,8 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		this.diService = diService;
 	}
 
-	public void setBamEventSender(BamEventSender bamEventSender) {
-		this.bamEventSender = bamEventSender;
+	public void setBamMessageSender(BamMessageSender bamMessageSender) {
+		this.bamMessageSender = bamMessageSender;
 	}
 
 	@Override

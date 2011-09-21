@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.evenement.cedi;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -16,7 +18,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.jms.BamEventSender;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -31,7 +33,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private ValidationService validationService;
-	private BamEventSender bamEventSender;
+	private BamMessageSender bamMessageSender;
 
 	@Override
 	public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -90,7 +92,8 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
-				bamEventSender.sendEventBamRetourDi(processDefinitionId, processInstanceId, String.format("%d-%d", ctbId, annee), ctbId, annee, null);
+				final String businessId = String.format("%d-%d-%s", ctbId, annee, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
+				bamMessageSender.sendBamMessageRetourDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, null);
 			}
 			catch (RuntimeException e) {
 				throw e;
@@ -215,7 +218,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		this.validationService = validationService;
 	}
 
-	public void setBamEventSender(BamEventSender bamEventSender) {
-		this.bamEventSender = bamEventSender;
+	public void setBamMessageSender(BamMessageSender bamMessageSender) {
+		this.bamMessageSender = bamMessageSender;
 	}
 }

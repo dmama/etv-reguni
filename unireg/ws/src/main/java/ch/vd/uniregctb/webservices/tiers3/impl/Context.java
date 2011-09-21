@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -42,4 +43,6 @@ public class Context {
 	public ListeRecapService lrService;
 
 	public DeclarationImpotService diService;
+
+	public BamMessageSender bamSender;
 }

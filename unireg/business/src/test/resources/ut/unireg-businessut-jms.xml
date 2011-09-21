@@ -62,6 +62,6 @@
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
 	</bean>
 
-	<bean id="bamEventSender" class="ch.vd.uniregctb.jms.MockBamEventSender"/>
+	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
 </beans>
