@@ -44,7 +44,12 @@ public class JobStarter implements Job, InterruptableJob {
 		authentication = (Authentication) triggerData.get(JobDefinition.KEY_AUTH);
 		final HashMap<String, Object> params = (HashMap<String, Object>) triggerData.get(JobDefinition.KEY_PARAMS);
 
+		final String initialThreadName = Thread.currentThread().getName();
+
 		try {
+			// on donne le nom du job au thread d'exécution, de manière à le repérer plus facilement
+			Thread.currentThread().setName(job.getName());
+
 			job.initialize();
 
 			if (!job.isLogDisabled()) {
@@ -76,6 +81,9 @@ public class JobStarter implements Job, InterruptableJob {
 			job.setStatut(JobDefinition.JobStatut.JOB_EXCEPTION);
 			job.setRunningMessage(e.getMessage());
 			throw e;
+		}
+		finally {
+			Thread.currentThread().setName(initialThreadName);
 		}
 	}
 
