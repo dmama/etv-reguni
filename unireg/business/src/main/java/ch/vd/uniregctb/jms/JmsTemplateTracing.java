@@ -53,7 +53,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object execute(SessionCallback action) throws JmsException {
+	public <T> T execute(SessionCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.execute(action);
@@ -64,7 +64,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object execute(ProducerCallback action) throws JmsException {
+	public <T> T execute(ProducerCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.execute(action);
@@ -75,7 +75,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object execute(Destination destination, ProducerCallback action) throws JmsException {
+	public <T> T execute(Destination destination, ProducerCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.execute(destination, action);
@@ -86,7 +86,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object execute(String destinationName, ProducerCallback action) throws JmsException {
+	public <T> T execute(String destinationName, ProducerCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.execute(destinationName, action);
@@ -328,7 +328,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browse(BrowserCallback action) throws JmsException {
+	public <T> T browse(BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browse(action);
@@ -339,7 +339,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browse(Queue queue, BrowserCallback action) throws JmsException {
+	public <T> T browse(Queue queue, BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browse(queue, action);
@@ -350,7 +350,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browse(String queueName, BrowserCallback action) throws JmsException {
+	public <T> T browse(String queueName, BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browse(queueName, action);
@@ -361,7 +361,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browseSelected(String messageSelector, BrowserCallback action) throws JmsException {
+	public <T> T browseSelected(String messageSelector, BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browseSelected(messageSelector, action);
@@ -372,7 +372,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browseSelected(Queue queue, String messageSelector, BrowserCallback action) throws JmsException {
+	public <T> T browseSelected(Queue queue, String messageSelector, BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browseSelected(queue, messageSelector, action);
@@ -383,7 +383,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	}
 
 	@Override
-	public Object browseSelected(String queueName, String messageSelector, BrowserCallback action) throws JmsException {
+	public <T> T browseSelected(String queueName, String messageSelector, BrowserCallback<T> action) throws JmsException {
 		long time = tracing.start();
 		try {
 			return target.browseSelected(queueName, messageSelector, action);
