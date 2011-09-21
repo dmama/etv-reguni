@@ -249,7 +249,7 @@ public class WorkingQueue<T> {
 	}
 
 	/**
-	 * Ajoute un nouveau worker à la liste.
+	 * Ajoute un nouveau worker à la liste et démarre le thread immédiatement.
 	 *
 	 * @param worker le nouveau worker à ajouter
 	 * @return le nom du thread qui contient le nouveau worker
@@ -260,12 +260,13 @@ public class WorkingQueue<T> {
 			final String name = worker.getName() + "-" + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
+			l.start();
 			return name;
 		}
 	}
 
 	/**
-	 * Ajoute un nouveau worker à la liste.
+	 * Ajoute un nouveau worker à la liste et démarre le thread immédiatement.
 	 *
 	 * @param worker le nouveau worker à ajouter
 	 * @return le nom du thread qui contient le nouveau worker
@@ -276,6 +277,7 @@ public class WorkingQueue<T> {
 			final String name = worker.getName() + "-" + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
+			l.start();
 			return name;
 		}
 	}
@@ -312,7 +314,7 @@ public class WorkingQueue<T> {
 					listener.reset();
 				}
 				catch (DeadThreadException e) {
-					LOGGER.error(e); // que faire d'autre ?
+					LOGGER.error("Le thread [" + listener.getName() + "] était déjà mort lors de l'appel de reset()", e); // que faire d'autre ?
 				}
 			}
 		}
