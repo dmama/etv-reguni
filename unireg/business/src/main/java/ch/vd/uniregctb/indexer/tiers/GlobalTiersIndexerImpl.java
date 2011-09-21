@@ -350,6 +350,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 					// si tous les threads sont morts, il est temps de tout arrêter...
 					if (!asyncIndexer.isAlive()) {
+						LOGGER.debug("Détecté que tous les threads d'indexation sont morts avant la demande d'arrêt.");
 						deadThreads = true;
 						break;
 					}
