@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.ubr;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -46,13 +45,47 @@ public class BatchRunnerApp {
 	private static final String FILE_PREFIX = "file:" + File.separatorChar + File.separatorChar;
 	private static final String N_A = "-";
 
+	private abstract static class BatchException extends Exception {
+		protected final String batchName;
+
+		protected BatchException(String batchName) {
+			this.batchName = batchName;
+		}
+
+		@Override
+		public abstract String getMessage();
+	}
+
+	private static final class UnknownBatchException extends BatchException {
+		private UnknownBatchException(String batchName) {
+			super(batchName);
+		}
+
+		@Override
+		public String getMessage() {
+			return String.format("Batch %s does not exist.", batchName);
+		}
+	}
+
+	private static final class NoLastReportFoundException extends BatchException {
+		private NoLastReportFoundException(String batchName) {
+			super(batchName);
+		}
+
+		@Override
+		public String getMessage() {
+			return String.format("No last report found for batch %s.", batchName);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 
 		initLog4j();
 
 		final CommandLine line = parseCommandLine(args);
 		if (line == null) {
-			return;
+			// erreur de parsing de la ligne de commande
+			System.exit(1);
 		}
 
 		final String serviceUrl;
@@ -62,17 +95,14 @@ public class BatchRunnerApp {
 		final String config = line.getOptionValue("config");
 		if (config != null) {
 			// [UNIREG-1332] si spécifié, le fichier de configuration contient les paramètres de connexion
-			Properties props = new Properties();
+			final Properties props = new Properties();
 
-			FileInputStream in = null;
+			final FileInputStream in = new FileInputStream(config);
 			try {
-				in = new FileInputStream(config);
 				props.load(in);
 			}
 			finally {
-				if (in != null) {
-					in.close();
-				}
+				in.close();
 			}
 
 			serviceUrl = props.getProperty("url");
@@ -101,42 +131,47 @@ public class BatchRunnerApp {
 			System.exit(1);
 		}
 
-		BatchRunnerClient client = new BatchRunnerClient(serviceUrl, username, password);
+		final BatchRunnerClient client = new BatchRunnerClient(serviceUrl, username, password);
 
-		if (command.equals("start")) {
-			startBatch(name, params, client);
-		}
-		else if (command.equals("run")) {
-			runBatch(name, params, client);
-		}
-		else if (command.equals("stop")) {
-			stopBatch(name, client);
-		}
-		else if (command.equals("list")) {
-			final List<String> names = client.getBatchNames();
-			for (String s : names) {
-				System.out.println(s);
+		try {
+			if (command.equals("start")) {
+				startBatch(name, params, client);
+			}
+			else if (command.equals("run")) {
+				runBatch(name, params, client);
+			}
+			else if (command.equals("stop")) {
+				stopBatch(name, client);
+			}
+			else if (command.equals("list")) {
+				final List<String> names = client.getBatchNames();
+				for (String s : names) {
+					System.out.println(s);
+				}
+			}
+			else if (command.equals("show")) {
+				showBatch(name, client);
+			}
+			else if (command.equals("status")) {
+				statusBatch(name, client);
+			}
+			else if (command.equals("lastreport")) {
+				lastReport(name, outputDir, client);
 			}
 		}
-		else if (command.equals("show")) {
-			showBatch(name, client);
-		}
-		else if (command.equals("status")) {
-			statusBatch(name, client);
-		}
-		else if (command.equals("lastreport")) {
-			lastReport(name, outputDir, client);
+		catch (BatchException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
 		}
 
 		System.exit(0);
-		return;
 	}
 
 	/**
 	 * Initialise Log4j de manière à ce qu'il soit le plus discret possible.
 	 */
 	private static void initLog4j() {
-		Properties properties = new Properties();
+		final Properties properties = new Properties();
 		properties.setProperty("log4j.logger.ch.vd.uniregctb", "WARN");
 		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
 		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
@@ -144,7 +179,7 @@ public class BatchRunnerApp {
 		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "[ubr] %p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c | %m%n");
 		PropertyConfigurator.configure(properties);
 
-		// Ces deux classes semblent avoir l'oreille un peu dur...
+		// Ces deux classes semblent avoir l'oreille un peu dure...
 		java.util.logging.Logger l = java.util.logging.Logger.getLogger("org.apache.cxf.bus.spring.BusApplicationContext");
 		l.setLevel(Level.WARNING);
 		l = java.util.logging.Logger.getLogger("org.apache.cxf.service.factory.ReflectionServiceFactoryBean");
@@ -163,22 +198,20 @@ public class BatchRunnerApp {
 		client.stopBatch(name);
 	}
 
-	private static void statusBatch(String name, BatchRunnerClient client) {
+	private static void statusBatch(String name, BatchRunnerClient client) throws UnknownBatchException {
 		final JobDefinition def = client.getBatchDefinition(name);
 		if (def == null) {
-			System.err.println("batch " + name + " doesn't exists.");
-
+			throw new UnknownBatchException(name);
 		}
 		else {
 			System.out.println(def.getStatut().name());
 		}
 	}
 
-	private static void showBatch(String name, BatchRunnerClient client) {
+	private static void showBatch(String name, BatchRunnerClient client) throws UnknownBatchException {
 		final JobDefinition def = client.getBatchDefinition(name);
 		if (def == null) {
-			System.err.println("batch " + name + " doesn't exists.");
-
+			throw new UnknownBatchException(name);
 		}
 		else {
 			System.out.print("name:            ");
@@ -208,13 +241,12 @@ public class BatchRunnerApp {
 	 * @param outputDir
 	 *            le répertoire de sortie
 	 */
-	private static void lastReport(String name, String outputDir, BatchRunnerClient client) throws IOException, BatchWSException {
+	private static void lastReport(String name, String outputDir, BatchRunnerClient client) throws IOException, BatchWSException, NoLastReportFoundException {
 
 		// récupère le rapport
 		final Report report = client.getLastReport(name);
 		if (report == null) {
-			System.err.println("no last report found for batch " + name + ".");
-			return;
+			throw new NoLastReportFoundException(name);
 		}
 
 		// sauve le rapport
@@ -439,7 +471,7 @@ public class BatchRunnerApp {
 			line = parser.parse(options, args);
 
 			if (line.hasOption("help") || (!line.hasOption("config") && line.getArgs().length != 1)) {
-				HelpFormatter formatter = new HelpFormatter();
+				final HelpFormatter formatter = new HelpFormatter();
 				formatter.printHelp("BatchRunner [url] [options]", "Options:", options, null);
 				return null;
 			}
