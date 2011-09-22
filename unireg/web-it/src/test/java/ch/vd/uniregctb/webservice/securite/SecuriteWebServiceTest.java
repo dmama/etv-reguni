@@ -46,7 +46,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	private UserLogin zaiptf; // Francis Perroset
 	private UserLogin zaipmd; // Philippe Maillard
 	private UserLogin zciddo; // Daniel Di Lallo
-	private UserLogin zciaoc; // Annie Ourliac
+	private UserLogin zairfa; // Roselyne Favre
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -88,9 +88,9 @@ public class SecuriteWebServiceTest extends WebitTest {
 		zciddo.setUserId("zciddo");
 		zciddo.setOid(0);
 
-		zciaoc = new UserLogin();
-		zciaoc.setUserId("zciaoc");
-		zciaoc.setOid(10);
+		zairfa = new UserLogin();
+		zairfa.setUserId("zairfa");
+		zairfa.setOid(10);
 	}
 
 	@Test
@@ -193,13 +193,13 @@ public class SecuriteWebServiceTest extends WebitTest {
 	}
 
 	/**
-	 * Teste que Annie Ourliac ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Roselyne Favre (une employée de l'ACI prise au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
 	 */
 	@Test
-	public void testAutorisationsAnnieOurliac() throws Exception {
+	public void testAutorisationsRoselyneFavre() throws Exception {
 
 		GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-		params.setLogin(zciaoc);
+		params.setLogin(zairfa);
 
 		params.setNumeroTiers(12300001L); // Christine Schmid
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
