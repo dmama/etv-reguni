@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="jmsBroker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+		<property name="config" value="classpath:ch/vd/uniregctb/jms/activemq-broker.xml" />
+		<property name="start" value="true" />
+	</bean>
+
+	<bean id="jmsConnectionFactory" class="ch.vd.technical.esb.util.ConnectionFactoryFactoryBean">
+		<property name="connectionManager" ref="jmsConnectionManager"/>
+		<property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
+	</bean>
+
+	<bean id="jmsConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="poolMaxSize" value="20"/>
+		<property name="connectionTracker">
+		   <bean class="org.jencks.factory.ConnectionTrackerFactoryBean">
+			   <property name="geronimoTransactionManager" ref="transactionManager" />
+		   </bean>
+		</property>
+	</bean>
+
+	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
+	   <property name="resourceAdapter" ref="jmsResourceAdapter"/>
+	</bean>
+
+	<bean id="jmsResourceAdapter" class="org.springframework.jca.support.ResourceAdapterFactoryBean">
+		<property name="resourceAdapter">
+			<bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
+				<property name="serverUrl" value="vm://localhost" />
+				<property name="userName" value="smx" />
+				<property name="password" value="smx" />
+			</bean>
+		</property>
+		<property name="workManager">
+			<bean class="org.springframework.jca.work.SimpleTaskWorkManager"/>
+		</property>
+	</bean>
+
+	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
+
+	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
+
+	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender"/>
+
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessorImpl">
+		<property name="delaiPriseEnCompte" value="1"/>
+		<property name="fetchAwaitingEventsOnStart" value="false"/>
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
+	</bean>
+
+	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
+
+</beans>

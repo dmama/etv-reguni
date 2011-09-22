@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Audit -->
+	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+		<property name="auditLineDAO" ref="auditLineDAO" />
+		<!-- BEGIN_LVERSION -->
+		<property name="appName" value="WebServices (version 4.12-SNAPSHOT)" />
+		<!-- END_LVERSION -->
+	</bean>
+
+	<!-- Transaction manager -->
+
+	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
+		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
+		<property name="transactionLogDir" value="${extprop.tx.logDir}"/>
+		-->
+		<property name="defaultTransactionTimeoutSeconds" value="${extprop.tx.timeout}"/>
+	</bean>
+
+	<bean id="jdbcConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="poolMaxSize" value="${extprop.jdbc.poolMaxSize}"/>
+	</bean>
+	
+	<bean id="realDataSource" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+		<property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
+		<property name="connectionManager" ref="jdbcConnectionManager"/>
+	</bean>
+
+	<bean id="debugDataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">
+		<property name="target" ref="realDataSource" />
+		<property name="maxConnections" value="${extprop.jdbc.poolMaxSize}" />
+		<property name="enabled" value="${extprop.jdbc.datasource.debug}" />
+	</bean>
+
+	<bean id="dataSource" class="ch.vd.uniregctb.database.TracingDataSource">
+		<property name="target" ref="debugDataSource" />
+		<property name="statsService" ref="statsService" />
+		<property name="enabled" value="${extprop.jdbc.datasource.tracing}" />
+	</bean>
+
+	<bean id="hibernateDialect" class="${oracle.hibernate.dialect}"/>
+
+	<!-- hibernateProperties specifiques à cette datasource. -->
+	<util:map id="hibernateProperties">
+		<entry key="hibernate.connection.autocommit" value="false" />
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.show_sql" value="false" />
+		<entry key="hibernate.jdbc.batch_size" value="0" />
+		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
+		<entry key="hibernate.dialect" value="${oracle.hibernate.dialect}" />
+		<entry key="hibernate.query.substitutions" value="${oracle.hibernate.query.substitutions}" />
+		<entry key="hibernate.hbm2ddl.auto" value="${extprop.hibernate.hbm2ddl.mode}" />
+	</util:map>
+
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
+		<property name="driverType" value="thin" />
+		<property name="serverName" value="${extprop.jdbc.server}" />
+		<property name="portNumber" value="${extprop.jdbc.port}" />
+		<property name="databaseName" value="${extprop.jdbc.instance}" />
+		<property name="userName" value="${extprop.jdbc.username}" />
+		<property name="password" value="${extprop.jdbc.password}" />
+	</bean>
+
+</beans>

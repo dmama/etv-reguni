@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Etat de Vaud - CADEV (Etat de Vaud - CADEV) -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by xciccd (Etat De Vaud) -->
+<!-- Etat de Vaud, UID-DFIN, schéma TAO PP post -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--v2007.1.0 - 30.05.2007 : pour moteur 2007-2 - Création par copie du schéma 2005-->
+	<!--v2007.1.1 - 11.6.2007 : Include DocIdentification (avant était inclu au niveau SDI.xsd)-->
+	<xs:annotation>
+		<xs:documentation>v2011.1.1 - 06.07.2010 : ajout groupe DeductionsSpeciales</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="DocIdentification.xsd"/>
+	<xs:complexType name="Annexe05Type">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 05</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="FraisMedicaux" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Facture" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="EtabliePar" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id960</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DateeDu" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id961</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Type" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id962</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Medecin" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Pharmacie" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Hopital" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="EMS" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Divers" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="MontantBrut" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id963</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ParticipationCaisse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id964</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="MontantACharge" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id965</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="MontantAChargeHandicap" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID967</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="VersementsBenevoles" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Versement" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DateVersement" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id970</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Destinataire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id971</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id972</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DeductionsSpeciales" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Type" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4233</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="RenteChargeDurable" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="DonPartiPolitique" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Beneficiaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4234</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4235</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

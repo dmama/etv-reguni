@@ -1,0 +1,95 @@
+package ch.vd.uniregctb.dao.jdbc;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
+
+	private static final ForFiscalMapper ROW_MAPPER = new ForFiscalMapper();
+
+	@SuppressWarnings({"unchecked"})
+	public ForFiscal get(long forId, JdbcTemplate template) {
+		final Pair<Long, ForFiscal> pair = (Pair<Long, ForFiscal>) DataAccessUtils.uniqueResult(template.query(ForFiscalMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
+		return pair.getSecond();
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Set<ForFiscal> getForTiers(long tiersId, JdbcTemplate template) {
+		final List<Pair<Long, ForFiscal>> list = template.query(ForFiscalMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
+		final HashSet<ForFiscal> set = new HashSet<ForFiscal>(list.size());
+		for (Pair<Long, ForFiscal> pair : list) {
+			set.add(pair.getSecond());
+		}
+		return set;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Map<Long, Set<ForFiscal>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
+
+		// Découpe la requête en sous-requêtes si nécessaire
+		final List<Pair<Long, ForFiscal>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, ForFiscal>>() {
+			public List<Pair<Long, ForFiscal>> process(List<Long> ids) {
+				return template.query(ForFiscalMapper.selectByTiersIds(ids), ROW_MAPPER);
+			}
+		});
+
+		final HashMap<Long, Set<ForFiscal>> map = new HashMap<Long, Set<ForFiscal>>();
+		for (Pair<Long, ForFiscal> pair : list) {
+			Set<ForFiscal> set = map.get(pair.getFirst());
+			if (set == null) {
+				set = new HashSet<ForFiscal>();
+				map.put(pair.getFirst(), set);
+			}
+			set.add(pair.getSecond());
+		}
+		return map;
+	}
+
+	private static class ForFiscalMapper implements RowMapper {
+		private static final String BASE_SELECT = "select " +
+				${BASE_SELECT};
+
+		public static String selectById() {
+			return BASE_SELECT + " where ${PRIMARY_KEY} = ?";
+		}
+
+		public static String selectByTiersId() {
+			return BASE_SELECT + " where ${FOREIGN_KEY} = ?";
+		}
+
+		public static String selectByTiersIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " where ${FOREIGN_KEY} in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			${MAPPING_CODE}
+		}
+	}
+}

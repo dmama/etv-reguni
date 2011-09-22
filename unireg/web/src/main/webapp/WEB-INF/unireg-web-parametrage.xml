@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--
+		Configuration des beans pour : Paramètre d'application 
+	 -->
+	<bean id="paramHelper" class="ch.vd.uniregctb.param.ParamHelper"/>
+	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
+		<property name="service" ref = "parametreAppService" />
+	</bean>
+	
+	<bean 	id="paramApplicationController"
+			class="ch.vd.uniregctb.param.ParamApplicationController"
+			parent="abstractSimpleFormController">
+		<property name="sessionForm" value="false" />
+		<property name="commandClass" value="ch.vd.uniregctb.param.view.ParamApplicationView" />
+		<property name="commandName" value="command" />
+		<property name="paramApplicationManager" ref="paramApplicationManager" />
+		<property name="formView" value="param/application" />
+		<property name="successView" value="param/application" />
+		<property name="validator" ref="paramApplicationValidator" />
+	</bean>
+
+	<bean id="paramApplicationValidator" class="ch.vd.uniregctb.param.validator.ParamApplicationValidator" >
+	</bean>
+
+
+	<!--
+		Configuration des beans pour : Paramètre de Période fiscale
+	 -->
+	
+	<!--  Le manager -->
+	<bean id="paramPeriodeManager" class="ch.vd.uniregctb.param.manager.ParamPeriodeManagerImpl">
+		<property name="periodeFiscaleDAO" ref = "periodeFiscaleDAO"/>
+		<property name="modeleDocumentDAO" ref = "modeleDocumentDAO"/>
+		<property name="modeleFeuilleDocumentDAO" ref = "modeleFeuilleDocumentDAO"/>
+		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO"/>
+		<property name="periodeFiscaleService" ref="periodeFiscaleService"/> 
+	</bean>
+	
+	<!-- Les validators -->
+	<bean id="parametrePeriodeFiscaleValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleValidator"/>
+	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+	</bean>
+	<bean id="modeleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleDocumentValidator">
+			<property name="periodeFiscaleDAO" ref = "periodeFiscaleDAO"/>
+	</bean>
+	
+	<!-- Les Controlleurs -->
+
+	<bean id="paramPeriodeController"
+			class="ch.vd.uniregctb.param.ParamPeriodeController">
+		<property name="manager" ref="paramPeriodeManager" />
+	</bean>
+	
+	<bean id="initPeriodeController" class="ch.vd.uniregctb.param.InitPeriodeController">
+		<property name="manager" ref="paramPeriodeManager" />
+	</bean>
+	
+	<bean 	id="paramParametrePeriodeFiscaleEditController"
+			class="ch.vd.uniregctb.param.ParamParametrePeriodeFiscaleEditController"
+			parent="abstractSimpleFormController">
+		<property name="sessionForm" value="false" />
+		<property name="commandClass" value="ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="param/parametres-pf-edit" />
+		<property name="successView" value="param/refresh-parent-periode" />
+		<property name="validator" ref="parametrePeriodeFiscaleValidator" />
+		<property name="manager" ref="paramPeriodeManager" />
+	</bean>
+	
+	<bean 	id="paramModeleDocumentAddController"
+			class="ch.vd.uniregctb.param.ParamModeleDocumentAddController"
+			parent="abstractSimpleFormController">
+		<property name="sessionForm" value="false" />
+		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleDocumentView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="param/modele-add" />
+		<property name="successView" value="param/refresh-parent-periode" />
+		<property name="validator" ref = "modeleDocumentValidator"/>
+		<property name="manager" ref="paramPeriodeManager" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+	</bean>
+	
+	<bean id="paramModeleDocumentSupprController" class="ch.vd.uniregctb.param.ParamModeleDocumentSupprController">
+		<property name="manager" ref="paramPeriodeManager" />
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
+	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
+		<property name="manager" ref="paramPeriodeManager" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="modeleFeuilleDocumentDAO" ref = "modeleFeuilleDocumentDAO"/>
+	</bean>
+
+	<bean id="abstractParamModeleFeuilleDocumentController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.param.AbstractParamModeleFeuilleDocumentController">
+		<property name="paramHelper" ref="paramHelper" />
+		<property name="manager" ref="paramPeriodeManager" />
+	</bean>
+</beans>

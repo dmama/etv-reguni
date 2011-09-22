@@ -1,0 +1,379 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>MODE_COM</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>12300002</value>
+			<value>PersonnePhysique</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value>SCHMID</value>
+			<value>Laurent</value>
+			<value>1245789312435</value>
+			<value>19700123</value>
+			<value>MASCULIN</value>
+			<value>8212</value>
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12500001</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>ADMINISTRATEURS</value>
+			<value>TRIMESTRIEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service pour administrateurs]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>1290387</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>CONFERENCIERS_ARTISTES_SPORTIFS</value>
+			<value>TRIMESTRIEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service pour conferencier]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ANNEE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>2008</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>2</value>
+			<value>2009</value>
+		</row>
+		<row>
+			<value>2010-01-01</value>
+			<value>3</value>
+			<value>2010</value>
+		</row>
+	</table>
+	<table name="PARAMETRE_PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TERME_GEN_SOMM_REGL</column>
+		<column>TERME_GEN_SOMM_EFFECT</column>
+		<column>DATE_FIN_ENVOI_MASSE</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_CANTON</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_SUISSE</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>FOR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>GENRE_IMPOT</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>DATE_OUVERTURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value>ForDebiteurPrestationImposable</value>
+			<value>12500001</value>
+			<value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+			<null />
+			<null />
+			<value>20070101</value>
+			<null />
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>12</value>
+			<value>ForDebiteurPrestationImposable</value>
+			<value>1290387</value>
+			<value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+			<null />
+			<null />
+			<value>20090101</value>
+			<null />
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+	</table>
+	<table name="DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DOCUMENT_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>PERIODICITE</column>
+		<column>MODE_COM</column>
+		<column>ANNULATION_DATE</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>21</value>
+			<value>LR</value>
+			<value>12500001</value>
+			<value>20080101</value>
+			<value>20080131</value>
+			<value>MENSUEL</value>
+			<value>PAPIER</value>
+			<null />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>22</value>
+			<value>LR</value>
+			<value>12500001</value>
+			<value>20080101</value>
+			<value>20081231</value>
+			<value>ANNUEL</value>
+			<value>PAPIER</value>
+			<value>2007-02-02</value>
+			<value>1</value>
+		</row>
+			<row>
+			<value>2009-01-01</value>
+			<value>23</value>
+			<value>LR</value>
+			<value>1290387</value>
+			<value>20090201</value>
+			<value>20090228</value>
+			<value>UNIQUE</value>
+			<value>PAPIER</value>
+			<null />
+			<value>2</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>24</value>
+			<value>LR</value>
+			<value>1290387</value>
+			<value>20091101</value>
+			<value>20091130</value>
+			<value>UNIQUE</value>
+			<value>PAPIER</value>
+			<null />
+			<value>1</value>
+		</row>
+	</table>
+	<table name="DELAI_DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DECLARATION_ID</column>
+		<column>DATE_DEMANDE</column>
+		<column>DATE_TRAITEMENT</column>
+		<column>DELAI_ACCORDE_AU</column>
+		<column>CONFIRMATION_ECRITE</column>
+		<column>ANNULATION_DATE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>31</value>
+			<value>21</value>
+			<value>20080215</value>
+			<value>20080215</value>
+			<value>20080228</value>
+			<value>0</value>
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>32</value>
+			<value>21</value>
+			<value>20080228</value>
+			<value>20080228</value>
+			<value>20080315</value>
+			<value>0</value>
+			<value>2008-03-25</value>
+		</row>
+	</table>
+	<table name="ETAT_DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TYPE</column>
+		<column>DATE_OBTENTION</column>
+		<column>DECLARATION_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>41</value>
+			<value>EXPEDIEE</value>
+			<value>20080320</value>
+			<value>21</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>42</value>
+			<value>RETOURNEE</value>
+			<value>20100511</value>
+			<value>23</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>43</value>
+			<value>RETOURNEE</value>
+			<value>20100511</value>
+			<value>24</value>
+		</row>
+	</table>
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ADR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>USAGE_TYPE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>NUMERO_RUE</column>
+		<column>NUMERO_MAISON</column>
+		<column>RUE</column>
+		<column>TEXTE_CASE_POSTALE</column>
+		<column>NUMERO_CASE_POSTALE</column>
+		<column>TYPE</column>
+		<column>NUMERO_ORDRE_POSTE</column>
+		<column>COMPLEMENT_LOCALITE</column>
+		<column>NUMERO_POSTAL_LOCALITE</column>
+		<column>NUMERO_OFS_PAYS</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>AdresseSuisse</value>
+			<value>12500001</value>
+			<value>COURRIER</value>
+			<value>20040129</value>
+			<null />
+			<value>141554</value>
+			<value>12</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>104</value>
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+	</table>
+		<table name="PERIODICITE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DEBITEUR_ID</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>PERIODICITE_TYPE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>12500001</value>
+			<null />
+			<value>20070101</value>
+			<null />
+			<value>TRIMESTRIEL</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>2</value>
+			<value>1290387</value>
+			<value>M11</value>
+			<value>20090201</value>
+			<value>20091231</value>
+			<value>UNIQUE</value>
+		</row>
+		<row>
+			<value>2010-01-01</value>
+			<value>3</value>
+			<value>1290387</value>
+			<null />
+			<value>20100101</value>
+			<null />
+			<value>TRIMESTRIEL</value>
+		</row>
+	</table>
+</dataset>

@@ -1,0 +1,25 @@
+package ch.vd.uniregctb.interfaces.model;
+
+import ch.vd.registre.base.date.RegDate;
+
+public interface EtatCivil {
+
+    /**
+     * Retourne la date de début de l'état civil.
+     *
+     * @return la date de début de l'état civil.
+     */
+    RegDate getDateDebutValidite();
+
+    /**
+     * Retourne le type de l'état civil.
+     *
+     * @return le type de l'état civil.
+     */
+    TypeEtatCivil getTypeEtatCivil();
+
+	/**
+	 * @return le numéro d'individu du conjoint.
+	 */
+	Long getNumeroConjoint();
+}

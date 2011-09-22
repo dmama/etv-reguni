@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Log4j config for WEB -->
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<!-- Le "Threshold" veut dire qu'il ne va logger que les messages -->
+		<!-- "Threshold level" ou plus haut -->
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="IN_MEMORY" class="ch.vd.uniregctb.log.RollingInMemoryAppender">
+		<param name="MaxLines" value="100" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="LOGFILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="false" />
+		<param name="File" value="unireg-web.log" />
+		<param name="MaxFileSize" value="5000KB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<!--  Cas general -->
+	<logger name="ch.vd.uniregctb">
+		<level value="DEBUG" />
+	</logger>
+
+
+	<!-- BEGIN Cas particuliers -->
+	<logger name="org.springmodules.xt.ajax.AjaxInterceptor">
+		<level value="FATAL" /> <!-- autrement chaque requête Ajax génère une ligne d'INFO ! -->
+	</logger>
+	<logger name="org.springmodules.xt.ajax.util.AjaxResponseSender">
+		<level value="INFO" /> <!-- autrement chaque requête Ajax génère une ligne de DEBUG ! -->
+	</logger>
+	<logger name="ch.vd.uniregctb.tiers.TiersHelper">
+		<level value="INFO" />
+	</logger>
+	<!-- END Cas particuilers -->
+
+	
+
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.displaytag">
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.springmodules.xt.ajax">
+		<level value="WARN" />
+	</logger>
+
+	<!-- Suppress warnings from Commons Validator -->
+	<logger name="org.apache.commons.validator.ValidatorResources">
+		<level value="ERROR" />
+	</logger>
+
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="LOGFILE" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="IN_MEMORY" />
+	</root>
+</log4j:configuration>

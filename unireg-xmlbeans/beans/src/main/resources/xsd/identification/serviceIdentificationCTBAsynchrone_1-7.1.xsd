@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Christophe Ollivier (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7" targetNamespace="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>Question: Déterminer exactement le nom des XSD à utiliser</xs:documentation>
+	</xs:annotation>
+	<xs:element name="identificationCTB">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="demande">
+					<xs:annotation>
+						<xs:documentation>businessId, replyTo en tant qu'attributs du message JMS</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="demande">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="messageId" type="messageIdType"/>
+										<xs:element name="emetteurId" type="emetteurIdType"/>
+										<xs:element name="typeMessage" type="xs:string"/>
+										<xs:element name="periodeFiscale" type="xs:gYear"/>
+										<xs:element name="prioriteEmetteur" type="xs:boolean"/>
+										<xs:element name="prioriteUtilisateur" type="prioriteUtilisateurType"/>
+										<xs:element name="modeIdentification" type="ModeIdentificationType"/>
+										<xs:element name="transmetteur" type="xs:string" minOccurs="0"/>
+										<xs:element name="montant" type="xs:nonNegativeInteger" minOccurs="0"/>
+										<xs:element name="dateMessage" type="xs:date" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="personne">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="NAVS13" type="navs13Type" minOccurs="0"/>
+										<xs:element name="NAVS11" type="navs11Type" minOccurs="0"/>
+										<xs:element name="nom" type="nomType" minOccurs="0"/>
+										<xs:element name="prenoms" type="nomType" minOccurs="0"/>
+										<xs:element name="sexe" type="sexeType" minOccurs="0"/>
+										<xs:element name="dateNaissance" type="datePartielleType" minOccurs="0"/>
+										<xs:element name="adresse" type="informationAdresseType" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="reponse">
+					<xs:annotation>
+						<xs:documentation>placer le businessId en entrée dans le correlationID</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="date" type="xs:dateTime">
+								<xs:annotation>
+									<xs:documentation>date à laquelle la réponse était OK ou KO. Il est possible qu'elle soit différente de la date de génération du XML</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:choice>
+								<xs:element name="contribuable">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="numeroContribuableIndividuel" type="numeroContribuableType"/>
+											<xs:element name="numeroContribuableCouple" type="numeroContribuableType" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="erreur">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="type" type="typeErreurType">
+												<xs:annotation>
+													<xs:documentation>Technique ou Metier</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="code">
+												<xs:simpleType>
+													<xs:restriction base="xs:token">
+														<xs:maxLength value="20"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:element>
+											<xs:element name="message" type="messageErreurType">
+												<xs:annotation>
+													<xs:documentation>Message clair à afficher ou à communiquer à un utilisateur</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="enAttenteIdentifManuel" type="EnAttenteIdentifManuelType">
+									<xs:annotation>
+										<xs:documentation>Si le demandeur a choisit le type de réponse "mode_manuel_avec_ACK", alors  dés que la demande automatique échoue, il reçoit une première réponse avec ce flag, l'informant que l'identification manuelle est en cours. Il recevra une seconde réponse avec le résultat de l'identification manuelle lorsque celle-ci aura eu lieu. </xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="typeErreurType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="M"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="codeVisualisationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NCSCORE"/>
+			<xs:enumeration value="ACICOM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="messageErreurType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="numeroContribuableType">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="prioriteUtilisateurType">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="emetteurIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="utilisateurIdType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACICOM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="messageIdType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="36"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="navs13Type">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="7560000000001"/>
+			<xs:maxInclusive value="7569999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="navs11Type">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="10000000000"/>
+			<xs:maxInclusive value="99999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="nomType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sexeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="datePartielleType">
+		<xs:choice>
+			<xs:element name="anneeMoisJour" type="xs:date"/>
+			<xs:element name="anneeMois" type="xs:gYearMonth"/>
+			<xs:element name="annee" type="xs:gYear"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="informationAdresseType">
+		<xs:sequence>
+			<xs:element name="ligneAdresse1" type="LigneAdresseType" minOccurs="0"/>
+			<xs:element name="ligneAdresse2" type="LigneAdresseType" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="rue" type="RueType" minOccurs="0"/>
+				<xs:element name="noPolice" type="NoPoliceType" minOccurs="0"/>
+				<xs:element name="noAppartement" type="NoAppartementType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="numeroCasePostale" type="NumeroCasePostaleType" minOccurs="0"/>
+				<xs:element name="texteCasePostale" type="TexteCasePostaleType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:element name="localite" type="LocaliteType" minOccurs="0"/>
+			<xs:element name="lieu" type="LieuType" minOccurs="0"/>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="NPASuisse" type="NPASuisseType" minOccurs="0"/>
+					<xs:element name="ChiffreComplementaire" type="ChiffreComplementaireType" minOccurs="0"/>
+					<xs:element name="NPASuisseId" type="NPASuisseIdType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:element name="NPAEtranger" type="NPAEtrangerType" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="pays" type="PaysType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="LigneAdresseType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RueType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NoPoliceType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NoAppartementType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NumeroCasePostaleType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TexteCasePostaleType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LocaliteType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LieuType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NPASuisseIdType">
+		<xs:restriction base="xs:int"/>
+	</xs:simpleType>
+	<xs:simpleType name="NPASuisseType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1000"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ChiffreComplementaireType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NPAEtrangerType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PaysType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EnAttenteIdentifManuelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ModeIdentificationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SANS_MANUEL">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur ne souhaite pas que sa demande passe en mode manuel si le mode automatique échoue. La réponse sera immédiatement négative, sans autre traitement. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANUEL_AVEC_ACK">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Cependant, dés l'échec du mode automtique, une sorte d'accusé de réception sera envoyée au demandeur avant que le mode manuel n'aboutisse. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANUEL_SANS_ACK">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Il ne recevra rien tant que le mode manuel n'aura aboutie. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

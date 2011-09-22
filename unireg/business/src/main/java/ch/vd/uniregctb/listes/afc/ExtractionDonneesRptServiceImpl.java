@@ -1,0 +1,67 @@
+package ch.vd.uniregctb.listes.afc;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+
+/**
+ * Service utilisé par l'extraction des listes des données de référence RPT
+ */
+public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptService {
+
+	private HibernateTemplate hibernateTemplate;
+
+	private PlatformTransactionManager transactionManager;
+
+	private TiersService tiersService;
+
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+
+	private TiersDAO tiersDAO;
+
+	private ServiceInfrastructureService infraService;
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	/**
+	 * Extrait la liste des données de référence RPT de la période fiscale donnée
+	 * @param dateTraitement date d'exécution de l'extraction
+	 * @param pf période fiscale de référence
+	 * @param mode type d'extraction à effectuer
+	 * @param nbThreads degré de parallélisation du traitement
+	 * @return extraction
+	 */
+	@Override
+	public ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager) {
+		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
+		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
+	}
+}

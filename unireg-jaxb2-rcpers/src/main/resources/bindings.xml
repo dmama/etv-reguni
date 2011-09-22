@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<jxb:bindings version="1.0"
+			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
+
+	<!-- unireg-jaxb2-ech -->
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0006/2/eCH-0006-2-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0006.v2" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0007/3/eCH-0007-3-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0007.v3" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0007/4/eCH-0007-4-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0007.v4" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0008/2/eCH-0008-2-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0008.v2" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/3/eCH-0010-3-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0010.v3" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0010.v4" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0011/3/eCH-0011-3-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0011.v3" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0011/5/eCH-0011-5-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0011.v5" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0044/1/eCH-0044-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0044.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0044.v2" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0071/1/eCH-0071-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0071.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0072/1/eCH-0072-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0072.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0084.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<!-- local XSDs -->
+
+	<jxb:bindings schemaLocation="eVD-0001-2-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.evd0001.v2" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0009/1/eVD-0009-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.evd0009.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+</jxb:bindings>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
+		<property name="exposeNosTechniques" value="false" />        
+	</bean>
+
+	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->
+
+	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
+		<property name="service" ref="tiersService2Cache" />
+	</bean>
+
+	<bean id="tiersService2Bean" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="noOfsTranslator" ref="noOfsTranslator" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+	</bean>
+
+	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService2Bean" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers2" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersService2Cache" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+	<!-- Beans du web-service Tiers v3 mais sans le end-point jaxws -->
+
+	<bean id="tiersService3EndPoint" class="ch.vd.uniregctb.webservices.tiers3.impl.PartyWebServiceEndPoint">
+		<property name="service" ref="tiersService3Cache" />
+	</bean>
+
+	<bean id="tiersService3Impl" class="ch.vd.uniregctb.webservices.tiers3.impl.PartyWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+	</bean>
+
+	<bean id="tiersService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCache">
+		<property name="target" ref="tiersService3Impl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers3" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="tiersService3CacheManager" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersService3Cache" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="getDebtorInfoRequestType">
+		<xs:annotation>
+			<xs:documentation>Requête qui demande des informations spécifiques sur un débiteur de prestations imposables pour une période fiscale donnée.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ws:requestType">
+				<xs:sequence>
+					<xs:element name="debtorNumber" type="common:partyNumberType">
+						<xs:annotation>
+							<xs:documentation>Le numéro de tiers du débiteur de prestations imposables.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="taxPeriod" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>La période fiscale considérée (1er janvier au 31 décembre).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

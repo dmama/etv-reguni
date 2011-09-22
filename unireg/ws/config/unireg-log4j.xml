@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!--appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[ws-unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender-->
+
+	<appender name="LOGFILE" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="File" value="unireg-ws.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[ws-unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="WS_ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="File" value="ws-access.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="SERVICE_TRACING" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="File" value="srv-access-ws.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="ch.vd.uniregctb">
+		<level value="DEBUG" />
+	</logger>
+
+	<logger name="ch.vd.uniregctb.ejb.GentilRemoteStatelessSessionProxyFactoryBean">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<!--logger name="org.hibernate.SQL">
+		<level value="INFO"/>
+		</logger-->
+
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+	<!-- Suppress warnings from Commons Validator -->
+	<logger name="org.apache.commons.validator.ValidatorResources">
+		<level value="ERROR" />
+	</logger>
+
+	<category name="tiers2.read" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="tiers2.write" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="tiers3.read" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="tiers3.write" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="ServiceTracing" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="SERVICE_TRACING"/>
+	</category>
+	
+	<category name="ch.vd.uniregctb.transaction.TransactionManager" additivity="false">
+		<priority value="WARN"/>
+		<appender-ref ref="SERVICE_TRACING"/>
+	</category>
+
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="LOGFILE" />
+		<!--appender-ref ref="CONSOLE" /-->
+	</root>
+
+</log4j:configuration>
