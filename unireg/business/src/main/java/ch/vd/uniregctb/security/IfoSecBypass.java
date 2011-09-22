@@ -31,7 +31,7 @@ public class IfoSecBypass {
 	}
 
 	private void initProcedures(String procedures) {
-		final String[] array = procedures.split(", ");
+		final String[] array = procedures.split("[, ]+");
 		for (String s : array) {
 			final String code = s.replace("[", "").replace("]", "");
 			final Role r = Role.fromIfoSec(code);
