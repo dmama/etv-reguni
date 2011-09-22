@@ -16,8 +16,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
  */
 public abstract class BamMessageHelper {
 
-	public static final String PROCESS_DEFINITION_ID_PAPIER = "ACQUISITION-DI-PAPIER";
-	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE = "ACQUISITION-DI-ELECTRONIQUE";
+	public static final String PROCESS_DEFINITION_ID_PAPIER = "ACQUISITION_DI_PAPIER";
+	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE = "ACQUISITION_DI_ELECTRONIQUE";
 
 	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE = "E_DI_ACKNOWLEDGE_RECEIPT";
 	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER = "P_DI_ACKNOWLEDGE_RECEIPT";
