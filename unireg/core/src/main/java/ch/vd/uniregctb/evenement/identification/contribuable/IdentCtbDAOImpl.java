@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -27,7 +28,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	private static final String TOUS = "TOUS";
 
-	private static final  String clauseMessagesNonTraites = " where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
+	private static final String clauseMessagesNonTraites = " where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
 	private static final String clauseMessagesTraitees = " where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT')";
 
 	public IdentCtbDAOImpl() {
@@ -37,7 +38,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
+	                                             boolean nonTraiteAndSuspendu, @Nullable TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
@@ -65,8 +66,9 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		else {
 			queryOrder = queryOrder + " desc";
 		}
-
-		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='" + typeDemande.name() + "'" + queryWhere + queryOrder;
+		final String avecTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
+		final String sansTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 ";
+		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + "'" + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
 
 		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
 		final int maxResult = paramPagination.getTaillePage();
@@ -105,7 +107,8 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 */
 
 	@Override
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
+	                 @Nullable TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
@@ -113,23 +116,31 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		List<Object> criteria = new ArrayList<Object>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
-
-		String query = " select count(*) from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='" + typeDemande.name() + "'" + queryWhere;
+		final String avecTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
+		final String sansTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where 1=1 ";
+		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + "'" + queryWhere : sansTypeDemande + queryWhere;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 		return count;
 	}
 
+
 	@Override
-	public List<String> getTypesMessageEtatsNonTraites() {
-			String query = " select distinct identificationContribuable.demande.typeMessage" +
+	public List<String> getTypesMessageEtatsNonTraites(@Nullable TypeDemande typeDemande) {
+		String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
-				return getHibernateTemplate().find(query);
+		if (typeDemande != null) {
+			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + "'";
+		}
+		return getHibernateTemplate().find(query);
 	}
 
 	@Override
-	public List<String> getTypesMessageEtatsTraites() {
+	public List<String> getTypesMessageEtatsTraites(@Nullable TypeDemande typeDemande) {
 		String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
+		if (typeDemande != null) {
+			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + "'";
+		}
 		return getHibernateTemplate().find(query);
 	}
 
@@ -164,7 +175,6 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
-
 
 
 	@Override
@@ -220,22 +230,21 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	@Override
 	public List<PrioriteEmetteur> getListePrioriteMessagesNonTraites() {
-	String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-			"from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
+		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
+				"from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		return getHibernateTemplate().find(query);
 	}
 
 	@Override
 	public List<PrioriteEmetteur> getListePrioriteMessagesTraites() {
 		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-			"from IdentificationContribuable identificationContribuable" +  clauseMessagesTraitees;
+				"from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		return getHibernateTemplate().find(query);
 	}
 
 	public List<PrioriteEmetteur> getListePriorite() {
-	String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-			"from IdentificationContribuable identificationContribuable"
-			;
+		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
+				"from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
 	}
 

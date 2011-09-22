@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
@@ -85,7 +84,17 @@ public class Demande {
 	 * Type de la demande: MeldeWesen, NCS, ...
 	 */
 	private TypeDemande typeDemande;
-	
+
+	/** Valeur fourni par le demandeur, correspond au moyen technique par lequel la demande a transité
+	 *
+	 */
+	private String transmetteur;
+
+	/** Montant en lien avec le type du message(ex: montant du salaire pour un certificat de salaire)
+	 *
+	 */
+	private Long montant;
+
 
 	@Column(name = "DATE_DEMANDE")
 	public Date getDate() {
@@ -166,6 +175,24 @@ public class Demande {
 
 	public void setPrioriteUtilisateur(int prioriteUtilisateur) {
 		this.prioriteUtilisateur = prioriteUtilisateur;
+	}
+
+	@Column(name = "TRANSMETTEUR")
+	public String getTransmetteur() {
+		return transmetteur;
+	}
+
+	public void setTransmetteur(String transmetteur) {
+		this.transmetteur = transmetteur;
+	}
+
+	@Column(name = "MONTANT")
+	public Long getMontant() {
+		return montant;
+	}
+
+	public void setMontant(Long montant) {
+		this.montant = montant;
 	}
 
 	@Embedded

@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -59,7 +58,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		LOGGER.debug("Start of IdentificationMessagesListEnCoursController:formBackingObject");
 
 		// on doit avoir les droits de visualisation pour ça...
-		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO)) {
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
 
@@ -122,19 +121,22 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
 
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true, TypeDemande.MELDEWESEN);
-				nombreElements = identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN);
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true);
+				nombreElements = identificationMessagesListManager.count(bean, false, false, true);
 
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false, TypeDemande.MELDEWESEN);
-				nombreElements = identificationMessagesListManager.count(bean, true, false, false, TypeDemande.MELDEWESEN);
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false);
+				nombreElements = identificationMessagesListManager.count(bean, true, false, false);
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
-				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.MELDEWESEN);
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean);
 			}
-
+			else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.NCS);
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.NCS);
+			}
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 
@@ -226,7 +228,13 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage(false);
+		if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.NCS);
+		}
+		else {
+			return identificationMapHelper.initMapTypeMessage(false);
+		}
+
 
 	}
 
@@ -237,7 +245,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	}
 
 	@Override
-	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur() {
+	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
 	}
 }

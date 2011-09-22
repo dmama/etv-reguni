@@ -30,8 +30,26 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
+	                                                   boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException;
+
+	/**
+	 * Recherche des identifications correspondant aux critères
+	 *
+	 * @param bean
+	 * @param pagination
+	 * @param nonTraiteOnly         TODO
+	 * @param archiveOnly           TODO
+	 * @param nonTraiterAndSuspendu TODO
+	 * @return
+	 * @throws AdressesResolutionException
+	 * @throws ServiceInfrastructureException
+	 */
+	@Transactional(readOnly = true)
+	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
+	                                                   boolean nonTraiterAndSuspendu)
+			throws AdressesResolutionException, ServiceInfrastructureException;
+
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
@@ -45,6 +63,19 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande);
+
+
+	/**
+	 * Cherche et compte les identifications correspondant aux criteres
+	 *
+	 * @param criterion
+	 * @param nonTraiteOnly         TODO
+	 * @param archiveOnly           TODO
+	 * @param nonTraiterAndSuspendu TODO
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu);
 
 	/**
 	 * Suspendre l'identification des messages
@@ -79,8 +110,26 @@ public interface IdentificationMessagesListManager {
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
 	 *
+	 *
 	 * @param bean
 	 * @param pagination
+	 * @param typeDemande
+	 * @return
+	 * @throws AdressesResolutionException
+	 * @throws ServiceInfrastructureException
+	 */
+	@Transactional(readOnly = true)
+	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande typeDemande)
+			throws AdressesResolutionException, ServiceInfrastructureException;
+
+
+	/**
+	 * Recherche des identifications correspondant seulement à l'état en cours
+	 *
+	 *
+	 * @param bean
+	 * @param pagination
+	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
@@ -99,6 +148,15 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande typeDemande);
+
+	/**
+	 * Cherche et compte les identifications correspondant à l'etat en cours
+	 *
+	 * @param criterion
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public int countEnCoursSeul(IdentificationContribuableCriteria criterion);
 
 
 	/**

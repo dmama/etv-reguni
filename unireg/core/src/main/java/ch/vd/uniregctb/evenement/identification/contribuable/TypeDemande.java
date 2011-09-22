@@ -1,8 +1,19 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
- /**
-    @author
-  */
+
+/**
+ @author
+ */
 public enum TypeDemande {
-	MELDEWESEN,
-	NCS
+	MELDEWESEN("MELDEWESEN"),
+	NCS("NCS");
+
+	private final String name;
+
+	TypeDemande(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

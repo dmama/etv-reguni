@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -27,7 +27,7 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 */
 
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, TypeDemande typeDemande);
+	                                             boolean nonTraiteAndSuspendu, @Nullable TypeDemande typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -40,8 +40,8 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @return
 	 */
 
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande);
-
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
+	                 @Nullable TypeDemande typeDemande);
 
 
 	/**
@@ -57,17 +57,19 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * Récupère la liste des types de message avec un état non traité
 	 *
 	 * @return
+	 * @param typeDemande
 	 */
 
-	public List<String> getTypesMessageEtatsNonTraites();
+	public List<String> getTypesMessageEtatsNonTraites(TypeDemande typeDemande);
 
-/**
+	/**
 	 * Récupère la liste des types de message
 	 *
 	 * @return
+	 * @param typeDemande
 	 */
 
-	public List<String> getTypesMessageEtatsTraites();
+	public List<String> getTypesMessageEtatsTraites(TypeDemande typeDemande);
 
 
 	/**

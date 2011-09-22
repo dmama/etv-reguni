@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -42,7 +41,6 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	private static final String IDENTIFICATION_GESTION_MESSAGE = "gestionMessage";
 
 
-
 	private IdentificationMessagesListManager identificationMessagesListManager;
 
 	public void setIdentificationMessagesListManager(IdentificationMessagesListManager identificationMessagesListManager) {
@@ -69,16 +67,16 @@ public class IdentificationMessagesListController extends AbstractIdentification
 
 		boolean fromGestionMessage = false;
 		Boolean fromTraiteMessage = false;
-		if (session.getAttribute(IDENTIFICATION_GESTION_MESSAGE)!=null) {
-			fromGestionMessage = (Boolean)session.getAttribute(IDENTIFICATION_GESTION_MESSAGE);
+		if (session.getAttribute(IDENTIFICATION_GESTION_MESSAGE) != null) {
+			fromGestionMessage = (Boolean) session.getAttribute(IDENTIFICATION_GESTION_MESSAGE);
 		}
-		if (session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE)!=null) {
-			 fromTraiteMessage = (Boolean)session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE);
+		if (session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE) != null) {
+			fromTraiteMessage = (Boolean) session.getAttribute(IDENTIFICATION_TRAITE_MESSAGE);
 		}
 
 
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE)) || !fromGestionMessage || fromTraiteMessage) {
-	 		bean = identificationMessagesListManager.getView(parametreTypeMessage, parametrePeriode, parametreEtat);
+			bean = identificationMessagesListManager.getView(parametreTypeMessage, parametrePeriode, parametreEtat);
 			session.setAttribute(IDENTIFICATION_CRITERIA_NAME, bean);
 		}
 
@@ -103,7 +101,7 @@ public class IdentificationMessagesListController extends AbstractIdentification
 			// Récupération de la pagination
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
-			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false,true, TypeDemande.MELDEWESEN);
+			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN));
@@ -116,13 +114,11 @@ public class IdentificationMessagesListController extends AbstractIdentification
 		mav.addObject(IDENTIFICATION_GESTION_MESSAGE, true);
 		mav.addObject(IDENTIFICATION_TRAITE_MESSAGE, false);
 
-		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE,Boolean.FALSE);
-		session.setAttribute(IDENTIFICATION_GESTION_MESSAGE,Boolean.TRUE);
-		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE,Boolean.FALSE);
+		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE, Boolean.FALSE);
+		session.setAttribute(IDENTIFICATION_GESTION_MESSAGE, Boolean.TRUE);
+		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE, Boolean.FALSE);
 		return mav;
 	}
-
-
 
 
 	/**
@@ -153,7 +149,8 @@ public class IdentificationMessagesListController extends AbstractIdentification
 		session.setAttribute(IDENTIFICATION_CRITERIA_NAME, bean);
 		if (request.getParameter(EFFACER_PARAMETER_VALUE) != null) {
 			mav.setView(new RedirectView("list.do?action=effacer"));
-		} else {
+		}
+		else {
 			mav.setView(new RedirectView(getSuccessView()));
 		}
 		return mav;
@@ -165,9 +162,9 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	 * @return une map
 	 */
 	@Override
-	protected  Map<Etat, String> initMapEtatMessage() {
+	protected Map<Etat, String> initMapEtatMessage() {
 
-			return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
+		return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
 
 	}
 
@@ -184,12 +181,12 @@ public class IdentificationMessagesListController extends AbstractIdentification
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage(false);
+		return identificationMapHelper.initMapTypeMessage(false, TypeDemande.MELDEWESEN);
 
 	}
 
 	@Override
-	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
+	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
 	}
 

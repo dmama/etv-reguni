@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -9,14 +10,14 @@ import org.apache.xmlbeans.XmlException;
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
 import ch.vd.fiscalite.registre.identificationContribuable.EnAttenteIdentifManuelType;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB;
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Demande2;
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse;
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Contribuable;
+import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Erreur;
 import ch.vd.fiscalite.registre.identificationContribuable.InformationAdresseType;
 import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
 import ch.vd.fiscalite.registre.identificationContribuable.TypeErreurType;
-import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB;
-import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse;
-import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Demande2;
-import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Contribuable;
-import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Erreur;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.type.Sexe;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class XmlEntityAdapter {
+	public static String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
 
 	//private static Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
 
@@ -204,7 +206,8 @@ public abstract class XmlEntityAdapter {
 			return null;
 		}
 		final Demande entity = new Demande();
-		entity.setDate(DateHelper.getCurrentDate());
+		final Date dateMessage = xml.getDemande().getDateMessage() != null ? xml.getDemande().getDateMessage().getTime() : DateHelper.getCurrentDate();
+		entity.setDate(dateMessage);
 		entity.setEmetteurId(xml.getDemande().getEmetteurId());
 		entity.setMessageId(xml.getDemande().getMessageId());
 		entity.setPeriodeFiscale(xml.getDemande().getPeriodeFiscale().get(GregorianCalendar.YEAR));
@@ -215,8 +218,21 @@ public abstract class XmlEntityAdapter {
 		entity.setModeIdentification(translateModeIdentification(xml.getDemande().getModeIdentification()));
 		entity.setPrioriteUtilisateur(xml.getDemande().getPrioriteUtilisateur());
 		entity.setTypeMessage(xml.getDemande().getTypeMessage());
+		entity.setTransmetteur(xml.getDemande().getTransmetteur());
+		final BigInteger montant = xml.getDemande().getMontant();
+
+		if (montant != null) {
+			entity.setMontant(montant.longValue());
+		}
+
 		//TODO(BNM) à adapter en fonction du type de demande reçu. En attente d'une nouvelle XSD
-		entity.setTypeDemande(TypeDemande.MELDEWESEN);
+		if (TYPE_MESSAGE_NCS.equals(xml.getDemande())) {
+			entity.setTypeDemande(TypeDemande.NCS);
+		}
+		else {
+			entity.setTypeDemande(TypeDemande.MELDEWESEN);
+		}
+
 		return entity;
 	}
 
@@ -348,4 +364,5 @@ public abstract class XmlEntityAdapter {
 			throw new XmlException(e.getMessage());
 		}
 	}
+
 }

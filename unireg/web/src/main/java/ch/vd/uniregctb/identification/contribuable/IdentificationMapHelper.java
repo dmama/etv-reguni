@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEme
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 
@@ -58,7 +60,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur(final boolean isTraite) {
 
-	final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
+		final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<PrioriteEmetteur> listesPriorites = template.execute(new TransactionCallback<List<PrioriteEmetteur>>() {
@@ -102,13 +104,13 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatEnCoursMessage() {
 
-		final Map <Etat,String> etatsMessages = initMapEtatMessage(false);
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(false);
 
-		if(etatsMessages.containsKey(Etat.A_EXPERTISER_SUSPENDU)){
+		if (etatsMessages.containsKey(Etat.A_EXPERTISER_SUSPENDU)) {
 			etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
 		}
 
-		if(etatsMessages.containsKey(Etat.A_TRAITER_MAN_SUSPENDU)){
+		if (etatsMessages.containsKey(Etat.A_TRAITER_MAN_SUSPENDU)) {
 			etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
 		}
 
@@ -122,7 +124,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatEnCoursSuspenduMessage() {
 
-		final Map <Etat,String> etatsMessages = initMapEtatMessage(false);
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(false);
 
 		return etatsMessages;
 	}
@@ -134,7 +136,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatMessage(final boolean isTraite) {
 
-	final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		final Map<Etat, String> mapEtat = new HashMap<Etat, String>();
@@ -144,7 +146,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				if (isTraite) {
 					return identCtbDAO.getListeEtatsMessagesTraites();
 				}
-				else{
+				else {
 					return identCtbDAO.getListeEtatsMessagesNonTraites();
 				}
 
@@ -191,7 +193,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 
-	public Map<String, String> initMapTypeMessage(final boolean isTraite) {
+	public Map<String, String> initMapTypeMessage(final boolean isTraite, @Nullable final TypeDemande typeDemande) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
@@ -200,10 +202,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
 				if (isTraite) {
-					return identCtbDAO.getTypesMessageEtatsTraites();
+					return identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
 				}
 				else {
-					return identCtbDAO.getTypesMessageEtatsNonTraites();
+					return identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
 				}
 			}
 		});
@@ -216,6 +218,17 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		return mapMessage;
 	}
 
+
+	/**
+	 * Initialise la map des types du message
+	 *
+	 * @return une map
+	 */
+
+	public Map<String, String> initMapTypeMessage(final boolean isTraite) {
+		return initMapTypeMessage(isTraite, null);
+	}
+
 	/**
 	 * Initialise la map des utilisateurs traitants
 	 *
@@ -226,7 +239,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final Map<String, String>	mapUtilisateur = new HashMap<String, String>();
+		final Map<String, String> mapUtilisateur = new HashMap<String, String>();
 		final List<String> listVisaUser = template.execute(new TransactionCallback<List<String>>() {
 			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
@@ -262,10 +275,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final List<String> emetteurs = template.execute(new TransactionCallback<List<String>>() {
 			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
-				if(isTraite){
+				if (isTraite) {
 					return identCtbDAO.getEmetteursIdEtatsTraites();
 				}
-				else{
+				else {
 					return identCtbDAO.getEmetteursIdEtatsNonTraites();
 				}
 
@@ -287,7 +300,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 
 	public Map<Etat, String> initMapEtatArchiveMessage() {
-		final Map <Etat,String> etatsMessages = initMapEtatMessage(true);
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(true);
 
 		return etatsMessages;
 	}
@@ -320,9 +333,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 
-
-
-		/**
+	/**
 	 * Initialise la map des periodes fiscales
 	 * @return une map
 	 */

@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -182,7 +181,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage(true);
+		return identificationMapHelper.initMapTypeMessage(true, TypeDemande.MELDEWESEN);
 
 	}
 
@@ -192,8 +191,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	}
 
-		@Override
-	protected Map<Demande.PrioriteEmetteur,String> initMapPrioriteEmetteur(){
+	@Override
+	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(true);
 	}
 }

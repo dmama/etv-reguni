@@ -58,8 +58,16 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td></td>
-			<td></td>
+			<td>
+				<c:if test="${message.typeMessage == 'CS_EMPLOYEUR'}">
+					<fmt:message key="label.transmetteur.message"/>
+				</c:if>
+			</td>
+			<td>
+				<c:if test="${message.typeMessage == 'CS_EMPLOYEUR'}">
+					<c:out value="${message.transmetteur}"/>
+				</c:if>
+			</td>
 			<td><fmt:message key="label.sexe" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.sexe != null }">
@@ -68,8 +76,16 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td></td>
-			<td></td>
+			<td>
+				<c:if test="${message.typeMessage == 'CS_EMPLOYEUR'}">
+					<fmt:message key="label.montant.message"/>
+				</c:if>
+			</td>
+			<td>
+				<c:if test="${message.typeMessage == 'CS_EMPLOYEUR'}">
+					<c:out value="${message.montant}"/>
+				</c:if>
+			</td>
 			<td></td>
 			<td></td>
 		</tr>

@@ -56,7 +56,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
 		identificationMessagesEditView.setTypeTiers(TypeTiers.PERSONNE_PHYSIQUE);
 		identificationMessagesEditView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		identificationMessagesEditView.setDemandeIdentificationView(getDemandeIdentificationView (id));
+		identificationMessagesEditView.setDemandeIdentificationView(getDemandeIdentificationView(id));
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
 
 		String nomRaison = "";
@@ -65,16 +65,16 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		}
 		if (identificationContribuable.getDemande().getPersonne().getPrenoms() != null) {
 			if (!"".equals(nomRaison)) {
-				nomRaison = nomRaison + " " + identificationContribuable.getDemande().getPersonne().getPrenoms() ;
+				nomRaison = nomRaison + " " + identificationContribuable.getDemande().getPersonne().getPrenoms();
 			}
 			else {
-				nomRaison = identificationContribuable.getDemande().getPersonne().getPrenoms() ;
+				nomRaison = identificationContribuable.getDemande().getPersonne().getPrenoms();
 			}
 		}
 		identificationMessagesEditView.setNomRaison(nomRaison);
 		identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
-		if("".equals(identificationMessagesEditView.getNumeroAVS())){
-			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));	
+		if ("".equals(identificationMessagesEditView.getNumeroAVS())) {
+			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));
 		}
 
 		return identificationMessagesEditView;
@@ -88,7 +88,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception {
+	public DemandeIdentificationView getDemandeIdentificationView(Long id) throws Exception {
 
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
 		final DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
@@ -103,6 +103,8 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 			demandeIdentificationView.setTypeMessage(demande.getTypeMessage());
 			demandeIdentificationView.setBusinessId(identificationContribuable.getHeader().getBusinessId());
 			demandeIdentificationView.setDocumentUrl(getDocumentUrl(identificationContribuable));
+			demandeIdentificationView.setTransmetteur(demande.getTransmetteur());
+			demandeIdentificationView.setMontant(demande.getMontant());
 
 			final CriteresPersonne personne = demande.getPersonne();
 			if (personne != null) {
@@ -166,14 +168,15 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	public void impossibleAIdentifier(IdentificationMessagesEditView bean) throws Exception {
 
 		final Long idIdentification = bean.getDemandeIdentificationView().getId();
-		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification );
+		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
 
-		final Erreur erreur = new Erreur(TypeErreur.METIER,bean.getErreurMessage().getCode(), bean.getErreurMessage().getLibelle());
+		final Erreur erreur = new Erreur(TypeErreur.METIER, bean.getErreurMessage().getCode(), bean.getErreurMessage().getLibelle());
 		identCtbService.impossibleAIdentifier(identificationContribuable, erreur);
 	}
+
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public  void verouillerMessage(Long idIdentification) throws Exception {
+	public void verouillerMessage(Long idIdentification) throws Exception {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		identificationContribuable.setUtilisateurTraitant(user);

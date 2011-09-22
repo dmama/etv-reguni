@@ -13,6 +13,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -628,7 +629,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
-	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
+	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande) {
 		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 	}
 
@@ -642,7 +643,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                 boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
+	                 boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande) {
 		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 	}
 
@@ -1189,14 +1190,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 
 	@Override
-	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria, TypeDemande typeDemande) {
+	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria) {
 		int res = 0;
 		Map<IdentificationContribuable.Etat, Integer> resultatStats = new HashMap<IdentificationContribuable.Etat, Integer>();
 
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 
 			identificationContribuableCriteria.setEtatMessage(etat.name());
-			res = count(identificationContribuableCriteria, false, false, false, typeDemande);
+			res = count(identificationContribuableCriteria, false, false, false, null);
 			resultatStats.put(etat, res);
 
 		}

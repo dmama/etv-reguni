@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -91,7 +92,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
+	                                                   boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
 		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
@@ -104,10 +105,50 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	}
 
 	/**
-	 * Recherche des identifications correspondant seulement à l'état en cours
+	 * Recherche des identifications correspondant aux critères
 	 *
 	 * @param bean
 	 * @param pagination
+	 * @param typeDemande
+	 * @return
+	 * @throws AdressesResolutionException
+	 * @throws ServiceInfrastructureException
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
+	                                                   boolean nonTraiterAndSuspendu) throws AdressesResolutionException, ServiceInfrastructureException {
+
+		return find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, null);
+	}
+
+	/**
+	 * Recherche des identifications correspondant seulement à l'état en cours
+	 *
+	 *
+	 * @param bean
+	 * @param pagination
+	 * @param typeDemande
+	 * @return
+	 * @throws AdressesResolutionException
+	 * @throws ServiceInfrastructureException
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, @Nullable TypeDemande typeDemande)
+			throws AdressesResolutionException, ServiceInfrastructureException {
+
+		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
+		return find(bean, pagination, false, false, false, typeDemande);
+	}
+
+	/**
+	 * Recherche des identifications correspondant seulement à l'état en cours
+	 *
+	 *
+	 * @param bean
+	 * @param pagination
+	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
@@ -117,8 +158,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
 			throws AdressesResolutionException, ServiceInfrastructureException {
 
-		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
-		return find(bean, pagination, false, false, false, TypeDemande.MELDEWESEN);
+		return findEncoursSeul(bean, pagination, null);
 	}
 
 	/**
@@ -130,7 +170,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande) {
 		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 	}
 
@@ -143,9 +183,36 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande typeDemande) {
+	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, @Nullable TypeDemande typeDemande) {
 		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
 		return identCtbService.count(criterion, false, false, false, typeDemande);
+	}
+
+
+	/**
+	 * Cherche et compte les identifications correspondant aux criteres
+	 *
+	 * @param criterion
+	 * @param typeDemande
+	 * @return
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
+		return count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, null);
+	}
+
+	/**
+	 * Cherche et compte les identifications correspondant à l'etat en cours
+	 *
+	 * @param criterion
+	 * @param typeDemande
+	 * @return
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public int countEnCoursSeul(IdentificationContribuableCriteria criterion) {
+		return countEnCoursSeul(criterion);
 	}
 
 	/**
@@ -236,12 +303,12 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 			identificationMessagesResultView.setUtilisateurTraitant(identification.getUtilisateurTraitant());
 		}
 
-		if(identification.getTraitementUser()!=null){
+		if (identification.getTraitementUser() != null) {
 			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
 			identificationMessagesResultView.setTraitementUser(identifiantUtilisateur.getNomComplet());
 		}
 
-		if(identification.getDateTraitement()!=null){
+		if (identification.getDateTraitement() != null) {
 			identificationMessagesResultView.setTraitementDate(identification.getDateTraitement());
 		}
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
@@ -250,6 +317,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 			identificationMessagesResultView.setEmetteurId(identification.getDemande().getEmetteurId());
 			identificationMessagesResultView.setPeriodeFiscale(identification.getDemande().getPeriodeFiscale());
 			identificationMessagesResultView.setTypeMessage(identification.getDemande().getTypeMessage());
+			identificationMessagesResultView.setTransmetteur(identification.getDemande().getTransmetteur());
+			identificationMessagesResultView.setMontant(identification.getDemande().getMontant());
 			if (identification.getDemande().getPersonne() != null) {
 				identificationMessagesResultView.setNavs13(FormatNumeroHelper.formatNumAVS(identification.getDemande().getPersonne().getNAVS13()));
 				identificationMessagesResultView.setNavs11(FormatNumeroHelper.formatAncienNumAVS(identification.getDemande().getPersonne().getNAVS11()));
@@ -268,7 +337,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 				identificationMessagesResultView.setNumeroContribuable(noContribuable);
 			}
 			Erreur erreur = identification.getReponse().getErreur();
-			if(erreur!=null){
+			if (erreur != null) {
 				identificationMessagesResultView.setMessageRetour(erreur.getMessage());
 			}
 		}

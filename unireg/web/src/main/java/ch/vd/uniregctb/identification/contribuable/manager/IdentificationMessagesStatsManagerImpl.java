@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
@@ -63,9 +62,9 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean) {
 		List<IdentificationMessagesStatsResultView> statsView = new ArrayList<IdentificationMessagesStatsResultView>();
-		Map<IdentificationContribuable.Etat, Integer> resultatsStats = identCtbService.calculerStats(bean, TypeDemande.MELDEWESEN);
+		Map<IdentificationContribuable.Etat, Integer> resultatsStats = identCtbService.calculerStats(bean);
 
-		for (IdentificationContribuable.Etat etat :IdentificationContribuable.Etat.values()) {
+		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 			if (IdentificationContribuable.Etat.RECU != etat && IdentificationContribuable.Etat.SUSPENDU != etat) {
 
 				IdentificationMessagesStatsResultView statViewCourante = new IdentificationMessagesStatsResultView();

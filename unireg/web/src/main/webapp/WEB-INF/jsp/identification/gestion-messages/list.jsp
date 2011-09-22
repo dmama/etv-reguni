@@ -69,6 +69,9 @@
 				<display:column sortable ="true" titleKey="label.etat.message"  sortName="etat" style="white-space:nowrap">
 						<fmt:message key="option.etat.message.${message.etatMessage}"  />
 				</display:column>
+					<display:column sortable ="true" titleKey="label.montant.message"  sortName="montant" style="white-space:nowrap">
+							<c:out value="${message.montant}" />
+					</display:column>
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
 						<c:out value="${message.nom}" />
 				</display:column>
@@ -91,7 +94,7 @@
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
 						<c:out value="${message.navs13}" />
 				</display:column>
-				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO">
+				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_NCS_IDENT_CTB_CELLULE_BO">
 					<display:column>
 						<c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
 							 (message.etatMessage == 'A_EXPERTISER') || (message.etatMessage == 'SUSPENDU') ||

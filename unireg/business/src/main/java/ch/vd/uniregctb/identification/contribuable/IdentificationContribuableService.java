@@ -3,6 +3,8 @@ package ch.vd.uniregctb.identification.contribuable;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
@@ -43,7 +45,7 @@ public interface IdentificationContribuableService {
 	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiterAndSuspendu, TypeDemande typeDemande) ;
+	                                             boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -54,7 +56,8 @@ public interface IdentificationContribuableService {
 	 * @param typeDemande
 	 * @return
 	 */
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) ;
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu,
+	                 @Nullable TypeDemande typeDemande);
 
 	/**
 	 * Force l'identification du contribuable
@@ -71,23 +74,23 @@ public interface IdentificationContribuableService {
 	 * @param erreur TODO
 	 * @throws Exception
 	 */
-	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception ;
+	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception;
 
 	/**
 	 * Soumet le message à l'identification
 	 *
 	 * @param message
 	 */
-	public void soumettre(IdentificationContribuable message) ;
+	public void soumettre(IdentificationContribuable message);
 
 
 	/**
 	 *
 	 * Calcule et retourne les statistiques  par type de message par période et pour chaque état possible
 	 * @param identificationContribuableCriteria
-	 * @param typeDemande
+	 *
 	 */
-	public Map<IdentificationContribuable.Etat,Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria, TypeDemande typeDemande);
+	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
 
 	/**Retourn le nom complet du canton emetteur du message
 	 * @param emetteurId TODO
@@ -103,7 +106,7 @@ public interface IdentificationContribuableService {
 	 *
 	 *
 	 * @param visaUser
-	 * @return  le nom et le visa utilisateur modifié si besoin
+	 * @return le nom et le visa utilisateur modifié si besoin
 	 */
 	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
 
