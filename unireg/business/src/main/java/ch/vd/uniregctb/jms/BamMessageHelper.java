@@ -19,11 +19,11 @@ public abstract class BamMessageHelper {
 	public static final String PROCESS_DEFINITION_ID_PAPIER = "ACQUISITION-DI-PAPIER";
 	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE = "ACQUISITION-DI-ELECTRONIQUE";
 
-	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE = "E_DI_DI_RECEIPT_RECEIVED";
+	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE = "E_DI_ACKNOWLEDGE_RECEIPT";
 	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER = "P_DI_ACKNOWLEDGE_RECEIPT";
 
 	public static final String TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE = "E_DI_UPDATE_UNIREG_RECEIVED";
-	public static final String TASK_DEFINITION_ID_RETOUR_PAPIER = "P_DI_RECEIPT_UPDATE_UNIREG";
+	public static final String TASK_DEFINITION_ID_RETOUR_PAPIER = "P_DI_UPDATE_UNIREG_RECEIVED";
 
 	public static final String NUMERO_SEQUENCE = "numeroSequenceFourre";
 	public static final String PERIODE_IMPOSITION = "periodeImposition";

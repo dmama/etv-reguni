@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.di.manager;
 
 import javax.jms.JMSException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -58,6 +60,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.BamMessageHelper;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
@@ -125,6 +129,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private ValidationService validationService;
 
 	private ParametreAppService parametres;
+
+	private BamMessageSender bamMessageSender;
 
 	/**
 	 * Contrôle que la DI existe
@@ -808,7 +814,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					di.addEtat(etat);
 					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateQuittance);
 
-					// TODO JDE : envoi du message de quittance au BAM
+					// Envoi du message de quittance au BAM
+					sendQuittancementToBam(di);
 				}
 			}
 			else {
@@ -830,6 +837,25 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		return di;
+	}
+
+	private void sendQuittancementToBam(DeclarationImpotOrdinaire di) {
+		final long ctbId = di.getTiers().getNumero();
+		final int annee = di.getPeriode().getAnnee();
+		final int noSequence = di.getNumero();
+		try {
+			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di);
+			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
+			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
+			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
+			bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
+		}
+		catch (RuntimeException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(String.format("Erreur à la notification au BAM du quittancement de la DI %d (%d) du contribuable %d", annee, noSequence, ctbId), e);
+		}
 	}
 
 	/**
@@ -1064,38 +1090,47 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return declarationImpotImpressionView;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiService(DeclarationImpotService diService) {
 		this.diService = diService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersGeneralManager(TiersGeneralManager tiersGeneralManager) {
 		this.tiersGeneralManager = tiersGeneralManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
 		this.modeleDocumentDAO = modeleDocumentDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
 	}
@@ -1112,24 +1147,34 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.messageSource = messageSource;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDelaisService(DelaisService delaisService) {
 		this.delaisService = delaisService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
 		this.delaiDeclarationDAO = delaiDeclarationDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setBamMessageSender(BamMessageSender bamMessageSender) {
+		this.bamMessageSender = bamMessageSender;
 	}
 
 	@Override

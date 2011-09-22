@@ -23,6 +23,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -66,6 +67,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setEvenementFiscalService(new MockEvenementFiscalService());
 		manager.setParametres(getBean(ParametreAppService.class, "parametreAppService"));
 		manager.setValidationService(getBean(ValidationService.class, "validationService"));
+		manager.setBamMessageSender(getBean(BamMessageSender.class, "bamMessageSender"));
 	}
 
 	@Test
