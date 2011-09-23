@@ -26,6 +26,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -1074,7 +1075,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage.
 	 */
 	@Override
-	public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, RegDate date) {
+	public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, @Nullable RegDate date) {
 
 		if (personne == null) {
 			return null;

@@ -405,7 +405,7 @@ public interface TiersService {
 	 * @param date     la date de référence, ou null pour obtenir l'ensemble actif
 	 * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage, ou null si la personne n'appartient pas à un ménage.
 	 */
-	public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, RegDate date);
+	public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, @Nullable RegDate date);
 
 	/**
 	 * Ajoute l'individu spécifié en tant que tiers du ménage commun, à partir de la date spécifiée.
