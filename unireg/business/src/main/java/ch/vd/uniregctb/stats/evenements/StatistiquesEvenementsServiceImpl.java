@@ -10,6 +10,7 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -47,7 +48,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return new StatsEvenementsCivilsResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs, manipulationsManuelles, ignores);
 	}
 
-	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivils(RegDate debutActivite) {
+	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivils(@Nullable RegDate debutActivite) {
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
@@ -62,7 +63,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return getNombreParModalite(EtatEvenementCivil.class, sql, sqlParameters);
 	}
 
-	private Map<TypeEvenementCivil, Integer> getNombreEvenementsCivilsEnErreurParType(RegDate debutActivite) {
+	private Map<TypeEvenementCivil, Integer> getNombreEvenementsCivilsEnErreurParType(@Nullable RegDate debutActivite) {
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
@@ -200,7 +201,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return new StatsEvenementsIdentificationContribuableResults(etats, etatsNouveaux, aTraiter);
 	}
 
-	private Map<IdentificationContribuable.Etat, Integer> getEtatsEvenementsIdentificationContribuable(RegDate debutActivite) {
+	private Map<IdentificationContribuable.Etat, Integer> getEtatsEvenementsIdentificationContribuable(@Nullable RegDate debutActivite) {
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
@@ -314,7 +315,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, final Map<String, Object> sqlParameters) {
+	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, @Nullable final Map<String, Object> sqlParameters) {
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<T, Integer>>() {
 			@Override
 			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
