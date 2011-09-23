@@ -3,7 +3,9 @@ package ch.vd.uniregctb.evenement.civil.engine;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -33,6 +35,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Moteur de règle permettant d'appliquer les règles métiers. Le moteur contient une liste de EvenementCivilTranslationStrategy capables de gérer les
@@ -231,7 +234,10 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		Assert.notNull(event.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
 	}
 
-	private Long traiteErreurs(EvenementCivilExterne evenementCivilExterne, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	private Long traiteErreurs(EvenementCivilExterne evenementCivilExterne, List<EvenementCivilExterneErreur> errorList, List<EvenementCivilExterneErreur> warningList) {
+
+		final List<EvenementCivilExterneErreur> erreurs = eliminerDoublons(errorList);
+		final List<EvenementCivilExterneErreur> warnings = eliminerDoublons(warningList);
 
 		final Long result;
 		
@@ -267,6 +273,63 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		evenementCivilExterne.addWarnings(warnings);
 
 		return result;
+	}
+
+	private static class EvenementCivilExterneErreurKey {
+		private final Long id;
+		private final String message;
+		private final TypeEvenementErreur type;
+		private final String callstack;
+
+		private EvenementCivilExterneErreurKey(EvenementCivilExterneErreur erreur) {
+			this.id = erreur.getId();
+			this.message = erreur.getMessage();
+			this.type = erreur.getType();
+			this.callstack = erreur.getCallstack();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final EvenementCivilExterneErreurKey that = (EvenementCivilExterneErreurKey) o;
+
+			if (id != null ? !id.equals(that.id) : that.id != null) return false;
+			if (type != that.type) return false;
+			if (message != null ? !message.equals(that.message) : that.message != null) return false;
+			if (callstack != null ? !callstack.equals(that.callstack) : that.callstack != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = id != null ? id.hashCode() : 0;
+			result = 31 * result + (message != null ? message.hashCode() : 0);
+			result = 31 * result + (type != null ? type.hashCode() : 0);
+			result = 31 * result + (callstack != null ? callstack.hashCode() : 0);
+			return result;
+		}
+	}
+
+	private static List<EvenementCivilExterneErreur> eliminerDoublons(List<EvenementCivilExterneErreur> source) {
+		if (source == null || source.size() < 2) {
+			return source;
+		}
+		final Map<EvenementCivilExterneErreurKey, EvenementCivilExterneErreur> map = new LinkedHashMap<EvenementCivilExterneErreurKey, EvenementCivilExterneErreur>(source.size());
+		for (EvenementCivilExterneErreur src : source) {
+			final EvenementCivilExterneErreurKey key = new EvenementCivilExterneErreurKey(src);
+			if (!map.containsKey(key)) {
+				map.put(key, src);
+			}
+		}
+		if (map.size() < source.size()) {
+			return new ArrayList<EvenementCivilExterneErreur>(map.values());
+		}
+		else {
+			return source;
+		}
 	}
 
 	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
