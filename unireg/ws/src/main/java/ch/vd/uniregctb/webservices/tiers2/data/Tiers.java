@@ -337,11 +337,11 @@ public abstract class Tiers {
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			try {
-				this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.COURRIER);
-				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.DOMICILE);
-				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.REPRESENTATION);
-				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.POURSUITE);
-				this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, date, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS);
+				this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, date, TypeAdresseFiscale.COURRIER, context.adresseService);
+				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, TypeAdresseFiscale.DOMICILE, context.adresseService);
+				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, TypeAdresseFiscale.REPRESENTATION, context.adresseService);
+				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, TypeAdresseFiscale.POURSUITE, context.adresseService);
+				this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, date, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, context.adresseService);
 			}
 			catch (AdresseException e) {
 				LOGGER.error(e, e);

@@ -1,3 +1,321 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>INDEX_DIRTY</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>OID</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>REINDEX_ON</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>DATE_LIMITE_EXCLUSION</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>AC_NOM</column>
+		<column>NUMERO_CA</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>LOGICIEL_ID</column>
+		<column>MODE_COM</column>
+		<column>DPI_NOM1</column>
+		<column>DPI_NOM2</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>SANS_LISTE_RECAP</column>
+		<column>SANS_RAPPEL</column>
+		<column>NUMERO_ETABLISSEMENT</column>
+		<column>ANCIEN_NUMERO_SOURCIER</column>
+		<column>NH_CAT_ETRANGER</column>
+		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+		<column>DATE_DECES</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>PP_HABITANT</column>
+		<column>MAJORITE_TRAITEE</column>
+		<column>NH_NOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NH_NO_OFS_COMMUNE_ORIGINE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>NH_PRENOM</column>
+		<column>NH_SEXE</column>
+		<row>
+			<value>Entreprise</value>
+			<value>37</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-09-21 14:20:28.011]]></value>
+			<value>zsimsn</value>
+			<value><![CDATA[2011-09-21 14:20:28.014]]></value>
+			<value>zsimsn</value>
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>Entreprise</value>
+			<value>222</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-09-21 14:19:20.161]]></value>
+			<value>zsimsn</value>
+			<value><![CDATA[2011-09-21 14:19:20.164]]></value>
+			<value>zsimsn</value>
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>Entreprise</value>
+			<value>1314</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-09-21 14:20:19.098]]></value>
+			<value>zsimsn</value>
+			<value><![CDATA[2011-09-21 14:20:19.102]]></value>
+			<value>zsimsn</value>
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>Entreprise</value>
+			<value>25000</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-09-21 14:20:35.464]]></value>
+			<value>zsimsn</value>
+			<value><![CDATA[2011-09-21 14:20:35.467]]></value>
+			<value>zsimsn</value>
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>Entreprise</value>
+			<value>32592</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-09-21 14:20:02.905]]></value>
+			<value>zsimsn</value>
+			<value><![CDATA[2011-09-21 14:20:02.911]]></value>
+			<value>zsimsn</value>
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
 </dataset>

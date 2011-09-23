@@ -89,12 +89,12 @@ public class AdressePMAdapter implements AdresseGenerique {
 
 	@Override
 	public Integer getNumeroRue() {
-		return null;
+		return adresse.getNumeroTechniqueRue();
 	}
 
 	@Override
 	public int getNumeroOrdrePostal() {
-		return 0;
+		return adresse.getNumeroOrdrePostal();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 
 	@Override
 	public String getNumeroPostalComplementaire() {
-		return null;
+		return adresse.getNumeroPostalComplementaire();
 	}
 
 	@Override

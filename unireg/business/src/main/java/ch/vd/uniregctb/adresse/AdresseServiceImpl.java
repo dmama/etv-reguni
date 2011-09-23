@@ -445,6 +445,9 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
+			if (fillFormulePolitesse) {
+				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
+			}
 			final List<String> raisonComplete = getRaisonSocialeLongue(entreprise);
 			for (String ligne : raisonComplete) {
 				adresse.addRaisonSociale(ligne);

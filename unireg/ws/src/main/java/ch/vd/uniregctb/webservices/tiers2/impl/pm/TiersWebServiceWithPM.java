@@ -1,19 +1,22 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -32,7 +35,6 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
@@ -89,10 +91,13 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersWebServiceWithPM implements TiersWebService {
 
+	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceWithPM.class);
+	
 	private static final int OPTIONALITE_COMPLEMENT = 1;
 
 	private TiersDAO tiersDAO;
 	private TiersWebService target;
+	private AdresseService adresseService;
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivil;
 	private ServiceInfrastructureService serviceInfra;
@@ -100,6 +105,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	public void setTarget(TiersWebService target) {
 		this.target = target;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
@@ -364,11 +373,17 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return (Entreprise.FIRST_ID <= tiersNumber && tiersNumber <= Entreprise.LAST_ID);
 	}
 
-	private PersonneMoraleHisto getPmHisto(long tiersNumber, Set<TiersPart> parts) {
+	private PersonneMoraleHisto getPmHisto(long tiersNumber, Set<TiersPart> parts) throws BusinessException {
+
+		final ch.vd.uniregctb.tiers.Tiers tiers = tiersDAO.get(tiersNumber);
+		if (tiers == null) {
+			// la PM n'existe pas chez nous, on considère qu'elle n'existe pas du tout
+			return null;
+		}
 
 		final ch.vd.uniregctb.interfaces.model.PersonneMorale pmHost = servicePM.getPersonneMorale(tiersNumber, web2business(parts));
 		if (pmHost == null) {
-			return null;
+			throw new BusinessException("La PM numéro " + tiersNumber + " n'existe pas dans le service PM du Host.");
 		}
 
 		if (parts == null) {
@@ -391,45 +406,40 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pmHisto.numeroIPMRO = pmHost.getNumeroIPMRO();
 
 		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
-		final ch.vd.uniregctb.tiers.Tiers tiers = tiersDAO.get(tiersNumber);
-		if (tiers != null) {
-			pmHisto.blocageRemboursementAutomatique = tiers.getBlocageRemboursementAutomatique();
-		}
+		pmHisto.blocageRemboursementAutomatique = tiers.getBlocageRemboursementAutomatique();
 
-		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();
+		if (parts.contains(TiersPart.ADRESSES)) {
+
+			ch.vd.uniregctb.adresse.AdressesFiscalesHisto adresses;
+			try {
+				adresses = adresseService.getAdressesFiscalHisto(tiers, false);
+			}
+			catch (ch.vd.uniregctb.adresse.AdresseException e) {
+				LOGGER.error(e, e);
+				throw new BusinessException(e);
+			}
+
 			if (adresses != null) {
-				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
-					if (a.getType() == TypeAdressePM.COURRIER) {
-						if (pmHisto.adressesCourrier == null) {
-							pmHisto.adressesCourrier = new ArrayList<Adresse>();
-							pmHisto.adressesRepresentation = pmHisto.adressesCourrier;
-						}
-						pmHisto.adressesCourrier.add(host2web(a));
-					}
-					else if (a.getType() == TypeAdressePM.SIEGE) {
-						if (pmHisto.adressesDomicile == null) {
-							pmHisto.adressesDomicile = new ArrayList<Adresse>();
-							// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
-							pmHisto.adressesPoursuite = pmHisto.adressesDomicile;
-						}
-						pmHisto.adressesDomicile.add(host2web(a));
-					}
-					else if (a.getType() == TypeAdressePM.FACTURATION) {
-						// ces adresses sont ignorées
-					}
-					else {
-						throw new IllegalArgumentException("Type d'adresse entreprise inconnue = [" + a.getType() + "]");
-					}
-				}
+				pmHisto.adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, serviceInfra);
+				pmHisto.adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, serviceInfra);
+				pmHisto.adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, serviceInfra);
+				pmHisto.adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, serviceInfra);
+				pmHisto.adressesPoursuiteAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, serviceInfra);
 			}
 		}
 
 		if (parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			pmHisto.adresseEnvoi = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesCourrier);
-			pmHisto.adresseDomicileFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesDomicile);
-			pmHisto.adresseRepresentationFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesRepresentation);
-			pmHisto.adressePoursuiteFormattee = calculateAdresseEnvoi(tiers, pmHisto, pmHisto.adressesPoursuite);
+			try {
+				pmHisto.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.COURRIER, adresseService);
+				pmHisto.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.REPRESENTATION, adresseService);
+				pmHisto.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.DOMICILE, adresseService);
+				pmHisto.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.POURSUITE, adresseService);
+				pmHisto.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, adresseService);
+			}
+			catch (AdresseException e) {
+				LOGGER.error(e, e);
+				throw new BusinessException(e);
+			}
 		}
 
 		if (parts.contains(TiersPart.ASSUJETTISSEMENTS)) {

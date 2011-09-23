@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.webservices.tiers3.impl.pm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,9 @@ import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.corporation.v1.Capital;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
@@ -53,6 +55,7 @@ import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -71,9 +74,9 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
+import ch.vd.uniregctb.webservices.tiers3.impl.ExceptionHelper;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
@@ -84,9 +87,12 @@ import ch.vd.uniregctb.xml.address.AddressBuilder;
 @SuppressWarnings({"UnusedDeclaration"})
 public class PartyWebServiceWithPM implements PartyWebService {
 
+	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceWithPM.class);
+
 	private static final int OPTIONALITE_COMPLEMENT = 1;
 
 	private TiersDAO tiersDAO;
+	private AdresseService adresseService;
 	private PartyWebService target;
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivil;
@@ -94,6 +100,10 @@ public class PartyWebServiceWithPM implements PartyWebService {
 
 	public void setTarget(PartyWebService target) {
 		this.target = target;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
@@ -265,11 +275,17 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		return (Entreprise.FIRST_ID <= tiersNumber && tiersNumber <= Entreprise.LAST_ID);
 	}
 
-	private Corporation getCorporation(long partyNumber, Set<PartyPart> parts) {
+	private Corporation getCorporation(long partyNumber, Set<PartyPart> parts) throws WebServiceException {
+
+		final ch.vd.uniregctb.tiers.Tiers tiers = tiersDAO.get(partyNumber);
+		if (tiers == null) {
+			// la PM n'existe pas chez nous, on considère qu'elle n'existe pas du tout
+			return null;
+		}
 
 		final ch.vd.uniregctb.interfaces.model.PersonneMorale hostCorp = servicePM.getPersonneMorale(partyNumber, web2business(parts));
 		if (hostCorp == null) {
-			return null;
+			throw ExceptionHelper.newBusinessException("Corporation with number " + partyNumber + " is unknown in Host's corporation service.", BusinessExceptionCode.UNKNOWN_PARTY);
 		}
 
 		if (parts == null) {
@@ -292,40 +308,45 @@ public class PartyWebServiceWithPM implements PartyWebService {
 		corp.setIpmroNumber(hostCorp.getNumeroIPMRO());
 
 		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
-		final ch.vd.uniregctb.tiers.Tiers tiers = tiersDAO.get(partyNumber);
-		if (tiers != null) {
-			corp.setAutomaticReimbursementBlocked(tiers.getBlocageRemboursementAutomatique());
-		}
-		else {
-			corp.setAutomaticReimbursementBlocked(true); // [UNIREG-1266] Blocage des remboursements automatiques sur tous les nouveaux tiers
-		}
+		corp.setAutomaticReimbursementBlocked(tiers.getBlocageRemboursementAutomatique());
 
 		if (parts.contains(PartyPart.ADDRESSES)) {
-			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = hostCorp.getAdresses();
-			if (adresses != null && !adresses.isEmpty()) {
-				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
-					if (a.getType() == TypeAdressePM.COURRIER) {
-						corp.getMailAddresses().add(address2web(tiers, corp, a, AddressType.MAIL));
-					}
-					else if (a.getType() == TypeAdressePM.SIEGE) {
-						corp.getResidenceAddresses().add(address2web(tiers, corp, a, AddressType.RESIDENCE));
-					}
-					else if (a.getType() == TypeAdressePM.FACTURATION) {
-						// ces adresses sont ignorées
-					}
-					else {
-						throw new IllegalArgumentException("Type d'adresse entreprise inconnue = [" + a.getType() + "]");
-					}
+
+			ch.vd.uniregctb.adresse.AdressesEnvoiHisto adresses;
+			try {
+				adresses = adresseService.getAdressesEnvoiHisto(tiers, false);
+			}
+			catch (ch.vd.uniregctb.adresse.AdresseException e) {
+				LOGGER.error(e, e);
+				throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
+			}
+
+			if (adresses != null) {
+				final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, AddressType.MAIL);
+				if (adressesCourrier != null) {
+					corp.getMailAddresses().addAll(adressesCourrier);
+				}
+
+				final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, AddressType.REPRESENTATION);
+				if (adressesRepresentation != null) {
+					corp.getRepresentationAddresses().addAll(adressesRepresentation);
+				}
+
+				final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, AddressType.RESIDENCE);
+				if (adressesDomicile != null) {
+					corp.getResidenceAddresses().addAll(adressesDomicile);
+				}
+
+				final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
+				if (adressesPoursuite != null) {
+					corp.getDebtProsecutionAddresses().addAll(adressesPoursuite);
+				}
+
+				final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
+				if (adresseAutreTiers != null) {
+					corp.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 				}
 			}
-			else {
-				// par défaut, on renseigne une adresse partiellement vide (= sans la destination)
-				corp.getMailAddresses().add(address2web(tiers, corp, null, AddressType.MAIL));
-				corp.getResidenceAddresses().add(address2web(tiers, corp, null, AddressType.RESIDENCE));
-			}
-			corp.getRepresentationAddresses().addAll(corp.getMailAddresses());
-			// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
-			corp.getDebtProsecutionAddresses().addAll(corp.getResidenceAddresses());
 		}
 
 		if (parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {

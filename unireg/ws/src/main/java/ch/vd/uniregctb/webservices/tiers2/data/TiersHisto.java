@@ -381,11 +381,11 @@ public abstract class TiersHisto {
 
 	private void initAdressesEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
 		try {
-			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER);
-			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION);
-			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE);
-			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.POURSUITE);
-			this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, null, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS);
+			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.COURRIER, context.adresseService);
+			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.REPRESENTATION, context.adresseService);
+			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.DOMICILE, context.adresseService);
+			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, TypeAdresseFiscale.POURSUITE, context.adresseService);
+			this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, context.adresseService);
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e, e);

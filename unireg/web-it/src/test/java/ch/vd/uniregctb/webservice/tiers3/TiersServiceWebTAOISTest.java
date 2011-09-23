@@ -996,7 +996,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals(Long.valueOf(1001), info.getSwissZipCode());
 		assertEquals("Lausanne", info.getTown());
-		assertNull(info.getCountry());
+		assertEquals("CH", info.getCountry());
 	}
 
 	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {

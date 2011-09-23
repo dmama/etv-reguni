@@ -2561,7 +2561,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertNull(adresseCourrier.getLigne6());
 		assertTrue(adresseCourrier.isSuisse());
 		assertNull(adresseCourrier.getSalutations());
-		assertNull(adresseCourrier.getFormuleAppel());
+		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
 
 		final AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.DOMICILE, true);
 		assertNotNull(adresseDomicile);
@@ -2573,7 +2573,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertNull(adresseDomicile.getLigne6());
 		assertTrue(adresseDomicile.isSuisse());
 		assertNull(adresseDomicile.getSalutations());
-		assertNull(adresseDomicile.getFormuleAppel());
+		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());
 
 		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(jal, true);
 		assertNotNull(adressesEnvoi);
@@ -2592,7 +2592,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertNull(courrier0.getLigne6());
 		assertTrue(courrier0.isSuisse());
 		assertNull(courrier0.getSalutations());
-		assertNull(courrier0.getFormuleAppel());
+		assertEquals("Madame, Monsieur", courrier0.getFormuleAppel());
 
 		final AdresseEnvoiDetaillee courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
@@ -2606,7 +2606,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertNull(courrier1.getLigne6());
 		assertTrue(courrier1.isSuisse());
 		assertNull(courrier1.getSalutations());
-		assertNull(courrier1.getFormuleAppel());
+		assertEquals("Madame, Monsieur", courrier1.getFormuleAppel());
 
 		final AdresseEnvoiDetaillee domicile = adressesEnvoi.domicile.get(0);
 		assertNotNull(domicile);
@@ -2620,7 +2620,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertNull(domicile.getLigne6());
 		assertTrue(domicile.isSuisse());
 		assertNull(domicile.getSalutations());
-		assertNull(domicile.getFormuleAppel());
+		assertEquals("Madame, Monsieur", domicile.getFormuleAppel());
 	}
 
 	/**
@@ -2649,7 +2649,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Russie", adresseCourrier.getLigne6()); // <-- pays
 		assertFalse(adresseCourrier.isSuisse());
 		assertNull(adresseCourrier.getSalutations());
-		assertNull(adresseCourrier.getFormuleAppel());
+		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
 
 		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(evian, true);
 		assertNotNull(adressesEnvoi);
@@ -2667,7 +2667,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Russie", courrier.getLigne6()); // <-- pays
 		assertFalse(courrier.isSuisse());
 		assertNull(courrier.getSalutations());
-		assertNull(courrier.getFormuleAppel());
+		assertEquals("Madame, Monsieur", courrier.getFormuleAppel());
 	}
 
 	private static void assertAdressesEquals(AdresseEnvoiDetaillee expected, AdresseEnvoiDetaillee actual) {

@@ -22,6 +22,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
@@ -94,7 +95,7 @@ public class DataHelper {
 	}
 
 	public static List<Adresse> coreToWeb(List<ch.vd.uniregctb.adresse.AdresseGenerique> adresses,
-			ch.vd.registre.base.date.DateRangeHelper.Range range,
+			@Nullable ch.vd.registre.base.date.DateRangeHelper.Range range,
 			ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) throws BusinessException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
@@ -114,7 +115,7 @@ public class DataHelper {
 	}
 
 	public static List<AdresseAutreTiers> coreToWebAT(List<ch.vd.uniregctb.adresse.AdresseGenerique> adresses,
-			ch.vd.registre.base.date.DateRangeHelper.Range range,
+			@Nullable ch.vd.registre.base.date.DateRangeHelper.Range range,
 			ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) throws BusinessException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
@@ -441,16 +442,16 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
-		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
-		if (adressePoursuite == null) {
+	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, AdresseService adresseService) throws AdresseException {
+		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, date, type, false);
+		if (adresse == null) {
 			return null;
 		}
-		return new AdresseEnvoi(adressePoursuite);
+		return new AdresseEnvoi(adresse);
 	}
 
-	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
-		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
+	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, AdresseService adresseService) throws AdresseException {
+		final AdresseEnvoiDetaillee adressePoursuite = adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;
 		}
