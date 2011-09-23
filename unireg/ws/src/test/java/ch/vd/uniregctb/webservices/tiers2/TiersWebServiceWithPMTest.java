@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -54,13 +55,14 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final TiersWebService bean = getBean(TiersWebService.class, "tiersService2Bean");
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		service = new TiersWebServiceWithPM();
 		service.setServicePM(servicePM);
 		service.setServiceInfra(serviceInfra);
+		service.setAdresseService(adresseService);
 		service.setTarget(bean);
 		service.setTiersDAO(tiersDAO);
 		service.setNoOfsTranslator(new NoOfsTranslatorImpl());
@@ -85,10 +87,10 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		assertNull(tiersDAO.get(noBCV));
 
 		// on s'assure que le code de blocage de remboursement est à true (valeur par défaut)
+		// msi 23.09.2011: depuis la migration des coquilles vides, le service retourne null pour une PM inconnue
 		{
 			final PersonneMorale bcv = (PersonneMorale) service.getTiers(params);
-			assertNotNull(bcv);
-			assertTrue(bcv.blocageRemboursementAutomatique);
+			assertNull(bcv);
 		}
 
 		// on change le code de remboursement
