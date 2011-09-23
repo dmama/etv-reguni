@@ -141,7 +141,9 @@ public class PersonnePhysique extends Contribuable {
 	/**
 	 * L'ancien numéro de sécurité sociale (ancien format sur 11 positions).
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> entrée avec la clé <i>CH_AHV_AVS</i> de la collection <i>otherPersonId</i> de la structure <i>personIdentificationType</i>.
+	 * <b>Dans la version 3 du web-service :</b> champ <i>personId</i> associé à la catégorie "CH.AHV" de la collection <i>otherPersonId</i> de la structure <i>personIdentificationType</i>.
+	 * Voir le document http://www.ech.ch/alfresco/guestDownload/attach/workspace/SpacesStore/6e94bc14-52fb-4825-a96f-65bcf5ea32d4/STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
+	 * pour plus d'informations.
 	 */
 	@XmlElement(required = false)
 	public String ancienNumeroAssureSocial;
