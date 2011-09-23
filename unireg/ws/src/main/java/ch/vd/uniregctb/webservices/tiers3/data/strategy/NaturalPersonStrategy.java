@@ -17,7 +17,6 @@ import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.webservices.tiers3.impl.Context;
 import ch.vd.uniregctb.webservices.tiers3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers3.impl.EnumHelper;
@@ -108,7 +107,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
 		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 		if (StringUtils.isNotBlank(data.getNoAVS())) {
-			identification.getOtherPersonId().add(new NamedPersonId(CategorieIdentifiant.CH_AHV_AVS.name(), data.getNoAVS()));
+			identification.getOtherPersonId().add(new NamedPersonId("CH.AHV", data.getNoAVS())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
 		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(individu.getDateNaissance()));
 		return identification;
