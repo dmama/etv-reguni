@@ -302,11 +302,14 @@ public class WorkingQueue<T> {
 	 */
 	public void reset() {
 
-		// on déplace tous les éléments de la queue dans une liste
+		// on vide la queue dans une liste
 		final List<Element<T>> drain = new ArrayList<Element<T>>();
 		queue.drainTo(drain);
+		
 		// on supprime tous les éléments de la liste (les éléments non-présents dans le queue mais présents dans le 'inprocessing' sont ceux en cours de traitement par les listeners)
-		removeFromInProcessing(drain);
+		if (!drain.isEmpty()) {
+			removeFromInProcessing(drain);
+		}
 
 		synchronized (listeners) {
 			for (Listener<T> listener : listeners) {
@@ -347,6 +350,7 @@ public class WorkingQueue<T> {
 					listener.shutdown();
 				}
 				catch (DeadThreadException e) {
+					LOGGER.debug("Détecté que le listener [" + listener.getName() + "] est mort avant la demande d'arrêt.");
 					stats.incDeadThreadsCount();
 				}
 			}
