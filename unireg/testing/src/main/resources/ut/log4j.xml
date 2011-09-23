@@ -6,7 +6,7 @@
 	<!-- log4j config pour les UT de Biz -->
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-		<param name="Threshold" value="WARN" />
+		<param name="Threshold" value="TRACE" /> <!-- msi 23.09.2011 temp pour essayer de comprendre un bug dans la WorkingQueue -->
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[ut] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
 		</layout>
@@ -25,9 +25,9 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<!--<logger name="ch.vd.uniregctb.indexer.async">-->
-		<!--<level value="TRACE" />-->
-	<!--</logger>-->
+	<logger name="ch.vd.uniregctb.worker">
+		<level value="TRACE" />
+	</logger>
 
 	<logger name="net.sf.ehcache">
 		<level value="ERROR" />
