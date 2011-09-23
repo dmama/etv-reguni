@@ -101,7 +101,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		return (PersonnePhysique)tiersDAO.save(h);
 	}
 
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnCreate() throws Exception {
 
@@ -141,7 +141,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 	}
 
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnUpdate() throws Exception {
 
@@ -222,7 +222,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 *   - 1 NonHabitant qui va s'indexer correctement
 	 *  => Résultat, on doit pouvoir chercher le NH mais pas l'Habitant
 	 */
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testPartialIndexation() throws Exception {
 
@@ -278,7 +278,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 	}
 
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnModifyFor() throws Exception {
 
@@ -427,7 +427,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	/**
 	 * Vérifie que le flag dirty est bien mis lorsqu'un tiers est mis-à-jour dans la base alors que l'indexation on-the-fly est désactivée.
 	 */
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDisabledOnTheFlyIndexation() throws Exception {
 
@@ -495,7 +495,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	/**
 	 * Vérifie que le flag dirty est bien resetté lorsqu'un tiers dirty est finalement indexé sans erreur.
 	 */
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testResetIndexDirtyFlag() throws Exception {
 
@@ -551,7 +551,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	/**
 	 * [UNIREG-1988] Vérifie qu'un tiers nouvellement créé n'est pas indexé si la transaction est rollée-back
 	 */
-	@Test
+	@Test(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexOnRollback() throws Exception {
 
