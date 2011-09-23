@@ -47,6 +47,7 @@ public class TaxDeclarationBuilder {
 	}
 
 	private static void fillTaxDeclarationBase(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration) {
+		d.setId(declaration.getId()); // [SIFISC-2392]
 		d.setDateFrom(DataHelper.coreToWeb(declaration.getDateDebut()));
 		d.setDateTo(DataHelper.coreToWeb(declaration.getDateFin()));
 		d.setCancellationDate(DataHelper.coreToWeb(declaration.getAnnulationDate()));

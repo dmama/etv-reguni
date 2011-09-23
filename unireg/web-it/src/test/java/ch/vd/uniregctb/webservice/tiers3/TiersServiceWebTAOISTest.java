@@ -43,6 +43,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
+import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
@@ -562,10 +563,12 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		final WithholdingTaxDeclaration lr0 = (WithholdingTaxDeclaration) declarations.get(0);
 		assertNotNull(lr0);
+		assertEquals(1, lr0.getId());
 		assertEquals(WithholdingTaxDeclarationPeriodicity.QUARTERLY, lr0.getPeriodicity());
 
 		final WithholdingTaxDeclaration lr1 = (WithholdingTaxDeclaration) declarations.get(1);
 		assertNotNull(lr1);
+		assertEquals(5, lr1.getId());
 		assertEquals(WithholdingTaxDeclarationPeriodicity.QUARTERLY, lr1.getPeriodicity());
 	}
 
@@ -997,6 +1000,42 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(Long.valueOf(1001), info.getSwissZipCode());
 		assertEquals("Lausanne", info.getTown());
 		assertEquals("CH", info.getCountry());
+	}
+
+	// [SIFISC-2392] Vérifie que les ids des déclarations sont bien retournés.
+	@Test
+	public void testGetDeclarationContribuable() throws Exception {
+
+		GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(86006202); // la BCV
+		params.getParts().add(PartyPart.TAX_DECLARATIONS);
+
+		final Taxpayer tp = (Taxpayer) service.getParty(params);
+		assertNotNull(tp);
+
+		final List<TaxDeclaration> declarations = tp.getTaxDeclarations();
+		assertNotNull(declarations);
+		assertEquals(3, declarations.size());
+
+		final TaxDeclaration decl0 = declarations.get(0);
+		assertNotNull(decl0);
+		assertEquals(2, decl0.getId());
+		assertEquals(newDate(2005, 1, 1), decl0.getDateFrom());
+		assertEquals(newDate(2005, 12, 31), decl0.getDateTo());
+
+		final TaxDeclaration decl1 = declarations.get(1);
+		assertNotNull(decl1);
+		assertEquals(3, decl1.getId());
+		assertEquals(newDate(2006, 1, 1), decl1.getDateFrom());
+		assertEquals(newDate(2006, 12, 31), decl1.getDateTo());
+
+		final TaxDeclaration decl2 = declarations.get(2);
+		assertNotNull(decl2);
+		assertEquals(4, decl2.getId());
+		assertEquals(newDate(2007, 1, 1), decl2.getDateFrom());
+		assertEquals(newDate(2007, 12, 31), decl2.getDateTo());
+
 	}
 
 	public static XMLGregorianCalendar regdate2xmlcal(RegDate date) {
