@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebTest.xml";
 
 	private UserLogin login;
-	private UserLogin zciddo; // Annie Ourliac
+	private UserLogin zairfa; // Roselyne Favre
 
 	private static boolean alreadySetUp = false;
 
@@ -52,9 +53,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		login.setUserId("[UT] TiersServiceWebTest");
 		login.setOid(0);
 
-		zciddo = new UserLogin();
-		zciddo.setUserId("zciddo");
-		zciddo.setOid(21);
+		zairfa = new UserLogin();
+		zairfa.setUserId("zairfa");
+		zairfa.setOid(22);
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertActivite(newDate(1980, 1, 1), newDate(1987, 1, 31), 12100002, service);
 	}
 
-	private void assertActivite(Date debut, Date fin, int numero, TiersPort service) throws Exception {
+	private void assertActivite(@Nullable Date debut, @Nullable Date fin, int numero, TiersPort service) throws Exception {
 		final GetTiers params = new GetTiers();
 		params.setLogin(login);
 		params.setTiersNumber(numero);
@@ -1195,7 +1196,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	public void testGetBatchTiersSurTiersNonAutorise() throws Exception {
 
 		final GetBatchTiers params = new GetBatchTiers();
-		params.setLogin(zciddo); // Daniel Di Lallo
+		params.setLogin(zairfa); // Roselyne Favre
 		params.setDate(newDate(2009, 1, 1));
 		params.getTiersNumbers().add(10149508L); // Pascal Broulis
 
@@ -1207,7 +1208,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(entry);
 		assertNull(entry.getTiers()); // autorisation exclusive pour Francis Perroset
 		assertEquals(WebServiceExceptionType.ACCESS_DENIED, entry.getExceptionType());
-		assertEquals("L'utilisateur spécifié (zciddo/21) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", entry
+		assertEquals("L'utilisateur spécifié (zairfa/22) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", entry
 				.getExceptionMessage());
 	}
 
@@ -1218,7 +1219,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	public void testGetBatchTiersHistoSurTiersNonAutorise() throws Exception {
 
 		final GetBatchTiersHisto params = new GetBatchTiersHisto();
-		params.setLogin(zciddo); // Daniel Di Lallo
+		params.setLogin(zairfa); // Roselyne Favre
 		params.getTiersNumbers().add(10149508L); // Pascal Broulis
 
 		final BatchTiersHisto batch = service.getBatchTiersHisto(params);
@@ -1229,7 +1230,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(entry);
 		assertNull(entry.getTiers()); // autorisation exclusive pour Francis Perroset
 		assertEquals(WebServiceExceptionType.ACCESS_DENIED, entry.getExceptionType());
-		assertEquals("L'utilisateur spécifié (zciddo/21) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", entry
+		assertEquals("L'utilisateur spécifié (zairfa/22) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", entry
 				.getExceptionMessage());
 	}
 

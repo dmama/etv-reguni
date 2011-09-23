@@ -86,7 +86,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	private static final int PREMIERE_ANNEE_FISCALE = 2003;
 
 	private UserLogin login;
-	private UserLogin zciddo; // Annie Ourliac
+	private UserLogin zairfa; // Roselyne Favre
 
 	private static boolean alreadySetUp = false;
 
@@ -107,9 +107,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		login.setUserId("[UT] TiersServiceWebTest");
 		login.setOid(22);
 
-		zciddo = new UserLogin();
-		zciddo.setUserId("zciddo");
-		zciddo.setOid(21);
+		zairfa = new UserLogin();
+		zairfa.setUserId("zairfa");
+		zairfa.setOid(22);
 	}
 
 	@Test
@@ -1138,7 +1138,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 	public void testGetBatchTiersHistoSurTiersNonAutorise() throws Exception {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
-		params.setLogin(zciddo); // Daniel Di Lallo
+		params.setLogin(zairfa); // Roselyne Favre
 		params.getPartyNumbers().add(10149508); // Pascal Broulis
 
 		final BatchParty batch = service.getBatchParty(params);
@@ -1151,7 +1151,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final ServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
 		assertTrue(exceptionInfo instanceof AccessDeniedExceptionInfo);
-		assertEquals("L'utilisateur spécifié (zciddo/21) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", exceptionInfo.getMessage());
+		assertEquals("L'utilisateur spécifié (zairfa/22) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", exceptionInfo.getMessage());
 	}
 
 	/**
