@@ -6,6 +6,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -53,8 +54,8 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 				throw new UsernameNotFoundException("Le visa de l'utilisateur n'est pas renseigné dans la requête.");
 			}
 
-			final String firstName = request.getHeader(firstnameHeaderKey);
-			final String lastName = request.getHeader(lastnameHeaderKey);
+			final String firstName = getHeaderString(request, firstnameHeaderKey);
+			final String lastName = getHeaderString(request, lastnameHeaderKey);
 			final String[] roles = getRoles(request);
 
 			// Vérification des rôles
@@ -105,17 +106,47 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 	}
 
 	private static String[] getRoles(HttpServletRequest request) {
-		String application = request.getHeader(applicationHeaderKey);
-		String allRoles = request.getHeader(rolesHeaderKey);
+		final String application = getHeaderString(request, applicationHeaderKey);
+		final String allRoles = getHeaderString(request, rolesHeaderKey);
 		return IAMUtil.createRoles(application, allRoles);
 	}
 
 	private static String getVisa(HttpServletRequest request) {
-		String username = request.getHeader(visaHeaderKey);
+		String username = getHeaderString(request, visaHeaderKey);
 		if (StringUtils.isBlank(username)) {
-			username = request.getParameter(ACEGI_SECURITY_FORM_USERNAME_KEY);
+			username = decodeHeaderString(request.getParameter(ACEGI_SECURITY_FORM_USERNAME_KEY));
 		}
 		return username;
+	}
+
+	/**
+	 * Retourne un paramètre stockée dans le header http de la requête. Cette méthode s'assure que l'encoding de la chaîne de caractères retournée est correct.
+	 *
+	 * @param request   la requête http
+	 * @param key le nom du paramètre
+	 * @return la valeur string du paramètre
+	 */
+	private static String getHeaderString(HttpServletRequest request, String key) {
+		return decodeHeaderString(request.getHeader(key));
+	}
+
+	/**
+	 * [SIFISC-2424] Il semble que toutes les strings stockés dans le header http soient encodées en ISO-8859-1, on effectue donc la conversion à la main.
+	 *
+	 * @param string une string directement récupérée du header http
+	 * @return la même string décodée en UTF-8.
+	 */
+	private static String decodeHeaderString(String string) {
+		if (string != null) {
+			try {
+				final byte[] bytes = string.getBytes("ISO-8859-1");
+				string = new String(bytes, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return string;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
