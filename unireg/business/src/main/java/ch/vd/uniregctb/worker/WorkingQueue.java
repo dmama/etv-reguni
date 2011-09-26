@@ -238,14 +238,15 @@ public class WorkingQueue<T> {
 	 * @throws DeadThreadException si le worker était déjà mort
 	 */
 	public String removeLastWorker() throws DeadThreadException {
+		final Listener<T> last;
 		synchronized (listeners) {
 			if (listeners.size() <= 1) {
 				throw new RuntimeException("Il y a moins de 2 workers actifs actuellement");
 			}
-			final Listener<T> last = listeners.remove(listeners.size() - 1);
-			last.shutdown();
-			return last.getName();
+			last = listeners.remove(listeners.size() - 1);
 		}
+		last.shutdown(); // il faut appeler le shutdown en dehors du bloc synchronized, pour éviter des deadlocks dans certaines situations particulières
+		return last.getName();
 	}
 
 	/**
@@ -311,14 +312,18 @@ public class WorkingQueue<T> {
 			removeFromInProcessing(drain);
 		}
 
+		// on travaille sur une copie de la liste pour éviter de partir en dead-lock lors de l'appel du reset()
+		final List<Listener<T>> copy;
 		synchronized (listeners) {
-			for (Listener<T> listener : listeners) {
-				try {
-					listener.reset();
-				}
-				catch (DeadThreadException e) {
-					LOGGER.error("Le thread [" + listener.getName() + "] était déjà mort lors de l'appel de reset()", e); // que faire d'autre ?
-				}
+			copy = new ArrayList<Listener<T>>(listeners);
+		}
+
+		for (Listener<T> listener : copy) {
+			try {
+				listener.reset();
+			}
+			catch (DeadThreadException e) {
+				LOGGER.error("Le thread [" + listener.getName() + "] était déjà mort lors de l'appel de reset()", e); // que faire d'autre ?
 			}
 		}
 	}
@@ -339,48 +344,50 @@ public class WorkingQueue<T> {
 			// on ignore l'exception, on est de toutes façons entrain de s'arrêter
 		}
 
-		final WorkStats stats;
-
+		// on travaille sur une copie de la liste pour éviter de partir en dead-lock lors de l'appel du shutdown()
+		final List<Listener<T>> copy;
 		synchronized (listeners) {
-			stats = new WorkStats(listeners.size());
-
-			// arrêt des workers
-			for (Listener<T> listener : listeners) {
-				try {
-					listener.shutdown();
-				}
-				catch (DeadThreadException e) {
-					LOGGER.debug("Détecté que le listener [" + listener.getName() + "] est mort avant la demande d'arrêt.");
-					stats.incDeadThreadsCount();
-				}
-			}
-
-			// récupération des stats des workers
-			final ThreadMXBean mXBean = ManagementFactory.getThreadMXBean();
-			for (Listener<T> listener : listeners) {
-				final long cpuTime = mXBean.getThreadCpuTime(listener.getId());
-				final long userTime = mXBean.getThreadUserTime(listener.getId());
-
-				try {
-					listener.join(10000);
-				}
-				catch (InterruptedException e) {
-					// attente interrompue... pas grave, on aura attendu moins longtemps, c'est tout!
-				}
-				if (listener.isAlive()) {
-					LOGGER.warn("Interruption forcée du thread " + listener.getName() + " qui ne s'est pas arrêté après 10 secondes d'attente.");
-					listener.interrupt();
-				}
-
-				final long execTime = listener.getExecutionTime();
-				stats.add(cpuTime, userTime, execTime);
-			}
-
-			// cleanup
-			listeners.clear();
-			queue.clear();
-			inprocessing.clear();
+			copy = new ArrayList<Listener<T>>(listeners);
 		}
+
+		final WorkStats stats = new WorkStats(copy.size());
+
+		// arrêt des workers
+		for (Listener<T> listener : copy) {
+			try {
+				listener.shutdown();
+			}
+			catch (DeadThreadException e) {
+				LOGGER.debug("Détecté que le listener [" + listener.getName() + "] est mort avant la demande d'arrêt.");
+				stats.incDeadThreadsCount();
+			}
+		}
+
+		// récupération des stats des workers
+		final ThreadMXBean mXBean = ManagementFactory.getThreadMXBean();
+		for (Listener<T> listener : copy) {
+			final long cpuTime = mXBean.getThreadCpuTime(listener.getId());
+			final long userTime = mXBean.getThreadUserTime(listener.getId());
+
+			try {
+				listener.join(10000);
+			}
+			catch (InterruptedException e) {
+				// attente interrompue... pas grave, on aura attendu moins longtemps, c'est tout!
+			}
+			if (listener.isAlive()) {
+				LOGGER.warn("Interruption forcée du thread " + listener.getName() + " qui ne s'est pas arrêté après 10 secondes d'attente.");
+				listener.interrupt();
+			}
+
+			final long execTime = listener.getExecutionTime();
+			stats.add(cpuTime, userTime, execTime);
+		}
+
+		// cleanup
+		listeners.clear();
+		queue.clear();
+		inprocessing.clear();
 
 		return stats;
 	}
