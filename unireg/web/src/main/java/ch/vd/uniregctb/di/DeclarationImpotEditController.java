@@ -205,9 +205,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 					if (request.getParameter(BUTTON_AJOUTER_DI) != null) {
 						mav = ajouterDI(request, response, checkBean(DeclarationImpotListView.class, command, true), errors);
 					}
-					if (request.getParameter(BUTTON_SAVE_DI) != null) {
-						mav = sauverDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
-					}
 					else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
 						mav = sommerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
 					}
@@ -219,6 +216,9 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 					}
 					else if (request.getParameter(BUTTON_MAINTENIR_DI) != null) {
 						mav = maintenirDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (request.getParameter(BUTTON_SAVE_DI) != null) {
+						mav = sauverDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
 					}
 				}
 			}
