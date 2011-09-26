@@ -450,6 +450,9 @@ public class WorkingQueue<T> {
 			}
 			inprocessing.notifyAll(); // on notifie les éventuels processus en attente de changement
 		}
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("done");
+		}
 	}
 
 	private void removeFromInProcessing(List<Element<T>> list) {
@@ -463,6 +466,9 @@ public class WorkingQueue<T> {
 				}
 			}
 			inprocessing.notifyAll(); // on notifie les éventuels processus en attente de changement
+		}
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("done");
 		}
 	}
 
