@@ -207,7 +207,14 @@
 		<!-- Fin List tiers -->			
 	
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='list.do';" />
+		<c:if test="${listEvenementsPageInfo != null}">
+			<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do?${listEvenementsPageInfo}';" />
+		</c:if>
+		<c:if test="${listEvenementsPageInfo == null}">
+			<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
+		</c:if>
+
+
 		<c:if test="${(command.evenement.etat == 'A_TRAITER') || (command.evenement.etat == 'EN_ERREUR')}">
 			<input type="submit" name="recycler" value="<fmt:message key="label.bouton.recycler" />" />	
 		</c:if>

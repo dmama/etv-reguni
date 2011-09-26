@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -9,8 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -86,6 +85,11 @@ public class AbstractEvenementController extends AbstractSimpleFormController {
 	 * Le nom de l'attribut utilise pour la taille de la liste
 	 */
 	public static final String EVENEMENT_LIST_ATTRIBUTE_SIZE = "listEvenementsSize";
+
+	/**
+	 * Le nom de l'attribut utilisé pour les informations de pagination en cas de retour
+	 */
+	public static final String EVENEMENT_LIST_PAGE_INFO = "listEvenementsPageInfo";
 
 	/**
 	 * Le nom de l'attribut utilise pour la liste des types de recherche par nom

@@ -12,6 +12,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
@@ -52,6 +53,10 @@ public class EvenementListController extends AbstractEvenementController {
 			bean.setTypeRechercheDuNom(EvenementCivilExterneCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
 			bean.setEtat(EtatEvenementCivil.A_VERIFIER);
 			session.setAttribute(EVENEMENT_CRITERIA_NAME, bean);
+			session.setAttribute(EVENEMENT_LIST_PAGE_INFO, null);
+		}
+		else {
+			session.setAttribute(EVENEMENT_LIST_PAGE_INFO, ControllerUtils.getPaginatedTableParameters(request, TABLE_NAME));
 		}
 
 		return bean;

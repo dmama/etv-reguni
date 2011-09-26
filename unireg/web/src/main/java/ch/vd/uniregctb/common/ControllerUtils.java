@@ -1,6 +1,12 @@
 package ch.vd.uniregctb.common;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
+import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -56,4 +62,45 @@ public abstract class ControllerUtils {
 		}
 	}
 
+	/**
+	 * Renvoie les paramétres à ajouter à une URL pour que la table (générée par DisplayTag) soit ré-affichée
+	 * sur la même page et avec le même ordre de tri que ce qu'elle a actuellement
+	 * @param request request avec laquelle la table a déjà été affichée
+	 * @param tableName le nom de la table
+	 * @return une chaîne de caractères (<code>null</code> si vide) dans laquelle ont été extraits les paramètres de pagination pour la table donnée, depuis la requête donnée
+	 */
+	public static String getPaginatedTableParameters(HttpServletRequest request, String tableName) {
+		final ParamEncoder encoder = new ParamEncoder(tableName);
+		final String pageParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE);
+		final String sortUsingNameParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORTUSINGNAME);
+		final String sortParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT);
+		final String orderParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER);
+		final String pageParamValue = StringUtils.trimToNull(request.getParameter(pageParamName));
+		final String sortUsingNameParamValue = StringUtils.trimToNull(request.getParameter(sortUsingNameParamName));
+		final String sortParamValue = StringUtils.trimToNull(request.getParameter(sortParamName));
+		final String orderParamValue = StringUtils.trimToNull(request.getParameter(orderParamName));
+		final StringBuilder b = new StringBuilder();
+		if (pageParamValue != null) {
+			b.append(String.format("%s=%s", pageParamName, pageParamValue));
+		}
+		if (sortUsingNameParamValue != null) {
+			if (b.length() > 0) {
+				b.append('&');
+			}
+			b.append(String.format("%s=%s", sortUsingNameParamName, sortUsingNameParamValue));
+		}
+		if (sortParamValue != null) {
+			if (b.length() > 0) {
+				b.append('&');
+			}
+			b.append(String.format("%s=%s", sortParamName, sortParamValue));
+		}
+		if (orderParamValue != null) {
+			if (b.length() > 0) {
+				b.append('&');
+			}
+			b.append(String.format("%s=%s", orderParamName, orderParamValue));
+		}
+	    return StringUtils.trimToNull(HtmlUtils.htmlEscape(b.toString()));
+	}
 }
