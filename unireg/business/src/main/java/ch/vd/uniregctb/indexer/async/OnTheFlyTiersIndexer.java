@@ -142,6 +142,9 @@ public class OnTheFlyTiersIndexer {
 				// on enlève un thread
 				final int last = threadSize - 1;
 				try {
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.trace("Demande de suppression du dernier thread d'indexation...");
+					}
 					final String name = queue.removeLastWorker();
 					LOGGER.info("Supprimé le thread d'indexation " + name + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ")");
 				}
@@ -152,6 +155,9 @@ public class OnTheFlyTiersIndexer {
 
 			if (queueSize > HIGH_LEVEL && threadSize < MAX_THREADS) {
 				// on ajoute un thread
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Demande d'ajout d'un nouveau thread d'indexation...");
+				}
 				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly"));
 				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ")");
 			}
