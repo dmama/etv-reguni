@@ -541,8 +541,16 @@ public class WorkingQueue<T> {
 		 */
 		public void shutdown() throws DeadThreadException {
 			if (!shutdown) {
-				shutdown = true;
-				sync();
+				if (!isAlive()) {
+					throw new DeadThreadException(getName());
+				}
+				shutdown = true; // à partir de là, le thread peut s'arrêter tout seul
+				try {
+					sync();
+				}
+				catch (DeadThreadException e) {
+					// si le thread s'est arrêté tout seul avant le sync, on reçoit cette exception qu'on peut ignorer sans soucis
+				}
 			}
 		}
 
