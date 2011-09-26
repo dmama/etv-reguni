@@ -26,19 +26,24 @@ public class EvenementIAMServiceImpl implements EvenementIAMService, EvenementIA
 	protected void onEnregistrementEmployeur(EnregistrementEmployeur enregistrement) throws EvenementIAMException {
 		//on recupere la liste des employeurs à modifier
 		final List<InfoEmployeur> infoEmployeurs = enregistrement.getEmployeursAMettreAJour();
-		for (InfoEmployeur infoEmployeur : infoEmployeurs) {
-			final long debiteurId = infoEmployeur.getNoEmployeur();
-			final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
-			if (debiteur == null) {
-				throw new EvenementIAMException("L'employeur n°" + debiteurId + " est inconnu.");
-			}
+		if (infoEmployeurs != null) {
+			for (InfoEmployeur infoEmployeur : infoEmployeurs) {
+				final long debiteurId = infoEmployeur.getNoEmployeur();
+				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
+				if (debiteur == null) {
+					throw new EvenementIAMException("L'employeur n°" + debiteurId + " est inconnu.");
+				}
 
-			final ValidationResults results = validationService.validate(debiteur);
-			if (results.hasErrors()) {
-				throw new EvenementIAMException("L'employeur  n°" + debiteurId + " ne valide pas (" + results.toString() + ").");
-			}
+				final ValidationResults results = validationService.validate(debiteur);
+				if (results.hasErrors()) {
+					throw new EvenementIAMException("L'employeur  n°" + debiteurId + " ne valide pas (" + results.toString() + ").");
+				}
 
-			updateInformationsDebiteur(infoEmployeur, debiteur);
+				updateInformationsDebiteur(infoEmployeur, debiteur);
+			}
+		}
+		else {
+			throw new EvenementIAMException("Informations employeurs absentes pour une action create ou update");
 		}
 	}
 

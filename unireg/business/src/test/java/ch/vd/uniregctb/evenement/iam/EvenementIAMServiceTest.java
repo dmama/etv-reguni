@@ -16,6 +16,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class EvenementIAMServiceTest extends BusinessTest {
 
@@ -40,7 +41,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2010, 1, 1));
 				return siggenAirlines.getNumero();
 			}
 		});
@@ -85,7 +86,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2010, 1, 1));
 				return siggenAirlines.getNumero();
 			}
 		});
@@ -130,7 +131,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL,date(2010,1,1));
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2010, 1, 1));
 				siggenAirlines.setModeCommunication(ModeCommunication.SITE_WEB);
 				siggenAirlines.setLogicielId(1L);
 				return siggenAirlines.getNumero();
@@ -143,8 +144,8 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				final DebiteurPrestationImposable siggenHolding = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL,date(2010,1,1));
-				 siggenHolding.setModeCommunication(ModeCommunication.PAPIER);
+				final DebiteurPrestationImposable siggenHolding = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2010, 1, 1));
+				siggenHolding.setModeCommunication(ModeCommunication.PAPIER);
 				return siggenHolding.getNumero();
 			}
 		});
@@ -194,4 +195,40 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testModifierInfoEmployeurIncoherenceAction() throws Exception {
+
+		// Création d'un débiteur
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2010, 1, 1));
+				return siggenAirlines.getNumero();
+			}
+		});
+
+		// Simule la réception d'un enregistrement de debiteur
+
+		final InfoEmployeur infoEmployeur = new InfoEmployeur();
+		infoEmployeur.setNoEmployeur(id);
+		infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+		List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+		listeEmp.add(infoEmployeur);
+		final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+
+		try {
+			service.onEnregistrementEmployeur(enregistrementEmployeur);
+			fail();
+		}
+		catch (EvenementIAMException e) {
+			assertEquals("Informations employeurs absentes pour une action create ou update", e.getMessage());
+		}
+
+
+	}
+
 }
