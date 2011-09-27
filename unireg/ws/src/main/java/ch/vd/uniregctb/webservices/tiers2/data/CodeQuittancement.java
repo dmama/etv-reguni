@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Le code de retour du quittancement, qui permet de déterminer si le quittancement a bien pu être effectué ou non.
  * <p/>
- * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationReturnCodeType</i> (xml) / <i>TaxDeclarationReturnCode</i> (client java)
+ * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationAcknowledgeCodeType</i> (xml) / <i>TaxDeclarationAcknowledgeCode</i> (client java)
  */
 @XmlType(name = "CodeQuittancement")
 @XmlEnum(String.class)

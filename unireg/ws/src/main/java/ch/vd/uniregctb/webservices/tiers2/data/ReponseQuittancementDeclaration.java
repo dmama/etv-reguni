@@ -11,7 +11,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.exception.QuittancementErreur;
 /**
  * Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.
  * <p/>
- * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationReturnResponseType</i> (xml) / <i>TaxDeclarationReturnResponse</i> (client java)
+ * <b>Dans la version 3 du web-service :</b> <i>acknowledgeTaxDeclarationResponseType</i> (xml) / <i>AcknowledgeTaxDeclarationResponse</i> (client java)
  *
  * @see ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration
  */

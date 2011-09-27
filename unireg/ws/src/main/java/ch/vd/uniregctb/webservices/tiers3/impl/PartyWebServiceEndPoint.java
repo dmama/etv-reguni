@@ -14,6 +14,9 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
@@ -22,15 +25,12 @@ import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
@@ -307,7 +307,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	}
 
 	@Override
-	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
+	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());
@@ -318,7 +318,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 						") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 			}
 
-			final ReturnTaxDeclarationsResponse reponses = service.returnTaxDeclarations(params);
+			final AcknowledgeTaxDeclarationsResponse reponses = service.acknowledgeTaxDeclarations(params);
 			logEmbeddedErrors(params, reponses);
 			return reponses;
 		}
@@ -559,14 +559,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 * @param params   le message de demande de quittancements
 	 * @param reponses les données retournées
 	 */
-	private void logEmbeddedErrors(ReturnTaxDeclarationsRequest params, ReturnTaxDeclarationsResponse reponses) {
+	private void logEmbeddedErrors(AcknowledgeTaxDeclarationsRequest params, AcknowledgeTaxDeclarationsResponse reponses) {
 
 		// 1. collection des cas en erreur
-		List<TaxDeclarationReturnResponse> inError = null;
-		for (TaxDeclarationReturnResponse reponse : reponses.getResponses()) {
-			if (reponse.getCode() != TaxDeclarationReturnCode.OK) {
+		List<AcknowledgeTaxDeclarationResponse> inError = null;
+		for (AcknowledgeTaxDeclarationResponse reponse : reponses.getResponses()) {
+			if (reponse.getCode() != TaxDeclarationAcknowledgeCode.OK) {
 				if (inError == null) {
-					inError = new ArrayList<TaxDeclarationReturnResponse>();
+					inError = new ArrayList<AcknowledgeTaxDeclarationResponse>();
 				}
 				inError.add(reponse);
 			}
@@ -576,10 +576,10 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		if (inError != null) {
 			final StringBuilder b = new StringBuilder();
 			b.append("Les erreurs suivantes ont été levées lors du traitement du message ").append(params).append(" : ");
-			for (TaxDeclarationReturnResponse reponse : inError) {
+			for (AcknowledgeTaxDeclarationResponse reponse : inError) {
 				b.append("\n - key=").append(reponse.getKey());
 				b.append(", code=").append(reponse.getCode());
-				if (reponse.getCode() == TaxDeclarationReturnCode.EXCEPTION) {
+				if (reponse.getCode() == TaxDeclarationAcknowledgeCode.EXCEPTION) {
 					final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 					b.append(", exception=\"").append(exceptionInfo.getMessage()).append("\", type=").append(exceptionInfo.getClass().getSimpleName());
 				}

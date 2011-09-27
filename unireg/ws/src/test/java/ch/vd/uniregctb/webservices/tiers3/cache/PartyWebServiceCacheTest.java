@@ -688,7 +688,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	private static void assertOnlyPart(PartyPart p, Party tiers) {
 
 		boolean checkAddresses = PartyPart.ADDRESSES == p;
-		boolean checkTaxLiabilities = PartyPart.ORDINARY_TAX_LIABILITIES == p;
+		boolean checkTaxLiabilities = PartyPart.TAX_LIABILITIES == p;
 		boolean checkSimplifiedTaxLiabilities = PartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
 		boolean checkHouseholdMembers = PartyPart.HOUSEHOLD_MEMBERS == p;
 		boolean checkBankAccounts = PartyPart.BANK_ACCOUNTS == p;
@@ -722,7 +722,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		if (tiers instanceof Taxpayer) {
 			Taxpayer ctb = (Taxpayer) tiers;
-			assertNullOrNotNull(checkTaxLiabilities, ctb.getOrdinaryTaxLiabilities(), "ordinaryTaxLiabilities");
+			assertNullOrNotNull(checkTaxLiabilities, ctb.getTaxLiabilities(), "taxLiabilities");
 			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityVD(), "simplifiedTaxLiabilityVD");
 			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityCH(), "simplifiedTaxLiabilityCH");
 			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses, ctb.getTaxDeclarations(), "taxDeclarations");

@@ -239,7 +239,7 @@ public interface TiersWebService {
 	/**
 	 * Cette méthode permet de quittancer les déclarations d'impôt ordinaires aux dates spécifiées.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>returnTaxDeclarations</i>.
+	 * <b>Dans la version 3 du web-service :</b> <i>acknowledgeTaxDeclarations</i>.
 	 *
 	 * @param params les demandes de quittancement
 	 * @return le résultat détaillé du processing des quittancements

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
@@ -22,8 +24,6 @@ import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
@@ -357,8 +357,8 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	}
 
 	@Override
-	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
-		return target.returnTaxDeclarations(params);
+	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
+		return target.acknowledgeTaxDeclarations(params);
 	}
 
 	@Override

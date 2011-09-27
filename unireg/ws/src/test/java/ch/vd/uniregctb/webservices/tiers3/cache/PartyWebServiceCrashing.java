@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
@@ -14,8 +16,6 @@ import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
@@ -115,7 +115,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 	}
 
 	@Override
-	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
+	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 		throw new NotImplementedException();
 	}
 

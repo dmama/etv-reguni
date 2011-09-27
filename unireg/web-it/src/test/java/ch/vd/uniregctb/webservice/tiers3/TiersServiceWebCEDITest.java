@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -62,23 +62,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationContribuableInconnu() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le contribuable est inconnu -> erreur
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 90909090L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 90909090L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAXPAYER, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_UNKNOWN_TAXPAYER, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -89,23 +89,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationContribuableSansForFiscal() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le contribuable ne possède pas de for fiscal -> erreur
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 10501047L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 10501047L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_TAX_LIABILITY, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_TAX_LIABILITY, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -116,23 +116,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationContribuableDebiteurInactif() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le contribuable est un débiteur inactif -> erreur
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 10582592L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 10582592L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_INACTIVE_DEBTOR, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_INACTIVE_DEBTOR, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -143,23 +143,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationDeclarationInexistante() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le tiers ne possède qu'une seule déclaration en 2008, demander la quatrième ne devrait donc pas fonctionner
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 28014710L, 4, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 28014710L, 4, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAX_DECLARATION, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_UNKNOWN_TAX_DECLARATION, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -171,23 +171,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationAvantDateEnvoi() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le déclaration a été envoyée le 28 janvier 2009, demander un quittancement au 1er janvier 2009 ne devrait donc pas fonctionner
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 1, 1), 28014710L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 1, 1), 28014710L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_INVALID_RETURN_DATE, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_INVALID_ACKNOWLEDGE_DATE, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -198,23 +198,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationAnnulee() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le déclaration a été annulée après l'envoi, demander un quittancement ne devrait donc pas fonctionner
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 38005301L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 38005301L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_CANCELLED_TAX_DECLARATION, reponse.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = reponse.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -225,23 +225,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclaration() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le contribuable possède une seule déclaration, émise, non-sommée, non-annulée, ..., le cas standard quoi.
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 28014710L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 28014710L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.OK, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, reponse.getCode());
 		assertNull(reponse.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 28014710L, 2008, 1);
 	}
@@ -249,23 +249,23 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 	@Test
 	public void testQuittancerDeclarationDejaSommee() throws Exception {
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le déclaration a déjà été sommée, cependant une demande de quittancement devrait quand même être traitée avec succès
-		final TaxDeclarationReturnRequest demande = newDemande(newDate(2009, 4, 1), 38005401L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande = newDemande(newDate(2009, 4, 1), 38005401L, 1, 2008);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(1, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse = reponses.get(0);
 		assertNotNull(reponse);
-		assertEquals(TaxDeclarationReturnCode.OK, reponse.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, reponse.getCode());
 		assertNull(reponse.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 38005401, 2008, 1);
 	}
@@ -276,46 +276,46 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		// on force le rechargement du fichier dbunits, parce des déclarations ont déjà été sommées par les tests précédents
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 
 		// Le déclaration a été annulée après l'envoi, demander un quittancement ne devrait donc pas fonctionner
-		final TaxDeclarationReturnRequest demande0 = newDemande(newDate(2009, 4, 1), 38005301L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande0 = newDemande(newDate(2009, 4, 1), 38005301L, 1, 2008);
 		params.getRequests().add(demande0);
 
 		// Le contribuable possède une seule déclaration, émise, non-sommée, non-annulée, ..., le cas standard quoi.
-		final TaxDeclarationReturnRequest demande1 = newDemande(newDate(2009, 4, 1), 28014710L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande1 = newDemande(newDate(2009, 4, 1), 28014710L, 1, 2008);
 		params.getRequests().add(demande1);
 
 		// Le déclaration a déjà été sommée, cependant une demande de quittancement devrait quand même être traitée avec succès
-		final TaxDeclarationReturnRequest demande2 = newDemande(newDate(2009, 4, 1), 38005401L, 1, 2008);
+		final AcknowledgeTaxDeclarationRequest demande2 = newDemande(newDate(2009, 4, 1), 38005401L, 1, 2008);
 		params.getRequests().add(demande2);
 
-		final ReturnTaxDeclarationsResponse array = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse array = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(array);
 
-		final List<TaxDeclarationReturnResponse> reponses = array.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> reponses = array.getResponses();
 		assertNotNull(reponses);
 		assertEquals(3, reponses.size());
 
-		final TaxDeclarationReturnResponse reponse0 = reponses.get(0);
+		final AcknowledgeTaxDeclarationResponse reponse0 = reponses.get(0);
 		assertNotNull(reponse0);
-		assertEquals(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, reponse0.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.ERROR_CANCELLED_TAX_DECLARATION, reponse0.getCode());
 
 		final ServiceExceptionInfo exceptionInfo0 = reponse0.getExceptionInfo();
 		assertNotNull(exceptionInfo0);
 		assertTrue(exceptionInfo0 instanceof BusinessExceptionInfo);
 		assertEquals("La déclaration a été annulée entre-temps.", exceptionInfo0.getMessage());
 
-		final TaxDeclarationReturnResponse reponse1 = reponses.get(1);
+		final AcknowledgeTaxDeclarationResponse reponse1 = reponses.get(1);
 		assertNotNull(reponse1);
-		assertEquals(TaxDeclarationReturnCode.OK, reponse1.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, reponse1.getCode());
 		assertNull(reponse1.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 28014710L, 2008, 1);
 
-		final TaxDeclarationReturnResponse reponse2 = reponses.get(2);
+		final AcknowledgeTaxDeclarationResponse reponse2 = reponses.get(2);
 		assertNotNull(reponse2);
-		assertEquals(TaxDeclarationReturnCode.OK, reponse2.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, reponse2.getCode());
 		assertNull(reponse2.getExceptionInfo());
 		assertQuittancement(newDate(2009, 4, 1), 38005401, 2008, 1);
 	}
@@ -365,10 +365,10 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		assertSameDay(dateObtention, etat.getDateFrom());
 	}
 
-	private static TaxDeclarationReturnRequest newDemande(Date dateRetour, long ctbId, int numeroSequenceDI, int periodeFiscale) {
+	private static AcknowledgeTaxDeclarationRequest newDemande(Date dateRetour, long ctbId, int numeroSequenceDI, int periodeFiscale) {
 
-		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-		demande.setReturnDate(dateRetour);
+		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+		demande.setAcknowledgeDate(dateRetour);
 
 		final OrdinaryTaxDeclarationKey di0 = new OrdinaryTaxDeclarationKey();
 		di0.setTaxpayerNumber((int) ctbId);

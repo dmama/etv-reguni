@@ -12,7 +12,7 @@ import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 
 /**
- * <b>Dans la version 3 du web-service :</b> <i>returnTaxDeclarationsRequestType</i> (xml) / <i>ReturnTaxDeclarationsRequest</i> (client java)
+ * <b>Dans la version 3 du web-service :</b> <i>acknowledgeTaxDeclarationsRequestType</i> (xml) / <i>AcknowledgeTaxDeclarationsRequest</i> (client java)
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "QuittancerDeclarations")

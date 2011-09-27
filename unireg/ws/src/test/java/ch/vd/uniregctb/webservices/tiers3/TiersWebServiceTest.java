@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
@@ -21,11 +25,7 @@ import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -433,30 +433,30 @@ public class TiersWebServiceTest extends WebserviceTest {
 		});
 
 		// quittancement de la DI
-		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
+		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+		demande.setAcknowledgeDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
 		demande.getKey().setTaxPeriod(2009);
 
-		final ReturnTaxDeclarationsRequest quittances = new ReturnTaxDeclarationsRequest();
+		final AcknowledgeTaxDeclarationsRequest quittances = new AcknowledgeTaxDeclarationsRequest();
 		quittances.setLogin(login);
 		quittances.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse reponse = service.returnTaxDeclarations(quittances);
+		final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(quittances);
 		assertNotNull(reponse);
 
-		final List<TaxDeclarationReturnResponse> retours = reponse.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
 		assertNotNull(retours);
 		assertEquals(1, retours.size());
 
-		final TaxDeclarationReturnResponse retour = retours.get(0);
+		final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
 		assertNotNull(retour);
 		assertEquals(ids.ppId, retour.getKey().getTaxpayerNumber());
 		assertEquals(1, retour.getKey().getSequenceNumber());
 		assertEquals(2009, retour.getKey().getTaxPeriod());
-		assertEquals(TaxDeclarationReturnCode.OK, retour.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -518,30 +518,30 @@ public class TiersWebServiceTest extends WebserviceTest {
 		});
 
 		// quittancement de la DI
-		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
+		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+		demande.setAcknowledgeDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
 		demande.getKey().setTaxPeriod(annee);
 
-		final ReturnTaxDeclarationsRequest quittances = new ReturnTaxDeclarationsRequest();
+		final AcknowledgeTaxDeclarationsRequest quittances = new AcknowledgeTaxDeclarationsRequest();
 		quittances.setLogin(login);
 		quittances.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse reponse = service.returnTaxDeclarations(quittances);
+		final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(quittances);
 		assertNotNull(reponse);
 
-		final List<TaxDeclarationReturnResponse> retours = reponse.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
 		assertNotNull(retours);
 		assertEquals(1, retours.size());
 
-		final TaxDeclarationReturnResponse retour = retours.get(0);
+		final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
 		assertNotNull(retour);
 		assertEquals(ids.ppId, retour.getKey().getTaxpayerNumber());
 		assertEquals(1, retour.getKey().getSequenceNumber());
 		assertEquals(annee, retour.getKey().getTaxPeriod());
-		assertEquals(TaxDeclarationReturnCode.EXCEPTION, retour.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.EXCEPTION, retour.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = retour.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -620,12 +620,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 		});
 
 		// quittancement des DI
-		final ReturnTaxDeclarationsRequest quittances = new ReturnTaxDeclarationsRequest();
+		final AcknowledgeTaxDeclarationsRequest quittances = new AcknowledgeTaxDeclarationsRequest();
 		quittances.setLogin(login);
 
 		for (Ids ids : liste) {
-			final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-			demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
+			final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+			demande.setAcknowledgeDate(DataHelper.coreToWeb(RegDate.get()));
 			demande.setKey(new OrdinaryTaxDeclarationKey());
 			demande.getKey().setTaxpayerNumber((int) ids.idCtb);
 			demande.getKey().setSequenceNumber(1);
@@ -633,26 +633,26 @@ public class TiersWebServiceTest extends WebserviceTest {
 			quittances.getRequests().add(demande);
 		}
 		
-		final ReturnTaxDeclarationsResponse reponse = service.returnTaxDeclarations(quittances);
+		final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(quittances);
 		assertNotNull(reponse);
 
-		final List<TaxDeclarationReturnResponse> retours = reponse.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
 		assertNotNull(retours);
 		assertEquals(2, retours.size());
 
-		final TaxDeclarationReturnResponse retourValide = retours.get(0);
+		final AcknowledgeTaxDeclarationResponse retourValide = retours.get(0);
 		assertNotNull(retourValide);
 		assertEquals(liste.get(0).idCtb, retourValide.getKey().getTaxpayerNumber());
 		assertEquals(1, retourValide.getKey().getSequenceNumber());
 		assertEquals(annee, retourValide.getKey().getTaxPeriod());
-		assertEquals(TaxDeclarationReturnCode.OK, retourValide.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, retourValide.getCode());
 
-		final TaxDeclarationReturnResponse retourInvalide = retours.get(1);
+		final AcknowledgeTaxDeclarationResponse retourInvalide = retours.get(1);
 		assertNotNull(retourInvalide);
 		assertEquals(liste.get(1).idCtb, retourInvalide.getKey().getTaxpayerNumber());
 		assertEquals(1, retourInvalide.getKey().getSequenceNumber());
 		assertEquals(annee, retourInvalide.getKey().getTaxPeriod());
-		assertEquals(TaxDeclarationReturnCode.EXCEPTION, retourInvalide.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.EXCEPTION, retourInvalide.getCode());
 
 		final ServiceExceptionInfo exceptionInfo = retourInvalide.getExceptionInfo();
 		assertNotNull(exceptionInfo);
@@ -810,27 +810,27 @@ public class TiersWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-		demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
+		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+		demande.setAcknowledgeDate(DataHelper.coreToWeb(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(ids.noSequence);
 		demande.getKey().setTaxPeriod(annee);
 
-		final ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+		final AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 		params.setLogin(login);
 		params.getRequests().add(demande);
 
-		final ReturnTaxDeclarationsResponse reponse = service.returnTaxDeclarations(params);
+		final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(params);
 		assertNotNull(reponse);
 
-		final List<TaxDeclarationReturnResponse> retours = reponse.getResponses();
+		final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
 		assertNotNull(retours);
 		assertEquals(1, retours.size());
 
-		final TaxDeclarationReturnResponse retour = retours.get(0);
+		final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
 		assertNotNull(retour);
-		assertEquals(TaxDeclarationReturnCode.OK, retour.getCode());
+		assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
 	}
 
 	/**
@@ -870,28 +870,28 @@ public class TiersWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final TaxDeclarationReturnRequest demande = new TaxDeclarationReturnRequest();
-				demande.setReturnDate(DataHelper.coreToWeb(RegDate.get()));
+				final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+				demande.setAcknowledgeDate(DataHelper.coreToWeb(RegDate.get()));
 				demande.setSource("TEST_QUITTANCEMENT");
 				demande.setKey(new OrdinaryTaxDeclarationKey());
 				demande.getKey().setTaxpayerNumber((int) ids.ppId);
 				demande.getKey().setSequenceNumber(1);
 				demande.getKey().setTaxPeriod(annee);
 
-				final ReturnTaxDeclarationsRequest params = new ReturnTaxDeclarationsRequest();
+				final AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 				params.setLogin(login);
 				params.getRequests().addAll(Arrays.asList(demande));
 
-				final ReturnTaxDeclarationsResponse reponse = service.returnTaxDeclarations(params);
+				final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(params);
 				assertNotNull(reponse);
 
-				final List<TaxDeclarationReturnResponse> retours = reponse.getResponses();
+				final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
 				assertNotNull(retours);
 				assertEquals(1, retours.size());
 
-				final TaxDeclarationReturnResponse retour = retours.get(0);
+				final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
 				assertNotNull(retour);
-				assertEquals(TaxDeclarationReturnCode.OK, retour.getCode());
+				assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
 				return null;
 			}
 		});

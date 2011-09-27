@@ -1368,12 +1368,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
 		params.setPartyNumber(12900001); // Michel Lederet
-		params.getParts().add(PartyPart.ORDINARY_TAX_LIABILITIES);
+		params.getParts().add(PartyPart.TAX_LIABILITIES);
 
 		final NaturalPerson np = (NaturalPerson) service.getParty(params);
 		assertNotNull(np);
 
-		final List<TaxLiability> list = np.getOrdinaryTaxLiabilities();
+		final List<TaxLiability> list = np.getTaxLiabilities();
 		assertNotNull(list);
 		assertEquals(2, list.size());
 

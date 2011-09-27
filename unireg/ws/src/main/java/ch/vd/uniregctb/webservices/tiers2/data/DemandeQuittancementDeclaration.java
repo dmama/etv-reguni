@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Demande de quittancement (= enregistrement du retour) d'une déclaration d'impôt ordinaire
  * <p/>
- * <b>Dans la version 3 du web-service :</b> <i>taxDeclarationReturnRequestType</i> (xml) / <i>TaxDeclarationReturnRequest</i> (client java)
+ * <b>Dans la version 3 du web-service :</b> <i>acknowledgeTaxDeclarationRequestType</i> (xml) / <i>AcknowledgeTaxDeclarationRequest</i> (client java)
  *
  * @see ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration
  */

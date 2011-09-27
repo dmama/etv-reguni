@@ -23,6 +23,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
@@ -31,16 +35,12 @@ import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.PartyPart;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
 import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnCode;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationReturnResponse;
+import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.webservices.tiers3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -75,11 +75,11 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.webservices.tiers3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.BatchPartyBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.DebtorInfoBuilder;
 import ch.vd.uniregctb.webservices.tiers3.data.PartyBuilder;
-import ch.vd.uniregctb.webservices.tiers3.data.TaxDeclarationReturnBuilder;
-import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError;
+import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationAcknowledgeError;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
@@ -521,58 +521,58 @@ public class PartyWebServiceImpl implements PartyWebService {
 	/**
 	 * Classe interne au quittancement des déclarations d'impôt
 	 */
-	private static class TaxDeclarationReturnResults implements BatchResults<TaxDeclarationReturnRequest, TaxDeclarationReturnResults> {
+	private static class AcknowledgeTaxDeclarationResults implements BatchResults<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults> {
 
-		private final ReturnTaxDeclarationsResponse reponses = new ReturnTaxDeclarationsResponse();
+		private final AcknowledgeTaxDeclarationsResponse reponses = new AcknowledgeTaxDeclarationsResponse();
 
 		@Override
-		public void addErrorException(TaxDeclarationReturnRequest element, Exception e) {
+		public void addErrorException(AcknowledgeTaxDeclarationRequest element, Exception e) {
 			if (e instanceof ValidationException) {
-				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION,
+				reponses.getResponses().add(new AcknowledgeTaxDeclarationResponse(element.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION,
 						new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null)));
 			}
 			else if (e instanceof RuntimeException) {
-				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
+				reponses.getResponses().add(new AcknowledgeTaxDeclarationResponse(element.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
 			}
 			else {
-				reponses.getResponses().add(new TaxDeclarationReturnResponse(element.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
+				reponses.getResponses().add(new AcknowledgeTaxDeclarationResponse(element.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null)));
 			}
 		}
 
 		@Override
-		public void addAll(TaxDeclarationReturnResults right) {
+		public void addAll(AcknowledgeTaxDeclarationResults right) {
 			this.reponses.getResponses().addAll(right.getReponses().getResponses());
 		}
 
-		public void addReponse(TaxDeclarationReturnResponse reponse) {
+		public void addReponse(AcknowledgeTaxDeclarationResponse reponse) {
 			this.reponses.getResponses().add(reponse);
 		}
 
-		public ReturnTaxDeclarationsResponse getReponses() {
+		public AcknowledgeTaxDeclarationsResponse getReponses() {
 			return reponses;
 		}
 	}
 
 	@Override
-	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
+	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 
 		try {
-			final List<TaxDeclarationReturnRequest> requests = params.getRequests();
-			final BatchTransactionTemplate<TaxDeclarationReturnRequest, TaxDeclarationReturnResults> template =
-					new BatchTransactionTemplate<TaxDeclarationReturnRequest, TaxDeclarationReturnResults>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+			final List<AcknowledgeTaxDeclarationRequest> requests = params.getRequests();
+			final BatchTransactionTemplate<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults> template =
+					new BatchTransactionTemplate<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 							context.transactionManager, null, context.hibernateTemplate);
-			final TaxDeclarationReturnResults finalReport = new TaxDeclarationReturnResults();
-			template.execute(finalReport, new BatchTransactionTemplate.BatchCallback<TaxDeclarationReturnRequest, TaxDeclarationReturnResults>() {
+			final AcknowledgeTaxDeclarationResults finalReport = new AcknowledgeTaxDeclarationResults();
+			template.execute(finalReport, new BatchTransactionTemplate.BatchCallback<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>() {
 
 				@Override
-				public TaxDeclarationReturnResults createSubRapport() {
-					return new TaxDeclarationReturnResults();
+				public AcknowledgeTaxDeclarationResults createSubRapport() {
+					return new AcknowledgeTaxDeclarationResults();
 				}
 
 				@Override
-				public boolean doInTransaction(List<TaxDeclarationReturnRequest> batch, TaxDeclarationReturnResults rapport) throws Exception {
-					for (TaxDeclarationReturnRequest demande : batch) {
-						final TaxDeclarationReturnResponse r = quittancerDeclaration(demande);
+				public boolean doInTransaction(List<AcknowledgeTaxDeclarationRequest> batch, AcknowledgeTaxDeclarationResults rapport) throws Exception {
+					for (AcknowledgeTaxDeclarationRequest demande : batch) {
+						final AcknowledgeTaxDeclarationResponse r = ackDeclaration(demande);
 						rapport.addReponse(r);
 					}
 					return true;
@@ -615,21 +615,21 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 	}
 
-	private TaxDeclarationReturnResponse quittancerDeclaration(TaxDeclarationReturnRequest demande) {
-		TaxDeclarationReturnResponse r;
+	private AcknowledgeTaxDeclarationResponse ackDeclaration(AcknowledgeTaxDeclarationRequest demande) {
+		AcknowledgeTaxDeclarationResponse r;
 		try {
 			r = handleRequest(demande);
 		}
-		catch (TaxDeclarationReturnError e) {
-			r = TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), e);
+		catch (TaxDeclarationAcknowledgeError e) {
+			r = AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), e);
 		}
 		catch (ValidationException e) {
 			LOGGER.error(e, e);
-			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
+			r = new AcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
-			r = new TaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
+			r = new AcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 		return r;
 	}
@@ -639,37 +639,37 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 *
 	 * @param demande la demande de quittancement à traiter
 	 * @return la réponse de la demande de quittancement en cas de traitement effectué.
-	 * @throws ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationReturnError
+	 * @throws ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationAcknowledgeError
 	 *          une erreur explicite en cas d'impossibilité d'effectuer le traitement.
 	 */
-	private TaxDeclarationReturnResponse handleRequest(TaxDeclarationReturnRequest demande) throws TaxDeclarationReturnError {
+	private AcknowledgeTaxDeclarationResponse handleRequest(AcknowledgeTaxDeclarationRequest demande) throws TaxDeclarationAcknowledgeError {
 
 		final int number = demande.getKey().getTaxpayerNumber();
 		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get((long) number);
 		if (ctb == null) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
 		}
 
 		if (ctb.getDernierForFiscalPrincipal() == null) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_TAX_LIABILITY, "Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_TAX_LIABILITY, "Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
 		}
 
 		if (ctb.isDebiteurInactif()) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_INACTIVE_DEBTOR, "Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_INACTIVE_DEBTOR, "Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
 		}
 
 		final DeclarationImpotOrdinaire declaration = findDeclaration(ctb, demande.getKey().getTaxPeriod(), demande.getKey().getSequenceNumber());
 		if (declaration == null) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_UNKNOWN_TAX_DECLARATION, "La déclaration n'existe pas.");
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_UNKNOWN_TAX_DECLARATION, "La déclaration n'existe pas.");
 		}
 
 		if (declaration.isAnnule()) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
 		}
 
-		final RegDate dateRetour = DataHelper.webToCore(demande.getReturnDate());
+		final RegDate dateRetour = DataHelper.webToCore(demande.getAcknowledgeDate());
 		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
-			throw new TaxDeclarationReturnError(TaxDeclarationReturnCode.ERROR_INVALID_RETURN_DATE,
+			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_INVALID_ACKNOWLEDGE_DATE,
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
 		}
 
@@ -680,7 +680,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource());
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
-		return TaxDeclarationReturnBuilder.newTaxDeclarationReturnResponse(demande.getKey(), TaxDeclarationReturnCode.OK);
+		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);
 	}
 
 	private void sendQuittancementToBam(DeclarationImpotOrdinaire di) {

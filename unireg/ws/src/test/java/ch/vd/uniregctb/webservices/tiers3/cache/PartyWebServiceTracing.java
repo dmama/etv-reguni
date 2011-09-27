@@ -3,6 +3,8 @@ package ch.vd.uniregctb.webservices.tiers3.cache;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.BatchParty;
 import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
@@ -10,8 +12,6 @@ import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
 import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.ReturnTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
@@ -35,7 +35,7 @@ public class PartyWebServiceTracing implements PartyWebService {
 	public List<SetAutomaticReimbursementBlockingRequest> setTiersBlocRembAutoCalls = new ArrayList<SetAutomaticReimbursementBlockingRequest>();
 	public List<SearchCorporationEventsRequest> searchEvenementsPMCalls = new ArrayList<SearchCorporationEventsRequest>();
 	public List<GetDebtorInfoRequest> getDebiteurInfoCalls = new ArrayList<GetDebtorInfoRequest>();
-	public List<ReturnTaxDeclarationsRequest> quittancerDeclarationsCalls = new ArrayList<ReturnTaxDeclarationsRequest>();
+	public List<AcknowledgeTaxDeclarationsRequest> acknowledgeTaxDeclarationsCalls = new ArrayList<AcknowledgeTaxDeclarationsRequest>();
 	public List<GetModifiedTaxpayersRequest> getListeCtbModifiesCalls = new ArrayList<GetModifiedTaxpayersRequest>();
 
 	public PartyWebServiceTracing(PartyWebService target) {
@@ -96,8 +96,8 @@ public class PartyWebServiceTracing implements PartyWebService {
 	}
 
 	@Override
-	public ReturnTaxDeclarationsResponse returnTaxDeclarations(ReturnTaxDeclarationsRequest params) throws WebServiceException {
-		quittancerDeclarationsCalls.add(params);
-		return target.returnTaxDeclarations(params);
+	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
+		acknowledgeTaxDeclarationsCalls.add(params);
+		return target.acknowledgeTaxDeclarations(params);
 	}
 }

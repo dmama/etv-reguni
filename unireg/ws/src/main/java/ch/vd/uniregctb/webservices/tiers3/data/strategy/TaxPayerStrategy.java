@@ -37,7 +37,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			initFamilyStatuses(to, ctb, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.ORDINARY_TAX_LIABILITIES) || parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
+		if (parts != null && (parts.contains(PartyPart.TAX_LIABILITIES) || parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
 			initTaxLiabilities(to, ctb, parts);
 		}
 
@@ -54,8 +54,8 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			copyColl(to.getFamilyStatuses(), from.getFamilyStatuses());
 		}
 
-		if (parts != null && parts.contains(PartyPart.ORDINARY_TAX_LIABILITIES)) {
-			copyColl(to.getOrdinaryTaxLiabilities(), from.getOrdinaryTaxLiabilities());
+		if (parts != null && parts.contains(PartyPart.TAX_LIABILITIES)) {
+			copyColl(to.getTaxLiabilities(), from.getTaxLiabilities());
 		}
 
 		if (parts != null && parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
@@ -93,12 +93,12 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (list != null) {
 
-			final boolean wantAssujettissements = parts.contains(PartyPart.ORDINARY_TAX_LIABILITIES);
+			final boolean wantAssujettissements = parts.contains(PartyPart.TAX_LIABILITIES);
 			final boolean wantPeriodes = parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
 
 			for (ch.vd.uniregctb.metier.assujettissement.Assujettissement a : list) {
 				if (wantAssujettissements) {
-					left.getOrdinaryTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
+					left.getTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
 				}
 				if (wantPeriodes) {
 					left.getSimplifiedTaxLiabilityVD().add(SimplifiedTaxLiabilityBuilder.toVD(a));
