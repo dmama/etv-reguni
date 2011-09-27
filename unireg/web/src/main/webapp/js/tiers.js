@@ -332,16 +332,12 @@ function hasClassName(objElement, strClass)
  * Affiche ou filtre les données historiques d'une table
  */
 function refreshHistoTable(showHisto, table, dateFinIndex) {
-	var len = $(table).get(0).rows.length;
-	var firstLine = null;
+    var rows = $(table).get(0).rows;
 	var foundSomething = false; // vrai si une ligne au moins est affichée
 	var visibleCount = 0;
 
-	for (i = 1; i < len; i++) { // on ignore l'entête
-		var line = table.rows[i];
-		if (i == 1) {
-			firstLine = line;
-		}
+	for (i = 1; i < rows.length; i++) { // on ignore l'entête
+		var line = rows[i];
 		var dateFin = line.cells[dateFinIndex].innerHTML;
 		var isHisto = (dateFin != null && isNotBlank(dateFin)); // date fin != null -> valeur historique
 
@@ -363,8 +359,8 @@ function refreshHistoTable(showHisto, table, dateFinIndex) {
 			line.className = (visibleCount++ % 2 == 0 ? 'even' : 'odd');
 		}
 	}
-	if (!showHisto && !foundSomething) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
-		firstLine.style.display = ''
+	if (!showHisto && !foundSomething && rows.length > 1) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
+		rows[1].style.display = ''
 	}
 }
 
