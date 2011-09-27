@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -15,8 +15,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesResults> {
 
 	public enum ErreurType {
-		UNKNOWN_EXCEPTION("une exception inconnue a été levée"),
-		VALIDATION("le contribuable ne valide pas");
+		UNKNOWN_EXCEPTION("Une exception a été levée."),
+		VALIDATION("Le contribuable ne valide pas.");
 
 		private final String description;
 
@@ -78,7 +78,6 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public final int nouveauNoOfs;
 
 	// résultats
-	public int nbTiersTotal;
 	public final List<Long> tiersTraites = new ArrayList<Long>();
 	public final List<Ignore> tiersIgnores = new ArrayList<Ignore>();
 	public final List<Erreur> tiersEnErrors = new ArrayList<Erreur>();
@@ -91,9 +90,12 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		this.dateTraitement = dateTraitement;
 	}
 
+	public int getNbTiersTotal() {
+		return tiersTraites.size() + tiersIgnores.size() + tiersEnErrors.size();
+	}
+
 	@Override
 	public void addAll(FusionDeCommunesResults right) {
-		this.nbTiersTotal += right.nbTiersTotal;
 		this.tiersTraites.addAll(right.tiersTraites);
 		this.tiersIgnores.addAll(right.tiersIgnores);
 		this.tiersEnErrors.addAll(right.tiersEnErrors);
@@ -103,8 +105,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		tiersEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
 	}
 
-	public void addTiersInvalide(Tiers t, ValidationResults results) {
-		tiersEnErrors.add(new Erreur(t.getNumero(), t.getOfficeImpotId(), ErreurType.VALIDATION, results.toString()));
+	public void addTiersInvalide(Long tiersId, ValidationException e) {
+		tiersEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage()));
 	}
 
 	public void addTiersIgnoreDejaSurCommuneResultante(Tiers tiers) {
@@ -113,6 +115,11 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		addOnCommitException(element, e);
+		if (e instanceof ValidationException) {
+			addTiersInvalide(element, (ValidationException) e);
+		}
+		else {
+			addOnCommitException(element, e);
+		}
 	}
 }

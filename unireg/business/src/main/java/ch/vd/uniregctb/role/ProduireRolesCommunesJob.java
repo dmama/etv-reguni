@@ -34,7 +34,7 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 		param.setDescription("Nom d'une commune (optionnel)");
 		param.setName(NO_OFS_COMMUNE);
 		param.setMandatory(false);
-		param.setType(new JobParamCommune());
+		param.setType(new JobParamCommune(JobParamCommune.TypeCommune.COMMUNE_VD));
 		addParameterDefinition(param, null);
 	}
 

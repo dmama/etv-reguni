@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.metier;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,8 +8,10 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -31,12 +34,14 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class FusionDeCommunesProcessorTest extends BusinessTest {
 
+	private ValidationService validationService;
 	private FusionDeCommunesProcessor processor;
 	private Set<Integer> anciensNoOfs;
 	private int nouveauNoOfs;
@@ -48,7 +53,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		super.onSetUp();
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
@@ -63,52 +68,167 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testTraiteContribuableInvalide() throws Exception {
+	public void testTraiteContribuableInvalideDansLesDatesDeFors() throws Exception {
 
-		final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
-		addForPrincipal(bruno, date(1984, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-		// un second for principal qui chevauche le premier -> invalide
-		ForFiscalPrincipal f = new ForFiscalPrincipal();
-		f.setDateDebut(date(1997, 10, 29));
-		f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-		f.setDateFin(null);
-		f.setMotifFermeture(null);
-		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		f.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFS());
-		f.setMotifRattachement(MotifRattachement.DOMICILE);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
-		bruno.addForFiscal(f);
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
-		processor.setRapport(rapport);
-		processor.traiteTiers(bruno.getNumero(), anciensNoOfs, nouveauNoOfs, dateFusion);
+				addForPrincipal(bruno, date(1984, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-		// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
-		final ForsParType fors = bruno.getForsParType(true);
-		assertNotNull(fors);
-		assertEquals(2, fors.principaux.size());
-		assertEmpty(fors.secondaires);
+				// un second for principal qui chevauche le premier -> invalide
+				final ForFiscalPrincipal f = new ForFiscalPrincipal();
+				f.setDateDebut(date(1997, 10, 29));
+				f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+				f.setDateFin(null);
+				f.setMotifFermeture(null);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFS());
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				bruno.addForFiscal(f);
 
-		final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
-		assertNotNull(ffp0);
-		assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
-				ffp0);
+				final ValidationResults validationResults = validationService.validate(bruno);
+				assertTrue(validationResults.hasErrors());
 
-		final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
-		assertNotNull(ffp1);
-		assertForPrincipal(date(1997, 10, 29), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, ffp1);
+				return bruno.getNumero();
+			}
+		});
 
-		assertEquals(1, rapport.nbTiersTotal);
+		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
+		assertNotNull(rapport);
+
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersTraites.size());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersEnErrors.size());
 
-		FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
+		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
+		assertNotNull(error);
+		assertEquals(FusionDeCommunesResults.ErreurType.UNKNOWN_EXCEPTION, error.raison);
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
+				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForsParType fors = bruno.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(2, fors.principaux.size());
+				assertEmpty(fors.secondaires);
+
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				assertNotNull(ffp0);
+				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				assertNotNull(ffp1);
+				assertForPrincipal(date(1997, 10, 29), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testTraiteContribuableInvalideHorsFor() throws Exception {
+
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
+				addForPrincipal(bruno, date(1984, 8, 1), MotifFor.MAJORITE, MockCommune.Croy);
+				bruno.setNom(null);     // c'est ça qui devrait poser problème
+
+				final ValidationResults validationResults = validationService.validate(bruno);
+				assertTrue(validationResults.hasErrors());
+
+				return bruno.getNumero();
+			}
+		});
+
+		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
+		assertNotNull(rapport);
+
+		assertEquals(1, rapport.getNbTiersTotal());
+		assertEquals(0, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(1, rapport.tiersEnErrors.size());
+
+		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
 		assertNotNull(error);
 		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
+		assertEquals(ppId, error.noCtb);
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
+				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForsParType fors = bruno.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(1, fors.principaux.size());
+				assertEmpty(fors.secondaires);
+
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				assertNotNull(ffp0);
+				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testTraiteContribuableInvalideMaisCorrigeParFusion() throws Exception {
+
+		final RegDate dateDebut = date(2001, 10, 29);
+		final RegDate dateFusion = MockCommune.BourgEnLavaux.getDateDebutValidite();
+
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
+				addForPrincipal(bruno, dateDebut, MotifFor.INDETERMINE, MockCommune.Villette);      // le problème de validation est que le for sur Villette est encore ouvert alors que la fusion est passée
+
+				final ValidationResults validationResults = validationService.validate(bruno);
+				assertTrue(validationResults.hasErrors());
+
+				return bruno.getNumero();
+			}
+		});
+
+		final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Villette.getNoOFS()));
+		final FusionDeCommunesResults rapport = processor.run(anciennesCommunes, MockCommune.BourgEnLavaux.getNoOFS(), dateFusion, dateTraitement, null);
+		assertNotNull(rapport);
+
+		assertEquals(1, rapport.getNbTiersTotal());
+		assertEquals(1, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(0, rapport.tiersEnErrors.size());
+
+		final long traite = rapport.tiersTraites.get(0);
+		assertEquals(ppId, traite);
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForsParType fors = bruno.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(2, fors.principaux.size());
+				assertEmpty(fors.secondaires);
+
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				assertNotNull(ffp0);
+				assertForPrincipal(dateDebut, MotifFor.INDETERMINE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				assertNotNull(ffp1);
+				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -128,11 +248,11 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable ne possède pas de for -> il ne devrait pas être impacté
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 		assertEmpty(bruno.getForsFiscaux());
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(0, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersTraites.size());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -157,7 +277,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable possède des fors sur des communes non-concernées pas la fusion -> il ne devrait pas être impacté
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -173,7 +293,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(ffs);
 		assertForSecondaire(date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, ffs);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(0, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(0, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -199,7 +319,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable possède des fors sur les communes concernées pas la fusion, mais ils sont tous fermés -> il ne devrait pas être impacté
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -222,7 +342,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertForSecondaire(date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE, ffs);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(0, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(0, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -247,7 +367,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable possède un immeuble sur une des communes concernées pas la fusion -> ce for devrait être mis-à-jour
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -268,7 +388,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(ffs1);
 		assertForSecondaire(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, ffs1);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -292,7 +412,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable habite sur une des communes concernées pas la fusion -> son for principal devrait être mis-à-jour
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -310,7 +430,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				ffp1);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -342,7 +462,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		// Le contribuable possèdes plusieurs fors sur des communes concernées pas la fusion -> ils devraient être mis à jour
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -364,7 +484,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(faei1);
 		assertForAutreElementImposable(dateFusion, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy, MotifRattachement.PRESTATION_PREVOYANCE, faei1);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -402,7 +522,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		// Le contribuable possède plusieurs fors *dans le futurs* sur des communes concernées pas la fusion -> leurs numéro OFs devraient être mis à jour sans changement de dates
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -434,7 +554,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(faei);
 		assertForAutreElementImposable(dateFutur, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy, MotifRattachement.PRESTATION_PREVOYANCE, faei);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -459,7 +579,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion -> son for principal ne doit pas être mis-à-jour
-		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
 		final ForsParType fors = bruno.getForsParType(true);
@@ -470,7 +590,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(ffp);
 		assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(1, rapport.tiersIgnores.size());
 		assertEquals(0, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
@@ -494,7 +614,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le débiteur habite sur une des communes concernées pas la fusion -> son for principal devrait être mis-à-jour
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) hibernateTemplate.get(DebiteurPrestationImposable.class, id);
+		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
 		assertNotNull(dpi);
 
 		final List<ForFiscal> fors = dpi.getForsFiscauxSorted();
@@ -509,7 +629,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(ffp1);
 		assertForDebiteur(dateFusion, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), ffp1);
 
-		assertEquals(1, rapport.nbTiersTotal);
+		assertEquals(1, rapport.getNbTiersTotal());
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);

@@ -8,4 +8,20 @@ package ch.vd.uniregctb.scheduler;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class JobParamCommune extends JobParamInteger {
+
+	private final TypeCommune type;
+
+	public static enum TypeCommune {
+		COMMUNE_CH,
+		COMMUNE_VD,
+		COMMUNE_HC
+	}
+
+	public JobParamCommune(TypeCommune type) {
+		this.type = type;
+	}
+
+	public TypeCommune getType() {
+		return type;
+	}
 }

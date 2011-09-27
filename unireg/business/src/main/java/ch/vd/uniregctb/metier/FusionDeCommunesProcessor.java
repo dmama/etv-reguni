@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -152,15 +151,6 @@ public class FusionDeCommunesProcessor {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		Assert.notNull(tiers);
-
-		rapport.nbTiersTotal++;
-
-		// On ne traite pas les tiers qui ne valident pas
-		final ValidationResults results = validationService.validate(tiers);
-		if (results.hasErrors()) {
-			rapport.addTiersInvalide(tiers, results);
-			return;
-		}
 
 		boolean forIgnore = false;
 		boolean forTraite = false;

@@ -56,7 +56,7 @@ public class FusionDeCommunesJob extends JobDefinition {
 			param.setDescription("Nouvelle commune");
 			param.setName(NOUVELLE_COMMUNE);
 			param.setMandatory(true);
-			param.setType(new JobParamCommune());
+			param.setType(new JobParamCommune(JobParamCommune.TypeCommune.COMMUNE_CH));
 			addParameterDefinition(param, null);
 		}
 

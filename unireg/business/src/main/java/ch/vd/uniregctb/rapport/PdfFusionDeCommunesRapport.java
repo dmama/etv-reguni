@@ -66,7 +66,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de tiers:", String.valueOf(results.nbTiersTotal));
+					table.addLigne("Nombre total de tiers:", String.valueOf(results.getNbTiersTotal()));
 					table.addLigne("Nombre de tiers traités:", String.valueOf(results.tiersTraites.size()));
 					table.addLigne("Nombre de tiers ignorés:", String.valueOf(results.tiersIgnores.size()));
 					table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErrors.size()));

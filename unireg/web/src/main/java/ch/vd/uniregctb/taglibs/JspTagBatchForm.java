@@ -280,10 +280,27 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// champ contenant le numéro Ofs invisible à l'utilisateur
 		b.append("<input id=\"").append(idInputNoOfs).append("\" name=\"").append(nameInputNoOfs).append("\" type=\"hidden\" value=\"").append(defaultNoOfsCommune).append("\"/>\n");
 
+		// la catégorie à donner à la méthode autocomplete_infra dépend du type de commune que l'on accepte
+		final JobParamCommune type = (JobParamCommune) param.getType();
+		final String categorie;
+		switch (type.getType()) {
+			case COMMUNE_VD:
+				categorie = "communeVD";
+				break;
+			case COMMUNE_HC:
+				categorie = "communeHC";
+				break;
+			case COMMUNE_CH:
+				categorie = "commune";
+				break;
+			default:
+				throw new RuntimeException("Catégorie de commune inconnue... : " + type.getType());
+		}
+
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
 		b.append("    $(function() {\n");
-		b.append("        autocomplete_infra('communeVD', '#").append(idInputNomCommune).append("', true, function(item) {\n");
+		b.append("        autocomplete_infra('").append(categorie).append("', '#").append(idInputNomCommune).append("', true, function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoOfs).append("').val(item.id1);\n");
 		b.append("                $('#").append(idInputNomCommune).append("').removeClass('error');\n");
