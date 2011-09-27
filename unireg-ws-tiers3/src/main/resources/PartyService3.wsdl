@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0-beta2 -->
+<!-- version 3.0-beta3 -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
@@ -23,7 +23,7 @@
 			<xs:include schemaLocation="messages/searchparty.xsd" />
 			<xs:include schemaLocation="messages/getmodifiedtaxpayers.xsd" />
 			<xs:include schemaLocation="messages/searchcorporationevents.xsd" />
-			<xs:include schemaLocation="messages/returntaxdeclarations.xsd" />
+			<xs:include schemaLocation="messages/acknowledgetaxdeclarations.xsd" />
 			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
 			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
 			<xs:element name="searchPartyRequest" nillable="true" type="ws:searchPartyRequestType" />
@@ -41,8 +41,8 @@
 			<xs:element name="getModifiedTaxpayersRequest" nillable="true" type="ws:getModifiedTaxpayersRequestType" />
 			<xs:element name="getModifiedTaxpayersResponse" nillable="true" type="ws:partyNumberListType" />
 			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="ws:setAutomaticReimbursementBlockingRequestType" />
-			<xs:element name="returnTaxDeclarationsRequest" nillable="true" type="ws:returnTaxDeclarationsRequestType" />
-			<xs:element name="returnTaxDeclarationsResponse" nillable="true" type="ws:returnTaxDeclarationsResponseType" />
+			<xs:element name="acknowledgeTaxDeclarationsRequest" nillable="true" type="ws:acknowledgeTaxDeclarationsRequestType" />
+			<xs:element name="acknowledgeTaxDeclarationsResponse" nillable="true" type="ws:acknowledgeTaxDeclarationsResponseType" />
 			<xs:element name="webServiceException" type="exception:serviceExceptionInfoType" />
 		</xs:schema>
 	</wsdl:types>
@@ -103,11 +103,11 @@
 	<wsdl:message name="setAutomaticReimbursementBlockingResponseMessage">
 	</wsdl:message>
 
-	<wsdl:message name="returnTaxDeclarationsRequestMessage">
-		<wsdl:part name="returnTaxDeclarationsRequest" element="returnTaxDeclarationsRequest" />
+	<wsdl:message name="acknowledgeTaxDeclarationsRequestMessage">
+		<wsdl:part name="acknowledgeTaxDeclarationsRequest" element="acknowledgeTaxDeclarationsRequest" />
 	</wsdl:message>
-	<wsdl:message name="returnTaxDeclarationsResponseMessage">
-		<wsdl:part name="returnTaxDeclarationsResponse" element="returnTaxDeclarationsResponse" />
+	<wsdl:message name="acknowledgeTaxDeclarationsResponseMessage">
+		<wsdl:part name="acknowledgeTaxDeclarationsResponse" element="acknowledgeTaxDeclarationsResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="pingRequestMessage" />
@@ -154,9 +154,9 @@
 			<wsdl:output message="setAutomaticReimbursementBlockingResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
-		<wsdl:operation name="returnTaxDeclarations">
-			<wsdl:input message="returnTaxDeclarationsRequestMessage" />
-			<wsdl:output message="returnTaxDeclarationsResponseMessage" />
+		<wsdl:operation name="acknowledgeTaxDeclarations">
+			<wsdl:input message="acknowledgeTaxDeclarationsRequestMessage" />
+			<wsdl:output message="acknowledgeTaxDeclarationsResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getDebtorInfo">
@@ -251,7 +251,7 @@
 				<soap:fault name="webServiceException" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
-		<wsdl:operation name="returnTaxDeclarations">
+		<wsdl:operation name="acknowledgeTaxDeclarations">
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>

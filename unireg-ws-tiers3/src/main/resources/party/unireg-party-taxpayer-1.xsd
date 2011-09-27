@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.0beta3 - 27 septembre 2011 - renommé ordinaryTaxLiabilities en taxLiabilities -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1">
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
@@ -23,11 +25,11 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="ordinaryTaxLiabilities" type="taxresidence:taxLiabilityType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxLiabilities" type="taxresidence:taxLiabilityType">
 						<xs:annotation>
-							<xs:documentation>L'historique complet des assujettissements du contribuable du point de vue du rôle ordinaire (en cas de conflit entre l'assujettissement source et
-								ordinaire, l'assujettissement ordinaire est privilégié).
-								Attention ! Cette collection n'est renseignée qui si la part ORDINARY_TAX_LIABILITIES est demandée.
+							<xs:documentation>L'historique complet des assujettissements du contribuable (en cas de conflit entre l'assujettissement source et ordinaire, l'assujettissement ordinaire
+								est privilégié).
+								Attention ! Cette collection n'est renseignée qui si la part TAX_LIABILITIES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
@@ -106,7 +108,7 @@
 					<xs:documentation>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="maritalStatusType">

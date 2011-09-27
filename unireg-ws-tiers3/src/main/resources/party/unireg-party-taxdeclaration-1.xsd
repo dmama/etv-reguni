@@ -152,7 +152,7 @@
 			</xs:enumeration>
 			<xs:enumeration value="RETURNED">
 				<xs:annotation>
-					<xs:documentation>Déclaration retournée.</xs:documentation>
+					<xs:documentation>Déclaration quittancée.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

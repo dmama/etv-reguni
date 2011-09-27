@@ -47,14 +47,14 @@
 					<xs:documentation>Les composants du ménage.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ORDINARY_TAX_LIABILITIES">
+			<xs:enumeration value="TAX_LIABILITIES">
 				<xs:annotation>
-					<xs:documentation>L'assujettissement 'rôle' du contribuable.</xs:documentation>
+					<xs:documentation>L'assujettissement complet du contribuable.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="SIMPLIFIED_TAX_LIABILITIES">
 				<xs:annotation>
-					<xs:documentation>Une vue simplifiée de l'assujettissement 'rôle' du contribuable.</xs:documentation>
+					<xs:documentation>Une vue simplifiée de l'assujettissement du contribuable.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="TAXATION_PERIODS">
