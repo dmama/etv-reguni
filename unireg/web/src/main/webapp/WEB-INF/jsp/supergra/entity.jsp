@@ -66,13 +66,7 @@
 								<a href="coll.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"><c:out value="${a.value}"/></a>
 							</c:if>
 							<c:if test="${!a.collection}">
-								<c:if test="${!a.entity}">
-									<!-- form:input path="attributes[${a_rowNum - 1}].value"/ -->
-									<unireg:formInput id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" clazz="${a.type}" readonly="${a.readonly}"/>
-								</c:if>
-								<c:if test="${a.entity}">
-									<unireg:entityField id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" type="${a.entityType}" value="${a.value}" readonly="${a.readonly}"/>
-								</c:if>
+								<unireg:formInput id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" type="${a.type}" category="${a.entityType}" readonly="${a.readonly}"/>
 							</c:if>
 							<form:errors path="attributes[${a_rowNum - 1}].value" cssClass="error"/>
 						</display:column>

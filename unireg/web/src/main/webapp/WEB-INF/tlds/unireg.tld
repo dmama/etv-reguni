@@ -253,14 +253,14 @@
 
 	<tag>
 		<name>formInput</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormInput</tag-class>
+		<tag-class>ch.vd.uniregctb.taglibs.formInput.JspTagFormInput</tag-class>
 		<body-content>JSP</body-content>
 		<description>Tag qui génère un champ d'édition pour la propriété spécifiée dans un formulaire.</description>
 		<attribute>
-			<name>clazz</name>
-			<required>true</required>
+			<name>id</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le type de la propriété à éditer</description>
+			<description>L'id html assigné au champ</description>
 		</attribute>
 		<attribute>
 			<name>path</name>
@@ -269,10 +269,16 @@
 			<description>Le chemin de la propriété à éditer par rapport à la command</description>
 		</attribute>
 		<attribute>
-			<name>id</name>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type de la propriété à éditer</description>
+		</attribute>
+		<attribute>
+			<name>category</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>L'id html assigné au champ</description>
+			<description>Le catégorie spécifique de la propriété à éditer (optionel)</description>
 		</attribute>
 		<attribute>
 			<name>readonly</name>
@@ -310,43 +316,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Le nom de la collection sur l'entité (optionnel)</description>
-		</attribute>
-	</tag>
-
-	<tag>
-		<name>entityField</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagEntityField</tag-class>
-		<body-content>JSP</body-content>
-		<description>Tag qui génère un champ d'édition pour une propriété de type 'lien vers une entité hibernate'.</description>
-		<attribute>
-			<name>type</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Le type (EntityType) de la propriété à éditer</description>
-		</attribute>
-		<attribute>
-			<name>value</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Le valeur de la propriété à éditer (peut être nulle)</description>
-		</attribute>
-		<attribute>
-			<name>path</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Le chemin de la propriété à éditer par rapport à la command</description>
-		</attribute>
-		<attribute>
-			<name>id</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>L'id html assigné au champ</description>
-		</attribute>
-		<attribute>
-			<name>readonly</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>Si le champ est en lecture seule (= édition interdite) ou non</description>
 		</attribute>
 	</tag>
 
