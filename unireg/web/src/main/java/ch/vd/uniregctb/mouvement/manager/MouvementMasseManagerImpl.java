@@ -440,7 +440,10 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		public String getExtractionDescription() {
 			final StringBuilder b = new StringBuilder();
 			b.append("Extraction des mouvements de dossiers");
-			if (criteria.isInclureMouvementsAnnules()) {
+			if (criteria.isSeulementDerniersMouvements()) {
+				b.append(" (seulement le dernier mouvement traité de chaque dossier)");
+			}
+			else if (criteria.isInclureMouvementsAnnules()) {
 				b.append(" (y compris les mouvements annulés)");
 			}
 			if (criteria.getTypeMouvement() != null) {
