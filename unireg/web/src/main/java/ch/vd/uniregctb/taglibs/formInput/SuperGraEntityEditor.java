@@ -7,7 +7,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 
 import ch.vd.uniregctb.supergra.EntityType;
 
-public class SuperGraEntityEditor implements Editor {
+class SuperGraEntityEditor implements Editor {
 
 	private EditorParams params;
 

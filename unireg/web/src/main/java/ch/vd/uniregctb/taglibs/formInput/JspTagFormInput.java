@@ -14,6 +14,7 @@ import org.springframework.web.servlet.tags.form.AbstractHtmlInputElementTag;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.json.InfraCategory;
 import ch.vd.uniregctb.supergra.EntityType;
 
 /**
@@ -54,6 +55,11 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 		// les types SuperGra
 		for (EntityType type : EntityType.values()) {
 			specificEditors.put(type, SuperGraEntityEditor.class);
+		}
+
+		// les catégories de données de l'infrastructure
+		for (InfraCategory category : InfraCategory.values()) {
+			specificEditors.put(category, InfrastructureEditor.class);
 		}
 	}
 

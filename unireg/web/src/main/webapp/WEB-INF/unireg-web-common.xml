@@ -166,7 +166,12 @@
     <bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra" >
 		<property name="service" ref="serviceInfrastructureService" />
     </bean>
-    
+
+    <bean id="jspTagInfraEditor" class="ch.vd.uniregctb.taglibs.formInput.InfrastructureEditor" >
+		<constructor-arg><null/></constructor-arg>
+		<property name="service" ref="serviceInfrastructureService" />
+    </bean>
+
     <bean id="jspTagCommune" class="ch.vd.uniregctb.taglibs.JspTagCommune" >
 		<property name="service" ref="serviceInfrastructureService" />
     </bean>

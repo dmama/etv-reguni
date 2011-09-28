@@ -36,19 +36,6 @@ public class AutoCompleteInfraController {
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 
-	private enum Category {
-		RUE,
-		LOCALITE,
-		COMMUNE,
-		COMMUNE_VD,
-		COMMUNE_HC,
-		ETAT,
-		TERRITOIRE,
-		COLLECTIVITE_ADMINISTRATIVE,
-		JUSTICES_DE_PAIX,
-		OFFICES_IMPOT
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	private static class Item {
 		/**
@@ -116,7 +103,7 @@ public class AutoCompleteInfraController {
 	@ResponseBody
 	public List<Item> infra(@RequestParam("category") String category, @RequestParam("term") String term, @RequestParam(value = "numCommune", required = false) Integer numCommune) throws Exception {
 
-		final Set<Category> categories = parseCategories(category);
+		final Set<InfraCategory> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
 		final byte[] bytes = term.getBytes("ISO-8859-1");
@@ -127,7 +114,7 @@ public class AutoCompleteInfraController {
 
 		final List<Item> list = new ArrayList<Item>();
 
-		if (categories.contains(Category.RUE)) {
+		if (categories.contains(InfraCategory.RUE)) {
 			if (numCommune == null) {
 				list.add(new Item("#error: pas de localité renseignée", "#error: pas de localité renseignée"));
 			}
@@ -154,7 +141,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.LOCALITE)) {
+		if (categories.contains(InfraCategory.LOCALITE)) {
 			final List<Localite> localites = serviceInfrastructureService.getLocalites();
 			if (localites != null) {
 				for (Localite localite : localites) {
@@ -167,7 +154,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.COMMUNE)) {
+		if (categories.contains(InfraCategory.COMMUNE)) {
 			final List<Commune> communes = serviceInfrastructureService.getCommunes();
 			if (communes != null) {
 				for (Commune commune : communes) {
@@ -179,7 +166,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.COMMUNE_VD)) {
+		if (categories.contains(InfraCategory.COMMUNE_VD)) {
 			final List<Commune> communes = serviceInfrastructureService.getListeFractionsCommunes();
 			if (communes != null) {
 				for (Commune commune : communes) {
@@ -191,7 +178,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.COMMUNE_HC)) {
+		if (categories.contains(InfraCategory.COMMUNE_HC)) {
 			final List<Commune> communes = serviceInfrastructureService.getCommunesHorsCanton();
 			if (communes != null) {
 				for (Commune commune : communes) {
@@ -203,10 +190,10 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.ETAT) || categories.contains(Category.TERRITOIRE)) {
+		if (categories.contains(InfraCategory.ETAT) || categories.contains(InfraCategory.TERRITOIRE)) {
 			final List<Pays> pays = serviceInfrastructureService.getPays();
 			if (pays != null) {
-				final boolean etatsOnly = !categories.contains(Category.TERRITOIRE);
+				final boolean etatsOnly = !categories.contains(InfraCategory.TERRITOIRE);
 				for (Pays p : pays) {
 					if (p.isValide() && (!etatsOnly || p.isEtatSouverain())) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
 						if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
@@ -218,7 +205,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.COLLECTIVITE_ADMINISTRATIVE)) {
+		if (categories.contains(InfraCategory.COLLECTIVITE_ADMINISTRATIVE)) {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(
 					Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD, EnumTypeCollectivite.SIGLE_ACIPP, EnumTypeCollectivite.SIGLE_CIR,
 							EnumTypeCollectivite.SIGLE_S_ACI));
@@ -231,7 +218,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.JUSTICES_DE_PAIX)) {
+		if (categories.contains(InfraCategory.JUSTICES_DE_PAIX)) {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Arrays.asList(EnumTypeCollectivite.SIGLE_JPAIX));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
@@ -243,7 +230,7 @@ public class AutoCompleteInfraController {
 			}
 		}
 
-		if (categories.contains(Category.OFFICES_IMPOT)) {
+		if (categories.contains(InfraCategory.OFFICES_IMPOT)) {
 			final List<OfficeImpot> offices = serviceInfrastructureService.getOfficesImpot();
 			if (offices != null) {
 				for (OfficeImpot oi : offices) {
@@ -257,7 +244,7 @@ public class AutoCompleteInfraController {
 		return list;
 	}
 
-	private Map<Integer, Localite> buildLocaliteMap(List<Localite> localites) {
+	private static Map<Integer, Localite> buildLocaliteMap(List<Localite> localites) {
 		if (localites == null || localites.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -268,47 +255,47 @@ public class AutoCompleteInfraController {
 		return map;
 	}
 
-	private static Set<Category> parseCategories(String category) {
-		final Set<Category> categories = new HashSet<Category>();
+	private static Set<InfraCategory> parseCategories(String category) {
+		final Set<InfraCategory> categories = new HashSet<InfraCategory>();
 		if ("rue".equalsIgnoreCase(category)) {
-			categories.add(Category.RUE);
+			categories.add(InfraCategory.RUE);
 		}
 		else if ("localite".equalsIgnoreCase(category)) {
-			categories.add(Category.LOCALITE);
+			categories.add(InfraCategory.LOCALITE);
 		}
 		else if ("etat".equalsIgnoreCase(category)) {
-			categories.add(Category.ETAT);
+			categories.add(InfraCategory.ETAT);
 		}
 		else if ("etatOuTerritoire".equalsIgnoreCase(category)) {
-			categories.add(Category.ETAT);
-			categories.add(Category.TERRITOIRE);
+			categories.add(InfraCategory.ETAT);
+			categories.add(InfraCategory.TERRITOIRE);
 		}
 		else if ("localiteOuPays".equalsIgnoreCase(category)) {
-			categories.add(Category.LOCALITE);
-			categories.add(Category.ETAT);
-			categories.add(Category.TERRITOIRE);
+			categories.add(InfraCategory.LOCALITE);
+			categories.add(InfraCategory.ETAT);
+			categories.add(InfraCategory.TERRITOIRE);
 		}
 		else if ("communeOuPays".equalsIgnoreCase(category)) {
-			categories.add(Category.COMMUNE);
-			categories.add(Category.ETAT);
+			categories.add(InfraCategory.COMMUNE);
+			categories.add(InfraCategory.ETAT);
 		}
 		else if ("commune".equalsIgnoreCase(category)) {
-			categories.add(Category.COMMUNE);
+			categories.add(InfraCategory.COMMUNE);
 		}
 		else if ("communeVD".equalsIgnoreCase(category)) {
-			categories.add(Category.COMMUNE_VD);
+			categories.add(InfraCategory.COMMUNE_VD);
 		}
 		else if ("communeHC".equalsIgnoreCase(category)) {
-			categories.add(Category.COMMUNE_HC);
+			categories.add(InfraCategory.COMMUNE_HC);
 		}
 		else if ("collectiviteAdministrative".equalsIgnoreCase(category)) {
-			categories.add(Category.COLLECTIVITE_ADMINISTRATIVE);
+			categories.add(InfraCategory.COLLECTIVITE_ADMINISTRATIVE);
 		}
 		else if ("justicePaix".equalsIgnoreCase(category)) {
-			categories.add(Category.JUSTICES_DE_PAIX);
+			categories.add(InfraCategory.JUSTICES_DE_PAIX);
 		}
 		else if ("officeImpot".equalsIgnoreCase(category)) {
-			categories.add(Category.OFFICES_IMPOT);
+			categories.add(InfraCategory.OFFICES_IMPOT);
 		}
 
 		return categories;

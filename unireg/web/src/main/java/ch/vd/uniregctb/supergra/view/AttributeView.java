@@ -10,6 +10,11 @@ import ch.vd.uniregctb.supergra.EntityType;
  */
 public class AttributeView {
 
+	/**
+	 * L'id HTML du champ d'édition (optionel)
+	 */
+	private String id;
+
 	private final String name;
 	private final String displayName;
 	private Object value;
@@ -18,6 +23,7 @@ public class AttributeView {
 	 * Type d'entité si le {@link #type} est {@link EntityKey}.
 	 */
 	private EntityType entityType;
+	private Object category;
 	private boolean parentForeignKey;
 	private final boolean collection;
 	private final boolean readonly;
@@ -28,6 +34,7 @@ public class AttributeView {
 		this.value = resolveValue(value);
 		this.type = resolveType(type, value, isParentForeignKey);
 		this.entityType = resolveEntityType(type, value, isParentForeignKey);
+		this.category = this.entityType;
 		this.parentForeignKey = isParentForeignKey;
 		this.collection = isCollection;
 		this.readonly = isReadonly;
@@ -39,8 +46,34 @@ public class AttributeView {
 		this.value = resolveValue(value);
 		this.type = resolveType(type, value, isParentForeignKey);
 		this.entityType = resolveEntityType(type, value, isParentForeignKey);
+		this.category = this.entityType;
 		this.collection = isCollection;
 		this.readonly = isReadonly;
+	}
+
+	public AttributeView(String name, String displayName, Class<?> type, Object value, Object category, boolean readonly) {
+		this.name = name;
+		this.displayName = displayName;
+		this.value = value;
+		this.entityType = null;
+		this.type = type;
+		this.category = category;
+		this.parentForeignKey = false;
+		this.collection = false;
+		this.readonly = readonly;
+	}
+
+	public AttributeView(String id, String name, String displayName, Class<?> type, Object value, Object category, boolean readonly) {
+		this.id = id;
+		this.name = name;
+		this.displayName = displayName;
+		this.value = value;
+		this.entityType = null;
+		this.type = type;
+		this.category = category;
+		this.parentForeignKey = false;
+		this.collection = false;
+		this.readonly = readonly;
 	}
 
 	public AttributeView(AttributeView right) {
@@ -48,6 +81,8 @@ public class AttributeView {
 		this.displayName = right.displayName;
 		this.value = right.value;
 		this.type = right.type;
+		this.entityType = right.entityType;
+		this.category = right.category;
 		this.parentForeignKey = right.parentForeignKey;
 		this.collection = right.collection;
 		this.readonly = right.readonly;
@@ -125,6 +160,14 @@ public class AttributeView {
 		return v;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -139,6 +182,10 @@ public class AttributeView {
 
 	public EntityType getEntityType() {
 		return entityType;
+	}
+
+	public Object getCategory() {
+		return category;
 	}
 
 	public Object getValue() {

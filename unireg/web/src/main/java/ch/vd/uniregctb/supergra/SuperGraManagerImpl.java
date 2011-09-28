@@ -29,12 +29,14 @@ import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.json.InfraCategory;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
 import ch.vd.uniregctb.supergra.view.AttributeView;
@@ -351,7 +353,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		try {
 			final MetaEntity meta = MetaEntity.determine(entity.getClass());
 			final List<Property> props = meta.getProperties();
-			for (Property p : props) {
+			for (int i = 0, propsSize = props.size(); i < propsSize; i++) {
+				final Property p = props.get(i);
 				final AttributeBuilder customBuilder = getCustomAttributeBuilder(new AttributeKey(entity.getClass(), p.getName()));
 				final String propName = p.getName();
 				final Object value = (propName == null ? p.getDiscriminatorValue() : ObjectGetterHelper.getValue(entity, propName));
@@ -374,6 +377,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					// cas général, on affiche l'éditeur pour l'attribut
 					final boolean readonly = p.isPrimaryKey() || p.isParentForeignKey() || readonlyProps.contains(propName);
 					attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
+				}
+
+				// on renseigne l'id (au sens HTML) s'il n'est pas déjà renseigné
+				if (attributeView.getId() == null) {
+					attributeView.setId("attributes_" + i);
 				}
 
 				attributes.add(attributeView);
@@ -782,6 +790,22 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
 				return new AttributeView(p.getName(), "retour collectivité administrative", CollectiviteAdministrative.class, entity, false, false, false);
+			}
+		});
+
+		// [SIFISC-927] auto-completion du numéro d'ordre poste dans les adresses suisses.
+		attributeCustomBuilders.put(new AttributeKey(AdresseSuisse.class, "numeroOrdrePoste"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				return new AttributeView("localite", p.getName(), "localité", Integer.class, value, InfraCategory.LOCALITE, false);
+			}
+		});
+
+		// [SIFISC-927] auto-completion du numéro de rue dans les adresses suisses.
+		attributeCustomBuilders.put(new AttributeKey(AdresseSuisse.class, "numeroRue"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				return new AttributeView("rue", p.getName(), "rue", Integer.class, value, InfraCategory.RUE, false);
 			}
 		});
 	}
