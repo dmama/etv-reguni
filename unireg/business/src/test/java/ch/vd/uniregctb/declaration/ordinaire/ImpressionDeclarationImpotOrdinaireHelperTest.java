@@ -16,12 +16,16 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlError;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -817,5 +821,47 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		assertNotNull(di.getEnfants());
 		assertEquals(2, di.getEnfants().getEnfantArray().length);
+	}
+
+		@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testImpressionAnnexe230() throws Exception {
+		loadDatabase("ImpressionDeclarationAnnexe_230.xml");
+		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
+		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration), buildDefaultAnnexes(declaration), false);
+		validate(di);
+		assertEquals(1, di.getAnnexes().getAnnexe230());
+
+
+	}
+
+
+	private static void validate(XmlObject document) {
+
+		// Endroit où on va récupérer les éventuelles erreurs
+		final XmlOptions validateOptions = new XmlOptions();
+		final List<XmlError> errorList = new ArrayList<XmlError>();
+		validateOptions.setErrorListener(errorList);
+
+		// C'est parti pour la validation !
+		final boolean isValid = document.validate(validateOptions);
+
+		// si le document n'est pas valide, on va logguer pour avoir de quoi identifier et corriger le bug ensuite
+		if (!isValid) {
+			final StringBuilder b = new StringBuilder();
+			b.append("--------------------------------------------------\n");
+			b.append("--------------------------------------------------\n");
+			b.append("Erreur de validation du message éditique en sortie\n");
+			b.append("--------------------------------------------------\n");
+			b.append("Message :\n").append(document).append('\n');
+			b.append("--------------------------------------------------\n");
+			for (XmlError error : errorList) {
+				b.append("Erreur : ").append(error.getMessage()).append('\n');
+				b.append("Localisation de l'erreur : ").append(error.getCursorLocation().xmlText()).append('\n');
+				b.append("--------------------------------------------------\n");
+			}
+			b.append("--------------------------------------------------\n");
+			Assert.fail(b.toString());
+		}
 	}
 }
