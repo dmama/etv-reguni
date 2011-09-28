@@ -224,6 +224,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>Si renseigné, reset le compteur de lignes interne à la valeur spécifiée et ne retourne rien</description>
 		</attribute>
+		<attribute>
+			<name>frozen</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Si renseigné (ignoré si 'reset' est renseigné), permet d'indiquer si le prochain appel retournera une valeur différente</description>
+		</attribute>
 	</tag>
 
 	<tag>

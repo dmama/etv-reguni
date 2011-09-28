@@ -50,7 +50,8 @@
         </td>
     </tr>
 
-	<tr id="choixDestinataireEnvoi" class="<unireg:nextRowClass/>" >
+    <%-- On gèle la classe de la ligne car cette ligne et les deux lignes du dessous sont mutuellement exclusives --%>
+	<tr id="choixDestinataireEnvoi" class="<unireg:nextRowClass frozen='true'/>" >
         <td><fmt:message key="label.envoi.colladm.destinataire"/>&nbsp;:</td>
         <td>
             <form:input path="collAdmDestinataire" id="collAdmDestinataire" />
@@ -83,10 +84,8 @@
         </td>
 	</tr>
 
-    <!-- On ne fait pas cet incrément du numéro de ligne car cette ligne et la ligne
-         du dessus sont mutuellement exclusives (ou pas là du tout -->
-
-	<tr id="ligneVide" class="<unireg:nextRowClass/>">
+    <%-- On gèle la classe de la ligne car cette ligne et les deux lignes immédiatement dessus et dessous sont mutuellement exclusives --%>
+	<tr id="ligneVide" class="<unireg:nextRowClass frozen='true'/>">
 	    <td colspan=4>&nbsp;</td>
 	</tr>
 

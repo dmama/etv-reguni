@@ -16,6 +16,8 @@ public class JspTagNextRowClass extends BodyTagSupport {
 	private static final ThreadLocal<MutableInt> count = new ThreadLocal<MutableInt>();
 	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<Boolean>();
 
+	private boolean frozen = false;
+
 	@Override
 	public int doStartTag() throws JspTagException {
 
@@ -32,7 +34,9 @@ public class JspTagNextRowClass extends BodyTagSupport {
 			else {
 				out.print("odd");
 			}
-			incCount();
+			if (!frozen) {
+				incCount();
+			}
 			// Skips the body.
 			return SKIP_BODY;
 		}
@@ -72,5 +76,10 @@ public class JspTagNextRowClass extends BodyTagSupport {
 
 	private boolean justReset() {
 		return justReset.get() != null && justReset.get();
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setFrozen(boolean frozen) {
+		this.frozen = frozen;
 	}
 }
