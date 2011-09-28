@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.mouvement;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -142,6 +143,79 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 		{
 			final List<ProtoBordereauMouvementDossier> bordereaux = dao.getAllProtoBordereaux(12);
 			Assert.assertNull(bordereaux);
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRechercheSeulementDerniersMouvements() throws Exception {
+
+		final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+		final CollectiviteAdministrative oid1 = addCollectiviteAdministrative(1);
+		final CollectiviteAdministrative oid5 = addCollectiviteAdministrative(5);
+
+		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
+		criteria.setSeulementDerniersMouvements(true);
+		criteria.setInclureMouvementsAnnules(true);
+		criteria.setNoCtb(pp.getNumero());
+		criteria.setEtatsMouvement(Arrays.asList(EtatMouvementDossier.A_TRAITER, EtatMouvementDossier.A_ENVOYER, EtatMouvementDossier.TRAITE));
+
+		// les mouvements annulés ne doivent pas apparaître quand on demande seulement les derniers mouvements (même si explicitement demandés)
+		final MouvementDossier mvtAnnule = addMouvementDossierArchives(pp, oid5, EtatMouvementDossier.TRAITE);
+		mvtAnnule.setAnnule(true);
+		mvtAnnule.setDateMouvement(RegDate.get());
+
+		{
+			final List<MouvementDossier> trouves = dao.find(criteria, null);
+			Assert.assertEquals(0, trouves.size());
+		}
+
+		// les mouvement non-traités ne doivent pas apparaître non-plus (même s'ils sont demandés)
+		final MouvementDossier mvtNonTraite = addMouvementDossierClassementGeneral(pp, oid5, EtatMouvementDossier.A_TRAITER);
+		mvtNonTraite.setDateMouvement(RegDate.get().getOneDayBefore());
+
+		{
+			final List<MouvementDossier> trouves = dao.find(criteria, null);
+			Assert.assertEquals(0, trouves.size());
+		}
+
+		// c'est le dernier mouvement traité, donc il doit apparaître
+		final MouvementDossier mvtTraiteThreeDays = addMouvementDossierEnvoi(pp, oid1, oid5, EtatMouvementDossier.TRAITE);
+		mvtTraiteThreeDays.setDateMouvement(RegDate.get().addDays(-3));
+
+		{
+			final List<MouvementDossier> trouves = dao.find(criteria, null);
+			Assert.assertEquals(1, trouves.size());
+
+			final MouvementDossier trouve = trouves.get(0);
+			Assert.assertEquals(mvtTraiteThreeDays.getId(), trouve.getId());
+		}
+
+		// il devient maintenant le dernier mouvement traité, donc il doit apparaître
+		final MouvementDossier mvtTraiteTwoDays = addMouvementDossierEnvoi(pp, oid1, oid5, EtatMouvementDossier.TRAITE);
+		mvtTraiteTwoDays.setDateMouvement(RegDate.get().addDays(-2));
+
+		{
+			final List<MouvementDossier> trouves = dao.find(criteria, null);
+			Assert.assertEquals(1, trouves.size());
+
+			final MouvementDossier trouve = trouves.get(0);
+			Assert.assertEquals(mvtTraiteTwoDays.getId(), trouve.getId());
+		}
+
+		// on attend un peu pour être sur que sur une même date de mouvement, le logmdate de celui qui vient est bien après le logmdate du précédent
+		Thread.sleep(100);
+
+		// il devient maintenant le dernier mouvement traité, donc il doit apparaître
+		final MouvementDossier mvtTraiteTwoDaysALittleLater = addMouvementDossierEnvoi(pp, oid1, oid5, EtatMouvementDossier.TRAITE);
+		mvtTraiteTwoDaysALittleLater.setDateMouvement(RegDate.get().addDays(-2));
+
+		{
+			final List<MouvementDossier> trouves = dao.find(criteria, null);
+			Assert.assertEquals(1, trouves.size());
+
+			final MouvementDossier trouve = trouves.get(0);
+			Assert.assertEquals(mvtTraiteTwoDaysALittleLater.getId(), trouve.getId());
 		}
 	}
 }

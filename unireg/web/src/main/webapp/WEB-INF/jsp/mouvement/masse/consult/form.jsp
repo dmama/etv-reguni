@@ -120,6 +120,23 @@
 	    <td id="localisationNonUtilisateur" width="50%" colspan=2>&nbsp;</td>
     </tr>
 
+	<tr class="<unireg:nextRowClass/>" >
+	    <td><fmt:message key="label.inclure.mouvements.seulement.derniers"/>&nbsp;:</td>
+        <td width="25%"><form:checkbox id="seulementDernierMouvement" path="seulementDernierMouvementDossiers" onchange="onChangeChoixSeulementDerniersMouvements(this)"/></td>
+        <td colspan=2>&nbsp;</td>
+	</tr>
+
+    <%-- On gèle la classe de la ligne car cette ligne et la ligne du dessous sont mutuellement exclusives --%>
+	<tr id="choixMouvementsAnnules" class="<unireg:nextRowClass frozen='true'/>" >
+	    <td><fmt:message key="label.inclure.mouvements.annules"/>&nbsp;:</td>
+        <td width="25%"><form:checkbox path="mouvementsAnnulesInclus"/></td>
+        <td colspan=2>&nbsp;</td>
+    </tr>
+
+    <tr id="ligneVide2" class="<unireg:nextRowClass/>" >
+    	<td colspan=4>&nbsp;</td>
+    </tr>
+
     <script type="text/javascript">
         function fixDisplay(idElement, visible) {
             var elt = document.getElementById(idElement);
@@ -157,15 +174,15 @@
             fixDisplay("localisationNonUtilisateur", !showUtilisateur);
         }
 
+        function onChangeChoixSeulementDerniersMouvements(box) {
+        	fixDisplay("choixMouvementsAnnules", !box.checked);
+        	fixDisplay("ligneVide2", box.checked);
+       	}
+
         onChangeTypeMouvement(document.getElementById("typeMouvement"));
         onChangeLocalisationReception(document.getElementById("localisationReception"));
+        onChangeChoixSeulementDerniersMouvements(document.getElementById("seulementDernierMouvement"));
     </script>
-
-	<tr class="<unireg:nextRowClass/>" >
-	    <td><fmt:message key="label.inclure.mouvements.annules"/>&nbsp;:</td>
-        <td width="25%"><form:checkbox path="mouvementsAnnulesInclus"/></td>
-        <td colspan=2>&nbsp;<td>
-    </tr>
 
 </table>
 

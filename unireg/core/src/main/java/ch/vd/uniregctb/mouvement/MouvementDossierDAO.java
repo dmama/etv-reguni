@@ -2,6 +2,8 @@ package ch.vd.uniregctb.mouvement;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
@@ -24,7 +26,7 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @param paramPagination si donné, pagination a utiliser, sinon tous les résultats
 	 * @return Liste de mouvements trouvés
 	 */
-	List<MouvementDossier> find(MouvementDossierCriteria criteria, ParamPagination paramPagination);
+	List<MouvementDossier> find(MouvementDossierCriteria criteria, @Nullable ParamPagination paramPagination);
 
 	/**
 	 * Recherche les ID de tous les mouvements de dossiers qui correspondent aux critères donnés
@@ -32,7 +34,7 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @param sorting indication du tri à utiliser
 	 * @return liste des ID des mouvements trouvés
 	 */
-	List<Long> findIds(MouvementDossierCriteria criteria, ParamSorting sorting);
+	List<Long> findIds(MouvementDossierCriteria criteria, @Nullable ParamSorting sorting);
 
 	/**
 	 * Renvoie le nombre de mouvements de dossiers qui correspondent aux critères donnés
@@ -54,5 +56,5 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @param noCollAdmInitiatrice si non-null, ne renvoie que les mouvements initiés par la collectivité administrative donnée
 	 * @return liste des combinaisons trouvées, ou null si aucune
 	 */
-	List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(Integer noCollAdmInitiatrice);
+	List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(@Nullable Integer noCollAdmInitiatrice);
 }

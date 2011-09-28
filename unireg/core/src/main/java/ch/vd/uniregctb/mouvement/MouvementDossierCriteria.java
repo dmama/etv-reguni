@@ -54,6 +54,11 @@ public class MouvementDossierCriteria {
 	private Localisation localisation;
 
 	/**
+	 * Indique si on doit filtrer sur les derniers mouvements de chaque dossier (pour avoir l'emplacement actuel) (<code>true</code>) ou si tout l'historique doit être recherché (<code>false</code>)
+	 */
+	private boolean seulementDerniersMouvements;
+
+	/**
 	 * Indique si oui ou non les mouvements annulés (au sens du flag, pas de l'état) doivent être inclus dans le résultat de la recherche
 	 */
 	private boolean isInclureMouvementsAnnules;
@@ -128,6 +133,14 @@ public class MouvementDossierCriteria {
 
 	public void setInclureMouvementsAnnules(boolean inclureMouvementsAnnules) {
 		isInclureMouvementsAnnules = inclureMouvementsAnnules;
+	}
+
+	public boolean isSeulementDerniersMouvements() {
+		return seulementDerniersMouvements;
+	}
+
+	public void setSeulementDerniersMouvements(boolean seulementDerniersMouvements) {
+		this.seulementDerniersMouvements = seulementDerniersMouvements;
 	}
 
 	public Long getIdCollAdministrativeInitiatrice() {

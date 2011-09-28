@@ -5,14 +5,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
@@ -58,7 +62,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	 * @param params Paramètres à remplir
 	 * @return Requête HQL
 	 */
-	private static String buildFindHql(MouvementDossierCriteria criteria, boolean idsOnly, ParamSorting sorting, List<Object> params) {
+	private static String buildFindHql(MouvementDossierCriteria criteria, boolean idsOnly, @Nullable ParamSorting sorting, List<Object> params) {
 		final StringBuilder b = new StringBuilder("SELECT mvt");
 		if (idsOnly) {
 			b.append(".id");
@@ -76,7 +80,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		return b.toString();
 	}
 
-	private static void buildOrderByClause(ParamSorting sorting, StringBuilder b) {
+	private static void buildOrderByClause(@Nullable ParamSorting sorting, StringBuilder b) {
 		if (sorting != null && !StringUtils.isBlank(sorting.getField())) {
 			b.append(" ORDER BY mvt.").append(sorting.getField());
 			if (!sorting.isAscending()) {
@@ -115,6 +119,33 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 		// collectivité administrative initiatrice (filtrage OID)
 		buildWhereClausePartieCollectiviteAdministrativeInitiatrice(criteria, b, params);
+
+		// filtre sur l'historique des mouvements pour chaque dossier
+		buildWhereClausePartieEtatActuelSeulement(criteria, b, params);
+	}
+
+	private static void buildWhereClausePartieEtatActuelSeulement(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+		if (criteria.isSeulementDerniersMouvements()) {
+			b.append(" AND NOT EXISTS (");
+			{
+				b.append("SELECT other.id FROM MouvementDossier other WHERE other.annulationDate IS NULL AND other.contribuable.numero = mvt.contribuable.numero AND other.etat IN (");
+
+				// tous les états dits "traités"
+				final List<EtatMouvementDossier> etatsTraites = EtatMouvementDossier.getEtatsTraites();
+				final Iterator<EtatMouvementDossier> iterator = etatsTraites.iterator();
+				while (iterator.hasNext()) {
+					final EtatMouvementDossier etat = iterator.next();
+					b.append('?');
+					params.add(etat.name());
+					if (iterator.hasNext()) {
+						b.append(',');
+					}
+				}
+
+				b.append(") AND (other.dateMouvement > mvt.dateMouvement OR (other.dateMouvement = mvt.dateMouvement AND other.logModifDate > mvt.logModifDate))");
+			}
+			b.append(")");
+		}
 	}
 
 	private static void buildWhereClausePartieCollectiviteAdministrativeInitiatrice(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
@@ -183,16 +214,39 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 	@SuppressWarnings({"unchecked"})
 	private static void buildWhereClausePartieEtatMouvement(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
-		final Collection<EtatMouvementDossier> etatsMouvement = criteria.getEtatsMouvement();
-		if (etatsMouvement != null) {
-			if (etatsMouvement.size() == 0) {
+
+		final Collection<EtatMouvementDossier> etatsDemandes;
+		if (criteria.isSeulementDerniersMouvements()) {
+			// si on doit filtrer sur les derniers mouvements seulement, seuls les mouvements traités doivent revenir
+			if (criteria.getEtatsMouvement() != null && criteria.getEtatsMouvement().size() > 0) {
+				final Set<EtatMouvementDossier> temp = new HashSet<EtatMouvementDossier>(criteria.getEtatsMouvement().size());
+				for (EtatMouvementDossier etat : criteria.getEtatsMouvement()) {
+					if (etat.isTraite()) {
+						temp.add(etat);
+					}
+				}
+				etatsDemandes = temp;
+			}
+			else if (criteria.getEtatsMouvement() == null) {
+			    etatsDemandes = EtatMouvementDossier.getEtatsTraites();
+			}
+			else {
+				etatsDemandes = criteria.getEtatsMouvement();
+			}
+		}
+		else {
+			etatsDemandes = criteria.getEtatsMouvement();
+		}
+
+		if (etatsDemandes != null) {
+			if (etatsDemandes.size() == 0) {
 				// aucun etat!
 				b.append(" AND 1=0");
 			}
-			else if (etatsMouvement.size() > 1) {
+			else if (etatsDemandes.size() > 1) {
 				b.append(" AND mvt.etat in (");
 				boolean first = true;
-				for (EtatMouvementDossier etat : etatsMouvement) {
+				for (EtatMouvementDossier etat : etatsDemandes) {
 					if (first) {
 						b.append("?");
 						first = false;
@@ -206,13 +260,13 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 			}
 			else {
 				b.append(" AND mvt.etat = ?");
-				params.add(etatsMouvement.iterator().next().name());
+				params.add(etatsDemandes.iterator().next().name());
 			}
 		}
 	}
 
 	private static void buildWhereClausePartieAnnule(MouvementDossierCriteria criteria, StringBuilder b) {
-		if (!criteria.isInclureMouvementsAnnules()) {
+		if (!criteria.isInclureMouvementsAnnules() || criteria.isSeulementDerniersMouvements()) {
 			b.append(" AND mvt.annulationDate IS NULL");
 		}
 	}
@@ -262,7 +316,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<MouvementDossier> find(MouvementDossierCriteria criteria, final ParamPagination paramPagination) {
+	public List<MouvementDossier> find(MouvementDossierCriteria criteria, @Nullable final ParamPagination paramPagination) {
 
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
@@ -287,7 +341,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<Long> findIds(MouvementDossierCriteria criteria, ParamSorting sorting) {
+	public List<Long> findIds(MouvementDossierCriteria criteria, @Nullable ParamSorting sorting) {
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildFindHql(criteria, true, sorting, params);
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {

@@ -43,7 +43,7 @@ public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 		nh.setNom(nom);
 		nh.setDateNaissance(dateNaissance);
 		nh.setSexe(sexe);
-		return (PersonnePhysique) hibernateTemplate.merge(nh);
+		return hibernateTemplate.merge(nh);
 	}
 
 	protected ReceptionDossierArchives addMouvementDossierArchives(Contribuable ctb, CollectiviteAdministrative oid, EtatMouvementDossier etat) {
@@ -51,7 +51,7 @@ public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 		mvt.setContribuable(ctb);
 		mvt.setCollectiviteAdministrativeReceptrice(oid);
 		mvt.setEtat(etat);
-		return (ReceptionDossierArchives) hibernateTemplate.merge(mvt);
+		return hibernateTemplate.merge(mvt);
 	}
 
 	protected MouvementDossier addMouvementDossierClassementGeneral(Contribuable ctb, CollectiviteAdministrative oid, EtatMouvementDossier etat) {
@@ -59,7 +59,7 @@ public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 		mvt.setContribuable(ctb);
 		mvt.setCollectiviteAdministrativeReceptrice(oid);
 		mvt.setEtat(etat);
-		return (MouvementDossier) hibernateTemplate.merge(mvt);
+		return hibernateTemplate.merge(mvt);
 	}
 
 	protected EnvoiDossierVersCollectiviteAdministrative addMouvementDossierEnvoi(Contribuable ctb, CollectiviteAdministrative oidDepart, CollectiviteAdministrative oidArrivee, EtatMouvementDossier etat) {
@@ -67,7 +67,7 @@ public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 		mvt.setContribuable(ctb);
 		mvt.setCollectiviteAdministrativeEmettrice(oidDepart);
 		mvt.setEtat(etat);
-		return (EnvoiDossierVersCollectiviteAdministrative) hibernateTemplate.merge(mvt);
+		return hibernateTemplate.merge(mvt);
 	}
-	
+
 }

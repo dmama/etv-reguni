@@ -70,6 +70,11 @@ public abstract class MouvementMasseCriteriaView {
 	private boolean mouvementsAnnulesInclus;
 
 	/**
+	 * Si oui ou non il faut se limiter au dernier mouvement traité de chaque dossier
+	 */
+	private boolean seulementDernierMouvementDossiers;
+
+	/**
 	 * Resultats de la recherche (par page)
 	 */
 	private List<MouvementDetailView> results;
@@ -179,6 +184,14 @@ public abstract class MouvementMasseCriteriaView {
 
 	public void setMouvementsAnnulesInclus(boolean mouvementsAnnulesInclus) {
 		this.mouvementsAnnulesInclus = mouvementsAnnulesInclus;
+	}
+
+	public boolean isSeulementDernierMouvementDossiers() {
+		return seulementDernierMouvementDossiers;
+	}
+
+	public void setSeulementDernierMouvementDossiers(boolean seulementDernierMouvementDossiers) {
+		this.seulementDernierMouvementDossiers = seulementDernierMouvementDossiers;
 	}
 
 	public String getNoCtbFormatte() {

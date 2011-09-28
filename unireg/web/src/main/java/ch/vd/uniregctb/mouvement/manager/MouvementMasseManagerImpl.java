@@ -119,6 +119,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		criteria.setNoCtb(view.getNoCtb());
 		criteria.setRangeDateMouvement(range);
 		criteria.setInclureMouvementsAnnules(view.isMouvementsAnnulesInclus());
+		criteria.setSeulementDerniersMouvements(view.isSeulementDernierMouvementDossiers());
 
 		final TypeMouvement typeMouvement = view.getTypeMouvement();
 		if (typeMouvement == TypeMouvement.EnvoiDossier) {
