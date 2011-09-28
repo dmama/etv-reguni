@@ -439,8 +439,44 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		public String getExtractionDescription() {
 			final StringBuilder b = new StringBuilder();
 			b.append("Extraction des mouvements de dossiers");
+			if (criteria.isInclureMouvementsAnnules()) {
+				b.append(" (y compris les mouvements annulés)");
+			}
 			if (criteria.getTypeMouvement() != null) {
-				b.append(" de type ").append(criteria.getTypeMouvement() == TypeMouvement.EnvoiDossier ? "'envoi'" : "'réception'");
+				b.append(" de type ");
+
+				switch (criteria.getTypeMouvement()) {
+					case EnvoiDossier:
+						b.append("'envoi'");
+						if (criteria.getNoIndividuDestinataire() != null) {
+							b.append(" vers le collaborateur ").append(criteria.getNoIndividuDestinataire());
+						}
+						break;
+					case ReceptionDossier:
+						if (criteria.getLocalisation() != null) {
+							switch (criteria.getLocalisation()) {
+								case ARCHIVES:
+									b.append("'réception aux archives'");
+									break;
+								case CLASSEMENT_GENERAL:
+									b.append("'réception pour classement général'");
+									break;
+								case CLASSEMENT_INDEPENDANTS:
+									b.append("'réception pour classement des indépendants'");
+									break;
+								case PERSONNE:
+									b.append("'réception personnelle'");
+									if (criteria.getNoIndividuRecepteur() != null) {
+										b.append(" par le collaborateur ").append(criteria.getNoIndividuRecepteur());
+									}
+									break;
+							}
+						}
+						else {
+							b.append("'réception'");
+						}
+						break;
+				}
 			}
 			if (criteria.getNoCtb() != null) {
 				b.append(" du contribuable ").append(FormatNumeroHelper.numeroCTBToDisplay(criteria.getNoCtb()));
