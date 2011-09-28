@@ -83,6 +83,7 @@ public class BatchRunnerClient {
 		final JobDefParam pp = new JobDefParam();
 		pp.setName(name);
 
+		String runningMessage = null;
 		JobStatut status = JobStatut.JOB_READY;
 		while (isRunning(status) || JobStatut.JOB_READY == status) {
 			try {
@@ -92,7 +93,8 @@ public class BatchRunnerClient {
 				throw new RuntimeException(e);
 			}
 			try {
-				JobDefinition def = service.getJobDefinition(pp);
+				final JobDefinition def = service.getJobDefinition(pp);
+				runningMessage = def.getRunningMessage();
 				status = def.getStatut();
 			}
 			catch (RuntimeException e) {
@@ -108,7 +110,15 @@ public class BatchRunnerClient {
 		}
 
 		if (JobStatut.JOB_EXCEPTION == status) {
-			throw new BatchWSException("Le job a lancé une exception - consulter le log du serveur");
+			// on essaie d'abord d'aller chercher le message de l'exception (qui se trouve dans le "runningMessage" du dernier run du batch)
+			final String msg;
+			if (StringUtils.isNotBlank(runningMessage)) {
+				msg = String.format("%s (détails dans le log du serveur)", runningMessage);
+			}
+			else {
+				msg = "Le job a lancé une exception - consulter le log du serveur";
+			}
+			throw new BatchWSException(msg);
 		}
 	}
 
