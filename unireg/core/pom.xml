@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<!-- POM for Core -->
 
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-xmlbeans</artifactId>
-			<version>1.31</version>
+			<version>1.31.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
@@ -47,7 +47,8 @@
 			<groupId>oracle.jdbc</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>${oracle.version}</version>
-			<scope>provided</scope> <!-- nécessaire à la classe UniregXAMCF -->
+			<scope>provided</scope>
+			<!-- nécessaire à la classe UniregXAMCF -->
 		</dependency>
 		<dependency>
 			<groupId>org.tranql</groupId>
@@ -63,7 +64,7 @@
 			<groupId>org.jencks</groupId>
 			<artifactId>jencks</artifactId>
 			<version>${jencks.version}</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-ra</artifactId>
@@ -119,9 +120,9 @@
 			<version>1.8.0.7</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
-	
+
 		<plugins>
 			<!-- Ce plugin permet de packager les classes de src/test/java dans leur propre jar de testing -->
 			<plugin>
@@ -137,7 +138,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-	
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
