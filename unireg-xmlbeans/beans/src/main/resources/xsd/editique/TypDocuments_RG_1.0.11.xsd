@@ -31,7 +31,7 @@ New -> DIVDTAX_0.0.4.xsd-->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:include schemaLocation="DonneesTechniques_0.0.7.xsd"/>
-	<xs:include schemaLocation="DI_0.0.11.xsd"/>
+	<xs:include schemaLocation="DI_0.0.12.xsd"/>
 	<xs:include schemaLocation="DIVDTAX_0.0.10.xsd"/>
 	<xs:include schemaLocation="DIHC_0.0.11.xsd"/>
 	<xs:include schemaLocation="DIDP_0.1.8.xsd"/>
