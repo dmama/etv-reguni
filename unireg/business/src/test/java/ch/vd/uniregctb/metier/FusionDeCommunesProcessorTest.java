@@ -35,6 +35,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -107,7 +108,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
 		assertNotNull(error);
-		assertEquals(FusionDeCommunesResults.ErreurType.UNKNOWN_EXCEPTION, error.raison);
+		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -633,5 +634,68 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertEquals(0, rapport.tiersIgnores.size());
 		assertEquals(1, rapport.tiersTraites.size());
 		assertEmpty(rapport.tiersEnErrors);
+	}
+
+	@Test
+	public void testControleCantonsDeCommunes() throws Exception {
+		// Communes vaudoises
+		{
+			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Aubonne.getNoOFSEtendu(), MockCommune.Bex.getNoOFSEtendu()));
+			final int nouvelleCommune = MockCommune.Lausanne.getNoOFSEtendu();
+			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
+			assertNotNull(results);
+			assertEquals(0, results.getNbTiersTotal());
+		}
+
+		// Communes neuchâteloises
+		{
+			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Neuchatel.getNoOFSEtendu(), MockCommune.Peseux.getNoOFSEtendu()));
+			final int nouvelleCommune = MockCommune.Neuchatel.getNoOFSEtendu();
+			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
+			assertNotNull(results);
+			assertEquals(0, results.getNbTiersTotal());
+		}
+
+		// Communes non-vaudoises réparties sur plusieurs cantons
+		try {
+			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Neuchatel.getNoOFSEtendu(), MockCommune.Bern.getNoOFSEtendu()));
+			final int nouvelleCommune = MockCommune.Bern.getNoOFSEtendu();
+			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
+			fail("Une exception aurait dû être levée, puisque Berne n'a pas encore annexé Neuchâtel...");
+		}
+		catch (FusionDeCommunesProcessor.MauvaiseCommuneException e) {
+			final String expectedMessage = String.format("L'ancienne commune %s (%d) est dans le canton %s, alors que la nouvelle commune %s (%d) est dans le canton %s",
+														 MockCommune.Neuchatel.getNomMinuscule(), MockCommune.Neuchatel.getNoOFSEtendu(), MockCommune.Neuchatel.getSigleCanton(),
+														 MockCommune.Bern.getNomMinuscule(), MockCommune.Bern.getNoOFSEtendu(), MockCommune.Bern.getSigleCanton());
+			assertEquals(expectedMessage, e.getMessage());
+		}
+
+		// Commune vaudoise annexée par un autre canton
+		try {
+			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Prilly.getNoOFSEtendu(), MockCommune.Bern.getNoOFSEtendu()));
+			final int nouvelleCommune = MockCommune.Bern.getNoOFSEtendu();
+			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
+			fail("Une exception aurait dû être levée, puisque Berne n'a pas encore annexé Prilly...");
+		}
+		catch (FusionDeCommunesProcessor.MauvaiseCommuneException e) {
+			final String expectedMessage = String.format("L'ancienne commune %s (%d) est dans le canton %s, alors que la nouvelle commune %s (%d) est dans le canton %s",
+			                                             MockCommune.Prilly.getNomMinuscule(), MockCommune.Prilly.getNoOFSEtendu(), MockCommune.Prilly.getSigleCanton(),
+			                                             MockCommune.Bern.getNomMinuscule(), MockCommune.Bern.getNoOFSEtendu(), MockCommune.Bern.getSigleCanton());
+			assertEquals(expectedMessage, e.getMessage());
+		}
+
+		// Commune hors-canton annexée par Vaud
+		try {
+			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Prilly.getNoOFSEtendu(), MockCommune.Bern.getNoOFSEtendu()));
+			final int nouvelleCommune = MockCommune.Lausanne.getNoOFSEtendu();
+			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
+			fail("Une exception aurait dû être levée, puisque Vaud n'a pas encore annexé Berne...");
+		}
+		catch (FusionDeCommunesProcessor.MauvaiseCommuneException e) {
+			final String expectedMessage = String.format("L'ancienne commune %s (%d) est dans le canton %s, alors que la nouvelle commune %s (%d) est dans le canton %s",
+			                                             MockCommune.Bern.getNomMinuscule(), MockCommune.Bern.getNoOFSEtendu(), MockCommune.Bern.getSigleCanton(),
+			                                             MockCommune.Lausanne.getNomMinuscule(), MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Lausanne.getSigleCanton());
+			assertEquals(expectedMessage, e.getMessage());
+		}
 	}
 }

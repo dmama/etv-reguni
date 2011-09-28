@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,9 +19,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -91,7 +95,7 @@ public class FusionDeCommunesProcessor {
 	 * @param status         un status manager
 	 * @return les résultats détaillés du traitement
 	 */
-	public FusionDeCommunesResults run(final Set<Integer> anciensNoOfs, final int nouveauNoOfs, final RegDate dateFusion, final RegDate dateTraitement, StatusManager status) {
+	public FusionDeCommunesResults run(final Set<Integer> anciensNoOfs, final int nouveauNoOfs, final RegDate dateFusion, final RegDate dateTraitement, @Nullable StatusManager status) {
 
 		if (status == null) {
 			status = new LoggingStatusManager(LOGGER);
@@ -152,47 +156,62 @@ public class FusionDeCommunesProcessor {
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		Assert.notNull(tiers);
 
-		boolean forIgnore = false;
-		boolean forTraite = false;
+		try {
 
-		final List<ForFiscal> fors = tiers.getForsFiscauxSorted();
-		for (ForFiscal f : fors) {
+			boolean forIgnore = false;
+			boolean forTraite = false;
 
-			if (f.isAnnule()) {
-				continue;
+			final List<ForFiscal> fors = tiers.getForsFiscauxSorted();
+			for (ForFiscal f : fors) {
+
+				if (f.isAnnule()) {
+					continue;
+				}
+
+				// On ne traite que les fors fiscaux correspondant aux communes fusionnées
+				if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || !anciensNoOfs.contains(f.getNumeroOfsAutoriteFiscale())) {
+					continue;
+				}
+
+				// On ne traite que les fors fiscaux valides après la date de la fusion
+				if (f.getDateFin() != null && f.getDateFin().isBefore(dateFusion)) {
+					continue;
+				}
+
+				// On ignore les fors qui sont déjà sur la commune résultant de la fusion
+				if (f.getNumeroOfsAutoriteFiscale() == nouveauNoOfs) {
+					forIgnore = true;
+					continue;
+				}
+
+				final Strategy strat = strategies.get(f.getClass());
+				if (strat == null) {
+					throw new IllegalArgumentException("Type de for fiscal inconnu : " + f.getClass().getSimpleName());
+				}
+
+				//noinspection unchecked
+				strat.traite(f, nouveauNoOfs, dateFusion);
+				forTraite = true;
 			}
 
-			// On ne traite que les fors fiscaux correspondant aux communes fusionnées
-			if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || !anciensNoOfs.contains(f.getNumeroOfsAutoriteFiscale())) {
-				continue;
+			if (forTraite) {
+				rapport.tiersTraites.add(id);
+			}
+			else if (forIgnore) {
+				rapport.addTiersIgnoreDejaSurCommuneResultante(tiers);
 			}
 
-			// On ne traite que les fors fiscaux valides après la date de la fusion
-			if (f.getDateFin() != null && f.getDateFin().isBefore(dateFusion)) {
-				continue;
-			}
-
-			// On ignore les fors qui sont déjà sur la commune résultant de la fusion
-			if (f.getNumeroOfsAutoriteFiscale() == nouveauNoOfs) {
-				forIgnore = true;
-				continue;
-			}
-
-			final Strategy strat = strategies.get(f.getClass());
-			if (strat == null) {
-				throw new IllegalArgumentException("Type de for fiscal inconnu : " + f.getClass().getSimpleName());
-			}
-
-			//noinspection unchecked
-			strat.traite(f, nouveauNoOfs, dateFusion);
-			forTraite = true;
 		}
-
-		if (forTraite) {
-			rapport.tiersTraites.add(id);
-		}
-		else if (forIgnore) {
-			rapport.addTiersIgnoreDejaSurCommuneResultante(tiers);
+		catch (RuntimeException e) {
+			// on essaie de détecter les erreurs qui pourraient être dues à un tiers qui ne valide pas
+			final ValidationResults validationResults = validationService.validate(tiers);
+			if (validationResults.hasErrors()) {
+				LOGGER.error(String.format("Exception lancée pendant le traitement du tiers %d, qui ne valide pas", tiers.getNumero()), e);
+				throw new ValidationException(tiers, validationResults);
+			}
+			else {
+				throw e;
+			}
 		}
 	}
 
@@ -282,21 +301,40 @@ public class FusionDeCommunesProcessor {
 		}
 	}
 
+	protected static class MauvaiseCommuneException extends RuntimeException {
+		public MauvaiseCommuneException(String message) {
+			super(message);
+		}
+	}
+
 	/**
 	 * Vérifie que les numéros Ofs spécifiés existent dans le host et qu'Unireg les voit bien ([UNIREG-2056]).
 	 *
 	 * @param anciensNoOfs les numéros Ofs des anciennes communes
 	 * @param nouveauNoOfs le numméro Ofs de la nouvelle commune
 	 * @param dateFusion   la date de fusion
+	 * @throws MauvaiseCommuneException si l'une des communes n'existe pas, ou si elles ne sont pas toutes dans le même canton
 	 */
 	private void checkNoOfs(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
 		try {
-			if (serviceInfra.getCommuneByNumeroOfsEtendu(nouveauNoOfs, dateFusion) == null) {
-				throw new RuntimeException("La commune avec le numéro Ofs [" + nouveauNoOfs + "] n'existe pas.");
+			final Commune nouvelleCommune = serviceInfra.getCommuneByNumeroOfsEtendu(nouveauNoOfs, dateFusion);
+			if (nouvelleCommune == null) {
+				throw new MauvaiseCommuneException(String.format("La commune avec le numéro OFS %d n'existe pas.", nouveauNoOfs));
 			}
+			final String nouveauCanton = nouvelleCommune.getSigleCanton();
+			if (nouveauCanton == null) {
+				throw new MauvaiseCommuneException(String.format("La commune %s (%d) semble n'être rattachée à aucun canton suisse.", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()));
+			}
+
 			for (Integer noOfs : anciensNoOfs) {
-				if (serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, dateFusion.getOneDayBefore()) == null) {
-					throw new RuntimeException("La commune avec le numéro Ofs [" + noOfs + "] n'existe pas.");
+				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, dateFusion.getOneDayBefore());
+				if (commune == null) {
+					throw new MauvaiseCommuneException(String.format("La commune avec le numéro OFS %d n'existe pas.", noOfs));
+				}
+				final String canton = commune.getSigleCanton();
+				if (!nouveauCanton.equals(canton)) {
+					throw new MauvaiseCommuneException(String.format("L'ancienne commune %s (%d) est dans le canton %s, alors que la nouvelle commune %s (%d) est dans le canton %s",
+															 commune.getNomMinuscule(), noOfs, canton, nouvelleCommune.getNomMinuscule(), nouveauNoOfs, nouveauCanton));
 				}
 			}
 		}
