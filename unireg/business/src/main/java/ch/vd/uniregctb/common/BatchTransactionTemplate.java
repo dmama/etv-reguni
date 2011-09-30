@@ -184,7 +184,9 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 			}
 
 			if (statusManager != null && statusManager.interrupted()) {
-				LOGGER.debug("le batch a été interrompu.");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("le batch a été interrompu.");
+				}
 				break;
 			}
 
@@ -192,11 +194,12 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 				LOGGER.debug("première exécution du batch");
 			}
 
-			// exécute le batch en un bloc
-			final ExecuteInTransactionResult ret = executeInTransaction(action, batch, reprise, rapportFinal);
+			// exécute le batch en un bloc (optimisation : il ne sert à rien de prévoir une reprise si le batch ne contient qu'un seul élément)
+			final boolean batchSeraReprisSiErreur = reprise && batch.size() > 1;
+			final ExecuteInTransactionResult ret = executeInTransaction(action, batch, batchSeraReprisSiErreur, rapportFinal);
 			processNextBatch = ret.processNextBatch;
 
-			if (!ret.committed && reprise) {
+			if (!ret.committed && batchSeraReprisSiErreur) {
 
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("reprise du batch");
