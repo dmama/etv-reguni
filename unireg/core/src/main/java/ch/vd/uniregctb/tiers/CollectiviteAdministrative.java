@@ -35,6 +35,11 @@ public class CollectiviteAdministrative extends Contribuable {
 	 */
 	private Integer numeroCollectiviteAdministrative;
 
+	private Long identifiantDistrictFiscal;
+
+	private Long identifiantRegionFiscale;
+
+
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -77,6 +82,24 @@ public class CollectiviteAdministrative extends Contribuable {
 	@Override
 	public TypeTiers getType() {
 		return TypeTiers.COLLECTIVITE_ADMINISTRATIVE;
+	}
+
+	@Column(name = "DISTRICT_FISCAL_ID", nullable = true)
+	public Long getIdentifiantDistrictFiscal() {
+		return identifiantDistrictFiscal;
+	}
+
+	public void setIdentifiantDistrictFiscal(Long identifiantDistrictFiscal) {
+		this.identifiantDistrictFiscal = identifiantDistrictFiscal;
+	}
+
+	@Column(name = "REGION_FISCALE_ID", nullable = true)
+	public Long getIdentifiantRegionFiscale() {
+		return identifiantRegionFiscale;
+	}
+
+	public void setIdentifiantRegionFiscale(Long identifiantRegionFiscale) {
+		this.identifiantRegionFiscale = identifiantRegionFiscale;
 	}
 
 	/**
