@@ -16,6 +16,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class EvenementIAMServiceTest extends BusinessTest {
 
@@ -221,6 +222,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 
 		try {
 			service.onEnregistrementEmployeur(enregistrementEmployeur);
+			fail();
 		}
 		catch (EvenementIAMException e) {
 			assertEquals("Informations employeurs absentes pour une action create ou update", e.getMessage());
