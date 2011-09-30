@@ -129,26 +129,49 @@ public class QueryConstructor {
 			switch (typeRecherche) {
 			case PHONETIQUE:
 				// Fuzzy
-				query.add(LuceneEngine.getTermsFuzzy(TiersIndexableData.NOM_RAISON, nomCourrier), should);
-				query.add(LuceneEngine.getTermsFuzzy(TiersIndexableData.AUTRES_NOM, nomCourrier), should);
+				{
+					final Query subQuery = LuceneEngine.getTermsFuzzy(TiersIndexableData.NOM_RAISON, nomCourrier);
+					if (subQuery != null) {
+						query.add(subQuery, should);
+					}
+					final BooleanQuery subQuery2 = LuceneEngine.getTermsFuzzy(TiersIndexableData.AUTRES_NOM, nomCourrier);
+					if (subQuery2 != null) {
+						query.add(subQuery2, should);
+					}
+				}
 				break;
+
 			case EST_EXACTEMENT:
-				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NOM_RAISON, nomCourrier), should);
-				query.add(LuceneEngine.getTermsExact(TiersIndexableData.AUTRES_NOM, nomCourrier), should);
+				{
+					final Query subQuery = LuceneEngine.getTermsExact(TiersIndexableData.NOM_RAISON, nomCourrier);
+					if (subQuery != null) {
+						query.add(subQuery, should);
+					}
+					final Query subQuery2 = LuceneEngine.getTermsExact(TiersIndexableData.AUTRES_NOM, nomCourrier);
+					if (subQuery2 != null) {
+						query.add(subQuery2, should);
+					}
+				}
 				break;
+
 			case CONTIENT:
 			default:
-				final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, tokenMinLength);
-				if (subQuery != null) {
-					query.add(subQuery, should);
-				}
-				final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, tokenMinLength);
-				if (subQuery2 != null) {
-					query.add(subQuery2, should);
+				{
+					final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, tokenMinLength);
+					if (subQuery != null) {
+						query.add(subQuery, should);
+					}
+					final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, tokenMinLength);
+					if (subQuery2 != null) {
+						query.add(subQuery2, should);
+					}
 				}
 				break;
 			}
-			fullQuery.add(query, BooleanClause.Occur.MUST);
+
+			if (query.clauses() != null && query.getClauses().length > 0) {
+				fullQuery.add(query, BooleanClause.Occur.MUST);
+			}
 		}
 	}
 

@@ -335,16 +335,16 @@ public abstract class LuceneEngine {
 	public static BooleanQuery getTermsFuzzy(String field, String value) throws IndexerException {
 
 		// Exact search
-		BooleanQuery booleanQuery = new BooleanQuery();
+		final BooleanQuery booleanQuery = new BooleanQuery();
 		try {
 			// Use teh standard analyzer.
 			// We don't want the tokens to be too much changed by the Analyzer
 			// in Fuzzy
-			TokenStream stream = getTokenStream(value, getStandardAnalyzer());
+			final TokenStream stream = getTokenStream(value, getStandardAnalyzer());
 			final TermAttribute att = stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
-				Query query = new FuzzyQuery(newTerm(field, att));
+				final Query query = new FuzzyQuery(newTerm(field, att));
 				booleanQuery.add(query, BooleanClause.Occur.MUST);
 			}
 		}
@@ -352,7 +352,7 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
-		return booleanQuery;
+		return booleanQuery.clauses() != null && booleanQuery.clauses().size() > 0 ? booleanQuery : null;
 	}
 
 	/**
