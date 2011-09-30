@@ -68,11 +68,11 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 		curatelle.setSujet(pupille);
 		curatelle.setObjet(tuteur);
 		curatelle.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Un conseiller légal ne peut être qu'une personne physique"), null, validate(curatelle));
+		assertValidation(Arrays.asList("Un conseiller légal ne peut être qu'une personne physique ou une collectivité administrative"), null, validate(curatelle));
 	}
 
 	/**
-	 * [SIFISC-719] Il ne doit pas être possible d'établir un conseil légal depuis une collectivité administrative sur une personne physique
+	 * [SIFISC-2483] Il doit être possible d'établir un conseil légal depuis une collectivité administrative sur une personne physique
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -81,10 +81,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
 		hibernateTemplate.flush();
 
-		final ConseilLegal curatelle = new ConseilLegal();
-		curatelle.setSujet(pupille);
-		curatelle.setObjet(tuteur);
-		curatelle.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Un conseiller légal ne peut être qu'une personne physique"), null, validate(curatelle));
+		final ConseilLegal conseilLegal = new ConseilLegal(date(2000, 1, 1), null, pupille, tuteur, null);
+		assertFalse(validate(conseilLegal).hasErrors());
 	}
 }

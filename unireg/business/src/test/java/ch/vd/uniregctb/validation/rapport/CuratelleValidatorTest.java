@@ -68,23 +68,20 @@ public class CuratelleValidatorTest extends AbstractValidatorTest<Representation
 		curatelle.setSujet(pupille);
 		curatelle.setObjet(tuteur);
 		curatelle.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Un curateur ne peut être qu'une personne physique"), null, validate(curatelle));
+		assertValidation(Arrays.asList("Un curateur ne peut être qu'une personne physique ou une collectivité administrative"), null, validate(curatelle));
 	}
 
 	/**
-	 * [SIFISC-719] Il ne doit pas être possible d'établir une curatelle depuis une collectivité administrative sur une personne physique
+	 * [SIFISC-2483] Il doit être possible d'établir une curatelle depuis une collectivité administrative sur une personne physique
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateCuratelleDepuisCollectiviteAdministrative() throws Exception {
-		final CollectiviteAdministrative tuteur = (CollectiviteAdministrative) tiersDAO.save(new CollectiviteAdministrative());
+		final CollectiviteAdministrative curateur = (CollectiviteAdministrative) tiersDAO.save(new CollectiviteAdministrative());
 		final PersonnePhysique pupille = addNonHabitant("Michèle", "Talbot", date(1972, 3, 24), Sexe.FEMININ);
 		hibernateTemplate.flush();
 
-		final Curatelle curatelle = new Curatelle();
-		curatelle.setSujet(pupille);
-		curatelle.setObjet(tuteur);
-		curatelle.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Un curateur ne peut être qu'une personne physique"), null, validate(curatelle));
+		final Curatelle curatelle = new Curatelle(date(2000, 1,1), null, pupille, curateur, null);
+		assertFalse(validate(curatelle).hasErrors());
 	}
 }
