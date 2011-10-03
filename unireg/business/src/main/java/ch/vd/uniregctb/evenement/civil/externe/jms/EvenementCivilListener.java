@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.externe.jms;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -31,6 +32,8 @@ public class EvenementCivilListener extends TransactionalEsbMessageListener impl
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
+	private static final String DEFAULT_BUSINESS_USER = "JMSEvtCivil-SansVisa";
+
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
@@ -46,10 +49,10 @@ public class EvenementCivilListener extends TransactionalEsbMessageListener impl
 
 		try {
 			final String message = esbMessage.getBodyAsString();
-			final String visaMutation = esbMessage.getBusinessUser();
+			final String visaMutation = StringUtils.trimToNull(esbMessage.getBusinessUser());
 
 			// le user de création est initialisé avec le user à l'origine de l'événement civil
-			AuthenticationHelper.setPrincipal(visaMutation);
+			AuthenticationHelper.setPrincipal(visaMutation != null ? visaMutation : DEFAULT_BUSINESS_USER);
 			try {
 				onEvenementCivil(message);
 			}
