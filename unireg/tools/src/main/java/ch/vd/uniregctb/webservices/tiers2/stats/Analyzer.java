@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,33 +88,38 @@ class Analyzer {
 	public void analyze(String[] args) {
 		try {
 			for (String filename : args) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
-				String line = reader.readLine();
-				while (line != null) {
-					process(line);
-					line = reader.readLine();
-				}
-
-				reader.close();
+				analyzeFile(filename);
 			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void process(String line) {
-
-		try {
-			final Call call = Call.parse(line);
-			if (call == null) {
-				return;
-			}
-			addCall(call);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void analyzeFile(String filename) throws IOException {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+			String line = reader.readLine();
+			while (line != null) {
+				process(line);
+				line = reader.readLine();
+			}
+
+			reader.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Erreur lors du parsing du fichier [" + filename + "]");
+		}
+	}
+
+	private void process(String line) throws ParseException {
+
+		final Call call = Call.parse(line);
+		if (call == null) {
+			return;
+		}
+		addCall(call);
 	}
 
 	protected String buildChart(String chartName, String htmlFile, boolean localImages, Chart chart) throws IOException {
