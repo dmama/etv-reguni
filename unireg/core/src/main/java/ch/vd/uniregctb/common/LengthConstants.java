@@ -85,7 +85,8 @@ public abstract class LengthConstants {
 	public final static int DOCINDEX_NOM = 100;
 	public final static int DOCINDEX_DESC = 255;
 
-	public static final int NATURE_IMMEUBLE = 11;
+	public static final int NUMERO_IMMEUBLE = 20;
+	public static final int NATURE_IMMEUBLE = 255;
 	public static final int GENRE_PROPRIETE = 12;
 
 	public final static int MAXLEN = 2000;

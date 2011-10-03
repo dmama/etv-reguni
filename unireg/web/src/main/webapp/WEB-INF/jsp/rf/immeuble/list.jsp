@@ -24,7 +24,8 @@
 				<display:column titleKey="label.numero.immeuble" property="numero"/>
 				<display:column titleKey="label.nature" property="nature"/>
 				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale"/>
-				<display:column titleKey="label.date.mutation" property="dateMutation"/>
+				<display:column titleKey="label.date.estimation.fiscale" property="dateEstimationFiscale"/>
+				<display:column titleKey="label.ancienne.estimation.fiscale" property="ancienneEstimationFiscale"/>
 				<display:column titleKey="label.genre.propriete" property="genrePropriete"/>
 				<display:column titleKey="label.part.propriete" property="partPropriete"/>
 			</display:table>
