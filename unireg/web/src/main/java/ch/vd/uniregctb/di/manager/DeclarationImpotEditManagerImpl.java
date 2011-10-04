@@ -28,6 +28,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -515,10 +516,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 
-		Audit.info(String.format("Impression d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
-				declaration.getTiers().getNumero(),
-				RegDateHelper.dateToDashString(declaration.getDateDebut()),
-				RegDateHelper.dateToDashString(declaration.getDateFin())));
+		Audit.info(String.format("Impression (%s/%s) d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
+		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), declaration.getTiers().getNumero(),
+		                         RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin())));
 
 		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), selectedTypeDocument, annexes);
 	}
