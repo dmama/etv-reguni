@@ -28,9 +28,6 @@
 		</property>
 		<property name="properties"
 			value="
-                | DB2 proxy               : ${testprop.db2.proxy}
-                | DB2 user                : ${testprop.db2.username}
-                | DB2 schema              : ${testprop.db2.schema}
                 | Host Interfaces URL     : ${testprop.host-interfaces.url}
                 | Host Interfaces user    : ${testprop.host-interfaces.username}
                 | Index path UT           : ${testprop.indexer.globalIndexPath}

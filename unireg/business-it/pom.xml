@@ -51,21 +51,6 @@
 			<artifactId>host-interfaces-client</artifactId>
 			<version>${host-interfaces.version-long}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.ibm.db2</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>9.5-3.50.152</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm.db2</groupId>
-			<artifactId>db2jcc_license_cisuz</artifactId>
-			<version>9.5-3.50.152</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm.db2</groupId>
-			<artifactId>db2-driver-client</artifactId>
-			<version>7.1</version>
-		</dependency>
         <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>ejb</artifactId>
