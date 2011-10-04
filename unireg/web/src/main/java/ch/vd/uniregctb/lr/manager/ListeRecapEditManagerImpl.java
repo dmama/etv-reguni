@@ -277,24 +277,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		return lrListView;
 	}
 
-	private static RegDate getProchaineDateDebutLr(RegDate dateDebutPrecedente, PeriodiciteDecompte periodicite, DebiteurPrestationImposable dpi) {
-		RegDate nvelleDate = periodicite.getDebutPeriodeSuivante(dateDebutPrecedente);
-		ForDebiteurPrestationImposable forDpi = dpi.getForDebiteurPrestationImposableAt(nvelleDate);
-		if (forDpi == null) {
-			// on essaie encore après, dès fois qu'il y aurait un trou dans les fors
-			forDpi = dpi.getForDebiteurPrestationImposableAfter(nvelleDate);
-			if (forDpi == null) {
-				// décidément, plus rien à faire pour ce débiteur à l'avenir
-				//TODO (cgd) modifier cette exception par un message d'erreur
-				throw new ObjectNotFoundException("Toutes les LR de ce débiteur ont déjà été émises.");
-			}
-			else {
-				nvelleDate = periodicite.getDebutPeriode(forDpi.getDateDebut());
-			}
-		}
-		return nvelleDate;
-	}
-
 	@Override
 	public DelaiDeclarationView creerDelai(Long idLr) {
 		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
@@ -365,9 +347,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 					lrEditView.setDateFinPeriode(periodeSuivante.getDateFin());
 					lrEditView.setPeriodicite(periodiciteSuivante.getPeriodiciteDecompte());
 				}
-
-
-
+				else {
+					// il ne manque pas de LR, et la prochaine LR en suivant les périodicité n'est couverte par aucun
+					// for fiscal ouvert...
+					throw new ObjectNotFoundException("Toutes les LR du débiteur ont déjà été émises");
+				}
 			}
 		}
 		// Créée une premiere LR sur ce debiteur
