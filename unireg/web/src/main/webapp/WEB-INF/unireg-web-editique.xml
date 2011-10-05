@@ -34,8 +34,6 @@
 		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation" />
 		<property name="esbHttpTemplate" ref="esbHttpTemplate" />
 		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}" />
-		<property name="domain" value="fiscalite" />
-		<property name="application" value="unireg" />
 	</bean>
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">

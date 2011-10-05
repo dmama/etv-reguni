@@ -6,6 +6,7 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.EsbMessageException;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.http.EsbHttpTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
@@ -26,8 +27,6 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 	private EsbMessageFactory esbMessageFactory;
 	private EsbHttpTemplate esbHttpTemplate;
 	private String serviceDestination;
-	private String domain;
-	private String application;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
@@ -42,16 +41,6 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceDestination(String serviceDestination) {
 		this.serviceDestination = serviceDestination;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setApplication(String application) {
-		this.application = application;
 	}
 
 	@Override
@@ -72,8 +61,18 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 			}
 			return pdf;
 		}
+		catch (EsbMessageException e) {
+			if (e.getErrorCode() != null && Integer.parseInt(e.getErrorCode()) == 404) {
+				LOGGER.error(String.format("Not found : %s (document '%s')", e.getMessage(), nomDocument), e);
+				return null;
+			}
+			else {
+				LOGGER.error(String.format("Erreur lors de la demande de copie conforme '%s' (%s)", nomDocument, e.getErrorCode()), e);
+				throw new EditiqueException(e);
+			}
+		}
 		catch (Exception e) {
-			LOGGER.error("Erreur lors de la demande de copie conforme", e);
+			LOGGER.error(String.format("Erreur lors de la demande de copie conforme '%s'", nomDocument), e);
 			throw new EditiqueException(e);
 		}
 	}
@@ -83,9 +82,7 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		final EsbMessage m = esbMessageFactory.createMessage();
 
-		m.setDomain(domain);
 		m.setContext(contexte);
-		m.setApplication(application);
 		m.setBusinessId(nomDocument);
 		m.setBusinessUser(user);
 		m.setServiceDestination(serviceDestination);

@@ -89,6 +89,8 @@
 		<property name="timeout" value="15000"/>
 		<property name="host" value="${extprop.esb.http.host}"/>
 		<property name="port" value="${extprop.esb.http.port}"/>
+		<property name="application" value="unireg" />
+		<property name="domain" value="fiscalite"/>
 	</bean>
 
 	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">

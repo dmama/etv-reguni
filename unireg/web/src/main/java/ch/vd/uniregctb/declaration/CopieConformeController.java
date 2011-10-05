@@ -17,10 +17,12 @@ public class CopieConformeController extends AbstractSimpleFormController {
 
 	private CopieConformeManager copieConformeManager;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServletService(ServletService servletService) {
 		this.servletService = servletService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCopieConformeManager(CopieConformeManager copieConformeManager) {
 		this.copieConformeManager = copieConformeManager;
 	}
