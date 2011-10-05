@@ -22,16 +22,17 @@ public class PersonnePhysiqueListController extends  AbstractTiersListController
 
 	private CoupleListManager coupleListManager;
 
-	private final String PREMIER_TIERS = "premier";
-	private final String SECOND_TIER = "second";
-	private final String TROISIEME_TIER = "troisième";
+	private static final String PREMIER_TIERS = "premier";
+	private static final String SECOND_TIER = "second";
+	private static final String TROISIEME_TIER = "troisième";
 
 	public static final String PP_CRITERIA_NAME = "ppCriteria";
 	public static final String PP_LIST_ATTRIBUTE_NAME = "list";
 
 	public static final String BUTTON_POURSUIVRE = "poursuivre";
 
-	private final String NUMERO_PREMIER_PP_PARAMETER_NAME = "numeroPP1";
+	private static final String NUMERO_PREMIER_PP_PARAMETER_NAME = "numeroPP1";
+	private static final String CLEAR_SESSION_PARAMETER_NAME = "clearSession";
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -45,6 +46,13 @@ public class PersonnePhysiqueListController extends  AbstractTiersListController
 		Long numeroPremierePersonne = null;
 		if (numeroPremierePersonneParam != null) {
 			numeroPremierePersonne= Long.parseLong(numeroPremierePersonneParam);
+		}
+
+		// [SIFISC-2459] Hack pour s'assurer que rien n'est gardé en session lorsqu'on arrive depuis le raccourci des actions du bandeau de tiers
+		final String clearSessionParam = request.getParameter(CLEAR_SESSION_PARAMETER_NAME);
+		if (clearSessionParam != null && clearSessionParam.equalsIgnoreCase("true")) {
+			removeModuleFromSession(request, PP_CRITERIA_NAME);
+			CoupleRecapController.effaceCriteresRecherche(request);
 		}
 
 		HttpSession session = request.getSession();

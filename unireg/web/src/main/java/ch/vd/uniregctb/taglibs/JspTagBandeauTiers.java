@@ -897,7 +897,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "goto:/couple/list-pp.do?numeroPP1=";
+			return "goto:/couple/list-pp.do?clearSession=true&numeroPP1=";
 		}
 	}
 
