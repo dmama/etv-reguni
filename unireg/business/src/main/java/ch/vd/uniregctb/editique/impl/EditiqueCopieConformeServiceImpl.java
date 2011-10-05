@@ -64,12 +64,11 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		catch (EsbMessageException e) {
 			if (e.getErrorCode() != null && Integer.parseInt(e.getErrorCode()) == 404) {
 				LOGGER.error(String.format("Not found : %s (document '%s')", e.getMessage(), nomDocument), e);
-				return null;
 			}
 			else {
 				LOGGER.error(String.format("Erreur lors de la demande de copie conforme '%s' (%s)", nomDocument, e.getErrorCode()), e);
-				throw new EditiqueException(e);
 			}
+			throw new EditiqueException(e);
 		}
 		catch (Exception e) {
 			LOGGER.error(String.format("Erreur lors de la demande de copie conforme '%s'", nomDocument), e);
