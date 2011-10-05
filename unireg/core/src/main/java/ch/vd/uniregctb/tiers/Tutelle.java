@@ -29,6 +29,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorValue("Tutelle")
 public class Tutelle extends RepresentationLegale {
 
+	private static final String TUTEUR = "tuteur";
+
 	private static final long serialVersionUID = 8255992899554760735L;
 
 	public Tutelle() {
@@ -55,5 +57,11 @@ public class Tutelle extends RepresentationLegale {
 	@Transient
 	public TypeRapportEntreTiers getType() {
 		return TypeRapportEntreTiers.TUTELLE;
+	}
+
+	@Override
+	@Transient
+	public String getDescriptionTypeObjet() {
+		return TUTEUR;
 	}
 }

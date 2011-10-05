@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -39,8 +40,9 @@ public class TutelleValidatorTest extends AbstractValidatorTest<RepresentationLe
 		// Dates ko
 		tutelle.setDateDebut(date(2000, 1, 1));
 		tutelle.setDateFin(date(1996, 12, 31));
-		assertValidation(Arrays.asList(String.format("Le rapport-entre-tiers %s possède une date de début qui est après la date de fin: début = 01.01.2000 fin = 31.12.1996", tutelle)), null,
-				validate(tutelle));
+		assertValidation(Arrays.asList(String.format("Le rapport-entre-tiers %s entre le tiers pupille %s et le tiers tuteur %s possède une date de début qui est après la date de fin: début = 01.01.2000, fin = 31.12.1996",
+		                                             tutelle, FormatNumeroHelper.numeroCTBToDisplay(pupille.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(tuteur.getNumero()))),
+		                 null, validate(tutelle));
 	}
 
 	/**

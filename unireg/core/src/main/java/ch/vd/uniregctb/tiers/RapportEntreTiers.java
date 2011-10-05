@@ -240,6 +240,20 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
 	}
 
+	/**
+	 * Retourne une chaîne de caractères qui décrit le rôle <i>objet</i> de ce rapport entre tiers
+	 * @return "ménage commun", "personne physique", "contribuable", "employeur"...
+	 */
+	@Transient
+	public abstract String getDescriptionTypeObjet();
+
+	/**
+	 * Retourne une chaîne de caractères qui décrit le rôle <i>sujet</i> de ce rapport entre tiers
+	 * @return "ménage commun", "personne physique", "contribuable", "employeur"...
+	 */
+	@Transient
+	public abstract String getDescriptionTypeSujet();
+
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {

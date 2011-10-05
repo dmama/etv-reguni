@@ -29,6 +29,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorValue("Curatelle")
 public class Curatelle extends RepresentationLegale {
 
+	private static final String CURATEUR = "curateur";
+
 	private static final long serialVersionUID = -1357290304664777417L;
 
 	public Curatelle() {
@@ -55,5 +57,11 @@ public class Curatelle extends RepresentationLegale {
 	@Transient
 	public TypeRapportEntreTiers getType() {
 		return TypeRapportEntreTiers.CURATELLE;
+	}
+
+	@Override
+	@Transient
+	public String getDescriptionTypeObjet() {
+		return CURATEUR;
 	}
 }

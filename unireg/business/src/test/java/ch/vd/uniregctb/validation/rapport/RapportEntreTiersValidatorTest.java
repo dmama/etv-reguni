@@ -41,6 +41,16 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 			public RapportEntreTiers duplicate() {
 				throw new NotImplementedException();
 			}
+
+			@Override
+			public String getDescriptionTypeObjet() {
+				return null;
+			}
+
+			@Override
+			public String getDescriptionTypeSujet() {
+				return null;
+			}
 		};
 
 		// Adresse invalide (date début nul) mais annulée => pas d'erreur

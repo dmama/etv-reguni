@@ -29,6 +29,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorValue("ConseilLegal")
 public class ConseilLegal extends RepresentationLegale {
 
+	private static final String CONSEILLER_LEGAL = "conseiller légal";
+
 	private static final long serialVersionUID = 4695352371610248334L;
 
 	public ConseilLegal() {
@@ -55,5 +57,11 @@ public class ConseilLegal extends RepresentationLegale {
 	@Transient
 	public TypeRapportEntreTiers getType() {
 		return TypeRapportEntreTiers.CONSEIL_LEGAL;
+	}
+
+	@Override
+	@Transient
+	public String getDescriptionTypeObjet() {
+		return CONSEILLER_LEGAL;
 	}
 }

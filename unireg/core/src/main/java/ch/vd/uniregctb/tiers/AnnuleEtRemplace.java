@@ -21,9 +21,10 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Entity
 @DiscriminatorValue("AnnuleEtRemplace")
 public class AnnuleEtRemplace extends RapportEntreTiers {
-	/**
-	 *
-	 */
+
+	private static final String REMPLACE = "remplacé";
+	private static final String REMPLACANT = "remplaçant";
+
 	private static final long serialVersionUID = -1688097858774925185L;
 
 	public AnnuleEtRemplace() {
@@ -42,6 +43,18 @@ public class AnnuleEtRemplace extends RapportEntreTiers {
 	@Transient
 	public TypeRapportEntreTiers getType() {
 		return TypeRapportEntreTiers.ANNULE_ET_REMPLACE;
+	}
+
+	@Override
+	@Transient
+	public String getDescriptionTypeObjet() {
+		return REMPLACANT;
+	}
+
+	@Override
+	@Transient
+	public String getDescriptionTypeSujet() {
+		return REMPLACE;
 	}
 
 	@Override
