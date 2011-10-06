@@ -180,7 +180,7 @@
 			$(function() {
 				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});
 
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
 				// [SIFISC-2337] chargement différé (ajax) de la liste des immeubles (si nécessaire seulement)
 				$.get('../rf/immeuble/count.do?ctb=${command.tiersGeneral.numero}', function(data) {
 					if (parseInt(data) > 0) { // si le contribuable possède au moins un immeuble

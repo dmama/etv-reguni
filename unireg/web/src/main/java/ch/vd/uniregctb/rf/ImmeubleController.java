@@ -54,7 +54,7 @@ public class ImmeubleController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String list(@RequestParam("ctb") long ctbId, Model mav) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityProvider.isGranted(Role.VISU_ALL) || !SecurityProvider.isGranted(Role.VISU_IMMEUBLES)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
