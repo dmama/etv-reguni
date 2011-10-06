@@ -836,7 +836,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		final int annee = di.getPeriode().getAnnee();
 		final int noSequence = di.getNumero();
 		try {
-			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di);
+			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);

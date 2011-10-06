@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanHelper;
+import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -93,7 +94,8 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
 				final String businessId = String.format("%d-%d-%s", ctbId, annee, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
-				bamMessageSender.sendBamMessageRetourDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, null);
+				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForRetourDi(incomingHeaders);
+				bamMessageSender.sendBamMessageRetourDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 			}
 			catch (RuntimeException e) {
 				throw e;

@@ -75,7 +75,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
-				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclarations(declarations);
+				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclarations(declarations, incomingHeaders);
 				final String businessId = String.format("%d-%d-%s", ctbId, annee, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 				bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 			}
