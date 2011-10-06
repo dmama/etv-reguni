@@ -3972,22 +3972,7 @@ public class TiersServiceImpl implements TiersService {
 				raisonSociale = Arrays.asList(((AutreCommunaute) referent).getNom());
 			}
 			else if (referent instanceof Entreprise) {
-				final PersonneMorale pm = servicePM.getPersonneMorale(referent.getNumero());
-				raisonSociale = new ArrayList<String>(3);
-				if (pm != null) {
-					final String ligne1 = pm.getRaisonSociale1();
-					if (StringUtils.isNotBlank(ligne1)) {
-						raisonSociale.add(ligne1.trim());
-					}
-					final String ligne2 = pm.getRaisonSociale2();
-					if (StringUtils.isNotBlank(ligne2)) {
-						raisonSociale.add(ligne2.trim());
-					}
-					final String ligne3 = pm.getRaisonSociale3();
-					if (StringUtils.isNotBlank(ligne3)) {
-						raisonSociale.add(ligne3.trim());
-					}
-				}
+				raisonSociale = getRaisonSociale((Entreprise) referent);
 			}
 			else if (referent instanceof CollectiviteAdministrative) {
 				try {
@@ -4028,6 +4013,36 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return raisonSociale;
+	}
+
+	@Override
+	public String getRaisonSocialeAbregee(Entreprise entreprise) {
+		final Long numeroEntreprise = entreprise.getNumero();
+		Assert.notNull(numeroEntreprise);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
+		return pm != null ? StringUtils.trimToNull(pm.getRaisonSociale()) : null;
+	}
+
+	@Override
+	public List<String> getRaisonSociale(Entreprise entreprise) {
+
+		final Long numeroEntreprise = entreprise.getNumero();
+		Assert.notNull(numeroEntreprise);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
+
+		final List<String> nomsComplets = new ArrayList<String>(3);
+		if (pm != null) {
+			if (StringUtils.isNotBlank(pm.getRaisonSociale1())) {
+				nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale1()));
+			}
+			if (StringUtils.isNotBlank(pm.getRaisonSociale2())) {
+				nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale2()));
+			}
+			if (StringUtils.isNotBlank(pm.getRaisonSociale3())) {
+				nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale3()));
+			}
+		}
+		return nomsComplets;
 	}
 
 	@Override

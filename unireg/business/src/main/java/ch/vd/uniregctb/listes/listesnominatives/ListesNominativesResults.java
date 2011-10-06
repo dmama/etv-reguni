@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCourrierPourRF;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -14,6 +16,7 @@ import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -36,15 +39,19 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
 	private final AdresseService adresseService;
 
-	private final boolean avecContribuables;
+	private final boolean avecContribuablesPP;
+
+	private final boolean avecContribuablesPM;
 
 	private final boolean avecDebiteurs;
 
-	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService, AdresseService adresseService) {
+	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs,
+	                                TiersService tiersService, AdresseService adresseService) {
         super(dateTraitement, nombreThreads, tiersService);
         this.typeAdressesIncluses = typeAdressesIncluses;
-	    this.avecContribuables = avecContribuables;
-	    this.avecDebiteurs = avecDebiteurs;
+	    this.avecContribuablesPP = avecContribuablesPP;
+		this.avecContribuablesPM = avecContribuablesPM;
+		this.avecDebiteurs = avecDebiteurs;
 		this.adresseService = adresseService;
 	}
 
@@ -137,6 +144,23 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			else {
 				addErrorManqueLiensMenage(menage);
 			}
+		}
+		else if (ctb instanceof Entreprise) {
+			final Entreprise pm = (Entreprise) ctb;
+			final String raisonSociale = tiersService.getRaisonSocialeAbregee(pm);
+
+			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
+				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
+				addTiers(ctb.getNumero(), raisonSociale, null, adresse.getLignes());
+			}
+			else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
+				final AdresseCourrierPourRF adresse = adresseService.getAdressePourRF(ctb, null);
+				addContribuable(ctb.getNumero(), raisonSociale, null, adresse.getRueEtNumero(), adresse.getNpa(), adresse.getLocalite(), adresse.getPays());
+			}
+			else {
+				addTiers(ctb.getNumero(), raisonSociale, null);
+			}
+
 		}
 	}
 
@@ -234,15 +258,15 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         }
     }
 
-    private void addTiers(long numeroCtb, String nomPrenomPrincipal, String nomPrenomConjoint) {
+    private void addTiers(long numeroCtb, String nomPrenomPrincipal, @Nullable String nomPrenomConjoint) {
         this.tiers.add(new InfoTiers(numeroCtb, nomPrenomPrincipal, nomPrenomConjoint));
     }
 
-    private void addTiers(long numeroCtb, String nomPrenomPrincipal, String nomPrenomConjoint, String[] lignesAdresse) {
+    private void addTiers(long numeroCtb, String nomPrenomPrincipal, @Nullable String nomPrenomConjoint, String[] lignesAdresse) {
         this.tiers.add(new InfoTiersAvecAdresseFormattee(numeroCtb, nomPrenomPrincipal, nomPrenomConjoint, lignesAdresse));
     }
 
-	private void addContribuable(Long numero, String nomPrenomPrincipal, String nomPrenomConjoint, String rueEtNumero, String npa, String localite, String pays) {
+	private void addContribuable(Long numero, String nomPrenomPrincipal, @Nullable String nomPrenomConjoint, String rueEtNumero, String npa, String localite, String pays) {
 		this.tiers.add(new InfoTiersAvecAdresseStructureeRF(numero, nomPrenomPrincipal, nomPrenomConjoint, rueEtNumero, npa, localite, pays));
 	}
 
@@ -277,8 +301,12 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		return typeAdressesIncluses;
 	}
 
-	public boolean isAvecContribuables() {
-		return avecContribuables;
+	public boolean isAvecContribuablesPP() {
+		return avecContribuablesPP;
+	}
+
+	public boolean isAvecContribuablesPM() {
+		return avecContribuablesPM;
 	}
 
 	public boolean isAvecDebiteurs() {

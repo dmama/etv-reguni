@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +58,8 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
     /**
      * Appel principal de génération des listes nominatives
      */
-    public ListesNominativesResults run(RegDate dateTraitement, final int nbThreads, final TypeAdresse adressesIncluses, final boolean avecContribuables, final boolean avecDebiteurs, StatusManager s) {
+    public ListesNominativesResults run(RegDate dateTraitement, final int nbThreads, final TypeAdresse adressesIncluses, final boolean avecContribuablesPP, final boolean avecContribuablesPM,
+                                        final boolean avecDebiteurs, StatusManager s) {
 
         final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -66,52 +68,71 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
             @Override
             public ListesNominativesResults createResults(RegDate dateTraitement) {
-                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService);
+                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersService, adresseService);
             }
 
             @Override
             public ListesNominativesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
                                                        AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
                 return new ListesNominativesThread(queue,
-                        dateTraitement,
-		                nbThreads, 
-                        adressesIncluses,
-		                avecContribuables,
-		                avecDebiteurs,
-		                tiersService,
-                        adresseService,
-		                serviceCivilCacheWarmer,
-		                status,
-                        compteur,
-                        transactionManager,
-                        tiersDAO,
-                        hibernateTemplate);
+                                                   dateTraitement,
+                                                   nbThreads,
+                                                   adressesIncluses,
+                                                   avecContribuablesPP,
+                                                   avecContribuablesPM,
+                                                   avecDebiteurs,
+                                                   tiersService,
+                                                   adresseService,
+                                                   serviceCivilCacheWarmer,
+                                                   status,
+                                                   compteur,
+                                                   transactionManager,
+                                                   tiersDAO,
+                                                   hibernateTemplate);
             }
 
             @Override
             public Iterator<Long> getIdIterator(Session session) {
-                return createIteratorOnIDsOfTiers(session, avecContribuables, avecDebiteurs);
+                return createIteratorOnIDsOfTiers(session, avecContribuablesPP, avecContribuablesPM, avecDebiteurs);
             }
 
         });
     }
 
-    @SuppressWarnings("unchecked")
-    private Iterator<Long> createIteratorOnIDsOfTiers(Session session, boolean avecContribuables, boolean avecDebiteurs) {
-	    if (avecContribuables || avecDebiteurs) {
-		    final String contribuablePart = "PersonnePhysique, MenageCommun";
+	@Override
+	protected String getDenominationContribuablesComptes() {
+		return "tiers";     // et oui, il n'y a pas que des contribuables
+	}
+
+	@SuppressWarnings("unchecked")
+    private Iterator<Long> createIteratorOnIDsOfTiers(Session session, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs) {
+	    if (avecContribuablesPP || avecContribuablesPM || avecDebiteurs) {
+		    final String ppPart = "PersonnePhysique, MenageCommun";
+		    final String pmPart = "Entreprise";
 		    final String debiteurPart = "DebiteurPrestationImposable";
 
-		    final String inPart;
-		    if (avecContribuables && avecDebiteurs) {
-			    inPart = String.format("%s, %s", contribuablePart, debiteurPart);
+		    final List<String> whereParts = new ArrayList<String>(3);
+		    if (avecContribuablesPP) {
+			    whereParts.add(ppPart);
 		    }
-		    else if (avecContribuables) {
-			    inPart = contribuablePart;
+		    if (avecContribuablesPM) {
+			    whereParts.add(pmPart);
 		    }
-		    else {
-			    inPart = debiteurPart;
+		    if (avecDebiteurs) {
+			    whereParts.add(debiteurPart);
 		    }
+
+		    final StringBuilder b = new StringBuilder();
+		    final Iterator<String> wherePartIterator = whereParts.iterator();
+		    while (wherePartIterator.hasNext()) {
+			    final String part = wherePartIterator.next();
+			    b.append(part);
+			    if (wherePartIterator.hasNext()) {
+				    b.append(", ");
+			    }
+		    }
+
+		    final String inPart = b.toString();
 		    final String queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) ORDER BY tiers.id ASC", inPart);
 			final Query query = session.createQuery(queryString);
 			return query.iterate();

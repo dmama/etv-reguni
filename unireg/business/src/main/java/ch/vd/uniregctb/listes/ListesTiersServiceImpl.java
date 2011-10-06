@@ -64,10 +64,10 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 	}
 
 	@Override
-	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuables, boolean avecDebiteurs,
-	                                                          StatusManager statusManager) {
+	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM,
+	                                                          boolean avecDebiteurs, StatusManager statusManager) {
 		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer);
-		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);
+		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, statusManager);
 	}
 
 	@Override

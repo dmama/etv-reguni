@@ -34,7 +34,6 @@ import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -342,34 +341,45 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public AdresseCourrierPourRF getAdressePourRF(Contribuable ctb, RegDate date) throws AdresseException {
 
-		NomPrenom nomPrenom1 = null;
-		NomPrenom nomPrenom2 = null;
-		if (ctb instanceof PersonnePhysique) {
-			nomPrenom1 = getNomPrenom((PersonnePhysique) ctb, date);
+		final String nomPrenom1String;
+		final String nomPrenom2String;
+		if (ctb instanceof PersonnePhysique || ctb instanceof MenageCommun) {
+			NomPrenom nomPrenom1 = null;
+			NomPrenom nomPrenom2 = null;
+			if (ctb instanceof PersonnePhysique) {
+				nomPrenom1 = getNomPrenom((PersonnePhysique) ctb, date);
+			}
+			else {
+				final MenageCommun mc = (MenageCommun) ctb;
+				/* Récupère la vue historique complète du ménage (date = null) */
+				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
+
+				final PersonnePhysique principal = ensemble.getPrincipal();
+				if (principal != null) {
+					nomPrenom1 = getNomPrenom(principal, date);
+				}
+
+				final PersonnePhysique conjoint = ensemble.getConjoint();
+				if (conjoint != null) {
+					final NomPrenom np = getNomPrenom(conjoint, date);
+					if (nomPrenom1 == null) {
+						nomPrenom1 = np;
+					}
+					else {
+						nomPrenom2 = np;
+					}
+				}
+			}
+
+			nomPrenom1String = nomPrenom1 == null ? null : nomPrenom1.getNomPrenom();
+			nomPrenom2String = nomPrenom2 == null ? null : nomPrenom2.getNomPrenom();
 		}
-		else if (ctb instanceof MenageCommun) {
-			final MenageCommun mc = (MenageCommun) ctb;
-			/* Récupère la vue historique complète du ménage (date = null) */
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
-
-			final PersonnePhysique principal = ensemble.getPrincipal();
-			if (principal != null) {
-				nomPrenom1 = getNomPrenom(principal, date);
-			}
-
-			final PersonnePhysique conjoint = ensemble.getConjoint();
-			if (conjoint != null) {
-				final NomPrenom np = getNomPrenom(conjoint, date);
-				if (nomPrenom1 == null) {
-					nomPrenom1 = np;
-				}
-				else {
-					nomPrenom2 = np;
-				}
-			}
+		else if (ctb instanceof Entreprise) {
+			nomPrenom1String = getRaisonSociale((Entreprise) ctb);
+			nomPrenom2String = null;
 		}
 		else {
-			Assert.fail("Le registre foncier ne s'intéresse qu'aux personnes physiques et ménages communs!");
+			throw new IllegalArgumentException("Le registre foncier ne s'intéresse qu'aux personnes physiques, ménages communs et personnes morales (entreprises) !");
 		}
 
 		final AdresseGenerique adresse = getAdresseFiscale(ctb, TypeAdresseFiscale.COURRIER, date, false);
@@ -378,11 +388,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final String npa = adresse != null ? adresse.getNumeroPostal() : null;
 		final String localite = adresse != null ? adresse.getLocalite() : null;
 		final Pays pays = adresse != null ? buildPays(adresse) : null;
-
 		final String paysString = pays == null ? null : pays.getNomMinuscule();
-		final String nomPrenom1String = nomPrenom1 == null ? null : nomPrenom1.getNomPrenom();
-		final String nomPrenom2String = nomPrenom2 == null ? null : nomPrenom2.getNomPrenom();
-
 		return new AdresseCourrierPourRF(nomPrenom1String, nomPrenom2String, rueEtNumeroString, npa, localite, paysString);
 	}
 
@@ -786,10 +792,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'enteprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
-		final Long numeroEntreprise = entreprise.getNumero();
-		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
-		return pm.getRaisonSociale();
+		return tiersService.getRaisonSocialeAbregee(entreprise);
 	}
 
 	/**
@@ -799,23 +802,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'entreprise sur une, deux ou trois lignes.
 	 */
 	private List<String> getRaisonSocialeLongue(Entreprise entreprise) {
-
-		final Long numeroEntreprise = entreprise.getNumero();
-		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
-
-		final List<String> nomsComplets = new ArrayList<String>(3);
-		if (StringUtils.isNotBlank(pm.getRaisonSociale1())) {
-			nomsComplets.add(pm.getRaisonSociale1());
-		}
-		if (StringUtils.isNotBlank(pm.getRaisonSociale2())) {
-			nomsComplets.add(pm.getRaisonSociale2());
-		}
-		if (StringUtils.isNotBlank(pm.getRaisonSociale3())) {
-			nomsComplets.add(pm.getRaisonSociale3());
-		}
-
-		return nomsComplets;
+		return tiersService.getRaisonSociale(entreprise);
 	}
 
 	public static RueEtNumero buildRueEtNumero(AdresseGenerique adresse) {

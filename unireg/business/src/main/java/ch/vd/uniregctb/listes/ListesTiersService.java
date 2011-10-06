@@ -13,15 +13,18 @@ public interface ListesTiersService {
 
 	/**
 	 * Retourne les données nécessaires à la génération des listes nominatives
-	 * @param dateTraitement
-	 * @param nbThreads
+	 *
+	 * @param dateTraitement date de traitement - la date du jour
+	 * @param nbThreads degré de parallélisation du traitement
 	 * @param adressesIncluses le type d'adresse à inclure
-	 * @param avecContribuables
-	 * @param avecDebiteurs
-	 * @param statusManager
+	 * @param avecContribuablesPP si oui ou non les contribuables PP (personnes physiques et ménages communs) doivent être inclus
+	 * @param avecContribuablesPM si oui ou non les contribuables PM (entreprises) doivent être inclus
+	 * @param avecDebiteurs si oui ou non les débiteurs de prestations imposables (employeurs de sourciers) doivent être inclus
+	 * @param statusManager un status manager
 	 * @return les données pour la liste globale
 	 */
-	ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuables, boolean avecDebiteurs,
+	ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses,
+	                                                   boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs,
 	                                                   StatusManager statusManager);
 
 	/**

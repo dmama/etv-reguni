@@ -144,7 +144,7 @@ public interface AdresseService {
 	 * @return l'adresse structurée pour le RF
 	 * @throws AdressesResolutionException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public AdresseCourrierPourRF getAdressePourRF(Contribuable ctb, RegDate date) throws AdresseException;
+	public AdresseCourrierPourRF getAdressePourRF(Contribuable ctb, @Nullable RegDate date) throws AdresseException;
 
 	/**
 	 * Ajoute une adresse fiscale sur un tiers. Cette méthode s'assure que la cohérence des plages d'adresse est respectée.

@@ -46,7 +46,8 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	            @Override
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
-			        table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuables()));
+			        table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuablesPP()));
+			        table.addLigne("Inclure les personnes morales :", String.valueOf(results.isAvecContribuablesPM()));
 			        table.addLigne("Inclure les débiteurs de prestations imposables :", String.valueOf(results.isAvecDebiteurs()));
 			        table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
 	            }

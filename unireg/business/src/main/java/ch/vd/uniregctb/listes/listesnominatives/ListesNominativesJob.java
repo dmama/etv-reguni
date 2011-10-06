@@ -30,7 +30,8 @@ public class ListesNominativesJob extends JobDefinition {
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String E_ADRESSES_INCLUSES = "typeAdresses";
-	public static final String B_CONTRIBUABLES = "avecContribuables";
+	public static final String B_CONTRIBUABLES_PP = "avecContribuablesPP";
+	public static final String B_CONTRIBUABLES_PM = "avecContribuablesPM";
 	public static final String B_DEBITEURS = "avecDebiteurs";
 
 	private ListesTiersService service;
@@ -58,7 +59,7 @@ public class ListesNominativesJob extends JobDefinition {
 
 		final JobParam param2 = new JobParam();
 		param2.setDescription("Inclure les personnes physiques / ménages");
-		param2.setName(B_CONTRIBUABLES);
+		param2.setName(B_CONTRIBUABLES_PP);
 		param2.setMandatory(true);
 		param2.setType(new JobParamBoolean());
 		addParameterDefinition(param2, Boolean.TRUE);
@@ -69,6 +70,13 @@ public class ListesNominativesJob extends JobDefinition {
 		param3.setMandatory(true);
 		param3.setType(new JobParamBoolean());
 		addParameterDefinition(param3, Boolean.TRUE);
+
+		final JobParam param4 = new JobParam();
+		param4.setDescription("Inclure les personnes morales");
+		param4.setName(B_CONTRIBUABLES_PM);
+		param4.setMandatory(true);
+		param4.setType(new JobParamBoolean());
+		addParameterDefinition(param4, Boolean.FALSE);
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -96,11 +104,12 @@ public class ListesNominativesJob extends JobDefinition {
 		final TypeAdresse adressesIncluses = getEnumValue(params, E_ADRESSES_INCLUSES, TypeAdresse.class);
 
 		// population à lister ?
-		final boolean avecContribuables = getBooleanValue(params, B_CONTRIBUABLES);
+		final boolean avecContribuablesPP = getBooleanValue(params, B_CONTRIBUABLES_PP);
+		final boolean avecContribuablesPM = getBooleanValue(params, B_CONTRIBUABLES_PM);
 		final boolean avecDebiteurs = getBooleanValue(params, B_DEBITEURS);
 
 		// Extrait les résultats dans une transaction read-only (en fait, plusieurs, pour ne pas avoir de timeout de transaction)
-		final ListesNominativesResults results = service.produireListesNominatives(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);
+		final ListesNominativesResults results = service.produireListesNominatives(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, statusManager);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

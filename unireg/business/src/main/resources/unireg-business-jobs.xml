@@ -266,7 +266,7 @@
 
     <bean id="listesNominativesJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.listesnominatives.ListesNominativesJob">
         <constructor-arg value="604"/>
-        <constructor-arg value="Produire la liste nominative des personnes physiques et débiteurs de prestation imposable"/>
+        <constructor-arg value="Produire la liste nominative des contribuables et débiteurs de prestations imposables"/>
         <property name="service" ref="listesTiersService"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="transactionManager" ref="transactionManager"/>

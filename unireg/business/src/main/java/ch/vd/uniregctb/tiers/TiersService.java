@@ -1178,6 +1178,18 @@ public interface TiersService {
 	List<String> getRaisonSociale(DebiteurPrestationImposable debiteur);
 
 	/**
+	 * @param pm l'entreprise dont on veut connaître la raison sociale abrégée
+	 * @return la raison sociale abrégée de l'entreprise donnée
+	 */
+	String getRaisonSocialeAbregee(Entreprise pm);
+
+	/**
+	 * @param pm l'entreprise dont on veut connaître la raison sociale complète
+	 * @return la raison sociale complète de l'entreprise donnée, potentiellement sur plusieurs lignes
+	 */
+	List<String> getRaisonSociale(Entreprise pm);
+
+	/**
 	 * Renvoie une liste des composants du ménage valides à une date donnée.
 	 *
 	 * @param menageCommun
