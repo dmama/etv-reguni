@@ -349,7 +349,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 	/**
 	 * Cas où un for intermédiaire est ouvert (date de fin = null).
-	 * <p>
+	 * <p/>
 	 * Cas réel du contribuable n° 010.010.860 (Matthieu Argueyrolles)
 	 */
 	@SuppressWarnings("deprecation")
@@ -1057,5 +1057,27 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		final List<String> errors = results.getErrors();
 		assertEquals(1, errors.size());
 		assertEquals("La période [01.07.2005 ; 31.12.2005] est couverte par plusieurs représentations conventionnelles", errors.get(0));
+	}
+
+	// [SIFISC-2533] Vérifie que les rapports d'appartenance ménage ne se chevauchent pas
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRapportsAppartenanceMenage() throws Exception {
+
+		// un marié seul
+		final PersonnePhysique pp = addNonHabitant("Gérard", "Stöpötz", date(1954, 7, 23), Sexe.MASCULIN);
+		assertFalse(validate(pp).hasErrors());
+
+		addEnsembleTiersCouple(pp, null, date(2003, 3, 23), null);
+		assertFalse(validate(pp).hasErrors());
+
+		// on créé un second ménage avec la personne physique, qui chevauch le premier ménage
+		addEnsembleTiersCouple(pp, null, date(2005, 7, 10), null);
+		final ValidationResults results = validate(pp);
+		assertTrue(results.hasErrors());
+
+		final List<String> errors = results.getErrors();
+		assertEquals(1, errors.size());
+		assertEquals("La personne physique appartient à plusieurs ménages communs sur la période [10.07.2005 ; ]", errors.get(0));
 	}
 }

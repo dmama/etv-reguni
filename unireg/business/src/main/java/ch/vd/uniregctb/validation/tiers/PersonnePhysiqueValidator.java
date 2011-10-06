@@ -15,6 +15,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -158,6 +159,28 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 				// génération des messages d'erreur
 				for (DateRange range : intersections) {
 					results.addError(String.format("La période %s est couverte par plusieurs mesures tutélaires", DateRangeHelper.toDisplayString(range)));
+				}
+			}
+
+		}
+
+		// [SIFISC-2533] Une personne physique ne peut pas appartenir à plusieurs ménages-communs en même temps
+		if (tiers.getRapportsSujet() != null) {
+			List<AppartenanceMenage> menages = null;
+			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
+				if (!r.isAnnule() && r instanceof AppartenanceMenage) {
+					if (menages == null) {
+						menages = new ArrayList<AppartenanceMenage>();
+					}
+					menages.add((AppartenanceMenage) r);
+				}
+			}
+
+			final List<DateRange> intersections = determineIntersectingRanges(menages);
+			if (intersections != null) {
+				// génération des messages d'erreur
+				for (DateRange range : intersections) {
+					results.addError(String.format("La personne physique appartient à plusieurs ménages communs sur la période %s", DateRangeHelper.toDisplayString(range)));
 				}
 			}
 
