@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -62,13 +64,20 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		public final CollectiviteAdministrative cedi;
 		public final CollectiviteAdministrative aci;
 		public final PeriodeFiscale periode;
-		public final ModeleDocument modele;
+		public final Set<ModeleFeuilleDocument> setAnnexeImmeuble;
 
-		public Cache(CollectiviteAdministrative cedi, CollectiviteAdministrative aci, ModeleDocument modele, PeriodeFiscale periode) {
+		public Cache(CollectiviteAdministrative cedi, CollectiviteAdministrative aci, PeriodeFiscale periode) {
 			this.cedi = cedi;
-			this.modele = modele;
 			this.periode = periode;
 			this.aci = aci;
+
+			ModeleFeuilleDocument modeleAnnexeImmeuble = new ModeleFeuilleDocument();
+			modeleAnnexeImmeuble.setModeleDocument(null);
+			modeleAnnexeImmeuble.setIntituleFeuille(ModeleFeuille.ANNEXE_320.getDescription());
+			modeleAnnexeImmeuble.setNumeroFormulaire(ModeleFeuille.ANNEXE_320.getCode());
+
+			setAnnexeImmeuble = new HashSet<ModeleFeuilleDocument>();
+			setAnnexeImmeuble.add(modeleAnnexeImmeuble);
 		}
 	}
 
@@ -155,7 +164,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 * @param listCtbImmeuble les listCtbImmeuble des contribuables à traiter
 	 * @param anneePeriode    l'année fiscale considérée
 	 * @param dateTraitement  la date de traitement
-	 * @param nbAnnexeMax
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'erreur dans le traitement d'un contribuable.
 	 */
@@ -191,7 +199,8 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL, pi.getCodeSegment(),
 						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 
-				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.modele.getModelesFeuilleDocument(), dateTraitement, nombreAnnexesImmeuble);
+
+				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.setAnnexeImmeuble, dateTraitement, nombreAnnexesImmeuble);
 				rapport.addInfoCtbTraites(ctb, nombreAnnexesImprimees);
 				rapport.addCtbTraites(ctb.getId());
 			}
@@ -246,7 +255,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 * Initialise les données pré-cachées pour éviter de les recharger plusieurs fois de la base de données.
 	 *
 	 * @param anneePeriode l'année fiscale considérée
-	 * @param categorie    la catégorie de contribuable considérée
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'erreur dans le traitement d'un contribuable.
 	 */
@@ -276,7 +284,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 					+ periode.getAnnee() + "] et le type de document [" + TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH.name() + "].");
 		}
 
-		cache = new Cache(cedi, aci, modele, periode);
+		cache = new Cache(cedi, aci, periode);
 	}
 
 
