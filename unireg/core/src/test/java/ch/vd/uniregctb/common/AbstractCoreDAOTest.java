@@ -49,6 +49,7 @@ import org.xml.sax.InputSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -666,6 +667,23 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		feuille.setModeleDocument(modeleDoc);
 		feuille = hibernateTemplate.merge(feuille);
 		return feuille;
+	}
+
+	/**
+	 * Ajoute une LR au débiteur spécifié
+	 */
+	protected DeclarationImpotSource addListeRecapitulative(DebiteurPrestationImposable dpi, PeriodeFiscale periode, RegDate debut, RegDate fin, ModeleDocument modele) {
+		DeclarationImpotSource lr = new DeclarationImpotSource();
+		lr.setModeCommunication(dpi.getModeCommunication());
+		lr.setPeriodicite(dpi.getPeriodiciteAt(debut).getPeriodiciteDecompte());
+		lr.setPeriode(periode);
+		lr.setDateDebut(debut);
+		lr.setDateFin(fin);
+		lr.setModeleDocument(modele);
+		lr.setTiers(dpi);
+		lr = hibernateTemplate.merge(lr);
+		dpi.addDeclaration(lr);
+		return lr;
 	}
 
 	/**

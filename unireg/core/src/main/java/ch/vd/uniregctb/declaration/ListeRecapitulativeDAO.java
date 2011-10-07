@@ -2,6 +2,8 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -19,7 +21,7 @@ public interface ListeRecapitulativeDAO extends GenericDAO<DeclarationImpotSourc
 	 * @param criterion
 	 * @return
 	 */
-	public List<DeclarationImpotSource> find(ListeRecapCriteria criterion, ParamPagination paramPagination) ;
+	public List<DeclarationImpotSource> find(ListeRecapCriteria criterion, @Nullable ParamPagination paramPagination) ;
 
 	/**
 	 * Recherche toutes les LR en fonction du numero de debiteur

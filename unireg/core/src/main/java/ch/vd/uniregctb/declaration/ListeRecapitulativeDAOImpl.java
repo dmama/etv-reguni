@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -26,7 +27,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOImpl.class);
 
-	private final String TOUS = "TOUS";
+	private static final String TOUS = "TOUS";
 
 	public ListeRecapitulativeDAOImpl() {
 		super(DeclarationImpotSource.class);
@@ -40,20 +41,14 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @return
 	 */
 	@Override
-	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, final ParamPagination paramPagination) {
+	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DeclarationImpotSource>>() {
 			@Override
 			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final List<Object> parameters = new ArrayList<Object>();
-				final String query = String.format("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 %s%s", buildWhereClauseFromCriteria(
-						criterion, parameters), buildOrderClause(paramPagination));
-
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("EvenementCivilExterneCriteria Query: " + query);
-					LOGGER.debug("EvenementCivilExterneCriteria Table size: " + parameters.size());
-				}
+				final String query = String.format("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 %s%s", buildWhereClauseFromCriteria(criterion, parameters), buildOrderClause(paramPagination));
 
 				final Query queryObject = session.createQuery(query);
 				final Object[] values = parameters.toArray();
@@ -134,19 +129,19 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
     	final StringBuilder builder = new StringBuilder();
 
-    	if (!criterion.getPeriodicite().equals(TOUS)) {
+    	if (!TOUS.equals(criterion.getPeriodicite())) {
 			final PeriodiciteDecompte periodicite = PeriodiciteDecompte.valueOf(criterion.getPeriodicite());
 			builder.append(" and lr.periodicite = ? ");
 			parameters.add(periodicite.name());
 		}
 
-		if (!criterion.getCategorie().equals(TOUS)) {
+		if (!TOUS.equals(criterion.getCategorie())) {
 			final CategorieImpotSource categorie = CategorieImpotSource.valueOf(criterion.getCategorie());
 			builder.append(" and lr.tiers.categorieImpotSource = ? ");
 			parameters.add(categorie.name());
 		}
 
-		if (!criterion.getModeCommunication().equals(TOUS)) {
+		if (!TOUS.equals(criterion.getModeCommunication())) {
 			final ModeCommunication mode = ModeCommunication.valueOf(criterion.getModeCommunication());
 			builder.append(" and lr.modeCommunication = ? ");
 			parameters.add(mode.name());
@@ -158,12 +153,14 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			parameters.add(periode.index());
 		}
 
-		if (!criterion.getEtat().equals(TOUS)) {
+		if (!TOUS.equals(criterion.getEtat())) {
 			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
 			if (etat != TypeEtatDeclaration.EMISE) {
-				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ? and etat.annulationDate is null)");
-				final Class classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
-				parameters.add(classeOfEtatDeclaration.getName());
+				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
+
+				final Class<? extends EtatDeclaration> classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
+				builder.append(classeOfEtatDeclaration.getName());
+				builder.append(" and etat.annulationDate is null)");
 			}
 
 			if (etat != TypeEtatDeclaration.RETOURNEE) {
@@ -186,12 +183,11 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
 				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class in (");
 				boolean first = true;
-				for (Class classeEtatInterdit : classesEtatDeclarationsInterdits) {
+				for (Class<? extends EtatDeclaration> classeEtatInterdit : classesEtatDeclarationsInterdits) {
 					if (!first) {
-						builder.append(",");
+						builder.append(" ,");
 					}
-					builder.append("?");
-					parameters.add(classeEtatInterdit.getName());
+					builder.append(classeEtatInterdit.getName());
 					first = false;
 				}
 				builder.append(") and etat.annulationDate is null)");
