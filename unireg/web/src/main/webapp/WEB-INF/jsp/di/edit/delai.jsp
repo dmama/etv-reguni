@@ -105,7 +105,6 @@
     	eltButtonAnnule.style.display = "none";
     	eltBoxConfirmation.disabled = true;
     	eltButtonRetour.style.display = "";
-		formAddDelai.submit();
 	}
 
 
