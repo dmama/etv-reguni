@@ -247,7 +247,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 * @return le nombre d'immeuble divisé par 2 arondi à l'entier supérieur
 	 */
 	protected int getNombreAnnexeAEnvoyer(int nombreImmeuble) {
-		return Double.valueOf(Math.ceil(nombreImmeuble / 2.0)).intValue();
+		final int nbreAnnexeCalcule = Double.valueOf(Math.ceil(nombreImmeuble / 2.0)).intValue();
+		//[SIFISC-2485] les annexes sotn à envoyer à double.
+		return nbreAnnexeCalcule * 2;
 
 	}
 

@@ -68,16 +68,16 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerNombreAnnexeImmeuble() {
 
-		// 1 immeuble => 1 annexe
-		assertEquals(1, processor.getNombreAnnexeAEnvoyer(1));
-		//2 immeubles => 1annexe
-		assertEquals(1, processor.getNombreAnnexeAEnvoyer(2));
-		//3 immeubles => 2 annexes
-		assertEquals(2, processor.getNombreAnnexeAEnvoyer(3));
-		//4 immeubles => 2 annexes
-		assertEquals(2, processor.getNombreAnnexeAEnvoyer(4));
-		//5 immeubles => 3 annexes
-		assertEquals(3, processor.getNombreAnnexeAEnvoyer(5));
+		// 1 immeuble => 2 annexes
+		assertEquals(2, processor.getNombreAnnexeAEnvoyer(1));
+		//2 immeubles => 2 annexes
+		assertEquals(2, processor.getNombreAnnexeAEnvoyer(2));
+		//3 immeubles => 4 annexes
+		assertEquals(4, processor.getNombreAnnexeAEnvoyer(3));
+		//4 immeubles => 4 annexes
+		assertEquals(4, processor.getNombreAnnexeAEnvoyer(4));
+		//5 immeubles => 6 annexes
+		assertEquals(6, processor.getNombreAnnexeAEnvoyer(5));
 	}
 
 	@Test

@@ -47,7 +47,6 @@
 		<property name="impressionTaxationOfficeHelper" ref="impressionTaxationOfficeHelper" />
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
-		<property name="nombreMaxAnnexesImmeuble" value="${extprop.editique.annexes.immeuble.nombreMax}" />
 	</bean>
 
 </beans>

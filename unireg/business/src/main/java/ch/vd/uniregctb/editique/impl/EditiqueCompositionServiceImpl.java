@@ -60,7 +60,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ServiceSecuriteService serviceSecurite;
 	private ImpressionTaxationOfficeHelper impressionTaxationOfficeHelper;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
-	private int nombreMaxAnnexesImmeuble;
 
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
@@ -108,11 +107,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionBordereauMouvementDossierHelper(ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper) {
 		this.impressionBordereauMouvementDossierHelper = impressionBordereauMouvementDossierHelper;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setNombreMaxAnnexesImmeuble(int nombreMaxAnnexesImmeuble) {
-		this.nombreMaxAnnexesImmeuble = nombreMaxAnnexesImmeuble;
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
@@ -206,15 +200,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException {
-		// on limite le nombre d'annexe au maximum de la capacité des enveloppes
-		final int nombreAnnexesImmeubleAImprimer = (nombreAnnexesImmeuble > nombreMaxAnnexesImmeuble ? nombreMaxAnnexesImmeuble : nombreAnnexesImmeuble);
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
+			EditiqueException {
 
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final String typeDocument = impressionDIHelper.calculPrefixe(typeDoc);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeubleAImprimer), true);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeuble), true);
 		Assert.notNull(document);
 		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
@@ -223,7 +216,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final Tiers tiers = infosDocument.getTiers();
 		final String nomDocument = impressionDIHelper.construitIdDocument(annee, idDoc, tiers);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
-		return nombreAnnexesImmeubleAImprimer;
+		return nombreAnnexesImmeuble;
 	}
 
 	@Override
