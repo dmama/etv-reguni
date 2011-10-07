@@ -18,7 +18,7 @@
 	<tiles:put name="body">
 		<fieldset>
 			<legend><span><fmt:message key="label.liste.immeubles" /></span></legend>
-			<display:table name="${immeubles}" class="display" pagesize="10">
+			<display:table name="${immeubles}" id="immeuble" class="display" pagesize="10">
 				<display:column titleKey="label.date.debut" property="dateDebut"/>
 				<display:column titleKey="label.date.fin" property="dateFin"/>
 				<display:column titleKey="label.numero.immeuble" property="numero"/>
@@ -26,7 +26,9 @@
 				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale"/>
 				<display:column titleKey="label.date.estimation.fiscale" property="dateEstimationFiscale"/>
 				<display:column titleKey="label.ancienne.estimation.fiscale" property="ancienneEstimationFiscale"/>
-				<display:column titleKey="label.genre.propriete" property="genrePropriete"/>
+				<display:column titleKey="label.genre.propriete">
+					<fmt:message key="option.rf.genre.propriete.${immeuble.genrePropriete}" />
+				</display:column>
 				<display:column titleKey="label.part.propriete" property="partPropriete"/>
 			</display:table>
 		</fieldset>
