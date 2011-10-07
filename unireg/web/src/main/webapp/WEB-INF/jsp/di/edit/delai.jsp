@@ -72,41 +72,41 @@
 	</form:form>
 	<script type="text/javascript" language="Javascript1.3">
 
-	function verifierDate(dateExpedition,formAddDelai){
+	function verifierDate(dateExpedition, formAddDelai) {
 		var delaiAccordeAu = formAddDelai.delaiAccordeAu.value;
 		if (compare(addYear(dateExpedition, 1, 'yyyy.MM.dd' ), getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
-			if(!confirm('Ce délai est située plus d un an dans le futur à compter de la date d expédition de la DI. Voulez-vous le sauver ?')) {
-				return true;
-			}
+			return confirm("Ce délai est située plus d'un an dans le futur à compter de la date d'expédition de la DI. Voulez-vous le sauver ?");
 		}
+		return true;
 	}
 
 	function ajouterDelaiDI(dateExpedition) {
 		var formAddDelai = document.getElementById('formAddDelai');
-		verifierDate(dateExpedition,formAddDelai);
-	    Form.doPostBack("theForm","ajouter","");
+		if (verifierDate(dateExpedition, formAddDelai)) {
+		    Form.doPostBack("theForm", "ajouter", "");
+		}
 	}
 
 	function ajouterDelaiAvecConfirmation(dateExpedition) {
 		var formAddDelai = document.getElementById('formAddDelai');
-		verifierDate(dateExpedition,formAddDelai);
-	    Form.doPostBack("theForm","imprimer","");
+		if (verifierDate(dateExpedition, formAddDelai)) {
+	    	Form.doPostBack("theForm", "imprimer", "");
 
-	    /*On desactive les boutons */
+			/*On desactive les boutons */
 
-	    var eltButtonImprime = document.getElementById('imprimer');
-    	var eltButtonAjout = document.getElementById('ajouter');
-    	var eltButtonAnnule = document.getElementById('annuler');
-    	var eltButtonRetour = document.getElementById('retour');
-    	var eltBoxConfirmation = document.getElementById('confirmation');
+			var eltButtonImprime = document.getElementById('imprimer');
+			var eltButtonAjout = document.getElementById('ajouter');
+			var eltButtonAnnule = document.getElementById('annuler');
+			var eltButtonRetour = document.getElementById('retour');
+			var eltBoxConfirmation = document.getElementById('confirmation');
 
-    	eltButtonImprime.style.display = "none";
-    	eltButtonAjout.style.display = "none";
-    	eltButtonAnnule.style.display = "none";
-    	eltBoxConfirmation.disabled = true;
-    	eltButtonRetour.style.display = "";
+			eltButtonImprime.style.display = "none";
+			eltButtonAjout.style.display = "none";
+			eltButtonAnnule.style.display = "none";
+			eltBoxConfirmation.disabled = true;
+			eltButtonRetour.style.display = "";
+		}
 	}
-
 
     function toggleActionDelai() {
     	var elt = document.getElementById('confirmation');
@@ -122,6 +122,8 @@
     	}
     }
 
+	// première exécution au chargement de la page...
+	toggleActionDelai();
 	
 	</script>
 	</tiles:put>
