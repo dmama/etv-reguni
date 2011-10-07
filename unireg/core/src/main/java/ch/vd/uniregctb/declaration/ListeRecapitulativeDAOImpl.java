@@ -27,8 +27,6 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOImpl.class);
 
-	private static final String TOUS = "TOUS";
-
 	public ListeRecapitulativeDAOImpl() {
 		super(DeclarationImpotSource.class);
 	}
@@ -129,22 +127,22 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
     	final StringBuilder builder = new StringBuilder();
 
-    	if (!TOUS.equals(criterion.getPeriodicite())) {
-			final PeriodiciteDecompte periodicite = PeriodiciteDecompte.valueOf(criterion.getPeriodicite());
+	    final PeriodiciteDecompte periodicite = criterion.getPeriodicite();
+	    if (periodicite != null) {
 			builder.append(" and lr.periodicite = ? ");
 			parameters.add(periodicite.name());
 		}
 
-		if (!TOUS.equals(criterion.getCategorie())) {
-			final CategorieImpotSource categorie = CategorieImpotSource.valueOf(criterion.getCategorie());
+	    final CategorieImpotSource categorie = criterion.getCategorie();
+	    if (categorie != null) {
 			builder.append(" and lr.tiers.categorieImpotSource = ? ");
 			parameters.add(categorie.name());
 		}
 
-		if (!TOUS.equals(criterion.getModeCommunication())) {
-			final ModeCommunication mode = ModeCommunication.valueOf(criterion.getModeCommunication());
+	    final ModeCommunication modeCommunication = criterion.getModeCommunication();
+	    if (modeCommunication != null) {
 			builder.append(" and lr.modeCommunication = ? ");
-			parameters.add(mode.name());
+			parameters.add(modeCommunication.name());
 		}
 
 		final RegDate periode = criterion.getPeriode();
@@ -153,8 +151,8 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			parameters.add(periode.index());
 		}
 
-		if (!TOUS.equals(criterion.getEtat())) {
-			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
+	    final TypeEtatDeclaration etat = criterion.getEtat();
+	    if (etat != null) {
 			if (etat != TypeEtatDeclaration.EMISE) {
 				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
 

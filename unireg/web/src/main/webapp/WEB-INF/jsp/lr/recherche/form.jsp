@@ -5,7 +5,7 @@
 		<td width="25%"><fmt:message key="label.periodicite" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="periodicite">
-				<form:option value="TOUS" ><fmt:message key="option.TOUTES" /></form:option>
+				<form:option value="" ><fmt:message key="option.TOUTES" /></form:option>
 				<form:options items="${periodicitesDecompte}" />
 			</form:select>	
 		</td>
@@ -20,14 +20,14 @@
 		<td><fmt:message key="label.categorie.impot.source" />&nbsp;:</td>
 		<td>
 			<form:select path="categorie">
-				<form:option value="TOUS" ><fmt:message key="option.TOUTES" /></form:option>
+				<form:option value="" ><fmt:message key="option.TOUTES" /></form:option>
 				<form:options items="${categoriesImpotSource}" />
 			</form:select>	
 		</td>
 		<td><fmt:message key="label.etat.avancement" />&nbsp;:</td>
 		<td>
 			<form:select path="etat">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value="" ><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${etatsDocument}" />
 			</form:select>	
 		</td>
@@ -36,7 +36,7 @@
 		<td><fmt:message key="label.mode.communication" />&nbsp;:</td>
 		<td>
 			<form:select path="modeCommunication">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value="" ><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${modesCommunication}" />
 			</form:select>	
 		</td>

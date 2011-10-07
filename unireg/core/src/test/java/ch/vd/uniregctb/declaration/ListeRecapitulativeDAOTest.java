@@ -28,8 +28,6 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 	private static final String DAO_NAME = "lrDAO";
 
-	private static final String TOUS = "TOUS";
-
 	private static final String DB_UNIT_DATA_FILE = "ListeRecapitulativeDAOTest.xml";
 
 	/**
@@ -54,14 +52,14 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
-		ListeRecapCriteria criterion = new ListeRecapCriteria();
-		criterion.setPeriodicite(PeriodiciteDecompte.MENSUEL.toString());
-        RegDate dateDebutPeriode = RegDate.get(2008, 1, 1);
+		final ListeRecapCriteria criterion = new ListeRecapCriteria();
+		criterion.setPeriodicite(PeriodiciteDecompte.MENSUEL);
+        final RegDate dateDebutPeriode = RegDate.get(2008, 1, 1);
 		criterion.setPeriode(dateDebutPeriode);
-		criterion.setModeCommunication(ModeCommunication.PAPIER.toString());
-		criterion.setEtat(TypeEtatDeclaration.EMISE.toString());
-		criterion.setCategorie(CategorieImpotSource.ADMINISTRATEURS.toString());
-		List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
+		criterion.setModeCommunication(ModeCommunication.PAPIER);
+		criterion.setEtat(TypeEtatDeclaration.EMISE);
+		criterion.setCategorie(CategorieImpotSource.ADMINISTRATEURS);
+		final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 		assertNotNull(lrs);
 		assertEquals(1, lrs.size());
 	}
@@ -73,7 +71,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFindByNumero() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
-		List<DeclarationImpotSource> lrs = lrDao.findByNumero(12500001L);
+		final List<DeclarationImpotSource> lrs = lrDao.findByNumero(12500001L);
 		assertNotNull(lrs);
 		assertEquals(2, lrs.size());
 	}
@@ -87,7 +85,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	public void testFindDerniereLrEnvoyee() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
-		EtatDeclaration etat = lrDao.findDerniereLrEnvoyee(12500001L);
+		final EtatDeclaration etat = lrDao.findDerniereLrEnvoyee(12500001L);
 		assertNotNull(etat);
 		assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
 		assertEquals(new Long(12500001), etat.getDeclaration().getTiers().getNumero());
@@ -200,10 +198,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapCriteria criterion = new ListeRecapCriteria();
-				criterion.setEtat(TypeEtatDeclaration.RETOURNEE.name());
-				criterion.setCategorie(TOUS);
-				criterion.setModeCommunication(TOUS);
-				criterion.setPeriodicite(TOUS);
+				criterion.setEtat(TypeEtatDeclaration.RETOURNEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -328,10 +323,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapCriteria criterion = new ListeRecapCriteria();
-				criterion.setEtat(TypeEtatDeclaration.EMISE.name());
-				criterion.setCategorie(TOUS);
-				criterion.setModeCommunication(TOUS);
-				criterion.setPeriodicite(TOUS);
+				criterion.setEtat(TypeEtatDeclaration.EMISE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -444,10 +436,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapCriteria criterion = new ListeRecapCriteria();
-				criterion.setEtat(TypeEtatDeclaration.SOMMEE.name());
-				criterion.setCategorie(TOUS);
-				criterion.setModeCommunication(TOUS);
-				criterion.setPeriodicite(TOUS);
+				criterion.setEtat(TypeEtatDeclaration.SOMMEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -560,10 +549,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapCriteria criterion = new ListeRecapCriteria();
-				criterion.setEtat(TypeEtatDeclaration.ECHUE.name());
-				criterion.setCategorie(TOUS);
-				criterion.setModeCommunication(TOUS);
-				criterion.setPeriodicite(TOUS);
+				criterion.setEtat(TypeEtatDeclaration.ECHUE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
