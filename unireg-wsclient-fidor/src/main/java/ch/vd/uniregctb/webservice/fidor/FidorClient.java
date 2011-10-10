@@ -7,6 +7,7 @@ import ch.vd.fidor.ws.v2.Acces;
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.fidor.ws.v2.FidorDate;
+import ch.vd.fidor.ws.v2.FusionCommune;
 import ch.vd.fidor.ws.v2.Logiciel;
 import ch.vd.fidor.ws.v2.ParameterMap;
 import ch.vd.fidor.ws.v2.Pays;
@@ -49,13 +50,14 @@ public interface FidorClient {
 	/**
 	 * Retourne la liste des communes participant à une fusion.
 	 *
+	 *
 	 * @param ofsId      le numéro Ofs d'une commune participant à une fusion (en tant qu'ancienne commune ou nouvelle commune fusionnée)
 	 * @param dateFusion la date précise de la fusion (= début de validité de la nouvelle commune résultant de la fusion)
 	 * @return la liste des communes ayant participé à la fusion (incluant les anciennes communes et la nouvelle commune).
 	 * @throws ch.vd.fidor.ws.v2.FidorBusinessException_Exception
 	 *          en cas d'erreur métier
 	 */
-	List<CommuneFiscale> getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception;
+	FusionCommune getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception;
 
 	/**
 	 * @param date une date ou <b>null</b> pour obtenir l'historique complet.

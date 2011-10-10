@@ -18,6 +18,7 @@ import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.fidor.ws.v2.FidorPortType;
 import ch.vd.fidor.ws.v2.FidorService;
+import ch.vd.fidor.ws.v2.FusionCommune;
 import ch.vd.fidor.ws.v2.Logiciel;
 import ch.vd.fidor.ws.v2.ParameterMap;
 import ch.vd.fidor.ws.v2.Pays;
@@ -73,7 +74,7 @@ public class FidorClientImpl implements FidorClient {
 		return service.getCommunesParNoOFS(ofsId);
 	}
 
-	public List<CommuneFiscale> getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception {
+	public FusionCommune getCommunesParFusion(int ofsId, FidorDate dateFusion) throws FidorBusinessException_Exception {
 		init();
 		return service.getCommunesParFusion(ofsId, dateFusion);
 	}
