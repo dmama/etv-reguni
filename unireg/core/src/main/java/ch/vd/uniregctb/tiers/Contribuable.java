@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
 
 /**
@@ -33,28 +34,15 @@ import ch.vd.uniregctb.type.MotifFor;
 @Entity
 public abstract class Contribuable extends Tiers {
 
+	private static final long serialVersionUID = -3641798749343787983L;
+
 	public static final int CTB_GEN_FIRST_ID = 10000000;
 
 	public static final int CTB_GEN_LAST_ID = 99999999;
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3641798749343787983L;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_9KImIuxIEdycMumkNMs2uQ"
-	 */
 	private Set<SituationFamille> situationsFamille;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3qxWkVjJEd2uSoZKEkgcsw"
-	 */
 	private Set<MouvementDossier> mouvementsDossier;
+	private Set<Immeuble> immeubles;
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 
@@ -118,6 +106,16 @@ public abstract class Contribuable extends Tiers {
 		// begin-user-code
 		mouvementsDossier = theMouvementDossier;
 		// end-user-code
+	}
+
+	@OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ForeignKey(name = "FK_IMM_CTB_ID")
+	public Set<Immeuble> getImmeubles() {
+		return immeubles;
+	}
+
+	public void setImmeubles(Set<Immeuble> immeubles) {
+		this.immeubles = immeubles;
 	}
 
 	/**

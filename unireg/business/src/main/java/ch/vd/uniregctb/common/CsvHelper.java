@@ -3,6 +3,7 @@ package ch.vd.uniregctb.common;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +42,7 @@ public abstract class CsvHelper {
 	/**
 	 * Méthode de remplissage de fichier Csv utilisant un {@link Filler}
 	 */
-	public static <T> String asCsvFile(List<T> list, String fileName, StatusManager status, int avgLineLength, Filler<T> filler) {
+	public static <T> String asCsvFile(Collection<T> list, String fileName, StatusManager status, int avgLineLength, Filler<T> filler) {
 		String contenu = null;
 		final int size = list.size();
 		if (size > 0) {

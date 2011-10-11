@@ -40,6 +40,7 @@ import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
+import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
@@ -432,4 +434,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ImportCodesSegmentRapport generateRapport(ImportCodesSegmentResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport dexécution du batch d'import des immeubles du registre foncier.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	ImportImmeublesRapport generateRapport(ImportImmeublesResults results, StatusManager status);
 }

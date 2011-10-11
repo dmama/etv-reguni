@@ -41,4 +41,15 @@ public class ImmeubleDAOImpl extends GenericDAOImpl<Immeuble, Long> implements I
 			}
 		});
 	}
+
+	@Override
+	public void removeAll() {
+		getHibernateTemplate().execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
+				Query query = session.createSQLQuery("delete from Immeuble");
+				return query.executeUpdate();
+			}
+		});
+	}
 }

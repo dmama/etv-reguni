@@ -240,6 +240,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />		
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="immeubleDAO" ref="immeubleDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersService" ref="tiersService"/>
 	</bean>

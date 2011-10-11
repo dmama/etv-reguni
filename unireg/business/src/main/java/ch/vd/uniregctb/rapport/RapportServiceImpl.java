@@ -49,6 +49,7 @@ import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
@@ -79,6 +80,7 @@ import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
+import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
@@ -1016,6 +1018,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportCodesSegmentRapport doc, OutputStream os) throws Exception {
 					final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public ImportImmeublesRapport generateRapport(final ImportImmeublesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportImportImmeubles";
+		final String description = "Rapport d'exécution du job d'importation des immeubles du registre foncier.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ImportImmeublesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImportImmeublesRapport>() {
+				@Override
+				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
+					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

@@ -34,7 +34,7 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 	private static final Logger LOGGER = Logger.getLogger(RapprocherCtbRegistreFoncierJob.class);
 
 	public static final String NAME = "RapprocherCtbRegistreFoncierJob";
-	private static final String CATEGORIE = "Tiers";
+	private static final String CATEGORIE = "RF";
 
 	public static final String LISTE_PROPRIO = "LISTE_PROPRIO";
 	public static final String NB_THREADS = "NB_THREADS";

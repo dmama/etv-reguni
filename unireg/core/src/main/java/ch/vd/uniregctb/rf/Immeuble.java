@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.net.URL;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -43,6 +44,7 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	private GenrePropriete genrePropriete;
 	private PartPropriete partPropriete;
 	private Contribuable proprietaire;
+	private URL lienRegistreFoncier;
 
 	/**
 	 * @return numéro technique de l'enregistrement dans la base de données.
@@ -61,7 +63,7 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	 * @return la date de début de validité de l'inscription au registre foncier.
 	 */
 	@Override
-	@Column(name = "DATE_DEBUT", nullable = false)
+	@Column(name = "DATE_DEBUT", nullable = true)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
@@ -187,6 +189,16 @@ public class Immeuble extends HibernateEntity implements DateRange {
 
 	public void setProprietaire(Contribuable proprietaire) {
 		this.proprietaire = proprietaire;
+	}
+
+	@Column(name = "LIEN_RF", nullable = true, length = LengthConstants.LIEN_RF)
+	@Type(type = "ch.vd.uniregctb.hibernate.URLUserType")
+	public URL getLienRegistreFoncier() {
+		return lienRegistreFoncier;
+	}
+
+	public void setLienRegistreFoncier(URL lienRegistreFoncier) {
+		this.lienRegistreFoncier = lienRegistreFoncier;
 	}
 
 	@Transient

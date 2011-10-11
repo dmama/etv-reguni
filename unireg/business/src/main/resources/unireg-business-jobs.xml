@@ -55,9 +55,17 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+    <!-- [SIFISC-2337] Job qui importe en vrac les immeubles du registre foncier    -->
+     <bean id="importerImmeublesJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.ImportImmeublesJob">
+        <constructor-arg value="105"/>
+        <constructor-arg value="Importer les immeubles du registre foncier"/>
+        <property name="registreFoncierService" ref="registreFoncierService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
-        <constructor-arg value="105"/>
+        <constructor-arg value="106"/>
         <constructor-arg value="Déterminer les mouvements de dossiers en masse"/>
         <property name="mouvementService" ref="mouvementService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -66,7 +74,7 @@
 
 	<!-- Job qui Resoud les adresses en fonction du numéro de rue-->
      <bean id="resolutionAdresseJob" parent="schedulerJob" class="ch.vd.uniregctb.adresse.ResolutionAdresseJob">
-        <constructor-arg value="106"/>
+        <constructor-arg value="107"/>
         <constructor-arg value="Résoudre les adresses en fonction du numéro de rue"/>
         <property name="adresseService" ref="adresseService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -74,7 +82,7 @@
 
 	<!-- Job qui compare les situations de famille UNIREG avec celles du civil-->
      <bean id="ComparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
-        <constructor-arg value="107"/>
+        <constructor-arg value="108"/>
         <constructor-arg value="Comparer les situations de familles"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="situationFamilleService" ref="situationFamilleService"/>
@@ -82,7 +90,7 @@
 
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
-		<constructor-arg value="108"/>
+		<constructor-arg value="109"/>
 		<constructor-arg value="Met-à-jour les statistiques des tâches"/>
 		<property name="tacheService" ref="tacheService"/>
 		<property name="logDisabled" value="true"/>
