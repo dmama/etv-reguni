@@ -180,14 +180,38 @@
 			$(function() {
 				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});
 
+				// [SIFISC-2587] sélection automatique d'un onglet (cas général)
+				var params = get_url_params();
+				if (params && params.selectTab) {
+					try {
+						var index = $('#' + params.selectTab).index();
+						$('#tiersTabs').tabs('select', index);
+					}
+					catch (err) {
+						// tant pis
+					}
+				}
+
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
 				// [SIFISC-2337] chargement différé (ajax) de la liste des immeubles (si nécessaire seulement)
 				$.get('../rf/immeuble/count.do?ctb=${command.tiersGeneral.numero}', function(data) {
 					if (parseInt(data) > 0) { // si le contribuable possède au moins un immeuble
 						var len = $("#tiersTabs").tabs("length");
+						var immeublesIndex = len - 1; // en avant dernière position
+
 						// ajoute un tab avec la liste des immeubles en avant dernière position (le tab des remarques doit rester le dernier)
-						$("#tiersTabs").tabs("add", '../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}', "Immeubles", len - 1);
+						$("#tiersTabs").tabs("add", '../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}', "Immeubles", immeublesIndex);
+
+						// on renseigne un id de manière à pouvoir sélectionner la tab depuis l'url
+						var immeublesTab = $("#menuTiersTabs li:eq(" + immeublesIndex + ")");
+						immeublesTab.attr('id', 'immeublesTab');
+
 						$('#ui-tabs-2').addClass('ui-tabs-hide'); // work-around pour un bug dans jQuery qui fait qu'une div surnuméraire est créée et qu'elle n'est pas masquée correctement.
+
+						// [SIFISC-2587] sélection automatique de l'onglet immeubles (cas particulier)
+						if (params && params.selectTab && params.selectTab == 'immeublesTab') {
+							$('#tiersTabs').tabs('select', immeublesIndex);
+						}
 					}
 				});
 				</authz:authorize>
