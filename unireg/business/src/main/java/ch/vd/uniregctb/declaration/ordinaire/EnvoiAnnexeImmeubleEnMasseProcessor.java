@@ -197,7 +197,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 				final InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, ctb.getId().intValue(), anneePeriode, dateReference,
 						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL, pi.getCodeSegment(),
-						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+						EnvoiAnnexeImmeubleJob.NAME, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, null);
 
 
 				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.setAnnexeImmeuble, dateTraitement, nombreAnnexesImmeuble);

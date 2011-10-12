@@ -835,6 +835,53 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNIPSurDI2011() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+		// Crée une personne physique décédé
+		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+		final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+		final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+		declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+		declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011), null, false);
+		assertNotNull(di);
+		//le NIP doit être présent
+		assertNotNull(di.getInfoDI().getNIP());
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNIPSurDI2010() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+		// Crée une personne physique décédé
+		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+		declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010), null, false);
+		assertNotNull(di);
+		//le NIP ne doit pas être présent
+		assertNull(di.getInfoDI().getNIP());
+
+	}
 
 	private static void validate(XmlObject document) {
 

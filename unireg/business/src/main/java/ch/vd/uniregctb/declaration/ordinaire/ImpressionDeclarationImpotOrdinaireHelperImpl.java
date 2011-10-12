@@ -721,6 +721,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		}
 
 		infoDI.setCODBARR(codbarr);
+		//[SIFISC-2619] Le code de controle /NIP est transmis lorsqu'il est présent sur la DI pour les périodes fiscales postérieurs à 2010
+		if (anneeFiscale >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && informationsDocument.codeControle != null) {
+			infoDI.setNIP(informationsDocument.codeControle);
+		}
 
 		// [SIFISC-2100] Le code trame doit être déduit du code "segment" de TAO et du type de la DI
 		final String codeTrame;
