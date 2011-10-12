@@ -75,12 +75,12 @@
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
-	<category name="tiers3.read" additivity="false">
+	<category name="party3.read" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
-	<category name="tiers3.write" additivity="false">
+	<category name="party3.write" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>

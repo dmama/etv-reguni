@@ -34,7 +34,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 	protected String securiteUrl;
 	protected String tiers1Url;
 	protected String tiers2Url;
-	protected String tiers3Url;
+	protected String party3Url;
 
 	protected WebClient webClient;
 
@@ -89,7 +89,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 		securiteUrl = baseWsUrl + propsWebIT.getProperty("webservice.securite.serverurl");
 		tiers1Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers.serverurl");
 		tiers2Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers2.serverurl");
-		tiers3Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers3.serverurl");
+		party3Url = baseWsUrl + propsWebIT.getProperty("webservice.party3.serverurl");
 
 		LOGGER.debug("baseUrl: " + baseUrl);
 		LOGGER.debug("baseWsUrl: " + baseWsUrl);
