@@ -50,3 +50,11 @@ drop table IMMEUBLE cascade constraints;
 create table IMMEUBLE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), ANCIENNE_ESTIM_FISC number(10,0), DATE_DEBUT number(10,0), DATE_ESTIM_FISC number(10,0), DATE_FIN number(10,0), ESTIMATION_FISCALE number(10,0) not null, GENRE_PROPRIETE nvarchar2(12) not null, LIEN_RF nvarchar2(255), NATURE_IMMEUBLE nvarchar2(255) not null, NUMERO_IMMEUBLE nvarchar2(20) not null, PART_PROPRIETE_DENOMINATEUR number(10,0) not null, PART_PROPRIETE_NUMERATEUR number(10,0) not null, CTB_ID number(19,0) not null, primary key (id));
 create index IDX_IMM_CTB_ID on IMMEUBLE (CTB_ID);
 alter table IMMEUBLE add constraint FK_IMM_CTB_ID foreign key (CTB_ID) references TIERS;
+
+--
+-- Nouveaux indexes proposés par le CEI
+--
+CREATE INDEX IDX_EVT_CIVIL_ERR_EVT_ID ON EVENEMENT_CIVIL_ERREUR(EVT_CIVIL_ID);
+CREATE INDEX IDX_EVT_EXTRNE_CORR_ID ON EVENEMENT_EXTERNE(CORRELATION_ID);
+CREATE INDEX IDX_MVT_DOSSIER_BORD_ID on MOUVEMENT_DOSSIER (BORDEREAU_ID);		-- celui-ci a été oublié dans un script d'update précédent...
+CREATE INDEX IDX_TACHE_TYPE_CA ON TACHE(TACHE_TYPE, ETAT, ANNULATION_DATE, DATE_ECHEANCE, CA_ID);
