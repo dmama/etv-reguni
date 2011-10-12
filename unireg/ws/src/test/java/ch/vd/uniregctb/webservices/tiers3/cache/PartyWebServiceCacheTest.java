@@ -85,16 +85,16 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		CacheManager manager = getBean(CacheManager.class, "ehCacheManager");
-		PartyWebService webService = getBean(PartyWebService.class, "tiersService3Impl");
+		PartyWebService webService = getBean(PartyWebService.class, "partyService3Impl");
 		implementation = new PartyWebServiceTracing(webService);
 
 		cache = new PartyWebServiceCache();
 		cache.setCacheManager(manager);
 		cache.setTarget(implementation);
-		cache.setCacheName("webServiceTiers3");
+		cache.setCacheName("webServiceParty3");
 		ehcache = cache.getEhCache();
 
-		wsCacheManager = getBean(PartyWebServiceCacheManager.class, "tiersService3CacheManager");
+		wsCacheManager = getBean(PartyWebServiceCacheManager.class, "partyService3CacheManager");
 		wsCacheManager.setCache(cache);
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -156,7 +156,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 	@Override
 	public void onTearDown() throws Exception {
-		wsCacheManager.setCache(getBean(PartyWebServiceCache.class, "tiersService3Cache"));
+		wsCacheManager.setCache(getBean(PartyWebServiceCache.class, "partyService3Cache"));
 		super.onTearDown();
 	}
 

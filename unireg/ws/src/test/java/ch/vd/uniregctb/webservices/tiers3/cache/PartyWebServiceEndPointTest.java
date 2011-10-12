@@ -42,7 +42,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		PartyWebService partyService = getBean(PartyWebService.class, "tiersService3Impl");
+		PartyWebService partyService = getBean(PartyWebService.class, "partyService3Impl");
 		endpoint = new PartyWebServiceEndPoint();
 		endpoint.setService(partyService);
 	}

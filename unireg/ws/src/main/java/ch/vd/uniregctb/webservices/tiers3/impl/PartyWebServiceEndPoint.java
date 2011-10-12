@@ -50,7 +50,7 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/tiers3", serviceName = "PartyWebServiceFactory", portName = "Service",
+@WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3", serviceName = "PartyWebServiceFactory", portName = "Service",
 		endpointInterface = "ch.vd.unireg.webservices.tiers3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable {
 

@@ -83,7 +83,7 @@
         overflowToDisk="false"
         />
         
-    <cache name="webServiceTiers3"
+    <cache name="webServiceParty3"
         maxElementsInMemory="1000"
         eternal="false"
         timeToIdleSeconds="300"

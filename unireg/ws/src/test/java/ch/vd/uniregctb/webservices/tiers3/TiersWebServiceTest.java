@@ -80,7 +80,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		service = getBean(PartyWebService.class, "tiersService3Impl");
+		service = getBean(PartyWebService.class, "partyService3Impl");
 		login = new UserLogin("iamtestuser", 22);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 	}

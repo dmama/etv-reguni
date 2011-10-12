@@ -23,8 +23,8 @@
 	</bean>
 
 	<!-- Version PM du Web-service Tiers 3 -->
-	<bean id="tiersService3PM" class="ch.vd.uniregctb.webservices.tiers3.impl.pm.PartyWebServiceWithPM">
-		<property name="target" ref="tiersService3Impl" />
+	<bean id="partyService3PM" class="ch.vd.uniregctb.webservices.tiers3.impl.pm.PartyWebServiceWithPM">
+		<property name="target" ref="partyService3Impl" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
@@ -48,10 +48,10 @@
 	</bean>
 
 	<!-- redéfinition du cache avec le service PM 3 comme target -->
-	<bean id="tiersService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCache">
-		<property name="target" ref="tiersService3PM" /> <!-- override -->
+	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.tiers3.cache.PartyWebServiceCache">
+		<property name="target" ref="partyService3PM" /> <!-- override -->
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceTiers3" />
+		<property name="cacheName" value="webServiceParty3" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
