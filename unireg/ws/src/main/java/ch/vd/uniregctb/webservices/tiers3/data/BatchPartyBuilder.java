@@ -2,9 +2,9 @@ package ch.vd.uniregctb.webservices.tiers3.data;
 
 import java.util.Map;
 
-import ch.vd.unireg.webservices.tiers3.BatchParty;
-import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.party.v1.Party;
 
 public class BatchPartyBuilder {

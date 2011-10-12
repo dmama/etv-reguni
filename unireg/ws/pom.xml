@@ -74,7 +74,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-ws-tiers3</artifactId>
+			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>

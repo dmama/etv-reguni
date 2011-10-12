@@ -3,7 +3,7 @@ package ch.vd.uniregctb.webservices.tiers3.impl;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**

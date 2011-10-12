@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.webservices.tiers3.data;
 
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
-import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
+import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.webservices.tiers3.exception.TaxDeclarationAcknowledgeError;

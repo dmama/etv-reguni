@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.Debtor;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;

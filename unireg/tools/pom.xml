@@ -33,7 +33,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-ws-tiers3</artifactId>
+			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>

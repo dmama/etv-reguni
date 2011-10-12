@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.PartyPart;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;

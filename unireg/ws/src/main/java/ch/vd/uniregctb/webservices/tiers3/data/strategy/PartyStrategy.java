@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;

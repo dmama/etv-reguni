@@ -2,7 +2,7 @@ package ch.vd.uniregctb.webservices.tiers3.impl;
 
 import org.springmodules.xt.model.generator.support.IllegalArgumentPositionException;
 
-import ch.vd.unireg.webservices.tiers3.SearchMode;
+import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;

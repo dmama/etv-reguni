@@ -9,12 +9,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.tiers3.BatchParty;
-import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
-import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.SearchPartyRequest;
+import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.uniregctb.common.WebserviceTest;

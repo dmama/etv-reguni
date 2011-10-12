@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers3.exception;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 
 public class TaxDeclarationAcknowledgeError extends Exception {
 

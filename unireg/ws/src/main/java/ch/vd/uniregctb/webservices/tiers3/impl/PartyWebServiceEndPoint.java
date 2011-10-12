@@ -14,24 +14,24 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.tiers3.BatchParty;
-import ch.vd.unireg.webservices.tiers3.BatchPartyEntry;
-import ch.vd.unireg.webservices.tiers3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.tiers3.GetDebtorInfoRequest;
-import ch.vd.unireg.webservices.tiers3.GetModifiedTaxpayersRequest;
-import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.GetPartyTypeRequest;
-import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsRequest;
-import ch.vd.unireg.webservices.tiers3.SearchCorporationEventsResponse;
-import ch.vd.unireg.webservices.tiers3.SearchPartyRequest;
-import ch.vd.unireg.webservices.tiers3.SearchPartyResponse;
-import ch.vd.unireg.webservices.tiers3.SetAutomaticReimbursementBlockingRequest;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
+import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
+import ch.vd.unireg.webservices.party3.SearchPartyRequest;
+import ch.vd.unireg.webservices.party3.SearchPartyResponse;
+import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
@@ -51,7 +51,7 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3", serviceName = "PartyWebServiceFactory", portName = "Service",
-		endpointInterface = "ch.vd.unireg.webservices.tiers3.PartyWebService")
+		endpointInterface = "ch.vd.unireg.webservices.party3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceEndPoint.class);

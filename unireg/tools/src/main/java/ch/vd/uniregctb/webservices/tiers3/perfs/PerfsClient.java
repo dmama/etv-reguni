@@ -25,9 +25,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.PartyWebService;
-import ch.vd.unireg.webservices.tiers3.PartyWebServiceFactory;
+import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
 import ch.vd.uniregctb.perfs.PerfsAccessFile;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 

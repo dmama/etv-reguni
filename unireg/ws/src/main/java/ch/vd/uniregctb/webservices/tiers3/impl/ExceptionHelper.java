@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers3.impl;
 
-import ch.vd.unireg.webservices.tiers3.WebServiceException;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;

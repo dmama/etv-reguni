@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationRequest;
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationResponse;
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.tiers3.AcknowledgeTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.tiers3.GetPartyRequest;
-import ch.vd.unireg.webservices.tiers3.OrdinaryTaxDeclarationKey;
-import ch.vd.unireg.webservices.tiers3.PartyPart;
-import ch.vd.unireg.webservices.tiers3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
+import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
