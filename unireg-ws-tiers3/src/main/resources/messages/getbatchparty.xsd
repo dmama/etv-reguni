@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1"
 		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1">
 

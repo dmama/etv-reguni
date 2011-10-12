@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.0-beta3 -->
-<wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
-				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<!-- version 3.0-beta4-SNAPSHOT -->
+<wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
-		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-				   xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/tiers3"
+				   xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 				   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
 				   xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
 				   xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
