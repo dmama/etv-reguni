@@ -398,7 +398,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		if (di instanceof DIRetourCivil) {
 			remplitContribuables(infoAdapter, (DIRetourCivil) di);
 		}
-		if (di instanceof DIRetourCivilEnfant) {
+		if (di instanceof DIRetourCivilEnfant && infoAdapter.annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			remplitEnfants(infoAdapter, (DIRetourCivilEnfant) di);
 
 		}
@@ -728,17 +728,24 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		// [SIFISC-2100] Le code trame doit être déduit du code "segment" de TAO et du type de la DI
 		final String codeTrame;
-		switch (informationsDocument.getTypeDocument()) {
-		case DECLARATION_IMPOT_HC_IMMEUBLE:
-			codeTrame = "H";
-			break;
-		case DECLARATION_IMPOT_DEPENSE:
-			codeTrame = "D";
-			break;
-		default:
-			codeTrame = getCodeSegment(informationsDocument);
-			break;
+		//[SIFISC-2626] le code trame n'a de valeur que pour les périodes fiscales  >= à 2011
+		if (anneeFiscale >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			switch (informationsDocument.getTypeDocument()) {
+			case DECLARATION_IMPOT_HC_IMMEUBLE:
+				codeTrame = "H";
+				break;
+			case DECLARATION_IMPOT_DEPENSE:
+				codeTrame = "D";
+				break;
+			default:
+				codeTrame = getCodeSegment(informationsDocument);
+				break;
+			}
 		}
+		else {
+			codeTrame = "X";
+		}
+
 		infoDI.setCODETRAME(codeTrame);
 
 		final String codeSegment = getCodeSegment(informationsDocument);

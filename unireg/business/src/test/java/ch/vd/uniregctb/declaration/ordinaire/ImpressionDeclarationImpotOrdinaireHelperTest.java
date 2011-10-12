@@ -837,7 +837,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNIPSurDI2011() throws Exception {
+	public void testInfosSurDI2011() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
 		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
@@ -856,12 +856,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertNotNull(di);
 		//le NIP doit être présent
 		assertNotNull(di.getInfoDI().getNIP());
+		assertEquals("D", di.getInfoDI().getCODETRAME());
 
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNIPSurDI2010() throws Exception {
+	public void testInfosSurDI2010() throws Exception {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
 		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
@@ -880,8 +881,75 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertNotNull(di);
 		//le NIP ne doit pas être présent
 		assertNull(di.getInfoDI().getNIP());
+		//La valeur de  code trame à X
+		assertEquals("X", di.getInfoDI().getCODETRAME());
 
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCtbAvecEnfantAvant2011() throws Exception {
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2005, 2, 8), "Cognac", "Eva", false);
+
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+
+				fils.setParents(Arrays.<Individu>asList(pere));
+				fille.setParents(Arrays.<Individu>asList(pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+			}
+		});
+
+		class Ids {
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+		final long idDi2011 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+				// Crée une for
+				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pere, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+
+				return declaration2010.getId();
+			}
+		});
+
+		final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011), null, false);
+		assertNotNull(di);
+
+		assertNull(di.getEnfants());
+	}
+
 
 	private static void validate(XmlObject document) {
 
