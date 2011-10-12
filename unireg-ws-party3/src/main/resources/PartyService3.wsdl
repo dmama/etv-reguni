@@ -286,7 +286,7 @@
 	<!-- SERVICE declarations -->
 	<wsdl:service name="PartyWebServiceFactory">
 		<wsdl:port binding="ws:PartyServiceSoapBinding" name="Service">
-			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/tiers3" />
+			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/party3" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
