@@ -408,6 +408,11 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
+		public int getNumeroTechnique() {
+			return noOfsCommune;
+		}
+
+		@Override
 		public String getSigleCanton() {
 			throw new NotImplementedException();
 		}

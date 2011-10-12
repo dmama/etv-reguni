@@ -16,7 +16,8 @@
     </bean>
 
 	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
-		<property name="exposeNosTechniques" value="${extprop.webservice.expose.technical.ids}" />        
+		<property name="exposeNosTechniques" value="${extprop.webservice.expose.technical.ids}" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 

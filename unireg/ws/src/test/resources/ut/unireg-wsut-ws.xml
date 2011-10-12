@@ -4,7 +4,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
-		<property name="exposeNosTechniques" value="false" />        
+		<property name="exposeNosTechniques" value="false" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->

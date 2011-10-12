@@ -10,7 +10,7 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 8537916537832562224L;
+	private static final long serialVersionUID = 4937434910175701641L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -20,6 +20,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	private final boolean fraction;
 	private final boolean principale;
 	private final String sigleCanton;
+	private final int numTechnique;
 
 	public static CommuneImpl get(ch.vd.infrastructure.model.Commune target) {
 		if (target == null) {
@@ -49,6 +50,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
+		this.numTechnique = target.getNoTechnique();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
@@ -61,6 +63,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
+		this.numTechnique = target.getNoTechnique();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
@@ -73,6 +76,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.noOFSEtendu = (target.getNoOFSFaitiere() == null ? target.getNoOfs() : target.getNoTechnique());
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNoOFSFaitiere() == null ? 0 : target.getNoOFSFaitiere();
+		this.numTechnique = target.getNoTechnique();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = (target.getNoOFSFaitiere() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
@@ -109,6 +113,11 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	@Override
 	public int getNumTechMere() {
 		return numTechMere;
+	}
+
+	@Override
+	public int getNumeroTechnique() {
+		return numTechnique;
 	}
 
 	@Override

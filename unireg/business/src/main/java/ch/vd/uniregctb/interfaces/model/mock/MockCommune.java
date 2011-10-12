@@ -230,6 +230,11 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	}
 
 	@Override
+	public int getNumeroTechnique() {
+		return getNoOFSEtendu();
+	}
+
+	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
 	}

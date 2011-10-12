@@ -34,6 +34,12 @@ public interface Commune extends EntiteOFS {
 	int getNumTechMere();
 
 	/**
+	 * @return le numéro technique de la commune (toujours préférer le numéro OFS !)
+	 */
+	@Deprecated
+	int getNumeroTechnique();
+
+	/**
 	 * Retourne le sigle du canton de la commune.
 	 *
 	 * @return le sigle du canton de la commune.
