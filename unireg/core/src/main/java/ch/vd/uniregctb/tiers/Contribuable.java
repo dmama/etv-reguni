@@ -216,6 +216,19 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	/**
+	 * Ajoute un immeuble au contribuable.
+	 *
+	 * @param immeuble l'immeuble à ajouter
+	 */
+	public void addImmeuble(Immeuble immeuble) {
+		if (immeubles == null) {
+			this.immeubles = new HashSet<Immeuble>();
+		}
+		immeuble.setProprietaire(this);
+		this.immeubles.add(immeuble);
+	}
+
+	/**
 	 * Liste de fors fiscaux spécialisée de manière à ne stocker que les fors débutant le plus tôt (= date de début).
 	 * <p>
 	 * Dans la majorité des cas, cette liste ne contiendra qu'un seul for. Ce n'est que dans le cas où plusieurs fors débutent en même temps

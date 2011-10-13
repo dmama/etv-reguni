@@ -3561,6 +3561,7 @@ public class TiersServiceImpl implements TiersService {
 		void assertSame(E entity1, E entity2);
 	}
 
+	// TODO (msi) déplacer cette méthode (et celles qui en dépendent) dans le TiersDAO
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {

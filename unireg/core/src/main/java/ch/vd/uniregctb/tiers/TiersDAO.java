@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.rf.Immeuble;
 
 public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
@@ -39,7 +40,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 		ADRESSES,
 		SITUATIONS_FAMILLE,
 		DECLARATIONS,
-		PERIODICITES;
+		PERIODICITES,
+		IMMEUBLES;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);
@@ -211,6 +213,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
 
+	/**
+	 * Ajoute un nouvel immeuble à un tiers.
+	 *
+	 * @param tiers    le tiers sur lequel on veut ajouter un for fiscal
+	 * @param immeuble le nouvel immeuble
+	 * @return une nouvelle instance de l'immeuble avec son id renseigné.
+	 */
+	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

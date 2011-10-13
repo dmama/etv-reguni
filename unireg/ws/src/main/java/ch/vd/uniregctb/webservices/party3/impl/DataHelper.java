@@ -364,6 +364,9 @@ public class DataHelper {
 			case DEBTOR_PERIODICITIES:
 				results.add(Parts.PERIODICITES);
 				break;
+			case IMMOVABLE_PROPERTIES:
+				results.add(Parts.IMMEUBLES);
+				break;
 			case BANK_ACCOUNTS:
 			case CAPITALS:
 			case CORPORATION_STATUSES:

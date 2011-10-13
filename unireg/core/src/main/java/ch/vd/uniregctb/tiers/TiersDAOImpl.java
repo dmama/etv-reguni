@@ -37,6 +37,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 
@@ -44,6 +45,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
     private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
     private static final int MAX_IN_SIZE = 500;
+	private static final ImmeubleAccessor IMMEUBLE_ACCESSOR = new ImmeubleAccessor();
 
 	private Dialect dialect;
 
@@ -366,6 +368,28 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
 					if (tiers instanceof DebiteurPrestationImposable) {
 						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
+					}
+				}
+			});
+		}
+
+		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
+			// on charge tous les immeubles en vrac
+			Query q = session.createQuery("from Immeuble as i where i.proprietaire.id in (:ids)");
+			q.setParameterList("ids", idsDemandes);
+			List<Immeuble> immeubles = q.list();
+
+			// on associe les immeubles avec les tiers à la main
+			associate(session, immeubles, tiers, new TiersIdGetter<Immeuble>() {
+				@Override
+				public Long getTiersId(Immeuble entity) {
+					return entity.getProprietaire().getId();
+				}
+			}, new EntitySetSetter<Immeuble>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<Immeuble> set) {
+					if (tiers instanceof Contribuable) {
+						((Contribuable) tiers).setImmeubles(set);
 					}
 				}
 			});
@@ -893,47 +917,57 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	 */
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
+		return addAndSave(tiers, forFiscal, new ForFiscalAccessor<T>());
+	}
 
-		if (forFiscal.getId() == null) { // le for n'a jamais été persisté
+	@Override
+	public Immeuble addAndSave(Contribuable ctb, Immeuble immeuble) {
+		return addAndSave(ctb, immeuble, IMMEUBLE_ACCESSOR);
+	}
 
-			// on mémorise les ids des fors existant
-			final Set<Long> ids;
-			final Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
-			if (forsFiscaux == null || forsFiscaux.isEmpty()) {
-				ids = Collections.emptySet();
+	@SuppressWarnings({"unchecked"})
+	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
+		if (entity.getKey() == null) {
+			// pas encore persistée
+
+			// on mémorise les clés des entités existantes
+			final Set<Object> keys;
+			final Collection<E> entities = accessor.getEntities(tiers);
+			if (entities == null || entities.isEmpty()) {
+				keys = Collections.emptySet();
 			}
 			else {
-				ids = new HashSet<Long>(forsFiscaux.size());
-				for (ForFiscal f : forsFiscaux) {
-					final Long id = f.getId();
-					Assert.notNull(id, "Les fors existants doivent être persistés.");
-					ids.add(id);
+				keys = new HashSet<Object>(entities.size());
+				for (E d : entities) {
+					final Object key = d.getKey();
+					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
+					keys.add(key);
 				}
 			}
 
-			// on ajoute le for et sauve le tout
-			tiers.addForFiscal(forFiscal);
-			tiers = save(tiers);
+			// on ajoute la nouvelle entité et on sauve le tout
+			accessor.addEntity(tiers, entity);
+			tiers = (T) save(tiers);
 
-			// on recherche le for nouvellement ajouté
-			ForFiscal nouveauFor = null;
-			for (ForFiscal f : tiers.getForsFiscaux()) {
-				if (!ids.contains(f.getId())) {
-					nouveauFor = f;
+			// rebelotte pour trouver la nouvelle entité
+			E newEntity = null;
+			for (E d : accessor.getEntities(tiers)) {
+				if (!keys.contains(d.getKey())) {
+					newEntity = d;
 					break;
 				}
 			}
 
-			Assert.isSame(forFiscal.getDateDebut(), nouveauFor.getDateDebut());
-			Assert.isSame(forFiscal.getDateFin(), nouveauFor.getDateFin());
-			forFiscal = (T) nouveauFor;
+			Assert.notNull(newEntity);
+			accessor.assertSame(entity, newEntity);
+			entity = newEntity;
 		}
 		else {
-			tiers.addForFiscal(forFiscal);
+			accessor.addEntity(tiers, entity);
 		}
 
-		Assert.notNull(forFiscal.getId());
-		return forFiscal;
+		Assert.notNull(entity.getKey());
+		return entity;
 	}
 
 	@Override
@@ -992,5 +1026,47 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return listeCtbModifies;
 	}
 
+	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
+		Collection<E> getEntities(T tiers);
 
+		void addEntity(T tiers, E entity);
+
+		void assertSame(E entity1, E entity2);
+	}
+
+	private static class ForFiscalAccessor<T extends ForFiscal> implements EntityAccessor<Tiers, T> {
+		@Override
+		public Collection<T> getEntities(Tiers tiers) {
+			//noinspection unchecked
+			return (Collection<T>) tiers.getForsFiscaux();
+		}
+
+		@Override
+		public void addEntity(Tiers tiers, T entity) {
+			tiers.addForFiscal(entity);
+		}
+
+		@Override
+		public void assertSame(T entity1, T entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	}
+
+	private static class ImmeubleAccessor implements EntityAccessor<Contribuable, Immeuble> {
+		@Override
+		public Collection<Immeuble> getEntities(Contribuable ctb) {
+			return ctb.getImmeubles();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, Immeuble immeuble) {
+			ctb.addImmeuble(immeuble);
+		}
+
+		@Override
+		public void assertSame(Immeuble entity1, Immeuble entity2) {
+			Assert.isEqual(entity1.getNumero(), entity2.getNumero());
+		}
+	}
 }

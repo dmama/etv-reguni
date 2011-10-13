@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -242,6 +243,11 @@ public class TiersDAOMockPM implements TiersDAO {
 
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
 		throw new NotImplementedException();
 	}
 

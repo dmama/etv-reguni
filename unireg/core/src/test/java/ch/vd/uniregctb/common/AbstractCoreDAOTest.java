@@ -59,6 +59,9 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.rf.Immeuble;
+import ch.vd.uniregctb.rf.PartPropriete;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -1077,6 +1080,22 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f = tiersDAO.addAndSave(tiers, f);
 		return f;
+	}
+
+	protected Immeuble addImmeuble(Contribuable tiers, String numero, RegDate dateDebut, @Nullable RegDate dateFin, String nature, GenrePropriete genrePropriete, int estimationFiscale,
+	                               RegDate dateEstimationFiscale, @Nullable Integer ancienneEstimationFiscale, String partPropriete) {
+		Immeuble i = new Immeuble();
+		i.setNumero(numero);
+		i.setDateDebut(dateDebut);
+		i.setDateFin(dateFin);
+		i.setNature(nature);
+		i.setGenrePropriete(genrePropriete);
+		i.setEstimationFiscale(estimationFiscale);
+		i.setDateEstimationFiscale(dateEstimationFiscale);
+		i.setAncienneEstimationFiscale(ancienneEstimationFiscale);
+		i.setPartPropriete(PartPropriete.parse(partPropriete));
+		i = tiersDAO.addAndSave(tiers, i);
+		return i;
 	}
 
 	/**

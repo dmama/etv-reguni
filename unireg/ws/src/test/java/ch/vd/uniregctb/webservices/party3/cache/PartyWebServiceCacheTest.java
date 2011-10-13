@@ -41,6 +41,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -144,6 +145,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
+
+				addImmeuble(mc, "132/543", date(1988, 3, 14), null, "Place jardin", GenrePropriete.COMMUNE, 923000, date(1994, 12, 2), null, "1");
 
 				ids.monsieur = monsieur.getNumero();
 				ids.madame = madame.getNumero();
@@ -706,9 +709,10 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkTaxSystems = PartyPart.TAX_SYSTEMS == p;
 		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
 		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
+		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses ||
 				checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals || checkCorporationStatuses ||
-				checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities, "La partie [" + p + "] est inconnue");
+				checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -728,6 +732,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses, ctb.getTaxDeclarations(), "taxDeclarations");
 			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
+			assertNullOrNotNull(checkImmovableProperties, ctb.getImmovableProperties(), "immovableProperties");
 		}
 
 		if (tiers instanceof CommonHousehold) {

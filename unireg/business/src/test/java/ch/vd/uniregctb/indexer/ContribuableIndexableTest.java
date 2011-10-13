@@ -46,6 +46,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -1090,6 +1091,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		@Override
 		public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
 			throw new NotImplementedException();
 		}
 
