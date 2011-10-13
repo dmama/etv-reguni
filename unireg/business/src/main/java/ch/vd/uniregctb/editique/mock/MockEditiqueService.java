@@ -9,21 +9,22 @@ import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public class MockEditiqueService implements EditiqueService {
 
 	@Override
-	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
 		return null;
 	}
 
 	@Override
-	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException {
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException {
 		return null;
 	}
 
 	@Override
-	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
+	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 	}
 
 	@Override

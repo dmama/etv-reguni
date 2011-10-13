@@ -4,10 +4,11 @@ import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public class MockImpressionSommationDIHelper implements ImpressionSommationDIHelper {
 	@Override
-	public String calculPrefixe() {
+	public TypeDocumentEditique getTypeDocumentEditique() {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

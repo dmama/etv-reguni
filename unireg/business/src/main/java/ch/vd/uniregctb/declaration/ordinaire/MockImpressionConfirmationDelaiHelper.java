@@ -4,10 +4,11 @@ import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public class MockImpressionConfirmationDelaiHelper implements ImpressionConfirmationDelaiHelper {
 	@Override
-	public String calculPrefixe() {
+	public TypeDocumentEditique getTypeDocumentEditique() {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

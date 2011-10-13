@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -55,14 +56,14 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String calculPrefixe(Declaration declaration);
+	public TypeDocumentEditique getTypeDocumentEditique(Declaration declaration);
 
 	/**
 	 *
 	 * @param typeDoc
 	 * @return
 	 */
-	public String calculPrefixe(TypeDocument typeDoc);
+	public TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc);
 
 
 }

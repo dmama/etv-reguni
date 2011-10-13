@@ -5,10 +5,11 @@ import noNamespace.FichierImpressionDocument;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public interface ImpressionSommationLRHelper {
 
-	public String calculPrefixe();
+	public TypeDocumentEditique getTypeDocumentEditique();
 
 	/**
 	 * Génère l'objet pour l'impression de la sommation LR

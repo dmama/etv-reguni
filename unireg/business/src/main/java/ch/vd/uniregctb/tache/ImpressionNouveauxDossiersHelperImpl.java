@@ -30,6 +30,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -46,7 +47,6 @@ import ch.vd.uniregctb.type.MotifFor;
 
 public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxDossiersHelper {
 
-	private static final String PREFIXE_FIC_OUV_DOS = "RGPF0801";
 	private static final String TYPE_DOC_NOUVEAU_DOSSIER = "FO";
 	private static final String CODE_DOC_NOUVEAU_DOSSIER = "FIC_OUV_DOS";
 	private static final String VERSION = "1.0";
@@ -60,34 +60,16 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EditiqueHelper editiqueHelper;
 
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public SituationFamilleService getSituationFamilleService() {
-		return situationFamilleService;
 	}
 
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
 	}
 
-	public ServiceInfrastructureService getServiceInfrastructureService() {
-		return serviceInfrastructureService;
-	}
-
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
-
-
-
-	public EditiqueHelper getEditiqueHelper() {
-		return editiqueHelper;
 	}
 
 	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
@@ -191,9 +173,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		ficheOuvertureDossier.setDateEdition(dateEditionDisplay);
 
 		return ficheOuvertureDossier;
-
 	}
-
 
 	/**
 	 * Calcul le prefixe
@@ -201,13 +181,10 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @param contribuable
 	 * @return
 	 */
-
 	@Override
-	public String calculPrefixe() {
-		String prefixe = PREFIXE_FIC_OUV_DOS;
-		return prefixe;
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.FICHE_OUVERTURE_DOSSIER;
 	}
-
 
 	/**
 	 * Alimente la partie infoDocument du Document
@@ -216,7 +193,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 */
 	private InfoDocument remplitInfoDocument() {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", calculPrefixe(), DOCUM);
+		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setCodDoc(CODE_DOC_NOUVEAU_DOSSIER);
@@ -225,7 +202,6 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		infoDocument.setPopulations(POPULATIONS_PP);
 		return infoDocument;
 	}
-
 
 	/**
 	 * Alimente l'entête du document
@@ -238,11 +214,9 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 * @throws ServiceInfrastructureException
 	 */
 	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, ServiceInfrastructureException {
-		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-
-		String prefixe = calculPrefixe();
-		prefixe += HAUT1;
-		infoEnteteDocument.setPrefixe(prefixe);
+		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
+		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
 
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(contribuable, infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
@@ -254,7 +228,6 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;
-
 	}
 
 	/**
@@ -292,7 +265,6 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		return mainDocument;
 	}
 
-
 	/**
 	 * Construit le champ idDocument
 	 *
@@ -308,5 +280,4 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 	}
-
 }

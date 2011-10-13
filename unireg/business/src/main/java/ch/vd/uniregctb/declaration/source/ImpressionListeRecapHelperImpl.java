@@ -40,6 +40,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -52,7 +53,6 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	public static final Logger LOGGER = Logger.getLogger(ImpressionListeRecapHelperImpl.class);
 
 	private static final String ORGINAL = "ORG";
-	private static final String PREFIXE_LR = "ISPL0801";
 	private static final String TYPE_DOC_LR = "LR";
 
 	private static final String LISTE_RECAPITULATIVE_MAJ = "LISTE RECAPITULATIVE";
@@ -150,10 +150,9 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @return
 	 */
 	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) {
-		InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		String prefixe = calculPrefixe();
-		prefixe += DOCUM;
-		infoDocument.setPrefixe(prefixe);
+		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
+		infoDocument.setPrefixe(prefixe.getCodeDocumentEditique() + DOCUM);
 		infoDocument.setTypDoc(TYPE_DOC_LR);
 
 		final String codeDoc;
@@ -211,9 +210,8 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 */
 
 	@Override
-	public String calculPrefixe() {
-		String prefixe = PREFIXE_LR;
-		return prefixe;
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.LR;
 	}
 
 	/**
@@ -229,9 +227,8 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration, String traitePar) throws AdresseException, ServiceInfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
-		String prefixe = calculPrefixe();
-		prefixe += HAUT1;
-		infoEnteteDocument.setPrefixe(prefixe);
+		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
+		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
 
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
@@ -255,17 +252,18 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		// TypPeriode
 		//
 		TypPeriode typPeriode = lrlcbvr.addNewPeriode();
-		String prefixe = calculPrefixe();
-		String prefixePerio = prefixe + PERIO;
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
+		final String prefixePerio = prefixe + PERIO;
 		typPeriode.setPrefixe(prefixePerio);
 		typPeriode.setOrigDuplicat(ORGINAL);
 		typPeriode.setHorsSuisse("");
 		typPeriode.setHorsCanton("");
 		typPeriode.setAnneeFiscale(lr.getPeriode().getAnnee().toString());
 		typPeriode.setDateDecompte(String.valueOf(lr.getDateExpedition().index()));
-		Entete entete = typPeriode.addNewEntete();
-		Tit tit = entete.addNewTit();
-		String prefixeTitim = prefixe + TITIM;
+
+		final Entete entete = typPeriode.addNewEntete();
+		final Tit tit = entete.addNewTit();
+		final String prefixeTitim = prefixe + TITIM;
 		tit.setPrefixe(prefixeTitim);
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;

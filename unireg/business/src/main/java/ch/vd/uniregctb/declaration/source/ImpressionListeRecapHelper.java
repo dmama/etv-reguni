@@ -4,6 +4,7 @@ import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public interface ImpressionListeRecapHelper {
@@ -34,6 +35,6 @@ public interface ImpressionListeRecapHelper {
 	 * @return
 	 */
 
-	public String calculPrefixe() ;
+	public TypeDocumentEditique getTypeDocumentEditique() ;
 
 }

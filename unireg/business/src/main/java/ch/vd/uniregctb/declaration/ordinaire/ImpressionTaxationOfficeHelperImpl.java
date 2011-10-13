@@ -31,6 +31,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -50,7 +51,6 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	public static final Logger LOGGER = Logger.getLogger(ImpressionTaxationOfficeHelperImpl.class);
 
 	private static final String MOTIF_TO = "Taxation d'office pour défaut de déclaration";
-	private static final String PREFIXE_CHEMISE_TO = "RGPT0801";
 	private static final String TYPE_DOC_CHEMISE_TO = "CT";
 	private static final String CODE_DOC_CHEMISE_TO = "CHEM_TO";
 	private static final String VERSION = "1.0";
@@ -81,9 +81,8 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	}
 
 	@Override
-	public String calculPrefixe() {
-		String prefixe = PREFIXE_CHEMISE_TO;
-		return prefixe;
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.CHEMISE_TO;
 	}
 
 	@Override
@@ -245,7 +244,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	private InfoDocument remplitInfoDocument(DeclarationImpotOrdinaire declaration, Contribuable contribuable) throws EditiqueException{
 
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", calculPrefixe(), DOCUM);
+		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_CHEMISE_TO);
 		infoDocument.setCodDoc(CODE_DOC_CHEMISE_TO);
@@ -282,7 +281,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
-		final String prefixe = String.format("%s%s", calculPrefixe(), HAUT1);
+		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), HAUT1);
 		infoEnteteDocument.setPrefixe(prefixe);
 
 		final Integer oid = getOfficeImpotAt(contribuable, declaration.getDateFin());

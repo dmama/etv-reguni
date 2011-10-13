@@ -5,11 +5,12 @@ import noNamespace.FichierImpressionDocument;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public class MockImpressionSommationLRHelper implements ImpressionSommationLRHelper {
 
 	@Override
-	public String calculPrefixe() {
+	public TypeDocumentEditique getTypeDocumentEditique() {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

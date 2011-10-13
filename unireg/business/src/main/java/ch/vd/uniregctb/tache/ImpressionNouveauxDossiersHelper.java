@@ -5,6 +5,7 @@ import java.util.List;
 import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -24,7 +25,7 @@ public interface ImpressionNouveauxDossiersHelper {
 	 * @return
 	 */
 
-	public String calculPrefixe() ;
+	public TypeDocumentEditique getTypeDocumentEditique() ;
 
 	/**
 	 * Construit le champ idDocument

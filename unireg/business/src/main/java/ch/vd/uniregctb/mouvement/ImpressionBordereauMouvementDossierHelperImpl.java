@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -35,8 +36,6 @@ import ch.vd.uniregctb.tiers.TiersService;
  * Impression éditique d'un bordereau de mouvements de dossier
  */
 public class ImpressionBordereauMouvementDossierHelperImpl implements ImpressionBordereauMouvementDossierHelper {
-
-	private static final String PREFIXE = "RGPB0801";
 
 	private static final String TYPE_DOC_BORDEREAU_ENVOI = "BE";
 	private static final String CODE_DOC_BORDEREAU_ENVOI = "BRD_ENV";
@@ -65,8 +64,8 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	}
 
 	@Override
-	public String calculePrefixe() {
-		return PREFIXE;
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.BORDEREAU_MVT_DOSSIER;
 	}
 
 	@Override
@@ -159,7 +158,8 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 
 		// période fiscale
 		final TypPeriode pf = bordereauEnvoi.addNewPeriode();
-		pf.setPrefixe(PREFIXE + "PERIO");
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
+		pf.setPrefixe(prefixe + "PERIO");
 		pf.setOrigDuplicat("ORG");
 		pf.setHorsSuisse("");
 		pf.setHorsCanton("");
@@ -169,7 +169,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		final TypPeriode.Entete entete = pf.addNewEntete();
 		final TypPeriode.Entete.Tit titre = entete.addNewTit();
 		titre.setLibTit(TITRE);
-		titre.setPrefixe(PREFIXE + "TITIM");
+		titre.setPrefixe(prefixe + "TITIM");
 		entete.setTitArray(new TypPeriode.Entete.Tit[] {titre});
 		pf.setEntete(entete);
 		bordereauEnvoi.setPeriode(pf);
@@ -187,7 +187,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	 */
 	private InfoDocumentDocument1.InfoDocument remplitInfoDocument() {
 		final InfoDocumentDocument1.InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", calculePrefixe(), DOCUM);
+		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_BORDEREAU_ENVOI);
 		infoDocument.setCodDoc(CODE_DOC_BORDEREAU_ENVOI);
@@ -203,7 +203,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws ServiceInfrastructureException, AdresseException {
 		InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
-		final String prefixe = String.format("%s%s", calculePrefixe(), HAUT1);
+		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), HAUT1);
 		infoEnteteDocument.setPrefixe(prefixe);
 
 		final BordereauMouvementDossier bordereau = params.getBordereau();

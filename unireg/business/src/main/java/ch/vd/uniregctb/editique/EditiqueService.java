@@ -24,7 +24,7 @@ public interface EditiqueService {
 	 * @return le document imprimé ou une indication de timeout si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException;
+	EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException;
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe ; si l'impression est un peu lente,
@@ -40,7 +40,7 @@ public interface EditiqueService {
 	 * @return le document imprimé ou une indication de prise en charge par le système asynchrone si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException;
+	EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException;
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression de masse.
@@ -51,7 +51,7 @@ public interface EditiqueService {
 	 * @param archive      indicateur d'archivage   @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 * @throws EditiqueException en cas de problème à l'envoi
 	 */
-	void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException;
+	void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException;
 
 	/**
 	 * Obitent un document pdf, sous forme binaire, identifié par les différents paramètres.

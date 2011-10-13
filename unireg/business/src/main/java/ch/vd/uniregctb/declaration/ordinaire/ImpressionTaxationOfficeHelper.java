@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import noNamespace.FichierImpressionDocument;
+
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public interface ImpressionTaxationOfficeHelper {
 
-
-	String calculPrefixe();
+	TypeDocumentEditique getTypeDocumentEditique();
 
 	FichierImpressionDocument remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException;
 
@@ -17,6 +18,6 @@ public interface ImpressionTaxationOfficeHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration) ;
+	String construitIdDocument(DeclarationImpotOrdinaire declaration) ;
 
 }

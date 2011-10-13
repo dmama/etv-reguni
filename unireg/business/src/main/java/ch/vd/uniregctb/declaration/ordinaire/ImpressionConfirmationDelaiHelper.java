@@ -4,10 +4,11 @@ import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public interface ImpressionConfirmationDelaiHelper {
 
-	String calculPrefixe();
+	TypeDocumentEditique getTypeDocumentEditique();
 
 	FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException;
 

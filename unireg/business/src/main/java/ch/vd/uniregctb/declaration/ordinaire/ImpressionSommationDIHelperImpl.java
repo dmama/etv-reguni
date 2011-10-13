@@ -33,6 +33,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -80,8 +81,8 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 	}
 
 	@Override
-	public String calculPrefixe() {
-		return "RGPS0801";
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.SOMMATION_DI;
 	}
 
 	@Override
@@ -188,7 +189,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 
 	private InfoDocument remplitInfoDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {
 		InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		String prefixe = calculPrefixe() + "DOCUM";
+		String prefixe = getTypeDocumentEditique().getCodeDocumentEditique() + "DOCUM";
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc("SD");
 		infoDocument.setCodDoc("SOMM_DI");
@@ -237,7 +238,8 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 	private SommationDI remplitSpecifiqueSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
 		SommationDI sommationDI  = SommationDIDocument.Factory.newInstance().addNewSommationDI();
 		TypPeriode periode = sommationDI.addNewPeriode();
-		periode.setPrefixe(calculPrefixe() + "PERIO");
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
+		periode.setPrefixe(prefixe + "PERIO");
 		periode.setOrigDuplicat("ORG");
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
@@ -250,13 +252,13 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		periode.setDatDerCalculAc("");
 		Entete entete = periode.addNewEntete();
 		Tit tit = entete.addNewTit();
-		tit.setPrefixe(calculPrefixe() + "TITIM");
+		tit.setPrefixe(prefixe + "TITIM");
 		tit.setLibTit(
 				String.format(
 						"Invitation à déposer la déclaration %s - Sommation",
 						params.getDi().getPeriode().getAnnee().toString()));
 		ImpCcn impCcn = entete.addNewImpCcn();
-		impCcn.setPrefixe(calculPrefixe() + "IMPCC");
+		impCcn.setPrefixe(prefixe + "IMPCC");
 		impCcn.setLibImpCcn("");
 
 		LettreSom lettreSom = sommationDI.addNewLettreSom();
@@ -270,7 +272,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 
 	private InfoArchivage remplitInfoArchivage(ImpressionSommationDIHelperParams params) {
 		InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
-		infoArchivage.setPrefixe(calculPrefixe() + "FOLDE");
+		infoArchivage.setPrefixe(getTypeDocumentEditique().getCodeDocumentEditique() + "FOLDE");
 		infoArchivage.setNomApplication("FOLDERS");
 		infoArchivage.setTypDossier(EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
 		String numeroCTB = FormatNumeroHelper.numeroCTBToDisplay(params.getDi().getTiers().getNumero());

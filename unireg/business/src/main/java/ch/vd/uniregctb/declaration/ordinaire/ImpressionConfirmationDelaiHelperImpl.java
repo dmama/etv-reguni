@@ -30,6 +30,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -38,7 +39,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 	private static final String VERSION_XSD = "1.0";
 
 	/**
-	 * Le type de document à transmettre au service pour la sommation DI
+	 * Le type de document à transmettre au service d'archivage
 	 */
 	public static final String TYPE_DOCUMENT_CONFIRMATION_DELAI = "387";
 
@@ -46,8 +47,8 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 	private AdresseService adresseService;
 
 	@Override
-	public String calculPrefixe() {
-		return "RGPC0801";
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.CONFIRMATION_DELAI;
 	}
 
 	@Override
@@ -78,7 +79,8 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 		ConfirmationDelai confirmationDelai = ConfirmationDelaiDocument.Factory.newInstance().addNewConfirmationDelai();
 		confirmationDelai.setDateAccord(RegDateHelper.toIndexString(params.getDateAccord()));
 		TypPeriode periode = confirmationDelai.addNewPeriode();
-		periode.setPrefixe(calculPrefixe() + "PERIO");
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
+		periode.setPrefixe(prefixe + "PERIO");
 		periode.setOrigDuplicat("ORG");
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
@@ -87,10 +89,10 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 		periode.setDatDerCalculAc("");
 		Entete entete = periode.addNewEntete();
 		Tit tit = entete.addNewTit();
-		tit.setPrefixe(calculPrefixe() + "TITIM");
+		tit.setPrefixe(prefixe + "TITIM");
 		tit.setLibTit("Impôt cantonal et communal / Impôt fédéral direct");
 		ImpCcn impCcn = entete.addNewImpCcn();
-		impCcn.setPrefixe(calculPrefixe() + "IMPCC");
+		impCcn.setPrefixe(prefixe + "IMPCC");
 		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %d", params.getDi().getPeriode().getAnnee()));
 		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
 		confirmationDelai.setCivil(formuleAppel);
@@ -102,7 +104,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		try {
-			infoEnteteDocument.setPrefixe(calculPrefixe() + "HAUT1");
+			infoEnteteDocument.setPrefixe(getTypeDocumentEditique().getCodeDocumentEditique() + "HAUT1");
 
 			final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
@@ -130,7 +132,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 
 	private InfoDocument remplitInfoDocument(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = calculPrefixe() + "DOCUM";
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique() + "DOCUM";
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc("CD");
 		infoDocument.setCodDoc("CONF_DEL");
@@ -143,7 +145,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements ImpressionConfirma
 
 	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionConfirmationDelaiHelperParams params) {
 		InfoArchivageDocument.InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
-		infoArchivage.setPrefixe(calculPrefixe() + "FOLDE");
+		infoArchivage.setPrefixe(getTypeDocumentEditique().getCodeDocumentEditique() + "FOLDE");
 		infoArchivage.setNomApplication("FOLDERS");
 		infoArchivage.setTypDossier(EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
 		String numeroCTB = FormatNumeroHelper.numeroCTBToDisplay(params.getDi().getTiers().getNumero());

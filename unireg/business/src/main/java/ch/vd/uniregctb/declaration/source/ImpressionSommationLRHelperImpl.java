@@ -43,6 +43,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -59,7 +60,6 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	private static final String VERSION = "1.0";
 	private static final String POPULATIONS_IS = "IS";
 	private static final String LOGO_CANT = "CANT";
-	private static final String PREFIXE_SOMMATION_LR = "ISPS0801";
 	private static final String TYPE_DOC_SOMMATION_LR = "SL";
 
 	private static final String LISTE_RECAPITULATIVE_MAJ = "LISTE RECAPITULATIVE";
@@ -92,7 +92,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	private static final String IMPCC = "IMPCC";
 	private static final String BVRST = "BVRST";
 
-	/** Le type de document à transmettre au service pour la sommation LR */
+	/** Le type de document à transmettre au service d'archivage */
 	public static final String TYPE_DOCUMENT_SOMMATION_LR = "355";
 
 	private BVRPlusClient bvrPlusClient;
@@ -112,8 +112,8 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	}
 
 	@Override
-	public String calculPrefixe() {
-		return PREFIXE_SOMMATION_LR;
+	public TypeDocumentEditique getTypeDocumentEditique() {
+		return TypeDocumentEditique.SOMMATION_LR;
 	}
 
 	@Override
@@ -187,9 +187,8 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 */
 	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		String prefixe = calculPrefixe();
-		prefixe += DOCUM;
-		infoDocument.setPrefixe(prefixe);
+		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
+		infoDocument.setPrefixe(prefixe.getCodeDocumentEditique() + DOCUM);
 		infoDocument.setTypDoc(TYPE_DOC_SOMMATION_LR);
 
 		final String codeDoc;
@@ -249,11 +248,10 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 * @throws ServiceInfrastructureException
 	 */
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, ServiceInfrastructureException {
-		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
-		String prefixe = calculPrefixe();
-		prefixe += HAUT1;
-		infoEnteteDocument.setPrefixe(prefixe);
+		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
+		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
 
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
@@ -275,7 +273,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final SLRLCBVR slrlcbvr = SLRLCBVRDocument.Factory.newInstance().addNewSLRLCBVR();
 
 		final TypPeriode typPeriode = slrlcbvr.addNewPeriode();
-		final String prefixe = calculPrefixe();
+		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
 		final String prefixePerio = prefixe + PERIO;
 
 		typPeriode.setPrefixe(prefixePerio);
@@ -415,7 +413,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 
 	private InfoArchivage remplitInfoArchivage(DeclarationImpotSource lr, RegDate dateTraitement) {
 		InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
-		infoArchivage.setPrefixe(calculPrefixe() + "FOLDE");
+		infoArchivage.setPrefixe(getTypeDocumentEditique().getCodeDocumentEditique() + "FOLDE");
 		infoArchivage.setNomApplication("FOLDERS");
 		infoArchivage.setTypDossier(EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
 		String numeroCTB = FormatNumeroHelper.numeroCTBToDisplay(lr.getTiers().getNumero());

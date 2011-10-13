@@ -19,6 +19,7 @@ import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.EvenementEditiqueSender;
 import ch.vd.uniregctb.editique.RetourImpressionToInboxTrigger;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.inbox.InboxService;
 
 /**
@@ -60,7 +61,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(final String nomDocument, final String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, final String description) throws EditiqueException {
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(final String nomDocument, final TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, final String description) throws EditiqueException {
 		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new TimeoutManager() {
 			@Override
 			public EditiqueResultat onTimeout(EditiqueResultat src) {
@@ -77,7 +78,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
 		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
 			@Override
 			public EditiqueResultat onTimeout(EditiqueResultat src) {
@@ -103,7 +104,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	 * @return le document imprimé ou <b>null</b> si éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	private EditiqueResultat creerDocumentImmediatement(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
+	private EditiqueResultat creerDocumentImmediatement(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
 
 		// envoi de la demande
 		if (LOGGER.isDebugEnabled()) {
@@ -149,7 +150,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
+	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
 	}
 

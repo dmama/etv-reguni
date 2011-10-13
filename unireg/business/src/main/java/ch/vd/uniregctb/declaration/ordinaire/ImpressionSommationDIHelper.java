@@ -1,13 +1,15 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import noNamespace.FichierImpressionDocument;
+
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 
 public interface ImpressionSommationDIHelper {
 
-	String calculPrefixe();
+	TypeDocumentEditique getTypeDocumentEditique();
 
 	FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException;
 
