@@ -10,6 +10,7 @@ public class FlashMessage {
 
 	private String displayClass;
 	private String message;
+	private long timeout;
 
 	/**
 	 * Spécifie un message d'information
@@ -17,8 +18,19 @@ public class FlashMessage {
 	 * @param message le message à afficher en haut de la page
 	 */
 	public void setMessage(String message) {
+		setMessage(message, 0L);
+	}
+
+	/**
+	 * Spécifie un message d'information
+	 *
+	 * @param message le message à afficher en haut de la page
+	 * @param timeout timeout, en millisecondes, au delà duquel le message peut-être à nouveau effacé (0 pour l'absence de timeout)
+	 */
+	public void setMessage(String message, long timeout) {
 		this.displayClass = "flash";
 		this.message = message;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -27,8 +39,19 @@ public class FlashMessage {
 	 * @param message le message à afficher en haut de la page
 	 */
 	public void setWarning(String message) {
+		setWarning(message, 0L);
+	}
+
+	/**
+	 * Spécifie un message de warning
+	 *
+	 * @param message le message à afficher en haut de la page
+	 * @param timeout timeout, en millisecondes, au delà duquel le message peut-être à nouveau effacé (0 pour l'absence de timeout)
+	 */
+	public void setWarning(String message, long timeout) {
 		this.displayClass = "flash-warning";
 		this.message = message;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -37,8 +60,19 @@ public class FlashMessage {
 	 * @param message le message à afficher en haut de la page
 	 */
 	public void setError(String message) {
+		setError(message, 0L);
+	}
+
+	/**
+	 * Spécifie un message d'erreur
+	 *
+	 * @param message le message à afficher en haut de la page
+	 * @param timeout timeout, en millisecondes, au delà duquel le message peut-être à nouveau effacé (0 pour l'absence de timeout)
+	 */
+	public void setError(String message, long timeout) {
 		this.displayClass = "flash-error";
 		this.message = message;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -70,5 +104,13 @@ public class FlashMessage {
 		final String s = message;
 		message = null;
 		return s;
+	}
+
+	/**
+	 * @return le temps d'affichage du message, en millisecondes (0 ou moins pour un message indéfiniment affiché)
+	 */
+	@SuppressWarnings({"UnusedDeclaration"})
+	public long getTimeout() {
+		return timeout;
 	}
 }

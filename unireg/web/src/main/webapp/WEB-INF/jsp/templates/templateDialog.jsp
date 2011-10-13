@@ -25,7 +25,12 @@
 
 		<%-- Message flash --%>
 		<c:if test="${flash != null && flash.active}">
-		<div class="<c:out value="${flash.displayClass}"/>"><c:out value="${flash.messageForDisplay}"/></div>
+			<div id="flashdisplay" class="<c:out value='${flash.displayClass}'/>"><c:out value="${flash.messageForDisplay}"/></div>
+			<c:if test="${flash.timeout > 0}">
+				<script type="text/javascript">
+					$('#flashdisplay').delay(<c:out value="${flash.timeout}"/>).fadeOut('slow');
+				</script>
+			</c:if>
 		</c:if>
 
 		<spring:hasBindErrors name="command">

@@ -22,6 +22,11 @@ public class CopieConformeController {
 	private static final String ID_DELAI = "idDelai";
 	private static final String ID_ETAT = "idEtat";
 
+	/**
+	 * Temps (ms) après lequel un message d'erreur doit être effacé automatiquement
+	 */
+	private static final long errorFadingTimeout = 5000L;
+
 	private ServletService servletService;
 
 	private CopieConformeManager copieConformeManager;
@@ -63,7 +68,7 @@ public class CopieConformeController {
 		}
 		else {
 			if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
-				Flash.error(errorMessageIfNoSuchDocument);
+				Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
 			}
 			return getRedirectPagePrecedente(request);
 		}
