@@ -23,7 +23,7 @@
 			<c:if test="${command.allowedDelai}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${delai.confirmationEcrite}">
-						<a href="../declaration/copie-conforme.do?idDelai=${delai.id}" class="pdf" id="print-delai-${delai.id}" onClick="Page_GetArchiveDelai(${delai.id})">&nbsp;</a>
+						<a href="../declaration/copie-conforme-delai.do?idDelai=${delai.id}" class="pdf" id="print-delai-${delai.id}" onClick="Page_GetArchiveDelai(${delai.id})">&nbsp;</a>
 						<span class="pdf-grayed" id="disabled-print-delai-${delai.id}" style="display: none;">&nbsp;</span>
 					</c:if>
 				</c:if>

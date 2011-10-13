@@ -169,9 +169,6 @@
 				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
 				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
 
-				<!-- Impression de copie conforme de sommation de DI/LR/Delai -->
-				<entry key="/declaration/copie-conforme.do" value-ref="declarationCopieConfomeController" />
-
 				<!-- Tiers - edit -->
 				<entry key="/tiers/edit.do" value-ref="tiersEditController" />
 				<!-- Evenements -->

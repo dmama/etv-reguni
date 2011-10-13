@@ -55,6 +55,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public InputStream getPdfCopieConformeDelai(Long idDelai) throws EditiqueException {
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+		Assert.notNull(delai);
 		return diService.getCopieConformeConfirmationDelai(delai);
 	}
 }

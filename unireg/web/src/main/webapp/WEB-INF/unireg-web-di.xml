@@ -71,11 +71,9 @@
 	
 	<bean id="diEditDelaiValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditDelaiValidator" />
 
-	<bean id="declarationCopieConfomeController" class="ch.vd.uniregctb.declaration.CopieConformeController">
-		<property name="sessionForm" value="true" />
+	<bean id="declarationCopieConformeController" class="ch.vd.uniregctb.declaration.CopieConformeController">
 		<property name="servletService" ref="servletService" />
 		<property name="copieConformeManager" ref="copieConformeManager" />
-		<property name="successView" value="../admin/tiersImport/list.do" /> <!-- msi: temp hack -->
 	</bean>
 
 	<bean id="copieConformeManager" class="ch.vd.uniregctb.declaration.CopieConformeManagerImpl">
