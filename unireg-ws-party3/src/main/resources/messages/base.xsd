@@ -119,6 +119,11 @@
 					<xs:documentation>Les périodicités du débiteur.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTIES">
+				<xs:annotation>
+					<xs:documentation>Les immeubles du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 

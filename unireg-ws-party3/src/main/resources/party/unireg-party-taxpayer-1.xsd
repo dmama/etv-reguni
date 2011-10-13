@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta4 - 13 octobre 2011 - ajouté les immovableProperties sur le taxpayerType -->
 <!-- v1.0beta3 - 27 septembre 2011 - renommé ordinaryTaxLiabilities en taxLiabilities -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
-		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1">
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" schemaLocation="unireg-party-immovableproperty-1.xsd" />
 
 	<xs:complexType abstract="true" name="taxpayerType">
 		<xs:annotation>
@@ -51,6 +53,13 @@
 						<xs:annotation>
 							<xs:documentation>La liste des périodes d'imposition. Cette liste peut être vide si le tiers n'est pas assujetti.
 								Attention ! Cette collection n'est renseignée qui si la part TAXATION_PERIODS est demandée.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="immovableProperties" type="immo:immovablePropertyType">
+						<xs:annotation>
+							<xs:documentation>La liste des immeubles. Cette liste peut être vide si le tiers ne possède pas d'immeuble.
+								Attention ! Cette collection n'est renseignée qui si la part IMMOVABLE_PROPERTIES est demandée.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>

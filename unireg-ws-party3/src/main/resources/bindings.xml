@@ -51,6 +51,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="party/unireg-party-immovableproperty-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.immovableproperty.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='immovablePropertyType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="party/unireg-party-taxpayer-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.taxpayer.v1" />
