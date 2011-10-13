@@ -37,6 +37,9 @@ import ch.vd.unireg.xml.party.debtor.v1.Debtor;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
+import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
@@ -1394,4 +1397,36 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(m1.getDateTo());
 	}
 
+	// [SIFISC-2588]
+	@Test
+	public void testGetImmovableProperties() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(12900001); // Michel Lederet
+		params.getParts().add(PartyPart.IMMOVABLE_PROPERTIES);
+
+		final NaturalPerson np = (NaturalPerson) service.getParty(params);
+		assertNotNull(np);
+
+		final List<ImmovableProperty> immovableProperties = np.getImmovableProperties();
+		assertNotNull(immovableProperties);
+		assertEquals(1, immovableProperties.size());
+
+		final ImmovableProperty immo0 = immovableProperties.get(0);
+		assertNotNull(immo0);
+		assertEquals("132/2345", immo0.getNumber());
+		assertEquals(newDate(1976, 4, 27), immo0.getDateFrom());
+		assertNull(immo0.getDateTo());
+		assertEquals(860000, immo0.getEstimatedTaxValue());
+		assertEquals(newDate(2002, 3, 2), immo0.getEstimatedTaxValueDate());
+		assertEquals(Integer.valueOf(572000), immo0.getFormerEstimatedTaxValue());
+		assertEquals("Place-jardin", immo0.getNature());
+		assertEquals(OwnershipType.UNDIVIDED_CO_OWNERSHIP, immo0.getType());
+
+		final PropertyShare share = immo0.getShare();
+		assertNotNull(share);
+		assertEquals(1, share.getNumerator());
+		assertEquals(2, share.getDenominator());
+	}
 }

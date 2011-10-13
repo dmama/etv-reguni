@@ -8,6 +8,7 @@ import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
 import ch.vd.unireg.xml.party.relation.v1.ActivityType;
@@ -23,6 +24,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -634,6 +636,24 @@ public abstract class EnumHelper {
 			return AccountNumberFormat.IBAN;
 		default:
 			throw new IllegalArgumentException("Format de compte bancaire inconnu = [" + format + "]");
+		}
+	}
+
+	public static OwnershipType coreToWeb(GenrePropriete genre) {
+		if (genre == null) {
+			return null;
+		}
+		switch (genre) {
+		case INDIVIDUELLE:
+			return OwnershipType.SOLE_OWNERSHIP;
+		case COPROPRIETE:
+			return OwnershipType.TENANCY_IN_COMMON;
+		case COMMUNE:
+			return OwnershipType.UNDIVIDED_CO_OWNERSHIP;
+		case COLLECTIVE:
+			return OwnershipType.CONDOMINIUM_OWNERSHIP;
+		default:
+			throw new IllegalArgumentException("Genre de priopriété inconnu = [" + genre + "]");
 		}
 	}
 }

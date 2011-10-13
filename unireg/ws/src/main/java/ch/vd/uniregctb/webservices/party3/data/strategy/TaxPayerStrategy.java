@@ -14,9 +14,12 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.webservices.party3.data.FamilyStatusBuilder;
+import ch.vd.uniregctb.webservices.party3.data.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.webservices.party3.data.SimplifiedTaxLiabilityBuilder;
 import ch.vd.uniregctb.webservices.party3.data.TaxLiabilityBuilder;
 import ch.vd.uniregctb.webservices.party3.data.TaxationPeriodBuilder;
@@ -32,7 +35,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 	protected void initParts(T to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
 		super.initParts(to, from, parts, context);
 
-		ch.vd.uniregctb.tiers.Contribuable ctb=(ch.vd.uniregctb.tiers.Contribuable) from;
+		ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) from;
 		if (parts != null && parts.contains(PartyPart.FAMILY_STATUSES)) {
 			initFamilyStatuses(to, ctb, context);
 		}
@@ -43,6 +46,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
 			initTaxationPeriods(to, ctb, context);
+		}
+
+		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
+			initImmovableProperties(to, ctb);
 		}
 	}
 
@@ -65,6 +72,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
 			copyColl(to.getTaxationPeriods(), from.getTaxationPeriods());
+		}
+
+		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
+			copyColl(to.getImmovableProperties(), from.getImmovableProperties());
 		}
 	}
 
@@ -138,6 +149,15 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 					derniere.setDateTo(null);
 				}
 			}
+		}
+	}
+
+	// [SIFISC-2588] ajout de la part immeuble
+	private static void initImmovableProperties(Taxpayer left, Contribuable contribuable) throws WebServiceException {
+
+		final Set<Immeuble> immeubles = contribuable.getImmeubles();
+		for (Immeuble immeuble : immeubles) {
+			left.getImmovableProperties().add(ImmovablePropertyBuilder.newImmovableProperty(immeuble));
 		}
 	}
 }

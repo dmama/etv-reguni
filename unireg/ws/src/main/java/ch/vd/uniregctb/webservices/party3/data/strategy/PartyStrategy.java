@@ -38,7 +38,7 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @param parts   les parts à renseigner
 	 * @param context le context de création
 	 * @return un nouveau tiers
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException en cas de problème
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException en cas de problème
 	 */
 	public abstract T newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException;
 
