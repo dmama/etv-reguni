@@ -70,23 +70,25 @@
 					<xs:documentation>Priopriété individuelle. Utilisé dans le cas où une personne possède l'intégralité d'un bien.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="TENANCY_IN_COMMON">
+			<xs:enumeration value="SIMPLE_CO_OWNERSHIP">
 				<xs:annotation>
 					<xs:documentation>Co-propriété. Utilisé dans le cas où des personnes distinctes possèdent un bien commun. Par exemple : Monsieur Michaud et Madame Martin, voisins de leurs états,
-						s'entendent pour acheter en co-propriété une parcelle avoisinante.
+						s'entendent pour acheter en co-propriété une parcelle avoisinante. Le bien est découpé en parts, et chaque personne dispose d'une part déterminée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="UNDIVIDED_CO_OWNERSHIP">
+			<xs:enumeration value="COLLECTIVE_OWNERSHIP">
 				<xs:annotation>
 					<xs:documentation>Propriété commune. Utilisé dans le cas où une communauté de personnes (une hoirie, un couple, ...) possède un bien. Par exemple : Mesdames Dupond, Dupneu
-						et Duboulon, filles de feu Madame et Monsieur Dumoulin, reçoivent en héritage la villa de leurs parents.
+						et Duboulon, filles de feu Madame et Monsieur Dumoulin, reçoivent en héritage la villa de leurs parents. Le bien n'est pas découpé en parts.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
 				<xs:annotation>
-					<xs:documentation>Propriété collective. Utilisé dans le cas d'une propriété par étage (PPE).</xs:documentation>
+					<xs:documentation>Propriété par étages. La propriété par étages est une forme particulière de copropriété à laquelle a été ajoutée la notion de droit d'usage exclusif sur une
+						partie géographiquement déterminée de l'immeuble, dont bénéficie chaque copropriétaire.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
