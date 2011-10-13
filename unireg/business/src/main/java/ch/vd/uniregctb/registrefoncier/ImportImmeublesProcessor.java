@@ -354,7 +354,7 @@ public class ImportImmeublesProcessor {
 		case 2:
 			return GenrePropriete.COPROPRIETE;
 		case 3:
-			return GenrePropriete.COLLECTIVE;
+			return GenrePropriete.PAR_ETAGES;
 		default:
 			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + "]");
 		}

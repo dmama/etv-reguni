@@ -647,10 +647,10 @@ public abstract class EnumHelper {
 		case INDIVIDUELLE:
 			return OwnershipType.SOLE_OWNERSHIP;
 		case COPROPRIETE:
-			return OwnershipType.TENANCY_IN_COMMON;
+			return OwnershipType.SIMPLE_CO_OWNERSHIP;
 		case COMMUNE:
-			return OwnershipType.UNDIVIDED_CO_OWNERSHIP;
-		case COLLECTIVE:
+			return OwnershipType.COLLECTIVE_OWNERSHIP;
+		case PAR_ETAGES:
 			return OwnershipType.CONDOMINIUM_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Genre de priopriété inconnu = [" + genre + "]");
