@@ -28,6 +28,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -45,15 +46,11 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxDossiersHelper {
+public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper implements ImpressionNouveauxDossiersHelper {
 
 	private static final String TYPE_DOC_NOUVEAU_DOSSIER = "FO";
 	private static final String CODE_DOC_NOUVEAU_DOSSIER = "FIC_OUV_DOS";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
-	private static final String LOGO_CANT = "CANT";
-	private static final String DOCUM = "DOCUM";
-	private static final String HAUT1 = "HAUT1";
 
 	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
@@ -193,13 +190,13 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 */
 	private InfoDocument remplitInfoDocument() {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
+		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setCodDoc(CODE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_PP);
 		return infoDocument;
 	}
 
@@ -215,8 +212,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 */
 	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, ServiceInfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
-		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(contribuable, infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);

@@ -2,6 +2,8 @@ package ch.vd.uniregctb.editique.impl;
 
 import java.rmi.RemoteException;
 
+import noNamespace.InfoArchivageDocument;
+import noNamespace.InfoArchivageDocument.InfoArchivage;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
@@ -18,8 +20,10 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -29,11 +33,14 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class EditiqueHelperImpl implements EditiqueHelper {
+public class EditiqueHelperImpl extends EditiqueAbstractHelper implements EditiqueHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(EditiqueHelperImpl.class);
 
 	private static final String IMPOT_A_LA_SOURCE_MIN = "Impôt à la source";
+
+	private static final String APPLICATION_ARCHIVAGE = "FOLDERS";
+	private static final String TYPE_DOSSIER_ARCHIVAGE = "003";
 
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
@@ -258,7 +265,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	}
 
 
-		/**
+	/**
 	 * Alimente la partie expéditeur d'une LR
 	 */
 	@Override
@@ -293,6 +300,39 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 
 		return expediteur;
+	}
+
+	/**
+	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
+	 * @param typeDocument le type de document qui nous intéresse
+	 * @param noTiers le numéro du tiers concerné par le document
+	 * @param cleArchivage la clé d'archivage du document
+	 * @param dateTraitement la date de génération du document
+	 * @return la structure de demande d'archivage remplie
+	 */
+	@Override
+	public InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement) {
+		if (typeDocument.getCodeDocumentArchivage() == null) {
+			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
+		}
+
+		final InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
+		infoArchivage.setPrefixe(buildPrefixeInfoArchivage(typeDocument));
+		infoArchivage.setNomApplication(APPLICATION_ARCHIVAGE);
+		infoArchivage.setTypDossier(getTypeDossierArchivage());
+		infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(noTiers));
+		infoArchivage.setTypDocument(typeDocument.getCodeDocumentArchivage());
+		infoArchivage.setIdDocument(cleArchivage);
+		infoArchivage.setDatTravail(String.valueOf(dateTraitement.index()));
+		return infoArchivage;
+	}
+
+	/**
+	 * @return le code du type de dossier à donner au service d'archivage
+	 */
+	@Override
+	public String getTypeDossierArchivage() {
+		return TYPE_DOSSIER_ARCHIVAGE;
 	}
 
 	public void setAdresseService(AdresseService adresseService) {

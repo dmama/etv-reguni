@@ -29,6 +29,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -46,7 +47,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOfficeHelper {
+public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper implements ImpressionTaxationOfficeHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(ImpressionTaxationOfficeHelperImpl.class);
 
@@ -54,10 +55,6 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	private static final String TYPE_DOC_CHEMISE_TO = "CT";
 	private static final String CODE_DOC_CHEMISE_TO = "CHEM_TO";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
-	private static final String LOGO_CANT = "CANT";
-	private static final String DOCUM = "DOCUM";
-	private static final String HAUT1 = "HAUT1";
 
 	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
@@ -244,15 +241,15 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	private InfoDocument remplitInfoDocument(DeclarationImpotOrdinaire declaration, Contribuable contribuable) throws EditiqueException{
 
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
+		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_CHEMISE_TO);
 		infoDocument.setCodDoc(CODE_DOC_CHEMISE_TO);
 		final CleRgp cleRgp = infoDocument.addNewCleRgp();
 		cleRgp.setAnneeFiscale(Integer.toString(declaration.getPeriode().getAnnee()));
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_PP);
 
 		final Integer officeImpotId = getOfficeImpotAt(contribuable, declaration.getDateFin());
 		if (officeImpotId != null) {
@@ -280,9 +277,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	private InfoEnteteDocument remplitEnteteDocument(DeclarationImpotOrdinaire declaration, Contribuable contribuable) throws EditiqueException, AdresseException, ServiceInfrastructureException {
 
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-
-		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), HAUT1);
-		infoEnteteDocument.setPrefixe(prefixe);
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
 		final Integer oid = getOfficeImpotAt(contribuable, declaration.getDateFin());
 		if (oid != null) {

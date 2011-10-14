@@ -29,9 +29,6 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 
 	private static final Logger LOGGER = Logger.getLogger(EditiqueServiceImpl.class);
 
-	/** Le type de document à transmettre au service pour UNIREG */
-	public static final String TYPE_DOSSIER_UNIREG = "003";
-
 	private EvenementEditiqueSender sender;
 
 	private EditiqueRetourImpressionStorageService retourImpressionStorage;
@@ -155,8 +152,8 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
-		return copieConformeService.getPdfCopieConforme(noContribuable, typeDocument, nomDocument, contexte);
+	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
+		return copieConformeService.getPdfCopieConforme(noContribuable, typeDocument, nomDocument);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

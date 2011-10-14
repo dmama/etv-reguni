@@ -38,6 +38,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -53,15 +54,6 @@ import ch.vd.uniregctb.validation.ValidationInterceptor;
 public class ListeRecapServiceImpl implements ListeRecapService, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapServiceImpl.class);
-
-	/**
-	 * Le type de document à transmettre au service pour les LR
-	 */
-	private static final String TYPE_DOCUMENT_LR = "03";
-
-	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationLR";
-
-	private static final String CONTEXTE_COPIE_CONFORME_LR = "LR";
 
 	private DelaisService delaisService;
 
@@ -89,23 +81,10 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 
 	private ValidationInterceptor validationInterceptor;
 
-
-	/**
-	 * Recupere à l'éditique un document pour afficher une copie conforme (duplicata)
-	 *
-	 * @param lr
-	 * @return le document pdf
-	 * @throws EditiqueException
-	 */
-	@Override
-	public InputStream getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
-		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString(), CONTEXTE_COPIE_CONFORME_LR);
-	}
-
 	@Override
 	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
 		final String nomDocument = helperSommationLR.construitIdArchivageDocument(lr);
-		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), ImpressionSommationLRHelperImpl.TYPE_DOCUMENT_SOMMATION_LR, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
+		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_LR, nomDocument);
 	}
 
 	/**

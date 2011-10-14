@@ -2,11 +2,13 @@ package ch.vd.uniregctb.editique;
 
 import java.rmi.RemoteException;
 
+import noNamespace.InfoArchivageDocument.InfoArchivage;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -119,4 +121,18 @@ public interface EditiqueHelper {
 	 */
 	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
 
+	/**
+	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
+	 * @param typeDocument le type de document qui nous intéresse
+	 * @param noTiers le numéro du tiers concerné par le document
+	 * @param cleArchivage la clé d'archivage du document
+	 * @param dateTraitement la date de génération du document
+	 * @return la structure de demande d'archivage remplie
+	 */
+	public InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
+
+	/**
+	 * @return le code du type de dossier à donner au service d'archivage (pour tous les documents gérés par Unireg)
+	 */
+	public String getTypeDossierArchivage();
 }

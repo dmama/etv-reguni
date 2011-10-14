@@ -34,6 +34,7 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -91,10 +92,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private EvenementDeclarationSender evenementDeclarationSender;
 
 	private int tailleLot = 100; // valeur par défaut
-
-	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationDI";
-
-	private static final String CONTEXTE_COPIE_CONFORME_DELAI = "ConfirmationDelai";
 
 	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
 
@@ -429,14 +426,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
 		InputStream pdf =
-				editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
+				editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDI(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
 		}
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDIPourOnLine(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
 		}
 		return pdf;
 	}
@@ -597,10 +594,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
 		String nomDocument = construitIdArchivageConfirmationDelai(delai);
-		InputStream pdf =
-				editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(),
-						ImpressionConfirmationDelaiHelperImpl.TYPE_DOCUMENT_CONFIRMATION_DELAI, nomDocument, CONTEXTE_COPIE_CONFORME_DELAI);
-		return pdf;
+		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(), TypeDocumentEditique.CONFIRMATION_DELAI, nomDocument);
 	}
 
 	/**

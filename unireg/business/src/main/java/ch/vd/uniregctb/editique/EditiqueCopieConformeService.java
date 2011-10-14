@@ -12,9 +12,8 @@ public interface EditiqueCopieConformeService {
 	 * @param numeroTiers numéro de tiers associé au document recherché
 	 * @param typeDocument type de document
 	 * @param nomDocument identifiant du document archivé
-	 * @param contexte token identifiant le contexte de récupération de ce document depuis l'archive
 	 * @return contenu (format PDF) du document archivé, ou <code>null</null> si un tel document n'existe pas
 	 * @throws EditiqueException en cas de problème
 	 */
-	InputStream getPdfCopieConforme(long numeroTiers, String typeDocument, String nomDocument, String contexte) throws EditiqueException;
+	InputStream getPdfCopieConforme(long numeroTiers, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException;
 }

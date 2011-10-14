@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import noNamespace.BVRSTDDocument.BVRSTD;
 import noNamespace.CleRgpDocument;
 import noNamespace.FichierImpressionDocument;
-import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
 import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
@@ -41,10 +40,10 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -52,14 +51,11 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
-public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHelper {
+public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper implements ImpressionSommationLRHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(ImpressionSommationLRHelperImpl.class);
 
-	private static final String ORGINAL = "ORG";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_IS = "IS";
-	private static final String LOGO_CANT = "CANT";
 	private static final String TYPE_DOC_SOMMATION_LR = "SL";
 
 	private static final String LISTE_RECAPITULATIVE_MAJ = "LISTE RECAPITULATIVE";
@@ -84,16 +80,6 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	private static final String CODE_DOC_SOMMATION_LR_PRE = "SLR_SPRE";
 	private static final String CODE_DOC_SOMMATION_LR_HYP = "SLR_SHYP";
 	private static final String CODE_DOC_SOMMATION_LR_LTN = "SLR_SLTN";
-
-	private static final String DOCUM = "DOCUM";
-	private static final String HAUT1 = "HAUT1";
-	private static final String PERIO = "PERIO";
-	private static final String TITIM = "TITIM";
-	private static final String IMPCC = "IMPCC";
-	private static final String BVRST = "BVRST";
-
-	/** Le type de document à transmettre au service d'archivage */
-	public static final String TYPE_DOCUMENT_SOMMATION_LR = "355";
 
 	private BVRPlusClient bvrPlusClient;
 	private EditiqueHelper editiqueHelper;
@@ -187,8 +173,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 */
 	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
-		infoDocument.setPrefixe(prefixe.getCodeDocumentEditique() + DOCUM);
+		infoDocument.setPrefixe(buildPrefixeInfoDocument(getTypeDocumentEditique()));
 		infoDocument.setTypDoc(TYPE_DOC_SOMMATION_LR);
 
 		final String codeDoc;
@@ -232,8 +217,8 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final CleRgpDocument.CleRgp cleRgp = infoDocument.addNewCleRgp();
 		cleRgp.setAnneeFiscale(Integer.toString(lr.getPeriode().getAnnee()));
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_IS);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_IS);
 		return infoDocument;
 	}
 
@@ -249,9 +234,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 */
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, ServiceInfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
-		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
@@ -273,18 +256,18 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final SLRLCBVR slrlcbvr = SLRLCBVRDocument.Factory.newInstance().addNewSLRLCBVR();
 
 		final TypPeriode typPeriode = slrlcbvr.addNewPeriode();
-		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
-		final String prefixePerio = prefixe + PERIO;
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
+		final String prefixePerio = buildPrefixePeriode(typeDocumentEditique);
 
 		typPeriode.setPrefixe(prefixePerio);
-		typPeriode.setOrigDuplicat(ORGINAL);
+		typPeriode.setOrigDuplicat(ORIGINAL);
 		typPeriode.setHorsSuisse("");
 		typPeriode.setHorsCanton("");
 		typPeriode.setAnneeFiscale(lr.getPeriode().getAnnee().toString());
 		typPeriode.setDateDecompte(String.valueOf(lr.getDateExpedition().index()));
 		Entete entete = typPeriode.addNewEntete();
 		final Tit tit = entete.addNewTit();
-		final String prefixeTitim = prefixe + TITIM;
+		final String prefixeTitim = buildPrefixeTitreEntete(typeDocumentEditique);
 		tit.setPrefixe(prefixeTitim);
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;
@@ -307,7 +290,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		entete.setTitArray(tits);
 
 		final ImpCcn impCcn = entete.addNewImpCcn();
-		final String prefixeImpCcn = prefixe + IMPCC;
+		final String prefixeImpCcn = buildPrefixeImpCcnEntete(typeDocumentEditique);
 		impCcn.setPrefixe(prefixeImpCcn);
 		impCcn.setLibImpCcn(DECOMPTE_LR_MIN);
 		//
@@ -370,7 +353,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		final String noReference = FormatNumeroHelper.extractNoReference(bvrReponse.getLigneCodage());
 
 		final BVRSTD bvrstd = slrlcbvr.addNewBVRSTD();
-		final String prefixeBVRST = prefixe + BVRST;
+		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + " " + lr.getPeriode().getAnnee().toString());
 		//TODO (FDE) Se renseigner sur le numéro de collectivité concerné
@@ -412,17 +395,6 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	}
 
 	private InfoArchivage remplitInfoArchivage(DeclarationImpotSource lr, RegDate dateTraitement) {
-		InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
-		infoArchivage.setPrefixe(getTypeDocumentEditique().getCodeDocumentEditique() + "FOLDE");
-		infoArchivage.setNomApplication("FOLDERS");
-		infoArchivage.setTypDossier(EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
-		String numeroCTB = FormatNumeroHelper.numeroCTBToDisplay(lr.getTiers().getNumero());
-		infoArchivage.setNomDossier(numeroCTB);
-		infoArchivage.setTypDocument(TYPE_DOCUMENT_SOMMATION_LR);
-		String idDocument = construitIdArchivageDocument(lr);
-		infoArchivage.setIdDocument(idDocument);
-		infoArchivage.setDatTravail(String.valueOf(dateTraitement.index()));
-		return infoArchivage;
+		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), lr.getTiers().getNumero(), construitIdArchivageDocument(lr), dateTraitement);
 	}
-
 }

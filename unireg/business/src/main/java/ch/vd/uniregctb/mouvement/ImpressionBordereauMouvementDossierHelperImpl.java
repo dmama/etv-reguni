@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -35,15 +36,11 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Impression éditique d'un bordereau de mouvements de dossier
  */
-public class ImpressionBordereauMouvementDossierHelperImpl implements ImpressionBordereauMouvementDossierHelper {
+public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstractHelper implements ImpressionBordereauMouvementDossierHelper {
 
 	private static final String TYPE_DOC_BORDEREAU_ENVOI = "BE";
 	private static final String CODE_DOC_BORDEREAU_ENVOI = "BRD_ENV";
-	private static final String DOCUM = "DOCUM";
-	private static final String HAUT1 = "HAUT1";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
-	private static final String LOGO_CANT = "CANT";
 	private static final String TITRE = "Bordereau d'envoi des dossiers";
 
 	private EditiqueHelper editiqueHelper;
@@ -156,11 +153,12 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		signature.setOfficeImpot(ca.getNomCourt());
 		bordereauEnvoi.setSignature(signature);
 
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
+
 		// période fiscale
 		final TypPeriode pf = bordereauEnvoi.addNewPeriode();
-		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
-		pf.setPrefixe(prefixe + "PERIO");
-		pf.setOrigDuplicat("ORG");
+		pf.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
+		pf.setOrigDuplicat(ORIGINAL);
 		pf.setHorsSuisse("");
 		pf.setHorsCanton("");
 		pf.setDateDecompte(null);
@@ -169,7 +167,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		final TypPeriode.Entete entete = pf.addNewEntete();
 		final TypPeriode.Entete.Tit titre = entete.addNewTit();
 		titre.setLibTit(TITRE);
-		titre.setPrefixe(prefixe + "TITIM");
+		titre.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
 		entete.setTitArray(new TypPeriode.Entete.Tit[] {titre});
 		pf.setEntete(entete);
 		bordereauEnvoi.setPeriode(pf);
@@ -187,13 +185,13 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	 */
 	private InfoDocumentDocument1.InfoDocument remplitInfoDocument() {
 		final InfoDocumentDocument1.InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), DOCUM);
+		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_BORDEREAU_ENVOI);
 		infoDocument.setCodDoc(CODE_DOC_BORDEREAU_ENVOI);
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_PP);
 		return infoDocument;
 	}
 
@@ -201,10 +199,8 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 	 * Remplit la partie entête du document
 	 */
 	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws ServiceInfrastructureException, AdresseException {
-		InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-
-		final String prefixe = String.format("%s%s", getTypeDocumentEditique().getCodeDocumentEditique(), HAUT1);
-		infoEnteteDocument.setPrefixe(prefixe);
+		final InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
 		final BordereauMouvementDossier bordereau = params.getBordereau();
 		final CollectiviteAdministrative expediteurBordereau = bordereau.getExpediteur();

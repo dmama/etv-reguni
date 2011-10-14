@@ -28,7 +28,7 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
-	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
+	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
 		return new ByteArrayInputStream(new byte[0]);
 	}
 }

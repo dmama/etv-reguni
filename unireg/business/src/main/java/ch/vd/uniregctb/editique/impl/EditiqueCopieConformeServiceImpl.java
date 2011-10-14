@@ -14,6 +14,8 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueCopieConformeService;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 /**
  * Implémentation du service d'obtention de copies conformes
@@ -27,6 +29,7 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 	private EsbMessageFactory esbMessageFactory;
 	private EsbHttpTemplate esbHttpTemplate;
 	private String serviceDestination;
+	private EditiqueHelper editiqueHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
@@ -43,11 +46,15 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		this.serviceDestination = serviceDestination;
 	}
 
+	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
+		this.editiqueHelper = editiqueHelper;
+	}
+
 	@Override
-	public InputStream getPdfCopieConforme(long numeroTiers, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
+	public InputStream getPdfCopieConforme(long numeroTiers, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
 
 		try {
-			final EsbMessage demande = createEsbMessageDemande(numeroTiers, typeDocument, nomDocument, contexte);
+			final EsbMessage demande = createEsbMessageDemande(numeroTiers, typeDocument, nomDocument);
 			final EsbMessage reponse = esbHttpTemplate.sendSync(demande);
 
 			final InputStream pdf;
@@ -77,21 +84,24 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		}
 	}
 
-	private EsbMessage createEsbMessageDemande(long numeroTiers, String typeDocument, String nomDocument, String contexte) throws Exception {
+	private EsbMessage createEsbMessageDemande(long numeroTiers, TypeDocumentEditique typeDocument, String nomDocument) throws Exception {
+		if (typeDocument.getCodeDocumentArchivage() == null) {
+			throw new IllegalArgumentException("Archivage non-supporté pour document de type " + typeDocument);
+		}
 
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		final EsbMessage m = esbMessageFactory.createMessage();
 
-		m.setContext(contexte);
+		m.setContext(typeDocument.getContexteImpression());
 		m.setBusinessId(nomDocument);
 		m.setBusinessUser(user);
 		m.setServiceDestination(serviceDestination);
 		m.setBody("<empty/>");
 
 		// paramètres d'entrée
-		m.addHeader("typDossier", EditiqueServiceImpl.TYPE_DOSSIER_UNIREG);
+		m.addHeader("typDossier", editiqueHelper.getTypeDossierArchivage());
 		m.addHeader("nomDossier", FormatNumeroHelper.numeroCTBToDisplay(numeroTiers));
-		m.addHeader("typDocument", typeDocument);
+		m.addHeader("typDocument", typeDocument.getCodeDocumentArchivage());
 		m.addHeader("idDocument", nomDocument);
 		m.addHeader("typFormat", PDF);
 

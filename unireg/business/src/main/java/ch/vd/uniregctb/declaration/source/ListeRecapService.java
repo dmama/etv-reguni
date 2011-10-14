@@ -20,15 +20,6 @@ public interface ListeRecapService {
 	 * @param lr
 	 * @return le document pdf
 	 */
-	InputStream getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
-
-	/**
-	 * Recupere à l'éditique un document pour afficher
-	 * une copie conforme (duplicata)
-	 *
-	 * @param lr
-	 * @return le document pdf
-	 */
 	InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**

@@ -33,6 +33,7 @@
 	<bean id="copieConformeService" class="ch.vd.uniregctb.editique.impl.EditiqueCopieConformeServiceImpl">
 		<property name="esbMessageFactory" ref="esbMessageFactorySansValidation" />
 		<property name="esbHttpTemplate" ref="esbHttpTemplate" />
+		<property name="editiqueHelper" ref="editiqueHelper" />
 		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}" />
 	</bean>
 

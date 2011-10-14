@@ -38,6 +38,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -48,11 +49,10 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
-public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelper {
+public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper implements ImpressionListeRecapHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(ImpressionListeRecapHelperImpl.class);
 
-	private static final String ORGINAL = "ORG";
 	private static final String TYPE_DOC_LR = "LR";
 
 	private static final String LISTE_RECAPITULATIVE_MAJ = "LISTE RECAPITULATIVE";
@@ -79,15 +79,6 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	private static final String ADM_MAJ = "ADMINISTRATEURS";
 
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_IS = "IS";
-	private static final String LOGO_CANT = "CANT";
-
-	private static final String DOCUM = "DOCUM";
-	private static final String HAUT1 = "HAUT1";
-	private static final String PERIO = "PERIO";
-	private static final String TITIM = "TITIM";
-	private static final String IMPCC = "IMPCC";
-	private static final String BVRST = "BVRST";
 
 	private BVRPlusClient bvrPlusClient;
 
@@ -151,8 +142,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 */
 	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
-		infoDocument.setPrefixe(prefixe.getCodeDocumentEditique() + DOCUM);
+		infoDocument.setPrefixe(buildPrefixeInfoDocument(getTypeDocumentEditique()));
 		infoDocument.setTypDoc(TYPE_DOC_LR);
 
 		final String codeDoc;
@@ -199,8 +189,8 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		cleRgp.setAnneeFiscale(Integer.toString(lr.getPeriode().getAnnee()));
 
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_IS);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_IS);
 		return infoDocument;
 	}
 
@@ -225,18 +215,16 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @throws ServiceInfrastructureException
 	 */
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration, String traitePar) throws AdresseException, ServiceInfrastructureException {
-		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique();
-		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
-
-		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
+		final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = editiqueHelper.remplitExpediteurPourEnvoiLR(declaration, infoEnteteDocument, traitePar);
+		final Expediteur expediteur = editiqueHelper.remplitExpediteurPourEnvoiLR(declaration, infoEnteteDocument, traitePar);
 		infoEnteteDocument.setExpediteur(expediteur);
 
-		Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
+		final Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;
@@ -245,17 +233,17 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 
 	private LRLCBVR remplitSpecifiqueListeRecap(DeclarationImpotSource lr) throws EditiqueException {
 
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
 
-		LRLCBVR lrlcbvr = LRLCBVRDocument.Factory.newInstance().addNewLRLCBVR();
+		final LRLCBVR lrlcbvr = LRLCBVRDocument.Factory.newInstance().addNewLRLCBVR();
 		//
 		// TypPeriode
 		//
-		TypPeriode typPeriode = lrlcbvr.addNewPeriode();
-		final String prefixe = getTypeDocumentEditique().getCodeDocumentEditique();
-		final String prefixePerio = prefixe + PERIO;
+		final TypPeriode typPeriode = lrlcbvr.addNewPeriode();
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
+		final String prefixePerio = buildPrefixePeriode(typeDocumentEditique);
 		typPeriode.setPrefixe(prefixePerio);
-		typPeriode.setOrigDuplicat(ORGINAL);
+		typPeriode.setOrigDuplicat(ORIGINAL);
 		typPeriode.setHorsSuisse("");
 		typPeriode.setHorsCanton("");
 		typPeriode.setAnneeFiscale(lr.getPeriode().getAnnee().toString());
@@ -263,7 +251,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 
 		final Entete entete = typPeriode.addNewEntete();
 		final Tit tit = entete.addNewTit();
-		final String prefixeTitim = prefixe + TITIM;
+		final String prefixeTitim = buildPrefixeTitreEntete(typeDocumentEditique);
 		tit.setPrefixe(prefixeTitim);
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;
@@ -281,18 +269,18 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		}
 		libTit = libTit + " " + lr.getPeriode().getAnnee().toString();
 		tit.setLibTit(libTit);
-		Tit[] tits = new Tit[1];
+		final Tit[] tits = new Tit[1];
 		tits[0] = tit;
 		entete.setTitArray(tits);
 
-		ImpCcn impCcn = entete.addNewImpCcn();
-		String prefixeImpCcn = prefixe + IMPCC;
+		final ImpCcn impCcn = entete.addNewImpCcn();
+		final String prefixeImpCcn = buildPrefixeImpCcnEntete(typeDocumentEditique);
 		impCcn.setPrefixe(prefixeImpCcn);
 		impCcn.setLibImpCcn(DECOMPTE_LR_MIN);
 		//
 		// InfBVR
 		//
-		InfBVR infBVR = lrlcbvr.addNewInfBVR();
+		final InfBVR infBVR = lrlcbvr.addNewInfBVR();
 		infBVR.setPeriodeDu(String.valueOf(lr.getDateDebut().index()));
 		infBVR.setPeriodeAu(String.valueOf(lr.getDateFin().index()));
 		if (lr.getDelaiAccordeAu() != null) {
@@ -301,8 +289,8 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		//
 		// LRLC
 		//
-		LRLC lrlc = lrlcbvr.addNewLRLC();
-		TitreDoc titreDoc = lrlc.addNewTitreDoc();
+		final LRLC lrlc = lrlcbvr.addNewLRLC();
+		final TitreDoc titreDoc = lrlc.addNewTitreDoc();
 		titreDoc.setLibelle1(LISTE_RECAPITULATIVE_MAJ);
 		if (dpi.getCategorieImpotSource() == CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS) {
 			titreDoc.setLibelle2(CAS_MIN);
@@ -323,26 +311,26 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		lrlc.setTel(dpi.getNumeroTelephoneProfessionnel());
 		lrlc.setPeriodeDu(String.valueOf(lr.getDateDebut().index()));
 		lrlc.setPeriodeAu(String.valueOf(lr.getDateFin().index()));
-		String codeBar = calculCodeBarre(lr);
+		final String codeBar = calculCodeBarre(lr);
 		lrlc.setCodeBar(codeBar);
 
 		//
 		// BVRSTD
 		//
-		BvrDemande bvrDemande = new BvrDemande();
+		final BvrDemande bvrDemande = new BvrDemande();
 		bvrDemande.setNdc(dpi.getNumero().toString());
-		Integer anneeAsInteger = lr.getPeriode().getAnnee();
-		BigInteger annee = BigInteger.valueOf(anneeAsInteger.longValue());
+		final Integer anneeAsInteger = lr.getPeriode().getAnnee();
+		final BigInteger annee = BigInteger.valueOf(anneeAsInteger.longValue());
 		bvrDemande.setAnneeTaxation(annee);
 		bvrDemande.setTypeDebiteurIS(dpi.getCategorieImpotSource().toString());
-		BvrReponse bvrReponse = bvrPlusClient.getBVRDemande(bvrDemande);
+		final BvrReponse bvrReponse = bvrPlusClient.getBVRDemande(bvrDemande);
 		if (bvrReponse.getLigneCodage() == null) {
 			throw new EditiqueException("Le service 'SipfBVRPlus' ne renvoie pas d'information pour le débiteur " + dpi.getNumero().toString() + " de type " + dpi.getCategorieImpotSource()  + " et l'année " + annee );
 		}
 
-		String noReference = FormatNumeroHelper.extractNoReference(bvrReponse.getLigneCodage());
-		BVRSTD bvrstd = lrlcbvr.addNewBVRSTD();
-		String prefixeBVRST = prefixe + BVRST;
+		final String noReference = FormatNumeroHelper.extractNoReference(bvrReponse.getLigneCodage());
+		final BVRSTD bvrstd = lrlcbvr.addNewBVRSTD();
+		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + " " + lr.getPeriode().getAnnee().toString());
 		//TODO (FDE) Se renseigner sur le numéro de collectivité concerné
@@ -354,7 +342,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		bvrstd.setNoCompte(bvrReponse.getNoAdherent());
 		bvrstd.setIBAN(dpi.getNumeroCompteBancaire());
 		try {
-			AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
+			final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
 			bvrstd.setVerseParLigne1(adresseEnvoi.getLigne1());
 			bvrstd.setVerseParLigne2(adresseEnvoi.getLigne2());
 			bvrstd.setVerseParLigne3(adresseEnvoi.getLigne3());
@@ -399,6 +387,4 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 				)
 		);
 	}
-
-
 }

@@ -56,13 +56,13 @@ public interface EditiqueService {
 	/**
 	 * Obitent un document pdf, sous forme binaire, identifié par les différents paramètres.
 	 *
+	 *
 	 * @param noContribuable l'identifiant du contribuable.
 	 * @param typeDocument   le type de document.
 	 * @param nomDocument    le nom du document.
-	 * @param contexte       token identifiant le contexte de récupération de ce document depuis l'archive
 	 * @return un document pdf, sous forme binaire.
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException;
+	InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException;
 
 }

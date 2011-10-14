@@ -43,6 +43,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -63,7 +64,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDeclarationImpotOrdinaireHelperImpl implements ImpressionDeclarationImpotOrdinaireHelper {
+public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotOrdinaireHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperImpl.class);
 
@@ -71,15 +72,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 	private static final String DI = "DI";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
-	private static final String LOGO_CANT = "CANT";
-	private static final String HAUT1 = "HAUT1";
 	private static final String CODE_DOCUMENT_CPLT = "DI_STD";
 	private static final String CODE_DOCUMENT_VT = "DI_VAUDTAX";
 	private static final String CODE_DOCUMENT_HC = "DI_HC";
 	private static final String CODE_DOCUMENT_DEP = "DI_DP";
-	private static final String DOCUM = "DOCUM";
-	private static final String FOLDE = "FOLDE";
 
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
@@ -141,8 +137,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 		final TypeDocument typeDoc = informationDocument.getTypeDocument();
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique(typeDoc);
-		infoDocument.setPrefixe(prefixe.getCodeDocumentEditique() + DOCUM);
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(typeDoc);
+		infoDocument.setPrefixe(buildPrefixeInfoDocument(typeDocumentEditique));
 		infoDocument.setTypDoc(DI);
 		final String codDoc;
 		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
@@ -189,8 +185,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 			throw new EditiqueException(message);
 		}
 		infoDocument.setVersion(VERSION);
-		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setLogo(LOGO_CANTON);
+		infoDocument.setPopulations(POPULATION_PP);
 		return infoDocument;
 	}
 
@@ -201,8 +197,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		final TypeDocument typeDoc = informationDocument.getTypeDocument();
-		final TypeDocumentEditique prefixe = getTypeDocumentEditique(typeDoc);
-		infoEnteteDocument.setPrefixe(prefixe.getCodeDocumentEditique() + HAUT1);
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(typeDoc);
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(typeDocumentEditique));
 
 		final Tiers tiers = informationDocument.getTiers();
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(tiers, infoEnteteDocument);
