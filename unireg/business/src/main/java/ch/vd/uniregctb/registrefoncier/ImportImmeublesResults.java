@@ -15,6 +15,8 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION),
 		CTB_INCONNU("Le contribuable n'existe pas"),
+		BAD_CTB_TYPE("Le type de contribuable est incorrect"),
+		BAD_GENRE_PERSONNE("Le genre de personne est malformé"),
 		BAD_DATE_NO_CTB("Le numéro de contribuable est malformé"),
 		BAD_URL("L'url est malformée"),
 		BAD_DATE_DEBUT("La date de début est malformée"),
@@ -23,7 +25,8 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 		BAD_EF("L'estimation fiscale est malformée"),
 		BAD_DATE_ANCIENNE_EF("L'ancienne estimation fiscale est malformée"),
 		BAD_GENRE_PROP("Le genre de propriété est malformé"),
-		BAD_PART_PROP("La part de propriété est malformée");
+		BAD_PART_PROP("La part de propriété est malformée"),
+		CTB_MENAGE_COMMUN("Le contribuable est un ménage commun");
 
 		private final String description;
 
@@ -37,11 +40,27 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	}
 
 	public enum IgnoreType {
-		CTB_NULL("Le contribuable n'est pas renseigné");
+		CTB_NULL("Le contribuable n'est pas renseigné"),
+		CTB_ENTREPRISE("Le contribuable est une entreprise");
 
 		private final String description;
 
 		private IgnoreType(String description) {
+			this.description = description;
+		}
+
+		public String description() {
+			return description;
+		}
+	}
+
+	public enum AVerifierType {
+		TYPE_INCOHERENT_TRAITE("Incohérence des types de contribuable (traitement effectué)."),
+		TYPE_INCOHERENT_NON_TRAITE("Incohérence des types de contribuable (traitement non-effectué).");
+
+		private final String description;
+
+		private AVerifierType(String description) {
 			this.description = description;
 		}
 
@@ -116,10 +135,35 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 		}
 	}
 
+	public static class AVerifier {
+		public final String noImmeuble;
+		public final AVerifierType raison;
+		public final String details;
+
+		public AVerifier(String noImmeuble, AVerifierType raison, String details) {
+			this.noImmeuble = noImmeuble;
+			this.raison = raison;
+			this.details = details;
+		}
+
+		public String getNoImmeuble() {
+			return noImmeuble;
+		}
+
+		public String getDescriptionRaison() {
+			return raison.description;
+		}
+
+		public String getDetails() {
+			return details;
+		}
+	}
+
 	public final RegDate dateTraitement = RegDate.get();
 	public int nbLignes;
 	public final List<Import> traites = new ArrayList<Import>();
 	public final List<Ignore> ignores = new ArrayList<Ignore>();
+	public final List<AVerifier> averifier = new ArrayList<AVerifier>();
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
@@ -158,11 +202,16 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 		ignores.add(new Ignore(noImmeuble, raison));
 	}
 
+	public void addAVerifier(String noImmeuble, AVerifierType raison, String details) {
+		averifier.add(new AVerifier(noImmeuble, raison, details));
+	}
+
 	@Override
 	public void addAll(ImportImmeublesResults right) {
 		nbLignes += right.nbLignes;
 		traites.addAll(right.traites);
 		ignores.addAll(right.ignores);
+		averifier.addAll(right.averifier);
 		erreurs.addAll(right.erreurs);
 	}
 

@@ -32,7 +32,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Override
 	public ImportImmeublesResults importImmeubles(InputStream csvStream, String encoding, StatusManager status) {
-		final ImportImmeublesProcessor processor = new ImportImmeublesProcessor(hibernateTemplate, immeubleDAO, transactionManager, tiersDAO);
+		final ImportImmeublesProcessor processor = new ImportImmeublesProcessor(hibernateTemplate, immeubleDAO, transactionManager, tiersDAO, tiersService);
 		return processor.run(csvStream, encoding, status);
 	}
 

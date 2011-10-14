@@ -73,6 +73,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -913,6 +914,20 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi = hibernateTemplate.merge(dpi);
 		return dpi;
+	}
+
+	protected DebiteurPrestationImposable addDebiteur(Long numero) {
+		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+		dpi.setNumero(numero);
+		dpi = hibernateTemplate.merge(dpi);
+		return dpi;
+	}
+
+	protected Etablissement addEtablissement(Long numero) {
+		Etablissement eta = new Etablissement();
+		eta.setNumero(numero);
+		eta = hibernateTemplate.merge(eta);
+		return eta;
 	}
 
 	protected DebiteurPrestationImposable addDebiteur(String complementNom, Contribuable ctbLie, RegDate dateDebutContact) {

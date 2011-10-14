@@ -29,7 +29,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO);
+		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService);
 	}
 
 	@Override
@@ -62,6 +62,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(0, res.nbLignes);
 		assertEquals(0, res.traites.size());
 		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
 		assertEquals(0, res.erreurs.size());
 	}
 
@@ -74,6 +75,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(1, res.nbLignes);
 		assertEquals(0, res.traites.size());
 		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
 		assertEquals(1, res.erreurs.size());
 
 		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
@@ -92,6 +94,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(1, res.nbLignes);
 		assertEquals(0, res.traites.size());
 		assertEquals(1, res.ignores.size());
+		assertEquals(0, res.averifier.size());
 		assertEquals(0, res.erreurs.size());
 
 		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
@@ -103,7 +106,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Test
 	public void testRunFichierAvecUnImmeubleEtContribuableConnu() throws Exception {
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addNonHabitant(12345678L, "Madeleine", "Chtöpötz", date(1945, 1, 1), Sexe.FEMININ);
@@ -117,6 +120,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(1, res.nbLignes);
 		assertEquals(1, res.traites.size());
 		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
 		assertEquals(0, res.erreurs.size());
 
 		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
@@ -124,7 +128,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
 		assertEquals("132/3129", traite0.getNoImmeuble());
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(12345678L);
@@ -147,5 +151,177 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtContribuableConnuEtIncoherenceSurLeType() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addNonHabitant(12345678L, "Madeleine", "Chtöpötz", date(1945, 1, 1), Sexe.FEMININ);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble_incoherence.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(1, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(1, res.averifier.size());
+		assertEquals(0, res.erreurs.size());
+
+		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+		assertNotNull(traite0);
+		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+		assertEquals("132/3129", traite0.getNoImmeuble());
+
+		final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
+		assertNotNull(averifier0);
+		assertEquals("132/3129", averifier0.getNoImmeuble());
+		assertEquals("Incohérence des types de contribuable (traitement effectué).", averifier0.getDescriptionRaison());
+		assertEquals("Type dans le RF = [Entreprise], type dans Unireg = [PersonnePhysique]", averifier0.getDetails());
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(12345678L);
+				assertNotNull(pp);
+
+				final Set<Immeuble> immeubles = pp.getImmeubles();
+				assertNotNull(immeubles);
+				assertEquals(1, immeubles.size());
+
+				final Immeuble immeuble0 = immeubles.iterator().next();
+				assertNotNull(immeuble0);
+				assertEquals("132/3129", immeuble0.getNumero());
+				assertEquals(date(2001, 1, 9), immeuble0.getDateDebut());
+				assertNull(immeuble0.getDateFin());
+				assertEquals("Revêtement dur", immeuble0.getNature());
+				assertEquals(1200000, immeuble0.getEstimationFiscale());
+				assertNull(immeuble0.getDateEstimationFiscale());
+				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
+				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtMenageCommun() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique jacques = addNonHabitant(22224444L, "Jacques", "Chtöpötz", date(1945, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique madeleine = addNonHabitant(33335555L, "Madeleine", "Chtöpötz", date(1954, 11, 1), Sexe.FEMININ);
+				addEnsembleTiersCouple(12345678L, jacques, madeleine, date(1968, 3, 12), null);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(0, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(1, res.erreurs.size());
+
+		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+		assertNotNull(erreur0);
+		assertEquals("132/3129", erreur0.getNoImmeuble());
+		assertEquals("Le contribuable est un ménage commun", erreur0.getDescriptionRaison());
+		assertEquals("Le contribuable n°12345678 est un ménage commun constitué " +
+				"du principal = {numéro=22224444, prénom='Jacques', nom='Chtöpötz', date de naissance=01.01.1945, sexe=masculin} et " +
+				"du conjoint = {numéro=33335555, prénom='Madeleine', nom='Chtöpötz', date de naissance=01.11.1954, sexe=féminin}.", erreur0.getDetails());
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtPersonneMorale() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addEntreprise(45678L);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble_pm.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(0, res.traites.size());
+		assertEquals(1, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(0, res.erreurs.size());
+
+		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
+		assertNotNull(ignore0);
+		assertEquals("132/3129", ignore0.getNoImmeuble());
+		assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtPersonneMoraleEtIncoherenceSurLeType() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addEntreprise(45678L);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble_pm_incoherence.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(0, res.traites.size());
+		assertEquals(1, res.ignores.size());
+		assertEquals(1, res.averifier.size());
+		assertEquals(0, res.erreurs.size());
+
+		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
+		assertNotNull(ignore0);
+		assertEquals("132/3129", ignore0.getNoImmeuble());
+		assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
+
+		final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
+		assertNotNull(averifier0);
+		assertEquals("132/3129", averifier0.getNoImmeuble());
+		assertEquals("Incohérence des types de contribuable (traitement non-effectué).", averifier0.getDescriptionRaison());
+		assertEquals("Type dans le RF = [PersonnePhysique], type dans Unireg = [Entreprise]", averifier0.getDetails());
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtEtablissement() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addEtablissement(2000123L);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble_eta.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(0, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(1, res.erreurs.size());
+
+		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+		assertNotNull(erreur0);
+		assertEquals("132/3129", erreur0.getNoImmeuble());
+		assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
+		assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
 	}
 }

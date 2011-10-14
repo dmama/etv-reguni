@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -26,13 +27,23 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.rf.PartPropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.Sexe;
+
+import static ch.vd.uniregctb.registrefoncier.ImportImmeublesResults.ErreurType;
+import static ch.vd.uniregctb.registrefoncier.ImportImmeublesResults.IgnoreType;
 
 /**
  * Processeur qui gère l'importation des immeubles du registe-foncier dans Unireg à partir d'un fichier CSV.
@@ -44,6 +55,7 @@ public class ImportImmeublesProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	private static final String HEADER_NO_CTB = "NO_CTB";
+	private static final String HEADER_GENRE_PERSONNE = "GENRE_PERSONNE";
 	private static final String HEADER_NO_IMMEUBLE = "NO_IMMEUBLE";
 	private static final String HEADER_NATURE = "NATURE";
 	private static final String HEADER_ESTIMATION_FISCALE = "ESTIMATION_FISCALE";
@@ -55,16 +67,24 @@ public class ImportImmeublesProcessor {
 	private static final String HEADER_DATE_FIN = "DATE_FIN";
 	private static final String HEADER_URL = "URL";
 
+	private enum GenrePersonne {
+		PersonnePhysique,
+		Entreprise,
+		DroitPublic
+	}
+
 	private final ImmeubleDAO immeubleDAO;
 	private final TiersDAO tiersDAO;
+	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 
-	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO) {
+	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.immeubleDAO = immeubleDAO;
 		this.tiersDAO = tiersDAO;
+		this.tiersService = tiersService;
 	}
 
 	/**
@@ -223,7 +243,16 @@ public class ImportImmeublesProcessor {
 			dateDebut = parseRegDate(data.get(HEADER_DATE_DEBUT));
 		}
 		catch (ParseException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_DATE_DEBUT, "Date = " + data.get(HEADER_DATE_DEBUT));
+			rapport.addError(numero, ErreurType.BAD_DATE_DEBUT, "Date = " + data.get(HEADER_DATE_DEBUT));
+			return null;
+		}
+
+		final GenrePersonne genrePersonne;
+		try {
+			genrePersonne = parseGenrePersonne(data.get(HEADER_GENRE_PERSONNE));
+		}
+		catch (IllegalArgumentException e) {
+			rapport.addError(numero, ErreurType.BAD_GENRE_PERSONNE, "Genre personne = " + data.get(HEADER_GENRE_PERSONNE));
 			return null;
 		}
 
@@ -232,7 +261,7 @@ public class ImportImmeublesProcessor {
 			dateFin = parseRegDate(data.get(HEADER_DATE_FIN));
 		}
 		catch (ParseException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_DATE_FIN, "Date = " + data.get(HEADER_DATE_FIN));
+			rapport.addError(numero, ErreurType.BAD_DATE_FIN, "Date = " + data.get(HEADER_DATE_FIN));
 			return null;
 		}
 
@@ -243,7 +272,7 @@ public class ImportImmeublesProcessor {
 			estimationFiscale = Integer.parseInt(data.get(HEADER_ESTIMATION_FISCALE));
 		}
 		catch (NumberFormatException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_EF, "Estimation fiscale = " + data.get(HEADER_ESTIMATION_FISCALE));
+			rapport.addError(numero, ErreurType.BAD_EF, "Estimation fiscale = " + data.get(HEADER_ESTIMATION_FISCALE));
 			return null;
 		}
 
@@ -252,7 +281,7 @@ public class ImportImmeublesProcessor {
 			dateEstimationFiscale = parseRegDate(data.get(HEADER_DATE_ESTIMATION_FISCALE));
 		}
 		catch (ParseException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_DATE_EF, "Date = " + data.get(HEADER_DATE_ESTIMATION_FISCALE));
+			rapport.addError(numero, ErreurType.BAD_DATE_EF, "Date = " + data.get(HEADER_DATE_ESTIMATION_FISCALE));
 			return null;
 		}
 
@@ -261,7 +290,7 @@ public class ImportImmeublesProcessor {
 			ancienneEstimationFiscale = parseInteger(data.get(HEADER_ANCIENNE_ESTIMATION_FISCALE));
 		}
 		catch (NumberFormatException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_DATE_ANCIENNE_EF, "Ancienne estimation fiscale = " + data.get(HEADER_ANCIENNE_ESTIMATION_FISCALE));
+			rapport.addError(numero, ErreurType.BAD_DATE_ANCIENNE_EF, "Ancienne estimation fiscale = " + data.get(HEADER_ANCIENNE_ESTIMATION_FISCALE));
 			return null;
 		}
 
@@ -270,7 +299,7 @@ public class ImportImmeublesProcessor {
 			genrePropriete = parseGenrePropriete(data.get(HEADER_GENRE_PROPRIETE));
 		}
 		catch (IllegalArgumentException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_GENRE_PROP, "Genre propriété = " + data.get(HEADER_GENRE_PROPRIETE));
+			rapport.addError(numero, ErreurType.BAD_GENRE_PROP, "Genre propriété = " + data.get(HEADER_GENRE_PROPRIETE));
 			return null;
 		}
 
@@ -279,7 +308,7 @@ public class ImportImmeublesProcessor {
 			partPropriete = PartPropriete.parse(data.get(HEADER_PART_PROPRIETE));
 		}
 		catch (IllegalArgumentException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_PART_PROP, "Part de propriété = " + data.get(HEADER_PART_PROPRIETE));
+			rapport.addError(numero, ErreurType.BAD_PART_PROP, "Part de propriété = " + data.get(HEADER_PART_PROPRIETE));
 			return null;
 		}
 
@@ -288,7 +317,7 @@ public class ImportImmeublesProcessor {
 			lienRegistreFoncier = parseURL(data.get(HEADER_URL));
 		}
 		catch (MalformedURLException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_URL, "Url = " + data.get(HEADER_URL));
+			rapport.addError(numero, ErreurType.BAD_URL, "Url = " + data.get(HEADER_URL));
 			return null;
 		}
 
@@ -297,18 +326,40 @@ public class ImportImmeublesProcessor {
 			ctbId = parseLong(data.get(HEADER_NO_CTB));
 		}
 		catch (NumberFormatException e) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.BAD_DATE_NO_CTB, "Numéro = " + data.get(HEADER_NO_CTB));
+			rapport.addError(numero, ErreurType.BAD_DATE_NO_CTB, "Numéro = " + data.get(HEADER_NO_CTB));
 			return null;
 		}
 		if (ctbId == null || ctbId == 0) {
-			rapport.addIgnore(numero, ImportImmeublesResults.IgnoreType.CTB_NULL);
+			rapport.addIgnore(numero, IgnoreType.CTB_NULL);
 			return null;
 		}
 
 		final Contribuable proprietaire = (Contribuable) tiersDAO.get(ctbId);
 		if (proprietaire == null) {
-			rapport.addError(numero, ImportImmeublesResults.ErreurType.CTB_INCONNU, "Le contribuable n°" + ctbId + " n'existe pas.");
+			rapport.addError(numero, ErreurType.CTB_INCONNU, "Le contribuable n°" + ctbId + " n'existe pas.");
 			return null;
+		}
+		else if (proprietaire instanceof MenageCommun) {
+			// les ménages-communs ne possèdent pas de personnalité juridique et ne peuvent pas posséder d'immeubles.
+			rapport.addError(numero, ErreurType.CTB_MENAGE_COMMUN, buildMenageErrorDetails((MenageCommun) proprietaire));
+			return null;
+		}
+		else if (proprietaire instanceof Entreprise) {
+			if (genrePersonne != GenrePersonne.Entreprise) {
+				// il y a incohérence incompatible du type de contribuable entre les deux registres, on notifie et on ne traite pas l'immeuble
+				rapport.addAVerifier(numero, ImportImmeublesResults.AVerifierType.TYPE_INCOHERENT_NON_TRAITE, "Type dans le RF = [" + genrePersonne + "], type dans Unireg = [Entreprise]");
+			}
+			rapport.addIgnore(numero, IgnoreType.CTB_ENTREPRISE);
+			return null;
+		}
+		else if (!(proprietaire instanceof PersonnePhysique)) {
+			rapport.addError(numero, ErreurType.BAD_CTB_TYPE, "Le contribuable n°" + proprietaire.getNumero() + " est de type [" + proprietaire.getClass().getSimpleName() + "].");
+			return null;
+		}
+
+		if (genrePersonne != GenrePersonne.PersonnePhysique) {
+			// malgré l'incohérence des types de contribuable, on traite quand même l'immeuble car le contribuable est une personne physique
+			rapport.addAVerifier(numero, ImportImmeublesResults.AVerifierType.TYPE_INCOHERENT_TRAITE, "Type dans le RF = [" + genrePersonne + "], type dans Unireg = [PersonnePhysique]");
 		}
 
 		final Immeuble immeuble = new Immeuble();
@@ -328,6 +379,28 @@ public class ImportImmeublesProcessor {
 		return immeuble;
 	}
 
+	private String buildMenageErrorDetails(@NotNull MenageCommun menageCommun) {
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, null);
+		if (ensemble.getPrincipal() == null) {
+			return "Le contribuable n°" + menageCommun.getNumero() + " est un ménage commun vide.";
+		}
+		else if (ensemble.getConjoint() == null) {
+			return "Le contribuable n°" + menageCommun.getNumero() + " est un ménage commun constitué du principal = {" + buildPersonnePhysiqueDetails(ensemble.getPrincipal()) +
+					"} et d'un conjoint inconnu.";
+		}
+		else {
+			return "Le contribuable n°" + menageCommun.getNumero() + " est un ménage commun constitué du principal = {" + buildPersonnePhysiqueDetails(ensemble.getPrincipal()) +
+					"} et du conjoint = {" + buildPersonnePhysiqueDetails(ensemble.getConjoint()) + "}.";
+		}
+	}
+
+	private String buildPersonnePhysiqueDetails(PersonnePhysique pp) {
+		final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+		final Sexe sexe = tiersService.getSexe(pp);
+		return String.format("numéro=%d, prénom='%s', nom='%s', date de naissance=%s, sexe=%s", pp.getNumero(), nomPrenom.getPrenom(), nomPrenom.getNom(),
+				RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(pp)), (sexe == null ? "inconnu" : (sexe == Sexe.MASCULIN ? "masculin" : "féminin")));
+	}
+
 	private static URL parseURL(String str) throws MalformedURLException {
 		if (StringUtils.isBlank(str)) {
 			return null;
@@ -343,6 +416,21 @@ public class ImportImmeublesProcessor {
 		}
 		else {
 			return Long.parseLong(str);
+		}
+	}
+
+	private static GenrePersonne parseGenrePersonne(String s) {
+		if ("P".equals(s)) {
+			return GenrePersonne.PersonnePhysique;
+		}
+		else if ("M".equals(s)) {
+			return GenrePersonne.Entreprise;
+		}
+		else if ("DP".equals(s)) {
+			return GenrePersonne.DroitPublic;
+		}
+		else {
+			throw new IllegalArgumentException("Genre de personne inconnu = [" + s + "]");
 		}
 	}
 

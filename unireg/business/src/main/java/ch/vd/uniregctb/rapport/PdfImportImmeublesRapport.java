@@ -40,6 +40,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 					table.addLigne("Nombre d'immeubles lus :", String.valueOf(results.getNbImmeubles()));
 					table.addLigne("Nombre d'immeubles importés :", String.valueOf(results.traites.size()));
 					table.addLigne("Nombre d'immeubles ignorés :", String.valueOf(results.ignores.size()));
+					table.addLigne("Nombre d'immeubles à vérifier :", String.valueOf(results.averifier.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
 					table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
@@ -60,9 +61,18 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		{
 			final String filename = "immeubles_ignores.csv";
 			final String contenu = buildContenuIgnores(results.ignores, status, filename);
-			final String titre = "Liste des contribuables dont le code de segmentation n'a pas été touché";
+			final String titre = "Liste des immeubles ignorés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+		}
+
+		// A vérifier
+		{
+			final String filename = "immeubles_a_verifier.csv";
+			final String contenu = buildContenuAVerifier(results.averifier, status, filename);
+			final String titre = "Liste des immeubles qui doivent être vérifiés dans le registre foncier";
+			final String listVide = "(aucun)";
+			addListeDetaillee(writer, results.averifier.size(), titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
@@ -102,6 +112,20 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 			@Override
 			public void fillLine(StringBuilder b, ImportImmeublesResults.Ignore elt) {
 				b.append(elt.noImmeuble).append(COMMA).append(CsvHelper.escapeChars(elt.raison.description()));
+			}
+		});
+	}
+
+	private String buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
+		return CsvHelper.asCsvFile(averifiers, filename, status, 100, new CsvHelper.Filler<ImportImmeublesResults.AVerifier>() {
+			@Override
+			public void fillHeader(StringBuilder b) {
+				b.append("NO_IMMEUBLE").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");
+			}
+
+			@Override
+			public void fillLine(StringBuilder b, ImportImmeublesResults.AVerifier elt) {
+				b.append(elt.noImmeuble).append(COMMA).append(CsvHelper.escapeChars(elt.raison.description())).append(COMMA).append(CsvHelper.escapeChars(elt.details));
 			}
 		});
 	}
