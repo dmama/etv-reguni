@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
 			<artifactId>EsbClient</artifactId>
-			<version>3.1-SNAPSHOT</version>
+			<version>3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
