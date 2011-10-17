@@ -94,47 +94,15 @@
 			<c:out value="${cacheStatus}" escapeXml="false"/>
 		</fieldset>
 		
-		<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
-			<fieldset id="extprop_fieldset" class="info">
-				<legend><span><fmt:message key="title.info.extprop" /></span></legend>
-				<div id="extprop_output" class="output"><c:out value="${extProps}" escapeXml="false"/></div>
-			</fieldset>
-
-			<fieldset id="log4j_fieldset" class="info">
-				<legend><span><fmt:message key="title.info.log4j" /></span></legend>
-				<table>
-					<tr><td><fmt:message key="label.info.log4j.config"/></td><td><span class="value"><c:out value="${log4jConfig}"/></span></td></tr>
-					<tr><td><fmt:message key="label.info.log4j.logfile"/></td><td><span class="value"><c:out value="${logFilename}"/></span></td></tr>
-					<tr><td colspan="2"><fmt:message key="label.info.log4j.taillog"/></td></tr>
-					<tr><td colspan="2"><div id="log4j_output" class="console"><c:out value="${tailLog}" escapeXml="false"/></div></td></tr>
-				</table>
-			
-			</fieldset>
-
-		</authz:authorize>
-
 		<script>
 			$(function() {
-
 				// Ajuste la taille des divs *_output par rapport à celles des divs *_fieldset, ceci pour
 				// contourner une limitation du style 'overflow:auto' qui ne supporte pas des tailles relatives
-				var divs = ['stats', 'extprop', 'log4j'];
+				var divs = ['stats'];
 				for (d in divs) {
 					var fieldset = $('#' + divs[d] + '_fieldset');
 					var output = $('#' + divs[d] + '_output');
 					output.css('width', fieldset.attr('offsetWidth') - 20);
-				}
-
-				if ($('#log4j_output')) {
-					$(document).everyTime("3s", function() {
-						XT.doAjaxAction('updateTailLog', $("#log4j_output").get(0), {},
-							{
-								clearQueryString: true,
-								errorHandler : function(ajaxRequest, exception) {
-									// on ignore les éventuelles erreurs
-								}
-							});
-					});
 				}
 			});
 		</script>

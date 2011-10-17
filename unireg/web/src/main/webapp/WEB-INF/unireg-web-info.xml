@@ -6,7 +6,6 @@
 		<property name="viewName" value="admin/status" />
 		<property name="globalSearcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="uniregProperties" ref="uniregExternalProperties" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="batchController" ref="gestionBatchController" />
 		<property name="statsService" ref="statsService" />

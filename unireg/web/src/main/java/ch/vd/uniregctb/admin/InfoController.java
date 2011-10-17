@@ -2,15 +2,10 @@ package ch.vd.uniregctb.admin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Statistics;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -21,10 +16,6 @@ import org.springmodules.xt.ajax.AjaxActionEvent;
 import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.AjaxHandler;
 import org.springmodules.xt.ajax.AjaxResponse;
-import org.springmodules.xt.ajax.AjaxResponseImpl;
-import org.springmodules.xt.ajax.action.ReplaceContentAction;
-import org.springmodules.xt.ajax.component.Component;
-import org.springmodules.xt.ajax.component.SimpleText;
 import org.springmodules.xt.ajax.support.UnsupportedEventException;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
@@ -32,26 +23,21 @@ import ch.vd.uniregctb.checker.ServiceChecker;
 import ch.vd.uniregctb.checker.Status;
 import ch.vd.uniregctb.common.HtmlHelper;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.log.RollingInMemoryAppender;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
  * Ce contrôleur affiche des informations sur le status de l'application. Il est donc en read-only.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class InfoController extends ParameterizableViewController implements AjaxHandler, InitializingBean {
+public class InfoController extends ParameterizableViewController implements AjaxHandler {
 
 	// private static final Logger LOGGER = Logger.getLogger(InfoController.class);
 
 	private TiersDAO dao;
 	private GlobalTiersSearcher globalSearcher;
-	private UniregProperties uniregProperties;
 	private CacheManager cacheManager;
 	private GestionBatchController batchController;
 	private StatsService statsService;
@@ -64,8 +50,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 
 	private PlatformTransactionManager transactionManager;
 
-	private RollingInMemoryAppender inMemoryAppender;
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGlobalSearcher(GlobalTiersSearcher globalSearcher) {
 		this.globalSearcher = globalSearcher;
 	}
@@ -74,18 +59,17 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.dao = dao;
 	}
 
-	public void setUniregProperties(UniregProperties uniregProperties) {
-		this.uniregProperties = uniregProperties;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBatchController(GestionBatchController batchController) {
 		this.batchController = batchController;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
 	}
@@ -94,22 +78,27 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.transactionManager = transactionManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilChecker(ServiceChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceHostInfraChecker(ServiceChecker serviceHostInfraChecker) {
 		this.serviceHostInfraChecker = serviceHostInfraChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceFidorChecker(ServiceChecker serviceFidorChecker) {
 		this.serviceFidorChecker = serviceFidorChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecuriteChecker(ServiceChecker serviceSecuriteChecker) {
 		this.serviceSecuriteChecker = serviceSecuriteChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceBVRChecker(ServiceChecker serviceBVRChecker) {
 		this.serviceBVRChecker = serviceBVRChecker;
 	}
@@ -127,15 +116,6 @@ public class InfoController extends ParameterizableViewController implements Aja
 		fillServiceSecuriteInfo(mav);
 		fillStatsServiceInfo(mav);
 		fillBvrClientInfo(mav);
-
-
-		if (SecurityProvider.isGranted(Role.ADMIN) || SecurityProvider.isGranted(Role.TESTER)) {
-			// les informations ci-dessous peuvent contenir des informations sensibles (url des serveurs, etc...)
-			mav.addObject("log4jConfig", getLog4jConfig());
-			mav.addObject("logFilename", getLogFilename());
-			mav.addObject("tailLog", getTailLog());
-			mav.addObject("extProps", getExtProps());
-		}
 
 		return mav;
 	}
@@ -169,52 +149,6 @@ public class InfoController extends ParameterizableViewController implements Aja
 				return tiersCount;
 			}
 		});
-	}
-
-	private String getExtProps() {
-		String extProps;
-		try {
-			extProps = uniregProperties.dumpProps(true);
-			extProps = HtmlHelper.renderMultilines(extProps);
-		}
-		catch (Exception e) {
-			extProps = e.getMessage();
-		}
-		return extProps;
-	}
-
-	private String getLogFilename() {
-		String logFile;
-		try {
-			FileAppender appender = (FileAppender) Logger.getRootLogger().getAppender("LOGFILE");
-			logFile = appender.getFile();
-		}
-		catch (Exception e) {
-			logFile = e.getMessage();
-		}
-		return logFile;
-	}
-
-	private String getTailLog() {
-		if (inMemoryAppender == null) {
-			return "<indisponible>";
-		}
-		else {
-			String log = inMemoryAppender.getLogBuffer();
-			log = HtmlHelper.renderMultilines(log);
-			return log;
-		}
-	}
-
-	private String getLog4jConfig() {
-		String log4j;
-		try {
-			log4j = getServletContext().getInitParameter("log4jConfigLocation");
-		}
-		catch (Exception e) {
-			log4j = e.getMessage();
-		}
-		return log4j;
 	}
 
 	private void fillServiceCivilInfo(ModelAndView mav) {
@@ -285,26 +219,16 @@ public class InfoController extends ParameterizableViewController implements Aja
 	/**
 	 * Cette méthode est appelée par une requête Ajax pour mettre-à-jour la liste des jobs actifs dans l'écran d'état de l'application.
 	 */
+	@SuppressWarnings({"JavaDoc"})
 	public AjaxResponse loadJobActif(AjaxActionEvent event) {
 		// on affiche la table en read-only (sans les boutons pour interrompre les batches)
 		return batchController.doLoadJobActif(event, true);
-	}
-
-	public AjaxResponse updateTailLog(AjaxActionEvent event) {
-		AjaxResponse response = new AjaxResponseImpl();
-		List<Component> components = new ArrayList<Component>(1);
-		components.add(new SimpleText(getTailLog()));
-		response.addAction(new ReplaceContentAction("logdiv", components));
-		return response;
 	}
 
 	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 		if ("loadJobActif".equals(event.getEventId())) {
 			return loadJobActif((AjaxActionEvent) event);
-		}
-		else if ("updateTailLog".equals(event.getEventId())) {
-			return updateTailLog((AjaxActionEvent) event);
 		}
 		logger.error("You need to call the supports() method first!");
 		throw new UnsupportedEventException("You need to call the supports() method first!");
@@ -316,11 +240,6 @@ public class InfoController extends ParameterizableViewController implements Aja
 			return false;
 		}
 		final String id = event.getEventId();
-		return ("loadJobActif".equals(id) || ("updateTailLog".equals(id)));
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		inMemoryAppender = (RollingInMemoryAppender) Logger.getRootLogger().getAppender("IN_MEMORY");
+		return "loadJobActif".equals(id);
 	}
 }
