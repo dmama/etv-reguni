@@ -62,12 +62,14 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.District;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -3063,6 +3065,27 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return ca;
+	}
+
+	@Override
+	public CollectiviteAdministrative getOfficeImpotRegionAt(Tiers tiers, @Nullable RegDate date) {
+
+		final ForGestion forGestion = getDernierForGestionConnu(tiers, date);
+		//RechercherComplementInformationContribuable de la commune du for de gestion
+		if (forGestion != null) {
+			Commune communeGestion = serviceInfra.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), date);
+			if (communeGestion != null) {
+				District district = communeGestion.getDistrict();
+				if (district != null) {
+					Region region = district.getRegion();
+					if (region != null) {
+						return tiersDAO.getCollectiviteAdministrativeForRegion(region.getCode());
+					}
+
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

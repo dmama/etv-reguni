@@ -132,7 +132,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	public void setWantIndexation(boolean wantIndexation) {
 		this.wantIndexation = wantIndexation;
-		
+
 		if (globalTiersIndexer != null) {
 			globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
 		}
@@ -270,14 +270,14 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected static void assertForAutreElementImposable(RegDate debut, RegDate fin, TypeAutoriteFiscale taf, MockCommune commune, MotifRattachement rattachement,
-	                                            ForFiscalAutreElementImposable forFiscal) {
+	                                                     ForFiscalAutreElementImposable forFiscal) {
 		Assert.assertEquals(debut, forFiscal.getDateDebut());
 		Assert.assertEquals(fin, forFiscal.getDateFin());
 		Assert.assertEquals(taf, forFiscal.getTypeAutoriteFiscale());
 		Assert.assertEquals(commune.getNoOFSEtendu(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
 		Assert.assertEquals(rattachement, forFiscal.getMotifRattachement());
 	}
-	
+
 	/**
 	 * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
 	 */
@@ -296,14 +296,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
+	                                             MockCommune commune) {
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE);
 	}
 
 	/**
 	 * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune,
+	                                             MotifRattachement motifRattachement) {
 		final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFSEtendu(), type, motifRattachement);
 	}
@@ -311,7 +313,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié avec le mode d'imposition spécifié
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture,
+	                                             MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
 		final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement);
 		ffp.setModeImposition(modeImposition);
 		return ffp;
@@ -343,7 +346,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode d'imposition spécifié
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays, ModeImposition modeImposition) {
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
+	                                             ModeImposition modeImposition) {
 		final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
 		ffp.setModeImposition(modeImposition);
 		return ffp;
@@ -385,7 +389,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
-	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite, Pays pays) {
+	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
+	                                               Pays pays) {
 		AdresseEtrangere adresse = new AdresseEtrangere();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);
@@ -409,8 +414,18 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid) {
+		return addCollAdm(oid, null, null);
+	}
+
+	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid, Integer identifiantDistrict, Integer identifiantRegion) {
 		CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(oid.getNoColAdm());
+		if (identifiantDistrict != null) {
+			ca.setIdentifiantDistrictFiscal(identifiantDistrict);
+		}
+		if (identifiantRegion != null) {
+			ca.setIdentifiantRegionFiscale(identifiantRegion);
+		}
 		ca = (CollectiviteAdministrative) hibernateTemplate.merge(ca);
 		hibernateTemplate.flush();
 		return ca;
@@ -446,7 +461,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		debiteur.addDeclaration(lr);
 		return lr;
 	}
-
 
 
 	protected DebiteurPrestationImposable addDebiteur(CategorieImpotSource categorie, PeriodiciteDecompte periodicite, RegDate debutValiditePeriodicite) {
@@ -520,7 +534,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, RegDate fin, int nombreEnfants,
-			TarifImpotSource tarif) {
+	                                                    TarifImpotSource tarif) {
 		SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
 		situation.setDateDebut(debut);
 		situation.setDateFin(fin);

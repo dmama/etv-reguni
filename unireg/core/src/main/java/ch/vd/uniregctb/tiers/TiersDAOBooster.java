@@ -207,6 +207,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+		return target.getCollectiviteAdministrativeForRegion(numeroRegion);
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 		return target.getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique, doNotAutoFlush);
 	}
@@ -258,7 +263,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
 	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
-		return target.getListeCtbModifies(dateDebutRech,dateFinRech);
+		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}
 
 	private static final String poppins = "Supercalifragilisticexpialidocious";

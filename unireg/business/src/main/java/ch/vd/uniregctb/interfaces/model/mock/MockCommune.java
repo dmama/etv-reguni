@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.District;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
@@ -20,35 +21,37 @@ public class MockCommune extends MockEntityOFS implements Commune {
 
 	// Quelques communes vaudoises
 	//                                                        OFS   NOM    CANTON
-	public static final MockCommune Aubonne = new MockCommune(5422, "Aubonne", VAUD, MockOfficeImpot.OID_ROLLE_AUBONNE);
-	public static final MockCommune Bex = new MockCommune(5402, "Bex", VAUD, MockOfficeImpot.OID_AIGLE);
-	public static final MockCommune Lausanne = new MockCommune(5586, "Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
+	public static final MockCommune Aubonne = new MockCommune(5422, "Aubonne", VAUD, MockOfficeImpot.OID_ROLLE_AUBONNE, MockDistrict.RolleAubonne);
+	public static final MockCommune Bex = new MockCommune(5402, "Bex", VAUD, MockOfficeImpot.OID_AIGLE, MockDistrict.Aigle);
+	public static final MockCommune Lausanne = new MockCommune(5586, "Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
 	public static final MockCommune Cossonay = new MockCommune(5477, "Cossonay", VAUD, MockOfficeImpot.OID_COSSONAY);
-	public static final MockCommune RomainmotierEnvy = new MockCommune(5761, "Romainmôtier-Envy", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune Croy = new MockCommune(5752, "Croy", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune Vaulion = new MockCommune(5765, "Vaulion", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune LesClees = new MockCommune(5750, "Les Clées", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune VillarsSousYens = new MockCommune(5652, "Villars-sous-Yens", VAUD, MockOfficeImpot.OID_MORGES);
-	public static final MockCommune Orbe = new MockCommune(5757, "Orbe", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune Vevey = new MockCommune(5890, "Vevey", VAUD, MockOfficeImpot.OID_VEVEY);
-	public static final MockCommune Leysin = new MockCommune(5407, "Leysin", VAUD, MockOfficeImpot.OID_AIGLE);
-	public static final MockCommune Renens = new MockCommune(5591, "Renens VD", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
-	public static final MockCommune CheseauxSurLausanne = new MockCommune(5582, "Cheseaux-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
-	public static final MockCommune VufflensLaVille = new MockCommune(5503, "Vufflens-la-Ville", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
-	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE);
-	public static final MockCommune LIsle = new MockCommune(5486, "L'Isle", VAUD, MockOfficeImpot.OID_MORGES);
-	public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON);
-	public static final MockCommune GrangesMarnand = new MockCommune(5818, "Granges-près-Marnand", VAUD, MockOfficeImpot.OID_PAYERNE);
-	public static final MockCommune Bussigny = new MockCommune(5624, "Bussigny-près-Lausanne", VAUD, MockOfficeImpot.OID_MORGES);
-	public static final MockCommune Morges = new MockCommune(5642, "Morges", VAUD, MockOfficeImpot.OID_MORGES);
-	public static final MockCommune Echallens = new MockCommune(5518, "Echallens", VAUD, MockOfficeImpot.OID_ECHALLENS);
-	public static final MockCommune Lonay = new MockCommune(5638, "Lonay", VAUD, MockOfficeImpot.OID_MORGES);
-	public static final MockCommune RomanelSurLausanne = new MockCommune(5592, "Romanel-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
-	public static final MockCommune Moudon = new MockCommune(5678, "Moudon", VAUD, MockOfficeImpot.OID_MOUDON);
-	public static final MockCommune Pully = new MockCommune(5590, "Pully", VAUD, MockOfficeImpot.OID_LAVAUX);
-	public static final MockCommune Prilly = new MockCommune(5589, "Prilly", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
-	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockOfficeImpot.OID_NYON);
-	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE);
+	public static final MockCommune RomainmotierEnvy = new MockCommune(5761, "Romainmôtier-Envy", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune Croy = new MockCommune(5752, "Croy", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune Vaulion = new MockCommune(5765, "Vaulion", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune LesClees = new MockCommune(5750, "Les Clées", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune VillarsSousYens = new MockCommune(5652, "Villars-sous-Yens", VAUD, MockOfficeImpot.OID_MORGES, MockDistrict.Morges);
+	public static final MockCommune Orbe = new MockCommune(5757, "Orbe", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune Vevey = new MockCommune(5890, "Vevey", VAUD, MockOfficeImpot.OID_VEVEY, MockDistrict.Vevey);
+	public static final MockCommune Leysin = new MockCommune(5407, "Leysin", VAUD, MockOfficeImpot.OID_AIGLE, MockDistrict.Aigle);
+	public static final MockCommune Renens = new MockCommune(5591, "Renens VD", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
+	public static final MockCommune CheseauxSurLausanne = new MockCommune(5582, "Cheseaux-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
+	public static final MockCommune VufflensLaVille = new MockCommune(5503, "Vufflens-la-Ville", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
+	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE, MockDistrict.Orbe);
+	public static final MockCommune LIsle = new MockCommune(5486, "L'Isle", VAUD, MockOfficeImpot.OID_MORGES, MockDistrict.Morges);
+	public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON, MockDistrict.Yverdon);
+	public static final MockCommune GrangesMarnand = new MockCommune(5818, "Granges-près-Marnand", VAUD, MockOfficeImpot.OID_PAYERNE, MockDistrict.Yverdon);
+	public static final MockCommune Bussigny = new MockCommune(5624, "Bussigny-près-Lausanne", VAUD, MockOfficeImpot.OID_MORGES, MockDistrict.Morges);
+	public static final MockCommune Morges = new MockCommune(5642, "Morges", VAUD, MockOfficeImpot.OID_MORGES, MockDistrict.Morges);
+	public static final MockCommune Echallens = new MockCommune(5518, "Echallens", VAUD, MockOfficeImpot.OID_ECHALLENS, MockDistrict.Echallens);
+	public static final MockCommune Lonay = new MockCommune(5638, "Lonay", VAUD, MockOfficeImpot.OID_MORGES, MockDistrict.Morges);
+	public static final MockCommune RomanelSurLausanne = new MockCommune(5592, "Romanel-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
+	public static final MockCommune Moudon = new MockCommune(5678, "Moudon", VAUD, MockOfficeImpot.OID_MOUDON, MockDistrict.Moudon);
+	public static final MockCommune Pully = new MockCommune(5590, "Pully", VAUD, MockOfficeImpot.OID_LAVAUX, MockDistrict.Lavaux);
+	public static final MockCommune Prilly = new MockCommune(5589, "Prilly", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST, MockDistrict.Lausanne);
+	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockOfficeImpot.OID_NYON, MockDistrict.Nyon);
+	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE, MockDistrict.Aigle);
+	public static final MockCommune Grandson = new MockCommune(5561, "Grandson", VAUD, MockOfficeImpot.OID_GRANDSON, MockDistrict.Grandson);
+	public static final MockCommune ChateauDoex = new MockCommune(5841, "Chateau-d'Oex", VAUD, MockOfficeImpot.OID_PAYS_D_ENHAUT, MockDistrict.PaysDenHaut);
 
 	//
 	// Quelques communes fusionnées civilement au 1er juillet 2011, mais seulement au 31 décembre 2011 fiscalement
@@ -97,7 +100,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static class Fraction extends MockCommune {
 		// commune de l'Abbaye
 		public static final MockCommune LePont = new Fraction(8010, "Le Pont", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
-		public static final MockCommune LAbbaye = new Fraction(8011, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
+		public static final MockCommune LAbbaye = new Fraction(8011, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu(), MockDistrict.LaVallee);
 		public static final MockCommune LesBioux = new Fraction(8012, "Les Bioux", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
 
 		// commune du Chenit
@@ -116,6 +119,12 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		private Fraction(int noOFSetendu, String nomMinuscule, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere) {
 			super(noOFSetendu, nomMinuscule, sigleCanton, oid);
 			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
+		}
+
+		private Fraction(int noOFSetendu, String nomMinuscule, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere, District district) {
+			super(noOFSetendu, nomMinuscule, sigleCanton, oid, district);
+			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
+
 		}
 
 		@Override
@@ -184,6 +193,8 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	private RegDate dateFinValidite;
 	private final String sigleCanton;
 	private final OfficeImpot officeImpot;
+	private District district;
+
 
 	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<MockLienCommuneBatiment>();
 
@@ -199,6 +210,11 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		this.officeImpot = oid;
 
 		DefaultMockServiceInfrastructureService.addCommune(this);
+	}
+
+	private MockCommune(int noOFS, String nomMinuscule, String sigleCanton, OfficeImpot oid, District district) {
+		this(noOFS, nomMinuscule, sigleCanton, oid);
+		this.district = district;
 	}
 
 	public String getNomMinusculeOFS() {
@@ -252,6 +268,11 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	@Override
 	public boolean isPrincipale() {
 		return false;
+	}
+
+	@Override
+	public District getDistrict() {
+		return district;
 	}
 
 	public OfficeImpot getOfficeImpot() {

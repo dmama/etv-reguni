@@ -7,6 +7,7 @@ import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.District;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
@@ -21,6 +22,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	private final boolean principale;
 	private final String sigleCanton;
 	private final int numTechnique;
+	private final District district;
 
 	public static CommuneImpl get(ch.vd.infrastructure.model.Commune target) {
 		if (target == null) {
@@ -54,6 +56,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
+		this.district = null;
 	}
 
 	protected CommuneImpl(ch.vd.infrastructure.model.Commune target) {
@@ -67,6 +70,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
+		this.district = null;
 	}
 
 	protected CommuneImpl(CommuneFiscale target) {
@@ -80,6 +84,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
 		this.fraction = (target.getNoOFSFaitiere() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
+		this.district = DistrictImpl.get(target.getDistrict());
 	}
 
 	private static String toUpperCase(String string) {
@@ -138,5 +143,10 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	@Override
 	public boolean isPrincipale() {
 		return principale;
+	}
+
+	@Override
+	public District getDistrict() {
+		return district;
 	}
 }

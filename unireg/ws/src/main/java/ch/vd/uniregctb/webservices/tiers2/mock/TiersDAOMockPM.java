@@ -202,6 +202,11 @@ public class TiersDAOMockPM implements TiersDAO {
 	}
 
 	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 		throw new NotImplementedException();
 	}

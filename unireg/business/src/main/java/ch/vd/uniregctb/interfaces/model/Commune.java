@@ -65,4 +65,10 @@ public interface Commune extends EntiteOFS {
 	 * @return <code>true</code> si la commune, dans le cadre d'un regroupement, est la commune principale; <code>false</code> s'il s'agit d'une fraction de commune ou d'une commune non-fractionnée.
 	 */
 	boolean isPrincipale();
+
+	/** retourne le district d ela commune
+	 *
+	 * @return
+	 */
+	District getDistrict();
 }

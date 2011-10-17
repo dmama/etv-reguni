@@ -186,7 +186,7 @@ public class TiersDAOWithPM implements TiersDAO {
 	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 		throw new NotImplementedException();
 	}
-	
+
 	@Override
 	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
 		throw new NotImplementedException();
@@ -199,6 +199,11 @@ public class TiersDAOWithPM implements TiersDAO {
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
 		throw new NotImplementedException();
 	}
 
@@ -233,7 +238,7 @@ public class TiersDAOWithPM implements TiersDAO {
 	}
 
 	@Override
-	public void updateOids(Map<Long,Integer> tiersOidsMapping) {
+	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 		throw new NotImplementedException();
 	}
 

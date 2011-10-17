@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.District;
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -430,6 +431,11 @@ public class ServiceInfrastructureCacheTest {
 		@Override
 		public boolean isPrincipale() {
 			return false;
+		}
+
+		@Override
+		public District getDistrict() {
+			throw new NotImplementedException();
 		}
 
 		@Override

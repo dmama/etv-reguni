@@ -17,16 +17,33 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
 	private static final Map<Long, MockCollectiviteAdministrative> all = new HashMap<Long, MockCollectiviteAdministrative>();
+	//Mapping oid District
+	public static final Map<Integer, Integer> districts = initDistrict();
+	//Mapping oid Region
+	public static final Map<Integer, Integer> regions = initRegions();
 
-	public static final MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
-	public static final MockCollectiviteAdministrative CEDI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null, "CEDI");
-	public static final MockCollectiviteAdministrative CAT = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT","0213160000","0213162140");
-	public static final MockCollectiviteAdministrative ACI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACI, new MockAdresse("Route de Berne 46", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null, null, "ACI");
-	public static final MockCollectiviteAdministrative ACISUCCESSIONS = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts SUCCESSIONS","SUCCESSIONS", null, "ACI-SUCCESSIONS");
-	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts","IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE","0213162065","0213162898");
+
+	public static final MockCollectiviteAdministrative OTG =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
+	public static final MockCollectiviteAdministrative CEDI =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null,
+					"CEDI");
+	public static final MockCollectiviteAdministrative CAT =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT", "0213160000", "0213162140");
+	public static final MockCollectiviteAdministrative ACI =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noACI, new MockAdresse("Route de Berne 46", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null,
+					null, "ACI");
+	public static final MockCollectiviteAdministrative ACISUCCESSIONS =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"),
+					"Administration cantonale des impôts SUCCESSIONS", "SUCCESSIONS", null, "ACI-SUCCESSIONS");
+	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE =
+			new MockCollectiviteAdministrative(ServiceInfrastructureService.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"),
+					"Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");
+
 	public static final class JusticePaix {
-		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud = 
-				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", new CasePostale(TexteCasePostale.CASE_POSTALE, 693), "1400", "Yverdon-les-Bains"), "Justice de Paix des districts du",
+		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud =
+				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", new CasePostale(TexteCasePostale.CASE_POSTALE, 693), "1400", "Yverdon-les-Bains"),
+						"Justice de Paix des districts du",
 						"Jura-Nord Vaudois et du Gros-de-Vaud", null, "JUSPX");
 	}
 
@@ -73,14 +90,14 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 * Crée une nouvelle collectivité administrative qui sera enregistrée automatiquement dans le mock par défaut du service infrastructure.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt,String noTelephone,String noFax) {
+	protected MockCollectiviteAdministrative(long noColAdm, Adresse adresse, String nomComplet1, String nomComplet2, String nomComplet3, String nomCourt, String noTelephone, String noFax) {
 		this.noColAdm = noColAdm;
 		this.adresse = adresse;
 		this.nomComplet1 = nomComplet1;
 		this.nomComplet2 = nomComplet2;
 		this.nomComplet3 = nomComplet3;
 		this.nomCourt = nomCourt;
-		this.noTelephone =noTelephone;
+		this.noTelephone = noTelephone;
 		this.noFax = noFax;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
@@ -109,6 +126,57 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		}
 		all.put(noColAdm, ca);
 	}
+
+	private static Map<Integer, Integer> initDistrict() {
+		final Map<Integer, Integer> districts = new HashMap<Integer, Integer>();
+		//Aigle
+		districts.put(1, 1);
+		//Echallens
+		districts.put(5, 2);
+		// Grandson
+		districts.put(6, 3);
+		//Lausanne
+		districts.put(7, 4);
+		//La Vallée
+		districts.put(8, 5);
+		//Lavaux
+		districts.put(9, 6);
+		//Morges
+		districts.put(10, 7);
+		//Moudon
+		districts.put(11, 8);
+		//Nyon
+		districts.put(12, 9);
+		//Orbe
+		districts.put(13, 10);
+		// Payerne
+		districts.put(15, 11);
+		//Pays d'Enhaut
+		districts.put(16, 12);
+		//Rolle-Aubonne
+		districts.put(17, 13);
+		//Vevey
+		districts.put(18, 14);
+		//Yverson
+		districts.put(19, 15);
+
+		return districts;
+	}
+
+	private static Map<Integer, Integer> initRegions() {
+		final Map<Integer, Integer> regions = new HashMap<Integer, Integer>();
+		//Lausanne
+		regions.put(7, 1);
+		//Nyon
+		regions.put(12, 2);
+		//Vevey
+		regions.put(18, 3);
+		//Yverson
+		regions.put(19, 4);
+
+		return regions;
+	}
+
 
 	/**
 	 * @return the adresse

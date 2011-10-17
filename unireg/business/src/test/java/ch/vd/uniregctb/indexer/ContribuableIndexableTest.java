@@ -89,7 +89,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private ServiceInfrastructureService serviceInfra;
 	private ServicePersonneMoraleService servicePM;
 	private MockTiersDAO tiersDAO;
-	
+
 	@Override
 	public void onSetUp() {
 
@@ -172,7 +172,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		nonHab.setNumero(1234L);
-		nonHab.setDateNaissance(RegDate.get(1965, 3,12));
+		nonHab.setDateNaissance(RegDate.get(1965, 3, 12));
 		nonHab.setNom("Poncet");
 		nonHab.setPrenom("Charles");
 		nonHab.setNumeroAssureSocial("432.23.654.345");
@@ -766,13 +766,13 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		MenageCommun mc = new MenageCommun();
 		mc.setNumero(2345L);
-		addTiers(mc, hab1,RegDate.get(2001, 2, 23));
-		addTiers(mc, hab2,RegDate.get(2001, 2, 23));
+		addTiers(mc, hab1, RegDate.get(2001, 2, 23));
+		addTiers(mc, hab2, RegDate.get(2001, 2, 23));
 
 		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
-		
+
 		// Search
 		//assertContains(numCtb1.toString(), values.getNumeros());
 		//assertContains(numCtb2.toString(), values.getNumeros());
@@ -886,15 +886,15 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	}
 
 	private static class MockTiersDAO implements TiersDAO {
-		
+
 		private Map<Long, Tiers> map = new HashMap<Long, Tiers>();
-		
+
 		public void addTiers(Tiers tiers) {
 			final Long id = tiers.getId();
 			Assert.notNull(id);
-			map.put(id,  tiers);
+			map.put(id, tiers);
 		}
-		
+
 		@Override
 		public Tiers get(long id, boolean doNotAutoFlush) {
 			return map.get(id);
@@ -982,6 +982,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		@Override
 		public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
 			throw new NotImplementedException();
 		}
 

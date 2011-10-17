@@ -478,7 +478,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 * @param declaration
 	 * @return
 	 */
-	private Integer getNumeroOfficeImpotRetour(InformationsDocumentAdapter informationsDocument) {
+	protected Integer getNumeroOfficeImpotRetour(InformationsDocumentAdapter informationsDocument) {
 
 		final int anneeCourante = RegDate.get().year();
 
@@ -493,6 +493,16 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 			dateRecherche = finPeriodePrecedente;
 		}
 		final Tiers tiers = informationsDocument.getTiers();
+		final CollectiviteAdministrative col = getRetourCollectiviteAdministrative(informationsDocument);
+
+		//[SIFISC-1412] L'oid Region n'est à utiliser que pour les periode fiscale postérieurs à 2010 et pour le CEDI comme collectivité administrative de retour
+		if (annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) {
+			final CollectiviteAdministrative officeImpot = tiersService.getOfficeImpotRegionAt(tiers, dateRecherche);
+			if (officeImpot != null) {
+				return officeImpot.getNumeroCollectiviteAdministrative();
+			}
+
+		}
 		return tiersService.getOfficeImpotIdAt(tiers, dateRecherche);
 	}
 

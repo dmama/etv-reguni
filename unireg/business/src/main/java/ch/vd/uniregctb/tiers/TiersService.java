@@ -929,6 +929,17 @@ public interface TiersService {
 	 */
 	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, @Nullable RegDate date);
 
+
+	/**
+	 * Calcule et retourne l'office d'impôt de regroupement / Region responsable d'un tiers à une date donnée.
+	 *
+	 * @param tiers le tiers dont on veut connaître l'office d'impôt de regroupement
+	 * @param date  la date de validité de l'office d'impôt; ou <i>null</i> pour obtenir l'état courant.
+	 * @return un office d'impôt; ou <i>null</null> si le tiers n'est pas assujetti ou que son office d'impôt ne peut pas être calculé pour une autre raison.
+	 */
+	public CollectiviteAdministrative getOfficeImpotRegionAt(Tiers tiers, @Nullable RegDate date);
+
+
 	/**
 	 * Calcule l'office d'impôt du tiers spécifié et retourne son id.
 	 *

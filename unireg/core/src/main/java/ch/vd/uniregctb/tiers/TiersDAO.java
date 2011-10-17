@@ -98,9 +98,9 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	/**
 	 * Retourne la liste de tous les Numéros d'habitant des tiers en base
-	 * @return  la liste de tous les Numéros d'habitant
+	 * @return la liste de tous les Numéros d'habitant
 	 */
-	 List<Long> getHabitantsForMajorite( RegDate dateReference) ;
+	List<Long> getHabitantsForMajorite(RegDate dateReference);
 
 	/**
 	 * Retourne une liste de numero de Tiers dans le range passé
@@ -165,6 +165,17 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique);
 
+
+	/**
+	 * Renvoie la collectivité administrative rattachée au numero de Région donné.
+	 *
+	 * @parm le numero du district
+	 * @return le tiers représentant la collectivité administrative correspondant
+	 * @param numeroRegion
+	 */
+	CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion);
+
+
 	CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush);
 
 	public List<PersonnePhysique> getSourciers(int noSourcier);
@@ -192,7 +203,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 *
 	 * @param tiersOidsMapping le mapping numéro de tiers vers numéro d'oid.
 	 */
-	void updateOids(Map<Long,Integer> tiersOidsMapping);
+	void updateOids(Map<Long, Integer> tiersOidsMapping);
 
 	/**
 	 * Retourne la liste de débiteurs qui n'on pas de périodicité
@@ -201,7 +212,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des debiteurs pour qui on devra construire l'historique de periodicite
 	 */
 	public List<Long> getListeDebiteursSansPeriodicites();
-	
+
 	/**
 	 * Ajoute un nouveau for fiscal à un tiers.
 	 *
@@ -230,5 +241,5 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param dateFinRech Date de fin de la recherche
 	 * @return la liste des ids des contribuables modifiés
 	 */
-	 public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
+	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
 }

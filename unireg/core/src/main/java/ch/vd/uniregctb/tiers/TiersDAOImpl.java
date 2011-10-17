@@ -43,15 +43,15 @@ import ch.vd.uniregctb.tracing.TracingManager;
 
 public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDAO {
 
-    private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
-    private static final int MAX_IN_SIZE = 500;
+	private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
+	private static final int MAX_IN_SIZE = 500;
 	private static final ImmeubleAccessor IMMEUBLE_ACCESSOR = new ImmeubleAccessor();
 
 	private Dialect dialect;
 
 	public TiersDAOImpl() {
-        super(Tiers.class);
-    }
+		super(Tiers.class);
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDialect(Dialect dialect) {
@@ -61,19 +61,20 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	public Tiers get(long id, boolean doNotAutoFlush) {
 
-        Object[] criteria = {
-                id
-        };
-        String query = "from Tiers t where t.numero = ?";
+		Object[] criteria = {
+				id
+		};
+		String query = "from Tiers t where t.numero = ?";
 
-        final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-        final List<?> list = find(query, criteria, mode);
-        if (list.size() > 0) {
-            return (Tiers) list.get(0);
-        } else {
-            return null;
-        }
-    }
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final List<?> list = find(query, criteria, mode);
+		if (list.size() > 0) {
+			return (Tiers) list.get(0);
+		}
+		else {
+			return null;
+		}
+	}
 
 	private static final List<Class<? extends Tiers>> TIERS_CLASSES =
 			Arrays.asList(PersonnePhysique.class, MenageCommun.class, Entreprise.class, Etablissement.class, AutreCommunaute.class, CollectiviteAdministrative.class,
@@ -100,68 +101,68 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	private interface TiersIdGetter<T extends HibernateEntity> {
-        public Long getTiersId(T entity);
-    }
+		public Long getTiersId(T entity);
+	}
 
-    private interface EntitySetSetter<T extends HibernateEntity> {
-        public void setEntitySet(Tiers tiers, Set<T> set);
-    }
+	private interface EntitySetSetter<T extends HibernateEntity> {
+		public void setEntitySet(Tiers tiers, Set<T> set);
+	}
 
-    private <T extends HibernateEntity> Map<Long, Set<T>> groupByTiersId(Session session, List<T> entities, TiersIdGetter<T> getter) {
+	private <T extends HibernateEntity> Map<Long, Set<T>> groupByTiersId(Session session, List<T> entities, TiersIdGetter<T> getter) {
 
-        final Map<Long, Set<T>> map = new HashMap<Long, Set<T>>();
+		final Map<Long, Set<T>> map = new HashMap<Long, Set<T>>();
 
-        for (T e : entities) {
-            session.setReadOnly(e, true);
-            final Long tiersId = getter.getTiersId(e);
-            Set<T> set = map.get(tiersId);
-            if (set == null) {
-                set = new HashSet<T>();
-                map.put(tiersId, set);
-            }
-            set.add(e);
-        }
+		for (T e : entities) {
+			session.setReadOnly(e, true);
+			final Long tiersId = getter.getTiersId(e);
+			Set<T> set = map.get(tiersId);
+			if (set == null) {
+				set = new HashSet<T>();
+				map.put(tiersId, set);
+			}
+			set.add(e);
+		}
 
-        return map;
-    }
+		return map;
+	}
 
-    private <T extends HibernateEntity> void associateSetsWith(Map<Long, Set<T>> map, List<Tiers> tiers, EntitySetSetter<T> setter) {
-        for (Tiers t : tiers) {
-            Set<T> a = map.get(t.getId());
-            if (a == null) {
-                a = new HashSet<T>();
-            }
-            setter.setEntitySet(t, a);
-        }
-    }
+	private <T extends HibernateEntity> void associateSetsWith(Map<Long, Set<T>> map, List<Tiers> tiers, EntitySetSetter<T> setter) {
+		for (Tiers t : tiers) {
+			Set<T> a = map.get(t.getId());
+			if (a == null) {
+				a = new HashSet<T>();
+			}
+			setter.setEntitySet(t, a);
+		}
+	}
 
-    private <T extends HibernateEntity> void associate(Session session, List<T> entities, List<Tiers> tiers, TiersIdGetter<T> getter, EntitySetSetter<T> setter) {
-        Map<Long, Set<T>> m = groupByTiersId(session, entities, getter);
-        associateSetsWith(m, tiers, setter);
-    }
+	private <T extends HibernateEntity> void associate(Session session, List<T> entities, List<Tiers> tiers, TiersIdGetter<T> getter, EntitySetSetter<T> setter) {
+		Map<Long, Set<T>> m = groupByTiersId(session, entities, getter);
+		associateSetsWith(m, tiers, setter);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
-        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
-            @Override
-            public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+			@Override
+			public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
-                if (ids == null || ids.isEmpty()) {
-                    return Collections.emptyList();
-                }
+				if (ids == null || ids.isEmpty()) {
+					return Collections.emptyList();
+				}
 
-	            final FlushMode mode = session.getFlushMode();
-	            if (mode != FlushMode.MANUAL) {
-		            LOGGER.warn("Le 'flushMode' de la session hibernate est forcé en MANUAL.");
-		            session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
-	            }
+				final FlushMode mode = session.getFlushMode();
+				if (mode != FlushMode.MANUAL) {
+					LOGGER.warn("Le 'flushMode' de la session hibernate est forcé en MANUAL.");
+					session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
+				}
 
-	            return getBatch(ids, parts, session);
-            }
-        });
-    }
+				return getBatch(ids, parts, session);
+			}
+		});
+	}
 
 	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts, Session session) {
@@ -210,18 +211,19 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les identifications de personnes avec les tiers à la main
 			associate(session, identifications, tiers, new TiersIdGetter<IdentificationPersonne>() {
-				@Override
-				public Long getTiersId(IdentificationPersonne entity) {
-					return entity.getPersonnePhysique().getId();
-				}
-			}, new EntitySetSetter<IdentificationPersonne>() {
+						@Override
+						public Long getTiersId(IdentificationPersonne entity) {
+							return entity.getPersonnePhysique().getId();
+						}
+					}, new EntitySetSetter<IdentificationPersonne>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<IdentificationPersonne> set) {
 					if (tiers instanceof PersonnePhysique) {
 						((PersonnePhysique) tiers).setIdentificationsPersonnes(set);
 					}
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.ADRESSES)) {
@@ -231,16 +233,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les adresses avec les tiers à la main
 			associate(session, adresses, full, new TiersIdGetter<AdresseTiers>() {
-				@Override
-				public Long getTiersId(AdresseTiers entity) {
-					return entity.getTiers().getId();
-				}
-			}, new EntitySetSetter<AdresseTiers>() {
+						@Override
+						public Long getTiersId(AdresseTiers entity) {
+							return entity.getTiers().getId();
+						}
+					}, new EntitySetSetter<AdresseTiers>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<AdresseTiers> set) {
 					tiers.setAdressesTiers(set);
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.DECLARATIONS)) {
@@ -256,16 +259,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les déclarations avec les tiers à la main
 			associate(session, declarations, tiers, new TiersIdGetter<Declaration>() {
-				@Override
-				public Long getTiersId(Declaration entity) {
-					return entity.getTiers().getId();
-				}
-			}, new EntitySetSetter<Declaration>() {
+						@Override
+						public Long getTiersId(Declaration entity) {
+							return entity.getTiers().getId();
+						}
+					}, new EntitySetSetter<Declaration>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Declaration> set) {
 					tiers.setDeclarations(set);
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.FORS_FISCAUX)) {
@@ -276,16 +280,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les fors fiscaux avec les tiers à la main
 			associate(session, fors, tiers, new TiersIdGetter<ForFiscal>() {
-				@Override
-				public Long getTiersId(ForFiscal entity) {
-					return entity.getTiers().getId();
-				}
-			}, new EntitySetSetter<ForFiscal>() {
+						@Override
+						public Long getTiersId(ForFiscal entity) {
+							return entity.getTiers().getId();
+						}
+					}, new EntitySetSetter<ForFiscal>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<ForFiscal> set) {
 					tiers.setForsFiscaux(set);
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.RAPPORTS_ENTRE_TIERS)) {
@@ -297,16 +302,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
-					@Override
-					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getSujetId();
-					}
-				}, new EntitySetSetter<RapportEntreTiers>() {
+							@Override
+							public Long getTiersId(RapportEntreTiers entity) {
+								return entity.getSujetId();
+							}
+						}, new EntitySetSetter<RapportEntreTiers>() {
 					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsSujet(set);
 					}
-				});
+				}
+				);
 			}
 			{
 
@@ -316,16 +322,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
-					@Override
-					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getObjetId();
-					}
-				}, new EntitySetSetter<RapportEntreTiers>() {
+							@Override
+							public Long getTiersId(RapportEntreTiers entity) {
+								return entity.getObjetId();
+							}
+						}, new EntitySetSetter<RapportEntreTiers>() {
 					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsObjet(set);
 					}
-				});
+				}
+				);
 			}
 		}
 
@@ -337,18 +344,19 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les situations de famille avec les tiers à la main
 			associate(session, situations, tiers, new TiersIdGetter<SituationFamille>() {
-				@Override
-				public Long getTiersId(SituationFamille entity) {
-					return entity.getContribuable().getId();
-				}
-			}, new EntitySetSetter<SituationFamille>() {
+						@Override
+						public Long getTiersId(SituationFamille entity) {
+							return entity.getContribuable().getId();
+						}
+					}, new EntitySetSetter<SituationFamille>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
 					if (tiers instanceof Contribuable) {
 						((Contribuable) tiers).setSituationsFamille(set);
 					}
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.PERIODICITES)) {
@@ -359,18 +367,19 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les périodicités avec les tiers à la main
 			associate(session, periodicites, tiers, new TiersIdGetter<Periodicite>() {
-				@Override
-				public Long getTiersId(Periodicite entity) {
-					return entity.getDebiteur().getId();
-				}
-			}, new EntitySetSetter<Periodicite>() {
+						@Override
+						public Long getTiersId(Periodicite entity) {
+							return entity.getDebiteur().getId();
+						}
+					}, new EntitySetSetter<Periodicite>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
 					if (tiers instanceof DebiteurPrestationImposable) {
 						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
 					}
 				}
-			});
+			}
+			);
 		}
 
 		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
@@ -381,79 +390,84 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on associe les immeubles avec les tiers à la main
 			associate(session, immeubles, tiers, new TiersIdGetter<Immeuble>() {
-				@Override
-				public Long getTiersId(Immeuble entity) {
-					return entity.getProprietaire().getId();
-				}
-			}, new EntitySetSetter<Immeuble>() {
+						@Override
+						public Long getTiersId(Immeuble entity) {
+							return entity.getProprietaire().getId();
+						}
+					}, new EntitySetSetter<Immeuble>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Immeuble> set) {
 					if (tiers instanceof Contribuable) {
 						((Contribuable) tiers).setImmeubles(set);
 					}
 				}
-			});
+			}
+			);
 		}
 		return tiers;
 	}
 
 	/**
-     * Charge les objets d'un certain type en fonction des ids spécifiés.
-     * <p/>
-     * Cette méthode contourne la limitation du nombre d'éléments dans la clause in (1'000 pour Oracle, par exemple) en exécutant plusieurs requêtes si nécessaire.
-     *
-     * @param hql     la requête hql qui doit de la forme <i>from XXX as o where o.id in (:ids)</i>
-     * @param ids     les ids des tiers à charger
-     * @param session la session à utiliser
-     * @return une liste des entités trouvées
-     */
-    @SuppressWarnings({"unchecked"})
-    private static <T> List<T> queryObjectsByIds(String hql, Set<Long> ids, Session session) {
+	 * Charge les objets d'un certain type en fonction des ids spécifiés.
+	 * <p/>
+	 * Cette méthode contourne la limitation du nombre d'éléments dans la clause in (1'000 pour Oracle, par exemple) en exécutant plusieurs requêtes si nécessaire.
+	 *
+	 * @param hql     la requête hql qui doit de la forme <i>from XXX as o where o.id in (:ids)</i>
+	 * @param ids     les ids des tiers à charger
+	 * @param session la session à utiliser
+	 * @return une liste des entités trouvées
+	 */
+	@SuppressWarnings({"unchecked"})
+	private static <T> List<T> queryObjectsByIds(String hql, Set<Long> ids, Session session) {
 
-        final List<T> list;
-        final int size = ids.size();
-        final Query query = session.createQuery(hql);
-        if (size <= MAX_IN_SIZE) {
-            // on charge les entités en vrac
-            query.setParameterList("ids", ids);
-            list = query.list();
-        } else {
-            // on charge les entités par sous lots
-            list = new ArrayList<T>(size);
-            final List<Long> l = new ArrayList<Long>(ids);
-            for (int i = 0; i < size; i += MAX_IN_SIZE) {
-                final List<Long> sub = l.subList(i, Math.min(size, i + MAX_IN_SIZE));
-                query.setParameterList("ids", sub);
-                list.addAll(query.list());
-            }
-        }
+		final List<T> list;
+		final int size = ids.size();
+		final Query query = session.createQuery(hql);
+		if (size <= MAX_IN_SIZE) {
+			// on charge les entités en vrac
+			query.setParameterList("ids", ids);
+			list = query.list();
+		}
+		else {
+			// on charge les entités par sous lots
+			list = new ArrayList<T>(size);
+			final List<Long> l = new ArrayList<Long>(ids);
+			for (int i = 0; i < size; i += MAX_IN_SIZE) {
+				final List<Long> sub = l.subList(i, Math.min(size, i + MAX_IN_SIZE));
+				query.setParameterList("ids", sub);
+				list.addAll(query.list());
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
 
-        List<Long> list;
-        if (ctbStart > 0 && ctbEnd > 0) {
-            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", ctbStart, ctbEnd);
-        } else if (ctbStart > 0) {
-            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", ctbStart);
-        } else if (ctbEnd > 0) {
-            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= ?", ctbEnd);
-        } else {
-            Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
-            list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers");
-        }
-        return list;
-    }
+		List<Long> list;
+		if (ctbStart > 0 && ctbEnd > 0) {
+			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", ctbStart, ctbEnd);
+		}
+		else if (ctbStart > 0) {
+			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", ctbStart);
+		}
+		else if (ctbEnd > 0) {
+			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= ?", ctbEnd);
+		}
+		else {
+			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
+			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers");
+		}
+		return list;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Long> getAllIds() {
-        return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Long> getAllIds() {
+		return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -466,13 +480,13 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	/**
-     * ne retourne que le numero des PP de type habitant
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Long> getAllNumeroIndividu() {
-        return (List<Long>) getHibernateTemplate().find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true");
-    }
+	 * ne retourne que le numero des PP de type habitant
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Long> getAllNumeroIndividu() {
+		return (List<Long>) getHibernateTemplate().find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true");
+	}
 
 	private static final String QUERY_GET_NOS_IND =
 			"select h.numeroIndividu " +
@@ -487,115 +501,115 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 					"and h.numeroIndividu is not null " +
 					"and am.objetId in (:ids)";
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
+	@Override
+	@SuppressWarnings("unchecked")
+	public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
 
-	    if (tiersIds.size() > 1000) {
-			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");		    
-	    }
+		if (tiersIds.size() > 1000) {
+			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");
+		}
 
-        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
-            @Override
-            public Set<Long> doInHibernate(Session session) throws HibernateException {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
+			@Override
+			public Set<Long> doInHibernate(Session session) throws HibernateException {
 
-	            final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+				final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
 
-	            if (includesComposantsMenage) {
-		            // on récupère les numéros d'individu des composants des ménages
+				if (includesComposantsMenage) {
+					// on récupère les numéros d'individu des composants des ménages
 					final Query queryComposants = session.createQuery(QUERY_GET_NOS_IND_COMPOSANTS);
 					queryComposants.setParameterList("ids", tiersIds);
-		            numeros.addAll(queryComposants.list());
-	            }
+					numeros.addAll(queryComposants.list());
+				}
 
-                final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
-                queryObject.setParameterList("ids", tiersIds);
-                numeros.addAll(queryObject.list());
+				final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
+				queryObject.setParameterList("ids", tiersIds);
+				numeros.addAll(queryObject.list());
 
-	            return numeros;
-            }
-        });
-    }
+				return numeros;
+			}
+		});
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Long> getHabitantsForMajorite(RegDate dateReference) {
-        // FIXME (???) la date de référence n'est pas utilisée !
-        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-            @Override
-            public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-                Criteria criteria = session.createCriteria(PersonnePhysique.class);
-                criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
-                criteria.setProjection(Projections.property("numero"));
-                DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
-                subCriteria.setProjection(Projections.id());
-                subCriteria.add(Restrictions.isNull("dateFin"));
-                subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
-                criteria.add(Subqueries.notExists(subCriteria));
-                return criteria.list();
-            }
-        });
-    }
-
-
-    @Override
-    public boolean exists(final Long id) {
-
-        final String name = this.getPersistentClass().getCanonicalName();
-
-        return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
-            @Override
-            public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
-
-                // recherche dans le cache de 1er niveau dans la session si le tiers existe.
-                // Hack fix, on peut resoudre le problème en utilisant la fonction session.contains(), mais pour cela
-                // la fonction equals et hashcode doit être définit dans la classe tiers.
-                SessionImpl s = (SessionImpl) session;
-                // car il faut en prendre un. La classe EntityKey génére un hashCode sur la rootclass et non sur la classe de
-                // l'instance
-                // Doit être vérifier à chaque nouvelle release d'hibernate.
-                Tiers tiers = new PersonnePhysique(true);
-                tiers.setNumero(id);
-                if (s.getPersistenceContext().containsEntity(new EntityKey(id, s.getEntityPersister(name, tiers), EntityMode.POJO)))
-                    return true;
-                Criteria criteria = s.createCriteria(getPersistentClass());
-                criteria.setProjection(Projections.rowCount());
-                criteria.add(Restrictions.eq("numero", id));
-                Integer count = (Integer) criteria.uniqueResult();
-                return count > 0;
-            }
-        });
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
+		// FIXME (???) la date de référence n'est pas utilisée !
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+			@Override
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				Criteria criteria = session.createCriteria(PersonnePhysique.class);
+				criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
+				criteria.setProjection(Projections.property("numero"));
+				DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
+				subCriteria.setProjection(Projections.id());
+				subCriteria.add(Restrictions.isNull("dateFin"));
+				subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
+				criteria.add(Subqueries.notExists(subCriteria));
+				return criteria.list();
+			}
+		});
+	}
 
 
-    @Override
-    public RapportEntreTiers save(RapportEntreTiers object) {
-        TracePoint tp = TracingManager.begin();
-        Object obj = super.getHibernateTemplate().merge(object);
-        TracingManager.end(tp);
-        return (RapportEntreTiers) obj;
-    }
+	@Override
+	public boolean exists(final Long id) {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
-        return getHabitantByNumeroIndividu(numeroIndividu, false);
-    }
+		final String name = this.getPersistentClass().getCanonicalName();
 
-    @Override
-    public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
-	    return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
-    }
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
+			@Override
+			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
 
-    /**
-     * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
-     */
-    @Override
-    public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
-	    return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
-    }
+				// recherche dans le cache de 1er niveau dans la session si le tiers existe.
+				// Hack fix, on peut resoudre le problème en utilisant la fonction session.contains(), mais pour cela
+				// la fonction equals et hashcode doit être définit dans la classe tiers.
+				SessionImpl s = (SessionImpl) session;
+				// car il faut en prendre un. La classe EntityKey génére un hashCode sur la rootclass et non sur la classe de
+				// l'instance
+				// Doit être vérifier à chaque nouvelle release d'hibernate.
+				Tiers tiers = new PersonnePhysique(true);
+				tiers.setNumero(id);
+				if (s.getPersistenceContext().containsEntity(new EntityKey(id, s.getEntityPersister(name, tiers), EntityMode.POJO)))
+					return true;
+				Criteria criteria = s.createCriteria(getPersistentClass());
+				criteria.setProjection(Projections.rowCount());
+				criteria.add(Restrictions.eq("numero", id));
+				Integer count = (Integer) criteria.uniqueResult();
+				return count > 0;
+			}
+		});
+	}
+
+
+	@Override
+	public RapportEntreTiers save(RapportEntreTiers object) {
+		TracePoint tp = TracingManager.begin();
+		Object obj = super.getHibernateTemplate().merge(object);
+		TracingManager.end(tp);
+		return (RapportEntreTiers) obj;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
+		return getHabitantByNumeroIndividu(numeroIndividu, false);
+	}
+
+	@Override
+	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+		return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
+	}
+
+	/**
+	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
+	 */
+	@Override
+	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+		return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
+	}
 
 	@Override
 	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
@@ -642,7 +656,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				if (doNotAutoFlush) {
 					flushMode = session.getFlushMode();
 					session.setFlushMode(FlushMode.MANUAL);
-				} else {
+				}
+				else {
 					// la requête ci-dessus n'est pas une requête HQL, donc hibernate ne fera pas les
 					// flush potentiellement nécessaires... Idéalement, bien-sûr, il faudrait écrire la requête en HQL, mais
 					// je n'y arrive pas...
@@ -751,152 +766,169 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
-        return getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique, false);
-    }
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
+		return getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique, false);
+	}
 
-    @Override
-    @SuppressWarnings({"UnnecessaryBoxing"})
-    public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
+	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+		Object[] criteria = {
+				Long.valueOf(numeroRegion)
+		};
+		String query = "from CollectiviteAdministrative col where col.identifiantRegionFiscale = ?";
 
-        Object[] criteria = {
-                Integer.valueOf(numeroTechnique)
-        };
-        String query = "from CollectiviteAdministrative col where col.numeroCollectiviteAdministrative = ?";
+		final List<?> list = find(query, criteria, null);
 
-        final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-        final List<?> list = find(query, criteria, mode);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par Region
+		return (CollectiviteAdministrative) list.get(0);
+	}
 
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        Assert.isEqual(1, list.size()); // le numéro de collectivité administrative est défini comme 'unique' sur la base
-        return (CollectiviteAdministrative) list.get(0);
-    }
+	@Override
+	@SuppressWarnings({"UnnecessaryBoxing"})
+	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 
-    @Override
-    public Contribuable getContribuableByNumero(Long numeroContribuable) {
-	    if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Recherche du contribuable dont le numéro est:" + numeroContribuable);
-	    }
-        return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
-    }
+		Object[] criteria = {
+				Integer.valueOf(numeroTechnique)
+		};
+		String query = "from CollectiviteAdministrative col where col.numeroCollectiviteAdministrative = ?";
 
-    /**
-     * @see ch.vd.uniregctb.tiers.TiersDAO#getDebiteurPrestationImposableByNumero(java.lang.Long)
-     */
-    @Override
-    public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
-	    if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
-	    }
-        return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
-    }
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final List<?> list = find(query, criteria, mode);
 
-    /**
-     * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long)
-     */
-    @Override
-    public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
-        return getPPByNumeroIndividu(numeroIndividu, false);
-    }
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		Assert.isEqual(1, list.size()); // le numéro de collectivité administrative est défini comme 'unique' sur la base
+		return (CollectiviteAdministrative) list.get(0);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<PersonnePhysique> getSourciers(int noSourcier) {
-	    if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Recherche d'un sourcier dont le numéro est:" + noSourcier);
-	    }
-        Object[] criteria = {noSourcier};
-        String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = ?";
-        return (List<PersonnePhysique>) getHibernateTemplate().find(query, criteria);
-    }
+	@Override
+	public Contribuable getContribuableByNumero(Long numeroContribuable) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche du contribuable dont le numéro est:" + numeroContribuable);
+		}
+		return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<PersonnePhysique> getAllMigratedSourciers() {
-	    if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Recherche de tous les sourciers migrés");
-	    }
-        String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
-        return (List<PersonnePhysique>) getHibernateTemplate().find(query);
-    }
+	/**
+	 * @see ch.vd.uniregctb.tiers.TiersDAO#getDebiteurPrestationImposableByNumero(java.lang.Long)
+	 */
+	@Override
+	public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
+		}
+		return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Tiers getTiersForIndexation(final long id) {
+	/**
+	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long)
+	 */
+	@Override
+	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
+		return getPPByNumeroIndividu(numeroIndividu, false);
+	}
 
-        final List<Tiers> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
-            @Override
-            public List<Tiers> doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(Tiers.class);
-                crit.add(Restrictions.eq("numero", id));
-                crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
-                crit.setFetchMode("forFiscaux", FetchMode.JOIN);
-                // msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
-                // msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
-                // crit.setFetchMode("adressesTiers", FetchMode.JOIN);
-                crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<PersonnePhysique> getSourciers(int noSourcier) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche d'un sourcier dont le numéro est:" + noSourcier);
+		}
+		Object[] criteria = {noSourcier};
+		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = ?";
+		return (List<PersonnePhysique>) getHibernateTemplate().find(query, criteria);
+	}
 
-                final FlushMode mode = session.getFlushMode();
-                try {
-                    session.setFlushMode(FlushMode.MANUAL);
-                    return crit.list();
-                }
-                finally {
-                    session.setFlushMode(mode);
-                }
-            }
-        });
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<PersonnePhysique> getAllMigratedSourciers() {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche de tous les sourciers migrés");
+		}
+		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
+		return (List<PersonnePhysique>) getHibernateTemplate().find(query);
+	}
 
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            Assert.isEqual(1, list.size());
-            return list.get(0);
-        }
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public Tiers getTiersForIndexation(final long id) {
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
-        final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-            @Override
-            public List<Long> doInHibernate(Session session) throws HibernateException {
-                Query query = session.createQuery("select mc.numero from MenageCommun mc where mc.numero in (:ids)");
-                query.setParameterList("ids", ids);
-                return query.list();
-            }
-        });
+		final List<Tiers> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
+			@Override
+			public List<Tiers> doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(Tiers.class);
+				crit.add(Restrictions.eq("numero", id));
+				crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
+				crit.setFetchMode("forFiscaux", FetchMode.JOIN);
+				// msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
+				// msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
+				// crit.setFetchMode("adressesTiers", FetchMode.JOIN);
+				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-        final List<Tiers> tiers = getBatch(idsMC, parts);
-        final List<MenageCommun> menages = new ArrayList<MenageCommun>(tiers.size());
-        for (Tiers t : tiers) {
-            menages.add((MenageCommun) t);
-        }
-        return menages;
-    }
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+					return crit.list();
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
+		});
+
+		if (list.isEmpty()) {
+			return null;
+		}
+		else {
+			Assert.isEqual(1, list.size());
+			return list.get(0);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
+		final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
+			@Override
+			public List<Long> doInHibernate(Session session) throws HibernateException {
+				Query query = session.createQuery("select mc.numero from MenageCommun mc where mc.numero in (:ids)");
+				query.setParameterList("ids", ids);
+				return query.list();
+			}
+		});
+
+		final List<Tiers> tiers = getBatch(idsMC, parts);
+		final List<MenageCommun> menages = new ArrayList<MenageCommun>(tiers.size());
+		for (Tiers t : tiers) {
+			menages.add((MenageCommun) t);
+		}
+		return menages;
+	}
 
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Contribuable>() {
-		    @Override
-		    public Contribuable doInHibernate(Session session) throws HibernateException {
-		        Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
-		        query.setParameter("dpiId", debiteur.getId());
-			    final FlushMode mode = session.getFlushMode();
-			    try {
-			        session.setFlushMode(FlushMode.MANUAL);
-				    return (Contribuable) query.uniqueResult();
-			    }
-			    finally {
-			        session.setFlushMode(mode);
-			    }
-		    }
+			@Override
+			public Contribuable doInHibernate(Session session) throws HibernateException {
+				Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
+				query.setParameter("dpiId", debiteur.getId());
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+					return (Contribuable) query.uniqueResult();
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
 		});
 	}
 
@@ -974,32 +1006,32 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeCtbModifies(final Date dateDebutRech, final Date dateFinRech) {
 		final String RequeteContribuablesModifies = //----------------------------------------------------
-		"SELECT T.NUMERO AS CTB_ID                                                " +
-				"FROM TIERS T                                                             " +
-				"JOIN FOR_FISCAL FF ON FF.TIERS_ID=T.NUMERO                               " +
-				"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
-				"AND T.LOG_MDATE >= :debut                                                " +
-				"AND T.LOG_MDATE <= :fin                                                  " +
-				"                                                                         " +
-				"UNION                                                                    " +
-				"                                                                         " +
-				"SELECT FF.TIERS_ID AS CTB_ID                                             " +
-				"FROM FOR_FISCAL FF                                                       " +
-				"WHERE FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                    " +
-				"AND FF.LOG_MDATE >= :debut                                               " +
-				"AND FF.LOG_MDATE <= :fin                                                 " +
-				"                                                                         " +
-				"UNION                                                                    " +
-				"                                                                         " +
-				"SELECT DI.TIERS_ID AS CTB_ID                                             " +
-				"FROM DECLARATION DI                                                      " +
-				"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
-				"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
-				"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
-				"AND ED.LOG_MDATE >= :debut                                               " +
-				"AND ED.LOG_MDATE <= :fin                                                 " +
-				"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
-				"ORDER BY CTB_ID                                                          ";
+				"SELECT T.NUMERO AS CTB_ID                                                " +
+						"FROM TIERS T                                                             " +
+						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=T.NUMERO                               " +
+						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+						"AND T.LOG_MDATE >= :debut                                                " +
+						"AND T.LOG_MDATE <= :fin                                                  " +
+						"                                                                         " +
+						"UNION                                                                    " +
+						"                                                                         " +
+						"SELECT FF.TIERS_ID AS CTB_ID                                             " +
+						"FROM FOR_FISCAL FF                                                       " +
+						"WHERE FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                    " +
+						"AND FF.LOG_MDATE >= :debut                                               " +
+						"AND FF.LOG_MDATE <= :fin                                                 " +
+						"                                                                         " +
+						"UNION                                                                    " +
+						"                                                                         " +
+						"SELECT DI.TIERS_ID AS CTB_ID                                             " +
+						"FROM DECLARATION DI                                                      " +
+						"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
+						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
+						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
+						"AND ED.LOG_MDATE >= :debut                                               " +
+						"AND ED.LOG_MDATE <= :fin                                                 " +
+						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
+						"ORDER BY CTB_ID                                                          ";
 
 		final List<Long> listeCtbModifies = getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
 			@Override
