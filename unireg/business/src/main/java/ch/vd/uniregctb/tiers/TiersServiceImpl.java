@@ -1784,7 +1784,16 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
+		//[SIFISC-2703] tri des enfants par date de naissance croissante
+		Collections.sort(listeEnfants, new Comparator<PersonnePhysique>() {
+			@Override
+			public int compare(PersonnePhysique o1, PersonnePhysique o2) {
+				final RegDate dateNaissance1 = getDateNaissance(o1);
+				final RegDate dateNaissance2 = getDateNaissance(o2);
+				return dateNaissance1.compareTo(dateNaissance2);
 
+			}
+		});
 		return listeEnfants;
 	}
 

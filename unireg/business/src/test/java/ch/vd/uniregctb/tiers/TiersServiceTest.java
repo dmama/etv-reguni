@@ -5259,4 +5259,79 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 
+	// [SIFISC-2703]  Tri des enfants dans l'ordre décroissant
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationMenageOrdreCroissant() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+		final long indFille2 = 5;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2004, 2, 8), "Cognac", "Eva", false);
+				MockIndividu fille2 = addIndividu(indFille2, date(2006, 2, 8), "Cognac", "Lucie", false);
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille2, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				fille2.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille, fille2));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille, fille2));
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+			Long fille2;
+		}
+		final Ids ids = new Ids();
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+				final PersonnePhysique fille2 = addHabitant(indFille2);
+				ids.fille2 = fille2.getId();
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(3, enfantsForDeclaration.size());
+		assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
+		assertEquals(ids.fille, enfantsForDeclaration.get(1).getNumero());
+		assertEquals(ids.fille2, enfantsForDeclaration.get(2).getNumero());
+	}
+
 }
