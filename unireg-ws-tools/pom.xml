@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tools</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1</version>
+	<version>1.2</version>
 
 	<name>Unireg - WS Tools</name>
 	<description>Unireg - Outils pour les web-services</description>
@@ -29,8 +29,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -67,7 +67,7 @@
 		<copyright.year>2010</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<cxf.version>2.2.8</cxf.version>
+		<cxf.version>2.4.2-fuse-00-08</cxf.version>
 	</properties>
 	
 </project>

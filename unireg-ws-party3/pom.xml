@@ -180,7 +180,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.0.5.RELEASE</spring.version>
-		<cxf.version>2.3.3-fuse-01-09</cxf.version>
+		<cxf.version>2.4.2-fuse-00-08</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
 	</properties>
