@@ -1790,8 +1790,18 @@ public class TiersServiceImpl implements TiersService {
 			public int compare(PersonnePhysique o1, PersonnePhysique o2) {
 				final RegDate dateNaissance1 = getDateNaissance(o1);
 				final RegDate dateNaissance2 = getDateNaissance(o2);
-				return dateNaissance1.compareTo(dateNaissance2);
-
+				if (dateNaissance1 == null && dateNaissance2 == null) {
+					return 0;
+				}
+				else if (dateNaissance1 == null) {
+					return -1;
+				}
+				else if (dateNaissance2 == null) {
+					return 1;
+				}
+				else {
+					return dateNaissance1.compareTo(dateNaissance2);
+				}
 			}
 		});
 		return listeEnfants;
