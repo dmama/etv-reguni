@@ -58,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>weblogic</groupId>
-			<artifactId>wlfullclient-jdk5</artifactId>
+			<artifactId>wlfullclient-jdk6</artifactId>
 			<version>10.3</version>
         </dependency>
         <dependency>
