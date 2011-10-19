@@ -13,6 +13,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +40,8 @@ public class ModeleFeuilleDocumentController {
 	private ParamPeriodeManager manager;
 	private MessageSource messageSource;
 	private ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO;
+	private Validator modeleFeuilleDocumentValidator;
+
 
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
@@ -47,6 +54,17 @@ public class ModeleFeuilleDocumentController {
 	public void setModeleFeuilleDocumentDAO(ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO) {
 		this.modeleFeuilleDocumentDAO = modeleFeuilleDocumentDAO;
 	}
+
+	public void setModeleFeuilleDocumentValidator(Validator modeleFeuilleDocumentValidator) {
+		this.modeleFeuilleDocumentValidator = modeleFeuilleDocumentValidator;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(modeleFeuilleDocumentValidator);
+	}
+
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -61,9 +79,12 @@ public class ModeleFeuilleDocumentController {
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String add(@Valid ModeleFeuilleDocumentView view) throws Exception {
+	public String add(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
 		Commun.verifieLesDroits();
 
+		if (result.hasErrors()) {
+			return "param/feuille-add";
+		}
 		manager.addFeuille(view.getIdModele(), view.getModeleFeuille());
 
 		return "redirect:/param/periode.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
@@ -82,9 +103,11 @@ public class ModeleFeuilleDocumentController {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String edit(@Valid ModeleFeuilleDocumentView view) throws Exception {
+	public String edit(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
 		Commun.verifieLesDroits();
-
+		if (result.hasErrors()) {
+			return "/edit.do";
+		}
 		manager.updateFeuille(view.getIdFeuille(), view.getModeleFeuille());
 
 		return "redirect:/param/periode.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();

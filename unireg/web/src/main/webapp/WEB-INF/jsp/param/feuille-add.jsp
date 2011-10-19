@@ -13,6 +13,8 @@
 		</fieldset>
 		<form:hidden path="idPeriode" value="${command.idPeriode}"/>
 		<form:hidden path="idModele" value="${command.idModele}"/>
+		<form:hidden path="modeleDocumentTypeDocument" value="${command.modeleDocumentTypeDocument}"/>
+		<form:hidden path="periodeAnnee" value="${command.periodeAnnee}"/>
 		<div>
 			<input type="submit" id="ajout" value="<fmt:message key="label.bouton.ajouter" />">
 			<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='../periode.do?pf=${command.idPeriode}&md=${command.idModele}'">
