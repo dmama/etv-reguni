@@ -286,4 +286,10 @@ public interface ServiceInfrastructureService extends ServiceInfrastructureRaw {
 	 * @return la liste de tous les logiciels associés au domaine métier spécifié.
 	 */
 	List<Logiciel> getLogicielsPour(LogicielMetier metier);
+
+	/**
+	 * @param metier un domaine métier
+	 * @return la liste de tous les logiciels certifiés associés au domaine métier spécifié.
+	 */
+	List<Logiciel> getLogicielsCertifiesPour(LogicielMetier metier);
 }

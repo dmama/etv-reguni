@@ -367,4 +367,9 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {
 		return target.getLogicielsPour(metier);
 	}
+
+	@Override
+	public List<Logiciel> getLogicielsCertifiesPour(LogicielMetier metier) {
+		return target.getLogicielsCertifiesPour(metier);
+	}
 }

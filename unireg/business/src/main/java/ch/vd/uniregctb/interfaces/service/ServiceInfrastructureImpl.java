@@ -793,4 +793,15 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		}
 		return list;
 	}
+
+	@Override
+	public List<Logiciel> getLogicielsCertifiesPour(LogicielMetier metier) {
+		final List<Logiciel> list = new ArrayList<Logiciel>();
+		for (Logiciel l : getLogicielsPour(metier)) {
+			if (l.isCertifie()) {
+				list.add(l);
+			}
+		}
+		return list;
+	}
 }
