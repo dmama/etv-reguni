@@ -12,6 +12,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<!--
+			<property name="autorisationManager" ref="autorisationManager" />
 			<property name="hostCivilService" ref="hostCivilService" />
 			<property name="serviceCivilService" ref="serviceCivilService" />
 			<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />

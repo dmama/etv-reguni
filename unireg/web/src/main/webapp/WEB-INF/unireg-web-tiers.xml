@@ -17,6 +17,11 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
+	<bean id="autorisationManager" class="ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl">
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+	</bean>
+
 	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
 
 	<bean id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
@@ -95,6 +100,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="autorisationManager" ref="autorisationManager" />
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">

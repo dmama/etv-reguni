@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -55,7 +54,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
@@ -70,14 +68,11 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -86,6 +81,7 @@ import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -116,10 +112,7 @@ import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
@@ -167,6 +160,7 @@ public class TiersManager implements MessageSourceAware {
 	protected RapportEntreTiersDAO rapportEntreTiersDAO;
 	protected IbanValidator ibanValidator;
 	private ServicePersonneMoraleService servicePM;
+	private AutorisationManager autorisationManager;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -179,7 +173,7 @@ public class TiersManager implements MessageSourceAware {
 		IndividuView individuView = null;
 		Long noIndividu = habitant.getNumeroIndividu();
 		if (noIndividu != null) {
-			individuView = getHostCivilService().getIndividu(noIndividu);
+			individuView = hostCivilService.getIndividu(noIndividu);
 		}
 		if (habitant.getDateDeces() != null && individuView != null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
@@ -275,7 +269,7 @@ public class TiersManager implements MessageSourceAware {
 		final int year = RegDate.get().year();
 
 		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
-		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
+		final Individu ind = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 
 		final String nomInd = tiersService.getNomPrenom(ind);
 
@@ -330,7 +324,7 @@ public class TiersManager implements MessageSourceAware {
 
 		final RapportView rapportView = createRapportViewPourFilliation(individu, parent, SensRapportEntreTiers.SUJET);
 
-		final Individu parentAvecAdoptions = getServiceCivilService().getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
+		final Individu parentAvecAdoptions = serviceCivilService.getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
 		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parentAvecAdoptions.getAdoptionsReconnaissances(), individu.getNoTechnique());
 		if (ar != null) {
 			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
@@ -1076,193 +1070,18 @@ public class TiersManager implements MessageSourceAware {
 	 * @return true si l'utilisateur a le droit d'éditer le tiers
 	 */
 	protected boolean setDroitEdition(Tiers tiers, Map<String, Boolean> allowedOnglet) {
+
+		final Map<String, Boolean> autorisations = autorisationManager.getAutorisations(tiers);
+		allowedOnglet.putAll(autorisations);
+
 		boolean isEditable = false;
-
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces == Niveau.LECTURE) {
-			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_RAPPORT, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_DEBITEUR, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_AUTRE, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.FISCAL_SIT_FAMILLLE, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.ADR_D, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.ADR_C, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.ADR_B, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.ADR_P, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.FALSE);
-			allowedOnglet.put(TiersEditView.DOSSIER_NO_TRAVAIL, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_DI, Boolean.FALSE);
-			return false;
-		}
-
-		if (SecurityProvider.isGranted(Role.COOR_FIN)) {
-			allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
-			isEditable = true;
-		}
-
-		if (SecurityProvider.isGranted(Role.SUIVI_DOSS)) {
-			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.TRUE);
-			isEditable = true;
-		}
-
-		if (tiers.isDesactive(null)) {
-			// droits pour un contribuable annulé
-			if (SecurityProvider.isGranted(Role.MODIF_NONHAB_INACTIF)) {
-				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-				allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-				allowedOnglet.put(TiersVisuView.MODIF_DI, Boolean.FALSE);
-				if (SecurityProvider.isGranted(Role.ADR_PP_D)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PP_B)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PP_C)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_P)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
-				}
-				isEditable = true;
-			}
-			return isEditable;
-		}
-
-		if (tiers instanceof Contribuable) {
-			if (SecurityProvider.isGranted(Role.CREATE_DPI)) {
-				allowedOnglet.put(TiersVisuView.MODIF_DEBITEUR, Boolean.TRUE);
-				isEditable = true;
-			}
-			if ((tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
-				if (SecurityProvider.isGranted(Role.SIT_FAM)) {
-					Contribuable contribuable = (Contribuable) tiers;
-					boolean isSitFamActive = isSituationFamilleActive(contribuable);
-					boolean civilOK = true;
-					if (tiers instanceof PersonnePhysique) {
-						PersonnePhysique pp = (PersonnePhysique) tiers;
-						if (pp.isHabitantVD()) {
-							Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), null);
-							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-								if (etatCivil.getDateDebutValidite() == null) {
-									civilOK = false;
-								}
-							}
-						}
-					}
-					if (civilOK && (isSitFamActive || !contribuable.getSituationsFamille().isEmpty())) {
-						allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-						allowedOnglet.put(TiersEditView.FISCAL_SIT_FAMILLLE, Boolean.TRUE);
-						isEditable = true;
-					}
-				}
-				if (SecurityProvider.isGranted(Role.DI_EMIS_PP) || SecurityProvider.isGranted(Role.DI_DELAI_PM) ||
-						SecurityProvider.isGranted(Role.DI_DUPLIC_PP) || SecurityProvider.isGranted(Role.DI_QUIT_PP) ||
-						SecurityProvider.isGranted(Role.DI_SOM_PP)) {
-					allowedOnglet.put(TiersVisuView.MODIF_DI, Boolean.TRUE);
+		if (!(tiers instanceof Etablissement)) { // les établissements ne sont pas éditables pour l'instant
+			for (Boolean b : autorisations.values()) {
+				if (b!= null&& b) {
 					isEditable = true;
-				}
-			}
-		}
-
-		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitantVD()) {
-				isEditable = setDroitHabitant(tiers, allowedOnglet) || isEditable;
-			}
-			else {
-				isEditable = setDroitNonHabitant(tiers, allowedOnglet) || isEditable;
-			}
-		}
-		else if (tiers instanceof MenageCommun) {
-			//les ménages n'ont jamais les onglets civil et rapport prestation
-			MenageCommun menageCommun = (MenageCommun) tiers;
-			boolean isHabitant = false;
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
-				if (pp.isHabitantVD()) {
-					isHabitant = true;
 					break;
 				}
 			}
-			if (isHabitant) {
-				isEditable = setDroitHabitant(tiers, allowedOnglet) || isEditable;
-			}
-			else {
-				isEditable = setDroitNonHabitant(tiers, allowedOnglet) || isEditable;
-			}
-		}
-		else if (tiers instanceof AutreCommunaute) {
-			//les autres communautés n'ont jamais les onglets fiscal, rapport prestation et dossier apparenté
-			if (SecurityProvider.isGranted(Role.MODIF_AC)) {
-				allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
-				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-				if (SecurityProvider.isGranted(Role.ADR_PM_D)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PM_B)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PM_C)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_P)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
-				}
-				isEditable = true;
-			}
-		}
-		else if (tiers instanceof DebiteurPrestationImposable) {
-			//les DPI n'ont jamais les onglets civil, dossier apparenté et débiteur IS
-			if (SecurityProvider.isGranted(Role.CREATE_DPI)) {
-				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-				allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-				isEditable = true;
-			}
-			if (SecurityProvider.isGranted(Role.RT)) {
-				allowedOnglet.put(TiersVisuView.MODIF_RAPPORT, Boolean.TRUE);
-				isEditable = true;
-			}
-			if (SecurityProvider.isGranted(Role.ADR_P)) {
-				allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
-				isEditable = true;
-			}
-		}
-
-		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
-	    // UNIREG-3362 Création de débiteur à partir d'une PM
-		else if (tiers instanceof CollectiviteAdministrative || tiers instanceof Entreprise) {
-			allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
-			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
-			isEditable = true;
-		}
-		else {//Entreprise, Etablissement ou CollectiviteAdministrative non éditables pour le moment
-			isEditable = false;
 		}
 		return isEditable;
 	}
@@ -1271,10 +1090,12 @@ public class TiersManager implements MessageSourceAware {
 		return new ComplementView(tiers, servicePM, serviceInfrastructureService, ibanValidator);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
 	}
@@ -1301,368 +1122,12 @@ public class TiersManager implements MessageSourceAware {
 		return horsSuisse;
 	}
 
-	private static enum TypeImposition {
-		AUCUN_FOR_ACTIF,
-		ORDINAIRE_DEPENSE,
-		SOURCIER;
-
-		public boolean isOrdinaireDepenseOuNonActif() {
-			return this == AUCUN_FOR_ACTIF || this == ORDINAIRE_DEPENSE;
-		}
-
-		public boolean isSourcierOuNonActif() {
-			return this == AUCUN_FOR_ACTIF || this == SOURCIER;
-		}
-	}
-
-	private static TypeImposition calculeTypeImposition(Tiers tiers) {
-		final TypeImposition type;
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(null);
-		if (forFiscalPrincipal != null) {
-			final ModeImposition modeImposition = tiers.getForFiscalPrincipalAt(null).getModeImposition();
-			switch (modeImposition) {
-			case SOURCE:
-			case MIXTE_137_1:
-			case MIXTE_137_2:
-				type = TypeImposition.SOURCIER;
-				break;
-			default:
-				type = TypeImposition.ORDINAIRE_DEPENSE;
-				break;
-			}
-		}
-		else {
-			type = TypeImposition.AUCUN_FOR_ACTIF;
-		}
-		return type;
-	}
-
-	/**
-	 * Le type d'autorité fiscale est null en cas d'absence de for fiscal principal actif
-	 *
-	 * @param tiers
-	 * @return
-	 */
-	private static Pair<TypeImposition, TypeAutoriteFiscale> calculeTypeImpositionEtAutoriteFiscale(Tiers tiers) {
-		final TypeImposition typeImposition = calculeTypeImposition(tiers);
-		final TypeAutoriteFiscale typeAutoriteFiscale;
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(null);
-		if (forFiscalPrincipal != null) {
-			typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
-		}
-		else {
-			typeAutoriteFiscale = null;
-		}
-		return new Pair<TypeImposition, TypeAutoriteFiscale>(typeImposition, typeAutoriteFiscale);
-	}
-
-	/**
-	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 */
-	private boolean setDroitHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
-
-		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
-
-		//les habitants n'ont jamais les onglets civil et rapport prestation
-		boolean isEditable = codeFactorise1(tiers, allowedOnglet);
-		if (checkDroitEditPP(tiers)) {
-			codeFactorise2(allowedOnglet);
-			isEditable = true;
-		}
-		isEditable = codeFactorise3(tiers, allowedOnglet, isEditable);
-
-		final boolean isPersonnePhysique = tiers instanceof PersonnePhysique;
-		TypeImposition typeImposition = calculeTypeImposition(tiers);
-		if (typeImposition == TypeImposition.AUCUN_FOR_ACTIF && isPersonnePhysique) {
-			// [UNIREG-1736] un sourcier est un individu qui a un for source ou dont le
-			// ménage commun actif a un for source...
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
-			if (ensemble != null) {
-				final MenageCommun menage = ensemble.getMenage();
-				typeImposition = calculeTypeImposition(menage);
-			}
-		}
-
-		if ((typeImposition.isOrdinaireDepenseOuNonActif() && SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
-				(typeImposition.isSourcierOuNonActif() && SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))) {
-			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.TRUE);
-			isEditable = true;
-		}
-		if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityProvider.isGranted(Role.RT)) {
-			allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.TRUE);
-			isEditable = true;
-		}
-		return isEditable;
-	}
-
-	/**
-	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 */
-	private boolean setDroitNonHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
-
-		//les non habitants n'ont jamais l'onglet rapport prestation
-		//les ménage commun n'ont jamais les onglets civil et rapport prestation
-
-		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
-
-		final boolean isPersonnePhysique = tiers instanceof PersonnePhysique;
-
-		boolean isEditable = codeFactorise1(tiers, allowedOnglet);
-		if (tiers.isDebiteurInactif()) {//I107
-			if (SecurityProvider.isGranted(Role.MODIF_NONHAB_INACTIF)) {
-				if (isPersonnePhysique) {
-					allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
-				}
-				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-				allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-				if (SecurityProvider.isGranted(Role.ADR_PP_D)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PP_B)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
-				}
-				if (SecurityProvider.isGranted(Role.ADR_PP_C)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-				}
-				isEditable = true;
-			}
-		}
-		else {
-			if (checkDroitEditPP(tiers)) {
-				if (isPersonnePhysique) {
-					allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
-				}
-				codeFactorise2(allowedOnglet);
-				isEditable = true;
-			}
-
-			isEditable = codeFactorise3(tiers, allowedOnglet, isEditable);
-
-			Pair<TypeImposition, TypeAutoriteFiscale> types = calculeTypeImpositionEtAutoriteFiscale(tiers);
-			if (types.getFirst() == TypeImposition.AUCUN_FOR_ACTIF && isPersonnePhysique) {
-				// [UNIREG-1736] un sourcier est un individu qui a un for source ou dont le
-				// ménage commun actif a un for source...
-				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
-				if (ensemble != null) {
-					final MenageCommun menage = ensemble.getMenage();
-					types = calculeTypeImpositionEtAutoriteFiscale(menage);
-				}
-			}
-
-			final TypeImposition typeImposition = types.getFirst();
-			final TypeAutoriteFiscale typeAutoriteFiscale = types.getSecond();
-			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityProvider.isGranted(Role.RT)) {
-				allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.TRUE);
-				isEditable = true;
-			}
-			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			if ((typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HCHS)) ||
-					(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_GRIS)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HCHS)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_GRIS))) {
-				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.TRUE);
-				isEditable = true;
-			}
-		}
-		return isEditable;
-	}
-
-	/**
-	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 * @return
-	 */
-	private boolean codeFactorise1(Tiers tiers, Map<String, Boolean> allowedOnglet) {
-		boolean isEditable = false;
-		if (SecurityProvider.isGranted(Role.ADR_P)) {
-			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
-			isEditable = true;
-		}
-
-		if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (tiersService.isDecede(pp)) {
-				allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-				isEditable = true;
-			}
-		}
-		else if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiers instanceof MenageCommun) {
-			MenageCommun mc = (MenageCommun) tiers;
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(mc)) {
-				if (tiersService.isDecede(pp)) {
-					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-					isEditable = true;
-					break;
-				}
-			}
-		}
-		return isEditable;
-	}
-
-	/**
-	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param allowedOnglet
-	 * @return
-	 */
-	private void codeFactorise2(Map<String, Boolean> allowedOnglet) {
-		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
-		allowedOnglet.put(TiersEditView.DOSSIER_NO_TRAVAIL, Boolean.TRUE);
-		if (SecurityProvider.isGranted(Role.ADR_PP_D)) {
-			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-		}
-		if (SecurityProvider.isGranted(Role.ADR_PP_B)) {
-			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
-		}
-		if (SecurityProvider.isGranted(Role.ADR_PP_C)) {
-			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
-		}
-	}
-
-	/**
-	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 * @param isEditable
-	 * @return
-	 */
-	private boolean codeFactorise3(Tiers tiers, Map<String, Boolean> allowedOnglet,
-	                               boolean isEditable) {
-		if (!tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityProvider.isGranted(Role.FOR_SECOND_PP)) {
-			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.TRUE);
-			isEditable = true;
-		}
-		if (SecurityProvider.isGranted(Role.FOR_AUTRE)) {
-			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-			allowedOnglet.put(TiersEditView.FISCAL_FOR_AUTRE, Boolean.TRUE);
-			isEditable = true;
-		}
-		return isEditable;
-	}
-
-	/**
-	 * @param tiers (uniquement PP ou ménage)
-	 * @return true sur l'utilisateur connecté à les droits Ifosec de modif le tiers
-	 */
-	private boolean checkDroitEditPP(Tiers tiers) {
-		boolean isHabitant = false;
-		Tiers tiersAssujetti = null;
-		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
-			MenageCommun menage = tiersService.findMenageCommun(pp, null);
-			if (menage != null) {
-				tiersAssujetti = menage;
-			}
-			else tiersAssujetti = tiers;
-			if (pp.isHabitantVD()) {
-				isHabitant = true;
-			}
-		}
-		else if (tiers instanceof MenageCommun) {
-			Assert.isTrue(tiers instanceof MenageCommun, "checkDroitEditPP : le tiers fourni n'est ni une PP ni un couple");
-			tiersAssujetti = tiers;
-			//les ménages n'ont jamais les onglets civil et rapport prestation
-			MenageCommun menageCommun = (MenageCommun) tiers;
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
-				if (pp.isHabitantVD()) {
-					isHabitant = true;
-					break;
-				}
-			}
-		}
-
-		int typeCtb = 0; //0 non assujetti, 1 HC/HS, 2 VD ordinaire, 3 VD sourcier pur, 4 VD sourcier mixte
-		ForFiscalPrincipal forpCtbAssu = tiersAssujetti.getForFiscalPrincipalAt(null);
-		if (forpCtbAssu != null) {
-			TypeAutoriteFiscale typeFor = forpCtbAssu.getTypeAutoriteFiscale();
-			ModeImposition modeImp = forpCtbAssu.getModeImposition();
-			switch (typeFor) {
-			case COMMUNE_OU_FRACTION_VD:
-				switch (modeImp) {
-				case SOURCE:
-					typeCtb = 3;
-					break;
-				case MIXTE_137_1:
-				case MIXTE_137_2:
-					typeCtb = 4;
-					break;
-				default:
-					typeCtb = 3;
-				}
-				break;
-			default:
-				typeCtb = 1;
-			}
-		}
-
-		if ((typeCtb == 0 && SecurityProvider.isGranted(Role.MODIF_NONHAB_DEBPUR) && !isHabitant) ||
-				(typeCtb == 0 && SecurityProvider.isGranted(Role.MODIF_HAB_DEBPUR) && isHabitant) ||
-				(typeCtb == 1 && SecurityProvider.isGranted(Role.MODIF_HC_HS)) ||
-				((typeCtb == 2 || typeCtb == 4) && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) ||
-				(typeCtb > 2 && SecurityProvider.isGranted(Role.MODIF_VD_SOURC))) {
-
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @param collectivite)
-	 * @return true sur l'utilisateur connecté à les droits Ifosec de modif le tiers
-	 */
-	private boolean checkDroitEditCA(CollectiviteAdministrative collectivite) {
-		return SecurityProvider.isGranted(Role.CREATE_CA) || SecurityProvider.isGranted(Role.MODIF_CA);
-	}
-
 	/**
 	 * @param tiers
 	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
 	protected boolean checkDroitEdit(Tiers tiers) {
-
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces == Niveau.LECTURE) {
-			return false;
-		}
-
-		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
-			return checkDroitEditPP(tiers);
-		}
-		else if (tiers instanceof CollectiviteAdministrative) {
-			CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
-			return checkDroitEditCA(collectivite);
-		}
-		else {
-			return false;
-		}
+		return autorisationManager.isEditAllowed(tiers);
 	}
 
 	/**
@@ -1995,10 +1460,7 @@ public class TiersManager implements MessageSourceAware {
 		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur, !rapportsPrestationHisto);
 	}
 
-	public HostCivilService getHostCivilService() {
-		return hostCivilService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHostCivilService(HostCivilService hostCivilService) {
 		this.hostCivilService = hostCivilService;
 	}
@@ -2011,10 +1473,7 @@ public class TiersManager implements MessageSourceAware {
 		this.tiersDAO = tiersDAO;
 	}
 
-	public ServiceCivilService getServiceCivilService() {
-		return serviceCivilService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
@@ -2031,6 +1490,7 @@ public class TiersManager implements MessageSourceAware {
 		return serviceInfrastructureService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
@@ -2039,14 +1499,12 @@ public class TiersManager implements MessageSourceAware {
 		return hostPersonneMoraleService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHostPersonneMoraleService(HostPersonneMoraleService hostPersonneMoraleService) {
 		this.hostPersonneMoraleService = hostPersonneMoraleService;
 	}
 
-	public AdresseManager getAdresseManager() {
-		return adresseManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseManager(AdresseManager adresseManager) {
 		this.adresseManager = adresseManager;
 	}
@@ -2067,10 +1525,7 @@ public class TiersManager implements MessageSourceAware {
 		this.adresseService = adresseService;
 	}
 
-	public SituationFamilleService getSituationFamilleService() {
-		return situationFamilleService;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
 	}
@@ -2079,10 +1534,12 @@ public class TiersManager implements MessageSourceAware {
 		return adresseTiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
 		this.adresseTiersDAO = adresseTiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
 	}
@@ -2094,6 +1551,11 @@ public class TiersManager implements MessageSourceAware {
 
 	public MessageSource getMessageSource() {
 		return messageSource;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAutorisationManager(AutorisationManager autorisationManager) {
+		this.autorisationManager = autorisationManager;
 	}
 
 	/**

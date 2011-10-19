@@ -57,9 +57,7 @@
 		<property name="successView" value="edit.do" />
 	</bean>
 
-	<bean id="rapportListManager" class="ch.vd.uniregctb.rapport.manager.RapportListManagerImpl" >
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
-		<property name="tiersService" ref="tiersService" />
+	<bean id="rapportListManager" class="ch.vd.uniregctb.rapport.manager.RapportListManagerImpl" parent="tiersManager" >
 	</bean>
 
 	<bean id="rapportEditController" class="ch.vd.uniregctb.rapport.RapportEditController" parent="abstractRapportPrestationController">

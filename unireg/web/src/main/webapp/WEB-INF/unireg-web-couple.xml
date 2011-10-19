@@ -32,9 +32,7 @@
 		<property name="droitAccesService" ref="droitAccesService" />
 	</bean>
 
-	<bean id="coupleListManager" class="ch.vd.uniregctb.couple.manager.CoupleListManagerImpl">
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
-		<property name="tiersService" ref="tiersService" />
+	<bean id="coupleListManager" class="ch.vd.uniregctb.couple.manager.CoupleListManagerImpl" parent="tiersManager">
 	</bean>
 
 	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >

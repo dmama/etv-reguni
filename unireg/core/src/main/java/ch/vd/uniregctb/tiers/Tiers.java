@@ -1513,7 +1513,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return si le tiers est désactivé ou non
 	 */
 	@Transient
-	public final boolean isDesactive(RegDate date) {
+	public final boolean isDesactive(@Nullable RegDate date) {
 		return isAnnule() || isDesactiveSelonFors(date);
 	}
 
