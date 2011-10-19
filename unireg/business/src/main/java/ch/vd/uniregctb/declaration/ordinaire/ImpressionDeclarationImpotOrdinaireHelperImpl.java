@@ -38,6 +38,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -249,13 +250,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		expediteur.setNumFax(collectivite.getNoFax());
 		expediteur.setNumCCP(collectivite.getNoCCP());
 
-		final String modifUser = informationDocument.getModifUser();
-		/*
-		 * List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesUtilisateur =
-		 * serviceSecuriteService.getCollectivitesUtilisateur(ideUti); ch.vd.infrastructure.model.CollectiviteAdministrative colUtil =
-		 * collectivitesUtilisateur.get(0); if (colUtil != null) { String traitePar = colUtil.getNomComplet1();
-		 * expediteur.setTraitePar(traitePar); }
-		 */
+		final String modifUser = AuthenticationHelper.getCurrentPrincipal();
 		expediteur.setIdeUti(modifUser);
 
 		final String dateExpedition = RegDateHelper.toIndexString(RegDate.get());

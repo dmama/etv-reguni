@@ -17,12 +17,11 @@ public class InformationsDocumentAdapter {
 	public final Long collId;
 	public final Qualification qualification;
 	public final Integer codeSegment;
-	public final String modifUser;
 	public final TypeDocument typeDocument;
 	public final String codeControle;
 
 	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, int annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
-	                                   Qualification qualification, Integer codeSegment, String modifUser, TypeDocument typeDocument, String codeControle) {
+	                                   Qualification qualification, Integer codeSegment, TypeDocument typeDocument, String codeControle) {
 		this.tiers = tiers;
 		this.idDocument = idDocument;
 		this.annee = annee;
@@ -33,7 +32,6 @@ public class InformationsDocumentAdapter {
 		this.collId = collId;
 		this.qualification = qualification;
 		this.codeSegment = codeSegment;
-		this.modifUser = modifUser;
 		this.typeDocument = typeDocument;
 		this.codeControle = codeControle;
 
@@ -51,7 +49,6 @@ public class InformationsDocumentAdapter {
 		collId = declaration.getRetourCollectiviteAdministrativeId();
 		qualification = declaration.getQualification();
 		codeSegment = declaration.getCodeSegment();
-		modifUser = declaration.getLogModifUser();
 		codeControle = declaration.getCodeControle();
 	}
 
@@ -93,10 +90,6 @@ public class InformationsDocumentAdapter {
 
 	public Integer getCodeSegment() {
 		return codeSegment;
-	}
-
-	public String getModifUser() {
-		return modifUser;
 	}
 
 	public TypeDocument getTypeDocument() {
