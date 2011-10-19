@@ -1014,7 +1014,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
-			assertEquals(numCtb + "20110118", info.getCODBARR());
+			assertEquals(numCtb + "20110101", info.getCODBARR());
 			assertEquals("18-0", info.getNOOID());
 
 			// ... sur l'adresse du CEDI

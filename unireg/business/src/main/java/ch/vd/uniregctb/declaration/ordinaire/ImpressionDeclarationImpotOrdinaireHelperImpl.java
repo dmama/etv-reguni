@@ -501,6 +501,24 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		return tiersService.getOfficeImpotIdAt(tiers, dateRecherche);
 	}
 
+	private Integer getNumeroOfficeImpotGestion(InformationsDocumentAdapter informationsDocument) {
+
+		final int anneeCourante = RegDate.get().year();
+
+		final RegDate finPeriodeCourante = RegDate.get(anneeCourante, 12, 31);
+		final RegDate finPeriodePrecedente = RegDate.get(anneeCourante - 1, 12, 31);
+		RegDate dateRecherche;
+		final int annee = informationsDocument.getAnnee();
+		if (annee == anneeCourante) {
+			dateRecherche = finPeriodeCourante;
+		}
+		else {
+			dateRecherche = finPeriodePrecedente;
+		}
+		final Tiers tiers = informationsDocument.getTiers();
+		return tiersService.getOfficeImpotIdAt(tiers, dateRecherche);
+	}
+
 	private void remplitAdresseRetourCEDI(DIRetour.AdresseRetour adresseRetour, Integer officeImpotId) throws EditiqueException {
 
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cedi;
@@ -861,7 +879,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
 		final int anneeDeclaration = informationsDocument.getAnnee();
 		final Tiers tiers = informationsDocument.getTiers();
-		final Integer officeImpotId = getNumeroOfficeImpotRetour(informationsDocument);
+		final Integer officeImpotId = getNumeroOfficeImpotGestion(informationsDocument);
 		Assert.notNull(officeImpotId);
 		final Integer idDocument = informationsDocument.getIdDocument();
 		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration
