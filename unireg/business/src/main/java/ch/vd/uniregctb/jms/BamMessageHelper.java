@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 
@@ -29,6 +32,7 @@ public abstract class BamMessageHelper {
 
 	public static final String NUMERO_SEQUENCE = "numeroSequenceFourre";
 	public static final String PERIODE_IMPOSITION = "periodeImposition";
+	public static final String DATE_ENVOI = "dateEnvoi";
 
 	public static final String NUMERO_SEQUENCE_DI_ELECTRONIQUE = "numeroSequenceDiElectronique";        // c'est le numéro de séquence fourni par ADDI...
 
@@ -96,30 +100,32 @@ public abstract class BamMessageHelper {
 	 * Prépare une map des attributs supplémentaires à envoyer dans le message au BAM lors du quittancement
 	 * d'une déclaration bien identifiée (<i>a priori</i> déclaration "papier")
 	 * @param d la déclaration quittancée
+	 * @param dateQuittancement date à laquelle la DI a été quittancée
 	 * @param incomingMessageHeaders dans le cas où le quittancement a été effectué suite à la réception d'un message JMS, les headers de ce message
 	 * @return les attributs à ajouter au message pour le BAM
 	 */
 	@Nullable
-	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclaration(Declaration d, @Nullable Map<String, String> incomingMessageHeaders) {
+	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclaration(Declaration d, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
 		final Map<String, String> transmittedAttributes = extractHeaders(attributesKeysToCopyFromIncomingMessages, incomingMessageHeaders);
 		final Map<String, String> map;
 		if (d instanceof DeclarationImpotOrdinaire) {
 			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 			final String strNoSeq = buildNoSequence(di);
 			final String strPeriode = buildPeriode(di);
-			map = new HashMap<String, String>(2 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+			map = new HashMap<String, String>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
 			if (transmittedAttributes != null) {
 				map.putAll(transmittedAttributes);
 			}
 			map.put(NUMERO_SEQUENCE, strNoSeq);
 			map.put(PERIODE_IMPOSITION, strPeriode);
 		}
-		else if (transmittedAttributes != null) {
-			map = new HashMap<String, String>(transmittedAttributes);
-		}
 		else {
-			map = null;
+			map = new HashMap<String, String>(1 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+			if (transmittedAttributes != null) {
+				map.putAll(transmittedAttributes);
+			}
 		}
+		map.put(DATE_ENVOI, DateFormatUtils.format(dateQuittancement.asJavaDate(), EsbMessage.DATE_FORMAT));
 		return map;
 	}
 
@@ -127,11 +133,12 @@ public abstract class BamMessageHelper {
 	 * Prépare une map des attributs supplémentaires à envoyer dans le message au BAM lors du quittancement
 	 * d'un ensemble de déclarations pas trop bien identifiées (<i>a priori</i> déclaration "électronique")
 	 * @param dis la collection des déclarations quittancées
+	 * @param dateQuittancement date à laquelle la DI a été quittancée
 	 * @param incomingMessageHeaders dans le cas où le quittancement a été effectué suite à la réception d'un message JMS, les headers de ce message
 	 * @return les attributs à ajouter au message pour le BAM
 	 */
 	@Nullable
-	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<Declaration> dis, @Nullable Map<String, String> incomingMessageHeaders) {
+	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<Declaration> dis, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
 		final StringBuilder bNoSequences = new StringBuilder();
 		final StringBuilder bPeriodes = new StringBuilder();
 		for (Declaration d : dis) {
@@ -150,21 +157,15 @@ public abstract class BamMessageHelper {
 		}
 
 		final Map<String, String> transmittedAttributes = extractHeaders(attributesKeysToCopyFromIncomingMessages, incomingMessageHeaders);
-		final Map<String, String> bamHeaders;
+		final Map<String, String> bamHeaders = new HashMap<String, String>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+		if (transmittedAttributes != null) {
+			bamHeaders.putAll(transmittedAttributes);
+		}
 		if (bNoSequences.length() > 0 || bPeriodes.length() > 0) {
-			bamHeaders = new HashMap<String, String>(2 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
-			if (transmittedAttributes != null) {
-				bamHeaders.putAll(transmittedAttributes);
-			}
 			bamHeaders.put(NUMERO_SEQUENCE, StringUtils.trimToNull(bNoSequences.toString()));
 			bamHeaders.put(PERIODE_IMPOSITION, StringUtils.trimToNull(bPeriodes.toString()));
 		}
-		else if (transmittedAttributes != null) {
-			bamHeaders = new HashMap<String, String>(transmittedAttributes);
-		}
-		else {
-			bamHeaders = null;
-		}
+		bamHeaders.put(DATE_ENVOI, DateFormatUtils.format(dateQuittancement.asJavaDate(), EsbMessage.DATE_FORMAT));
 		return bamHeaders;
 	}
 

@@ -815,7 +815,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateQuittance);
 
 					// Envoi du message de quittance au BAM
-					sendQuittancementToBam(di);
+					sendQuittancementToBam(di, dateQuittance);
 				}
 			}
 			else {
@@ -839,12 +839,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	private void sendQuittancementToBam(DeclarationImpotOrdinaire di) {
+	private void sendQuittancementToBam(DeclarationImpotOrdinaire di, RegDate dateQuittancement) {
 		final long ctbId = di.getTiers().getNumero();
 		final int annee = di.getPeriode().getAnnee();
 		final int noSequence = di.getNumero();
 		try {
-			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, null);
+			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, dateQuittancement, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);

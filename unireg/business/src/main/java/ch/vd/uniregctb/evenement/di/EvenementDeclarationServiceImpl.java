@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -64,18 +65,18 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		}
 
 		// on envoie l'information au BAM
-		sendQuittancementToBam(ctbId, annee, declarations, incomingHeaders);
+		sendQuittancementToBam(ctbId, annee, declarations, quittance.getDate(), incomingHeaders);
 
 		// et finalement on quittance les déclarations
 		quittancerDeclarations(ctb, declarations, quittance, quittance.getSource());
 	}
 
-	private void sendQuittancementToBam(long ctbId, int annee, List<Declaration> declarations, Map<String, String> incomingHeaders) throws EvenementDeclarationException {
+	private void sendQuittancementToBam(long ctbId, int annee, List<Declaration> declarations, RegDate dateQuittancement, Map<String, String> incomingHeaders) throws EvenementDeclarationException {
 		final String processDefinitionId = EsbMessageHelper.getProcessDefinitionId(incomingHeaders);
 		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
 			try {
-				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclarations(declarations, incomingHeaders);
+				final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclarations(declarations, dateQuittancement, incomingHeaders);
 				final String businessId = String.format("%d-%d-%s", ctbId, annee, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 				bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 			}

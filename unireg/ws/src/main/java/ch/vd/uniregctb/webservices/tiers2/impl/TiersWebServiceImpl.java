@@ -821,7 +821,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 
 		// envoie le quittancement au BAM
-		sendQuittancementToBam(declaration);
+		sendQuittancementToBam(declaration, dateRetour);
 
 		// La déclaration est correcte, on la quittance
 		final String source = StringUtils.isBlank(demande.source) ? EtatDeclarationRetournee.SOURCE_CEDI : demande.source; // [SIFISC-1782] historiquement, seul le CEDI quittance par le web-service.
@@ -831,12 +831,12 @@ public class TiersWebServiceImpl implements TiersWebService {
 		return new ReponseQuittancementDeclaration(demande.key, CodeQuittancement.OK);
 	}
 
-	private void sendQuittancementToBam(DeclarationImpotOrdinaire di) {
+	private void sendQuittancementToBam(DeclarationImpotOrdinaire di, RegDate dateQuittancement) {
 		final long ctbId = di.getTiers().getNumero();
 		final int annee = di.getPeriode().getAnnee();
 		final int noSequence = di.getNumero();
 		try {
-			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, null);
+			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, dateQuittancement, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
