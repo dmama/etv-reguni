@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -57,12 +59,13 @@ public class ImportImmeublesProcessor {
 	private static final String HEADER_NO_CTB = "NO_CTB";
 	private static final String HEADER_GENRE_PERSONNE = "GENRE_PERSONNE";
 	private static final String HEADER_NO_IMMEUBLE = "NO_IMMEUBLE";
+	private static final String HEADER_NOM_COMMUNE= "NOM_COMMUNE";
 	private static final String HEADER_NATURE = "NATURE";
 	private static final String HEADER_ESTIMATION_FISCALE = "ESTIMATION_FISCALE";
-	private static final String HEADER_DATE_ESTIMATION_FISCALE = "DATE_ESTIMATION_FISCALE";
-	private static final String HEADER_ANCIENNE_ESTIMATION_FISCALE = "ANCIENNE_ESTIMATION_FISCALE";
+	private static final String HEADER_REF_ESTIMATION_FISCALE = "REFERENCE_EF";
 	private static final String HEADER_GENRE_PROPRIETE = "GENRE_PROPRIETE";
 	private static final String HEADER_PART_PROPRIETE = "PART_PROPRIETE";
+	private static final String HEADER_DATE_MODIF = "DATE_VALIDATION_RF";
 	private static final String HEADER_DATE_DEBUT = "DATE_DEPOT_PJ";
 	private static final String HEADER_DATE_FIN = "DATE_FIN";
 	private static final String HEADER_URL = "URL";
@@ -78,13 +81,16 @@ public class ImportImmeublesProcessor {
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
+	private final ModificationLogInterceptor modificationLogInterceptor;
 
-	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService) {
+	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService,
+	                                ModificationLogInterceptor modificationLogInterceptor) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.immeubleDAO = immeubleDAO;
 		this.tiersDAO = tiersDAO;
 		this.tiersService = tiersService;
+		this.modificationLogInterceptor = modificationLogInterceptor;
 	}
 
 	/**
@@ -130,6 +136,29 @@ public class ImportImmeublesProcessor {
 			throw new IllegalArgumentException("Le fichier est vide !");
 		}
 
+		// Import de toutes les lignes du flux CSV
+		modificationLogInterceptor.setCompleteOnly(true); // de manière à pouvoir garder les dates de création/modification originales
+		try {
+			processAllLines(status, rapportFinal, csvIterator);
+		}
+		finally {
+			modificationLogInterceptor.setCompleteOnly(false);
+		}
+
+
+		// Logging
+		if (status.interrupted()) {
+			status.setMessage("L'import des immeubles a été interrompu."
+					+ " Nombre d'immeubles importés au moment de l'interruption = " + rapportFinal.getNbImmeubles());
+			rapportFinal.setInterrompu(true);
+		}
+		else {
+			status.setMessage("L'import des immeubles  est terminé."
+					+ " Nombre d'immeubles importés = " + rapportFinal.getNbImmeubles() + ". Nombre d'erreurs = " + rapportFinal.erreurs.size());
+		}
+	}
+
+	private void processAllLines(final StatusManager status, final ImportImmeublesResults rapportFinal, Scanner csvIterator) {
 		// Lecture de l'entête
 		final List<String> headers = extractHeaders(csvIterator.next());
 
@@ -167,17 +196,6 @@ public class ImportImmeublesProcessor {
 				return true;
 			}
 		});
-
-		// Logging
-		if (status.interrupted()) {
-			status.setMessage("L'import des immeubles a été interrompu."
-					+ " Nombre d'immeubles importés au moment de l'interruption = " + rapportFinal.getNbImmeubles());
-			rapportFinal.setInterrompu(true);
-		}
-		else {
-			status.setMessage("L'import des immeubles  est terminé."
-					+ " Nombre d'immeubles importés = " + rapportFinal.getNbImmeubles() + ". Nombre d'erreurs = " + rapportFinal.erreurs.size());
-		}
 	}
 
 	private static List<String> extractHeaders(String headerLine) {
@@ -236,7 +254,20 @@ public class ImportImmeublesProcessor {
 	 */
 	private Immeuble createImmeuble(Map<String, String> data, ImportImmeublesResults rapport) {
 
-		final String numero = data.get(HEADER_NO_IMMEUBLE);
+		final String numero = StringUtils.trimToNull(data.get(HEADER_NO_IMMEUBLE));
+		if (numero == null) {
+			rapport.addError(numero, ErreurType.BAD_NUMERO, "Le numéro est vide !");
+			return null;
+		}
+
+		final RegDate dateModif;
+		try {
+			dateModif = parseRegDate(data.get(HEADER_DATE_MODIF));
+		}
+		catch (ParseException e) {
+			rapport.addError(numero, ErreurType.BAD_DATE_MODIF, "Date = " + data.get(HEADER_DATE_MODIF));
+			return null;
+		}
 
 		final RegDate dateDebut;
 		try {
@@ -244,15 +275,6 @@ public class ImportImmeublesProcessor {
 		}
 		catch (ParseException e) {
 			rapport.addError(numero, ErreurType.BAD_DATE_DEBUT, "Date = " + data.get(HEADER_DATE_DEBUT));
-			return null;
-		}
-
-		final GenrePersonne genrePersonne;
-		try {
-			genrePersonne = parseGenrePersonne(data.get(HEADER_GENRE_PERSONNE));
-		}
-		catch (IllegalArgumentException e) {
-			rapport.addError(numero, ErreurType.BAD_GENRE_PERSONNE, "Genre personne = " + data.get(HEADER_GENRE_PERSONNE));
 			return null;
 		}
 
@@ -265,7 +287,17 @@ public class ImportImmeublesProcessor {
 			return null;
 		}
 
-		final String nature = data.get(HEADER_NATURE);
+		final GenrePersonne genrePersonne;
+		try {
+			genrePersonne = parseGenrePersonne(data.get(HEADER_GENRE_PERSONNE));
+		}
+		catch (IllegalArgumentException e) {
+			rapport.addError(numero, ErreurType.BAD_GENRE_PERSONNE, "Genre personne = " + data.get(HEADER_GENRE_PERSONNE));
+			return null;
+		}
+
+		final String nomCommune = StringUtils.trimToNull(data.get(HEADER_NOM_COMMUNE));
+		final String nature = StringUtils.trimToNull(data.get(HEADER_NATURE));
 
 		final int estimationFiscale;
 		try {
@@ -276,23 +308,7 @@ public class ImportImmeublesProcessor {
 			return null;
 		}
 
-		final RegDate dateEstimationFiscale;
-		try {
-			dateEstimationFiscale = parseRegDate(data.get(HEADER_DATE_ESTIMATION_FISCALE));
-		}
-		catch (ParseException e) {
-			rapport.addError(numero, ErreurType.BAD_DATE_EF, "Date = " + data.get(HEADER_DATE_ESTIMATION_FISCALE));
-			return null;
-		}
-
-		final Integer ancienneEstimationFiscale;
-		try {
-			ancienneEstimationFiscale = parseInteger(data.get(HEADER_ANCIENNE_ESTIMATION_FISCALE));
-		}
-		catch (NumberFormatException e) {
-			rapport.addError(numero, ErreurType.BAD_DATE_ANCIENNE_EF, "Ancienne estimation fiscale = " + data.get(HEADER_ANCIENNE_ESTIMATION_FISCALE));
-			return null;
-		}
+		final String referenceEstimationFiscale = StringUtils.trimToNull(data.get(HEADER_REF_ESTIMATION_FISCALE));
 
 		final GenrePropriete genrePropriete;
 		try {
@@ -367,14 +383,19 @@ public class ImportImmeublesProcessor {
 		immeuble.setDateDebut(dateDebut);
 		immeuble.setDateFin(dateFin);
 		immeuble.setNumero(numero);
+		immeuble.setNomCommune(nomCommune);
 		immeuble.setNature(nature);
 		immeuble.setEstimationFiscale(estimationFiscale);
-		immeuble.setDateEstimationFiscale(dateEstimationFiscale);
-		immeuble.setAncienneEstimationFiscale(ancienneEstimationFiscale);
+		immeuble.setReferenceEstimationFiscale(referenceEstimationFiscale);
 		immeuble.setGenrePropriete(genrePropriete);
 		immeuble.setPartPropriete(partPropriete);
 		immeuble.setLienRegistreFoncier(lienRegistreFoncier);
 		immeuble.setProprietaire(proprietaire);
+
+		immeuble.setLogCreationUser("Registre foncier (import)");
+		immeuble.setLogCreationDate(dateModif.asJavaDate());
+		immeuble.setLogModifUser("Registre foncier (import)");
+		immeuble.setLogModifDate(new Timestamp(dateModif.asJavaDate().getTime()));
 
 		return immeuble;
 	}
@@ -445,15 +466,6 @@ public class ImportImmeublesProcessor {
 			return GenrePropriete.PAR_ETAGES;
 		default:
 			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + "]");
-		}
-	}
-
-	private static Integer parseInteger(String str) {
-		if (StringUtils.isBlank(str)) {
-			return null;
-		}
-		else {
-			return Integer.valueOf(str);
 		}
 	}
 

@@ -9620,8 +9620,8 @@
 		<column>NUMERO_IMMEUBLE</column>
 		<column>NATURE_IMMEUBLE</column>
 		<column>ESTIMATION_FISCALE</column>
-		<column>DATE_ESTIM_FISC</column>
-		<column>ANCIENNE_ESTIM_FISC</column>
+		<column>REF_ESTIM_FISC</column>
+		<column>NOM_COMMUNE</column>
 		<column>GENRE_PROPRIETE</column>
 		<column>PART_PROPRIETE_NUMERATEUR</column>
 		<column>PART_PROPRIETE_DENOMINATEUR</column>
@@ -9636,11 +9636,11 @@
 			<value>tiers-basic</value>
 			<value>20000101</value>
 			<null />
-			<value>5586/158/1/1</value>
+			<value>132/158/1/1</value>
 			<value>Place-jardin</value>
 			<value>1325000</value>
-			<value>19991116</value>
-			<null />
+			<value>1999</value>
+			<value>Lausanne</value>
 			<value>INDIVIDUELLE</value>
 			<value>1</value>
 			<value>2</value>

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -29,7 +30,8 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService);
+		final ModificationLogInterceptor modificationLogInterceptor = getBean(ModificationLogInterceptor.class, "modificationLogInterceptor");
+		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, modificationLogInterceptor);
 	}
 
 	@Override
@@ -145,7 +147,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				assertNull(immeuble0.getDateFin());
 				assertEquals("Revêtement dur", immeuble0.getNature());
 				assertEquals(1200000, immeuble0.getEstimationFiscale());
-				assertNull(immeuble0.getDateEstimationFiscale());
+				assertNull(immeuble0.getReferenceEstimationFiscale());
 				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
 				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
 				return null;
@@ -201,7 +203,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				assertNull(immeuble0.getDateFin());
 				assertEquals("Revêtement dur", immeuble0.getNature());
 				assertEquals(1200000, immeuble0.getEstimationFiscale());
-				assertNull(immeuble0.getDateEstimationFiscale());
+				assertNull(immeuble0.getReferenceEstimationFiscale());
 				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
 				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
 				return null;

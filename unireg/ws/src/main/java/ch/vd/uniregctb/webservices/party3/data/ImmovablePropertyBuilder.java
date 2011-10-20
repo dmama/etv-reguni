@@ -14,11 +14,11 @@ public class ImmovablePropertyBuilder {
 		immo.setNumber(immeuble.getNumero());
 		immo.setDateFrom(DataHelper.coreToWeb(immeuble.getDateDebut()));
 		immo.setDateTo(DataHelper.coreToWeb(immeuble.getDateFin()));
+		immo.setMunicipalityName(immeuble.getNomCommune());
 		immo.setEstimatedTaxValue(immeuble.getEstimationFiscale());
-		immo.setEstimatedTaxValueDate(DataHelper.coreToWeb(immeuble.getDateEstimationFiscale()));
-		immo.setFormerEstimatedTaxValue(immeuble.getAncienneEstimationFiscale());
+		immo.setEstimatedTaxValueReference(immeuble.getReferenceEstimationFiscale());
 		immo.setNature(immeuble.getNature());
-		immo.setType(EnumHelper.coreToWeb(immeuble.getGenrePropriete()));
+		immo.setOwnershipType(EnumHelper.coreToWeb(immeuble.getGenrePropriete()));
 		immo.setShare(coreToWeb(immeuble.getPartPropriete()));
 		return immo;
 	}

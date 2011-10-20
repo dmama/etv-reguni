@@ -1,16 +1,12 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
@@ -28,6 +24,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
+import ch.vd.uniregctb.rf.Immeuble;
+import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -41,7 +39,7 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
-public class ConsultLogController  extends AbstractSimpleFormController {
+public class ConsultLogController extends AbstractSimpleFormController {
 
 	protected final Logger LOGGER = Logger.getLogger(ConsultLogController.class);
 
@@ -59,6 +57,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
+	private ImmeubleDAO immeubleDAO;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -79,9 +78,8 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
 	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
 	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
+	public final static String NATURE_IMMEUBLE = "Immeuble";
+
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -146,16 +144,20 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 					return fillConsultLogView(evenementCivilExterne);
 				}
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
-					IdentificationContribuable message  = identCtbDAO.get(id);
+					IdentificationContribuable message = identCtbDAO.get(id);
 					return fillConsultLogView(message);
 				}
 				else if (nature.equals(NATURE_PERIODICITE_PARAMETER_VALUE)) {
-					Periodicite periodicite= periodiciteDAO.get(id);
+					Periodicite periodicite = periodiciteDAO.get(id);
 					return fillConsultLogView(periodicite);
 				}
 				else if (nature.equals(NATURE_ETAT_PARAMETER_VALUE)) {
-					EtatDeclaration etatDeclaration= etatDeclarationDAO.get(id);
+					EtatDeclaration etatDeclaration = etatDeclarationDAO.get(id);
 					return fillConsultLogView(etatDeclaration);
+				}
+				else if (nature.equals(NATURE_IMMEUBLE)) {
+					Immeuble i = immeubleDAO.get(id);
+					return fillConsultLogView(i);
 				}
 				return null;
 			}
@@ -176,38 +178,32 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		return consultLogView;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
 		this.forFiscalDAO = forFiscalDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSituationFamilleDAO(SituationFamilleDAO situationFamilleDAO) {
 		this.situationFamilleDAO = situationFamilleDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
 		this.adresseTiersDAO = adresseTiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setLrDAO(ListeRecapitulativeDAO lrDAO) {
 		this.lrDAO = lrDAO;
 	}
@@ -216,47 +212,48 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementDossierDAO(MouvementDossierDAO mouvementDossierDAO) {
 		this.mouvementDossierDAO = mouvementDossierDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	public EvenementCivilExterneDAO getEvenementCivilExterneDAO() {
-		return evenementCivilExterneDAO;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
 		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 
-	public IdentCtbDAO getIdentCtbDAO() {
-		return identCtbDAO;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
 		this.identCtbDAO = identCtbDAO;
 	}
 
-	public PeriodiciteDAO getPeriodiciteDAO() {
-		return periodiciteDAO;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodiciteDAO(PeriodiciteDAO periodiciteDAO) {
 		this.periodiciteDAO = periodiciteDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEtatDeclarationDAO(EtatDeclarationDAO etatDeclarationDAO) {
 		this.etatDeclarationDAO = etatDeclarationDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
+		this.immeubleDAO = immeubleDAO;
 	}
 }

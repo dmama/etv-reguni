@@ -37,10 +37,10 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private String numero;
+	private String nomCommune;
 	private String nature;
 	private int estimationFiscale;
-	private RegDate dateEstimationFiscale;
-	private Integer ancienneEstimationFiscale;
+	private String referenceEstimationFiscale;
 	private GenrePropriete genrePropriete;
 	private PartPropriete partPropriete;
 	private Contribuable proprietaire;
@@ -100,6 +100,18 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	}
 
 	/**
+	 * @return le nom de la commune où l'immeuble est construit
+	 */
+	@Column(name = "NOM_COMMUNE", nullable = false, length = LengthConstants.NOM_COMMUNE)
+	public String getNomCommune() {
+		return nomCommune;
+	}
+
+	public void setNomCommune(String nomCommune) {
+		this.nomCommune = nomCommune;
+	}
+
+	/**
 	 * @return la nature de l'immeuble.
 	 */
 	@Column(name = "NATURE_IMMEUBLE", nullable = false, length = LengthConstants.NATURE_IMMEUBLE)
@@ -124,28 +136,15 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	}
 
 	/**
-	 * @return la date de l'estimation fiscale actuelle
+	 * @return la référence (année ou code de révision générale) de l'estimation fiscale courante
 	 */
-	@Column(name = "DATE_ESTIM_FISC", nullable = true)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateEstimationFiscale() {
-		return dateEstimationFiscale;
+	@Column(name = "REF_ESTIM_FISC", nullable = true, length = LengthConstants.REF_ESTIM_FISCALE)
+	public String getReferenceEstimationFiscale() {
+		return referenceEstimationFiscale;
 	}
 
-	public void setDateEstimationFiscale(RegDate dateEstimationFiscale) {
-		this.dateEstimationFiscale = dateEstimationFiscale;
-	}
-
-	/**
-	 * @return l'ancienne estimation fiscale en francs suisses, ou <b>null</b> si cette information n'est pas disponible.
-	 */
-	@Column(name = "ANCIENNE_ESTIM_FISC", nullable = true)
-	public Integer getAncienneEstimationFiscale() {
-		return ancienneEstimationFiscale;
-	}
-
-	public void setAncienneEstimationFiscale(Integer ancienneEstimationFiscale) {
-		this.ancienneEstimationFiscale = ancienneEstimationFiscale;
+	public void setReferenceEstimationFiscale(String referenceEstimationFiscale) {
+		this.referenceEstimationFiscale = referenceEstimationFiscale;
 	}
 
 	/**

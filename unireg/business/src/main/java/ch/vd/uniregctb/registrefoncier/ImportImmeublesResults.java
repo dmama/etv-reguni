@@ -15,15 +15,15 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION),
 		CTB_INCONNU("Le contribuable n'existe pas"),
+		BAD_NUMERO("Le numéro est vide"),
 		BAD_CTB_TYPE("Le type de contribuable est incorrect"),
 		BAD_GENRE_PERSONNE("Le genre de personne est malformé"),
 		BAD_DATE_NO_CTB("Le numéro de contribuable est malformé"),
 		BAD_URL("L'url est malformée"),
+		BAD_DATE_MODIF("La date de modification est malformée"),
 		BAD_DATE_DEBUT("La date de début est malformée"),
 		BAD_DATE_FIN("La date de fin est malformée"),
-		BAD_DATE_EF("La date d'estimation fiscale est malformée"),
 		BAD_EF("L'estimation fiscale est malformée"),
-		BAD_DATE_ANCIENNE_EF("L'ancienne estimation fiscale est malformée"),
 		BAD_GENRE_PROP("Le genre de propriété est malformé"),
 		BAD_PART_PROP("La part de propriété est malformée"),
 		CTB_MENAGE_COMMUN("Le contribuable est un ménage commun");

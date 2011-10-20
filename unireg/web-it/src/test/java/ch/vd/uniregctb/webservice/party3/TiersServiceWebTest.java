@@ -1418,11 +1418,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("132/2345", immo0.getNumber());
 		assertEquals(newDate(1976, 4, 27), immo0.getDateFrom());
 		assertNull(immo0.getDateTo());
+		assertEquals("Lausanne", immo0.getMunicipalityName());
 		assertEquals(860000, immo0.getEstimatedTaxValue());
-		assertEquals(newDate(2002, 3, 2), immo0.getEstimatedTaxValueDate());
-		assertEquals(Integer.valueOf(572000), immo0.getFormerEstimatedTaxValue());
+		assertEquals("2002", immo0.getEstimatedTaxValueReference());
 		assertEquals("Place-jardin", immo0.getNature());
-		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, immo0.getType());
+		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, immo0.getOwnershipType());
 
 		final PropertyShare share = immo0.getShare();
 		assertNotNull(share);

@@ -9,10 +9,10 @@ public class ImmeubleView {
 	private String dateDebut;
 	private String dateFin;
 	private String numero;
+	private String nomCommune;
 	private String nature;
 	private int estimationFiscale;
-	private String dateEstimationFiscale;
-	private Integer ancienneEstimationFiscale;
+	private String referenceEstimationFiscale;
 	private GenrePropriete genrePropriete;
 	private String partPropriete;
 	private Contribuable proprietaire;
@@ -22,10 +22,10 @@ public class ImmeubleView {
 		this.dateDebut = RegDateHelper.dateToDisplayString(immeuble.getDateDebut());
 		this.dateFin = RegDateHelper.dateToDisplayString(immeuble.getDateFin());
 		this.numero = immeuble.getNumero();
+		this.nomCommune = immeuble.getNomCommune();
 		this.nature = immeuble.getNature();
 		this.estimationFiscale = immeuble.getEstimationFiscale();
-		this.dateEstimationFiscale = RegDateHelper.dateToDisplayString(immeuble.getDateEstimationFiscale());
-		this.ancienneEstimationFiscale = immeuble.getAncienneEstimationFiscale();
+		this.referenceEstimationFiscale = immeuble.getReferenceEstimationFiscale();
 		this.genrePropriete = immeuble.getGenrePropriete();
 		this.partPropriete = immeuble.getPartPropriete().toString();
 		this.proprietaire = immeuble.getProprietaire();
@@ -47,6 +47,10 @@ public class ImmeubleView {
 		return numero;
 	}
 
+	public String getNomCommune() {
+		return nomCommune;
+	}
+
 	public String getNature() {
 		return nature;
 	}
@@ -55,12 +59,8 @@ public class ImmeubleView {
 		return estimationFiscale;
 	}
 
-	public String getDateEstimationFiscale() {
-		return dateEstimationFiscale;
-	}
-
-	public Integer getAncienneEstimationFiscale() {
-		return ancienneEstimationFiscale;
+	public String getReferenceEstimationFiscale() {
+		return referenceEstimationFiscale;
 	}
 
 	public GenrePropriete getGenrePropriete() {

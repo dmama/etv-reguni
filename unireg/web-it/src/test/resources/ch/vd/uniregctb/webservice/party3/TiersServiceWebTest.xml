@@ -3224,8 +3224,8 @@
 		<column>NUMERO_IMMEUBLE</column>
 		<column>NATURE_IMMEUBLE</column>
 		<column>ESTIMATION_FISCALE</column>
-		<column>DATE_ESTIM_FISC</column>
-		<column>ANCIENNE_ESTIM_FISC</column>
+		<column>REF_ESTIM_FISC</column>
+		<column>NOM_COMMUNE</column>
 		<column>GENRE_PROPRIETE</column>
 		<column>PART_PROPRIETE_NUMERATEUR</column>
 		<column>PART_PROPRIETE_DENOMINATEUR</column>
@@ -3243,8 +3243,8 @@
 			<value>132/2345</value>
 			<value>Place-jardin</value>
 			<value>860000</value>
-			<value>20020302</value>
-			<value>572000</value>
+			<value>2002</value>
+			<value>Lausanne</value>
 			<value>COMMUNE</value>
 			<value>1</value>
 			<value>2</value>

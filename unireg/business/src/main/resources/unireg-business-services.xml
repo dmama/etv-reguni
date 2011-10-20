@@ -243,6 +243,7 @@
 		<property name="immeubleDAO" ref="immeubleDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersService" ref="tiersService"/>
+		<property name="modificationLogInterceptor" ref="modificationLogInterceptor"/>
 	</bean>
 
 	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">

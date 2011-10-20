@@ -22,14 +22,17 @@
 				<display:column titleKey="label.date.debut" property="dateDebut"/>
 				<display:column titleKey="label.date.fin" property="dateFin"/>
 				<display:column titleKey="label.numero.immeuble" property="numero"/>
+				<display:column titleKey="label.commune" property="nomCommune"/>
 				<display:column titleKey="label.nature" property="nature"/>
 				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale"/>
-				<display:column titleKey="label.date.estimation.fiscale" property="dateEstimationFiscale"/>
-				<display:column titleKey="label.ancienne.estimation.fiscale" property="ancienneEstimationFiscale"/>
+				<display:column titleKey="label.ref.estimation.fiscale" property="referenceEstimationFiscale"/>
 				<display:column titleKey="label.genre.propriete">
 					<fmt:message key="option.rf.genre.propriete.${immeuble.genrePropriete}" />
 				</display:column>
 				<display:column titleKey="label.part.propriete" property="partPropriete"/>
+				<display:column style="action">
+					<unireg:consulterLog entityNature="Immeuble" entityId="${immeuble.id}"/>
+				</display:column>
 			</display:table>
 		</fieldset>
 	</tiles:put>

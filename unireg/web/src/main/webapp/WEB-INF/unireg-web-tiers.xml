@@ -167,6 +167,7 @@
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="periodiciteDAO" ref="periodiciteDAO" />
 		<property name="etatDeclarationDAO" ref="etatDeclarationDAO" />
+		<property name="immeubleDAO" ref="immeubleDAO" />
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">

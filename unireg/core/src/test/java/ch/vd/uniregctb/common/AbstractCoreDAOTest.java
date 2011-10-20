@@ -1097,17 +1097,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return f;
 	}
 
-	protected Immeuble addImmeuble(Contribuable tiers, String numero, RegDate dateDebut, @Nullable RegDate dateFin, String nature, GenrePropriete genrePropriete, int estimationFiscale,
-	                               RegDate dateEstimationFiscale, @Nullable Integer ancienneEstimationFiscale, String partPropriete) {
+	protected Immeuble addImmeuble(Contribuable tiers, String numero, RegDate dateDebut, @Nullable RegDate dateFin, String nomCommune, String nature, GenrePropriete genrePropriete,
+	                               int estimationFiscale, String referenceEstimationFiscale, @Nullable Integer ancienneEstimationFiscale, String partPropriete) {
 		Immeuble i = new Immeuble();
 		i.setNumero(numero);
 		i.setDateDebut(dateDebut);
 		i.setDateFin(dateFin);
+		i.setNomCommune(nomCommune);
 		i.setNature(nature);
 		i.setGenrePropriete(genrePropriete);
 		i.setEstimationFiscale(estimationFiscale);
-		i.setDateEstimationFiscale(dateEstimationFiscale);
-		i.setAncienneEstimationFiscale(ancienneEstimationFiscale);
+		i.setReferenceEstimationFiscale(referenceEstimationFiscale);
 		i.setPartPropriete(PartPropriete.parse(partPropriete));
 		i = tiersDAO.addAndSave(tiers, i);
 		return i;

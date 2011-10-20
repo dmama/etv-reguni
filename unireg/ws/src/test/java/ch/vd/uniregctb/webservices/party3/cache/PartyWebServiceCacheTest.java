@@ -146,7 +146,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 
-				addImmeuble(mc, "132/543", date(1988, 3, 14), null, "Place jardin", GenrePropriete.COMMUNE, 923000, date(1994, 12, 2), null, "1");
+				addImmeuble(mc, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", GenrePropriete.COMMUNE, 923000, "1994", null, "1");
 
 				ids.monsieur = monsieur.getNumero();
 				ids.madame = madame.getNumero();
