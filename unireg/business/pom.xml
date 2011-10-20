@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-beans</artifactId>
-			<version>1.0-beta4-SNAPSHOT</version>
+			<version>1.0-beta4</version>
 		</dependency>
 		<dependency>
 			<artifactId>jaxb2-catalog-resolver</artifactId>
