@@ -8,7 +8,9 @@
 
 	<xs:complexType name="immovablePropertyType">
 		<xs:annotation>
-			<xs:documentation>Contient les informations d'un immeuble appartenant à un contribuable.</xs:documentation>
+			<xs:documentation>Contient les informations d'un immeuble appartenant à un contribuable. ATTENTION ! Ces éléments sont basés sur une spécification non-validée : il est probable que la
+				définition ci-dessous varie encore dans le futur et ceci sans garantie de comptabilité ascendante. L'utilisation de cette structure en l'état est à vos risques et périls.
+			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
@@ -26,6 +28,13 @@
 					<xs:documentation>Le numéro de l'immeuble, tel que défini par le registre foncier.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="municipalityName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le nom en toutes lettres de la commune de l'immeuble, tel que défini par le registre foncier. Exemples: "Lausanne", "Romainmôtier-Envy", ...
+						Note: le registre foncier n'utilise pas les numéros Ofs pour identifier les communes, il n'est donc pas possible d'exposer ces numéros pour l'instant.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="nature" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</xs:documentation>
@@ -36,17 +45,14 @@
 					<xs:documentation>L'estimation fiscale de l'immeuble.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="estimatedTaxValueDate" type="common:dateType">
+			<xs:element minOccurs="0" name="estimatedTaxValueReference" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Date de l'estimation fiscale. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
+					<xs:documentation>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
+						renseignée.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="formerEstimatedTaxValue" type="xs:int">
-				<xs:annotation>
-					<xs:documentation>L'ancienne fiscale de l'immeuble (si applicable).</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="type" type="immo:ownershipTypeType">
+			<xs:element name="ownershipType" type="immo:ownershipTypeType">
 				<xs:annotation>
 					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
 				</xs:annotation>
