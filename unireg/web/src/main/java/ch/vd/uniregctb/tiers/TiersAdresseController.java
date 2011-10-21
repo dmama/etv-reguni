@@ -12,46 +12,38 @@ import ch.vd.uniregctb.tiers.view.AdresseView;
 
 public class TiersAdresseController extends AbstractTiersController {
 
-	/**
-	 * Un LOGGER.
-	 */
 	protected final Logger LOGGER = Logger.getLogger(TiersAdresseController.class);
+
+	private final static String NUMERO_CTB_PARAMETER_NAME = "numero";
+	private final static String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
 
 	private AdresseManager adresseManager;
 
-	private final static String NUMERO_CTB_PARAMETER_NAME = "numero";
-
-	private final static String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
-
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		AdresseView adresseView = new AdresseView();
-		String idAdr =  request.getParameter(ID_ADRESSE_PARAMETER_NAME);
-		Long numeroCtb = extractLongParam(request, NUMERO_CTB_PARAMETER_NAME);
+
+		final Long idAdr = extractLongParam(request, ID_ADRESSE_PARAMETER_NAME);
+		final Long numeroCtb = extractLongParam(request, NUMERO_CTB_PARAMETER_NAME);
 		checkAccesDossierEnLecture(numeroCtb);
 
 		//les droits sont vérifiés lors de la sauvegarde (TiersAdresseValidator)
-		if ( (idAdr != null && !"".equals(idAdr.trim())))  {
-			Long id = Long.parseLong(idAdr);
-			adresseView = adresseManager.getAdresseView(id);
+		final AdresseView adresseView;
+		if (idAdr != null) {
+			adresseView = adresseManager.getAdresseView(idAdr);
+		}
+		else if (numeroCtb != null) {
+			adresseView = adresseManager.create(numeroCtb);
 		}
 		else {
-			if (numeroCtb != null) {
-				adresseView = adresseManager.create(numeroCtb);
-			}
+			adresseView = new AdresseView();
 		}
 
 		return adresseView;
 	}
 
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
-		AdresseView adresseView = (AdresseView) command;
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+		final AdresseView adresseView = (AdresseView) command;
 		checkAccesDossierEnEcriture(adresseView.getNumCTB());
 
 		if (("reprise".equals(adresseView.getMode())) || ("repriseCivil".equals(adresseView.getMode()))) {
