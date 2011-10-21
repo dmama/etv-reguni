@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springmodules.xt.ajax.AjaxActionEvent;
+import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.AjaxResponse;
 import org.springmodules.xt.ajax.AjaxResponseImpl;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
@@ -115,6 +116,16 @@ public class TiersForController extends AbstractTiersController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParamService(ParametreAppService paramService) {
 		this.paramService = paramService;
+	}
+
+	@Override
+	public boolean supports(AjaxEvent event) {
+		if (!(event instanceof AjaxActionEvent)) {
+			return false;
+		}
+		// [SIFISC-2644] plutôt que d'utiliser la réflexion pour trouver le nom des méthodes (voir la méthode de base), on fait comme ça, c'est plus simple et plus sûr.
+		final String id = event.getEventId();
+		return "buildSynchronizeActionsTableSurModificationDeFor".equals(id) || "updateActionListSurModificationDuModeImposition".equals(id);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
