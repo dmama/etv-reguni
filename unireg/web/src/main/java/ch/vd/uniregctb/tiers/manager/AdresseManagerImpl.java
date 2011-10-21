@@ -22,12 +22,16 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -35,6 +39,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersHelper;
 import ch.vd.uniregctb.tiers.view.AdresseDisponibleView;
 import ch.vd.uniregctb.tiers.view.AdresseView;
+import ch.vd.uniregctb.tiers.view.EtatSuccessoralView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -58,28 +63,29 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	/**
 	 * Alimente la vue AdresseView pour une adresse existante
 	 *
-	 * @param id
-	 * @param numero
-	 * @return
+	 * @param id l'id de l'adresse tiers existante
+	 * @return la vue de l'adresse
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public AdresseView getAdresseView(Long id) {
-		AdresseView adresseView = new AdresseView();
-		AdresseTiers adresseTiers = getAdresseTiersDAO().get(id);
 
+		final AdresseTiers adresseTiers = getAdresseTiersDAO().get(id);
 		if (adresseTiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.adresse.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		adresseView = enrichiAdresseView(adresseTiers);
+		final AdresseView view = enrichiAdresseView(adresseTiers);
 		final Tiers tiers = tiersService.getTiers(adresseTiers.getTiers().getNumero());
-		List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
+		final List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
+		final EtatSuccessoralView etatSuccessoral = EtatSuccessoralView.determine(tiers, tiersService);
 
-		adresseView.setNature(tiers.getNatureTiers());
-		adresseView.setAdresseDisponibles(lAdresse);
-		adresseView.setNumCTB(adresseTiers.getTiers().getNumero());
-		return adresseView;
+		view.setNature(tiers.getNatureTiers());
+		view.setAdresseDisponibles(lAdresse);
+		view.setNumCTB(adresseTiers.getTiers().getNumero());
+		view.setEtatSuccessoral(etatSuccessoral);
+		view.setMettreAJourDecedes(etatSuccessoral != null);
+		return view;
 	}
 
 	@Override
@@ -94,21 +100,31 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	}
 
 	/**
-	 * Cree une nouvelle vue AdresseView pour une nouvelle adresse
+	 * Cree une vue pour une nouvelle adresse
 	 *
-	 * @param id
-	 * @return
+	 * @param numeroCtb le numéro de contribuable sur lequel la nouvelle adresse sera créée
+	 * @return la vue de l'adresse à créer
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public AdresseView create(Long numeroCtb) {
-		AdresseView adresseView = new AdresseView();
-		adresseView.setNumCTB(numeroCtb);
-		adresseView.setTypeLocalite(TYPE_LOCALITE_SUISSE);
+
 		final Tiers tiers = tiersService.getTiers(numeroCtb);
-		List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
-		adresseView.setAdresseDisponibles(lAdresse);
-		return adresseView;
+		if (tiers == null) {
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+		}
+		
+		final List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
+		final EtatSuccessoralView etatSuccessoral = EtatSuccessoralView.determine(tiers, tiersService);
+
+		final AdresseView view = new AdresseView();
+		view.setNumCTB(numeroCtb);
+		view.setTypeLocalite(TYPE_LOCALITE_SUISSE);
+		view.setAdresseDisponibles(lAdresse);
+		view.setEtatSuccessoral(etatSuccessoral);
+		view.setMettreAJourDecedes(etatSuccessoral != null);
+
+		return view;
 	}
 
 	/**
@@ -118,16 +134,48 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AdresseView adresseView) {
+	public void save(AdresseView adresseView) throws AccessDeniedException {
+		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 		if (adresseView.getId() == null) {
-			AdresseTiers adresseTiers = createAdresseTiers(adresseView);
-			if (adresseTiers != null) {
-				Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
-				adresseService.addAdresse(tiers, adresseTiers);
-			}
+			addNewAdresse(adresseView, tiers);
 		}
 		else {
 			updateAdresse(adresseView);
+		}
+
+		// [SIFISC-156] Mis-à-jour des adresses successorales si demandé
+		if (adresseView.isMettreAJourDecedes() && tiers instanceof MenageCommun) {
+			updateAdressesSuccessorales(adresseView, (MenageCommun) tiers);
+		}
+	}
+
+	private void addNewAdresse(AdresseView adresseView, Tiers tiers) {
+		final AdresseTiers adresseTiers = createAdresseTiers(adresseView);
+		if (adresseTiers != null) {
+			adresseService.addAdresse(tiers, adresseTiers);
+		}
+	}
+
+	private void updateAdressesSuccessorales(AdresseView adresseView, MenageCommun tiers) throws AccessDeniedException {
+		if (!SecurityProvider.isGranted(Role.ADR_PP_C_DCD)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec pour modifier l'adresse d'un décédé.");
+		}
+
+		// On vérifie la cohérence de l'état successoral entre le formulaire et la base
+		final EtatSuccessoralView etat = adresseView.getEtatSuccessoral();
+		final EtatSuccessoralView etatDb = EtatSuccessoralView.determine(tiers, tiersService);
+		if (etat == null || !etat.equals(etatDb)) {
+			throw new ActionException("L'état successoral n'est pas cohérent. Un autre utilisateur a peut-être effectué des modifications entre-temps. Veuillez recommencer l'opération.");
+		}
+
+		// On peut maintenant mettre-à-jour les adresses des décédés
+		if (etat.getNumeroPrincipalDecede() != null) {
+			PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(etat.getNumeroPrincipalDecede());
+			addNewAdresse(adresseView, principal);
+		}
+		if (etat.getNumeroConjointDecede() != null) {
+			PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(etat.getNumeroConjointDecede());
+			addNewAdresse(adresseView, conjoint);
 		}
 	}
 

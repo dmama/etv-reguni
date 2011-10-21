@@ -80,7 +80,13 @@ public class TiersAdresseValidator implements Validator {
 
 		final AdresseView adresseView = (AdresseView) obj;
 
-		if (!("reprise".equals(adresseView.getMode())) && !("repriseCivil".equals(adresseView.getMode()))) {
+		if ("reprise".equals(adresseView.getMode()) || "repriseCivil".equals(adresseView.getMode())) {
+			if (adresseView.isMettreAJourDecedes()) {
+				// [SIFISC-156] blindage : selon la logique de l'écran, on ne devrait jamais arriver là
+				errors.rejectValue("mettreAJourDecedes", "error.maj.deces.sur.adresse.reprise");
+			}
+		}
+		else {
 
 			if ("suisse".equals(adresseView.getTypeLocalite())) {
 				// On doit avoir un NO_ORDRE

@@ -283,4 +283,91 @@ public class TiersAdresseControllerTest extends WebTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-156] Vérifie que les mise-à-jour des adresses successorales s'effectue bien
+	 */
+	@Test
+	public void testMiseAJourAdressesSuccessorales() throws Exception {
+
+		class Ids {
+			long conjoint;
+			long principal;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		// Création d'un couple avec un membre décédé
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique jacques = addNonHabitant("Jacques", "Pignut", date(1932, 1, 1), Sexe.MASCULIN);
+				jacques.setDateDeces(date(2008, 11, 4));
+				addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1932, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
+				ids.principal = jacques.getId();
+
+				final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Pignut", date(1945, 1, 1), Sexe.FEMININ);
+				addAdresseSuisse(jeanne, TypeAdresseTiers.DOMICILE, date(1945, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+				ids.conjoint = jeanne.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jacques, jeanne, date(1961, 5, 1), date(2008, 11, 4));
+				ids.menage = ensemble.getMenage().getNumero();
+
+				return null;
+			}
+		});
+
+		// Ajout d'une adresse courrier dites "successorale" sur le ménage
+		request.clearAttributes();
+		request.addParameter("numCTB", String.valueOf(ids.menage));
+		request.addParameter("usage", TypeAdresseTiers.COURRIER.name());
+		request.addParameter("localiteSuisse", "Renens VD");
+		request.addParameter("numeroOrdrePoste", "165");
+		request.addParameter("typeLocalite", "suisse");
+		request.addParameter("dateDebut", "12.02.2010");
+
+		// l'état successoral
+		request.addParameter("etatSuccessoral.numeroPrincipalDecede", String.valueOf(ids.principal));
+		request.addParameter("mettreAJourDecedes", "true");
+
+		request.setMethod("POST");
+		controller.handleRequest(request, response);
+
+		// On vérifie que l'adresse saisie a été ajoutée à la fois sur le ménage et sur le principal décédé
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(menage);
+
+				final List<AdresseTiers> adressesMenage = menage.getAdressesTiersSorted();
+				assertNotNull(adressesMenage);
+				assertEquals(1, adressesMenage.size());
+
+				final AdresseSuisse adresseSuccMenage = (AdresseSuisse) adressesMenage.get(0);
+				assertNotNull(adresseSuccMenage);
+				assertEquals(date(2010, 2, 12), adresseSuccMenage.getDateDebut());
+				assertNull(adresseSuccMenage.getDateFin());
+				assertEquals(TypeAdresseTiers.COURRIER, adresseSuccMenage.getUsage());
+				assertEquals(Integer.valueOf(165), adresseSuccMenage.getNumeroOrdrePoste());
+
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+				assertNotNull(principal);
+
+				final List<AdresseTiers> adressesDefunt = principal.getAdressesTiersSorted();
+				assertNotNull(adressesDefunt);
+				assertEquals(2, adressesDefunt.size());
+
+				final AdresseSuisse adresseSuccDefunt = (AdresseSuisse) adressesDefunt.get(1);
+				assertNotNull(adresseSuccDefunt);
+				assertEquals(date(2010, 2, 12), adresseSuccDefunt.getDateDebut());
+				assertNull(adresseSuccDefunt.getDateFin());
+				assertEquals(TypeAdresseTiers.COURRIER, adresseSuccDefunt.getUsage());
+				assertEquals(Integer.valueOf(165), adresseSuccDefunt.getNumeroOrdrePoste());
+				return null;
+			}
+		});
+	}
 }

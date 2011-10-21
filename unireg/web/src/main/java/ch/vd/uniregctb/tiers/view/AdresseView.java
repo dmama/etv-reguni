@@ -14,23 +14,15 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	private Long id;
-
 	private RegDate dateDebut;
-
 	private RegDate dateFin;
 
 	private String numeroMaison;
-
 	private String numeroAppartement;
-
 	private TexteCasePostale texteCasePostale;
-
 	private Integer numeroCasePostale;
-
 	private String rue;
-
 	private String complements;
-
 	private boolean permanente;
 
 	/**
@@ -40,22 +32,15 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	// Suisse
 	private Integer numeroRue;
-
 	private String numeroOrdrePoste;
-
 	private String numCommune;
 
 	// Etranger
 	private String numeroPostal;
-
 	private String localite;
-
 	private String localiteSuisse;
-
 	private String paysNpa;
-
 	private Integer paysOFS;
-
 	private String typeLocalite ;
 
 	private TypeAdresseTiers usage;
@@ -87,6 +72,16 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	private NatureTiers nature ;
 
 	private boolean surVaud;
+
+	/**
+	 * L'état successoral renseigné si le contribuable édité est un ménage-commun dont au moins un des membres est décédé (SIFISC-156).
+	 */
+	private EtatSuccessoralView etatSuccessoral;
+
+	/**
+	 * Vrai si l'adresse saisie doit être reportée sur le principal et le conjoint décédés. Uniquement valable dans le cas d'un couple avec au moins un de ces membres décédé.
+	 */
+	private boolean mettreAJourDecedes;
 
 	public String getIndex() {
 		return index;
@@ -480,5 +475,21 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	public void setSurVaud(boolean surVaud) {
 		this.surVaud = surVaud;
+	}
+
+	public EtatSuccessoralView getEtatSuccessoral() {
+		return etatSuccessoral;
+	}
+
+	public void setEtatSuccessoral(EtatSuccessoralView etatSuccessoral) {
+		this.etatSuccessoral = etatSuccessoral;
+	}
+
+	public boolean isMettreAJourDecedes() {
+		return mettreAJourDecedes;
+	}
+
+	public void setMettreAJourDecedes(boolean mettreAJourDecedes) {
+		this.mettreAJourDecedes = mettreAJourDecedes;
 	}
 }

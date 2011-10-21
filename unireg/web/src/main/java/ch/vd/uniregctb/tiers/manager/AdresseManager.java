@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 
@@ -45,7 +46,7 @@ public interface AdresseManager {
 	 * @param adresseView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void save(AdresseView adresseView);
+	public abstract void save(AdresseView adresseView) throws AccessDeniedException;
 
 	/**
 	 * Annule une adresse

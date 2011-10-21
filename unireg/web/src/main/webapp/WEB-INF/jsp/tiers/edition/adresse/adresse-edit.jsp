@@ -15,6 +15,30 @@
   		</fmt:message>
   	</tiles:put>
 
+	<tiles:put name="head">
+		<style>
+			input {
+				padding: 2px;
+			}
+			.vignette {
+				/* pour que la vignette ne prenne pas toute la largeur */
+				display: inline-block;
+				width: 30em;
+				margin-left: 0.5em;
+				margin-right: 0.5em;
+				text-align: left; /* bug IE6 */
+			}
+			#adresseSuccessoral {
+				background-color: #FAF3A3;
+				margin: 1em 2em;
+				padding: 1em;
+			}
+			.radioSelectIdent  {
+				margin: 0.5em 2em;
+			}
+		</style>
+	</tiles:put>
+
 	<tiles:put name="body">
 
 	<fieldset>
@@ -293,7 +317,45 @@
 	</div>
 
 	<div id="adresse_add">
+
+		<%-- [SIFISC-156] Mise-à-jour automatique des adresses successorales --%>
+		<form:hidden path="etatSuccessoral.numeroPrincipalDecede"/>
+		<form:hidden path="etatSuccessoral.numeroConjointDecede"/>
+
 		<table border="0">
+		<authz:authorize ifAnyGranted="ROLE_ADR_PP_C_DCD">
+		<c:if test="${command.etatSuccessoral.numeroPrincipalDecede != null || command.etatSuccessoral.numeroConjointDecede != null}">
+			<tr>
+				<td colspan="4">
+					<div id="adresseSuccessoral">
+						<image src="<c:url value="/css/x/info.png"/>" style="position:relative; top:5px"/>
+						<c:if test="${command.etatSuccessoral.numeroPrincipalDecede != null && command.etatSuccessoral.numeroConjointDecede != null}">
+							<fmt:message key="label.adresse.successorale.tous.decedes"/> :<br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div>
+							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<fmt:message key="label.adresse.successorale.tous.decedes.question"/>
+						</c:if>
+						<c:if test="${command.etatSuccessoral.numeroConjointDecede == null}">
+							<fmt:message key="label.adresse.successorale.principal.decede"/> :<br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<fmt:message key="label.adresse.successorale.un.decede.question"/>
+						</c:if>
+						<c:if test="${command.etatSuccessoral.numeroPrincipalDecede == null}">
+							<fmt:message key="label.adresse.successorale.conjoint.decede"/> :<br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<fmt:message key="label.adresse.successorale.un.decede.question"/>
+						</c:if>
+						<div class="radioSelectIdent">
+							<form:radiobutton path="mettreAJourDecedes" value="true"/>
+							<label for="mettreAJourDecedes1">Oui</label><br>
+							<form:radiobutton path="mettreAJourDecedes" value="false"/>
+							<label for="mettreAJourDecedes2">Non</label><br>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</c:if>
+		</authz:authorize>
 		<tr>
 			<td width="25%"></td>
 			<td width="25%">
