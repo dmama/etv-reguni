@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.common.BusinessTest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class IdentificationContribuableHelperTest extends BusinessTest {
 	private IdentificationContribuableHelper helper;
@@ -23,11 +24,22 @@ public class IdentificationContribuableHelperTest extends BusinessTest {
 	public void testgetPremierMot() throws Exception {
 		String mot = "jean-renée";
 		assertEquals("jean", helper.getPremierMot(mot));
-		mot =  "jean renée";
+		mot = "jean renée";
 		assertEquals("jean", helper.getPremierMot(mot));
 
-		mot="jean";
+		mot = "jean";
 		assertEquals("jean", helper.getPremierMot(mot));
+
+		mot = " ";
+		assertNull(helper.getPremierMot(mot));
+
+		mot = "-";
+		assertNull(helper.getPremierMot(mot));
+
+		mot = "";
+		assertNull(helper.getPremierMot(mot));
+
+
 	}
 
 }

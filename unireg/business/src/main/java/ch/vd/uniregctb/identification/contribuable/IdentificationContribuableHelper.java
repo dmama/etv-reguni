@@ -23,7 +23,7 @@ public class IdentificationContribuableHelper {
 	}
 
 	public String getPremierMot(String mot) {
-		if (mot == null) {
+		if (mot == null || StringUtils.containsOnly(mot, "-") || StringUtils.containsOnly(mot, " ") || mot.isEmpty()) {
 			return null;
 		}
 		final String motMinuscule = mot.toLowerCase();
@@ -38,7 +38,7 @@ public class IdentificationContribuableHelper {
 
 	public String getMotSansE(String mot) {
 
-		if(mot ==null){
+		if (mot == null) {
 			return null;
 		}
 		final String motMinuscule = mot.toLowerCase();
