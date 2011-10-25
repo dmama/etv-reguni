@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.rf;
 
+import java.net.URL;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 
+@SuppressWarnings({"UnusedDeclaration"})
 public class ImmeubleView {
 
 	private Long id;
@@ -16,6 +19,7 @@ public class ImmeubleView {
 	private GenrePropriete genrePropriete;
 	private String partPropriete;
 	private Contribuable proprietaire;
+	private URL lienRF;
 
 	public ImmeubleView(Immeuble immeuble) {
 		this.id = immeuble.getId();
@@ -29,6 +33,7 @@ public class ImmeubleView {
 		this.genrePropriete = immeuble.getGenrePropriete();
 		this.partPropriete = immeuble.getPartPropriete().toString();
 		this.proprietaire = immeuble.getProprietaire();
+		this.lienRF = immeuble.getLienRegistreFoncier();
 	}
 
 	public Long getId() {
@@ -73,5 +78,9 @@ public class ImmeubleView {
 
 	public Contribuable getProprietaire() {
 		return proprietaire;
+	}
+
+	public URL getLienRF() {
+		return lienRF;
 	}
 }

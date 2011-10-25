@@ -31,6 +31,7 @@
 				</display:column>
 				<display:column titleKey="label.part.propriete" property="partPropriete"/>
 				<display:column style="action">
+					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;"/>
 					<unireg:consulterLog entityNature="Immeuble" entityId="${immeuble.id}"/>
 				</display:column>
 			</display:table>

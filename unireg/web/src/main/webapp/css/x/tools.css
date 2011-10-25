@@ -24,6 +24,7 @@ a.start {
 a.add,
 a.copy,
 a.detail,
+a.extlink,
 a.consult,
 a.infotraitement,
 a.alert,
@@ -58,6 +59,7 @@ a.plier:hover,
 a.add:hover,
 a.copy:hover,
 a.detail:hover,
+a.extlink:hover,
 a.consult:hover,
 a.alert:over
 a.historique:hover,
@@ -170,6 +172,10 @@ a.detail:hover {
 
 a.consult {
 	background-image: url(consult_off.gif);
+}
+
+a.extlink {
+	background-image: url(external-link.png);
 }
 
 a.infotraitement {

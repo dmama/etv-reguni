@@ -9626,6 +9626,7 @@
 		<column>PART_PROPRIETE_NUMERATEUR</column>
 		<column>PART_PROPRIETE_DENOMINATEUR</column>
 		<column>CTB_ID</column>
+		<column>LIEN_RF</column>
 		<row>
 			<value>1</value>
 			<null />
@@ -9645,6 +9646,7 @@
 			<value>1</value>
 			<value>2</value>
 			<value>86006202</value>
+			<value>http://arstechnica.com</value>
 		</row>
 	</table>
 </dataset>
