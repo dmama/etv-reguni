@@ -1,5 +1,6 @@
 package ch.vd.technical.esb.jms;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
@@ -54,7 +55,14 @@ public abstract class TransactionalEsbMessageListener extends AbstractEsbMessage
 
 		}
 		catch (Exception e) {
-			throw new RuntimeException(e);
+			String messageId = "Business ID=";
+			try {
+				messageId += message.getStringProperty("businessId");
+			}
+			catch (JMSException e1) {
+				messageId += "n/a";
+			}
+			throw new RuntimeException(messageId, e);
 		}
 
 	}
