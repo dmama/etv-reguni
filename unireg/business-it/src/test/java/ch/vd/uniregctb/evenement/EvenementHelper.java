@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.resource.spi.ResourceAdapter;
 import java.io.FileNotFoundException;
@@ -43,16 +44,16 @@ public abstract class EvenementHelper {
 		}
 	}
 
-	public static ActiveMQConnectionFactory initConnectionManager(UniregProperties uniregProperties) {
+	public static ConnectionFactory initConnectionFactory(UniregProperties uniregProperties) {
 		final String url = uniregProperties.getProperty("testprop.esb.jms.url");
 		final String username = uniregProperties.getProperty("testprop.esb.jms.username");
 		final String password = uniregProperties.getProperty("testprop.esb.jms.password");
 
-		ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL(url);
-		jmsConnectionManager.setUserName(username);
-		jmsConnectionManager.setPassword(password);
-		return jmsConnectionManager;
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
+		factory.setBrokerURL(url);
+		factory.setUserName(username);
+		factory.setPassword(password);
+		return factory;
 	}
 
 	public static ActiveMQResourceAdapter initResourceAdapter(UniregProperties uniregProperties) {

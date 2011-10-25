@@ -43,7 +43,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 		esbStore.setEndpoint("TestRaftStore");
 
 		esbTemplate = new EsbJmsTemplate();
-		esbTemplate.setConnectionFactory(jmsConnectionManager);
+		esbTemplate.setConnectionFactory(jmsConnectionFactory);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");

@@ -14,24 +14,16 @@
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 	</bean>
 
-	<bean id="jmsConnectionFactory" class="ch.vd.technical.esb.util.ConnectionFactoryFactoryBean">
-		<property name="connectionManager" ref="jmsConnectionManager"/>
-		<property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
-	</bean>
-
-	<bean id="jmsConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
-		<property name="transaction" value="xa" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="poolMaxSize" value="20"/>
-		<property name="connectionTracker">
-		   <bean class="org.jencks.factory.ConnectionTrackerFactoryBean">
-			   <property name="geronimoTransactionManager" ref="transactionManager" />
-		   </bean>
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${testprop.esb.jms.url}" />
+				<property name="userName" value="${testprop.esb.jms.username}" />
+				<property name="password" value="${testprop.esb.jms.password}" />
+			</bean>
 		</property>
-	</bean>
-
-	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="maxConnections" value="20"/>
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="jmsResourceAdapter" class="org.springframework.jca.support.ResourceAdapterFactoryBean">

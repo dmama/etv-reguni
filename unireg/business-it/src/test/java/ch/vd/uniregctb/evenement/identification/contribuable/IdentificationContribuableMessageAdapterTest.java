@@ -84,7 +84,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		esbTemplateWithErrorCollector = new EsbTemplateWithErrorCollector();
 		esbTemplate = esbTemplateWithErrorCollector;
-		esbTemplate.setConnectionFactory(jmsConnectionManager);
+		esbTemplate.setConnectionFactory(jmsConnectionFactory);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");

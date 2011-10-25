@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -28,14 +28,14 @@ public abstract class EvenementTest {
 
 	protected EsbMessageFactory esbMessageFactory;
 	protected UniregProperties uniregProperties;
-	protected ActiveMQConnectionFactory jmsConnectionManager;
+	protected ConnectionFactory jmsConnectionFactory;
 	protected ActiveMQResourceAdapter resourceAdapter;
 	protected EsbMessageEndpointManager manager;
 
 	protected EvenementTest() {
 		EvenementHelper.initLog4j();
 		uniregProperties = EvenementHelper.initProps();
-		jmsConnectionManager = EvenementHelper.initConnectionManager(uniregProperties);
+		jmsConnectionFactory = EvenementHelper.initConnectionFactory(uniregProperties);
 		resourceAdapter = EvenementHelper.initResourceAdapter(uniregProperties);
 	}
 
