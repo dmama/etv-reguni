@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 
 public class EvenementCivilAsyncProcessorTest extends BusinessTest {
@@ -38,13 +39,17 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		}
 
 		@Override
-		public Long traiteEvenementCivil(Long id, boolean refreshCache) {
+		public void traiteEvenementCivil(Long id) {
 			evenementsRecus.add(id);
-			return id;
 		}
 
 		@Override
-		public Long recycleEvenementCivil(Long id) {
+		public void recycleEvenementCivil(Long id) {
+			throw new NotImplementedException("Méthode non implémentée, normalement inutile pour le test!");
+		}
+
+		@Override
+		public void forceEvenementCivil(EvenementCivilExterne evenementCivilExterne) {
 			throw new NotImplementedException("Méthode non implémentée, normalement inutile pour le test!");
 		}
 

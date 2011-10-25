@@ -42,7 +42,6 @@ import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuEx
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -257,8 +256,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
-		evenementCivilExterne.setEtat(EtatEvenementCivil.FORCE);
+		final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
+		evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 	}
 
 	/**
@@ -270,12 +269,11 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination)
-			throws AdresseException {
-		List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
-		List<EvenementCivilExterne> evts = evenementService.find(bean, pagination);
+	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException {
+		final List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
+		final List<EvenementCivilExterne> evts = evenementService.find(bean, pagination);
 		for (EvenementCivilExterne evt : evts) {
-			EvenementCivilView evtView = buildView(evt);
+			final EvenementCivilView evtView = buildView(evt);
 			evtsView.add(evtView);
 		}
 

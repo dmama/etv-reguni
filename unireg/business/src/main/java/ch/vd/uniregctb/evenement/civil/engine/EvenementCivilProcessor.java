@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine;
 
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 
 
 /**
@@ -15,24 +16,25 @@ public interface EvenementCivilProcessor {
 	 *
 	 * @param status un status manager (optionel, peut être nul)
 	 */
-	public void traiteEvenementsCivils(StatusManager status);
+	void traiteEvenementsCivils(StatusManager status);
 
 
 	/**
 	 * Traite un événement civil désigné par l'id et recycle tous les événements de l'individu
-	 *
 	 * @param id l'id de l'événement civil
-	 * @param refreshCache <code>true</code> s'il faut rafraîchir les caches des individus (première tentative de traitement), <code>false</code> sinon
-	 * @return 0 dans tous les cas
+	 *
 	 */
-	public Long traiteEvenementCivil(Long id, boolean refreshCache);
+	void traiteEvenementCivil(Long id);
 
 	/**
 	 * Traite un événement civil désigné par l'id et recycle les événements en erreur de l'individu
-	 *
 	 * @param id l'id de l'événement civil
-	 * @return 0 dans tous les cas
 	 */
-	public Long recycleEvenementCivil(Long id);
+	void recycleEvenementCivil(Long id);
 
+	/**
+	 * Place un événement civil dans l'état forcé et rafraîchit le cache civil des individus concernés
+	 * @param evenementCivilExterne événement civil à forcer
+	 */
+	void forceEvenementCivil(EvenementCivilExterne evenementCivilExterne);
 }

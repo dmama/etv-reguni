@@ -42,7 +42,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 			}
 		});
 
-		evenementCivilProcessor.traiteEvenementCivil(9006L, true);
+		evenementCivilProcessor.traiteEvenementCivil(9006L);
 
 		tmpl.execute(new TransactionCallback<Object>() {
 			@Override

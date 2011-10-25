@@ -197,7 +197,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		// Lancement du traitement des événements
-		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
+		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -507,7 +507,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Arrivée de l'événement d'arrivée -> ce dernier doit être traité et provoquer le retraitement des événements de changement de nom
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 
-		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
+		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -899,6 +899,125 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 					final String prenomNom = tiersService.getNomPrenom(pp);
 					assertEquals("Alfred Hitchcock", prenomNom);
+					return null;
+				}
+			});
+		}
+		finally {
+			serviceCivil.tearDown();
+			cache.destroy();
+		}
+	}
+
+	/**
+	 * [SIFISC-2782] lors d'un forçage d'événement civil, ce serait bien de rafraîchir le cache des individus concernés
+	 */
+	@Test
+	public void testRafraichissementCacheEvtCivilsSurForcage() throws Exception {
+
+		final long noIndividu = 14563435356783512L;
+		final long evtId = 12456234125L;
+
+		/*
+		 * Préparation
+		 */
+
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+		assertNotNull(cacheManager);
+
+		final DataEventService dataEventService = getBean(DataEventService.class, "dataEventService");
+		assertNotNull(dataEventService);
+
+		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
+		assertNotNull(uniregCacheManager);
+
+		// Initialisation du service civil avec un cache
+		final ServiceCivilCache cache = new ServiceCivilCache();
+		cache.setCacheManager(cacheManager);
+		cache.setCacheName("serviceCivil");
+		cache.setUniregCacheManager(uniregCacheManager);
+		cache.setDataEventService(dataEventService);
+		cache.afterPropertiesSet();
+		cache.reset();
+		try {
+			serviceCivil.setUp(cache);
+
+			// mise en place civile
+			cache.setTarget(new DefaultMockServiceCivil() {
+				@Override
+				protected void init() {
+					addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfredo", true);
+				}
+			});
+
+			// mise en place fiscale, remplissage du cache du service civil sur l'individu
+			final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addHabitant(noIndividu);
+					assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
+					return pp.getNumero();
+				}
+			});
+
+			// modification dans le service civil, mais pas de notification
+			doModificationIndividu(noIndividu, new IndividuModification() {
+				@Override
+				public void modifyIndividu(MockIndividu individu) {
+					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Hitchcock", "Alfred");        // sans le "o"
+					individu.addHistoriqueIndividu(h);
+				}
+			});
+
+			// création d'un événement en erreur
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilExterne evt = new EvenementCivilExterne();
+					evt.setId(evtId);
+					evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
+					evt.setDateEvenement(date(2009, 1, 1));
+					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+					evt.setNumeroIndividuPrincipal(noIndividu);
+					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+					evenementCivilExterneDAO.save(evt);
+					return null;
+				}
+			});
+
+			// vérification que le nom contenu dans le cache du service civil est toujours celui qui est pris en compte
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+					final String prenomNom = tiersService.getNomPrenom(pp);
+					assertEquals("Alfredo Hitchcock", prenomNom);
+					return null;
+				}
+			});
+
+			// forçage de l'événement en erreur
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilExterne evt = evenementCivilExterneDAO.get(evtId);
+					evenementCivilProcessor.forceEvenementCivil(evt);
+					return null;
+				}
+			});
+
+			// vérification que le cache du service civil a bien été rafraîchi
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+					final String prenomNom = tiersService.getNomPrenom(pp);
+					assertEquals("Alfred Hitchcock", prenomNom);
+
+					final EvenementCivilExterne evt = evenementCivilExterneDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.FORCE, evt.getEtat());
+
 					return null;
 				}
 			});

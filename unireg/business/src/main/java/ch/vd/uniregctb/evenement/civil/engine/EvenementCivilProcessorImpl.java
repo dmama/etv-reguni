@@ -74,22 +74,26 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		traiteEvenements(ids, false, false, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public Long traiteEvenementCivil(final Long evenementCivilId, boolean refreshCache) {
-		traiteEvenements(Arrays.asList(evenementCivilId), true, refreshCache, null);
-		return 0L;
+	public void traiteEvenementCivil(final Long evenementCivilId) {
+		traiteEvenements(Arrays.asList(evenementCivilId), true, true, null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public Long recycleEvenementCivil(final Long evenementCivilId) {
+	public void recycleEvenementCivil(final Long evenementCivilId) {
 		traiteEvenements(Arrays.asList(evenementCivilId), false, true, null);
-		return 0L;
+	}
+
+	@Override
+	public void forceEvenementCivil(EvenementCivilExterne evenementCivilExterne) {
+		evenementCivilExterne.setEtat(EtatEvenementCivil.FORCE);
+		try {
+			buildInterne(evenementCivilExterne, true);
+		}
+		catch (EvenementCivilException e) {
+			// tant pis, on aura au moins essayé...
+			LOGGER.warn(String.format("Impossible de rafraîchir le cache civil relatif à l'événement civil %d", evenementCivilExterne.getId()), e);
+		}
 	}
 
 	/**
@@ -332,24 +336,29 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 	}
 
-	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
-	                             final List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-
-		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
-		Audit.info(evenementCivilExterne.getId(), message);
-
+	private EvenementCivilInterne buildInterne(EvenementCivilExterne evenementCivilExterne, boolean refreshCache) throws EvenementCivilException {
 		assertEvenement(evenementCivilExterne);
 
 		// On complète l'événement à la volée (on est obligé de le faire ici dans tous les cas, car le tiers
 		// correspondant peut avoir été créé entre la réception de l'événement et son re-traitement).
 		fillHabitants(evenementCivilExterne);
 
-		final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
-		final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
-
 		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
 		final EvenementCivilOptions options = new EvenementCivilOptions(refreshCache);
-		final EvenementCivilInterne event = evenementCivilTranslator.toInterne(evenementCivilExterne, options);
+		return evenementCivilTranslator.toInterne(evenementCivilExterne, options);
+	}
+
+	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
+	                             final List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+
+		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
+		Audit.info(evenementCivilExterne.getId(), message);
+
+		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
+		final EvenementCivilInterne event = buildInterne(evenementCivilExterne, refreshCache);
+
+		final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
+		final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
 
 		// 2.1 - lancement de la validation
 		event.checkCompleteness(erreurs, warnings);

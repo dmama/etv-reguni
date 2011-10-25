@@ -147,7 +147,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 							try {
 								final long debut = System.nanoTime();
 
-								evenementCivilProcessor.traiteEvenementCivil(data.evtId, true);
+								evenementCivilProcessor.traiteEvenementCivil(data.evtId);
 
 								final long fin = System.nanoTime();
 
