@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.admin.inbox;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,7 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springmodules.xt.ajax.AjaxActionEvent;
 import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.AjaxHandler;
@@ -28,26 +38,46 @@ import org.springmodules.xt.ajax.support.UnsupportedEventException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.admin.JobPercentIndicator;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionService;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.taglibs.JspTagDocumentIcon;
 import ch.vd.uniregctb.taglibs.JspTagDuration;
+import ch.vd.uniregctb.utils.WebContextUtils;
 import ch.vd.uniregctb.web.xt.component.SimpleText;
 
 /**
  * Contrôleur de la visualisation de l'inbox
  */
-public class InboxController extends ParameterizableViewController implements AjaxHandler {
+@Controller
+@RequestMapping(value = "/admin/inbox")
+public class InboxController implements AjaxHandler, MessageSourceAware, InitializingBean {
+
+	private static final Logger LOGGER = Logger.getLogger(InboxController.class);
 
 	private static final String NBSP = "&nbsp;";
+	private static final String ID = "id";
 
 	private InboxService inboxService;
 
 	private ExtractionService extractionService;
+
+	private PrintPCLManager pclManager;
+
+	private MessageSource messageSource;
+
+	private Map<String, ContentDeliveryStrategy> contentDeliveryStrategies;
+	private final ContentDeliveryStrategy defaultDeliveryStrategy = new PassThroughContentDeliveryStrategy();
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPclManager(PrintPCLManager pclManager) {
+		this.pclManager = pclManager;
+	}
 
 	private static interface AjaxActionHandler {
 		AjaxResponse handle(AjaxActionEvent event);
@@ -101,13 +131,29 @@ public class InboxController extends ParameterizableViewController implements Aj
 	}
 
 	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// initialisation de la stratégie associée aux flux PCL
+		final Map<String, ContentDeliveryStrategy> map = new HashMap<String, ContentDeliveryStrategy>();
+		final PclContentDeliveryStrategy pclContentDeliveryStrategy = new PclContentDeliveryStrategy(pclManager);
+		map.put(MimeTypeHelper.MIME_PCL, pclContentDeliveryStrategy);
+		map.put(MimeTypeHelper.MIME_XPCL, pclContentDeliveryStrategy);
+		map.put(MimeTypeHelper.MIME_HPPCL, pclContentDeliveryStrategy);
+		contentDeliveryStrategies = map;
+	}
+
+	@Override
 	public AjaxResponse handle(AjaxEvent event) {
 		final AjaxActionHandler handler = ajaxHandlers.get(event.getEventId());
 		if (handler != null && event instanceof AjaxActionEvent) {
 			return handler.handle((AjaxActionEvent) event);
 		}
 
-		logger.error("You need to call the supports() method first!");
+		LOGGER.error("You need to call the supports() method first!");
 		throw new UnsupportedEventException("You need to call the supports() method first!");
 	}
 
@@ -279,7 +325,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 				final InboxAttachment attachment = elt.getAttachment();
 				if (attachment != null) {
 					final Image img = new Image(JspTagDocumentIcon.getImageUri(contextPath, attachment.getMimeType()), attachment.getFilenameRadical());
-					final Anchor link = new Anchor(String.format("%s/admin/inbox-content.do?action=dl&amp;id=%s", contextPath, elt.getUuid()), img);
+					final Anchor link = new Anchor(String.format("%s/admin/inbox/download.do?id=%s", contextPath, elt.getUuid()), img);
 					row.addTableData(new TableData(link));
 				}
 				else {
@@ -302,7 +348,7 @@ public class InboxController extends ParameterizableViewController implements Aj
 	}
 
 	private String getMessageResource(String key) {
-		return this.getMessageSourceAccessor().getMessage(key);
+		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
 	}
 
 	private String buildRowClassForInboxContent(InboxElement elt, int rowIndex) {
@@ -351,5 +397,61 @@ public class InboxController extends ParameterizableViewController implements Aj
 		}
 
 		return response;
+	}
+
+	private ContentDeliveryStrategy getStrategy(String mimeType) {
+		ContentDeliveryStrategy strategy = contentDeliveryStrategies.get(mimeType);
+		if (strategy == null) {
+			strategy = defaultDeliveryStrategy;
+		}
+		return strategy;
+	}
+
+	@RequestMapping(value = "/download.do", method = RequestMethod.GET)
+	public String downloadAttachment(HttpServletResponse response, @RequestParam(value = ID, required = true) UUID uuid) throws Exception {
+
+		final InboxElement elt = inboxService.getInboxElement(uuid);
+		if (elt != null) {
+			final InboxAttachment attachment = elt.getAttachment();
+			final InputStream in = attachment.getContent();
+			try {
+				final String mimeType = attachment.getMimeType();
+
+				final ServletOutputStream out = response.getOutputStream();
+				response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
+
+				final ContentDeliveryStrategy strategy = getStrategy(mimeType);
+				final String actualMimeType = strategy.getMimeType(mimeType);
+				response.setContentType(actualMimeType);
+				final String filename = String.format("%s%s", attachment.getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(actualMimeType));
+				response.setHeader("Content-disposition", String.format("%s; filename=\"%s\"", strategy.isAttachment() ? "attachment" : "inline", filename));
+				response.setHeader("Pragma", "public");
+				response.setHeader("cache-control", "no-cache");
+				response.setHeader("Cache-control", "must-revalidate");
+
+				try {
+					strategy.copyToOutputStream(in, out);
+					out.flush();
+				}
+				finally {
+					out.close();
+				}
+			}
+			finally {
+				in.close();
+			}
+
+			elt.setRead(true);
+			return null;
+		}
+		else {
+			// l'élément a expiré et a été nettoyé...
+			return show();
+		}
+	}
+
+	@RequestMapping(value = "/show.do", method = RequestMethod.GET)
+	public String show() throws Exception {
+		return "/admin/inbox";
 	}
 }

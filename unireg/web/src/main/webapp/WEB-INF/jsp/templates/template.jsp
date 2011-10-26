@@ -81,7 +81,7 @@ function ouvrirAide(url) {
 
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 						<li>
-							<a href="<c:url value='/admin/inbox.do'/>">
+							<a href="<c:url value='/admin/inbox/show.do'/>">
 								<span id="inboxSize"><fmt:message key="title.inbox"/></span>
 							</a>
 						</li>
