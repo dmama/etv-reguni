@@ -281,7 +281,8 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	/**
 	 * Annule une entite
 	 *
-	 * @param user
+	 * @param annule
+     *  true annule l'entity, false la "désannule"
 	 */
 	@Transient
 	public void setAnnule(boolean annule) {
