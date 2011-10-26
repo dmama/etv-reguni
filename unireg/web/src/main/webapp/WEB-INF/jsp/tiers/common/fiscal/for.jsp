@@ -11,29 +11,22 @@
 <display:table
 		name="command.forsFiscaux" id="forFiscal" pagesize="10" 
 		requestURI="${url}"
-		class="display">
+		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 	<display:column sortable ="true" titleKey="label.genre.impot">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<fmt:message key="option.genre.impot.${forFiscal.genreImpot}"  />
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.rattachement" >
 		<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
-			<c:if test="${forFiscal.annule}"><strike></c:if>
 				<fmt:message key="option.rattachement.${forFiscal.motifRattachement}" />
-			<c:if test="${forFiscal.annule}"></strike></c:if>
 		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.mode.imposition">
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
-			<c:if test="${forFiscal.annule}"><strike></c:if>
 				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
-			<c:if test="${forFiscal.annule}"></strike></c:if>
 		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.for.abrege">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<c:choose>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
 					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
@@ -46,35 +39,26 @@
 					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFS"></unireg:infra>
 				</c:when>
 			</c:choose>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.ouv" sortProperty="dateOuverture">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<fmt:formatDate value="${forFiscal.dateOuverture}" pattern="dd.MM.yyyy"/>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.motif.ouv">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
 				<c:if test="${forFiscal.motifOuverture != null}">
 					<fmt:message key="option.motif.ouverture.${forFiscal.motifOuverture}" />
 				</c:if>
 			</c:if>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.fer" sortProperty="dateFermeture">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.motif.fer">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
 				<c:if test="${forFiscal.motifFermeture != null}">
 					<fmt:message key="option.motif.fermeture.${forFiscal.motifFermeture}" />
 				</c:if>
 			</c:if>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.for.gestion">
 		<c:if test="${!forFiscal.annule}">

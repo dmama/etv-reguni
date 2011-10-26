@@ -4,9 +4,7 @@
 <c:if test="${not empty command.forsFiscaux}">
 	<fieldset>
 		<legend><span><fmt:message key="label.fors.fiscaux" /></span></legend>
-
-		<input class="noprint" name="fors_histo" type="checkbox" onClick="toggleRowsIsHisto('forFiscal', 'isForHisto', 6);" id="isForHisto" />
-		<label class="noprint" for="isForHisto"><fmt:message key="label.historique" /></label>
+		<unireg:raccourciToggleAffichage tableId="forFiscal" numeroColonne="6" nombreLignes="${fn:length(command.forsFiscaux)}" />
 
 		<jsp:include page="../../common/fiscal/for.jsp">
 			<jsp:param name="page" value="visu"/>

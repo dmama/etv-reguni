@@ -285,7 +285,7 @@
 
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
-				toggleRowsIsHisto('forFiscal', 'isForHisto', 6);
+				toggleAffichageRows('forFiscal',false, 6);
 				toggleRowsIsHisto('situationFamille','isSFHisto', 5);
 				toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
 				toggleRowsIsHisto('adresse','isAdrHisto',2);
@@ -296,7 +296,7 @@
 	<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
 			toggleRowsIsHisto('adresse','isAdrHisto',2);
-			toggleRowsIsHisto('forFiscal', 'isForDebHisto', 2);
+			toggleAffichageRows('forFiscal',false, 2);
 			toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);
 			toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);
 		</script>

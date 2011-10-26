@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
-	version="2.0">
+		version="2.0">
 	<tlib-version>1.0</tlib-version>
 	<short-name>unireg</short-name>
 	<uri>http://www.unireg.com/uniregTagLib</uri>
@@ -25,7 +25,7 @@
 		<name>numCTB</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoCTB</tag-class>
 		<body-content>JSP</body-content>
-		<description>display numCTB </description>
+		<description>display numCTB</description>
 		<attribute>
 			<name>numero</name>
 			<required>false</required>
@@ -43,7 +43,7 @@
 		<name>numAVS</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoAVS</tag-class>
 		<body-content>JSP</body-content>
-		<description>display numAVS </description>
+		<description>display numAVS</description>
 		<attribute>
 			<name>numeroAssureSocial</name>
 			<required>false</required>
@@ -55,7 +55,7 @@
 		<name>ancienNumeroAVS</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagAncienNoAVS</tag-class>
 		<body-content>JSP</body-content>
-		<description>display ancienNumAVS </description>
+		<description>display ancienNumAVS</description>
 		<attribute>
 			<name>ancienNumeroAVS</name>
 			<required>false</required>
@@ -67,7 +67,7 @@
 		<name>date</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDate</tag-class>
 		<body-content>JSP</body-content>
-		<description>display date </description>
+		<description>display date</description>
 		<attribute>
 			<name>date</name>
 			<required>true</required>
@@ -97,7 +97,7 @@
 		<name>sdate</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDateToString</tag-class>
 		<body-content>JSP</body-content>
-		<description>display Date to String </description>
+		<description>display Date to String</description>
 		<attribute>
 			<name>sdate</name>
 			<required>true</required>
@@ -122,7 +122,7 @@
 		<name>user</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagUser</tag-class>
 		<body-content>JSP</body-content>
-		<description>display user </description>
+		<description>display user</description>
 	</tag>
 
 	<tag>
@@ -749,6 +749,30 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>raccourciToggleAffichage</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagToggleAffichage</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche un lien pour réduire ou augmenter le nombre de ligne affichées pour un tableau</description>
+		<attribute>
+			<name>tableId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id du tableau à gérer</description>
+		</attribute>
+		<attribute>
+			<name>numeroColonne</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Numéro de la colonne à prendre en compte pour l'affichage des lignes du tableau</description>
+		</attribute>
+		<attribute>
+			<name>nombreLignes</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Nombre de lignes du tableau à gerer, pas d'affichage du tag si une seule ligne dans le tableau</description>
+		</attribute>
+	</tag>
 	<tag>
 		<name>callstack</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagCallstack</tag-class>
