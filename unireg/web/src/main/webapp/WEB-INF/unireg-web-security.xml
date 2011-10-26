@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
           http://www.springframework.org/schema/security
-          http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+          http://www.springframework.org/schema/security/spring-security-3.0.xsd
+          http://www.springframework.org/schema/aop
+          http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
 
 	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
 	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
@@ -132,5 +135,10 @@
 	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
 		<property name="provider" ref="securityProviderCache" />
 	</bean>
+
+	<!-- Proxys Automatiques pour les classes advisées avec un aspect AspectJ -->
+	<aop:aspectj-autoproxy/>
+	<!-- Aspect pour géreer la sécurité applicative de manière déclarative avec l'annotation unireg @SecurityCheck -->
+	<bean id="securityCheckAspect" class="ch.vd.uniregctb.security.SecurityCheckAspect" />
 
 </beans>
