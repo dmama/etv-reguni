@@ -45,7 +45,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAcces(long noIndividuOperateur) {
 		Object[] criteria = {noIndividuOperateur};
-		String query = "from DroitAcces da where da.noIndividuOperateur = ? ";
+		String query = "from DroitAcces da where da.noIndividuOperateur = ? order by da.annulationDate desc, da.dateDebut desc";
 		List<DroitAcces> list = getHibernateTemplate().find(query, criteria);
 		return list;
 	}
