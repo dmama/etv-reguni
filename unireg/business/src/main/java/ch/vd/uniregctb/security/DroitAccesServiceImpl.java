@@ -257,11 +257,23 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		if (da == null) {
 			throw new DroitAccesException("Le droit d'accès n°" + id + " n'existe pas");
 		}
-		da.setAnnule(true);
-		da.setDateFin(RegDate.get());
+        annuleDroitAcces(da);
+
 	}
 
-	/**
+    private void annuleDroitAcces(DroitAcces da) {
+        da.setAnnule(true);
+		da.setDateFin(RegDate.get());
+    }
+
+    @Override
+    public void annuleToutLesDroitAcces(long noIndividuOperateur) {
+        for (DroitAcces da : droitAccesDAO.getDroitsAcces(noIndividuOperateur)) {
+            annuleDroitAcces(da);
+        }
+    }
+
+    /**
 	 * {@inheritDoc}
 	 */
 	@Override

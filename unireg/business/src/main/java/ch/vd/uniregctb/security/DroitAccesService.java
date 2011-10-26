@@ -68,4 +68,12 @@ public interface DroitAccesService {
 	 *            l'id du droit d'accès à annuler.
 	 */
 	void annuleDroitAcces(long id) throws DroitAccesException;
+
+	/**
+	 * Annule tous les droits d'accès pour un opérateur donné.
+	 *
+	 * @param id
+	 *            le numero d'individu de l'operateur dont les droits seront supprimés
+	 */
+	void annuleToutLesDroitAcces(long noIndividuOperateur);
 }

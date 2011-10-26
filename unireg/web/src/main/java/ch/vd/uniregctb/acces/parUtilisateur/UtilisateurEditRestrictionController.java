@@ -33,7 +33,6 @@ public class UtilisateurEditRestrictionController {
     @RequestMapping(value = "/acces/restrictions-utilisateur.do", method = RequestMethod.GET)
     @SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR, Role.SEC_DOS_LEC}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
     public ModelAndView getRestrictionsUtilisateur(@RequestParam("noIndividuOperateur") Long noIndividuOperateur) throws Exception {
-        System.out.println("UtilisateurEditRestrictionController.getRestrictionsUtilisateur");
         UtilisateurEditRestrictionView utilisateurEditRestrictionView = utilisateurEditRestrictionManager.get(noIndividuOperateur);
         return new ModelAndView("acces/par-utilisateur/restrictions-utilisateur", "command", utilisateurEditRestrictionView);
     }
@@ -42,9 +41,14 @@ public class UtilisateurEditRestrictionController {
     @SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
     public String onPostAnnulerRestriction(
             @RequestParam("noIndividuOperateur") Long noIndividuOperateur,
-            @RequestParam("aAnnuler") List<Long> restrictionsAAnnuler) {
+            @RequestParam(value = "aAnnuler", required = false) List<Long> restrictionsAAnnuler,
+            @RequestParam("annuleTout") Boolean annuleTout) {
         try {
-            utilisateurEditRestrictionManager.annulerRestriction(restrictionsAAnnuler);
+            if (annuleTout) {
+                utilisateurEditRestrictionManager.annulerToutesLesRestrictions(noIndividuOperateur);
+            } else {
+                utilisateurEditRestrictionManager.annulerRestriction(restrictionsAAnnuler);
+            }
         }
         catch (DroitAccesException e) {
             throw new ActionException(e.getMessage(), e);

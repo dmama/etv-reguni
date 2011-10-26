@@ -8,6 +8,7 @@
 	<tiles:put name="body">
 	<form:form  action="restrictions-utilisateur/annuler.do" id="formEditRestriction"  name="theForm" commandName="command">
 		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
+		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/utilisateur.jsp">
@@ -44,10 +45,21 @@
 							}
 						}
 					}
+					function onClickToutAnnuler (master) {
+						var confirmation = confirm("Voulez-vous vraiment annuler tous les droits d'accès pour l'utilisateur ${command.utilisateur.prenomNom} (${command.utilisateur.visaOperateur}) ?")
+						if (confirmation) {
+							$("#annuleTout")[0].value ="true";
+							$("#formEditRestriction")[0].submit()
+						}
+
+					}
 					</script>
 					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
 							<a href="javascript:onClickAnnualtion()" class="delete noprint" title="Annule les droits séléctionnés">
-								&nbsp;Annuler les droits
+								&nbsp;Annuler les droits séléctionnés
+							</a>
+							<a href="javascript:onClickToutAnnuler()" class="delete noprint" title="Annule tous les droits de l'utilisateur">
+								&nbsp;Annuler tous les droits
 							</a>
 					</authz:authorize>
 				</c:if>

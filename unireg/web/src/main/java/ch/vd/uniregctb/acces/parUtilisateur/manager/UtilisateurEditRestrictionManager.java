@@ -48,6 +48,14 @@ public interface UtilisateurEditRestrictionManager {
     public void annulerRestriction(List<Long> listIdRestriction) throws DroitAccesException;
 
     /**
+     * Annule toutes les restrictions
+     *
+     * @param noIndividuOperateur
+     */
+
+    @Transactional(rollbackFor = Throwable.class)
+    public  void annulerToutesLesRestrictions(Long noIndividuOperateur);
+    /**
      * Persiste le DroitAcces
      *
      * @param recapPersonneUtilisateurView
@@ -64,5 +72,6 @@ public interface UtilisateurEditRestrictionManager {
      */
     @Transactional(readOnly = true)
     public ExtractionJob exportListeDroitsAcces(Long operateurId);
+
 
 }
