@@ -214,7 +214,6 @@
 				<entry key="/acces/restrictions-pp.do" value-ref="dossierEditRestrictionController" />
 				<entry key="/acces/edit-acces-pp.do" value-ref="droitAccesEditController" />
 				<entry key="/acces/select-utilisateur.do" value-ref="selectUtilisateurController" />
-				<entry key="/acces/restrictions-utilisateur.do" value-ref="utilisateurEditRestrictionController" />
 				<entry key="/acces/list-pp-utilisateur.do" value-ref="utilisateurListPersonneController" />
 				<entry key="/acces/recap-pp-utilisateur.do" value-ref="recapPersonneUtilisateurController" />
 				<entry key="/acces/select-utilisateurs.do" value-ref="selectUtilisateursController" />

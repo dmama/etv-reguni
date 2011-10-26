@@ -77,14 +77,14 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	}
 
 	/**
-	 * Annule une restriction
+	 * Annule une liste de Restrictions
 	 *
-	 * @param idRestriction
+	 * @param listIdRestriction
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerRestriction(Long idRestriction) throws DroitAccesException {
-		droitAccesService.annuleDroitAcces(idRestriction);
+	public void annulerRestriction(List<Long> listIdRestriction) throws DroitAccesException {
+		for (Long id : listIdRestriction) droitAccesService.annuleDroitAcces(id);
 	}
 
 	/**
@@ -107,6 +107,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		}
 		utilisateurEditRestrictionView.setRestrictions(views);
 		return utilisateurEditRestrictionView;
+
 	}
 
 

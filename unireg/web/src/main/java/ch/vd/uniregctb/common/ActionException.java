@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.utils.Assert;
 
 /**
@@ -20,14 +22,24 @@ public class ActionException extends RuntimeException {
 	private final List<String> warnings;
 
 	public ActionException(String error) {
+		this(error, null);
+	}
+
+	public ActionException(String error, @Nullable Throwable cause) {
+		super(cause);
+        cause.getMessage();
 		this.errors = new ArrayList<String>(1);
 		this.errors.add(error);
 		this.warnings = Collections.emptyList();
 	}
 
 	public ActionException(List<String> errors, List<String> warnings) {
-		Assert.notEmpty(errors);
+		this(errors, warnings, null);
+	}
 
+	public ActionException(List<String> errors, List<String> warnings, @Nullable Throwable cause) {
+		super(cause);
+		Assert.notEmpty(errors);
 		this.errors = errors;
 		this.warnings = warnings;
 	}
