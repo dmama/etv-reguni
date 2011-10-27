@@ -277,7 +277,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		tiersEditView.setTiers(tiers);
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersEditView.setTiersGeneral(tiersGeneralView);
-		tiersEditView.setDossiersApparentes(getRapports(tiers));
+		if (!(tiers instanceof CollectiviteAdministrative)) { // [SIFISC-2561] il n'est pas permis d'éditer les rapports des collectivités, inutiles donc les charger
+			tiersEditView.setDossiersApparentes(getRapports(tiers));
+		}
 		if (tiers instanceof Contribuable) {
 			Contribuable contribuable = (Contribuable) tiers;
 			tiersEditView.setDebiteurs(getDebiteurs(contribuable));

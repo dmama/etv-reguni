@@ -14,7 +14,6 @@ import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
@@ -42,6 +41,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeOperation;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Cette classe expose les différents enums sours forme de map enum->description.
@@ -68,7 +68,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TexteCasePostale, String> mapTexteCasePostale;
 	private Map<TypeEvenementCivil, String> mapTypeEvenementCivil;
 	private Map<EtatEvenementCivil, String> mapStatusEvenementCivil;
-	private Map<TypeRapportEntreTiersWeb, String> mapTypeRapportEntreTiers;
+	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
 	private Map<TypeEtatDeclaration, String> mapTypeEtatDeclaration;
 	private Map<EtatCivil, String> mapEtatsCivil;
@@ -316,9 +316,9 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<TypeRapportEntreTiersWeb, String> getMapTypeRapportEntreTiers() {
+	public Map<TypeRapportEntreTiers, String> getMapTypeRapportEntreTiers() {
 		if (mapTypeRapportEntreTiers == null) {
-			mapTypeRapportEntreTiers = initMapEnum(ApplicationConfig.masterKeyTypeRapportEntreTiers, TypeRapportEntreTiersWeb.class);
+			mapTypeRapportEntreTiers = initMapEnum(ApplicationConfig.masterKeyTypeRapportEntreTiers, TypeRapportEntreTiers.class);
 		}
 		return mapTypeRapportEntreTiers;
 	}

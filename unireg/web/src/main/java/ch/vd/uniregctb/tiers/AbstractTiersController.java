@@ -48,7 +48,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		data.put(CATEGORIE_IMPOT_SOURCE_MAP_NAME, tiersMapHelper.getMapCategorieImpotSource());
 		data.put(TEXTE_CASE_POSTALE_MAP_NAME, tiersMapHelper.getMapTexteCasePostale());
 
-		data.put(TYPE_RAPPORT_TIERS_MAP_NAME, tiersMapHelper.getMapTypeRapportEntreTiers());
 		data.put(ETAT_CIVIL, tiersMapHelper.getMapEtatsCivil());
 		data.put(TYPE_ADRESSE_TIERS, tiersMapHelper.getMapTypeAdresse());
 		data.put(TYPE_ADRESSE_FISCALE_TIERS,tiersMapHelper.getMapTypeAdresseFiscale());
@@ -207,11 +206,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	 * Le nom de l'attribut utilise pour les tarifs impot a la source
 	 */
 	public static final String TARIF_IMPOT_SOURCE_MAP_NAME = "tarifsImpotSource";
-
-	/**
-	 * Le nom de l'attribut utilise pour les types de rapport entre tiers
-	 */
-	public static final String TYPE_RAPPORT_TIERS_MAP_NAME = "typesRapportTiers";
 
 	/**
 	 * Le nom de l'attribut utilise pour les mois

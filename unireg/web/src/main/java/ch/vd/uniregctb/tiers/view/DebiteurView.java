@@ -1,11 +1,17 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 
-public class DebiteurView {
+public class DebiteurView implements Annulable {
 
 	private Long numero;
 
@@ -20,6 +26,30 @@ public class DebiteurView {
 	private Long id;
 
 	private boolean annule;
+
+	public DebiteurView() {
+	}
+
+	public DebiteurView(DebiteurPrestationImposable dpi, ContactImpotSource r, AdresseService adresseService) {
+		this.annule = r.isAnnule();
+		this.id = r.getId();
+		this.numero = dpi.getNumero();
+		this.categorieImpotSource = dpi.getCategorieImpotSource();
+		this.personneContact = dpi.getPersonneContact();
+		this.nomCourrier.setNomCourrier(buildNomCourrier(dpi, adresseService));
+	}
+
+	private static List<String> buildNomCourrier(DebiteurPrestationImposable dpi, AdresseService adresseService) {
+		List<String> nomCourrier;
+		try {
+			nomCourrier = adresseService.getNomCourrier(dpi, null, false);
+		}
+		catch (AdresseException e) {
+			nomCourrier = new ArrayList<String>();
+			nomCourrier.add(e.getMessage());
+		}
+		return nomCourrier;
+	}
 
 	public Long getNumero() {
 		return numero;
@@ -81,6 +111,7 @@ public class DebiteurView {
 		this.id = id;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

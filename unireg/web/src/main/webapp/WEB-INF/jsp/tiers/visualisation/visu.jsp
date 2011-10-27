@@ -146,7 +146,6 @@
 
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="dossiers-apparentes.jsp"/>
-					<jsp:include page="debiteur.jsp"/>
 				</div>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers != 'Entreprise'}">

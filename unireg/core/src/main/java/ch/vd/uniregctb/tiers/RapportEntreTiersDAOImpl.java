@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, Long> implements RapportEntreTiersDAO {
 
@@ -32,8 +33,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		String query = "from RapportEntreTiers ret where ret.objetId = ? and ret.sujetId = ?";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 
-		List<RapportEntreTiers> list = (List<RapportEntreTiers>) find(query, criteria, mode);
-		return list;
+		return (List<RapportEntreTiers>) find(query, criteria, mode);
 	}
 
 	/**
@@ -87,8 +87,87 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		if (activesOnly) {
 			query += " and rapport.dateFin is null and rapport.annulationDate is null";
 		}
-		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query));
-		return count;
+		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
 	}
 
+	@Override
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type, final ParamPagination pagination) {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportEntreTiers>>() {
+			@Override
+			public List<RapportEntreTiers> doInHibernate(Session session) throws HibernateException, SQLException {
+
+				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))" +
+						" and r.class != RapportPrestationImposable and r.class != ContactImpotSource";
+				if (appartenanceMenageOnly) {
+					query += " and r.class = AppartenanceMenage";
+				}
+				if (!showHisto) {
+					query += " and r.dateFin is null and r.annulationDate is null";
+				}
+				if (type != null) {
+					query += " and r.class = " + type.getRapportClass().getSimpleName();
+				}
+				query += buildOrderClause(pagination);
+				final Query queryObject = session.createQuery(query);
+
+				final int firstResult = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
+				final int maxResult = pagination.getTaillePage();
+				queryObject.setFirstResult(firstResult);
+				queryObject.setMaxResults(maxResult);
+
+				//noinspection unchecked
+				return queryObject.list();
+			}
+		});
+	}
+
+	private static String buildOrderClause(ParamPagination pagination) {
+		String clauseOrder;
+		final String champ = pagination.getChamp();
+		if (champ != null) {
+			if (champ.equals("type")) {
+				clauseOrder = " order by r.class";
+			}
+			else if (champ.equals("tiersId")) {
+				// pour le champs tiersId, on s'arrange pour trier selon l'ordre sujet-objet
+				if (pagination.isSensAscending()) {
+					clauseOrder = " order by r.sujetId asc, r.objetId";
+				}
+				else {
+					clauseOrder = " order by r.sujetId desc, r.objetId";
+				}
+			}
+			else {
+				clauseOrder = " order by r." + champ;
+			}
+
+			if (pagination.isSensAscending()) {
+				clauseOrder = clauseOrder + " asc";
+			}
+			else {
+				clauseOrder = clauseOrder + " desc";
+			}
+		}
+		else {
+			clauseOrder = " order by r.id asc";
+
+		}
+		return clauseOrder;
+	}
+
+	@Override
+	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type) {
+		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))" +
+				" and r.class != RapportPrestationImposable and r.class != ContactImpotSource";
+		if (appartenanceMenageOnly) {
+			query += " and r.class = AppartenanceMenage";
+		}
+		if (!showHisto) {
+			query += " and r.dateFin is null and r.annulationDate is null";
+		}
+		if (type != null) {
+			query += " and r.class = " + type.getRapportClass().getSimpleName();
+		}
+		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
+	}
 }

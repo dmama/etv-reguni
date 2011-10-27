@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -33,14 +34,8 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	/**
-	 * Va chercher les individus liés aux tiers dont les numéros sont passés en paramètres
-	 * @param noTiers numéros des tiers concernés
-	 * @param date date de référence pour le cache
-	 * @param parties parties des individus à mémoriser dans le cache
-	 */
 	@Override
-	public void warmIndividusPourTiers(Collection<Long> noTiers, RegDate date, AttributeIndividu... parties) {
+	public void warmIndividusPourTiers(Collection<Long> noTiers, @Nullable RegDate date, AttributeIndividu... parties) {
 
 		if (serviceCivilService.isWarmable()) {
 

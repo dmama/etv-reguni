@@ -13,6 +13,17 @@ public class NomCourrierViewPart {
 
 	private String nomCourrier2;
 
+	public NomCourrierViewPart() {
+	}
+
+	public NomCourrierViewPart(String nomCourrier1) {
+		this.nomCourrier1 = nomCourrier1;
+	}
+
+	public NomCourrierViewPart(List<String> nomCourrier) {
+		setNomCourrier(nomCourrier);
+	}
+
 	public void setNomCourrier(List<String> nomCourrier) {
 		if (nomCourrier != null && nomCourrier.size() > 0) {
 			nomCourrier1 = nomCourrier.get(0);

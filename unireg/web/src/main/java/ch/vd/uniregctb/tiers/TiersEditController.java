@@ -23,6 +23,8 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
  *
+ * FIXME (msi) supprimer ce contrôleur et l'url associée qui n'est plus utilisé depuis longtemps
+ *
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
 public class TiersEditController extends AbstractTiersController {

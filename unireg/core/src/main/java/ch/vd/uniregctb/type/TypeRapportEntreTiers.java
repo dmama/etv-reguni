@@ -17,7 +17,6 @@ import ch.vd.uniregctb.tiers.Tutelle;
  * <!-- begin-user-doc --> Longueur de colonne : 20 <!-- end-user-doc -->
  *
  * @author jec
- *
  * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Ng5gYJQ9EdyqCO_31WzPOw"
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Ng5gYJQ9EdyqCO_31WzPOw"
  */
@@ -32,6 +31,11 @@ public enum TypeRapportEntreTiers {
 		public RapportEntreTiers newInstance() {
 			return new Tutelle();
 		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return Tutelle.class;
+		}
 	},
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -42,6 +46,11 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public RapportEntreTiers newInstance() {
 			return new Curatelle();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return Curatelle.class;
 		}
 	},
 	/**
@@ -54,6 +63,11 @@ public enum TypeRapportEntreTiers {
 		public RapportEntreTiers newInstance() {
 			return new ConseilLegal();
 		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return ConseilLegal.class;
+		}
 	},
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -64,6 +78,11 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public RapportEntreTiers newInstance() {
 			return new RapportPrestationImposable();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return RapportPrestationImposable.class;
 		}
 	},
 	/**
@@ -76,6 +95,11 @@ public enum TypeRapportEntreTiers {
 		public RapportEntreTiers newInstance() {
 			return new AppartenanceMenage();
 		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return AppartenanceMenage.class;
+		}
 	},
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -87,6 +111,11 @@ public enum TypeRapportEntreTiers {
 		public RapportEntreTiers newInstance() {
 			return new RepresentationConventionnelle();
 		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return RepresentationConventionnelle.class;
+		}
 	},
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -96,12 +125,22 @@ public enum TypeRapportEntreTiers {
 		public RapportEntreTiers newInstance() {
 			return new ContactImpotSource();
 		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return ContactImpotSource.class;
+		}
 	},
 
 	ANNULE_ET_REMPLACE {
 		@Override
 		public RapportEntreTiers newInstance() {
 			return new AnnuleEtRemplace();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return AnnuleEtRemplace.class;
 		}
 	};
 
@@ -111,4 +150,9 @@ public enum TypeRapportEntreTiers {
 	 * @return un rapport-entre-tiers du type demandé
 	 */
 	public abstract RapportEntreTiers newInstance();
+
+	/**
+	 * @return la classe concrète correspondant au type de rapport.
+	 */
+	public abstract Class<? extends RapportEntreTiers> getRapportClass();
 }

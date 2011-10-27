@@ -216,13 +216,13 @@ public class EachWebPageTest extends WebitTest {
 	 -----------------------*/
 	// Rapport entre tiers - Page de recherche des tiers
 	@Test
-	public void testRapportList() throws Exception {
-		assertPage("/rapport/list.do?numero=86006202", "Recherche du tiers à lier");
+	public void testRapportSearch() throws Exception {
+		assertPage("/rapport/search.do?numero=86006202", "Recherche du tiers à lier");
 	}
 
 	@Test
-	public void testRapportListInexistant() throws Exception {
-		assertPage("/rapport/list.do?numero=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
+	public void testRapportSearchInexistant() throws Exception {
+		assertPage("/rapport/search.do?numero=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
 	}
 
 	// Rapport entre tiers - Page d'édition

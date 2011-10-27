@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,8 +34,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
-import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -181,27 +178,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					}
 				}
 			}
-
-			final List<RapportView> rapportsView = getRapports(tiers);
-
-			// filtrer les rapports entre tiers si l'utilisateur a des droits en visu limitée
-			if (SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
-				final Iterator<RapportView> iter = rapportsView.iterator();
-				while (iter.hasNext()) {
-					final RapportView rv = iter.next();
-					if (rv.getTypeRapportEntreTiers() != TypeRapportEntreTiersWeb.APPARTENANCE_MENAGE) {
-						iter.remove();
-					}
-				}
-			}
-			if (tiers instanceof PersonnePhysique) {
-				final PersonnePhysique pp = (PersonnePhysique) tiers;
-				if (pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
-					final List<RapportView> rapportsFiliationView = getRapportsFiliation(pp);
-					rapportsView.addAll(rapportsFiliationView);
-				}
-			}
-			tiersVisuView.setDossiersApparentes(rapportsView);
 
 			final Map<String, Boolean> allowedOnglet = initAllowedModif();
 			setDroitEdition(tiers, allowedOnglet);

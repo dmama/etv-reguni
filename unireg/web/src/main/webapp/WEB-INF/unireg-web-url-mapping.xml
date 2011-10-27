@@ -180,7 +180,7 @@
 				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
 				<entry key="/rt/edit.do" value-ref="rapportPrestationEditController" />
 				<!-- Rapport entre tiers -->
-				<entry key="/rapport/list.do" value-ref="rapportListController" />
+				<entry key="/rapport/search.do" value-ref="rapportListController" />
 				<entry key="/rapport/edit.do" value-ref="rapportEditController" />
 				<!-- Fusion -->
 				<!-- La fusion est désactivée -->

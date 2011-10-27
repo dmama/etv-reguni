@@ -8,7 +8,7 @@
 	<table border="0">
 		<tr>
 			<td>
-				<a href="../rapport/list.do?action=effacer&numero=<c:out value="${command.tiers.numero}"></c:out>" 
+				<a href="../rapport/search.do?action=effacer&numero=<c:out value="${command.tiers.numero}"></c:out>"
 				class="add" title="Ajouter rapport">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
 			</td>
 		</tr>

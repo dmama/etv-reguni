@@ -55,9 +55,7 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -109,13 +107,11 @@ import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -344,29 +340,6 @@ public class TiersManager implements MessageSourceAware {
 		rapportView.setToolTipMessage(toolTipMessage);
 
 		return rapportView;
-	}
-
-	/**
-	 * Copie les informations de l'individu Individu dans la vue IndividuView
-	 *
-	 * @param indImpl
-	 * @return
-	 */
-	protected IndividuView createIndividuView(Individu indImpl) {
-
-		IndividuView individu = new IndividuView();
-
-		individu.setNumeroIndividu(indImpl.getNoTechnique());
-		individu.setNom(indImpl.getDernierHistoriqueIndividu().getNom());
-		individu.setPrenom(indImpl.getDernierHistoriqueIndividu().getPrenom());
-		individu.setDateNaissance(RegDate.asJavaDate(indImpl.getDateNaissance()));
-		if (indImpl.isSexeMasculin()) {
-			individu.setSexe(Sexe.MASCULIN);
-		}
-		else {
-			individu.setSexe(Sexe.FEMININ);
-		}
-		return individu;
 	}
 
 	/**
@@ -675,48 +648,6 @@ public class TiersManager implements MessageSourceAware {
 
 
 	/**
-	 * Alimente List<RapportPrestationView>
-	 *
-	 * @param dpi
-	 * @return
-	 * @throws AdresseException
-	 */
-	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi) throws AdresseException {
-		List<RapportPrestationView> rapportPrestationViews = new ArrayList<RapportPrestationView>();
-		Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-		for (RapportEntreTiers rapport : rapports) {
-			if (rapport instanceof RapportPrestationImposable) {
-				RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapport;
-				RapportPrestationView rapportPrestationView = new RapportPrestationView();
-				rapportPrestationView.setId(rapportPrestationImposable.getId());
-				rapportPrestationView.setAnnule(rapportPrestationImposable.isAnnule());
-				rapportPrestationView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
-				rapportPrestationView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
-				rapportPrestationView.setDateDebut(rapportPrestationImposable.getDateDebut());
-				rapportPrestationView.setDateFin(rapportPrestationImposable.getDateFin());
-				Tiers tiersObjet = tiersDAO.get(rapportPrestationImposable.getSujetId());
-				if (tiersObjet instanceof PersonnePhysique) {
-					PersonnePhysique pp = (PersonnePhysique) tiersObjet;
-					String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
-					if (nouveauNumeroAvs != null && !"".equals(nouveauNumeroAvs)) {
-						rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(nouveauNumeroAvs));
-					}
-					else {
-						String ancienNumeroAvs = tiersService.getAncienNumeroAssureSocial(pp);
-						rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(ancienNumeroAvs));
-					}
-				}
-				rapportPrestationView.setNumero(tiersObjet.getNumero());
-				List<String> nomCourrier = getAdresseService().getNomCourrier(tiersObjet, null, false);
-				rapportPrestationView.setNomCourrier(nomCourrier);
-				rapportPrestationViews.add(rapportPrestationView);
-			}
-		}
-		Collections.sort(rapportPrestationViews);
-		return rapportPrestationViews;
-	}
-
-	/**
 	 * Alimente Set<ListeRecapitulativeView>
 	 *
 	 * @param debiteur
@@ -757,34 +688,6 @@ public class TiersManager implements MessageSourceAware {
 		}
 		Collections.sort(lrsView, new ListeRecapDetailComparator());
 		return lrsView;
-	}
-
-	/**
-	 * @param noLocalite le numéro OFS de la localité.
-	 * @return la localité correspondante, ou <b>null</b> si elle n'existe pas.
-	 */
-	protected Localite getLocaliteByONRP(final Integer noLocalite) {
-		try {
-			return getServiceInfrastructureService().getLocaliteByONRP(noLocalite);
-		}
-		catch (ServiceInfrastructureException e) {
-			LOGGER.error("Impossible de trouver la localité avec le numéro OFS = " + noLocalite, e);
-			return null;
-		}
-	}
-
-	/**
-	 * @param numeroRue le numéro technique de la rue.
-	 * @return la rue correspondante, ou <b>null</b> si elle n'existe pas.
-	 */
-	protected Rue getRueByNumero(Integer numeroRue) {
-		try {
-			return getServiceInfrastructureService().getRueByNumero(numeroRue);
-		}
-		catch (ServiceInfrastructureException e) {
-			LOGGER.error("Impossible de trouver la rue avec le numéro = " + numeroRue, e);
-			return null;
-		}
 	}
 
 	/**
@@ -1425,27 +1328,6 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 		return resultat;  //To change body of created methods use File | Settings | File Templates.
-	}
-
-	/**
-	 * Initialise les champs avec les valeurs des paramètres
-	 *
-	 * @param tiersCriteriaView
-	 * @param numero
-	 * @param nomRaison
-	 * @param localiteOuPays
-	 * @param noOfsFor
-	 * @param dateNaissance
-	 * @param numeroAssureSocial
-	 */
-	public void initFieldsWithParams(TiersCriteriaView tiersCriteriaView,
-	                                 Long numero,
-	                                 String nomRaison,
-	                                 String localiteOuPays,
-	                                 Long noOfsFor,
-	                                 RegDate dateNaissance,
-	                                 String numeroAssureSocial) {
-
 	}
 
 	/**

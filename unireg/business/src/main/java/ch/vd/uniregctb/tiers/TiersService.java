@@ -1272,7 +1272,15 @@ public interface TiersService {
 	/**
 	 * Retourne le nom de la collectivité administrative en paramètre
 	 *
-	 * @param collectiviteAdministrative
+	 * @param collId le numéro d'une collectivité administrative
+	 * @return le nom de la collectivité adminsitrative
+	 */
+	public String getNomCollectiviteAdministrative(int collId);
+
+	/**
+	 * Retourne le nom de la collectivité administrative en paramètre
+	 *
+	 * @param collectiviteAdministrative une collectivité administrative
 	 * @return le nom de la collectivité adminsitrative
 	 */
 	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative);
@@ -1297,6 +1305,6 @@ public interface TiersService {
 	 * @param date   une date
 	 * @return <b>vrai</b> si le ménage possède au moins une personne physique active à la date spécifiée; <b>faux</b> autrement.
 	 */
-	boolean isMenageActif(MenageCommun menage, RegDate date);
+	boolean isMenageActif(MenageCommun menage, @Nullable RegDate date);
 }
 

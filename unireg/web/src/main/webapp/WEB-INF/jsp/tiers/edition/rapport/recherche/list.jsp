@@ -24,7 +24,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/list.do" class="display" sort="list">
+		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/search.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>

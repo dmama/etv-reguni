@@ -4234,11 +4234,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative) {
-
+	public String getNomCollectiviteAdministrative(int collId) {
 		String nom = null;
 		try {
-			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(collectiviteAdministrative.getNumeroCollectiviteAdministrative());
+			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(collId);
 
 			if (ca != null) {
 				final String ligne1 = ca.getNomComplet1();
@@ -4256,10 +4255,17 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + collectiviteAdministrative.getNumeroCollectiviteAdministrative());
+			throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + collId);
 		}
 
 		return nom;
+	}
+
+	@Override
+	public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative) {
+		final Integer collId = collectiviteAdministrative.getNumeroCollectiviteAdministrative();
+		Assert.notNull(collId);
+		return getNomCollectiviteAdministrative(collId);
 	}
 
 	@Override

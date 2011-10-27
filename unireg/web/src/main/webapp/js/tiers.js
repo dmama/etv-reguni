@@ -19,37 +19,47 @@ function effacerCriteres() {
   top.location.replace('list.do?action=effacer');
 }
 
-/*
-* Toggle rows is actif
-*/
-function toggleRowsIsHisto(tableId,elementId, numCol){
+/**
+ * Affiche ou cache les lignes qui possèdent une date de fin.
+ *
+ * @tableId   l'id de la table
+ * @elementId l'id du checkbox d'affichage de l'historique
+ * @numCol    le numéro de la colonne (0-based) qui contient les dates de fin
+ * @cond      condition optionnelle de visibilité, appelée sur chaque ligne (true=visible selon algo, false=toujours invisible)
+ */
+function toggleRowsIsHisto(tableId, elementId, numCol, cond) {
 	
 	var tbl = $('#' + tableId).get(0);
 	if (tbl != null) {
 		var len = tbl.rows.length;
 		var showHisto = $('#' + elementId).attr('checked');
 
-		for (i=1 ; i< len; i++) {
+		for (i = 1 ; i < len; i++) {
+
+			var visible;
 			if (!showHisto) {
 				var x = tbl.rows[i].cells;
 				if (numCol >= x.length) {
 					// work-around parce que le tag <display:table> ajoute une ligne avec une *seule* colonne lorsque la table est vide
 					// cette ligne est masquée par défaut, on ne fait donc rien
+					continue;
 				}
 				else if (trim(x[numCol].innerHTML) == '' && x[numCol].innerHTML.indexOf('strike')== -1 && !hasClassName(tbl.rows[i], 'strike')) {
-					tbl.rows[i].style.display = '';
+					visible = true;
 				}
 				else {
-					tbl.rows[i].style.display = 'none';
+					visible = false;
 				}
 			}
 			else {
-				tbl.rows[i].style.display = '';
+				visible = true;
 			}
-		}
-		
-		if (tableId == 'dossierApparente') {
-			filter(tbl, $('#typeRapportId'));
+
+			if (visible && cond) {
+				visible = cond(tbl.rows[i]);
+			}
+
+			tbl.rows[i].style.display = (visible ? '' : 'none');
 		}
 	}
 }	
@@ -154,58 +164,6 @@ function toggleRowsIsActif(tableId, elementId, numCol){
 		}
 	}
 }	
-
-/*
-* Filter select box
-*/
-function filter(tbl, element){
-	var sel  = $(element).val();
-	var hide= true;
-	var len = tbl.rows.length;
-	var vStyle = (hide)? "none":"";
-
-	for (i=1 ; i< len; i++){
-		var x = tbl.rows[i].cells;
-			
-		if (tbl.rows[i].style.display == '') {
-		
-			if (x[0].innerHTML.match(sel) ){
-				
-				tbl.rows[i].style.display = '';
-			} 
-			
-			else if(sel == 'Appartenance/Composition ménage' && (x[0].innerHTML.match('Appartenance ménage') || x[0].innerHTML.match('Composition ménage'))) {
-				tbl.rows[i].style.display = '';
-			}
-			
-			else if (sel == 'Pupille/Tuteur' && (x[0].innerHTML.match('Tuteur') || x[0].innerHTML.match('Pupille sous tutelle'))) {
-				tbl.rows[i].style.display = '';
-			} 
-			
-			else if (sel == 'Pupille/Curateur' && (x[0].innerHTML.match('Curateur') || x[0].innerHTML.match('Pupille sous curateur'))) {
-				tbl.rows[i].style.display = '';
-			} 
-			
-			else if (sel == 'Sous conseil légal/Conseil légal' && (x[0].innerHTML.match('Conseil légal') || x[0].innerHTML.match('Sous conseil légal'))) {
-				tbl.rows[i].style.display = '';
-			} 
-			
-			else if (sel == 'Enfant/Parent' && (x[0].innerHTML.match('Enfant') || x[0].innerHTML.match('Parent'))) {
-				tbl.rows[i].style.display = '';
-			}
-			
-			else if (sel == 'Représenté/Représentant' && (x[0].innerHTML.match('Représenté') || x[0].innerHTML.match('Représentant'))) {
-				tbl.rows[i].style.display = '';
-			}
-			
-			else if (sel == 'tous'){
-				tbl.rows[i].style.display = '';
-			} else {
-				tbl.rows[i].style.display = vStyle;
-			}
-		}
-	}
-}
 
 /*
 * Annuler un rapport

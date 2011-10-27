@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long> {
 
@@ -40,4 +41,29 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @return le nombre de rapports trouvés
 	 */
 	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly);
+
+	/**
+	 * Recherche les rapports qui pointent vers le tiers spécifié. Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont ignorés.
+	 *
+	 *
+	 * @param tiersId                l'id du tiers
+	 * @param appartenanceMenageOnly si vrai, seuls les rapports d'appartenance ménage sont retournés
+	 * @param showHisto
+	 * @param type
+	 * @param pagination             les paramètres de pagination  @return la liste des rapports trouvés
+	 */
+	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, ParamPagination pagination);
+
+	/**
+	 * Compte le nombre de rappors qui pointent vers le tiers spécifié.  Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont ignorés.
+	 *
+	 *
+	 *
+	 * @param tiersId                l'id du sujet
+	 * @param appartenanceMenageOnly si vrai, seuls les rapports d'appartenance ménage sont comptés
+	 * @param showHisto
+	 * @param type
+	 * @return le nombre de rapports qui pointe vers le sujet spécifié.
+	 */
+	int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type);
 }

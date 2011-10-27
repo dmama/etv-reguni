@@ -8,12 +8,14 @@
 
 		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/jquery-ui-tooltip.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.bgiframe.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.tooltip.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.cookie.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
