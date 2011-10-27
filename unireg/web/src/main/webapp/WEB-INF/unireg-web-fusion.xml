@@ -31,7 +31,7 @@
 		<property name="commandName" value="command" />
 		<property name="fusionRecapManager" ref="fusionRecapManager" />
 		<property name="formView" value="tiers/edition/fusion/recap" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 	</bean>
 	
 	<bean id="fusionRecapManager" class="ch.vd.uniregctb.fusion.manager.FusionRecapManagerImpl">

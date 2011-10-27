@@ -75,16 +75,12 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 
-	<bean id="tiersEditController" class="ch.vd.uniregctb.tiers.TiersEditController" parent="abstractTiersController">
+	<bean id="tiersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
 		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="forFiscalManager" ref="forFiscalManager" />
-		<property name="rapportEditManager" ref="rapportEditManager" />
-		<property name="adresseManager" ref="adresseManager" />
-		<property name="situationFamilleManager" ref="situationFamilleManager" />
 		<property name="validator" ref="tiersEditValidator" />
 	</bean>
 	

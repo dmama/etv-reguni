@@ -8,7 +8,7 @@
 	<table border="0">
 		<tr class="<unireg:nextRowClass/>" >
 			<td>
-				<unireg:raccourciAjouter link="../tiers/edit.do?nature=DebiteurPrestationImposable&amp;numeroCtbAss=${command.tiers.numero}" tooltip="Ajouter d&eacute;biteur" display="label.bouton.ajouter"/>
+				<unireg:raccourciAjouter link="../tiers/create.do?nature=DebiteurPrestationImposable&amp;numeroCtbAss=${command.tiers.numero}" tooltip="Ajouter d&eacute;biteur" display="label.bouton.ajouter"/>
 			</td>
 		</tr>
 	</table>

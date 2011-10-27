@@ -94,7 +94,7 @@ public class CivilEditControllerTest extends WebTest {
 
 		request.addParameter("id", Long.toString(ppId));
 		request.addParameter("tiers.nom", "Kamel");
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
 		request.setMethod("POST");
 		final ModelAndView mav = controller.handleRequest(request, response);
 		final Map<?, ?> model = mav.getModel();
@@ -130,7 +130,7 @@ public class CivilEditControllerTest extends WebTest {
 		request.addParameter("id", Long.toString(ppId));
 		request.addParameter("tiers.nom", nom);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
 		request.setMethod("POST");
 		final ModelAndView mav = controller.handleRequest(request, response);
 		final Map<?, ?> model = mav.getModel();
@@ -162,7 +162,7 @@ public class CivilEditControllerTest extends WebTest {
 
 		request.addParameter("id", Long.toString(ppId));
 		request.addParameter("tiers.dateNaissance", "12/*/.2008");
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
 		request.setMethod("POST");
 		final ModelAndView mav = controller.handleRequest(request, response);
 		final Map<?, ?> model = mav.getModel();
@@ -195,7 +195,7 @@ public class CivilEditControllerTest extends WebTest {
 		request.addParameter("tiers.nom", "TestKamel");
 		final RegDate dateN = RegDate.get(2008, 4, 12);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
 
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
@@ -237,7 +237,7 @@ public class CivilEditControllerTest extends WebTest {
 		request.addParameter("id", Long.toString(ppId));
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter("tiers.prenom", "toto");
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
 		request.setMethod("POST");
 		controller.handleRequest(request, response);
 

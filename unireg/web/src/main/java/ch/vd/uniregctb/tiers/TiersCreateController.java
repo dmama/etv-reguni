@@ -10,24 +10,18 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.tiers.manager.AdresseManager;
-import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
-import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
- * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
- *
- * FIXME (msi) supprimer ce contrôleur et l'url associée qui n'est plus utilisé depuis longtemps
- *
- * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
+ * Controller qui permet de créer un nouveau contribuable inconnu au registre des habitants ou inconnu au registre des PMs.
  */
-public class TiersEditController extends AbstractTiersController {
+public class TiersCreateController extends AbstractTiersController {
+
+	protected final Logger LOGGER = Logger.getLogger(TiersCreateController.class);
 
 	public final static String BUTTON_SAVE = "__confirmed_save";
 	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
@@ -35,19 +29,7 @@ public class TiersEditController extends AbstractTiersController {
 	public final static String NUMERO_CTB_ASSOCIE_PARAMETER_NAME = "numeroCtbAss";
 
 	private TiersEditManager tiersEditManager;
-	private ForFiscalManager forFiscalManager;
-	private RapportEditManager rapportEditManager;
-	private AdresseManager adresseManager;
-	private SituationFamilleManager situationFamilleManager;
 
-	/**
-	 * Un LOGGER.
-	 */
-	protected final Logger LOGGER = Logger.getLogger(TiersEditController.class);
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		TiersEditView tiersView = new TiersEditView();
@@ -126,12 +108,6 @@ public class TiersEditController extends AbstractTiersController {
 		return super.suppressValidation(request, command, errors);
 	}
 
-
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -154,44 +130,7 @@ public class TiersEditController extends AbstractTiersController {
 		return showForm(request, response, errors);
 	}
 
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
-
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
 	}
-
-	public ForFiscalManager getForFiscalManager() {
-		return forFiscalManager;
-	}
-
-	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
-		this.forFiscalManager = forFiscalManager;
-	}
-
-	public RapportEditManager getRapportEditManager() {
-		return rapportEditManager;
-	}
-
-	public void setRapportEditManager(RapportEditManager rapportEditManager) {
-		this.rapportEditManager = rapportEditManager;
-	}
-
-	public AdresseManager getAdresseManager() {
-		return adresseManager;
-	}
-
-	public void setAdresseManager(AdresseManager adresseManager) {
-		this.adresseManager = adresseManager;
-	}
-
-	public SituationFamilleManager getSituationFamilleManager() {
-		return situationFamilleManager;
-	}
-
-	public void setSituationFamilleManager(SituationFamilleManager situationFamilleManager) {
-		this.situationFamilleManager = situationFamilleManager;
-	}
-
 }

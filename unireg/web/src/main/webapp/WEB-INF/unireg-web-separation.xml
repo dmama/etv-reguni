@@ -17,7 +17,7 @@
 		<property name="commandClass" value="ch.vd.uniregctb.separation.view.SeparationRecapView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="tiers/edition/separation/recap" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 		<property name="separationRecapManager" ref="separationRecapManager" />
 		<property name="validator" ref="separationRecapValidator" />
 	</bean>
@@ -50,7 +50,7 @@
 		<property name="commandName" value="command" />
 		<property name="annulationSeparationRecapManager" ref="annulationSeparationRecapManager" />
 		<property name="formView" value="annulation/separation/recap" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 	</bean>
 	
 	<bean id="annulationSeparationRecapManager" class="ch.vd.uniregctb.annulation.separation.manager.AnnulationSeparationRecapManagerImpl"  >

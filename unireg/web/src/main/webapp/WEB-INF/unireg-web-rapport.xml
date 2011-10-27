@@ -35,7 +35,7 @@
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="formView" value="tiers/edition/rt/contrat/edit" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 		<property name="validator" ref="rapportPrestationValidator" />
 	</bean>
 	
@@ -77,7 +77,7 @@
 		<property name="commandName" value="command" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="formView" value="tiers/edition/rapport/recap/edit" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 		<property name="validator" ref="rapportValidator" />
 	</bean>
 

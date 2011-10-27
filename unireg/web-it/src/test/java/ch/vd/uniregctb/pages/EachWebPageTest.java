@@ -52,13 +52,13 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'ajout d'un habitant
 	@Test
 	public void testTiersNewNonHabitant() throws Exception {
-		assertPage("/tiers/edit.do?nature=NonHabitant&onglet=civil", "Création d'une PP inconnue au contrôle des habitants");
+		assertPage("/tiers/create.do?nature=NonHabitant&onglet=civil", "Création d'une PP inconnue au contrôle des habitants");
 	}
 
 	// Page d'ajout d'une autre communauté
 	@Test
 	public void testTiersNewAC() throws Exception {
-		assertPage("/tiers/edit.do?nature=AutreCommunaute&onglet=civil", "Création d'une PM non connue du registre");
+		assertPage("/tiers/create.do?nature=AutreCommunaute&onglet=civil", "Création d'une PM non connue du registre");
 	}
 
 	/*--------------------------
@@ -69,12 +69,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'un tiers (couple)
 	@Test
 	public void testEditTiers() throws Exception {
-		assertPage("/tiers/edit.do?id=86006202", "Edition d'un tiers");
+		assertPage("/tiers/create.do?id=86006202", "Edition d'un tiers");
 	}
 
 	@Test
 	public void testEditTiersInexistant() throws Exception {
-		assertPage("/tiers/edit.do?id=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
+		assertPage("/tiers/create.do?id=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
 	}
 
 	/*--------------------------

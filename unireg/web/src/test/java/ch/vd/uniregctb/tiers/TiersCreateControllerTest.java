@@ -23,25 +23,25 @@ import static junit.framework.Assert.assertEquals;
  *
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
-public class TiersEditControllerTest extends WebTest {
+public class TiersCreateControllerTest extends WebTest {
 
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private final static String CONTROLLER_NAME = "tiersEditController";
+	private final static String CONTROLLER_NAME = "tiersCreateController";
 
-	private final static String DB_UNIT_FILE = "TiersEditControllerTest.xml";
+	private final static String DB_UNIT_FILE = "TiersCreateControllerTest.xml";
 
 	public final static String TIERS_ID_PARAMETER_NAME = "id";
 
-	private TiersEditController controller;
+	private TiersCreateController controller;
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
 
-		controller = getBean(TiersEditController.class, CONTROLLER_NAME);
+		controller = getBean(TiersCreateController.class, CONTROLLER_NAME);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -74,7 +74,7 @@ public class TiersEditControllerTest extends WebTest {
 
 		request.addParameter("tiers.nom", "Kamel");
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(TiersCreateController.BUTTON_SAVE, TiersCreateController.BUTTON_SAVE);
 
 		request.setMethod("POST");
 		final ModelAndView mav = controller.handleRequest(request, response);
@@ -97,7 +97,7 @@ public class TiersEditControllerTest extends WebTest {
 		request.addParameter("tiers.nom", nom);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(TiersCreateController.BUTTON_SAVE, TiersCreateController.BUTTON_SAVE);
 
 		request.setMethod("POST");
 		final ModelAndView mav = controller.handleRequest(request, response);
@@ -133,7 +133,7 @@ public class TiersEditControllerTest extends WebTest {
 		final RegDate dateN = RegDate.get(2008, 4, 12);
 		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.addParameter(AbstractTiersController.TIERS_NATURE_PARAMETER_NAME, NatureTiers.NonHabitant.name());
-		request.addParameter(TiersEditController.BUTTON_SAVE, TiersEditController.BUTTON_SAVE);
+		request.addParameter(TiersCreateController.BUTTON_SAVE, TiersCreateController.BUTTON_SAVE);
 
 		request.setMethod("POST");
 		controller.handleRequest(request, response);

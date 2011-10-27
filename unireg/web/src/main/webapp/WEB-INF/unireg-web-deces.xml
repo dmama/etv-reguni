@@ -17,7 +17,7 @@
 		<property name="commandClass" value="ch.vd.uniregctb.deces.view.DecesRecapView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="tiers/edition/deces/recap" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 		<property name="decesRecapManager" ref="decesRecapManager" />
 		<property name="validator" ref="decesRecapValidator" />
 	</bean>
@@ -49,7 +49,7 @@
 		<property name="commandName" value="command" />
 		<property name="annulationDecesRecapManager" ref="annulationDecesRecapManager" />
 		<property name="formView" value="annulation/deces/recap" />
-		<property name="successView" value="/tiers/edit.do" />
+		<property name="successView" value="/tiers/visu.do" />
 	</bean>
 	
 	<bean id="annulationDecesRecapManager" class="ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManagerImpl"  >
