@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="civilEditController" class="ch.vd.uniregctb.tiers.CivilEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/civil/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="validator" ref="civilEditValidator" />
+	</bean>
+	
+	<bean id="civilEditValidator" class="ch.vd.uniregctb.tiers.validator.CivilEditValidator" />
+	
+</beans>

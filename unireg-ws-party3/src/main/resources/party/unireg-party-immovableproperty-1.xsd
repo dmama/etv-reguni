@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta4 - 13 octobre 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
+	<xs:complexType name="immovablePropertyType">
+		<xs:annotation>
+			<xs:documentation>Contient les informations d'un immeuble appartenant à un contribuable. ATTENTION ! Ces éléments sont basés sur une spécification non-validée : il est probable que la
+				définition ci-dessous varie encore dans le futur et ceci sans garantie de comptabilité ascendante. L'utilisation de cette structure en l'état est à vos risques et périls.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de début de validité de l'immeuble. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fin de validité de l'immeuble. Si l'immeuble est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="number" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le numéro de l'immeuble, tel que défini par le registre foncier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="municipalityName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Le nom en toutes lettres de la commune de l'immeuble, tel que défini par le registre foncier. Exemples: "Lausanne", "Romainmôtier-Envy", ...
+						Note: le registre foncier n'utilise pas les numéros Ofs pour identifier les communes, il n'est donc pas possible d'exposer ces numéros pour l'instant.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nature" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="estimatedTaxValue" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>L'estimation fiscale de l'immeuble.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="estimatedTaxValueReference" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
+						renseignée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ownershipType" type="immo:ownershipTypeType">
+				<xs:annotation>
+					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="share" type="immo:propertyShareType">
+				<xs:annotation>
+					<xs:documentation>La part de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="ownershipTypeType">
+		<xs:annotation>
+			<xs:documentation>Le genre de propriété.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SOLE_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Priopriété individuelle. Utilisé dans le cas où une personne possède l'intégralité d'un bien.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SIMPLE_CO_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Co-propriété. Utilisé dans le cas où des personnes distinctes possèdent un bien commun. Par exemple : Monsieur Michaud et Madame Martin, voisins de leurs états,
+						s'entendent pour acheter en co-propriété une parcelle avoisinante. Le bien est découpé en parts, et chaque personne dispose d'une part déterminée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COLLECTIVE_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Propriété commune. Utilisé dans le cas où une communauté de personnes (une hoirie, un couple, ...) possède un bien. Par exemple : Mesdames Dupond, Dupneu
+						et Duboulon, filles de feu Madame et Monsieur Dumoulin, reçoivent en héritage la villa de leurs parents. Le bien n'est pas découpé en parts.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Propriété par étages. La propriété par étages est une forme particulière de copropriété à laquelle a été ajoutée la notion de droit d'usage exclusif sur une
+						partie géographiquement déterminée de l'immeuble, dont bénéficie chaque copropriétaire.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="propertyShareType">
+		<xs:annotation>
+			<xs:documentation>Représente la part de propriété sous forme fractionnaire (comprise entre 0 exclu et 1 inclus).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="numerator" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le numérateur de la fraction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="denominator" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Le dénominateur de la fraction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+</xs:schema>

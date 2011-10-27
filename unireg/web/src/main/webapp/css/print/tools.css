@@ -1,0 +1,194 @@
+a.add,
+a.copy,
+a.detail,
+a.consult,
+a.historique,
+a.download,
+a.edit,
+a.delete,
+a.selectionner,
+a.correction,
+a.notes,
+a.replay,
+a.pdf,
+a.calendar {
+	background-position: left top;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	padding-left:16px;
+	padding-bottom:2px;
+	overflow:hidden;		
+}
+
+a.add:hover,
+a.copy:hover,
+a.detail:hover,
+a.consult:hover,
+a.historique:hover,
+a.download:hover,
+a.edit:hover,
+a.delete:hover,
+a.selectionner:hover,
+a.correction:hover,
+a.notes:hover,
+a.replay:hover,
+a.pdf:hover,
+a.calendar:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
+}
+
+a.add:hover span,
+a.copy:hover span,
+a.detail:hover span,
+a.consult:hover span,
+a.historique:hover span,
+a.download:hover span,
+a.edit:hover span,
+a.delete:hover span,
+a.selectionner:hover span,
+a.correction:hover span,
+a.notes:hover span,
+a.replay:hover span,
+a.pdf:hover span,
+a.calendar:hover span {
+	display: block;
+	position: absolute;
+	top: 2em;
+	left: 1em;
+	background: #ffffe0;
+	text-align: center;
+	color: black;
+	padding: 2px;
+}
+
+span.add,
+span.copy,
+span.delete,
+span.correction,
+span.detail,
+span.consult,
+span.historique,
+span.download,
+span.delete,
+span.selectionner,
+span.edit,
+span.notes,
+span.replay,
+span.pdf,
+span.calendar {
+	display: none;
+}
+
+
+a.calendar {
+	background-image: url(calendar_off.gif);
+}
+a.calendar:hover {
+	background-image: url(calendar_on.gif);
+}
+
+
+a.add {
+	background-image: url(add_button_off.gif);
+}
+
+a.add:hover {
+	background-image: url(add_button_on.gif);
+}
+
+a.copy {
+	background-image: url(copy_button_off.gif);
+}
+
+a.copy:hover {
+	background-image: url(copy_button_on.gif);
+}
+
+.correctionOrigine {
+	font-style: italic;
+	font-size: 8pt;
+}
+
+a.correction {
+	background-image: url(correction_off.gif);
+}
+
+a.correction:hover {
+	background-image: url(correction_on.gif);
+}
+
+a.detail {
+	background-image: url(detail_off.gif);
+}
+
+a.detail:hover {
+	background-image: url(detail_on.gif);
+}
+
+a.consult {
+	background-image: url(consult_off.gif);
+}
+
+a.consult:hover {
+	background-image: url(consult_on.gif);
+}
+
+a.historique {
+	background-image: url(historique_off.gif);
+	float: right;
+}
+
+a.historique:hover {
+	background-image: url(historique_on.gif);
+}
+
+a.download {
+	background-image: url(download_off.gif);
+}
+
+a.download:hover {
+	background-image: url(download_on.gif);
+}
+
+a.delete {
+	background-image: url(delete_off.gif);
+	float:right;
+}
+a.delete:hover {
+	background-image: url(delete_on.gif);
+}
+legend a.delete:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
+}
+
+a.selectionner {
+	background-image: url(selectionner_on.gif);
+}
+a.selectionner:hover {
+	background-image: url(selectionner_on.gif);
+}
+
+a.edit {
+	background-image: url(edit_off.gif);
+}
+a.edit:hover {
+	background-image: url(edit_on.gif);
+}
+
+a.notes {
+	background-image: url(notes_button_off.gif);
+}
+a.notes:hover {
+	background: url(notes_button_on.gif);
+}
+
+a.replay {
+	background-image: url(replay_button_off.gif);
+}
+a.replay:hover {
+	background-image: url(replay_button_on.gif);
+}

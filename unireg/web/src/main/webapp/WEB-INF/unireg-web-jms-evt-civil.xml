@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtCivil}" />
+	</bean>
+
+	<bean id="evtCivilEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivil}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivil.consumers}"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
+	</bean>
+
+	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilListener" parent="esbMessageListener">
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
+		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessorImpl">
+		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="fetchAwaitingEventsOnStart" value="true"/>
+		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Le ehcache manager pour ne pas avoir à inclure le fichier unireg-ws-cache.xml -->
+	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
+	</bean>
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
+
+	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
+	
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.externe.jms.MockEvenementCivilSender" />
+
+	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
+
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService"/>
+	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceHost"/>
+
+	<!-- Bean client ServiceCivil MOCK -->
+	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceHost"/>
+
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />
+
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
+
+	<!-- Mock service BVR -->
+	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient">
+	</bean>
+
+	<!-- Mock du Web-service PM -->
+	<bean id="tiersService2Mock" class="ch.vd.uniregctb.webservices.tiers2.mock.TiersWebServiceMockPM">
+		<property name="target" ref="tiersService2Bean" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="adressesPMCsvFile" value="classpath:mock/adresses_entreprises.csv" />
+		<property name="assujettissementsPMCsvFile" value="classpath:mock/assujettissements_entreprises.csv" />
+		<property name="capitauxPMCsvFile" value="classpath:mock/capitaux_entreprises.csv" />
+		<property name="etatsPMCsvFile" value="classpath:mock/etats_entreprises.csv" />
+		<property name="formesPMCsvFile" value="classpath:mock/formes_juridiques_entreprises.csv" />
+		<property name="forsPrincipauxPMCsvFile" value="classpath:mock/fors_principaux_entreprises.csv" />
+		<property name="forsSecondairesPMCsvFile" value="classpath:mock/fors_secondaires_entreprises.csv" />
+		<property name="pmsCsvFile" value="classpath:mock/entreprises.csv" />
+		<property name="regimesVDPMCsvFile" value="classpath:mock/regimes_fiscaux_ch_entreprises.csv" />
+		<property name="regimesCHPMCsvFile" value="classpath:mock/regimes_fiscaux_vd_entreprises.csv" />
+		<property name="siegesPMCsvFile" value="classpath:mock/sieges_entreprises.csv" />
+		<property name="evenementsPMCsvFile" value="classpath:mock/evenements_entreprises.csv" />
+	</bean>
+
+	<!-- Mock PM du tiers DAO -->
+	<bean id="tiersDAOMockPM" class="ch.vd.uniregctb.webservices.tiers2.mock.TiersDAOMockPM">
+		<property name="target" ref="tiersDAO" />
+		<property name="mockPM" ref="tiersService2Mock" />
+	</bean>
+
+	<!-- override du cache avec le mock comme target -->
+	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService2Mock" /> <!-- override -->
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers2" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<!-- override du service provider cache avec le mock PM comme tiers DAO -->
+	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+		<property name="target" ref="securityProviderImpl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="securityProvider" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAOMockPM" /> <!-- override -->
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="preloadTiersIds" value="${extprop.cache.preload.tiers.ids}"/>
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+</beans>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean 	id="abstractRapportPrestationController"
+			parent="abstractSimpleFormController"
+			abstract="true"
+			class="ch.vd.uniregctb.rt.AbstractRapportPrestationController">
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+	</bean>
+
+
+	<bean id="debiteurListController" class="ch.vd.uniregctb.rt.DebiteurListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rt.view.DebiteurListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/rt/debiteur/list" />
+		<property name="successView" value="edit.do" />
+		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
+	</bean>
+
+	<bean id="sourcierListController" class="ch.vd.uniregctb.rt.SourcierListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rt.view.SourcierListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/rt/sourcier/list" />
+		<property name="successView" value="edit.do" />
+		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
+	</bean>
+
+	<bean id="rapportPrestationEditController" class="ch.vd.uniregctb.rt.RapportPrestationEditController" parent="abstractRapportPrestationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rt.view.RapportPrestationView" />
+		<property name="commandName" value="command" />
+		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="formView" value="tiers/edition/rt/contrat/edit" />
+		<property name="successView" value="/tiers/edit.do" />
+		<property name="validator" ref="rapportPrestationValidator" />
+	</bean>
+	
+	<bean id="rapportPrestationEditManager" class="ch.vd.uniregctb.rt.manager.RapportPrestationEditManagerImpl" >
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	</bean>
+
+	<bean id="rapportPrestationValidator" class="ch.vd.uniregctb.rt.validator.RapportPrestationEditValidator" />
+
+	<bean id="rapportListController" class="ch.vd.uniregctb.rapport.RapportListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportListView" />
+		<property name="commandName" value="command" />
+		<property name="rapportListManager" ref="rapportListManager" />
+		<property name="formView" value="tiers/edition/rapport/recherche/list" />
+		<property name="successView" value="edit.do" />
+	</bean>
+
+	<bean id="rapportListManager" class="ch.vd.uniregctb.rapport.manager.RapportListManagerImpl" parent="tiersManager" >
+	</bean>
+
+	<bean id="rapportEditController" class="ch.vd.uniregctb.rapport.RapportEditController" parent="abstractRapportPrestationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportView" />
+		<property name="commandName" value="command" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
+		<property name="formView" value="tiers/edition/rapport/recap/edit" />
+		<property name="successView" value="/tiers/edit.do" />
+		<property name="validator" ref="rapportValidator" />
+	</bean>
+
+	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+	</bean>
+
+	<bean id="rapportValidator" class="ch.vd.uniregctb.rapport.validator.RapportEditValidator" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+	<bean id="dossiersApparentesEditController" class="ch.vd.uniregctb.tiers.DossiersApparentesEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/rapport/edit" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+	</bean>
+
+	<bean id="tiersRapportController" class="ch.vd.uniregctb.tiers.TiersRapportController" parent="abstractRapportPrestationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/rapport/rapport-modif" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
+		<property name="validator" ref="tiersRapportValidator" />
+	</bean>
+
+	<bean id="tiersRapportValidator" class="ch.vd.uniregctb.tiers.validator.TiersRapportValidator" />
+
+	<bean id="rapportsPrestationEditController" class="ch.vd.uniregctb.tiers.RapportsPrestationEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/rt/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
+	</bean>
+
+	<bean id="contribuableAssocieListController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/contribuable-associe/list" />
+		<property name="successView" value="edit.do" />
+		<property name="contribuableAssocieEditManager" ref="contribuableAssocieEditManager" />
+	</bean>
+
+	<bean id="contribuableAssocieEditController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieEditController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView" />
+		<property name="formView" value="tiers/edition/contribuable-associe/edit" />
+		<property name="contribuableAssocieEditManager" ref="contribuableAssocieEditManager" />
+		<property name="successView" value="edit.do" />
+	</bean>
+
+	<bean id="contribuableAssocieEditManager" class="ch.vd.uniregctb.contribuableAssocie.manager.ContribuableAssocieEditManagerImpl" parent="tiersManager">
+	</bean>
+
+</beans>
