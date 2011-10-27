@@ -47,7 +47,7 @@ public class UtilisateurEditRestrictionController {
             if (annuleTout) {
                 utilisateurEditRestrictionManager.annulerToutesLesRestrictions(noIndividuOperateur);
             } else {
-                utilisateurEditRestrictionManager.annulerRestriction(restrictionsAAnnuler);
+                utilisateurEditRestrictionManager.annulerRestrictions(restrictionsAAnnuler);
             }
         }
         catch (DroitAccesException e) {

@@ -83,8 +83,10 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerRestriction(List<Long> listIdRestriction) throws DroitAccesException {
-		for (Long id : listIdRestriction) droitAccesService.annuleDroitAcces(id);
+	public void annulerRestrictions(List<Long> listIdRestriction) throws DroitAccesException {
+		for (Long id : listIdRestriction) {
+			droitAccesService.annuleDroitAcces(id);
+		}
 	}
 
 	@Override

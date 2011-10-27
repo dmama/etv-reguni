@@ -45,7 +45,7 @@ public interface UtilisateurEditRestrictionManager {
      */
 
     @Transactional(rollbackFor = Throwable.class)
-    public void annulerRestriction(List<Long> listIdRestriction) throws DroitAccesException;
+    public void annulerRestrictions(List<Long> listIdRestriction) throws DroitAccesException;
 
     /**
      * Annule toutes les restrictions
