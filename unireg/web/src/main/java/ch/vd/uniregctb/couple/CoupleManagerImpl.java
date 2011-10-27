@@ -47,6 +47,7 @@ public class CoupleManagerImpl implements CoupleManager {
 		this.metierService = metierService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDroitAccesService(DroitAccesService droitAccesService) {
 		this.droitAccesService = droitAccesService;
 	}
@@ -55,8 +56,8 @@ public class CoupleManagerImpl implements CoupleManager {
 	public Couple getCoupleForReconstitution(PersonnePhysique pp1, PersonnePhysique pp2, RegDate date) {
 		EnsembleTiersCouple couplePP1 = tiersService.getEnsembleTiersCouple(pp1, date);
 		EnsembleTiersCouple couplePP2 = tiersService.getEnsembleTiersCouple(pp2, date);
-		MenageCommun menageAReconstituer = null;
-		PersonnePhysique tiersAAjouter = null;
+		MenageCommun menageAReconstituer;
+		PersonnePhysique tiersAAjouter;
 		if (couplePP1 != null) {
 			menageAReconstituer = couplePP1.getMenage();
 			tiersAAjouter = pp2;
@@ -88,9 +89,14 @@ public class CoupleManagerImpl implements CoupleManager {
 	@NotNull
 	@Override
 	public CoupleInfo determineInfoFuturCouple(@Nullable Long pp1Id, @Nullable Long pp2Id, @Nullable Long mcId) {
-		final PersonnePhysique pp1 = pp1Id == null ? null : (PersonnePhysique) tiersDAO.get(pp1Id);
-		final PersonnePhysique pp2 = pp2Id == null ? null : (PersonnePhysique) tiersDAO.get(pp2Id);
-		final Contribuable couple = mcId == null ? null : (Contribuable) tiersDAO.get(mcId);
+
+		final Tiers tiers1 = pp1Id == null ? null : tiersDAO.get(pp1Id);
+		final Tiers tiers2 = pp2Id == null ? null : tiersDAO.get(pp2Id);
+		final Tiers tiers3 = mcId == null ? null : tiersDAO.get(mcId);
+
+		final PersonnePhysique pp1 = tiers1 instanceof PersonnePhysique ? (PersonnePhysique) tiers1 : null;
+		final PersonnePhysique pp2 = tiers2 instanceof PersonnePhysique ? (PersonnePhysique) tiers2 : null;
+		final Contribuable couple = tiers3 instanceof Contribuable ? (Contribuable) tiers3 : null;
 
 		if (pp1 == null) {
 			return new CoupleInfo(null, null, null, null);
