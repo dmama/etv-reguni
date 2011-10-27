@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -930,8 +931,9 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
+	@NotNull
 	@Override
-	public MenageCommun getMenageForFusion(MenageCommun menage1, MenageCommun menage2) {
+	public MenageCommun getMenageForFusion(@NotNull MenageCommun menage1, @NotNull MenageCommun menage2) {
 		final ForFiscalPrincipal premierForPrincipal = menage1.getPremierForFiscalPrincipal();
 		final ForFiscalPrincipal premierForConjoint = menage2.getPremierForFiscalPrincipal();
 		if (premierForPrincipal != null && premierForConjoint != null) {
@@ -953,8 +955,8 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		// les deux ménages on un for à la même date ou pas de for
-		final PersonnePhysique pp1 = tiersService.getPersonnesPhysiques(menage1).toArray(new PersonnePhysique[0])[0];
-		final PersonnePhysique pp2 = tiersService.getPersonnesPhysiques(menage2).toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique pp1 = tiersService.getPersonnesPhysiques(menage1).iterator().next();
+		final PersonnePhysique pp2 = tiersService.getPersonnesPhysiques(menage2).iterator().next();
 		final PersonnePhysique principal = tiersService.getPrincipal(pp1, pp2);
 		if (principal == pp1) {
 			return menage1;

@@ -74,7 +74,7 @@ function open_tiers_picker_with_filter(button, filter_bean, filter_params, on_ti
 	var dialog = create_dialog_div('tiers-picker-dialog');
 
 	// on définit la méthode appelée lorsque un tiers a été choisi
-	button.select_tiers_id = function(link) {
+	$(button).get(0).select_tiers_id = function(link) {
 		var tiersId = link.innerHTML.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 		dialog.dialog("close");
 		if (on_tiers_selection) {
@@ -100,13 +100,13 @@ function open_tiers_picker_with_filter(button, filter_bean, filter_params, on_ti
 				var timer = setTimeout(function() {
 					var params = {
 						'query' : current,
-						'buttonId' : button.id
+						'buttonId' : $(button).attr('id')
 					};
 					if (filter_bean) {
 						params['filterBean'] = filter_bean;
 						params['filterParams'] = filter_params;
 					}
-					XT.doAjaxAction('tiersPickerQuickSearch', document.getElementById('tiers-picker-query'), params);
+					XT.doAjaxAction('tiersPickerQuickSearch', $('#tiers-picker-query').get(0), params);
 			    }, 200); // 200 ms
 			    $.data(this, "tiers-picker-timer", timer);
 			}
@@ -121,13 +121,13 @@ function open_tiers_picker_with_filter(button, filter_bean, filter_params, on_ti
 				'localite' : $('#tiers-picker-localite').val(),
 				'datenaissance' : $('#tiers-picker-datenaissance').val(),
 				'noavs' : $('#tiers-picker-noavs').val(),
-				'buttonId' : button.id
+				'buttonId' : $(button).attr('id')
 			};
 			if (filter_bean) {
 				params['filterBean'] = filter_bean;
 				params['filterParams'] = filter_params;
 			}
-			XT.doAjaxAction('tiersPickerFullSearch', document.getElementById('tiers-picker-query'), params);
+			XT.doAjaxAction('tiersPickerFullSearch', $('#tiers-picker-query').get(0), params);
 		});
 
 		// la fonction pour tout effacer, y compris les résultat de la recherche

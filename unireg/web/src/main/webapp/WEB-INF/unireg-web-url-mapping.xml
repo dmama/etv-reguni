@@ -189,9 +189,6 @@
 				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
-				<!-- Couple -->
-				<entry key="/couple/list-pp.do" value-ref="personnePhysiqueListController" />
-				<entry key="/couple/recap.do" value-ref="coupleRecapController" />
 				<!-- DI -->
 				<entry key="/di/edit.do" value-ref="diEditController" />
 				<entry key="/di/delai.do" value-ref="diEditDelaiController" />

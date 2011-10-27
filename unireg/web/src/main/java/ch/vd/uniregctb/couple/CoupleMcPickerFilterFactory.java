@@ -4,13 +4,13 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.picker.TiersPickerFilter;
 import ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory;
 
-public class CoupleRecapPickerFilterFactory implements TiersPickerFilterFactory {
+public class CoupleMcPickerFilterFactory implements TiersPickerFilterFactory {
 
 	private TiersDAO tiersDAO;
 
 	@Override
 	public TiersPickerFilter parse(String paramsString) {
-		return new CoupleRecapPickerFilter(tiersDAO);
+		return new CoupleMcPickerFilter(tiersDAO);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

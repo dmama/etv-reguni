@@ -378,7 +378,7 @@ public interface TiersService {
 	 * @return true si la personne physique est membre d'un ménage commun à la date donnée.
 	 */
 	@SuppressWarnings({"UnusedDeclaration"})
-	public boolean isInMenageCommun(PersonnePhysique personne, RegDate date);
+	public boolean isInMenageCommun(PersonnePhysique personne, @Nullable RegDate date);
 
 	/**
 	 * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers ménage-commun.
@@ -1166,6 +1166,7 @@ public interface TiersService {
 	 * @param menage un ménage commun
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun (0, 1 ou 2 personnes max, par définition) en ignorant les rapports annulés
 	 */
+	@NotNull
 	Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage);
 
 	/**
@@ -1173,6 +1174,7 @@ public interface TiersService {
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en prenant en compte les rapports éventuellement annulés (il peut donc y avoir plus de deux personnes
 	 *         physiques concernées en cas de correction de données) ; le dernier rapport entre tiers est également indiqué
 	 */
+	@NotNull
 	Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage);
 
 	/**

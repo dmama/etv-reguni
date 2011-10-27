@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple.view;
+package ch.vd.uniregctb.couple;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +16,7 @@ public enum TypeUnion {
 	SEUL(1, "Union où l'un des conjoints est inconnu"),
 	RECONCILIATION(2, "Réconciliation"),
 	RECONSTITUTION_MENAGE(3, "Reconstitution d'un ménage incomplet"),
-	FUSION_MENAGES(4, "Reconstitution d'un ménage à partir de deux ménages communs incomplets"),
-	;
+	FUSION_MENAGES(4, "Reconstitution d'un ménage à partir de deux ménages communs incomplets");
 	
 	private final int id;
 	

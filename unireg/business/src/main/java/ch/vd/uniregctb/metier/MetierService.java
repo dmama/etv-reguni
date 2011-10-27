@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -51,7 +52,7 @@ public interface MetierService {
 	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 
-	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 	
 	/**
@@ -98,11 +99,12 @@ public interface MetierService {
 	/**
 	 * Sélectionne le ménage sur lequel les deux membres vont être rattachés lors de la fusion.
 	 * 
-	 * @param menage1
-	 * @param menage2
-	 * @return
+	 * @param menage1 un ménage
+	 * @param menage2 un autre ménage
+	 * @return le ménage considéré comme principal
 	 */
-	public MenageCommun getMenageForFusion(MenageCommun menage1, MenageCommun menage2);
+	@NotNull
+	public MenageCommun getMenageForFusion(@NotNull MenageCommun menage1, @NotNull MenageCommun menage2);
 
 	/**
 	 * Fusionne deux ménage communs incomplets.
@@ -162,7 +164,7 @@ public interface MetierService {
 	 *            (optionnel) le numéro d'événement civil déclenchant la réconciliation
 	 * @return le ménage commun.
 	 */
-	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 	
 	/**

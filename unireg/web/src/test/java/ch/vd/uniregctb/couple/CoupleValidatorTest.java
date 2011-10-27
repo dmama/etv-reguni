@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple.validator;
+package ch.vd.uniregctb.couple;
 
 import java.util.List;
 
@@ -14,10 +14,6 @@ import org.springframework.validation.ObjectError;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ValidatorHelperImpl;
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.couple.CoupleHelper;
-import ch.vd.uniregctb.couple.view.CoupleRecapView;
-import ch.vd.uniregctb.couple.view.TypeUnion;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -34,9 +30,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
-public class CoupleRecapValidatorTest extends WebTest {
+public class CoupleValidatorTest extends WebTest {
 
-	private CoupleRecapValidator validator;
+	private CoupleValidator validator;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -46,16 +42,19 @@ public class CoupleRecapValidatorTest extends WebTest {
 		final MetierService metierService = getBean(MetierService.class, "metierService");
 		final MessageSource messageSource = getBean(MessageSource.class, "messageSource");
 
-		final CoupleHelper coupleHelper = new CoupleHelper();
-		coupleHelper.setTiersService(tiersService);
+		final CoupleManagerImpl coupleManager = new CoupleManagerImpl();
+		coupleManager.setTiersService(tiersService);
+		coupleManager.setTiersDAO(tiersDAO);
+		coupleManager.setMetierService(metierService);
 
 		final ValidatorHelperImpl validatorHelper = new ValidatorHelperImpl();
 		validatorHelper.setSituationFamilleService(situFamilleService);
 		validatorHelper.setTiersService(tiersService);
 		validatorHelper.setMessageSource(messageSource);
 
-		validator = new CoupleRecapValidator();
-		validator.setCoupleHelper(coupleHelper);
+		validator = new CoupleValidator();
+		validator.setTiersDAO(tiersDAO);
+		validator.setCoupleManager(coupleManager);
 		validator.setMetierService(metierService);
 		validator.setValidatorHelper(validatorHelper);
 		validator.setTiersService(tiersService);
@@ -92,10 +91,10 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// création du couple
-		final CoupleRecapView view = new CoupleRecapView();
-		view.setDateDebut(date(2009, 6, 8).asJavaDate());
-		view.setPremierePersonne(new TiersGeneralView(ppId));
-		view.setTypeUnion(TypeUnion.COUPLE);
+		final CoupleView view = new CoupleView();
+		view.setDateDebut(date(2009, 6, 8));
+		view.setPp1Id(ppId);
+		view.setMarieSeul(true);
 
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
@@ -139,10 +138,10 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// création du couple
-		final CoupleRecapView view = new CoupleRecapView();
-		view.setDateDebut(date(2009, 6, 8).asJavaDate());
-		view.setPremierePersonne(new TiersGeneralView(ppId));
-		view.setTypeUnion(TypeUnion.COUPLE);
+		final CoupleView view = new CoupleView();
+		view.setDateDebut(date(2009, 6, 8));
+		view.setPp1Id(ppId);
+		view.setMarieSeul(true);
 
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
@@ -183,13 +182,12 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// création du couple
-		final CoupleRecapView view = new CoupleRecapView();
-		view.setNouveauCtb(false);
-		view.setDateCoupleExistant(date(2009, 6, 8));
-		view.setPremierePersonne(new TiersGeneralView(ids.tiers1));
-		view.setSecondePersonne(new TiersGeneralView(ids.tiers2));
-		view.setNumeroTroisiemeTiers(ids.tiersInexistant);
-		view.setTypeUnion(TypeUnion.COUPLE);
+		final CoupleView view = new CoupleView();
+		view.setNouveauMC(false);
+		view.setDateDebut(date(2009, 6, 8));
+		view.setPp1Id(ids.tiers1);
+		view.setPp2Id(ids.tiers2);
+		view.setMcId(ids.tiersInexistant);
 
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
@@ -230,13 +228,12 @@ public class CoupleRecapValidatorTest extends WebTest {
 		});
 
 		// création du couple
-		final CoupleRecapView view = new CoupleRecapView();
-		view.setNouveauCtb(false);
-		view.setDateCoupleExistant(date(2009, 6, 8));
-		view.setPremierePersonne(new TiersGeneralView(ids.tiers1));
-		view.setSecondePersonne(new TiersGeneralView(ids.tiers2));
-		view.setNumeroTroisiemeTiers(ids.tiersInexistant);
-		view.setTypeUnion(TypeUnion.COUPLE);
+		final CoupleView view = new CoupleView();
+		view.setNouveauMC(false);
+		view.setDateDebut(date(2009, 6, 8));
+		view.setPp1Id(ids.tiers1);
+		view.setPp2Id(ids.tiers2);
+		view.setMcId(ids.tiersInexistant);
 
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);

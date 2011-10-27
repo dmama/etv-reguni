@@ -229,13 +229,13 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
 				s.append(buildDebugInfo(tiers));
 
-				if (showAvatar && showLinks) {
+				if (showAvatar || showLinks) {
 					s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
 					s.append(buildDescriptifTiers(tiers));
 					s.append("</td><td width=\"130 px\">\n");
 					s.append(buildImageTiers(tiers));
 
-					if (ensemble != null) {
+					if (showLinks && ensemble != null) {
 						// si on a un tiers appartenant à un ensemble tiers-couple, on affiche des raccourcis vers les autres membres
 						final String others = buildImageOtherTiers(tiers, ensemble);
 						if (others != null) {
@@ -322,7 +322,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		// Numéro de contribuable
 		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-		s.append("\t<td width=\"25%\">").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
+		s.append("\t<td width=\"25%\" nowrap>").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
 		s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
 		if (showLinks) {
 			final JspTagConsulterLog consulter = new JspTagConsulterLog();
@@ -897,7 +897,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "goto:/couple/list-pp.do?clearSession=true&numeroPP1=";
+			return "goto:/couple/create.do?pp1=";
 		}
 	}
 

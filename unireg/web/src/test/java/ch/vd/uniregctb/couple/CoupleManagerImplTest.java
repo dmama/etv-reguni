@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple.manager;
+package ch.vd.uniregctb.couple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,23 +8,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.couple.view.CoupleRecapView;
-import ch.vd.uniregctb.couple.view.TypeUnion;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -36,6 +27,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
@@ -44,16 +36,17 @@ import ch.vd.uniregctb.validation.EntityValidator;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
 		"classpath:ch/vd/uniregctb/couple/manager/config.xml"
 })
-public class CoupleRecapManagerImplTest extends BusinessTest {
+public class CoupleManagerImplTest extends BusinessTest {
 
-	private CoupleRecapManager mngr;
-	private Validator validator;
+	private CoupleManager mngr;
 	private DroitAccesDAO droitAccesDAO;
 	private ValidationService validationService;
 
@@ -62,14 +55,12 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
 		droitAccesDAO = getBean(DroitAccesDAO.class, "droitAccesDAO");
-		validator = getBean(Validator.class, "coupleRecapValidator");
-		mngr = getBean(CoupleRecapManager.class, "coupleRecapManager");
+		mngr = getBean(CoupleManager.class, "coupleManager");
 		validationService = getBean(ValidationService.class, "validationService");
 	}
 
 	// [UNIREG-1521]
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHEnMenageCommun() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -111,46 +102,36 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				TiersGeneralView viewTiers1 = new TiersGeneralView();
-				viewTiers1.setNumero(ids.arnold);
-				TiersGeneralView viewTiers2 = new TiersGeneralView();
-				viewTiers2.setNumero(ids.janine);
-
-				CoupleRecapView view = new CoupleRecapView();
-
-				view.setDateCoupleExistant(RegDate.get());
-				view.setNouveauCtb(false);
-				view.setPremierePersonne(viewTiers1);
-				view.setSecondePersonne(viewTiers2);
-				view.setNumeroTroisiemeTiers(ids.menage);
-				view.setTypeUnion(TypeUnion.COUPLE);
-
-				mngr.save(view);
+				mngr.sauverCouple(ids.arnold, ids.janine, ids.menage, RegDate.get(), TypeUnion.COUPLE, EtatCivil.MARIE, null);
 				return null;
 			}
 		});
 
-		// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
-		final Tiers mc = (Tiers) hibernateTemplate.get(Tiers.class, ids.menage);
-		assertNotNull(mc);
-		assertEquals(MenageCommun.class, mc.getClass());
-		assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
+				final Tiers mc = hibernateTemplate.get(Tiers.class, ids.menage);
+				assertNotNull(mc);
+				assertEquals(MenageCommun.class, mc.getClass());
+				assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
 
-		final Tiers arnold = (Tiers) hibernateTemplate.get(Tiers.class, ids.arnold);
-		assertNotNull(arnold);
-		assertEquals(PersonnePhysique.class, arnold.getClass());
-		assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
+				final Tiers arnold = hibernateTemplate.get(Tiers.class, ids.arnold);
+				assertNotNull(arnold);
+				assertEquals(PersonnePhysique.class, arnold.getClass());
+				assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
 
-		final Tiers janine = (Tiers) hibernateTemplate.get(Tiers.class, ids.janine);
-		assertNotNull(janine);
-		assertEquals(PersonnePhysique.class, janine.getClass());
-		assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+				final Tiers janine = hibernateTemplate.get(Tiers.class, ids.janine);
+				assertNotNull(janine);
+				assertEquals(PersonnePhysique.class, janine.getClass());
+				assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+				return null;
+			}
+		});
 	}
 
 	// [UNIREG-3011]
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHEnMenageCommunAvecForsFiscauxPreexistants() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -194,47 +175,36 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				TiersGeneralView viewTiers1 = new TiersGeneralView();
-				viewTiers1.setNumero(ids.arnold);
-				TiersGeneralView viewTiers2 = new TiersGeneralView();
-				viewTiers2.setNumero(ids.janine);
-
-				CoupleRecapView view = new CoupleRecapView();
-
-				view.setDateCoupleExistant(dateArrivee);
-				view.setDateDebut(dateArrivee.asJavaDate());
-				view.setNouveauCtb(false);
-				view.setPremierePersonne(viewTiers1);
-				view.setSecondePersonne(viewTiers2);
-				view.setNumeroTroisiemeTiers(ids.menage);
-				view.setTypeUnion(TypeUnion.COUPLE);
-
-				mngr.save(view);
+				mngr.sauverCouple(ids.arnold, ids.janine, ids.menage, dateArrivee, TypeUnion.COUPLE, EtatCivil.MARIE, null);
 				return null;
 			}
 		});
 
-		// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
-		final Tiers mc = hibernateTemplate.get(Tiers.class, ids.menage);
-		assertNotNull(mc);
-		assertEquals(MenageCommun.class, mc.getClass());
-		assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// On s'assure que le ménage commun est bien de la bonne classe et qu'il est bien composé
+				final Tiers mc = hibernateTemplate.get(Tiers.class, ids.menage);
+				assertNotNull(mc);
+				assertEquals(MenageCommun.class, mc.getClass());
+				assertEquals(2, mc.getRapportsObjet().size()); // possède bien deux parties
 
-		final Tiers arnold = hibernateTemplate.get(Tiers.class, ids.arnold);
-		assertNotNull(arnold);
-		assertEquals(PersonnePhysique.class, arnold.getClass());
-		assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
+				final Tiers arnold = hibernateTemplate.get(Tiers.class, ids.arnold);
+				assertNotNull(arnold);
+				assertEquals(PersonnePhysique.class, arnold.getClass());
+				assertEquals(1, arnold.getRapportsSujet().size()); // fait partie du ménage commun
 
-		final Tiers janine = hibernateTemplate.get(Tiers.class, ids.janine);
-		assertNotNull(janine);
-		assertEquals(PersonnePhysique.class, janine.getClass());
-		assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+				final Tiers janine = hibernateTemplate.get(Tiers.class, ids.janine);
+				assertNotNull(janine);
+				assertEquals(PersonnePhysique.class, janine.getClass());
+				assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+				return null;
+			}
+		});
 	}
 
 	// [UNIREG-2893] Droits d'accès sur le non-habitant à transformer en couple
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testTranformationNHAvecDroitsAccesEnMenageCommun() throws Exception {
 
 		// Création de trois personnes physiques dont une représente en fait un ménage commun
@@ -260,7 +230,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		final long operateurAvecDroitFerme = 1;
 		final long operateurAvecDroitOuvert = 2;
 
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>(){
+		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
 			@Override
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique arnold = addHabitant(noIndArnold);
@@ -282,64 +252,57 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				final TiersGeneralView viewTiers1 = new TiersGeneralView();
-				viewTiers1.setNumero(ids.arnold);
-				final TiersGeneralView viewTiers2 = new TiersGeneralView();
-				viewTiers2.setNumero(ids.janine);
-
-				final CoupleRecapView view = new CoupleRecapView();
-				view.setDateCoupleExistant(RegDate.get());
-				view.setNouveauCtb(false);
-				view.setPremierePersonne(viewTiers1);
-				view.setSecondePersonne(viewTiers2);
-				view.setNumeroTroisiemeTiers(ids.menage);
-				view.setTypeUnion(TypeUnion.COUPLE);
-
-				mngr.save(view);
+				mngr.sauverCouple(ids.arnold, ids.janine, ids.menage, RegDate.get(), TypeUnion.COUPLE, EtatCivil.MARIE, null);
 				return null;
 			}
 		});
 
 		// on s'assure que les droits d'accès sont au bon endroit
 
-		// on doit avoir effacé les droits pour cet opérateurs (ils ne sont plus valables sur le ménage et ne doivent pas être repris sur la PP car ils sont fermés)
-		final List<DroitAcces> droitsPourOperateurFerme = droitAccesDAO.getDroitsAcces(operateurAvecDroitFerme);
-		Assert.assertNotNull(droitsPourOperateurFerme);
-		Assert.assertEquals(0, droitsPourOperateurFerme.size());
-
-		// le droit sur l'ancien non-habitant doit avoir été reproduit sur les deux membres du ménage
-		final List<DroitAcces> droitsPourOperateurOuvert = droitAccesDAO.getDroitsAcces(operateurAvecDroitOuvert);
-		Assert.assertNotNull(droitsPourOperateurOuvert);
-		Assert.assertEquals(2, droitsPourOperateurOuvert.size());
-
-		// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
-		final List<DroitAcces> droits = new ArrayList<DroitAcces>(droitsPourOperateurOuvert);
-		Collections.sort(droits, new Comparator<DroitAcces>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public int compare(DroitAcces o1, DroitAcces o2) {
-				final long n1 = o1.getTiers().getNumero();
-				final long n2 = o2.getTiers().getNumero();
-				return n1 > n2 ? 1 : (n1 < n2 ? -1 : 0);
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// on doit avoir effacé les droits pour cet opérateurs (ils ne sont plus valables sur le ménage et ne doivent pas être repris sur la PP car ils sont fermés)
+				final List<DroitAcces> droitsPourOperateurFerme = droitAccesDAO.getDroitsAcces(operateurAvecDroitFerme);
+				assertNotNull(droitsPourOperateurFerme);
+				assertEquals(0, droitsPourOperateurFerme.size());
+
+				// le droit sur l'ancien non-habitant doit avoir été reproduit sur les deux membres du ménage
+				final List<DroitAcces> droitsPourOperateurOuvert = droitAccesDAO.getDroitsAcces(operateurAvecDroitOuvert);
+				assertNotNull(droitsPourOperateurOuvert);
+				assertEquals(2, droitsPourOperateurOuvert.size());
+
+				// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
+				final List<DroitAcces> droits = new ArrayList<DroitAcces>(droitsPourOperateurOuvert);
+				Collections.sort(droits, new Comparator<DroitAcces>() {
+					@Override
+					public int compare(DroitAcces o1, DroitAcces o2) {
+						final long n1 = o1.getTiers().getNumero();
+						final long n2 = o2.getTiers().getNumero();
+						return n1 > n2 ? 1 : (n1 < n2 ? -1 : 0);
+					}
+				});
+				final RegDate aujourdhui = RegDate.get();
+				{
+					final DroitAcces droit = droits.get(0);
+					assertEquals(ids.arnold, (long) droit.getTiers().getNumero());
+					assertEquals(Niveau.ECRITURE, droit.getNiveau());
+					assertEquals(aujourdhui, droit.getDateDebut());
+					assertNull(droit.getDateFin());
+					assertFalse(droit.isAnnule());
+				}
+				{
+					final DroitAcces droit = droits.get(1);
+					assertEquals(ids.janine, (long) droit.getTiers().getNumero());
+					assertEquals(Niveau.ECRITURE, droit.getNiveau());
+					assertEquals(aujourdhui, droit.getDateDebut());
+					assertNull(droit.getDateFin());
+					assertFalse(droit.isAnnule());
+				}
+				return null;
 			}
 		});
-		final RegDate aujourdhui = RegDate.get();
-		{
-			final DroitAcces droit = droits.get(0);
-			Assert.assertEquals(ids.arnold, (long) droit.getTiers().getNumero());
-			Assert.assertEquals(Niveau.ECRITURE, droit.getNiveau());
-			Assert.assertEquals(aujourdhui, droit.getDateDebut());
-			Assert.assertNull(droit.getDateFin());
-			Assert.assertFalse(droit.isAnnule());
-		}
-		{
-			final DroitAcces droit = droits.get(1);
-			Assert.assertEquals(ids.janine, (long) droit.getTiers().getNumero());
-			Assert.assertEquals(Niveau.ECRITURE, droit.getNiveau());
-			Assert.assertEquals(aujourdhui, droit.getDateDebut());
-			Assert.assertNull(droit.getDateFin());
-			Assert.assertFalse(droit.isAnnule());
-		}
 	}
 
 	// [UNIREG-1521] Teste que toutes les opérations sont bien rollées-back en cas d'erreur de validation
@@ -359,7 +322,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
-		
+
 		class Ids {
 			long arnold;
 			long janine;
@@ -375,7 +338,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				PersonnePhysique janine = addHabitant(noIndJanine);
 				ids.janine = janine.getNumero();
 				PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(menage, date(1988,1,1), MotifFor.MAJORITE, MockCommune.Fraction.LAbbaye);
+				addForPrincipal(menage, date(1988, 1, 1), MotifFor.MAJORITE, MockCommune.Fraction.LAbbaye);
 				ids.menage = menage.getNumero();
 				return null;
 			}
@@ -391,23 +354,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			doInNewTransactionAndSession(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
-
-					TiersGeneralView viewTiers1 = new TiersGeneralView();
-					viewTiers1.setNumero(ids.arnold);
-					TiersGeneralView viewTiers2 = new TiersGeneralView();
-					viewTiers2.setNumero(ids.janine);
-
-					CoupleRecapView view = new CoupleRecapView();
-
-					view.setDateCoupleExistant(RegDate.get());
-					view.setDateDebut(DateHelper.getCurrentDate());
-					view.setNouveauCtb(false);
-					view.setPremierePersonne(viewTiers1);
-					view.setSecondePersonne(viewTiers2);
-					view.setNumeroTroisiemeTiers(ids.menage);
-					view.setTypeUnion(TypeUnion.COUPLE);
-
-					mngr.save(view);
+					mngr.sauverCouple(ids.arnold, ids.janine, ids.menage, date(1988, 1, 1), TypeUnion.COUPLE, EtatCivil.MARIE, null);
 					return null;
 				}
 			});
@@ -422,22 +369,22 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
-		doInNewTransactionAndSession(new TxCallback<Object>(){
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Tiers arnold = (Tiers) hibernateTemplate.get(Tiers.class, ids.arnold);
+				final Tiers arnold = hibernateTemplate.get(Tiers.class, ids.arnold);
 				assertNotNull(arnold);
 				assertEquals(PersonnePhysique.class, arnold.getClass());
 				assertEmpty(arnold.getRapportsSujet()); // pas associé à un ménage
 				assertEmpty(arnold.getRapportsObjet());
 
-				final Tiers janine = (Tiers) hibernateTemplate.get(Tiers.class, ids.janine);
+				final Tiers janine = hibernateTemplate.get(Tiers.class, ids.janine);
 				assertNotNull(janine);
 				assertEquals(PersonnePhysique.class, janine.getClass());
 				assertEmpty(janine.getRapportsSujet()); // pas associé à un ménage
 				assertEmpty(janine.getRapportsObjet());
 
-				final Tiers mc = (Tiers) hibernateTemplate.get(Tiers.class, ids.menage);
+				final Tiers mc = hibernateTemplate.get(Tiers.class, ids.menage);
 				assertNotNull(mc);
 				assertEquals(PersonnePhysique.class, mc.getClass());
 				assertEmpty(mc.getRapportsSujet()); // pas associé à un ménage
@@ -448,7 +395,6 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testReconciliationDeSeparesAuCivilMariageInconnuAuFiscal() throws Exception {
 
 		final long noMr = 1234567L;
@@ -491,25 +437,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				final TiersGeneralView viewTiers1 = new TiersGeneralView();
-				viewTiers1.setNumero(ids.noHabMr);
-				final TiersGeneralView viewTiers2 = new TiersGeneralView();
-				viewTiers2.setNumero(ids.noHabMme);
-
-				final CoupleRecapView view = new CoupleRecapView();
-				view.setDateCoupleExistant(RegDate.get());
-				view.setDateDebut(DateHelper.getCurrentDate());
-				view.setNouveauCtb(true);
-				view.setPremierePersonne(viewTiers1);
-				view.setSecondePersonne(viewTiers2);
-				view.setTypeUnion(TypeUnion.COUPLE);
-
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				assertEmpty(errors.getAllErrors());
-
-				mngr.save(view);
+				mngr.sauverCouple(ids.noHabMr, ids.noHabMme, null, RegDate.get(), TypeUnion.COUPLE, EtatCivil.MARIE, null);
 				return null;
 			}
 		});

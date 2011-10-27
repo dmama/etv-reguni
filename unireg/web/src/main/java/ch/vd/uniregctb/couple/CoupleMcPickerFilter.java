@@ -16,11 +16,11 @@ import ch.vd.uniregctb.tiers.picker.TiersPickerFilterWithPostFiltering;
 /**
  * Filtre spécialisé pour l'écran de recherche d'un troisième tiers dans la constitution d'un couple.
  */
-public class CoupleRecapPickerFilter implements TiersPickerFilterWithPostFiltering {
+public class CoupleMcPickerFilter implements TiersPickerFilterWithPostFiltering {
 
 	private final TiersDAO tiersDAO;
 
-	public CoupleRecapPickerFilter(TiersDAO tiersDAO) {
+	public CoupleMcPickerFilter(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 

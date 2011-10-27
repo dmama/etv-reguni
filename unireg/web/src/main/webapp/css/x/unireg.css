@@ -68,6 +68,32 @@ legend a.delete {
 	float: left;
 }
 
+div.coupleMergeArrow {
+	width: 500px;
+	height: 150px;
+	background-image: url('merge.png');
+}
+
+div.coupleMergeArrow div {
+	padding-top: 20px;
+}
+
+div.ctbInconnu {
+	width: 128px;
+	height: 128px;
+	background-image: url('../../images/tiers/inconnu.png');
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.newMc {
+	width: 128px;
+	height: 128px;
+	background-image: url('../../images/tiers/nouveau_menagecommun.png');
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .seulPP {
 	
 }

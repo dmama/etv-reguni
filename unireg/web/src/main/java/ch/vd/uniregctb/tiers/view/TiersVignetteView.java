@@ -13,7 +13,7 @@ public class TiersVignetteView {
 	private boolean showComplements;
 
 	public void init(HttpServletRequest request) {
-		this.numero = Long.valueOf(request.getParameter("numero"));
+		this.numero = Long.valueOf(request.getParameter("numero").replaceAll("[^0-9]", ""));
 		this.titre = request.getParameter("titre");
 		this.showValidation = getBooleanParameter(request, "showValidation");
 		this.showEvenementsCivils = getBooleanParameter(request, "showEvenementsCivils");

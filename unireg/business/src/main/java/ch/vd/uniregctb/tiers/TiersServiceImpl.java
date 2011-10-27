@@ -3925,11 +3925,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
+	@NotNull
 	@Override
 	public Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage) {
 		return getPersonnesPhysiques(menage, false).keySet();
 	}
 
+	@NotNull
 	@Override
 	public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage) {
 		return getPersonnesPhysiques(menage, true);
@@ -3938,6 +3940,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
 	 */
+	@NotNull
 	private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
 		final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
 		final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();

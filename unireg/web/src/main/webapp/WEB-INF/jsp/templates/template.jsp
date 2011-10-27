@@ -129,7 +129,7 @@ function ouvrirAide(url) {
 								</authz:authorize>
 								</c:if>
 								<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR">
-									<li><a href="<c:url value='/couple/list-pp.do'/>"><fmt:message key="title.couple" /></a></li>
+									<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
 									<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 									<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
 									<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">

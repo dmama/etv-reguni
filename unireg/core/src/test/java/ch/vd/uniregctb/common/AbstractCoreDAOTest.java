@@ -998,7 +998,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute un droit d'accès (autorisation ou interdiction) entre un opérateur et un tiers.
 	 */
 	protected DroitAcces addDroitAcces(long noIndOperateur, PersonnePhysique pp, TypeDroitAcces type, Niveau niveau, RegDate debut,
-			RegDate fin) {
+			@Nullable RegDate fin) {
 
 		DroitAcces da = new DroitAcces();
 		da.setDateDebut(debut);

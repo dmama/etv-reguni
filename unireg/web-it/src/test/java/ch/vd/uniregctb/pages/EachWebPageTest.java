@@ -248,42 +248,10 @@ public class EachWebPageTest extends WebitTest {
 	 * Couple
 	 *
 	 *----------------------*/
-	// Couple - Recherche de la première PP
 	@Test
-	public void testCoupleListPP() throws Exception {
-		assertPage("/couple/list-pp.do", "Couple - Recherche de la première PP");
+	public void testCreateCouple() throws Exception {
+		assertPage("/couple/create.do", "Création d'un nouveau ménage commun");
 	}
-
-	// Couple - Recherche de la seconde PP
-	@Test
-	public void testCoupleListPP2() throws Exception {
-		assertPage("/couple/list-pp.do?numeroPP1=12300001", "Couple - Recherche de la seconde PP");
-	}
-
-	@Test
-	public void testCoupleListPP2Inexistant() throws Exception {
-		assertPage("/couple/list-pp.do?numeroPP1=12345678", "Page d'erreur",
-				"La personne physique spécifiée n'existe pas");
-	}
-
-	// Récapitulatif des éléments du couple
-	@Test
-	public void testCoupleRecap() throws Exception {
-		assertPage("/couple/recap.do?numeroPP1=12300001&numeroPP2=12300002", "Récapitulatif des éléments du couple");
-	}
-
-	@Test
-	public void testCoupleRecapPP1Inexistante() throws Exception {
-		assertPage("/couple/recap.do?numeroPP1=12345678&numeroPP2=12300002", "Page d'erreur",
-				"Le tiers id=[12345678] n'existe pas");
-	}
-
-	@Test
-	public void testCoupleRecapPP2Inexistante() throws Exception {
-		assertPage("/couple/recap.do?numeroPP1=12300001&numeroPP2=12345678", "Page d'erreur",
-				"Le tiers id=[12345678] n'existe pas");
-	}
-
 
 	/*----------------------
 	 *

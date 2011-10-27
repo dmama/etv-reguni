@@ -401,9 +401,11 @@ INPUT.readonly {
 }
 
 .validation_error, .action_error, .warnings {
-	width: 90%;
+	width: auto;
+	_width: 0; /* IE6 equivalent de auto */
 	font-size: x-small;
 	margin: 0.5em auto;
+	margin-bottom: 2em;
 }	
 
 .validation_error td.heading, .warnings td.heading {

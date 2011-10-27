@@ -20,21 +20,11 @@
 		 -->
 	</bean>
 	
-	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
+	<bean id="coupleManager" class="ch.vd.uniregctb.couple.CoupleManagerImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
-		<property name="coupleHelper" ref="coupleHelper" />
 		<property name="droitAccesService" ref="droitAccesService" />
-	</bean>
-
-	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >
-		<property name="tiersService" ref="tiersService" />
-		<property name="metierService" ref="metierService" />
-		<property name="coupleHelper" ref="coupleHelper" />
-		<property name="validatorHelper" ref="validatorHelper" />
-	</bean>
-
-	<bean id="coupleHelper" class="ch.vd.uniregctb.couple.CoupleHelper">
-		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
