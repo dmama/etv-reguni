@@ -405,6 +405,7 @@ INPUT.readonly {
 	_width: 0; /* IE6 equivalent de auto */
 	font-size: x-small;
 	margin: 0.5em auto;
+	margin-left: 2em;
 	margin-bottom: 2em;
 }	
 

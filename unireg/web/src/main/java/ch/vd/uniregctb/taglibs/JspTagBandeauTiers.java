@@ -20,7 +20,6 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -29,9 +28,6 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -51,7 +47,6 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
-import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Affiche les informations générales d'un tiers (nom, prénom, type d'assujettissement, adresse, image, ...).
@@ -66,11 +61,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static MessageSource messageSource;
 	private static TiersDAO tiersDAO;
 	private static TiersService tiersService;
-	private static ServiceCivilService serviceCivilService;
 	private static ServiceInfrastructureService serviceInfrastructure;
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
-	private static ValidationService validationService;
 
 	private static final List<Action> actions;
 
@@ -169,11 +162,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		JspTagBandeauTiers.tiersService = tiersService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		JspTagBandeauTiers.serviceCivilService = serviceCivilService;
-	}
-
 	public void setAdresseService(AdresseService adresseService) {
 		JspTagBandeauTiers.adresseService = adresseService;
 	}
@@ -185,11 +173,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		JspTagBandeauTiers.transactionManager = transactionManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setValidationService(ValidationService validationService) {
-		JspTagBandeauTiers.validationService = validationService;
 	}
 
 	private String buidHtlm() {
@@ -269,6 +252,17 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	private String buildDescriptifTiers(Tiers tiers) {
 		StringBuilder s = new StringBuilder();
+
+		if (showValidation) {
+			// [SIFISC-2561] on passe par un appel Ajax pour afficher les erreurs de validation car cela peut prendre beaucoup de temps sur certains tiers
+			s.append("<div id=\"validationMessage\" width=\"100%\"></div>");
+			s.append("<script>");
+			s.append("$(function() {");
+			s.append("    $('#validationMessage').load('").append(url("/validation/message.do?tiers=")).append(tiers.getNumero()).append("');");
+			s.append("});");
+			s.append("</script>");
+		}
+
 		s.append("<table cellspacing=\"0\" cellpadding=\"5\" border=\"0\" class=\"display_table\">\n");
 
 		if (tiers.isAnnule()) {
@@ -305,18 +299,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					s.append(" ").append(no);
 				}
 				s.append("</center></td></tr>\n");
-			}
-		}
-
-		if (showValidation) {
-			final ValidationResults validationResults = validationService.validate(tiers);
-			setErreursEtatsCivils(tiers, validationResults);
-			setErreursAdresses(tiers, validationResults);
-
-			if (validationResults.hasErrors() || validationResults.hasWarnings()) {
-				s.append("<tr><td colspan=\"3\" width=\"100%\">\n");
-				s.append(buildValidationResults(validationResults));
-				s.append("</td></tr>\n");
 			}
 		}
 
@@ -565,36 +547,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return s.toString();
 	}
 
-	private String buildValidationResults(ValidationResults validationResults) {
-		StringBuilder s = new StringBuilder();
-
-		s.append("<table class=\"validation_error\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n");
-		s.append("<tr><td class=\"heading\">").append(message("label.validation.problemes.detectes")).append(" <span id=\"val_script\">(<a href=\"#\" onclick=\"javascript:showDetails()\">")
-				.append(message("label.validation.voir.details")).append("</a>)</span></td></tr>\n");
-		s.append("<tr id=\"val_errors\"><td class=\"details\"><ul>\n");
-		for (String error : validationResults.getErrors()) {
-			s.append("<li class=\"err\">").append(message("label.validation.erreur")).append(": ").append(HtmlUtils.htmlEscape(error)).append("</li>\n");
-		}
-		for (String warning : validationResults.getWarnings()) {
-			s.append("<li class=\"warn\">").append(message("label.validation.warning")).append(": ").append(HtmlUtils.htmlEscape(warning)).append("</li>\n");
-		}
-		s.append("</ul></td></tr>\n");
-		s.append("</table>\n");
-
-		s.append("<script type=\"text/javascript\">\n");
-		s.append("    // cache les erreurs par défaut\n");
-		s.append("    $('#val_errors').hide();\n");
-		s.append("\n");
-		s.append("    // affiche les erreurs\n");
-		s.append("    function showDetails() {\n");
-		s.append("        $('#val_errors').show();\n");
-		s.append("        $('#val_script').hide();\n");
-		s.append("    }\n");
-		s.append("</script>");
-
-		return s.toString();
-	}
-
 	private String buildImageTiers(Tiers tiers) {
 
 		final TypeAvatar type = getTypeAvatar(tiers);
@@ -711,45 +663,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		final String basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");
 		return basePath + image;
-	}
-
-	/**
-	 * Met à jour les erreurs autour des états civils
-	 *
-	 * @param tiers             un tiers
-	 * @param validationResults le résultat de validation à augmenter
-	 */
-	private void setErreursEtatsCivils(Tiers tiers, ValidationResults validationResults) {
-		if (tiers instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isConnuAuCivil()) {
-				final int year = RegDate.get().year();
-				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year);
-				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-					if (etatCivil.getDateDebutValidite() == null) {
-						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
-								etatCivil.getTypeEtatCivil().asCore());
-						validationResults.addWarning(message);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Calcul les adresses historiques de manière stricte, et reporte toutes les erreurs trouvées.
-	 *
-	 * @param tiers             le tiers dont on veut vérifier les adresses
-	 * @param validationResults le résultat de la validation à compléter avec les éventuelles erreurs trouvées.
-	 */
-	private void setErreursAdresses(Tiers tiers, ValidationResults validationResults) {
-		try {
-			adresseService.getAdressesFiscalHisto(tiers, true /* strict */);
-		}
-		catch (Exception e) {
-			validationResults.addWarning("Des incohérences ont été détectées dans les adresses du tiers : " + e.getMessage() +
-					". Dans la mesure du possible, ces incohérences ont été corrigées à la volée (mais pas sauvées en base).");
-		}
 	}
 
 	private TypeAvatar getTypeAvatar(Tiers tiers) {

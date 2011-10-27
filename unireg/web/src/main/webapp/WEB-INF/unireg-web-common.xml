@@ -191,11 +191,9 @@
 	<bean id="jspTagBandeauContribuable" class="ch.vd.uniregctb.taglibs.JspTagBandeauTiers">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructure" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="validationService" ref="validationService" />
 	</bean>
 
 	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">
