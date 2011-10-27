@@ -26,7 +26,6 @@ import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
-import ch.vd.uniregctb.general.manager.UtilisateurManagerImpl;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -88,13 +87,13 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		for (Long id : listIdRestriction) droitAccesService.annuleDroitAcces(id);
 	}
 
-    @Override
+	@Override
 	@Transactional(rollbackFor = Throwable.class)
-    public void annulerToutesLesRestrictions(Long noIndividuOperateur) {
-        droitAccesService.annuleToutLesDroitAcces(noIndividuOperateur);
-    }
+	public void annulerToutesLesRestrictions(Long noIndividuOperateur) {
+		droitAccesService.annuleToutLesDroitAcces(noIndividuOperateur);
+	}
 
-    /**
+	/**
 	 * Alimente la vue du controller
 	 * @return
 	 * @throws ServiceInfrastructureException

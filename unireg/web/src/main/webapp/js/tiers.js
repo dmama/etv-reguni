@@ -58,8 +58,7 @@ function toggleRowsIsHisto(tableId,elementId, numCol){
 /*
 * Affichage des trois premières lignes d'un tableau ou de toutes les lignes en fonction du choix de l'utilisateur
 */
-function toggleAffichageRows(tableId,isAll, numCol){
-
+function toggleAffichageRows(tableId, isAll, numCol) {
 
 	var tbl = $('#' + tableId).get(0);
 	if (tbl != null) {
@@ -71,9 +70,9 @@ function toggleAffichageRows(tableId,isAll, numCol){
 					// work-around parce que le tag <display:table> ajoute une ligne avec une *seule* colonne lorsque la table est vide
 					// cette ligne est masquée par défaut, on ne fait donc rien
 				}
-                else if(i <= 3){
-                  tbl.rows[i].style.display = '';
-                }
+				else if (i <= 3) {
+					tbl.rows[i].style.display = '';
+				}
 				else if (trim(x[numCol].innerHTML) == '' && x[numCol].innerHTML.indexOf('strike')== -1 && !hasClassName(tbl.rows[i], 'strike')) {
 					tbl.rows[i].style.display = '';
 				}
@@ -89,17 +88,17 @@ function toggleAffichageRows(tableId,isAll, numCol){
 
 	//Affichage et masquage des liens
 
-   	var showall = $('a#linkAll');
-    var showReduce = $('a#linkReduce');
+	var showall = $('a #linkAll');
+	var showReduce = $('a #linkReduce');
 
-    if(isAll){
-    	showall.hide();
-    	showReduce.show();
-    }
-    else{
-      	showall.show();
-      	showReduce.hide();
-    }
+	if (isAll){
+		showall.hide();
+		showReduce.show();
+	}
+	else {
+		showall.show();
+		showReduce.hide();
+	}
 }
 
 /*
