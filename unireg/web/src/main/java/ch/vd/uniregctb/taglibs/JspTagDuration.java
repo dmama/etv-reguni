@@ -19,6 +19,7 @@ public class JspTagDuration extends BodyTagSupport {
 	private Long msDuration;
 	private boolean isNullDuration;
 	private boolean rounded = false;
+	private boolean shortVersion = false;
 	private String zeroDisplay;
 	private String nullDisplay;
 
@@ -32,6 +33,10 @@ public class JspTagDuration extends BodyTagSupport {
 
 	public void setRounded(boolean rounded) {
 		this.rounded = rounded;
+	}
+
+	public void setShortVersion(boolean shortVersion) {
+		this.shortVersion = shortVersion;
 	}
 
 	public void setZeroDisplay(String zeroDisplay) {
@@ -55,7 +60,7 @@ public class JspTagDuration extends BodyTagSupport {
 	}
 
 	private String buildHtml() {
-		return buildDisplayText(isNullDuration ? null : msDuration, nullDisplay, zeroDisplay, rounded);
+		return buildDisplayText(isNullDuration ? null : msDuration, nullDisplay, zeroDisplay, shortVersion, rounded);
 	}
 
 	/**
@@ -63,16 +68,20 @@ public class JspTagDuration extends BodyTagSupport {
 	 * @param msDuration durée, en millisecondes
 	 * @param nullDisplay chaîne utilisée si la durée donnée est <code>null</code>
 	 * @param zeroDisplay chaîne utilisée si la durée donnée est 0 ou négative
+	 * @param shortVersion <code>true</code> si la durée doit être affichée en version "courte", <code>false</code> si elle doit l'être en version "longue"
 	 * @param rounded <code>true</code> si la durée doit être arrondie (sinon, elle est affichée à la seconde près)
 	 * @return la chaîne HTML qui va bien
 	 */
-	public static String buildDisplayText(Long msDuration, String nullDisplay, String zeroDisplay, boolean rounded) {
+	public static String buildDisplayText(Long msDuration, String nullDisplay, String zeroDisplay, boolean shortVersion, boolean rounded) {
 		final String text;
 		if (msDuration == null) {
 			text = StringUtils.trimToEmpty(nullDisplay);
 		}
 		else if (msDuration <= 0 && zeroDisplay != null) {
 			text = StringUtils.trimToEmpty(zeroDisplay);
+		}
+		else if (shortVersion) {
+			text = TimeHelper.formatDureeShort(msDuration);
 		}
 		else if (rounded) {
 			text = TimeHelper.formatDureeArrondie(msDuration);

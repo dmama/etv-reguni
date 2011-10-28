@@ -908,6 +908,12 @@
 			<description>Indique si la durée doit être considérée comme non-spécifiée</description>
 		</attribute>
 		<attribute>
+			<name>shortVersion</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche une version courte de la durée (06h 23m) au lieu d'une longue (6 heures et 23 minutes)</description>
+		</attribute>
+		<attribute>
 			<name>rounded</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -937,6 +943,25 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>MIME-type dont on veut afficher une icône</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>percentIndicator</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagPercentIndicator</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une barre de progression en pourcentage</description>
+		<attribute>
+			<name>width</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Largeur en pixel de la barre de progression (100px par défaut)</description>
+		</attribute>
+		<attribute>
+			<name>percent</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur en pourcentage (0-100) de la progression à représenter</description>
 		</attribute>
 	</tag>
 

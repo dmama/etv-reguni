@@ -2,6 +2,8 @@ package ch.vd.uniregctb.admin;
 
 import org.springmodules.xt.ajax.component.Component;
 
+import ch.vd.uniregctb.taglibs.JspTagPercentIndicator;
+
 /**
  * Table spécialisée pour l'affichage de la progression d'un job en pourcent
  */
@@ -17,12 +19,6 @@ public class JobPercentIndicator implements Component {
 
 	@Override
 	public String render() {
-		int width = 100;
-		final int pixels = (width * percent) / 100;
-		StringBuilder s = new StringBuilder();
-		s.append("<div class=\"progress-bar\" style=\"width: ").append(width).append("px\">");
-		s.append("<div class=\"progress-bar-fill\" style=\"width: ").append(pixels).append("px\"></div>");
-		s.append("<div class=\"progress-bar-text\" style=\"width: ").append(width).append("px\">").append(percent).append("%</div></div>");
-		return s.toString();
+		return JspTagPercentIndicator.render(100, percent);
 	}
 }

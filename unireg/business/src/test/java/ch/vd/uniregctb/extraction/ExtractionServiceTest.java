@@ -374,18 +374,18 @@ public class ExtractionServiceTest extends BusinessTest {
 		}
 
 		final ExtractionJob job = extractionService.postExtractionQuery("MOI", new MyInterruptibleExtractor());
-		Assert.assertFalse(job.wasInterrupted());
+		Assert.assertFalse(job.isInterrupted());
 
 		Thread.sleep(100L);     // on laisse le temps au job de démarrer
 		Assert.assertEquals(1, extractionService.getExtractionsEnCours("MOI").size());     // le job n'aurait-il pas encore démarré ?
 
 		extractionService.cancelJob(job);
-		Assert.assertTrue(job.wasInterrupted());
+		Assert.assertTrue(job.isInterrupted());
 
 		Thread.sleep(800L);    // on laisse le temps au job de se terminer
 
 		Assert.assertFalse(job.isRunning());
-		Assert.assertTrue(job.wasInterrupted());
+		Assert.assertTrue(job.isInterrupted());
 
 		final InboxElement inboxElt = inboxService.getInboxElement(job.getUuid());
 		Assert.assertNotNull(inboxElt);

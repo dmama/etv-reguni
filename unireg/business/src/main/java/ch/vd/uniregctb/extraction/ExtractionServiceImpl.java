@@ -195,7 +195,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		}
 
 		@Override
-		public boolean wasInterrupted() {
+		public boolean isInterrupted() {
 			return extractor.wasInterrupted();
 		}
 

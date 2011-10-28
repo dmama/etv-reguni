@@ -95,12 +95,8 @@ function ouvrirAide(url) {
 									return;
 								}
 								requestInboxSizeDone = false;
-								XT.doAjaxAction('updateInboxUnreadSize', $("#inboxSize").get(0), {},
-								{
-									clearQueryString: true,
-									errorHandler :  function(ajaxRequest, exception) {
-											onReceivedInboxSize();
-										}
+								$('#inboxSize').load(getContextPath() + "/admin/inbox/unreadSize.do", function() {
+									onReceivedInboxSize();
 								});
 							}
 

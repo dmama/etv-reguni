@@ -36,13 +36,9 @@
 					return;
 				}
 				requestJobsEnAttenteDone = false;
-				XT.doAjaxAction('loadJobsEnAttente', $("#jobsEnAttente").get(0), {},
-				{
-					clearQueryString: true,
-					errorHandler :  function(ajaxRequest, exception) {
-							onReceivedJobsEnAttente();
-						}
-    			});
+				$('#jobsEnAttente').load(getContextPath() + "/admin/inbox/jobs.do", function() {
+					onReceivedJobsEnAttente();
+				});
 			}
 
 			function refreshInboxContent() {
@@ -50,13 +46,9 @@
 					return;
 				}
 				requestInboxDone = false;
-				XT.doAjaxAction('loadInboxContent', $("#inboxContent").get(0), {},
-				{
-					clearQueryString: true,
-					errorHandler :  function(ajaxRequest, exception) {
-							onReceivedInboxContent();
-						}
-    			});
+				$('#inboxContent').load(getContextPath() + "/admin/inbox/content.do", function() {
+					onReceivedInboxContent();
+				});
 			}
 
 			function refreshInboxPage() {
@@ -73,36 +65,6 @@
 			function onReceivedInboxContent() {
 				requestInboxDone = true;
 				refreshInboxSize();				// la méthode est définie dans template.jsp!
-			}
-
-			function stopJobEnAttente(uuid) {
-				if (confirm('Êtes-vous sûr de vouloir interrompre/annuler cette extraction ?')) {
-					XT.doAjaxAction('stopJobEnAttente', null,
-					{
-						uuid: uuid
-					},
-					{
-						clearQueryString: true,
-						errorHandler :  function(ajaxRequest, exception) {
-								onReceivedJobsEnAttente();
-							}
-					});
-				}
-			}
-
-			function removeInboxContent(uuid) {
-				if (confirm('Êtes-vous sûr de vouloir effacer ce message ?')) {
-					XT.doAjaxAction('removeInboxContent', null,
-					{
-						uuid: uuid
-					},
-					{
-						clearQueryString: true,
-						errorHandler :  function(ajaxRequest, exception) {
-								onReceivedJobsEnAttente();
-							}
-					});
-				}
 			}
 		</script>
 	</tiles:put>

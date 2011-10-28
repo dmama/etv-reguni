@@ -37,7 +37,7 @@ public interface ExtractionJob {
 	/**
 	 * @return <code>true</code> si une demande d'interruption a été faite
 	 */
-	boolean wasInterrupted();
+	boolean isInterrupted();
 
 	/**
 	 * @return la durée d'exécution du job en millisecondes depuis son démarrage jusqu'à sa fin (ou, s'il n'est pas terminé, jusqu'à maintenant) ; <code>null</code> si le job n'est pas commencé

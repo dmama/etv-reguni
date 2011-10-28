@@ -93,7 +93,7 @@ public class MockExtractionService implements ExtractionService {
 		}
 
 		@Override
-		public boolean wasInterrupted() {
+		public boolean isInterrupted() {
 			return interrupted;
 		}
 	}
