@@ -22,12 +22,6 @@
 		<antcall target="_deploy" />
 	</target>
 
-	<target name="deploy.norentes">
-		<property name="admin.url" value="t3://localhost:12345" />
-
-		<antcall target="_deploy" />
-	</target>
-
 	<target name="_deploy">
 		<!-- BEGIN_LVERSION -->
 		<property name="app.src" value="target/uniregctb-web-4.13-SNAPSHOT.war" />

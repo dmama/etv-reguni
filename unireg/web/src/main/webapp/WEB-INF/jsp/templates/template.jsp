@@ -233,9 +233,6 @@ function ouvrirAide(url) {
 								<%-- (msi, 11.03.2011) je pense que cet écran ne fonctionne plus depuis longtemps
 								<li><a href="<c:url value='/admin/evenementExterne/main.do'/>"><fmt:message key="title.admin.evtExterne" /></a></li>
 								--%>
-								<unireg:norentes>
-									<li><a href="<c:url value='/admin/norentes.do'/>"><fmt:message key="title.norentes" /></a></li>
-								</unireg:norentes>
 							</ul>
 						</li>
 						</unireg:testMode>
@@ -267,9 +264,6 @@ function ouvrirAide(url) {
 						<span style="color:white;font-size:21pt;font-weight: bold">)</span>
 					</div>
 				</unireg:testMode>
-				<unireg:norentes>
-					<div style="left:170px; top:100px; color:white; position:absolute; font-size:12pt"><unireg:norentesScenarioName/></div>
-				</unireg:norentes>
 				<div class="application iepngfix"></div>
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">

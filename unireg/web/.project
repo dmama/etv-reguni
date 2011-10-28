@@ -4,7 +4,6 @@
   <projects>
     <project>uniregctb-business</project>
     <project>uniregctb-core</project>
-    <project>uniregctb-norentes</project>
     <project>uniregctb-testing</project>
   </projects>
   <buildSpec>

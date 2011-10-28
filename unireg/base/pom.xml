@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Etat de Vaud (Etat de Vaud) -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -21,7 +20,6 @@
 		<module>../testing</module>
 		<module>../core</module>
 		<module>../business</module>
-		<module>../norentes</module>
 		<module>../web</module>
 		<module>../ws</module>
 	</modules>
@@ -599,14 +597,6 @@
 
 		<!-- =================== Environnement profiles -->
 		
-		<profile>
-			<!-- version spéciale d'Unireg pour les tests manuels de non-régression des événements civils -->
-			<id>env.norentes</id>
-			<properties>
-				<unireg.webxml>web.norentes.xml</unireg.webxml>
-				<unireg.webreleasexml>release.norentes.xml</unireg.webreleasexml>
-			</properties>
-		</profile>
 		<profile>
 			<!-- version standalone d'Unireg qui ne nécessite qu'une base de données Oracle pour fonctionner (pas de host, pas d'esb, ...) -->
 			<id>env.standalone</id>

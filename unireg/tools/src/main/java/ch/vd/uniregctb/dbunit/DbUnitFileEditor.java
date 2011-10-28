@@ -91,7 +91,6 @@ public class DbUnitFileEditor {
 //		String repbus = repBase + "business" + endPath;
 //		String repbusit = repBase + "business-it" + endPath;
 //		String repcore = repBase + "core" + endPath;
-//		String repnorentes = repBase + "norentes" + endPath;
 //		String reptesting = repBase + "testing" + endPath;
 //		String repweb = repBase + "web" + endPath;
 //		String repwebit = repBase + "web-it" + endPath;
@@ -100,7 +99,6 @@ public class DbUnitFileEditor {
 //		listeRep.add(repbus);
 //		listeRep.add(repbusit);
 //		listeRep.add(repcore);
-//		listeRep.add(repnorentes);
 //		listeRep.add(reptesting);
 //		listeRep.add(repweb);
 //		listeRep.add(repwebit);

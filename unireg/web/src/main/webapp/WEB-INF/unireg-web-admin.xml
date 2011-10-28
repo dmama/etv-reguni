@@ -130,12 +130,4 @@
 		<property name="evtCivilSender" ref="evtCivilSender" />
 	</bean>
 	
-		<!-- Norentes  -->
-	<bean id="norentesController" class="ch.vd.uniregctb.norentes.NorentesController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.norentes.NorentesBean" />
-		<property name="formView" value="admin/norentes" />
-		<property name="successView" value="norentes.do" />
-	</bean>
-	
 </beans>

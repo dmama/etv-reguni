@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.NorentesWebTest;
+import ch.vd.uniregctb.common.WebTest;
 
-public class GestionIndexationControllerTest extends NorentesWebTest {
+public class GestionIndexationControllerTest extends WebTest {
 
 	private GestionIndexationController controller;
 

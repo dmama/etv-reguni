@@ -340,20 +340,6 @@
 	</tag>
 
 	<tag>
-		<name>norentes</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNorentes</tag-class>
-		<body-content>JSP</body-content>
-		<description>Permet d'afficher du contenu uniquement si l'application est en mode Norentes</description>
-	</tag>
-
-	<tag>
-		<name>norentesScenarioName</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNorentesScenarioName</tag-class>
-		<body-content>JSP</body-content>
-		<description>Retourne le nom du scénario Norentes courant, ou chaîne vide s'il n'y a pas de scénario ou si l'application n'est pas en mode Norentes</description>
-	</tag>
-
-	<tag>
 		<name>standalone</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagStandalone</tag-class>
 		<body-content>JSP</body-content>

@@ -130,7 +130,6 @@
 				<entry key="/admin/evenementExterne/rapporttravail.do" value-ref="rapportTravailController" />
 				<entry key="/admin/evenementExterne/evolution.do" value-ref="evolutionController" />
 				<entry key="/admin/evenementExterne/civilunitaire.do" value-ref="civilUnitaireController" />
-				<entry key="/admin/norentes.do" value-ref="norentesController" />
 
 				<!-- Paramétrage -->
 				<entry key="/param/application.do" value-ref="paramApplicationController" />

@@ -62,11 +62,6 @@
 			<version>${pom.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-norentes</artifactId>
-			<version>${pom.parent.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-web</artifactId>
 			<version>2.4.1</version>
