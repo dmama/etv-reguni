@@ -1,0 +1,3936 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<!--   Version 2011-2 : modification par rapport à la version 2011-1
+
++++Modifications techniques
+
+Regroupement de tous les fichiers pour respecter au plus près les standards DSI
+Ajout namespace "http://www.vd.ch/fiscalite/taxation/dossier-electronique/1"
+Renommage fichier sdi.xsd en DossierElectronique-1.0.xsd
+
+DocIdentificationType, modifications :
+- attributs versionDocument : passe de obligatoire à optionnel
+
+OperationAcquisitionType, modifications :
+- OperateurScan, LieuScan : passent de obligatoire à optionnel
+- DateScan : devient DateScanOuGenerationXmlDi
+- TypeSaisie : introduction d'une énumération reprenant les valeurs actuellement utilisées; passe de optionnel à obligatoire
+- Ajout élément OrigineAcquisition : obligatoire; énumération; permet de savoir si la DI est sous forme de Papier (DI officielle ou impression en sortie d'un logiciel) ou de Données (xml)
+
+Création de AccuseReceptionType utilisé pour communiquer les identifiants Folders lors d'une DI électronique.
+
+Suppression des références vers des éléments au profit de types.
+
++++Modifications métier
+
+Types :
+- Création type PersonneAChargeType
+- Création type EnfantType
+- Création type SalaireType
+- Création Annexe03Type
+
+AnnexeImmeublesType
+- ajout d'un élément Immeuble, multiple, obligatoire
+
+DossierElectroniqueType, modifications :
+- Suppression CertificatSalaire
+- Suppression CS_AR
+- Ajout Annexe03, contenant la situation familiale (enfants et personnes à charge) et les (relevés) de certificats de salaire
+- Annexe immeuble : cardinalité devient 0-1 (précédemment : 0-unbounded)
+
+DelcarationImpotType, modifications :
+- Suppression Identification/PersonnesACharge
+
+SalaireType, reprise structure CertificatSalaireType :
+- Ajout élément Beneficiaire, NomEmployeur, TypeRevenuActivite, TauxActivite, DateDu, DateAu,  SalaireNetOuRente, CotisationsOrdinaires, CotisationRachat, RetenueImpotSource, AutresCotisations, TransportGratuit, ChequesRepasOuCantine, FraisForfaitaires, Perfectionnement, DroitsParticipation
+- Suppression No_AVS ID761, Cotisation_LPP ID762, SalaireNet_II ID763, Cotisation_Accident ID764, Rachat_LPP ID765
+
+EnfantType
+- Reprise de la structure des enfants qui était dans Identification/Enfants
+- ajout du NAVS
+
+PersonneAChargeType
+- reprise de la structure des personnes à chages qui était dans Identification/PersonnesACharge
+- ajout NAVS
+ -->
+	<xs:element name="DossierElectronique" type="DossierElectroniqueType"/>
+	<xs:complexType name="DossierElectroniqueType">
+		<xs:sequence>
+			<xs:element name="Operation" type="OperationAcquisitionType"/>
+			<xs:element name="AccuseReception" type="AccuseReceptionType" minOccurs="0"/>
+			<xs:element name="DeclarationImpot" type="DeclarationImpotType" minOccurs="0"/>
+			<xs:element name="EtatDesTitres" type="EtatDesTitresType" minOccurs="0"/>
+			<xs:element name="AnnexeUSA" type="AnnexeUSAType" minOccurs="0"/>
+			<xs:element name="ImputationForfaitaireImpot" type="ImputationForfaitaireImpotType" minOccurs="0"/>
+			<xs:element name="EtatDesDettes" type="EtatDesDettesType" minOccurs="0"/>
+			<xs:element name="Annexe03" type="Annexe03Type" minOccurs="0"/>
+			<xs:element name="AnnexeImmeubles" type="AnnexeImmeubleType" minOccurs="0"/>
+			<xs:element name="FraisAcquisitionRevenu" type="FraisAcquisitionRevenuType" minOccurs="0"/>
+			<xs:element name="Annexe05" type="Annexe05Type" minOccurs="0"/>
+			<xs:element name="PieceJustificative" type="PieceJustificativeType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="periode" type="xs:string" use="required"/>
+		<xs:attribute name="noContribuable" type="xs:string" use="required"/>
+		<xs:attribute name="noSequenceDI" type="xs:string" use="required"/>
+		<xs:attribute name="versionSchema" type="xs:string" use="required"/>
+		<xs:attribute name="retourPiece" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="OperationAcquisitionType">
+		<xs:sequence>
+			<xs:element name="DateReception" type="xs:string"/>
+			<xs:element name="OperateurScan" type="xs:string" minOccurs="0"/>
+			<xs:element name="DateScanOuGenerationXmlDi" type="xs:string"/>
+			<xs:element name="LieuScan" type="xs:string" minOccurs="0"/>
+			<xs:element name="TypeSaisie">
+				<xs:annotation>
+					<xs:documentation>Permet de définir si la DI est saisie entièrement manuellement ('M' pour manuel), ou envoyée sous forme électronique ('E')</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="M"/>
+						<xs:enumeration value="E"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="OrigineAcquisition">
+				<xs:annotation>
+					<xs:documentation>Permet de savoir si la DI arrive en format papier ('P', que ce soit la DI officielle ACI ou la DI imprimée par un logiciel), ou si elle arrive en format Données structurées ('D', pour les DI renvoyées par Internet).</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="DI-PAPIER"/>
+						<xs:enumeration value="DI-ELECTRONIQUE"/>
+						<xs:enumeration value="DI-ONLINE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AccuseReceptionType">
+		<xs:sequence>
+			<xs:element name="InfosArchivage" type="InfosArchivageType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InfosArchivageType">
+		<xs:sequence>
+			<xs:element name="DateArchivage" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Date génération du xml à destination de Folders</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TypeDocument">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Identifiant">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PagesType">
+		<xs:sequence>
+			<xs:element name="PageNumerisee" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:int" use="required"/>
+					<xs:attribute name="nomFichier" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DeclarationImpotType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de la DI</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Identification" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="EnteteAnnotee" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id17; plus sur la DI 2006 ni 2007</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="CoordonneesMandataire" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="AdresseLigne1" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2032</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseLigne2" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2024</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseLigne3" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2025</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseLigne4" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2026</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseLigne5" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2031</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseLigne6" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2027</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TelephoneContact" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID2100</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="CoordonneesContribuable" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="TelephoneContact" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID320; plus sur la DI 2007 car sera dans Registre.</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NoTelPortable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4140</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AdresseMail" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4147; pas sur la DI, mais dans VaudTax</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="CodeIBAN" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4141</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TitulaireCompte" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4142</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="EtatCivil" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id312: plus sur DI 2007 car sera dans Registre</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Celibataire" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Marie" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Separe" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Veuf" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Divorce" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="GenreContribuable" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4001; plus sur DI 2007 car sera dans Registre</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Madame" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Monsieur" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Contribuable" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>devient ctb1 sur DI 2007</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DateNaissance" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID319; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Filiation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID324; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TauxActivite" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4006</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="SituationProfessionnelle" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4004</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Salarie" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Independant" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Sans" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Etudiant" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Retraite" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Profession" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID314; réhexumé en DI 2007</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="LieuActivite" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id316</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NoAVS" type="AVSType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id313; ce champ n'est plus disponible dans la DI, à partir de la DI 2009</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Epouse" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>devient ctb2 sur DI 2007</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Nom" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID63; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Prenom" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4003; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DateNaissance" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id326; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Filiation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID325; plus sur DI 2007 car sera dans Registre</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TauxActivite" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4007</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="SituationProfessionnelle" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4005</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Salarie" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Independant" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Sans" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Etudiant" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Retraite" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Profession" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID327; réhexumé en DI 2007</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="LieuActivite" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id329</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NoAVS" type="AVSType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id330; ce champ n'est plus disponible dans la DI, à partir de la DI 2009</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ActiviteSalariee" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Revenu" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Principal" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id1</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id32</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Accessoire" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id2</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id33</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Allocations" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id3</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id34</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="AdministrateurPM" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id4</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id35</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Frais" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Transport" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id5</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id36</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Repas" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id6</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id37</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Autres" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id7</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id38</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="ActiviteAccessoire" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id8</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Epouse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id39</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ActiviteIndependante" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Principale" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id9</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id40</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="CA" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4145</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Accessoire" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id10</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id41</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="CA" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4146</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PerteCommerciale" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id11</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id42</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SNC_Commandite" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="RaisonSociale" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id12</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id13</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id44</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="CotisationsAVS" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id14</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id15</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="AutreRevenu" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID66</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Epouse" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID67</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="IndemnitePG" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="AC_APG" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id18</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id47</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Maladie_Accident" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id19</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id48</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AI" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id20</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id49</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="TotalRevenusActivite" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id16</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id45</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="DeductionDoubleActivite" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id46</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="RentesPensions" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Pilier_1" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id21</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id50</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Pilier_2" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id22</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id51</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Pilier_3A" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id23</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id52</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Pilier_3B" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id24</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id53</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PensionAlimentaire" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id25</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id54</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Assurances" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Maladie_Accident_Vie" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id26</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PrevoyanceIndividuelle" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id27</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id56</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="RachatAnnees" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id28</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id57</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="CotisationIndependant" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id29</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id58</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AutresCotisations" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id30</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id59</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TotalRevenus" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="ContribuableConjoint" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id31</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Epouse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id60</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Cumul" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Contribuable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id61</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ParticipationConjoint" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id64</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TitresFortune" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Loterie" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id102</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id110</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Monnaie_Metaux" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id103</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Successions" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id111</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id104</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Valeurs_Collections" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id105</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Assurances" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id106</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Mobilier" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id108</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DemiValeurAssurance" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id107</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Autres" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id112</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id109</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ExploitantsSol" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Animaux" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id171</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="MaterielExploitation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id172</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id113</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SNC_Commandite" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id114</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ActifsExploitation" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id115</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="InteretEpargne" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id116</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="FraisAdministration" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID122</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="MiseLoterie" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id117</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ImmeublesTerrains" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="ImmeublesPrives" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id118</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id119</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ImmeublesCommerciaux" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id121</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SousLocation" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id124</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Entretien" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id126</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DettesInterets" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Prives" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id129</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id128</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Commerciaux" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id130</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DeductionSpeciales" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="RentesCharges" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id132</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Pensionalimentaire" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id133</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="CotisationsSociales" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id134</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Net" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id135</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Logement" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id136</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Loyer" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id137</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="FraisGarde" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id138</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Effectif" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id131</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PersonneACharge" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id139</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Difference" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id140</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ContribuableModeste" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id142</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TotalNet" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="RevenuFortune" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id143</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id144</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="FraisMedicaux" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id145</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Liberalites" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id146</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="DeductionFamille" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4230</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="SousTotal" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id147</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TotalImposable" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="RevenuFortune" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id148</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Fortune" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id149</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="NombreParts" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id322</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Determinant" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Revenu" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id151</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="PensionsAlimentaires" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Recues" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Recue" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Beneficiaire" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id497</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:all>
+																	<xs:element name="Monsieur" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Madame" type="xs:boolean" minOccurs="0"/>
+																</xs:all>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="RecueDe" minOccurs="0">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Nom" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id506</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Prenom" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id507</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Adresse" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id508</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Domicile" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id509</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Montant" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id510</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Versees" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="VerseeA" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Nom" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id500</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Prenom" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id501</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Adresse" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id502</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Domicile" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id503</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Montant" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id504</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="PrestationsCapitalCaisse" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Montant" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id512</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Pilier1" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="LPP" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Pilier3A" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Pilier3B" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Autre" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="BeneficeLiquidation" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID513</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="PrestationsCapitalRemplacement" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Prestation" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id516</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id517</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="AutresRevenus" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="AutreRevenu" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID522</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id521</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="RevenusImposablesAutreEtat" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Revenu" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4011</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4010</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Donations" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Donation" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id530</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AvanceHoirie" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id531</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SuccessionNonPartagee" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id537</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="BiensHerites" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id538</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="JustificationEcarts" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>id529</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="RentesLPP" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Monsieur" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Apres_31_12_86" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id527</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="DatePremiereRente" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id528</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Madame" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Apres_31_12_86" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id524</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="DatePremiereRente" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id526</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CotisationsLPP" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Monsieur" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id539</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Madame" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id540</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+											<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Signature" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>id318</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ExcluTaxationAutomatique" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>ID534</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PartProprieteType">
+		<xs:attribute name="numerateur" type="xs:string" use="optional"/>
+		<xs:attribute name="denominateur" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="DateType">
+		<xs:attribute name="jour" type="xs:string" use="optional"/>
+		<xs:attribute name="mois" type="xs:string" use="optional"/>
+		<xs:attribute name="annee" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="DateType2">
+		<xs:annotation>
+			<xs:documentation>Shéma pour les dates en string de forme jj.mm.aaaa</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{1,2}\.\d{1,2}\.\d{2,4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="AVSType">
+		<xs:attribute name="part1" type="xs:string" use="optional"/>
+		<xs:attribute name="part2" type="xs:string" use="optional"/>
+		<xs:attribute name="part3" type="xs:string" use="optional"/>
+		<xs:attribute name="part4" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="DocIdentificationType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD pour le attributs des document</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="periode" type="xs:string" use="required"/>
+		<xs:attribute name="typeDocument" type="xs:string" use="required"/>
+		<xs:attribute name="versionDocument" type="xs:string" use="optional"/>
+		<xs:attribute name="noContribuable" type="xs:string" use="required"/>
+		<xs:attribute name="noSequenceDI" type="xs:string" use="required"/>
+		<xs:attribute name="identifiant" type="xs:string" use="required"/>
+		<xs:attribute name="typeLogiciel" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>outil utilisé pour calculer et remplir la déclaration d'impôt : aucun, vaudtax, ofisa, etc ...</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="EtatDesTitresType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 01</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="ComptesLivrets" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Annexe 01-1</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Titre" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="FortuneCommerciale" type="xs:boolean" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id650</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NumeroOuNombre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id652</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Designation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id654</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Operation" minOccurs="0">
+												<xs:complexType>
+													<xs:all>
+														<xs:element name="Ouverture" type="xs:boolean" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID663</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Cloture" type="xs:boolean" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID663</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Date_Operation" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID664</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:all>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="RendementIA" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id657</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="RendementNonIA" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id658</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TotalImposable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id660</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TitresSoumisIA" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Annexe 01-2A</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Titre" type="TitreType" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TitresNonSoumisIA" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Annexe 01-2B</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Titre" type="TitreType" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ParticipationsImportantes" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Annexe 01-A</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="SoumisIA" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>3/A</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Participation" type="ParticipationType" minOccurs="0" maxOccurs="unbounded"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="NonSoumisIA" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>3/B</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Participation" type="ParticipationType" minOccurs="0" maxOccurs="unbounded"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ContribuableAmericain" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>ID4015</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="EpouseAmericaine" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>ID4016</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="RendementType">
+		<xs:annotation>
+			<xs:documentation>ID4028 (soumis IA); ID4029 (non soumis IA)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="NumeroType">
+		<xs:annotation>
+			<xs:documentation>ID4023</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="DesignationType">
+		<xs:annotation>
+			<xs:documentation>ID4024</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="NombreOuValeurNominaleType">
+		<xs:annotation>
+			<xs:documentation>ID4025</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="CoursFiscalType">
+		<xs:annotation>
+			<xs:documentation>ID4030</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="TotalImposableType">
+		<xs:annotation>
+			<xs:documentation>ID4031</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="TitreType">
+		<xs:sequence>
+			<xs:element name="FortuneCommerciale" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4021</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4022</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ReleveFiscal" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Action" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Obligation" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Fond" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Creance" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="LoterieEtAutre" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Numero" type="NumeroType" minOccurs="0"/>
+			<xs:element name="Designation" type="DesignationType" minOccurs="0"/>
+			<xs:element name="NombreOuValeurNominale" type="NombreOuValeurNominaleType" minOccurs="0"/>
+			<xs:element name="Operation" type="OperationType" minOccurs="0"/>
+			<xs:element name="Rendement" type="RendementType" minOccurs="0"/>
+			<xs:element name="CoursFiscal" type="CoursFiscalType" minOccurs="0"/>
+			<xs:element name="TotalImposable" type="TotalImposableType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OperationType">
+		<xs:sequence>
+			<xs:element name="Achat" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4026</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Vente" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4026</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Date_Operation" type="DateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4027</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ParticipationType">
+		<xs:sequence>
+			<xs:element name="Commerciale" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4021</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Privee" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4021</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Numero" type="NumeroType" minOccurs="0"/>
+			<xs:element name="TauxDetention" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4037</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Designation" type="DesignationType" minOccurs="0"/>
+			<xs:element name="NombreOuValeurNominale" type="NombreOuValeurNominaleType" minOccurs="0"/>
+			<xs:element name="Operation" type="OperationType" minOccurs="0"/>
+			<xs:element name="Rendement" type="RendementType" minOccurs="0"/>
+			<xs:element name="CoursFiscal" type="CoursFiscalType" minOccurs="0"/>
+			<xs:element name="TotalImposable" type="TotalImposableType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EtatDesDettesType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 02</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="DettesPrivees" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>id775</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="DettesGaranties" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id776</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DetteGarantie" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Creancier" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id770</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NoCompte" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID779</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Interets" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id772</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MontantDette" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id773</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AutresDettes" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id776</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="AutreDette" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Creancier" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id770</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NoCompte" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID779</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Interets" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id772</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MontantDette" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id773</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DettesExploitation" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>id775</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="DettesGaranties" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id776</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DetteGarantie" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Creancier" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id770</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NoCompte" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID779</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Interets" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id772</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MontantDette" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id773</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="EnversFournisseurs" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+									<xs:annotation>
+										<xs:documentation>id768</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="AutresDettes" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id776</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="AutreDette" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Creancier" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id770</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NoCompte" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID779</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Interets" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id772</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MontantDette" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id773</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Assurances" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="AssuranceVie" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Societe" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id790</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AnneeConclusion" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id791</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AnneeEcheance" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id792</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Somme_Capital" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id793</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurRachat" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id794</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AnnexeImmeubleType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD d'annexe 03</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Immeuble" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="RenseignementGeneraux" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DateAcquisition" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id840</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DateAlienation" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id841</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PartPropriete" type="PartProprieteType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id811</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AnneeConstruction" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id831</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NoRegistreFoncier" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id810</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="LieuSituation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id812</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Canton" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id813</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Pays" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id814</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="NatureDestination" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id816</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurImposable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id820</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Preponderance" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id819</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Privee" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Commerciale" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="TypeLogement" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id817</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Principal" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Secondaire" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="ValeurLocative" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="OccupationDepuis" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id850</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Surface" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id852</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="SurfaceGlobale" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID849</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AnneeConstruct_Transformation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id854</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TypeHabitation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id858</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ReductionEnvironnement" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id860</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ReductionConfort" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id861</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurLocativeIFD" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id866</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurLocativeICC" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id868</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurLocativeICCEffective" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID874</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="RevenusImmobiliers" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Loyers" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id825</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurLocativeLocauxComm" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id826</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="AutresRendementsImmobiliers" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id827</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Passifs" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Interets" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id836</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Dette" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id837</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="FraisEntretien" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="ForfaitSimplifie" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id829</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="EtatDetaille" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Entretien" minOccurs="0" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="dateFacture" type="DateType" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id890</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="nature_MaitreEtat" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id891</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="montantFacture" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id892</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="plusValue" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id893</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="montantInvoque" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id894</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="PrimeAssuranceDommages" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id882</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PrimeAssuranceRC" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id881</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="TaxesOrduresEauxEtc" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id883</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Conciergerie_PartiesCommunes" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id884</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="FraisAdministration" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id885</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ImpotFoncier" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id886</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FraisAcquisitionRevenuType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 04</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Principal" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="DeductionsTransportRepas" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Du" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id900</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Au" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id901</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NombreJours" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id902</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Domicile" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id903</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="LieuTravail" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id904</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="KmTransport" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id905</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MoyenTransport" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id906</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="TP" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Velo" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Moto" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Voiture" type="xs:boolean" minOccurs="0"/>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="DeductionTransport" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id907</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="DeductionRepas" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id915</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="JustificationVehiculePrive" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID913</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="DeductionsResidence" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Libelle" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id920</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Deduction" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id921</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AutresFrais" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DeductionForfaitaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id924</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DetailsAutresFrais" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="DetailAutreFrais" minOccurs="0" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Libelle" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id925</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Deduction" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id926</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="InterruptionsTravail" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="InterruptionTravail" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Du" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id927</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Au" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id928</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Motif" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id929</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Epouse" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="DeductionsTransportRepas" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Du" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id930</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Au" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id931</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="NombreJours" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id932</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Domicile" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id933</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="LieuTravail" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id934</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="KmTransport" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id935</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="MoyenTransport" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id936</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="TP" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Velo" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Moto" type="xs:boolean" minOccurs="0"/>
+																	<xs:element name="Voiture" type="xs:boolean" minOccurs="0"/>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="DeductionTransport" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id937</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="DeductionRepas" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id945</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="JustificationVehiculePrive" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID943</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="DeductionsResidence" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Libelle" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id950</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Deduction" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id951</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AutresFrais" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DeductionForfaitaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id954</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DetailsAutresFrais" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="DetailAutreFrais" minOccurs="0" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Libelle" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id955</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Deduction" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>id956</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="InterruptionsTravail" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="InterruptionTravail" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Du" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id957</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Au" type="DateType" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id958</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Motif" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id959</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Annexe05Type">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 05</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="FraisMedicaux" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Facture" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="EtabliePar" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id960</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="DateeDu" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id961</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Type" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id962</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Medecin" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Pharmacie" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Hopital" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="EMS" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="Divers" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="MontantBrut" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id963</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ParticipationCaisse" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id964</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="MontantACharge" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id965</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="MontantAChargeHandicap" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID967</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="VersementsBenevoles" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Versement" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="DateVersement" type="DateType" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id970</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Destinataire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id971</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id972</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DeductionsSpeciales" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Deduction" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Type" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4233</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="RenteChargeDurable" type="xs:boolean" minOccurs="0"/>
+														<xs:element name="DonPartiPolitique" type="xs:boolean" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Beneficiaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4234</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id4235</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AnnexeUSAType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe USA</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Valeurs" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Valeur" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="ValeurNominale" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id700</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Designation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id701</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Cours" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id702</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurImposable" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id703</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="RendementBrut" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id704</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="RetenueSupplementaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id705</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ImputationForfaitaireImpotType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'IFI</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Placements" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Placement" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NombreOuValeurNominale" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id713</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Designation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id714</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Etat" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id715</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurImposable" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ParTitre_Pourcent" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id716</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="TotalFrancs" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id717</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Rendement" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id718</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ImpotNonRecuperable" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Pourcent" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id719</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Francs" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id720</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DividendesUSA" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="TotalFrancs" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id711</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Rendement" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id712</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ZIP-CodeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Format pour les NPA</xs:documentation>
+			<xs:documentation xml:lang="fr">
+				<translation>Code postal</translation>
+				<description>
+					<short>Code postal</short>
+				</description>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CS_AR_Harmonise2007Type">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD du certificat de salaire (CD) et attestation de rente (AR) harmonisé dans un seul formulaire ("NCS"), et utilisable dès 2007</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="IsCS" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>A; est un certificat de salaire; true si coché, false si vide</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="IsAR" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>B; est une attestation de rente; true si coché, false si vide</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Person" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Identification de l'employé ou du rentier, xpath analogues à ceux du format Swissdec du certificat employeur.</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Particulars" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Lastname" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation xml:lang="de">nom de famille employé ou rentier</xs:documentation>
+													<xs:documentation xml:lang="fr"/>
+													<xs:documentation>
+														<usage>all</usage>
+													</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Firstname" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation xml:lang="de">prénom employé ou rentier</xs:documentation>
+													<xs:documentation xml:lang="fr">
+														<translation>Prénom</translation>
+														<description>
+															<short>
+                                Prénom(s) de la personne
+                            </short>
+															<domain>
+                                Prénom selon papier officiel (p.e. attestation d'assurance)
+                            </domain>
+														</description>
+													</xs:documentation>
+													<xs:documentation>
+														<usage>all</usage>
+													</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Address" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ZIP-Code" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation xml:lang="de">No postal employé ou rentier</xs:documentation>
+																<xs:documentation xml:lang="fr">
+																	<translation>Code postal (CP)</translation>
+																	<description>
+																		<short>Code postal (5e ligne)</short>
+																	</description>
+																</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="ZIP-CodeType"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="City" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation xml:lang="de">Localité employé ou rentier</xs:documentation>
+																<xs:documentation xml:lang="fr">
+																	<translation>Lieu</translation>
+																	<description>
+																		<short>Lieu (5e ligne)</short>
+																	</description>
+																</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Identification" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="NoAVS" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID761; C</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NA_AVS" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4152; C</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Annee" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4153; D</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="DateDu" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4154; E</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="DateAu" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4155; E</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="TransportGratuit" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4156; F</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="ChequesRepasouCantine" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4157; G</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Adresse" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>H</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Ligne1" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4158</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Ligne2" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4159</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Ligne3" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4160</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Ligne4" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4161</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Ligne5" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4162</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Donnees" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="SalaireOuRente" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4163; 1</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="PrestSalAccessoires" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>2</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="PensionLogement" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4164; 2.1</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="PartPriveeVoitureService" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4165; 2.2</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Autres" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>2.3</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Montant" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4166</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Genre" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4167</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PrestNonPeriodiques" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>3</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4169</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4168</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PrestEnCapital" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>4</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4171</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4170</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="DroitsParticipation" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4172; 5</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="IndemnitesAdministrateurs" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4173; 6</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="AutresPrestations" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>7</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4175</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Montant" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4174</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SalaireBrutTotalOuRente" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4176; 8</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="CotisationsAVS_AI_APG_AC_AANP" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4177; 9</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="PrevoyanceProf2emePilier" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>10</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="CotisationsOrdinaire" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4178; 10.1</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="CotisationsRachat" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4179; 10.2</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SalaireNetOuRente" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4180; 11</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="RetenueImpotSource" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4181; 12</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="AllocPourFrais" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>13</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Effectifs" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>13.1</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="VoyagesRepasNuitees" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>13.1.1</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Flag" type="xs:boolean" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4182</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Montant" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4183</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="Autres" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>13.1.2</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Genre" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4184</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Montant" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4185</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Forfaitaires" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>13.2</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Representation" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4186; 13.2.1</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Voiture" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4187; 13.2.2</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Autres" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>13.2.3</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Genre" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4188</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="Montant" type="xs:string" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>ID4189</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Perfectionnement" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4190; 13.3</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="AutresPrestSalAccessoires" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>14</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Genre" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Ligne1" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4191</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Ligne2" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>ID4192</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Observations" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>15</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Ligne1" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4193</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Ligne2" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>ID4194</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="BasDePage" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>I</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="LieuEtDate" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4195</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Signature" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>plus utilisé par TAO</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NomEmployeur" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>recyclage ID4196, précédemment "Signature" </xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NPA_Employeur" type="ZIP-CodeType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>pas utilisé par TAO</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="LocaliteEmployeur" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>pas utilisé par TAO</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Annexe" type="xs:boolean" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>ID4197</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PieceJustificativeType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD d'une pièce justificative (code 113)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Annexe03Type">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'annexe 03 (personnes à charge, salaires)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="SituationFamiliale" type="PersonneAChargeType" minOccurs="0"/>
+					<xs:element name="CertificatsSalaire" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Salaire" type="SalaireType" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PersonneAChargeType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD des personnes à charge (enfants, autres personnes à charge)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EnfantsMineurs" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Enfant" type="EnfantType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="EnfantsMajeurs" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Enfants majeurs ou aux études</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Enfant" type="EnfantType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MenageSeul" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id339</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Oui" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Non" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AutrePersonnes" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="AutrePersonne" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="MenageCommun" type="xs:boolean" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id349</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PasMenageCommun" type="xs:boolean" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id349</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Prenom" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id380</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Nom" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id343</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="AnneeNaissance" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id344</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LienParente" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>ID354</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ParentEnfant" type="xs:boolean" minOccurs="0"/>
+												<xs:element name="AutreLien" type="xs:boolean" minOccurs="0"/>
+												<xs:element name="AucunLien" type="xs:boolean" minOccurs="0"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Domicile" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>ID353</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="VD" type="xs:boolean" minOccurs="0"/>
+												<xs:element name="CH" type="xs:boolean" minOccurs="0"/>
+												<xs:element name="Etranger" type="xs:boolean" minOccurs="0"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="PrestationAnnuelle" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>id347</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="NAVS" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>ID4256</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalaireType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD des salaires</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Beneficiaire" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id760</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="Monsieur" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Madame" type="xs:boolean" minOccurs="0"/>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NomEmployeur" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4196</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TypeRevenuActivite" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4149</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Principal" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Accessoire" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Allocation" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Administrateur" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TauxActivite" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4150</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateDu" type="DateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4154</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateAu" type="DateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4155</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalaireNetOuRente" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4180</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CotisationsOrdinaires" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4178</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CotisationsRachat" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4179</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RetenueImpotSource" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4181</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AutresCotisations" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4151</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransportGratuit" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4156</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChequesRepasouCantine" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4157</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FraisForfaitaires" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4198</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Perfectionnement" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4199</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DroitsParticipation" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4200</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EnfantType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD des enfants</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="NAVS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4013</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Prenom" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id331</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Nom" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id351</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MenageCommun" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id340</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PasMenageCommun" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID335</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateNaissance" type="DateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id332</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Activite" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID4002</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Ecolier" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Employe" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="Autre" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GainMensuel" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>id336</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
