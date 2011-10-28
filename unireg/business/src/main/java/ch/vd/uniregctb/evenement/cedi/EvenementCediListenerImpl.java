@@ -11,8 +11,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-import ch.vd.fiscalite.cedi.DeclarationImpotType;
-import ch.vd.fiscalite.cedi.DossierElectroniqueDocument;
+import ch.vd.fiscalite.taxation.dossierElectronique.x1.DeclarationImpotType;
+import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueDocument;
+import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
@@ -113,7 +114,7 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 
 		// Crée l'événement correspondant
 		if (evt instanceof DossierElectroniqueDocument) {
-			final DossierElectroniqueDocument.DossierElectronique dossier = ((DossierElectroniqueDocument) evt).getDossierElectronique();
+			final DossierElectroniqueType dossier = ((DossierElectroniqueDocument) evt).getDossierElectronique();
 			final DeclarationImpotType di = dossier.getDeclarationImpot();
 			final DeclarationImpotType.Identification.CoordonneesContribuable coordonnes = di.getIdentification() == null ? null : di.getIdentification().getCoordonneesContribuable(); // [UNIREG-2603]
 
@@ -139,7 +140,7 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 			//    Le type de document peut être déterminé par :
 			//      100 - déclaration manuelle
 			//      109 - déclaration vaudtax (ou autres éditeurs)
-			RetourDI.TypeDocument typeDocument = RetourDI.TypeDocument.fromTypeSaisie(dossier.getOperation().getTypeSaisie());
+			RetourDI.TypeDocument typeDocument = RetourDI.TypeDocument.fromTypeSaisie(dossier.getOperation().getTypeSaisie().toString());
 			if (typeDocument == null) {
 				// il s'agit peut-être d'une ancienne DI
 				typeDocument = RetourDI.TypeDocument.fromTypeDocument(di.getTypeDocument());

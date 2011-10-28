@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Classe de test du listener d'événements CEDI. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
- *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class EvenementCediListenerTest extends EvenementTest {
@@ -65,7 +64,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		listener.setHibernateTemplate(hibernateTemplate);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/cedi/Sdi.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/cedi/DossierElectronique-1-0.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
