@@ -13,7 +13,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -1036,60 +1035,6 @@ public interface TiersService {
 	 * @return une dénomination de l'assujettissement du tiers
 	 */
 	public String getRoleAssujettissement(Tiers tiers, RegDate date);
-
-	/**
-	 * Ajoute un nouveau for fiscal à un tiers.
-	 *
-	 * @param tiers     le tiers sur lequel on veut ajouter un for fiscal
-	 * @param forFiscal le nouveau for fiscal
-	 * @return une nouvelle instance du for fiscal avec son id renseigné.
-	 */
-	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
-
-	/**
-	 * Ajoute une nouvelle déclaration à un tiers
-	 *
-	 * @param tiers       le tiers auquel on veut ajouter la déclaration
-	 * @param declaration déclaration à ajouter
-	 * @return la déclaration une fois sauvegardée, avec son ID renseigné
-	 */
-	Declaration addAndSave(Tiers tiers, Declaration declaration);
-
-	/**
-	 * Ajoute une nouvelle periodicite à un debiteur.
-	 *
-	 * @param debiteur    le debiteur sur lequel on va ajouter la periodicite
-	 * @param periodicite la nouvelle periodicite
-	 * @return une nouvelle instance de la periodicite avec son id renseigné.
-	 */
-	Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite);
-
-	/**
-	 * Ajoute une nouvelle situation de famille à un contribuable.
-	 *
-	 * @param contribuable le contribuable sur lequel on veut ajouter un for fiscal
-	 * @param situation    la nouvelle situation de famille
-	 * @return une nouvelle instance de la situation de famille avec son id renseigné.
-	 */
-	SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation);
-
-	/**
-	 * Ajoute une nouvelle adresse à un tiers.
-	 *
-	 * @param tiers   le tiers sur lequel on veut ajouter un for fiscal
-	 * @param adresse la nouvelle adresse
-	 * @return une nouvelle instance de l'adresse avec son id renseigné.
-	 */
-	AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse);
-
-	/**
-	 * Ajoute une nouvelle identifiant de personne à une personne physique
-	 *
-	 * @param pp    une personne physique
-	 * @param ident l'identifiant à ajouter
-	 * @return une nouvelle instande de l'identificant avec son id renseigné.
-	 */
-	IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident);
 
 	/**
 	 * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.

@@ -320,7 +320,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theNumeroAssureSocial the numeroAssureSocial to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8PFx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setNumeroAssureSocial(String theNumeroAssureSocial) {
+	public void setNumeroAssureSocial(@Nullable String theNumeroAssureSocial) {
 		numeroAssureSocial = theNumeroAssureSocial;
 	}
 
@@ -339,7 +339,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theNom the nom to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Plx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setNom(String theNom) {
+	public void setNom(@Nullable String theNom) {
 		nom = theNom;
 	}
 
@@ -388,7 +388,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @param theDateNaissance the dateNaissance to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8QFx9Edygsbnw9h5bVw?SETTER"
 	 */
-	public void setDateNaissance(RegDate theDateNaissance) {
+	public void setDateNaissance(@Nullable RegDate theDateNaissance) {
 		dateNaissance = theDateNaissance;
 	}
 
@@ -540,7 +540,7 @@ public class PersonnePhysique extends Contribuable {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_4Z2GsO9YEdyEV8rfFv3rEg?SETTER"
 	 */
 	public void setIdentificationsPersonnes(
-			Set<IdentificationPersonne> theIdentificationsPersonnes) {
+			@Nullable Set<IdentificationPersonne> theIdentificationsPersonnes) {
 		// msi (23.11.2009) lorsqu'une collection est définie avec un Cascade=DELETE_ORPHAN *et* qu'on appel session.merge() sur une nouvelle instance de PersonnePhysique (donc avec une
 		// collection nulle), hibernate lève une exception avec le message "A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance". Le problème
 		// est que le merge fait les étapes suivantes :

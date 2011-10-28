@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.fiscal;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,7 @@ public interface EvenementFiscalService {
 	 * @param id du for
 	 * @throws Exception
 	 */
-	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) ;
+	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Fermeture de for'
@@ -58,7 +59,7 @@ public interface EvenementFiscalService {
 	 * @param id du for
 	 * @throws Exception
 	 */
-	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) ;
+	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation de for'

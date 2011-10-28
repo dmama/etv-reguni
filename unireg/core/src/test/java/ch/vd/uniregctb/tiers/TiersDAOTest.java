@@ -1764,7 +1764,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp8.setForsFiscaux(new HashSet());
 				pp8.setRapportsObjet(new HashSet());
 				pp8.setRapportsSujet(new HashSet());
-				pp8.setLogCreationDate(DateHelper.getDate(2010,11,20));
+				pp8.setLogCreationDate(DateHelper.getDate(2010, 11, 20));
 				pp8 = hibernateTemplate.merge(pp8);
 
 				AdresseSuisse as0 = new AdresseSuisse();
@@ -1863,7 +1863,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				ffp0.setMotifRattachement(MotifRattachement.DOMICILE);
 				ffp0.setNumeroOfsAutoriteFiscale(6200);
 				ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-				ffp0.setLogCreationDate(DateHelper.getDate(2010,11,20));
+				ffp0.setLogCreationDate(DateHelper.getDate(2010, 11, 20));
 				pp0.addForFiscal(ffp0);
 				pp0 = hibernateTemplate.merge(pp0);
 

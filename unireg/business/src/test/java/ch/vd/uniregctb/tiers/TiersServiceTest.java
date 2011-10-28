@@ -4096,7 +4096,7 @@ public class TiersServiceTest extends BusinessTest {
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		try {
-			tiersService.addAndSave(pp, f);
+			tiersDAO.addAndSave(pp, f);
 			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
 		}
 		catch (ValidationException e) {

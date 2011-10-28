@@ -8,6 +8,9 @@ import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.rf.Immeuble;
 
 public interface TiersDAO extends GenericDAO<Tiers, Long> {
@@ -232,6 +235,51 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance de l'immeuble avec son id renseigné.
 	 */
 	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
+
+	/**
+	 * Ajoute une nouvelle déclaration à un tiers
+	 *
+	 * @param tiers       le tiers auquel on veut ajouter la déclaration
+	 * @param declaration déclaration à ajouter
+	 * @return la déclaration une fois sauvegardée, avec son ID renseigné
+	 */
+	Declaration addAndSave(Tiers tiers, Declaration declaration);
+
+	/**
+	 * Ajoute une nouvelle periodicite à un debiteur.
+	 *
+	 * @param debiteur    le debiteur sur lequel on va ajouter la periodicite
+	 * @param periodicite la nouvelle periodicite
+	 * @return une nouvelle instance de la periodicite avec son id renseigné.
+	 */
+	Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite);
+
+	/**
+	 * Ajoute une nouvelle situation de famille à un contribuable.
+	 *
+	 * @param contribuable le contribuable sur lequel on veut ajouter un for fiscal
+	 * @param situation    la nouvelle situation de famille
+	 * @return une nouvelle instance de la situation de famille avec son id renseigné.
+	 */
+	SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation);
+
+	/**
+	 * Ajoute une nouvelle adresse à un tiers.
+	 *
+	 * @param tiers   le tiers sur lequel on veut ajouter un for fiscal
+	 * @param adresse la nouvelle adresse
+	 * @return une nouvelle instance de l'adresse avec son id renseigné.
+	 */
+	AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse);
+
+	/**
+	 * Ajoute une nouvelle identifiant de personne à une personne physique
+	 *
+	 * @param pp    une personne physique
+	 * @param ident l'identifiant à ajouter
+	 * @return une nouvelle instande de l'identificant avec son id renseigné.
+	 */
+	IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

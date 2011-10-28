@@ -1121,7 +1121,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return la liste des fors correspondant, qui peut être vide si aucun for ne correspond aux critères.
 	 */
 	@Transient
-	public List<ForFiscal> getForsFiscauxValidAt(RegDate date) {
+	public List<ForFiscal> getForsFiscauxValidAt(@Nullable RegDate date) {
 
 		List<ForFiscal> fors = new ArrayList<ForFiscal>();
 		if (forsFiscaux != null) {

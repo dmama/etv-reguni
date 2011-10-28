@@ -12,14 +12,19 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
@@ -253,6 +258,31 @@ public class TiersDAOMockPM implements TiersDAO {
 
 	@Override
 	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
 		throw new NotImplementedException();
 	}
 

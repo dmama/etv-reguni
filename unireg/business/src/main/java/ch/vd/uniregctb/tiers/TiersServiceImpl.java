@@ -129,7 +129,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Recherche les Tiers correspondants aux critères dans le data model de Unireg
 	 *
-	 * @param tiersCriteria
+	 * @param tiersCriteria les critères de recherche
 	 * @return la liste des tiers correspondants aux criteres.
 	 * @throws IndexerException
 	 */
@@ -138,6 +138,7 @@ public class TiersServiceImpl implements TiersService {
 		return tiersSearcher.search(tiersCriteria);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcher(GlobalTiersSearcher searcher) {
 		this.tiersSearcher = searcher;
 	}
@@ -169,6 +170,7 @@ public class TiersServiceImpl implements TiersService {
 		this.serviceCivilService = serviceCivil;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheService(TacheService tacheService) {
 		this.tacheService = tacheService;
 	}
@@ -185,6 +187,7 @@ public class TiersServiceImpl implements TiersService {
 		this.adresseService = adresseService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
 		this.remarqueDAO = remarqueDAO;
 	}
@@ -197,6 +200,7 @@ public class TiersServiceImpl implements TiersService {
 		this.validationService = validationService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
 		this.validationInterceptor = validationInterceptor;
 	}
@@ -214,9 +218,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public Tiers getTiers(long numeroTiers) {
-
-		final Tiers tiers = tiersDAO.get(numeroTiers);
-		return tiers;
+		return tiersDAO.get(numeroTiers);
 	}
 
 	@Override
@@ -274,7 +276,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * change un habitant en non habitant (en cas de départ HC ou HS)
 	 *
-	 * @param la PP de type Habitant
+	 * @param habitant la PP de type Habitant
 	 * @return la même PP de type nonHabitant maintenant
 	 */
 	@Override
@@ -350,13 +352,6 @@ public class TiersServiceImpl implements TiersService {
 		return habitant;
 	}
 
-	/**
-	 * Ré-initialise les champs NAVS11 et NumRCE du non-habitant donné
-	 *
-	 * @param nonHabitant
-	 * @param navs11
-	 * @param numRce
-	 */
 	@Override
 	public void setIdentifiantsPersonne(PersonnePhysique nonHabitant, String navs11, String numRce) {
 		final Set<IdentificationPersonne> set = new HashSet<IdentificationPersonne>(2);
@@ -813,8 +808,8 @@ public class TiersServiceImpl implements TiersService {
 	 * Détermine si un non habitant est étranger sans permis C.
 	 *
 	 * @param nonHabitant le non habitant
-	 * @param date        la date à laquelle on désire se placer
 	 * @return true si le non habitant est étranger sans permis C
+	 * @throws TiersException si l'habitant ne possède ni nationalité ni permis.
 	 */
 	private boolean isNonHabitantEtrangerSansPermisC(PersonnePhysique nonHabitant) throws TiersException {
 
@@ -827,6 +822,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 			else {
 				/* le non habitant a une origine étrangère avec un permis C */
+				//noinspection RedundantIfStatement
 				if (nonHabitant.getCategorieEtranger() != null && nonHabitant.getCategorieEtranger() == CategorieEtranger._03_ETABLI_C) {
 					return false;
 				}
@@ -864,7 +860,7 @@ public class TiersServiceImpl implements TiersService {
 		if (date == null) date = RegDate.get();
 		/* Récupération de l'individu avec ses permis, ses nationalités et son origine */
 		Assert.notNull(habitant.getNumeroIndividu());
-		Individu individu = null;
+		Individu individu;
 		try {
 			individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(), AttributeIndividu.PERMIS);
 		}
@@ -981,7 +977,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
 		final Set<PersonnePhysique> personnes = getPersonnesPhysiques(menageCommun);
-		if (personnes != null && personnes.size() > 0) {
+		if (personnes.size() > 0) {
 			final List<PersonnePhysique> liste = new ArrayList<PersonnePhysique>(personnes);
 			final PersonnePhysique tiers1 = liste.get(0);
 			if (liste.size() > 1) {
@@ -1001,7 +997,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, RegDate date) {
+	public EnsembleTiersCouple getEnsembleTiersCouple(MenageCommun menageCommun, @Nullable RegDate date) {
 
 		if (menageCommun == null) {
 			return null;
@@ -1035,9 +1031,8 @@ public class TiersServiceImpl implements TiersService {
 			if (personnes.size() == 1) {
 				// Détermination des tiers principal et secondaire
 				final Iterator<PersonnePhysique> iter = personnes.iterator();
-				final PersonnePhysique p1 = iter.next();
 
-				principal = p1;
+				principal = iter.next();
 				conjoint = null;
 				Assert.notNull(principal, "le tiers survivant du ménage commun n'a pu être trouvé");
 			}
@@ -1069,13 +1064,6 @@ public class TiersServiceImpl implements TiersService {
 		return ensemble;
 	}
 
-	/**
-	 * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers ménage-commun.
-	 *
-	 * @param menageCommun le tiers ménage-commun du menage
-	 * @param date         la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
-	 * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage.
-	 */
 	@Override
 	public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, @Nullable RegDate date) {
 
@@ -1155,17 +1143,6 @@ public class TiersServiceImpl implements TiersService {
 		return (findMenageCommun(personne, date) != null);
 	}
 
-	/**
-	 * Ajoute l'individu spécifié en tant que tiers du ménage commun, à partir de la date spécifiée.
-	 * <p/>
-	 * <b>Attention : le menage et le tiers spécifiés seront automatiques sauvés !</b>
-	 *
-	 * @param menage    le ménage sur lequel le tiers doit être ajouté
-	 * @param tiers     le tiers à ajouter au ménage
-	 * @param dateDebut la date de début de validité de la relation entre tiers
-	 * @param dateFin   la date de fin de validité de la relation entre tiers (peut être nulle)
-	 * @return le rapport-entre-tiers avec les références mises-à-jour des objets sauvés
-	 */
 	@Override
 	public RapportEntreTiers addTiersToCouple(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut, RegDate dateFin) {
 
@@ -1176,27 +1153,12 @@ public class TiersServiceImpl implements TiersService {
 		return addRapport(rapport, tiers, menage);
 	}
 
-	/**
-	 * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable
-	 *
-	 * @param debiteur
-	 * @param contribuable
-	 * @return le rapport
-	 */
 	@Override
 	public RapportEntreTiers addContactImpotSource(DebiteurPrestationImposable debiteur, Contribuable contribuable) {
 
 		return addContactImpotSource(debiteur, contribuable, RegDate.get());
 	}
 
-	/**
-	 * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable avec une date de début
-	 *
-	 * @param debiteur
-	 * @param contribuable
-	 * @param dateDebut
-	 * @return le rapport
-	 */
 	@Override
 	public RapportEntreTiers addContactImpotSource(DebiteurPrestationImposable debiteur, Contribuable contribuable, RegDate dateDebut) {
 
@@ -1355,12 +1317,6 @@ public class TiersServiceImpl implements TiersService {
 		return new EnsembleTiersCouple(menage, principal, conjoint);
 	}
 
-	/**
-	 * Retourne les nom et prénoms de la personne physique spécifiée
-	 *
-	 * @param pp personne physique dont on veut le nom
-	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
-	 */
 	@Override
 	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
@@ -1393,15 +1349,8 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	/**
-	 * Récupère l'individu correspondant à l'habitant pour une année donnée
-	 *
-	 * @param annee
-	 * @param attributes
-	 * @return
-	 */
 	@Override
-	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu[] attributes) {
+	public Individu getIndividu(PersonnePhysique personne, int annee, @Nullable AttributeIndividu[] attributes) {
 
 		if (personne.isHabitantVD()) {
 			Individu individu = null;
@@ -1418,6 +1367,7 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
 		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
@@ -1462,7 +1412,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setModeImposition(modeImposition);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
@@ -1474,21 +1424,6 @@ public class TiersServiceImpl implements TiersService {
 
 	}
 
-	/**
-	 * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
-	 *
-	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-	 * @param motifRattachement        le motif de rattachement du nouveau for
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
-	 * @param modeImposition           le mode d'imposition du for fiscal principal
-	 * @param motifOuverture           le motif d'ouverture
-	 * @param dateFermeture            la date de fermeture du for	 *
-	 * @param motifFermeture           le motif de fermeture
-	 * @param changeHabitantFlag
-	 * @return le nouveau for fiscal principal
-	 */
 	@Override
 	public ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
 	                                                         MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
@@ -1508,7 +1443,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateFin(dateFermeture);
 		nouveauForFiscal.setMotifFermeture(motifFermeture);
 
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
@@ -1587,16 +1522,18 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public boolean isDomicileVaudois(PersonnePhysique pp, RegDate date) {
+	public boolean isDomicileVaudois(PersonnePhysique pp, @Nullable RegDate date) {
 		final Boolean isVaudois = isDomicileDansLeCanton(pp, date);
 		return isVaudois != null && isVaudois;
 	}
 
 	/**
-	 * Renvoie {@link Boolean#TRUE} si l'adresse de domicile de la personne donnée à la date donnée est dans le canton, {@link Boolean#FALSE} si elle est hors-canton où hors-Suisse, et <code>null</code>
-	 * si on ne sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
+	 * @param pp   une personne physique
+	 * @param date une date de réféence
+	 * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
+	 *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
 	 */
-	private Boolean isDomicileDansLeCanton(PersonnePhysique pp, RegDate date) {
+	private Boolean isDomicileDansLeCanton(PersonnePhysique pp, @Nullable RegDate date) {
 
 		try {
 			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
@@ -1839,6 +1776,7 @@ public class TiersServiceImpl implements TiersService {
 					final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 					final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 					//Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant.
+					//noinspection SimplifiableIfStatement
 					if (TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
 						return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 
@@ -2028,7 +1966,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		Assert.notNull(nouveauForFiscal);
 		return nouveauForFiscal;
@@ -2048,7 +1986,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateFin(dateImpot);
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForAutreImportAdded(contribuable, nouveauForFiscal);
@@ -2071,7 +2009,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateDebut(dateOuverture);
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		nouveauForFiscal = addAndSave(debiteur, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(debiteur, nouveauForFiscal);
 
 		if (validationService.validate(debiteur).errorsCount() == 0) {
 			afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
@@ -2162,7 +2100,7 @@ public class TiersServiceImpl implements TiersService {
 	private void addAndSaveReopenedFors(Tiers tiers, List<ForFiscal> reopenedFors, boolean forsPrincipaux) {
 		for (ForFiscal reopenedFor : reopenedFors) {
 			if ((forsPrincipaux && reopenedFor instanceof ForFiscalPrincipal) || (!forsPrincipaux && reopenedFor instanceof ForFiscalSecondaire)) {
-				reopenedFor = addAndSave(tiers, reopenedFor);
+				reopenedFor = tiersDAO.addAndSave(tiers, reopenedFor);
 				// exécution des règles événements fiscaux
 				if (validationService.validate(tiers).errorsCount() == 0) {
 					afterForAdded(reopenedFor);
@@ -2171,18 +2109,12 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	/**
-	 * Réouvre le for et l'assigne au tiers.
-	 *
-	 * @param ff
-	 * @param tiers
-	 */
 	@Override
 	public void reopenFor(ForFiscal ff, Tiers tiers) {
 		ForFiscal nouveauForFiscal = ff.duplicate();
 		nouveauForFiscal.setAnnule(false);
 		nouveauForFiscal.setDateFin(null);
-		nouveauForFiscal = addAndSave(tiers, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(tiers, nouveauForFiscal);
 		// exécution des règles événements fiscaux
 		if (validationService.validate(tiers).errorsCount() == 0) {
 			afterForAdded(nouveauForFiscal);
@@ -2347,7 +2279,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(forFiscalPrincipal.getTypeAutoriteFiscale());
 		nouveauForFiscal.setModeImposition(modeImposition);
 		nouveauForFiscal.setMotifOuverture(motifFor);
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
 			tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
@@ -2386,7 +2318,7 @@ public class TiersServiceImpl implements TiersService {
 		ForFiscal forCorrige = forFiscal.duplicate();
 		forFiscal.setAnnule(true);
 		forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
-		forCorrige = addAndSave(tiers, forCorrige);
+		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
 		// notifie le reste du monde
 		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -2421,7 +2353,7 @@ public class TiersServiceImpl implements TiersService {
 		forCorrige.setMotifOuverture(motifOuverture);
 		forCorrige.setDateFin(dateFermeture);
 		forCorrige.setMotifFermeture(motifFermeture);
-		forCorrige = addAndSave(tiers, forCorrige);
+		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
 		// notifie le reste du monde
 		evenementFiscalService.publierEvenementFiscalAnnulationFor(ffs, RegDate.get());
@@ -2535,7 +2467,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final Periodicite nouvelle = new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, dateFin);
-		return addAndSave(debiteur, nouvelle);
+		return tiersDAO.addAndSave(debiteur, nouvelle);
 	}
 
 	/**
@@ -2561,8 +2493,8 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForFiscalSecondaire addForSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
-	                                            int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture) {
+	public ForFiscalSecondaire addForSecondaire(Contribuable contribuable, RegDate dateOuverture, @Nullable RegDate dateFermeture, MotifRattachement motifRattachement,
+	                                            int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, @Nullable MotifFor motifFermeture) {
 
 		// Ouvre un nouveau for à la date d'événement
 		ForFiscalSecondaire nouveauForFiscal = new ForFiscalSecondaire();
@@ -2573,7 +2505,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
 		nouveauForFiscal.setMotifFermeture(motifFermeture);
-		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
 			afterForFiscalSecondaireAdded(contribuable, nouveauForFiscal);
@@ -2742,12 +2674,6 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	/**
-	 * Fusionne un non habitant avec un habitant
-	 *
-	 * @param habitant
-	 * @param nonHabitant
-	 */
 	@Override
 	public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant) {
 		// Onglet Complements
@@ -2784,6 +2710,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
+	 *
+	 * @param tiers le tiers dont on veut débloquer le reboursement automatique.
 	 */
 	private static void resetFlagBlocageRemboursementAutomatiqueSelonFors(Tiers tiers) {
 		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
@@ -2809,8 +2737,8 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Copie les informations Complements
 	 *
-	 * @param tiersCible
-	 * @param tiersSource
+	 * @param tiersSource un tiers source
+	 * @param tiersCible un tiers cible
 	 */
 	private void copieComplements(Tiers tiersSource, Tiers tiersCible) {
 		tiersCible.setComplementNom(tiersSource.getComplementNom());
@@ -2824,20 +2752,12 @@ public class TiersServiceImpl implements TiersService {
 		tiersCible.setAdresseBicSwift(tiersSource.getAdresseBicSwift());
 	}
 
-	/**
-	 * @param forFiscalSource
-	 * @return
-	 */
 	private ForFiscalAutreImpot copieForFiscalAutreImpot(ForFiscalAutreImpot forFiscalSource) {
 		ForFiscalAutreImpot forFiscalCible = new ForFiscalAutreImpot();
 		copieForFiscal(forFiscalSource, forFiscalCible);
 		return forFiscalCible;
 	}
 
-	/**
-	 * @param forFiscalSource
-	 * @return
-	 */
 	private ForFiscalSecondaire copieForFiscalSecondaire(ForFiscalSecondaire forFiscalSource) {
 		ForFiscalSecondaire forFiscalCible = new ForFiscalSecondaire();
 		copieForFiscal(forFiscalSource, forFiscalCible);
@@ -2845,10 +2765,6 @@ public class TiersServiceImpl implements TiersService {
 		return forFiscalCible;
 	}
 
-	/**
-	 * @param forFiscalSource
-	 * @return
-	 */
 	private ForFiscalAutreElementImposable copieForFiscalAutreElementImposable(ForFiscalAutreElementImposable forFiscalSource) {
 		ForFiscalAutreElementImposable forFiscalCible = new ForFiscalAutreElementImposable();
 		copieForFiscal(forFiscalSource, forFiscalCible);
@@ -2856,10 +2772,6 @@ public class TiersServiceImpl implements TiersService {
 		return forFiscalCible;
 	}
 
-	/**
-	 * @param forFiscalSource
-	 * @return
-	 */
 	private ForFiscalPrincipal copieForFiscalPrincipal(ForFiscalPrincipal forFiscalSource) {
 		ForFiscalPrincipal forFiscalCible = new ForFiscalPrincipal();
 		copieForFiscal(forFiscalSource, forFiscalCible);
@@ -2868,12 +2780,6 @@ public class TiersServiceImpl implements TiersService {
 		return forFiscalCible;
 	}
 
-	/**
-	 * Copie les attributs de ForFiscal
-	 *
-	 * @param forFiscalSource
-	 * @param forFiscalCible
-	 */
 	private void copieForFiscal(ForFiscal forFiscalSource, ForFiscal forFiscalCible) {
 		forFiscalCible.setDateDebut(forFiscalSource.getDateDebut());
 		forFiscalCible.setDateFin(forFiscalSource.getDateFin());
@@ -2883,12 +2789,6 @@ public class TiersServiceImpl implements TiersService {
 		forFiscalCible.setAnnule(forFiscalSource.isAnnule());
 	}
 
-	/**
-	 * Copie les attributs de ForFiscalRevenuFortune
-	 *
-	 * @param forFiscalRevenuFortuneSource
-	 * @param forFiscalRevenuFortuneCible
-	 */
 	private void copieForFiscalRevenuFortune(ForFiscalRevenuFortune forFiscalRevenuFortuneSource,
 	                                         ForFiscalRevenuFortune forFiscalRevenuFortuneCible) {
 		forFiscalRevenuFortuneCible.setMotifRattachement(forFiscalRevenuFortuneSource.getMotifRattachement());
@@ -2896,16 +2796,11 @@ public class TiersServiceImpl implements TiersService {
 		forFiscalRevenuFortuneCible.setMotifFermeture(forFiscalRevenuFortuneSource.getMotifFermeture());
 	}
 
-	/**
-	 * @param evenementFiscalService the evenementFiscalService to set
-	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getNomPrenom(PersonnePhysique personne) {
 		Assert.notNull(personne);
@@ -3048,7 +2943,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Integer getOfficeImpotIdAt(Tiers tiers, RegDate date) {
+	public Integer getOfficeImpotIdAt(Tiers tiers, @Nullable RegDate date) {
 		Integer oid = tiers.getOfficeImpotId();
 		if (date == null && oid != null) {
 			// l'oid courant est déjà connu, pas besoin d'en faire plus
@@ -3289,7 +3184,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForGestion getDernierForGestionConnu(Tiers tiers, RegDate date) {
+	public ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date) {
 
 		if (tiers instanceof DebiteurPrestationImposable) {
 			//un DPI n'a pas de for de gestion, il est géré par une OID spéciale
@@ -3302,7 +3197,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// Lucky guess
-		ForGestion forGestion = null;
+		ForGestion forGestion;
 		if (date == null) {
 			// on essaie tout d'abord à la date de fin du dernier for fiscal
 			forGestion = getForGestionActif(tiers, forsFiscaux.get(forsFiscaux.size() - 1).getDateFin());
@@ -3518,6 +3413,7 @@ public class TiersServiceImpl implements TiersService {
 		return results;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
 	}
@@ -3591,188 +3487,6 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		return tiersDAO.addAndSave(tiers, forFiscal);
-	}
-
-	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
-		Collection<E> getEntities(T tiers);
-
-		void addEntity(T tiers, E entity);
-
-		void assertSame(E entity1, E entity2);
-	}
-
-	// TODO (msi) déplacer cette méthode (et celles qui en dépendent) dans le TiersDAO
-	@SuppressWarnings({"unchecked"})
-	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
-		if (entity.getKey() == null) {
-			// pas encore persistée
-
-			// on mémorise les clés des entités existantes
-			final Set<Object> keys;
-			final Collection<E> entities = accessor.getEntities(tiers);
-			if (entities == null || entities.isEmpty()) {
-				keys = Collections.emptySet();
-			}
-			else {
-				keys = new HashSet<Object>(entities.size());
-				for (E d : entities) {
-					final Object key = d.getKey();
-					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
-					keys.add(key);
-				}
-			}
-
-			// on ajoute la nouvelle entité et on sauve le tout
-			accessor.addEntity(tiers, entity);
-			tiers = (T) tiersDAO.save(tiers);
-
-			// rebelotte pour trouver la nouvelle entité
-			E newEntity = null;
-			for (E d : accessor.getEntities(tiers)) {
-				if (!keys.contains(d.getKey())) {
-					newEntity = d;
-					break;
-				}
-			}
-
-			Assert.notNull(newEntity);
-			accessor.assertSame(entity, newEntity);
-			entity = newEntity;
-		}
-		else {
-			accessor.addEntity(tiers, entity);
-		}
-
-		Assert.notNull(entity.getKey());
-		return entity;
-	}
-
-	private static final EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new EntityAccessor<Tiers, Declaration>() {
-		@Override
-		public Collection<Declaration> getEntities(Tiers tiers) {
-			return tiers.getDeclarations();
-		}
-
-		@Override
-		public void addEntity(Tiers tiers, Declaration d) {
-			tiers.addDeclaration(d);
-		}
-
-		@Override
-		public void assertSame(Declaration d1, Declaration d2) {
-			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
-			Assert.isSame(d1.getDateFin(), d2.getDateFin());
-		}
-	};
-
-	@Override
-	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
-		return addAndSave(tiers, declaration, DECLARATION_ACCESSOR);
-	}
-
-	private static final EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new EntityAccessor<DebiteurPrestationImposable, Periodicite>() {
-		@Override
-		public Collection<Periodicite> getEntities(DebiteurPrestationImposable dpi) {
-			return dpi.getPeriodicites();
-		}
-
-		@Override
-		public void addEntity(DebiteurPrestationImposable dpi, Periodicite p) {
-			dpi.addPeriodicite(p);
-		}
-
-		@Override
-		public void assertSame(Periodicite p1, Periodicite p2) {
-			Assert.isSame(p1.getDateDebut(), p2.getDateDebut());
-			Assert.isSame(p1.getDateFin(), p2.getDateFin());
-		}
-	};
-
-	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
-		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Contribuable, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<Contribuable, SituationFamille>() {
-		@Override
-		public Collection<SituationFamille> getEntities(Contribuable ctb) {
-			return ctb.getSituationsFamille();
-		}
-
-		@Override
-		public void addEntity(Contribuable ctb, SituationFamille entity) {
-			ctb.addSituationFamille(entity);
-		}
-
-		@Override
-		public void assertSame(SituationFamille entity1, SituationFamille entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-		}
-	};
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
-		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Tiers, AdresseTiers> ADRESSE_TIERS_ACCESSOR = new EntityAccessor<Tiers, AdresseTiers>() {
-		@Override
-		public Collection<AdresseTiers> getEntities(Tiers tiers) {
-			return tiers.getAdressesTiers();
-		}
-
-		@Override
-		public void addEntity(Tiers tiers, AdresseTiers entity) {
-			tiers.addAdresseTiers(entity);
-		}
-
-		@Override
-		public void assertSame(AdresseTiers entity1, AdresseTiers entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-		}
-	};
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
-		return addAndSave(tiers, adresse, ADRESSE_TIERS_ACCESSOR);
-	}
-
-	private static final EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new EntityAccessor<PersonnePhysique, IdentificationPersonne>() {
-		@Override
-		public Collection<IdentificationPersonne> getEntities(PersonnePhysique pp) {
-			return pp.getIdentificationsPersonnes();
-		}
-
-		@Override
-		public void addEntity(PersonnePhysique pp, IdentificationPersonne entity) {
-			pp.addIdentificationPersonne(entity);
-		}
-
-		@Override
-		public void assertSame(IdentificationPersonne entity1, IdentificationPersonne entity2) {
-			Assert.isSame(entity1.getCategorieIdentifiant(), entity2.getCategorieIdentifiant());
-			Assert.isSame(entity1.getIdentifiant(), entity2.getIdentifiant());
-		}
-	};
-
-	@Override
-	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
-		return addAndSave(pp, ident, IDENTIFICATION_PERSONNE_ACCESSOR);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s) {
 		ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager);
 		return processor.run(ctbIds, dateLimite, s);
@@ -3784,8 +3498,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager) {
 		final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager);
-		final CorrectionFlagHabitantSurPersonnesPhysiquesResults rapport = processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
-		return rapport;
+		return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
 	}
 
 	/**
@@ -3794,8 +3507,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public CorrectionFlagHabitantSurMenagesResults corrigeFlagHabitantSurMenagesCommuns(int nbThreads, StatusManager statusManager) {
 		final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager);
-		final CorrectionFlagHabitantSurMenagesResults rapport = processor.corrigeFlagSurMenages(nbThreads);
-		return rapport;
+		return processor.corrigeFlagSurMenages(nbThreads);
 	}
 
 	@Override
@@ -3842,7 +3554,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur) {
-		RegDate debutValidite = null;
+		RegDate debutValidite;
 		int anneeDebut = RegDate.get().year();
 		Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
 		if (derniereDeclaration != null) {
@@ -3938,6 +3650,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
+	 * @param menage               un ménage-commun
+	 * @param aussiRapportsAnnules <b>vrai</b> si l'on veut aussi les rapports annulés; <b>faux</b> autrement.
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
 	 */
 	@NotNull
@@ -4149,16 +3863,6 @@ public class TiersServiceImpl implements TiersService {
 		return personnes;
 	}
 
-	/**
-	 * Recherche le menage commun actif auquel est rattaché une personne
-	 *
-	 * @param personne la personne potentiellement rattachée à un ménage commun
-	 * @param periode
-	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
-	 * @throws Exception
-	 * @throws ch.vd.registre.common.service.RegistreException
-	 *                   si plus d'un ménage commun est trouvé.
-	 */
 	@Override
 	public MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException {
 
@@ -4216,7 +3920,7 @@ public class TiersServiceImpl implements TiersService {
 	public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {
 		MenageCommun menageCommun = findDernierMenageCommun(tiers);
 		if (menageCommun != null) {
-			PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[0]);
+			PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[getPersonnesPhysiques(menageCommun).size()]);
 			if (personnes.length == 1 && EtatCivil.VEUF == situationFamilleService.getEtatCivil(tiers, RegDate.get(), true)) {
 				return true;
 			}
@@ -4281,12 +3985,6 @@ public class TiersServiceImpl implements TiersService {
 		return false;
 	}
 
-	/**
-	 * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
-	 *
-	 * @param tiers
-	 * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
-	 */
 	@Override
 	public Long extractNumeroIndividuPrincipal(Tiers tiers) {
 		if (tiers instanceof PersonnePhysique) {
@@ -4306,13 +4004,13 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Recherche la presence d'un for actif sur une période
 	 *
-	 * @param contribuableUnireg
-	 * @param periode
-	 * @return booleen
+	 * @param ctb un contribuable
+	 * @param periode une période
+	 * @return <b>vrai</b> si le contribuable possède au moins un for actif pendant la période spécifiée; <b>faux</b> autrement.
 	 */
-	public static boolean isForActifSurPeriode(final ch.vd.uniregctb.tiers.Contribuable contribuableUnireg, final DateRangeHelper.Range periode) {
+	public static boolean isForActifSurPeriode(final ch.vd.uniregctb.tiers.Contribuable ctb, final DateRangeHelper.Range periode) {
 
-		for (ForFiscal f : contribuableUnireg.getForsFiscaux()) {
+		for (ForFiscal f : ctb.getForsFiscaux()) {
 			if (DateRangeHelper.intersect(f, periode) && !f.isAnnule()) {
 				return true;
 			}

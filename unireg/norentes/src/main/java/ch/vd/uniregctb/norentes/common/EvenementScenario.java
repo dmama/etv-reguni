@@ -145,7 +145,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
-		return tiersService.addAndSave(tiers, ffp);
+		return tiersDAO.addAndSave(tiers, ffp);
 	}
 
 	protected ForFiscalSecondaire addForFiscalSecondaire(Tiers tiers, int noOFS, RegDate debut, RegDate fin){
@@ -158,7 +158,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		forSec.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 		forSec.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 
-		return tiersService.addAndSave(tiers, forSec);
+		return tiersDAO.addAndSave(tiers, forSec);
 	}
 
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Tiers tiers, RegDate debut, RegDate fin, RegDate dateEmission, int delaiEnJours) {
@@ -230,7 +230,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		sit.setEtatCivil(etatCivil);
 		sit.setNombreEnfants(nbEnfants);
 
-		tiersService.addAndSave(personne, sit);
+		tiersDAO.addAndSave(personne, sit);
 	}
 
 	protected void addSituationFamille(final MenageCommun menage, RegDate debut, RegDate fin, EtatCivil etatCivil,
@@ -244,7 +244,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		sit.setContribuablePrincipalId(contribuablePrincipal == null ? null : contribuablePrincipal.getId());
 		sit.setEtatCivil(etatCivil);
 
-		tiersService.addAndSave(menage, sit);
+		tiersDAO.addAndSave(menage, sit);
 	}
 
 	protected void startNewTransaction() throws TransactionException {

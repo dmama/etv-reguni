@@ -26,6 +26,8 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
@@ -57,9 +59,11 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersServiceImpl;
@@ -1101,6 +1105,31 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		@Override
 		public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
 			throw new NotImplementedException();
 		}
 

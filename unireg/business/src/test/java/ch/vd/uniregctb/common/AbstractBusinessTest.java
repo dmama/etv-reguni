@@ -363,7 +363,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		if (dpi.getDernierForDebiteur() == null) {
 			tiersService.adaptPremierePeriodicite(dpi, debut);
 		}
-		f = tiersService.addAndSave(dpi, f);
+		f = tiersDAO.addAndSave(dpi, f);
 		return f;
 	}
 
@@ -385,7 +385,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setUsage(usage);
 		adresse.setNumeroRue(rue.getNoRue());
 		adresse.setNumeroOrdrePoste(rue.getLocalite().getNPA());
-		adresse = (AdresseSuisse) tiersService.addAndSave(tiers, adresse);
+		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
 		return adresse;
 	}
 
@@ -398,7 +398,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setRue(rue);
 		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
 		adresse.setNumeroOfsPays(pays.getNoOFS());
-		adresse = (AdresseEtrangere) tiersService.addAndSave(tiers, adresse);
+		adresse = (AdresseEtrangere) tiersDAO.addAndSave(tiers, adresse);
 		return adresse;
 	}
 
@@ -409,7 +409,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setUsage(usage);
 		adresse.setAutreTiersId(autreTiers.getId());
 		adresse.setType(autreType);
-		adresse = (AdresseAutreTiers) tiersService.addAndSave(tiers, adresse);
+		adresse = (AdresseAutreTiers) tiersDAO.addAndSave(tiers, adresse);
 		return adresse;
 	}
 
@@ -477,7 +477,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
 		f.setDateDebut(dateDebut);
 		f.setDateFin(dateFin);
-		return tiersService.addAndSave(dpi, f);
+		return tiersDAO.addAndSave(dpi, f);
 	}
 
 	protected ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable ctb, RegDate dateDebut, RegDate dateFin, MockCommune commune, TypeAutoriteFiscale taf,
@@ -492,7 +492,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		f.setTypeAutoriteFiscale(taf);
 		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
 		f.setMotifRattachement(rattachement);
-		return tiersService.addAndSave(ctb, f);
+		return tiersDAO.addAndSave(ctb, f);
 	}
 
 	/**
@@ -510,7 +510,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	@Override
 	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
 		if (useTiersServiceToCreateDeclarationImpot()) {
-			return (DeclarationImpotOrdinaire) tiersService.addAndSave(ctb, di);
+			return (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
 		}
 		else {
 			return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);
@@ -530,7 +530,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		situation.setDateDebut(debut);
 		situation.setDateFin(fin);
 		situation.setNombreEnfants(nombreEnfants);
-		return tiersService.addAndSave(pp, situation);
+		return tiersDAO.addAndSave(pp, situation);
 	}
 
 	protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, RegDate fin, int nombreEnfants,
@@ -540,14 +540,14 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		situation.setDateFin(fin);
 		situation.setNombreEnfants(nombreEnfants);
 		situation.setTarifApplicable(tarif);
-		return (SituationFamilleMenageCommun) tiersService.addAndSave(menage, situation);
+		return (SituationFamilleMenageCommun) tiersDAO.addAndSave(menage, situation);
 	}
 
 	protected IdentificationPersonne addIdentificationPersonne(PersonnePhysique pp, CategorieIdentifiant categorie, String identifiant) {
 		IdentificationPersonne ident = new IdentificationPersonne();
 		ident.setCategorieIdentifiant(categorie);
 		ident.setIdentifiant(identifiant);
-		return tiersService.addAndSave(pp, ident);
+		return tiersDAO.addAndSave(pp, ident);
 	}
 
 	private Stack<SecurityProviderInterface> securityProviderStack = new Stack<SecurityProviderInterface>();

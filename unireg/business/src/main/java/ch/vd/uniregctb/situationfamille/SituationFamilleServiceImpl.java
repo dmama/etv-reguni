@@ -34,10 +34,13 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class SituationFamilleServiceImpl implements SituationFamilleService {
+
+	private TiersDAO tiersDAO;
 
 	private TiersService tiersService;
 
@@ -55,6 +58,10 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 	/** Service des événements fiscaux */
 	private EvenementFiscalService evenementFiscalService;
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
 
 	public void setServiceCivil(ServiceCivilService serviceCivil) {
 		this.serviceCivil = serviceCivil;
@@ -454,7 +461,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		final RegDate dateDebut = situationFamille.getDateDebut();
 		contribuable.closeSituationFamilleActive(dateDebut.getOneDayBefore());
 
-		situationFamille = tiersService.addAndSave(contribuable, situationFamille);
+		situationFamille = tiersDAO.addAndSave(contribuable, situationFamille);
 		evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, situationFamille.getId());
 		return situationFamille;
 	}

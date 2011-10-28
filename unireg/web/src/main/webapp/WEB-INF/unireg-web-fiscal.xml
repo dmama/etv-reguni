@@ -62,6 +62,7 @@
 	</bean>
 
 	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="situationFamilleDAO" ref="situationFamilleDAO" />

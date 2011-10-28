@@ -957,6 +957,126 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return addAndSave(ctb, immeuble, IMMEUBLE_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new EntityAccessor<Tiers, Declaration>() {
+		@Override
+		public Collection<Declaration> getEntities(Tiers tiers) {
+			return tiers.getDeclarations();
+		}
+
+		@Override
+		public void addEntity(Tiers tiers, Declaration d) {
+			tiers.addDeclaration(d);
+		}
+
+		@Override
+		public void assertSame(Declaration d1, Declaration d2) {
+			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
+			Assert.isSame(d1.getDateFin(), d2.getDateFin());
+		}
+	};
+
+	@Override
+	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+		return addAndSave(tiers, declaration, DECLARATION_ACCESSOR);
+	}
+
+	private static final EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new EntityAccessor<DebiteurPrestationImposable, Periodicite>() {
+		@Override
+		public Collection<Periodicite> getEntities(DebiteurPrestationImposable dpi) {
+			return dpi.getPeriodicites();
+		}
+
+		@Override
+		public void addEntity(DebiteurPrestationImposable dpi, Periodicite p) {
+			dpi.addPeriodicite(p);
+		}
+
+		@Override
+		public void assertSame(Periodicite p1, Periodicite p2) {
+			Assert.isSame(p1.getDateDebut(), p2.getDateDebut());
+			Assert.isSame(p1.getDateFin(), p2.getDateFin());
+		}
+	};
+
+	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
+		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
+	}
+
+	private static final EntityAccessor<Contribuable, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<Contribuable, SituationFamille>() {
+		@Override
+		public Collection<SituationFamille> getEntities(Contribuable ctb) {
+			return ctb.getSituationsFamille();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, SituationFamille entity) {
+			ctb.addSituationFamille(entity);
+		}
+
+		@Override
+		public void assertSame(SituationFamille entity1, SituationFamille entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	};
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
+	}
+
+	private static final EntityAccessor<Tiers, AdresseTiers> ADRESSE_TIERS_ACCESSOR = new EntityAccessor<Tiers, AdresseTiers>() {
+		@Override
+		public Collection<AdresseTiers> getEntities(Tiers tiers) {
+			return tiers.getAdressesTiers();
+		}
+
+		@Override
+		public void addEntity(Tiers tiers, AdresseTiers entity) {
+			tiers.addAdresseTiers(entity);
+		}
+
+		@Override
+		public void assertSame(AdresseTiers entity1, AdresseTiers entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	};
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
+		return addAndSave(tiers, adresse, ADRESSE_TIERS_ACCESSOR);
+	}
+
+	private static final EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new EntityAccessor<PersonnePhysique, IdentificationPersonne>() {
+		@Override
+		public Collection<IdentificationPersonne> getEntities(PersonnePhysique pp) {
+			return pp.getIdentificationsPersonnes();
+		}
+
+		@Override
+		public void addEntity(PersonnePhysique pp, IdentificationPersonne entity) {
+			pp.addIdentificationPersonne(entity);
+		}
+
+		@Override
+		public void assertSame(IdentificationPersonne entity1, IdentificationPersonne entity2) {
+			Assert.isSame(entity1.getCategorieIdentifiant(), entity2.getCategorieIdentifiant());
+			Assert.isSame(entity1.getIdentifiant(), entity2.getIdentifiant());
+		}
+	};
+
+	@Override
+	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
+		return addAndSave(pp, ident, IDENTIFICATION_PERSONNE_ACCESSOR);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {

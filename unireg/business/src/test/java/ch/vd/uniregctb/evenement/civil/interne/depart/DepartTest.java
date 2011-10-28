@@ -755,7 +755,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(modeImposition);
-		f = tiersService.addAndSave(tiers, f);
+		f = tiersDAO.addAndSave(tiers, f);
 		return f;
 	}
 

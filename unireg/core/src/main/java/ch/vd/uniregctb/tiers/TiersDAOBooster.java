@@ -18,6 +18,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.rf.Immeuble;
 
 /**
@@ -259,6 +262,31 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
 		return target.addAndSave(tiers, immeuble);
+	}
+
+	@Override
+	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+		return target.addAndSave(tiers, declaration);
+	}
+
+	@Override
+	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
+		return target.addAndSave(debiteur, periodicite);
+	}
+
+	@Override
+	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+		return target.addAndSave(contribuable, situation);
+	}
+
+	@Override
+	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
+		return target.addAndSave(tiers, adresse);
+	}
+
+	@Override
+	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
+		return target.addAndSave(pp, ident);
 	}
 
 	@Override

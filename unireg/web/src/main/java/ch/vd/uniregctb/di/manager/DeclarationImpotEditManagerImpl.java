@@ -783,7 +783,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			di.addDelai(delai);
 
 			// persistence du lien entre le contribuable et la nouvelle DI
-			di = (DeclarationImpotOrdinaire) tiersService.addAndSave(ctb, di);
+			di = (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
 
 			//Mise à jour de l'état de la tâche si il y en a une
 			final TacheCriteria criterion = new TacheCriteria();

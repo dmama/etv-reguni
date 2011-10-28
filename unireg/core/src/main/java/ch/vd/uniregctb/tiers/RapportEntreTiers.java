@@ -281,7 +281,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isValidAt(RegDate date) {
+	public boolean isValidAt(@Nullable RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
