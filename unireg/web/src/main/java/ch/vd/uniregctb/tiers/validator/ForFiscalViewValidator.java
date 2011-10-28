@@ -44,7 +44,7 @@ public class ForFiscalViewValidator implements Validator {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return ForFiscalView.class.equals(clazz) ;
+		return ForFiscalView.class.equals(clazz);
 	}
 
 	@Override
@@ -61,18 +61,18 @@ public class ForFiscalViewValidator implements Validator {
 		}
 		else {
 			boolean isOrdinaire = false;
-			ModeImposition modeImp = forFiscalView.getModeImposition();
-			if (typeFor == TypeForFiscal.PRINCIPAL ) {
+			final ModeImposition modeImp = forFiscalView.getModeImposition();
+			if (typeFor == TypeForFiscal.PRINCIPAL) {
 				switch (modeImp) {
-					case ORDINAIRE :
-					case DEPENSE :
-					case INDIGENT :
+					case ORDINAIRE:
+					case DEPENSE:
+					case INDIGENT:
 						isOrdinaire = true;
 						break;
 				}
 			}
-			if (	(forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE
-					||(forFiscalView.getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE)
+			if ((forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE
+					|| (forFiscalView.getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE)
 					&& (forFiscalView.getDateOuverture() == null))) {
 				ValidationUtils.rejectIfEmpty(errors, "dateOuverture", "error.date.ouverture.vide");
 			}
@@ -95,7 +95,7 @@ public class ForFiscalViewValidator implements Validator {
 				}
 				else if (forFiscalView.getRegDateOuverture() != null &&
 						forFiscalView.getDateOuverture().after(forFiscalView.getDateFermeture())) {
-						errors.rejectValue("dateFermeture", "error.date.fermeture.anterieure");
+					errors.rejectValue("dateFermeture", "error.date.fermeture.anterieure");
 				}
 			}
 
@@ -106,16 +106,16 @@ public class ForFiscalViewValidator implements Validator {
 			}
 
 			if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
-				if(forFiscalView.getDateOuverture() != null && forFiscalView.getMotifOuverture() == null){
+				if (forFiscalView.getDateOuverture() != null && forFiscalView.getMotifOuverture() == null) {
 					if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 							(typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE)) {
 						errors.rejectValue("motifOuverture", "error.motif.ouverture.vide");
 					}
 				}
-				else if(forFiscalView.getMotifOuverture() != null){
-					if(forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute){
-						if(forFiscalView.getMotifOuverture() == MotifFor.MAJORITE ||
-								forFiscalView.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE){
+				else if (forFiscalView.getMotifOuverture() != null) {
+					if (forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute) {
+						if (forFiscalView.getMotifOuverture() == MotifFor.MAJORITE ||
+								forFiscalView.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE) {
 							errors.rejectValue("motifOuverture", "error.motif.ouverture.invalide");
 						}
 					}
@@ -139,16 +139,15 @@ public class ForFiscalViewValidator implements Validator {
 				}
 
 				if (forFiscalView.getDateFermeture() != null) {
-					if(forFiscalView.getMotifFermeture() == null){
-						if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-								(typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE)) {
+					if (forFiscalView.getMotifFermeture() == null) {
+						if (typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE) {
 							errors.rejectValue("motifFermeture", "error.motif.fermeture.vide");
 						}
 					}
 					else {
-						if(forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute){
-							if(forFiscalView.getMotifFermeture() == MotifFor.VEUVAGE_DECES ||
-									forFiscalView.getMotifFermeture() == MotifFor.PERMIS_C_SUISSE){
+						if (forFiscalView.getNatureTiers() == NatureTiers.AutreCommunaute) {
+							if (forFiscalView.getMotifFermeture() == MotifFor.VEUVAGE_DECES ||
+									forFiscalView.getMotifFermeture() == MotifFor.PERMIS_C_SUISSE) {
 								errors.rejectValue("motifFermeture", "error.motif.fermeture.invalide");
 							}
 						}
@@ -176,7 +175,8 @@ public class ForFiscalViewValidator implements Validator {
 				if (forFiscalView.getNumeroForFiscalCommune() == null) {
 					if (forFiscalView.getLibFractionCommune() == null) {
 						errors.rejectValue("libFractionCommune", "error.commune.vide");
-					} else {
+					}
+					else {
 						errors.rejectValue("libFractionCommune", "error.commune.non.vd");
 					}
 				}
@@ -185,7 +185,8 @@ public class ForFiscalViewValidator implements Validator {
 				if (forFiscalView.getNumeroForFiscalCommuneHorsCanton() == null) {
 					if (forFiscalView.getLibCommuneHorsCanton() == null) {
 						errors.rejectValue("libCommuneHorsCanton", "error.commune.vide");
-					} else {
+					}
+					else {
 						errors.rejectValue("libCommuneHorsCanton", "error.commune.non.hc");
 					}
 				}
@@ -213,15 +214,15 @@ public class ForFiscalViewValidator implements Validator {
 
 			ForFiscalPrincipal dernierForPrincipal = tiers.getDernierForFiscalPrincipal();
 			if ((dernierForPrincipal != null) && (dernierForPrincipal.getDateFin() != null)) {
-				if(typeFor == TypeForFiscal.PRINCIPAL){
-					if( forFiscalView.getId() == null){
-						if( tiers.getForFiscalPrincipalAt(forFiscalView.getRegDateOuverture()) != null) {
+				if (typeFor == TypeForFiscal.PRINCIPAL) {
+					if (forFiscalView.getId() == null) {
+						if (tiers.getForFiscalPrincipalAt(forFiscalView.getRegDateOuverture()) != null) {
 							errors.rejectValue("dateOuverture", "error.date.chevauchement");
 						}
 					}
-					for(ForFiscalPrincipal forPrincipal : tiers.getForsFiscauxPrincipauxActifsSorted()){
-						if (	forPrincipal.isValidAt(forFiscalView.getRegDateFermeture()) &&
-							((forFiscalView.getId() == null) || (forPrincipal.getId().longValue() != forFiscalView.getId().longValue()))){
+					for (ForFiscalPrincipal forPrincipal : tiers.getForsFiscauxPrincipauxActifsSorted()) {
+						if (forPrincipal.isValidAt(forFiscalView.getRegDateFermeture()) &&
+								((forFiscalView.getId() == null) || (forPrincipal.getId().longValue() != forFiscalView.getId().longValue()))) {
 							errors.rejectValue("dateFermeture", "error.date.chevauchement");
 							break;
 						}
@@ -230,15 +231,15 @@ public class ForFiscalViewValidator implements Validator {
 			}
 			ForDebiteurPrestationImposable dernierForDPI = tiers.getDernierForDebiteur();
 			if ((dernierForDPI != null) && (dernierForDPI.getDateFin() != null)) {
-				if( typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE ){
-					if(forFiscalView.getId() == null){
-						if( tiers.getForDebiteurPrestationImposableAt(forFiscalView.getRegDateOuverture()) != null) {
+				if (typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE) {
+					if (forFiscalView.getId() == null) {
+						if (tiers.getForDebiteurPrestationImposableAt(forFiscalView.getRegDateOuverture()) != null) {
 							errors.rejectValue("dateOuverture", "error.date.chevauchement");
 						}
 					}
-					for(ForFiscal forFiscal : tiers.getForsFiscauxValidAt(forFiscalView.getRegDateFermeture())){
-						if(	forFiscal instanceof ForDebiteurPrestationImposable &&
-							((forFiscalView.getId() == null) || (forFiscal.getId().longValue() != forFiscalView.getId().longValue()))){
+					for (ForFiscal forFiscal : tiers.getForsFiscauxValidAt(forFiscalView.getRegDateFermeture())) {
+						if (forFiscal instanceof ForDebiteurPrestationImposable &&
+								((forFiscalView.getId() == null) || (forFiscal.getId().longValue() != forFiscalView.getId().longValue()))) {
 							errors.rejectValue("dateFermeture", "error.date.chevauchement");
 							break;
 						}
@@ -255,28 +256,28 @@ public class ForFiscalViewValidator implements Validator {
 				errors.reject("global.error.msg", "Droits insuffisants pour modifier ce tiers");
 			}
 
-			if(typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE){
-				if(!SecurityProvider.isGranted(Role.CREATE_DPI)){
+			if (typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE) {
+				if (!SecurityProvider.isGranted(Role.CREATE_DPI)) {
 					errors.rejectValue("genreImpot", "error.tiers.interdit");
 				}
 			}
-			else if(typeFor == TypeForFiscal.PRINCIPAL){
+			else if (typeFor == TypeForFiscal.PRINCIPAL) {
 				//forFiscalView.getNatureTiers est tjs != MENEAGE_COMMUN (si couple => HABITANT ou NON_HABITANT
-				if(forFiscalView.getNatureTiers() == NatureTiers.Habitant){
-					if((isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
-							(!isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))){
+				if (forFiscalView.getNatureTiers() == NatureTiers.Habitant) {
+					if ((isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
+							(!isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))) {
 						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
-				else if(forFiscalView.getNatureTiers() == NatureTiers.NonHabitant){
+				else if (forFiscalView.getNatureTiers() == NatureTiers.NonHabitant) {
 					boolean isGris = false;
-					if(forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD){
+					if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						isGris = true;
 					}
-					if((isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HCHS)) ||
+					if ((isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HCHS)) ||
 							(!isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HCHS)) ||
 							(isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_GRIS)) ||
-							(!isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_GRIS))){
+							(!isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_GRIS))) {
 						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
@@ -285,19 +286,19 @@ public class ForFiscalViewValidator implements Validator {
 					errors.reject("global.error.msg", "Droits insuffisants pour modifier ce tiers");
 				}
 			}
-			else if(typeFor == TypeForFiscal.SECONDAIRE){
+			else if (typeFor == TypeForFiscal.SECONDAIRE) {
 				//pour + tard : traiter le cas des entreprises
-				if(!SecurityProvider.isGranted(Role.FOR_SECOND_PP)){
+				if (!SecurityProvider.isGranted(Role.FOR_SECOND_PP)) {
 					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
-			else if(typeFor == TypeForFiscal.AUTRE_ELEMENT){
-				if(!SecurityProvider.isGranted(Role.FOR_AUTRE)){
+			else if (typeFor == TypeForFiscal.AUTRE_ELEMENT) {
+				if (!SecurityProvider.isGranted(Role.FOR_AUTRE)) {
 					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
-			else if(typeFor == TypeForFiscal.AUTRE_IMPOT){
-				if(!SecurityProvider.isGranted(Role.FOR_AUTRE)){
+			else if (typeFor == TypeForFiscal.AUTRE_IMPOT) {
+				if (!SecurityProvider.isGranted(Role.FOR_AUTRE)) {
 					errors.rejectValue("genreImpot", (forFiscalView.getId() == null) ? "error.genre.impot.interdit" : "error.tiers.interdit");
 				}
 			}
@@ -305,7 +306,8 @@ public class ForFiscalViewValidator implements Validator {
 				if (TypeAutoriteFiscale.PAYS_HS == forFiscalView.getTypeAutoriteFiscale()) {
 					errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 				}
-			} else if (TypeForFiscal.PRINCIPAL != typeFor
+			}
+			else if (TypeForFiscal.PRINCIPAL != typeFor
 					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forFiscalView.getTypeAutoriteFiscale()) {
 				errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 			}
@@ -324,7 +326,8 @@ public class ForFiscalViewValidator implements Validator {
 				final RegDate date;
 				if (forFiscalView.isChangementModeImposition()) {
 					date = RegDate.get(forFiscalView.getDateChangement());
-				} else {
+				}
+				else {
 					date = RegDate.get(forFiscalView.getDateOuverture());
 				}
 
@@ -381,6 +384,7 @@ public class ForFiscalViewValidator implements Validator {
 		}
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
