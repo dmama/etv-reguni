@@ -3,7 +3,6 @@ package ch.vd.uniregctb.document;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,24 +14,19 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
  * {@inheritDoc}
  */
-public class DocumentServiceImpl implements DocumentService, InitializingBean {
+public class DocumentServiceImpl implements DocumentService {
 
 	private final Logger LOGGER = Logger.getLogger(DocumentServiceImpl.class);
-
-	private static final String LEGACY_REPO_PATH = System.getProperty("java.io.tmpdir") + "/uniregctb/dbdump/";
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -65,72 +59,6 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 			dir.mkdirs();
 		}
 		this.repository = dir;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		migrateOldFiles();
-	}
-
-	/**
-	 * On récupère d'éventuels fichiers de dump de base créés avant la création de ce service.
-	 */
-	private void migrateOldFiles() throws Exception {
-
-		File dir = new File(LEGACY_REPO_PATH);
-		if (!dir.exists()) {
-			// rien à faire
-			return;
-		}
-
-		// Récupère la liste des fichiers de dump
-		final String regex = "dbdump_.*\\.zip";
-		FilenameFilter filter = new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.matches(regex);
-			}
-		};
-		final File[] list = dir.listFiles(filter);
-
-		if (list.length == 0) {
-			// rien à faire
-			return;
-		}
-
-		try {
-			AuthenticationHelper.setPrincipal("[DocumentService]");
-
-			// On insert les anciens fichiers en tant que documents et on les efface du disque
-			for (File f : list) {
-
-				final File file = f;
-				final String filename = f.getName();
-				final String nom = FilenameUtils.getBaseName(filename);
-				final String extension = FilenameUtils.getExtension(filename);
-				final String description = "Fichier de dump legacy (" + filename + ")";
-				LOGGER.debug("Récupération du fichier de dump legacy " + filename);
-
-				newDoc(DatabaseDump.class, nom, description, extension, new DocumentService.WriteDocCallback<DatabaseDump>() {
-					@Override
-					public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
-						FileInputStream is = new FileInputStream(file);
-						try {
-							FileCopyUtils.copy(is, os);
-						}
-						finally {
-							is.close();
-						}
-						doc.setNbTiers(0); // on n'a pas moyen de récupérer le nombre de tiers à partir du fichier uniquement
-					}
-				});
-
-				file.delete();
-			}
-		}
-		finally {
-			AuthenticationHelper.resetAuthentication();
-		}
 	}
 
 	/**
