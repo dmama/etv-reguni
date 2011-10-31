@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
+public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annulable {
 
 	private Long id;
 
@@ -82,7 +83,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 		this.numeroCtb = forFiscal.getTiers().getNumero();
 		this.genreImpot = forFiscal.getGenreImpot();
 		this.annule = forFiscal.isAnnule();
-		
+
 		if (forFiscal instanceof ForFiscalAutreImpot) {
 			this.dateEvenement = forFiscal.getDateDebut();
 		}
@@ -281,7 +282,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 	 * @return the dateOuverture
 	 */
 	public Date getDateOuverture() {
-		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ? 
+		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ?
 				RegDate.asJavaDate(dateEvenement) :
 				RegDate.asJavaDate(dateOuverture);
 	}
@@ -297,7 +298,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 	 * @return the dateFermeture
 	 */
 	public Date getDateFermeture() {
-		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ? 
+		return "ForFiscalAutreImpot".equals(getNatureForFiscal()) ?
 				RegDate.asJavaDate(dateEvenement) :
 				RegDate.asJavaDate(dateFermeture);
 	}
@@ -402,7 +403,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 
 	/**
 	 * Compare d'apres la date de ForFiscalView
-	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
@@ -415,7 +415,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange {
 		if (autreDateDebut == null) {
 			autreDateDebut = getDateEvenement();
 		}
-		int value = - dateDebut.compareTo(autreDateDebut);
+		int value = -dateDebut.compareTo(autreDateDebut);
 		return value;
 	}
 
