@@ -2,28 +2,18 @@ package ch.vd.uniregctb.declaration.source;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -49,9 +39,8 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
 
-public class ListeRecapServiceImpl implements ListeRecapService, InitializingBean {
+public class ListeRecapServiceImpl implements ListeRecapService {
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapServiceImpl.class);
 
@@ -78,8 +67,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 	private ImpressionSommationLRHelper helperSommationLR;
 
 	private TiersService tiersService;
-
-	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
@@ -354,134 +341,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 		return lr;
 	}
 
-	/**
-	 * Permet de reconstruire l'historique des periodicités a partir des LR de chaque debiteurs.
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-
-		// on désactive la validation des tiers pendant le calcul des périodicités des débiteurs qui n'ont
-		// encore aucun historique
-		final boolean enabled = validationInterceptor.isEnabled();
-		validationInterceptor.setEnabled(false);
-		try {
-			createAllPeriodicites();
-		}
-		finally {
-			validationInterceptor.setEnabled(enabled);
-		}
-	}
-
-	@SuppressWarnings({"unchecked"})
-	private void createAllPeriodicites() {
-
-		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final List<Long> ids = t.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return tiersDAO.getListeDebiteursSansPeriodicites();
-			}
-		});
-
-		if (!ids.isEmpty()) {
-
-			LOGGER.warn("--- Début de la création de l'historique des périodicités---");
-			MigrationResults rapportFinal = new MigrationResults();
-
-			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
-
-			try {
-
-				BatchTransactionTemplate<Long, MigrationResults> template =
-						new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-				template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
-
-					@Override
-					public MigrationResults createSubRapport() {
-						return new MigrationResults();
-					}
-
-					@Override
-					public boolean doInTransaction(List<Long> batch, MigrationResults rapport) throws Exception {
-						createHistoriquePeriodicite(batch);
-						return true;
-					}
-				});
-
-			}
-			finally {
-
-				AuthenticationHelper.popPrincipal();
-			}
-
-			for (Map.Entry<Long, String> s : rapportFinal.erreurs.entrySet()) {
-				LOGGER.error("Impossible de crééer l'historique des périodicités pour le debiteur =" + s.getKey() + " Erreur=" + s.getValue());
-			}
-
-			LOGGER.warn("--- Fin de la création des Périodicités (Nombre de débiteurs impactés=" + (ids.size() - rapportFinal.erreurs.size()) + ", en erreur=" + rapportFinal.erreurs.size() + ") ---");
-		}
-	}
-
-	private void createHistoriquePeriodicite(List<Long> batch) {
-		for (Long debiteurId : batch) {
-			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
-			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(debiteur);
-			if (listePeriodiciteACreer.isEmpty()) {
-				tiersService.addPeriodicite(debiteur, debiteur.getPeriodiciteDecompteAvantMigration(), debiteur.getPeriodeDecompteAvantMigration(), RegDate.get(debiteur.getLogCreationDate()), null);
-			}
-			else {
-				for (Periodicite periodicite : listePeriodiciteACreer) {
-					tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
-				}
-			}
-
-
-		}
-	}
-
-	private List<Periodicite> construirePeriodiciteFromLR(DebiteurPrestationImposable debiteur) {
-		List<Declaration> listeLR = debiteur.getDeclarationsSorted();
-		List<Periodicite> listePeriodiciteIntermediaire = new ArrayList<Periodicite>();
-
-
-		//Transformation en lilste de periodicite
-		for (Declaration declaration : listeLR) {
-			PeriodeDecompte periodeDecompte = null;
-			if (!declaration.isAnnule()) {
-				DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
-				//Pour la periodicite de type UNIQUE, on doit egalement creer la periode decompte associé,
-				//Cette dernière est une propriété du tiers et non de la LR
-
-				if (PeriodiciteDecompte.UNIQUE == lr.getPeriodicite()) {
-					periodeDecompte = debiteur.getPeriodeDecompteAvantMigration();
-				}
-
-				Periodicite periodicite = new Periodicite(lr.getPeriodicite(), periodeDecompte, lr.getDateDebut(), lr.getDateFin());
-				listePeriodiciteIntermediaire.add(periodicite);
-			}
-
-		}
-		listePeriodiciteIntermediaire = Periodicite.comblerVidesPeriodicites(listePeriodiciteIntermediaire);
-
-
-		return DateRangeHelper.collate(listePeriodiciteIntermediaire);  //To change body of created methods use File | Settings | File Templates.
-	}
-
-
-	private static class MigrationResults implements BatchResults<Long, MigrationResults> {
-
-		public final Map<Long, String> erreurs = new HashMap<Long, String>();
-
-		@Override
-		public void addErrorException(Long element, Exception e) {
-			erreurs.put(element, e.getMessage());
-		}
-
-		@Override
-		public void addAll(MigrationResults right) {
-			erreurs.putAll(right.erreurs);
-		}
-	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
 		this.editiqueCompositionService = editiqueCompositionService;
@@ -533,9 +392,5 @@ public class ListeRecapServiceImpl implements ListeRecapService, InitializingBea
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
-		this.validationInterceptor = validationInterceptor;
 	}
 }
