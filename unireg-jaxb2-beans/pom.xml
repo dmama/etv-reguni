@@ -7,7 +7,7 @@
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-beans</artifactId>
-	<version>1.0-beta4</version>
+	<version>1.0-beta5</version>
 
 	<name>Unireg - Beans JAXB2</name>
 	<description>Les beans JAXB2 du projet Unireg</description>
@@ -16,7 +16,7 @@
 		<dependency>
 			<artifactId>unireg-jaxb2-party</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>1.0-beta4</version>
+			<version>1.0-beta5</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -69,7 +69,7 @@
 						<!-- pour la résolution des XSDs par le classpath resolver -->
 						<artifactId>unireg-jaxb2-party</artifactId>
 						<groupId>ch.vd.uniregctb</groupId>
-						<version>1.0-beta4</version>
+						<version>1.0-beta5</version>
 					</dependency>
 					<dependency>
 						<artifactId>jaxb2-catalog-resolver</artifactId>
