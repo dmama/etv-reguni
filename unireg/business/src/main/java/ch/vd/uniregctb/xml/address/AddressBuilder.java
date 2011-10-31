@@ -162,6 +162,8 @@ public class AddressBuilder {
 		info.setSwissZipCodeId(from.getNumeroOrdrePostal());
 		info.setStreetId(from.getNumeroTechniqueRue());
 		info.setTariffZone(DataHelper.coreToXML(from.getTypeAffranchissement()));
+		info.setEgid(from.getEgid() == null ? null : from.getEgid().longValue());
+		info.setEwid(from.getEwid() == null ? null : from.getEwid().longValue());
 
 		to.setAddressInformation(info);
 	}

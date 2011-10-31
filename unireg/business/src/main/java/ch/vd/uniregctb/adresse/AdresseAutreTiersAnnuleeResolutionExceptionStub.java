@@ -130,6 +130,11 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 	}
 
 	@Override
+	public Integer getEwid() {
+		return null;
+	}
+
+	@Override
 	public String getLogCreationUser() {
 		return target.getLogCreationUser();
 	}

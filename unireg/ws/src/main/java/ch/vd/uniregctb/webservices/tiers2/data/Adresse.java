@@ -21,7 +21,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Adresse", propOrder = {
 		"dateDebut", "dateFin", "titre", "numeroAppartement", "rue", "numeroRue", "casePostale", "localite", "numeroPostal", "pays",
-		"noOrdrePostal", "noRue", "noPays"
+		"noOrdrePostal", "noRue", "noPays", "ewid", "egid"
 })
 public class Adresse implements Range {
 
@@ -131,6 +131,22 @@ public class Adresse implements Range {
 	@XmlElement(required = false)
 	public Integer noPays;
 
+	/**
+	 * [Technique] Le numéro de bâtiment suisse. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses domiciles elle n'est pas connue dans tous les cas).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>egid</i> de la structure <i>addressInformationType</i>.
+	 */
+	@XmlElement(required = false)
+	public Integer egid;
+
+	/**
+	 * [Technique] Le numéro d'appartement dans le bâtiment. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses domiciles elle n'est pas connue dans tous les cas).
+	 * <p/>
+	 * <b>Dans la version 3 du web-service :</b> déplacé dans le champ <i>ewid</i> de la structure <i>addressInformationType</i>.
+	 */
+	@XmlElement(required = false)
+	public Integer ewid;
+
 	public Adresse() {
 	}
 
@@ -163,6 +179,8 @@ public class Adresse implements Range {
 		this.noOrdrePostal = adresse.getNumeroOrdrePostal();
 		this.noRue = adresse.getNumeroRue();
 		this.noPays = noOfsPays;
+		this.egid = adresse.getEgid();
+		this.ewid = adresse.getEwid();
 	}
 
 	@Override

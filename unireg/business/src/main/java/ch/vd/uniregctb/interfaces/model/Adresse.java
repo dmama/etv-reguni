@@ -115,5 +115,6 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
 	/**
 	 * @return le numéro Ofs de logement (Wohnung) ou <b>null</b> s'il est inconnu.
 	 */
+	@Override
 	Integer getEwid();
 }

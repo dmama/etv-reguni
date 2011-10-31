@@ -43,6 +43,8 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private Integer numeroOrdrePostal;
 	private Integer numeroTechniqueRue;
+	private Integer egid;
+	private Integer ewid;
 	private final AdresseGenerique.SourceType source;
 
 	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin) {
@@ -193,6 +195,14 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.numeroTechniqueRue = numeroTechniqueRue;
 	}
 
+	public void setEgid(Integer egid) {
+		this.egid = egid;
+	}
+
+	public void setEwid(Integer ewid) {
+		this.ewid = ewid;
+	}
+
 	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
@@ -298,6 +308,14 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return numeroTechniqueRue;
 	}
 
+	public Integer getEgid() {
+		return egid;
+	}
+
+	public Integer getEwid() {
+		return ewid;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -311,6 +329,8 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
 		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
 		if (destinataire != null ? !destinataire.equals(that.destinataire) : that.destinataire != null) return false;
+		if (egid != null ? !egid.equals(that.egid) : that.egid != null) return false;
+		if (ewid != null ? !ewid.equals(that.ewid) : that.ewid != null) return false;
 		if (formuleAppel != null ? !formuleAppel.equals(that.formuleAppel) : that.formuleAppel != null) return false;
 		if (nomsPrenoms != null ? !nomsPrenoms.equals(that.nomsPrenoms) : that.nomsPrenoms != null) return false;
 		if (npaEtLocalite != null ? !npaEtLocalite.equals(that.npaEtLocalite) : that.npaEtLocalite != null) return false;
@@ -348,6 +368,8 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (typeAffranchissement != null ? typeAffranchissement.hashCode() : 0);
 		result = 31 * result + (numeroOrdrePostal != null ? numeroOrdrePostal.hashCode() : 0);
 		result = 31 * result + (numeroTechniqueRue != null ? numeroTechniqueRue.hashCode() : 0);
+		result = 31 * result + (egid != null ? egid.hashCode() : 0);
+		result = 31 * result + (ewid != null ? ewid.hashCode() : 0);
 		result = 31 * result + (source != null ? source.hashCode() : 0);
 		return result;
 	}
@@ -372,6 +394,8 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 				", typeAffranchissement=" + typeAffranchissement +
 				", numeroOrdrePostal=" + numeroOrdrePostal +
 				", numeroTechniqueRue=" + numeroTechniqueRue +
+				", egid=" + egid +
+				", ewid=" + ewid +
 				", source=" + source +
 				"} " + super.toString();
 	}

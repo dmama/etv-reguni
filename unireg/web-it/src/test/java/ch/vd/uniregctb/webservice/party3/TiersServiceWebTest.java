@@ -1429,4 +1429,38 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals(1, share.getNumerator());
 		assertEquals(2, share.getDenominator());
 	}
+
+	/**
+	 * [SIFISC-2594] Vérifie que l'EGID et l'EGID sont bien renseignés sur les adresses de domicile.
+	 */
+	@Test
+	public void testGetAddesseWithEgidEwid() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(12100003);
+		params.getParts().add(PartyPart.ADDRESSES);
+
+		final NaturalPerson personne = (NaturalPerson) service.getParty(params);
+		assertNotNull(personne);
+
+		final List<Address> addresses = personne.getResidenceAddresses();
+		assertNotNull(addresses);
+		assertEquals(3, addresses.size());
+
+		final Address address = addresses.get(2);
+		assertNotNull(address);
+
+		assertSameDay(newDate(2009, 12, 1), address.getDateFrom());
+		assertNull(address.getDateTo());
+		AddressInformation info = address.getAddressInformation();
+		assertEquals("Chemin du Riau", info.getStreet());
+		assertEquals("2A", info.getHouseNumber());
+		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
+		assertEquals("St-Prex", info.getTown());
+		assertEquals(Integer.valueOf(294), info.getSwissZipCodeId());
+		assertEquals(Integer.valueOf(8100), info.getCountryId());
+		assertEquals(Long.valueOf(800423), info.getEgid());
+		assertEquals(Long.valueOf(1), info.getEwid());
+	}
 }

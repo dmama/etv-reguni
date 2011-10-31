@@ -1587,4 +1587,33 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne6()));
 		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 	}
+
+	/**
+	 * [SIFISC-2594] Vérifie que l'EGID et l'EGID sont bien renseignés sur les adresses de domicile.
+	 */
+	@Test
+	public void testGetAdresseAvecEgidEwid() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(12100003);
+		params.getParts().add(TiersPart.ADRESSES);
+
+		final PersonnePhysique personne = (PersonnePhysique) service.getTiers(params);
+		assertNotNull(personne);
+
+		final Adresse domicile = personne.getAdresseDomicile();
+		assertNotNull(domicile);
+
+		assertSameDay(newDate(2009, 12, 1), domicile.getDateDebut());
+		assertNull(domicile.getDateFin());
+		assertEquals("Chemin du Riau", domicile.getRue());
+		assertEquals("2A", domicile.getNumeroRue());
+		assertEquals("1162", domicile.getNumeroPostal());
+		assertEquals("St-Prex", domicile.getLocalite());
+		assertEquals(294, domicile.getNoOrdrePostal());
+		assertEquals(Integer.valueOf(8100), domicile.getNoPays());
+		assertEquals(Integer.valueOf(800423), domicile.getEgid());
+		assertEquals(Integer.valueOf(1), domicile.getEwid());
+	}
 }

@@ -145,6 +145,11 @@ public class AdressePMAdapter implements AdresseGenerique {
 	}
 
 	@Override
+	public Integer getEwid() {
+		return null;
+	}
+
+	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}

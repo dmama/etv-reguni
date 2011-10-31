@@ -280,6 +280,11 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	}
 
 	@Override
+	public Integer getEwid() {
+		return adresse.getEwid();
+	}
+
+	@Override
 	public Long getId() {
 		return adresseCivileSurcharge.getId();
 	}

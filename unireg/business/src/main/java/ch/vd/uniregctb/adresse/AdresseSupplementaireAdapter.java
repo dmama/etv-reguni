@@ -305,6 +305,11 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	@Override
+	public Integer getEwid() {
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		return DateRangeHelper.toString(this);
 	}

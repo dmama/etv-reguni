@@ -219,4 +219,9 @@ final class MockAdresseGeneric implements AdresseGenerique {
 	public Integer getEgid() {
 		return null;
 	}
+
+	@Override
+	public Integer getEwid() {
+		return null;
+	}
 }

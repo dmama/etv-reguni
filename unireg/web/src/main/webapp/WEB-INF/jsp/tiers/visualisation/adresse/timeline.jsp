@@ -113,6 +113,8 @@
 													No Rue : <b><c:out value="${range.numeroRue}"/></b><br/>
 													No Ordre Poste : <b><c:out value="${range.numeroOrdrePostal}"/></b><br/>
 													No Ofs Pays : <b><c:out value="${range.noOfsPays}"/></b><br/>
+													Egid : <b><c:out value="${range.egid}"/></b><br/>
+													Ewid : <b><c:out value="${range.ewid}"/></b><br/>
 													Source : <b><c:out value="${range.source.type}"/></b><br/>
 													Défaut : <b><c:out value="${range.default}"/></b><br/>
 													Permanente : <b><c:out value="${range.permanente}"/></b><br/>

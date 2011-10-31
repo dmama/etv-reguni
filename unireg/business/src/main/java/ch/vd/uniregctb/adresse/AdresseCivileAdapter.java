@@ -359,6 +359,11 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	}
 
 	@Override
+	public Integer getEwid() {
+		return adresse.getEwid();
+	}
+
+	@Override
 	public Long getId() {
 		return null;
 	}

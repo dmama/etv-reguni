@@ -13,7 +13,7 @@ import ch.vd.uniregctb.adresse.AdresseCouche;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 
 /**
- * Form backing object pour la page de visualisation de l'historique des fors fiscaux et assujettissements d'un contribuable
+ * Form backing object pour la page de visualisation de l'historique des adresses d'un contribuable
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

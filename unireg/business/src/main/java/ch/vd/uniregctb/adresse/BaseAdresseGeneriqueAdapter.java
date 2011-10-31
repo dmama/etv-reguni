@@ -324,4 +324,9 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	public Integer getEgid() {
 		return target.getEgid();
 	}
+
+	@Override
+	public Integer getEwid() {
+		return target.getEwid();
+	}
 }

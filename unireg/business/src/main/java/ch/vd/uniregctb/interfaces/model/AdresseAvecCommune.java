@@ -15,4 +15,9 @@ public interface AdresseAvecCommune {
 	 * @return le numéro Ofs de bâtiment (Gebäude) ou <b>null</b> s'il est inconnu.
 	 */
 	Integer getEgid();
+
+	/**
+	 * @return le numéro Ofs de logement (Wohnung) ou <b>null</b> s'il est inconnu.
+	 */
+	Integer getEwid();
 }
