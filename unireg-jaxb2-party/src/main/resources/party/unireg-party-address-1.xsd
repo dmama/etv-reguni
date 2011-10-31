@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta5 - 28 octobre 2011 - ajouté les ewid et egid sur les adresses -->
 <!-- v1.0beta1 - 1 septembre 2011 - remplacé eCH-0010-4-0f.xsd par eCH-0010-4-0.xsd -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/address/1" elementFormDefault="qualified"
@@ -144,6 +145,29 @@
 								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
 								qui serait utilisée pour envoyer du courrier par le poste !
 							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="egid" type="address:EGIDType">
+						<xs:annotation>
+							<xs:documentation>[Technique] Le numéro de bâtiment suisse. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses domiciles elle n'est
+								pas connue dans tous les cas).
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="ewid" type="address:EWIDType">
+						<xs:annotation>
+							<xs:documentation>[Technique] Le numéro d'appartement dans le bâtiment. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses
+								domiciles elle n'est pas connue dans tous les cas).
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
@@ -331,6 +355,18 @@
 					<xs:documentation>L'adresse de poursuiter 'autre tiers'.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EGIDType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EWIDType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
