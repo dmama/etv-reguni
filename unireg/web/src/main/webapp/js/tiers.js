@@ -98,8 +98,8 @@ function toggleAffichageRows(tableId, isAll, numCol) {
 
 	//Affichage et masquage des liens
 
-	var showall = $('a #linkAll');
-	var showReduce = $('a #linkReduce');
+	var showall = $('#linkAll');
+	var showReduce = $('#linkReduce');
 
 	if (isAll){
 		showall.hide();
