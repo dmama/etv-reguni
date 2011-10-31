@@ -52,6 +52,7 @@
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />

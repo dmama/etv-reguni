@@ -47,6 +47,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.District;
@@ -115,6 +117,7 @@ public class TiersServiceImpl implements TiersService {
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
@@ -163,6 +166,10 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public ServiceCivilService getServiceCivilService() {
 		return serviceCivilService;
+	}
+
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivil) {
@@ -1718,16 +1725,26 @@ public class TiersServiceImpl implements TiersService {
 		final Long numeroIndividu = pp.getNumeroIndividu();
 		Assert.notNull(numeroIndividu);
 
-		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.ENFANTS);
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.ENFANTS, AttributeIndividu.ADOPTIONS);
 		if (individu == null) {
 			throw new IndividuNotFoundException(numeroIndividu);
 		}
 
 		final List<PersonnePhysique> enfants = new ArrayList<PersonnePhysique>();
 		for (Individu ind : individu.getEnfants()) {
-			PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(ind.getNoTechnique(), true);
+			final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(ind.getNoTechnique(), true);
 			if (enfant != null) {
 				enfants.add(enfant);
+			}
+		}
+		for (AdoptionReconnaissance adopt : individu.getAdoptionsReconnaissances()) {
+			final RegDate debutLien = RegDateHelper.maximum(adopt.getDateAdoption(), adopt.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+			final DateRange dureeLien = new DateRangeHelper.Range(debutLien, adopt.getDateDesaveu());
+			if (dureeLien.isValidAt(dateValidite)) {
+				final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(adopt.getAdopteReconnu().getNoTechnique(), true);
+				if (enfant != null) {
+					enfants.add(enfant);
+				}
 			}
 		}
 
@@ -1754,7 +1771,6 @@ public class TiersServiceImpl implements TiersService {
 		}
 		else if (ctb instanceof PersonnePhysique) {
 			return getEnfants((PersonnePhysique) ctb, dateValidite);
-
 		}
 		else {
 			return Collections.emptyList();
@@ -1767,12 +1783,18 @@ public class TiersServiceImpl implements TiersService {
 		final List<PersonnePhysique> listeEnfants = new ArrayList<PersonnePhysique>();
 		final List<PersonnePhysique> listeRecherche = getEnfants(ctb, finPeriodeImposition);
 		if (!listeRecherche.isEmpty()) {
+
+			// warm-up du cache individu avec adresses
+			final List<Long> noTiersEnfants = new ArrayList<Long>(listeRecherche.size());
 			for (PersonnePhysique enfant : listeRecherche) {
-				// warm-up du cache individu avec adresses
-				getIndividu(enfant, 2400, new AttributeIndividu[]{AttributeIndividu.ADRESSES});
+				noTiersEnfants.add(enfant.getNumero());
+			}
+			serviceCivilCacheWarmer.warmIndividusPourTiers(noTiersEnfants, finPeriodeImposition, AttributeIndividu.ADRESSES);
+
+			for (PersonnePhysique enfant : listeRecherche) {
 				final RegDate dateDeces = getDateDeces(enfant);
 				//enfant non Décédé
-				if (dateDeces == null) {
+				if (dateDeces == null || dateDeces.isAfter(finPeriodeImposition)) {
 					//Enfant mineur à la date de fin de la periode d'imposition
 					if (isMineur(enfant, finPeriodeImposition)) {
 						//L'adresse de domicile (EGID) doit être la même entre l'enfant et le contribuable
