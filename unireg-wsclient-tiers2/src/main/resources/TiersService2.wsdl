@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.15 -->
-<wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
+<!-- version 2.16 -->
+<wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
@@ -75,6 +75,8 @@
 					<xs:element name="noOrdrePostal" type="xs:int" />
 					<xs:element minOccurs="0" name="noRue" type="xs:int" />
 					<xs:element minOccurs="0" name="noPays" type="xs:int" />
+					<xs:element minOccurs="0" name="ewid" type="xs:int" />
+					<xs:element minOccurs="0" name="egid" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="AdresseEnvoi">
@@ -979,18 +981,18 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:ReponseQuittancementDeclaration" />
 				</xs:sequence>
 			</xs:complexType>
-			<xs:element name="BusinessException" type="tns:BusinessException" />
 			<xs:complexType name="BusinessException">
 				<xs:sequence />
 			</xs:complexType>
-			<xs:element name="AccessDeniedException" type="tns:AccessDeniedException" />
+			<xs:element name="BusinessException" type="tns:BusinessException" />
 			<xs:complexType name="AccessDeniedException">
 				<xs:sequence />
 			</xs:complexType>
-			<xs:element name="TechnicalException" type="tns:TechnicalException" />
+			<xs:element name="AccessDeniedException" type="tns:AccessDeniedException" />
 			<xs:complexType name="TechnicalException">
 				<xs:sequence />
 			</xs:complexType>
+			<xs:element name="TechnicalException" type="tns:TechnicalException" />
 			<xs:element name="GetTiersPeriode" nillable="true" type="tns:GetTiersPeriode" />
 			<xs:element name="getTiersPeriodeResponse" nillable="true" type="tns:TiersHisto" />
 			<xs:element name="GetTiersHisto" nillable="true" type="tns:GetTiersHisto" />
