@@ -23,6 +23,7 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmerImpl;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -128,11 +129,16 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		tiersDAO = new MockTiersDAO();
 
+		final ServiceCivilCacheWarmerImpl warmer = new ServiceCivilCacheWarmerImpl();
+		warmer.setServiceCivilService(serviceCivil);
+		warmer.setTiersDAO(tiersDAO);
+
 		tiersService = new TiersServiceImpl();
 		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
 		servicePM = new DefaultMockServicePM();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
+		tiersService.setServiceCivilCacheWarmer(warmer);
 		tiersService.setTiersDAO(tiersDAO);
 		tiersService.setServicePM(servicePM);
 		tiersService.setValidationService(null);
