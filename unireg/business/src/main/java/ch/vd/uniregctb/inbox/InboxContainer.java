@@ -152,10 +152,17 @@ public class InboxContainer {
 	/**
 	 * Enregistrement d'un nouveau listener pour les opérations de créations/destruction (?) d'inboxes
 	 * @param listener la nouvelle entité à notifier
+	 * @param notifyOfExistingInboxes <code>true</code> s'il faut notifier ce nouveau listener de la "création" des inboxes déjà présentes
 	 */
-	public synchronized void registerInboxManagementListener(InboxManagementListener listener) {
+	public synchronized void registerInboxManagementListener(InboxManagementListener listener, boolean notifyOfExistingInboxes) {
 		if (listener != null) {
 			listeners.add(listener);
+
+			if (notifyOfExistingInboxes) {
+				for (String visa : byUser.keySet()) {
+					notifyListenerOnNewInbox(listener, visa);
+				}
+			}
 		}
 	}
 
@@ -165,12 +172,21 @@ public class InboxContainer {
 	 */
 	private void notifyListenersOnNewInbox(String visa) {
 		for (InboxManagementListener listener : listeners) {
-			try {
-				listener.onNewInbox(visa);
-			}
-			catch (Exception e) {
-				LOGGER.warn("La notification du listener " + listener + " a échoué", e);
-			}
+			notifyListenerOnNewInbox(listener, visa);
+		}
+	}
+
+	/**
+	 * Doit être appelé dans un contexte synchronisé
+	 * @param listener listener à notifier
+	 * @param visa visa de l'inbox qui vient d'être créée
+	 */
+	private void notifyListenerOnNewInbox(InboxManagementListener listener, String visa) {
+		try {
+			listener.onNewInbox(visa);
+		}
+		catch (Exception e) {
+			LOGGER.warn("La notification du listener " + listener + " a échoué", e);
 		}
 	}
 }

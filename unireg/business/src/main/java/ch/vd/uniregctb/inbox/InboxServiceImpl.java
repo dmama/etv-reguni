@@ -111,6 +111,6 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 
 	@Override
 	public void registerInboxManagementListener(InboxManagementListener listener) {
-		container.registerInboxManagementListener(listener);
+		container.registerInboxManagementListener(listener, true);
 	}
 }
