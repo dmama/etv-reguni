@@ -3944,7 +3944,6 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -3960,6 +3959,8 @@
     <column>NUMERO_RUE</column>
     <column>AUTRE_TIERS_ID</column>
     <column>TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
   </table>
   <table name="DECLARATION">
     <column>DOCUMENT_TYPE</column>

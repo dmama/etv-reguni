@@ -724,7 +724,6 @@
     <column>RUE</column>
     <column>TEXTE_CASE_POSTALE</column>
     <column>NUMERO_CASE_POSTALE</column>
-    <column>TYPE</column>
     <column>NUMERO_ORDRE_POSTE</column>
     <column>COMPLEMENT_LOCALITE</column>
     <column>NUMERO_POSTAL_LOCALITE</column>
@@ -732,6 +731,8 @@
     <column>AUTRE_TIERS_ID</column>
     <column>PERMANENTE</column>
     <column>COMPLEMENT</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -747,11 +748,12 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[75012 PARIS]]></value>
       <value>8212</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -767,13 +769,14 @@
       <value><![CDATA[rue recordon]]></value>
       <null/>
       <null/>
-      <null/>
       <value>1269</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -789,13 +792,14 @@
       <null/>
       <null/>
       <null/>
-      <value>REPRESENTATION</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>12100001</value>
       <value>0</value>
+      <null/>
+      <value>REPRESENTATION</value>
       <null/>
     </row>
     <row>
@@ -816,8 +820,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -838,8 +843,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -860,8 +866,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -882,8 +889,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -901,12 +909,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[4624 Aa Bergem Op Zoom]]></value>
       <value>8227</value>
       <null/>
       <value>0</value>
       <value><![CDATA[De Wit Tummers Elisabeth]]></value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2009-09-27</value>
@@ -921,13 +930,14 @@
       <value><![CDATA[Ch. du Devin]]></value>
       <null/>
       <null/>
-      <null/>
       <value>160</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
     </row>
   </table>

@@ -25,7 +25,7 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 
 	private static final ModeleDocumentMapper ROW_MAPPER = new ModeleDocumentMapper();
 
-	private final JdbcModeleFeuilleDocumentDao ppfDao = new JdbcModeleFeuilleDocumentDaoImpl();
+	private JdbcModeleFeuilleDocumentDao ppfDao = new JdbcModeleFeuilleDocumentDaoImpl();
 
 	@Override
 	@SuppressWarnings({"unchecked"})

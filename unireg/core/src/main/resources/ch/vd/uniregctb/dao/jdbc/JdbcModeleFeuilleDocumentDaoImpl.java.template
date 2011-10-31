@@ -23,12 +23,14 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 
 	private static final ModeleFeuilleDocumentMapper ROW_MAPPER = new ModeleFeuilleDocumentMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public ModeleFeuilleDocument get(long forId, JdbcTemplate template) {
 		final Pair<Long, ModeleFeuilleDocument> pair = (Pair<Long, ModeleFeuilleDocument>) DataAccessUtils.uniqueResult(template.query(ModeleFeuilleDocumentMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<ModeleFeuilleDocument> getForPeriode(long periodeId, JdbcTemplate template) {
 		final List<Pair<Long, ModeleFeuilleDocument>> list = template.query(ModeleFeuilleDocumentMapper.selectByTiersId(), new Object[]{periodeId}, ROW_MAPPER);
@@ -39,11 +41,13 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<ModeleFeuilleDocument>> getForPeriode(Collection<Long> periodeIds, final JdbcTemplate template) {
 
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, ModeleFeuilleDocument>> list = CollectionsUtils.splitAndProcess(periodeIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, ModeleFeuilleDocument>>() {
+			@Override
 			public List<Pair<Long, ModeleFeuilleDocument>> process(List<Long> ids) {
 				return template.query(ModeleFeuilleDocumentMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -77,6 +81,7 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 			return BASE_SELECT + " where ${FOREIGN_KEY} in " + JdbcDaoUtils.buildInClause(periodeIds);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			${MAPPING_CODE}
 		}

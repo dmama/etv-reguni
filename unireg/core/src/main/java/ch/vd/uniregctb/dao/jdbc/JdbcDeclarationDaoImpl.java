@@ -32,7 +32,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 
 public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 
-	private final JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
+	private JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
 
 	@Override
 	@SuppressWarnings({"unchecked"})
@@ -151,34 +151,36 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 				"ID, " + // 2
 				"ANNULATION_DATE, " + // 3
 				"ANNULATION_USER, " + // 4
-				"DATE_DEBUT, " + // 5
-				"DATE_FIN, " + // 6
-				"DATE_IMPR_CHEMISE_TO, " + // 7
-				"DELAI_RETOUR_IMPRIME, " + // 8
-				"LIBRE, " + // 9
-				"LOG_CDATE, " + // 10
-				"LOG_CUSER, " + // 11
-				"LOG_MDATE, " + // 12
-				"LOG_MUSER, " + // 13
-				"MODELE_DOC_ID, " + // 14
-				"MODE_COM, " + // 15
-				"NOM_DOCUMENT, " + // 16
-				"NO_OFS_FOR_GESTION, " + // 17
-				"NUMERO, " + // 18
-				"PERIODE_ID, " + // 19
-				"PERIODICITE, " + // 20
-				"QUALIFICATION, " + // 21
-				"RETOUR_COLL_ADMIN_ID, " + // 22
-				"SANS_RAPPEL, " + // 23
-				"TIERS_ID, " + // 24
-				"TYPE_CTB " + // 25
+				"CODE_CONTROLE, " + // 5
+				"CODE_SEGMENT, " + // 6
+				"DATE_DEBUT, " + // 7
+				"DATE_FIN, " + // 8
+				"DATE_IMPR_CHEMISE_TO, " + // 9
+				"DELAI_RETOUR_IMPRIME, " + // 10
+				"LIBRE, " + // 11
+				"LOG_CDATE, " + // 12
+				"LOG_CUSER, " + // 13
+				"LOG_MDATE, " + // 14
+				"LOG_MUSER, " + // 15
+				"MODELE_DOC_ID, " + // 16
+				"MODE_COM, " + // 17
+				"NOM_DOCUMENT, " + // 18
+				"NO_OFS_FOR_GESTION, " + // 19
+				"NUMERO, " + // 20
+				"PERIODE_ID, " + // 21
+				"PERIODICITE, " + // 22
+				"QUALIFICATION, " + // 23
+				"RETOUR_COLL_ADMIN_ID, " + // 24
+				"SANS_RAPPEL, " + // 25
+				"TIERS_ID, " + // 26
+				"TYPE_CTB " + // 27
 				"from DECLARATION";
 
-		private final JdbcPeriodeFiscaleDao pfDao = new JdbcPeriodeFiscaleDaoImpl();
-		private final JdbcModeleDocumentDao mdDao = new JdbcModeleDocumentDaoImpl();
-		private final Map<Long, PeriodeFiscale> periodesCache = new HashMap<Long, PeriodeFiscale>();
-		private final Map<Long, ModeleDocument> docCache = new HashMap<Long, ModeleDocument>();
-		private final JdbcTemplate template;
+		private JdbcPeriodeFiscaleDao pfDao = new JdbcPeriodeFiscaleDaoImpl();
+		private JdbcModeleDocumentDao mdDao = new JdbcModeleDocumentDaoImpl();
+		private Map<Long, PeriodeFiscale> periodesCache = new HashMap<Long, PeriodeFiscale>();
+		private Map<Long, ModeleDocument> docCache = new HashMap<Long, ModeleDocument>();
+		private JdbcTemplate template;
 
 		private DeclarationMapper(JdbcTemplate template) {
 			this.template = template;
@@ -200,8 +202,8 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String documentType = rs.getString(1);
-			final long temp24 = rs.getLong(24);
-			final Long tiersId = (rs.wasNull() ? null : temp24);
+			final long temp26 = rs.getLong(26);
+			final Long tiersId = (rs.wasNull() ? null : temp26);
 			final Declaration res;
 			
 			if (documentType.equals("DI")) {
@@ -210,39 +212,44 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final int temp5 = rs.getInt(5);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final String codeControle = rs.getString(5);
 				final int temp6 = rs.getInt(6);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
-				final Date dateImprChemiseTo = rs.getTimestamp(7);
+				final Integer codeSegment = (rs.wasNull() ? null : temp6);
+				final int temp7 = rs.getInt(7);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
 				final int temp8 = rs.getInt(8);
-				final RegDate delaiRetourImprime = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
-				final boolean temp9 = rs.getBoolean(9);
-				final Boolean libre = (rs.wasNull() ? null : temp9);
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final long temp14 = rs.getLong(14);
-				final ModeleDocument modeleDocId = (rs.wasNull() ? null : getModeleDocument(temp14));
-				final String nomDocument = rs.getString(16);
-				final int temp17 = rs.getInt(17);
-				final Integer noOfsForGestion = (rs.wasNull() ? null : temp17);
-				final int temp18 = rs.getInt(18);
-				final Integer numero = (rs.wasNull() ? null : temp18);
-				final long temp19 = rs.getLong(19);
-				final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp19));
-				final String temp21 = rs.getString(21);
-				final Qualification qualification = (rs.wasNull() ? null : Enum.valueOf(Qualification.class, temp21));
-				final long temp22 = rs.getLong(22);
-				final Long retourCollAdminId = (rs.wasNull() ? null : temp22);
-				final String temp25 = rs.getString(25);
-				final TypeContribuable typeCtb = (rs.wasNull() ? null : Enum.valueOf(TypeContribuable.class, temp25));
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
+				final Date dateImprChemiseTo = rs.getTimestamp(9);
+				final int temp10 = rs.getInt(10);
+				final RegDate delaiRetourImprime = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final boolean temp11 = rs.getBoolean(11);
+				final Boolean libre = (rs.wasNull() ? null : temp11);
+				final Date logCdate = rs.getTimestamp(12);
+				final String logCuser = rs.getString(13);
+				final Timestamp logMdate = rs.getTimestamp(14);
+				final String logMuser = rs.getString(15);
+				final long temp16 = rs.getLong(16);
+				final ModeleDocument modeleDocId = (rs.wasNull() ? null : getModeleDocument(temp16));
+				final String nomDocument = rs.getString(18);
+				final int temp19 = rs.getInt(19);
+				final Integer noOfsForGestion = (rs.wasNull() ? null : temp19);
+				final int temp20 = rs.getInt(20);
+				final Integer numero = (rs.wasNull() ? null : temp20);
+				final long temp21 = rs.getLong(21);
+				final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp21));
+				final String temp23 = rs.getString(23);
+				final Qualification qualification = (rs.wasNull() ? null : Enum.valueOf(Qualification.class, temp23));
+				final long temp24 = rs.getLong(24);
+				final Long retourCollAdminId = (rs.wasNull() ? null : temp24);
+				final String temp27 = rs.getString(27);
+				final TypeContribuable typeCtb = (rs.wasNull() ? null : Enum.valueOf(TypeContribuable.class, temp27));
 			
 				DeclarationImpotOrdinaire o = new DeclarationImpotOrdinaire();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
 				o.setAnnulationUser(annulationUser);
+				o.setCodeControle(codeControle);
+				o.setCodeSegment(codeSegment);
 				o.setDateDebut(dateDebut);
 				o.setDateFin(dateFin);
 				o.setDateImpressionChemiseTaxationOffice(dateImprChemiseTo);
@@ -268,25 +275,25 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final int temp5 = rs.getInt(5);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
-				final int temp6 = rs.getInt(6);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final long temp14 = rs.getLong(14);
-				final ModeleDocument modeleDocId = (rs.wasNull() ? null : getModeleDocument(temp14));
-				final String temp15 = rs.getString(15);
-				final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp15));
-				final String nomDocument = rs.getString(16);
-				final long temp19 = rs.getLong(19);
-				final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp19));
-				final String temp20 = rs.getString(20);
-				final PeriodiciteDecompte periodicite = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp20));
-				final boolean temp23 = rs.getBoolean(23);
-				final Boolean sansRappel = (rs.wasNull() ? null : temp23);
+				final int temp7 = rs.getInt(7);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
+				final int temp8 = rs.getInt(8);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
+				final Date logCdate = rs.getTimestamp(12);
+				final String logCuser = rs.getString(13);
+				final Timestamp logMdate = rs.getTimestamp(14);
+				final String logMuser = rs.getString(15);
+				final long temp16 = rs.getLong(16);
+				final ModeleDocument modeleDocId = (rs.wasNull() ? null : getModeleDocument(temp16));
+				final String temp17 = rs.getString(17);
+				final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp17));
+				final String nomDocument = rs.getString(18);
+				final long temp21 = rs.getLong(21);
+				final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp21));
+				final String temp22 = rs.getString(22);
+				final PeriodiciteDecompte periodicite = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp22));
+				final boolean temp25 = rs.getBoolean(25);
+				final Boolean sansRappel = (rs.wasNull() ? null : temp25);
 			
 				DeclarationImpotSource o = new DeclarationImpotSource();
 				o.setId(id);

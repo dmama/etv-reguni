@@ -9388,7 +9388,6 @@
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
     <column>AUTRE_TIERS_ID</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -9403,6 +9402,8 @@
     <column>NUMERO_ORDRE_POSTE</column>
     <column>NUMERO_RUE</column>
     <column>TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>AdresseSuisse</value>
       <value>1</value>
@@ -9419,7 +9420,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>23</value>
       <value>19</value>
       <value>0</value>
@@ -9431,6 +9431,8 @@
       <value>104</value>
       <value>83404</value>
       <value>12900001</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9449,7 +9451,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -9460,6 +9461,8 @@
       <null/>
       <value>32296</value>
       <value>12600001</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9478,7 +9481,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -9489,6 +9491,8 @@
       <value>104</value>
       <value>35365</value>
       <value>12600002</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9507,7 +9511,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <value><![CDATA[Rue des terreaux]]></value>
@@ -9518,6 +9521,8 @@
       <value>571</value>
       <null/>
       <value>12600003</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9536,7 +9541,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <value><![CDATA[Rue des terreaux]]></value>
@@ -9547,6 +9551,8 @@
       <value>571</value>
       <null/>
       <value>12600004</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9565,7 +9571,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -9576,6 +9581,8 @@
       <value>104</value>
       <value>35365</value>
       <value>12600008</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -9594,7 +9601,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -9605,48 +9611,50 @@
       <null/>
       <value>32296</value>
       <value>12600009</value>
+      <null/>
+      <null/>
     </row>
   </table>
-	<table name="IMMEUBLE">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_DEBUT</column>
-		<column>DATE_FIN</column>
-		<column>NUMERO_IMMEUBLE</column>
-		<column>NATURE_IMMEUBLE</column>
-		<column>ESTIMATION_FISCALE</column>
-		<column>REF_ESTIM_FISC</column>
-		<column>NOM_COMMUNE</column>
-		<column>GENRE_PROPRIETE</column>
-		<column>PART_PROPRIETE_NUMERATEUR</column>
-		<column>PART_PROPRIETE_DENOMINATEUR</column>
-		<column>CTB_ID</column>
-		<column>LIEN_RF</column>
-		<row>
-			<value>1</value>
-			<null />
-			<null />
-			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-			<value>tiers-basic</value>
-			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-			<value>tiers-basic</value>
-			<value>20000101</value>
-			<null />
-			<value>132/158/1/1</value>
-			<value>Place-jardin</value>
-			<value>1325000</value>
-			<value>1999</value>
-			<value>Lausanne</value>
-			<value>INDIVIDUELLE</value>
-			<value>1</value>
-			<value>2</value>
-			<value>86006202</value>
-			<value>http://arstechnica.com</value>
-		</row>
-	</table>
+  <table name="IMMEUBLE">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>NUMERO_IMMEUBLE</column>
+    <column>NATURE_IMMEUBLE</column>
+    <column>ESTIMATION_FISCALE</column>
+    <column>REF_ESTIM_FISC</column>
+    <column>NOM_COMMUNE</column>
+    <column>GENRE_PROPRIETE</column>
+    <column>PART_PROPRIETE_NUMERATEUR</column>
+    <column>PART_PROPRIETE_DENOMINATEUR</column>
+    <column>CTB_ID</column>
+    <column>LIEN_RF</column>
+    <row>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20000101</value>
+      <null/>
+      <value>132/158/1/1</value>
+      <value>Place-jardin</value>
+      <value>1325000</value>
+      <value>1999</value>
+      <value>Lausanne</value>
+      <value>INDIVIDUELLE</value>
+      <value>1</value>
+      <value>2</value>
+      <value>86006202</value>
+      <value>http://arstechnica.com</value>
+    </row>
+  </table>
 </dataset>

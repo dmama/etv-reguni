@@ -207,7 +207,7 @@
       <value>1</value>
       <null/>
       <value>0</value>
-	</row>
+    </row>
     <row>
       <value>2008-01-01</value>
       <value>21</value>
@@ -218,7 +218,7 @@
       <value>3</value>
       <null/>
       <value>0</value>
-	</row>
+    </row>
     <row>
       <value>2008-01-01</value>
       <value>22</value>
@@ -229,7 +229,7 @@
       <value>2</value>
       <value>2007-02-02</value>
       <value>0</value>
-	</row>
+    </row>
   </table>
   <table name="DELAI_DECLARATION">
     <column>LOG_MDATE</column>
@@ -302,12 +302,13 @@
     <column>RUE</column>
     <column>TEXTE_CASE_POSTALE</column>
     <column>NUMERO_CASE_POSTALE</column>
-    <column>TYPE</column>
     <column>NUMERO_ORDRE_POSTE</column>
     <column>COMPLEMENT_LOCALITE</column>
     <column>NUMERO_POSTAL_LOCALITE</column>
     <column>NUMERO_OFS_PAYS</column>
     <column>PERMANENTE</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>2008-01-01</value>
       <value>51</value>
@@ -321,12 +322,13 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>104</value>
       <null/>
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
   </table>
 </dataset>

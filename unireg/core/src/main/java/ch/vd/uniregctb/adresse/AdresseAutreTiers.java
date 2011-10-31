@@ -52,7 +52,7 @@ public class AdresseAutreTiers extends AdresseTiers {
 	 * @return the type
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_fwkOoOnYEdyry7KVEl1EMw?GETTER"
 	 */
-	@Column(name = "TYPE", length = LengthConstants.ADRESSE_TYPETIERS)
+	@Column(name = "AUTRE_TYPE", length = LengthConstants.ADRESSE_TYPETIERS)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdresseTiersUserType")
 	public TypeAdresseTiers getType() {
 		// begin-user-code

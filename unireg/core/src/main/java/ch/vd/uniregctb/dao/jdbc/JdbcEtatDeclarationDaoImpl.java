@@ -82,7 +82,8 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 				"LOG_CDATE, " + // 8
 				"LOG_CUSER, " + // 9
 				"LOG_MDATE, " + // 10
-				"LOG_MUSER " + // 11
+				"LOG_MUSER, " + // 11
+				"SOURCE " + // 12
 				"from ETAT_DECLARATION";
 
 		public static String selectById() {
@@ -168,6 +169,7 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 				final String logCuser = rs.getString(9);
 				final Timestamp logMdate = rs.getTimestamp(10);
 				final String logMuser = rs.getString(11);
+				final String source = rs.getString(12);
 			
 				EtatDeclarationRetournee o = new EtatDeclarationRetournee();
 				o.setId(id);
@@ -178,6 +180,7 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
 				o.setLogModifUser(logMuser);
+				o.setSource(source);
 				res = o;
 			}
 			else if (type.equals("ECHUE")) {

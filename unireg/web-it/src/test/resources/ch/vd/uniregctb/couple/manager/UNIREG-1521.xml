@@ -4551,7 +4551,6 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -4567,6 +4566,8 @@
     <column>NUMERO_RUE</column>
     <column>AUTRE_TIERS_ID</column>
     <column>TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>AdresseSuisse</value>
       <value>8050445</value>
@@ -4583,7 +4584,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <value>0</value>
       <value><![CDATA[Chemin de la Tavallaz]]></value>
@@ -4595,6 +4595,8 @@
       <value>159500</value>
       <null/>
       <value>10074118</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -4608,7 +4610,6 @@
       <value>20090709</value>
       <null/>
       <value>COURRIER</value>
-      <null/>
       <null/>
       <value><![CDATA[Lee Eun                                 ]]></value>
       <null/>
@@ -4624,6 +4625,8 @@
       <value>159500</value>
       <null/>
       <value>64415701</value>
+      <null/>
+      <null/>
     </row>
   </table>
   <table name="SITUATION_FAMILLE">

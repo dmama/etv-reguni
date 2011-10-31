@@ -41,7 +41,7 @@ public class AdressePM extends AdresseTiers {
 	 * @return the type
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_scmgk-xCEdyck8Nd0o6HOA?GETTER"
 	 */
-	@Column(name = "TYPE", length = LengthConstants.ADRESSE_TYPEPM)
+	@Column(name = "TYPE_PM", length = LengthConstants.ADRESSE_TYPEPM)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdressePMUserType")
 	public TypeAdressePM getType() {
 		// begin-user-code

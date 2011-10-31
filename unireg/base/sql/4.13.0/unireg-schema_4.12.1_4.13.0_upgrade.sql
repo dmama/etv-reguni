@@ -1,0 +1,8 @@
+-- Version
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('4.13.0', '4.12.1_4.13.0_upgrade');
+
+-- [code cleanup] Dé-duplification de l'utilisation de la colonne TYPE sur ADRESSE_TIERS
+ALTER TABLE ADRESSE_TIERS ADD (AUTRE_TYPE nvarchar2(14), TYPE_PM nvarchar2(11));
+UPDATE ADRESSE_TIERS SET AUTRE_TYPE = TYPE where ADR_TYPE = 'AdresseAutreTiers';
+UPDATE ADRESSE_TIERS SET TYPE_PM = TYPE where ADR_TYPE = 'AdressePM';
+ALTER TABLE ADRESSE_TIERS DROP COLUMN TYPE;

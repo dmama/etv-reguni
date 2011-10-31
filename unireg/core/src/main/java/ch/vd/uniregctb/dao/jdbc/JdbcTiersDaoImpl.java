@@ -49,13 +49,13 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 
 	private static final TiersMapper ROW_MAPPER = new TiersMapper();
 
-	private final JdbcAdresseTiersDao adresseDao = new JdbcAdresseTiersDaoImpl();
-	private final JdbcDeclarationDao declarationDao = new JdbcDeclarationDaoImpl();
-	private final JdbcForFiscalDao forFiscalDao = new JdbcForFiscalDaoImpl();
-	private final JdbcRapportEntreTiersDao retDao = new JdbcRapportEntreTiersDaoImpl();
-	private final JdbcSituationFamilleDao sfDao = new JdbcSituationFamilleDaoImpl();
-	private final JdbcIdentificationPersonneDao ipDao = new JdbcIdentificationPersonneDaoImpl();
-	private final JdbcPeriodiciteDao pDao = new JdbcPeriodiciteDaoImpl();
+	private JdbcAdresseTiersDao adresseDao = new JdbcAdresseTiersDaoImpl();
+	private JdbcDeclarationDao declarationDao = new JdbcDeclarationDaoImpl();
+	private JdbcForFiscalDao forFiscalDao = new JdbcForFiscalDaoImpl();
+	private JdbcRapportEntreTiersDao retDao = new JdbcRapportEntreTiersDaoImpl();
+	private JdbcSituationFamilleDao sfDao = new JdbcSituationFamilleDaoImpl();
+	private JdbcIdentificationPersonneDao ipDao = new JdbcIdentificationPersonneDaoImpl();
+	private JdbcPeriodiciteDao pDao = new JdbcPeriodiciteDaoImpl();
 
 	private DataSource dataSource;
 
@@ -285,6 +285,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 	}
 
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public Tiers get(long tiersId, JdbcTemplate template) {
 		return (Tiers) DataAccessUtils.uniqueResult(template.query(TiersMapper.selectById(), new Object[]{tiersId}, ROW_MAPPER));
 	}
@@ -318,41 +319,44 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				"DATE_DECES, " + // 13
 				"DATE_LIMITE_EXCLUSION, " + // 14
 				"DEBITEUR_INACTIF, " + // 15
-				"DPI_NOM1, " + // 16
-				"DPI_NOM2, " + // 17
-				"INDEX_DIRTY, " + // 18
-				"LOG_CDATE, " + // 19
-				"LOG_CUSER, " + // 20
-				"LOG_MDATE, " + // 21
-				"LOG_MUSER, " + // 22
-				"MAJORITE_TRAITEE, " + // 23
-				"MODE_COM, " + // 24
-				"NH_CAT_ETRANGER, " + // 25
-				"NH_DATE_DEBUT_VALID_AUTORIS, " + // 26
-				"NH_DATE_NAISSANCE, " + // 27
-				"NH_NOM, " + // 28
-				"NH_NO_OFS_COMMUNE_ORIGINE, " + // 29
-				"NH_NO_OFS_NATIONALITE, " + // 30
-				"NH_NUMERO_ASSURE_SOCIAL, " + // 31
-				"NH_PRENOM, " + // 32
-				"NH_SEXE, " + // 33
-				"NUMERO_CA, " + // 34
-				"NUMERO_COMPTE_BANCAIRE, " + // 35
-				"NUMERO_ETABLISSEMENT, " + // 36
-				"NUMERO_INDIVIDU, " + // 37
-				"NUMERO_TELECOPIE, " + // 38
-				"NUMERO_TEL_PORTABLE, " + // 39
-				"NUMERO_TEL_PRIVE, " + // 40
-				"NUMERO_TEL_PROF, " + // 41
-				"OID, " + // 42
-				"PERIODE_DECOMPTE, " + // 43
-				"PERIODICITE_DECOMPTE, " + // 44
-				"PERSONNE_CONTACT, " + // 45
-				"PP_HABITANT, " + // 46
-				"REINDEX_ON, " + // 47
-				"SANS_LISTE_RECAP, " + // 48
-				"SANS_RAPPEL, " + // 49
-				"TITULAIRE_COMPTE_BANCAIRE " + // 50
+				"DISTRICT_FISCAL_ID, " + // 16
+				"DPI_NOM1, " + // 17
+				"DPI_NOM2, " + // 18
+				"INDEX_DIRTY, " + // 19
+				"LOGICIEL_ID, " + // 20
+				"LOG_CDATE, " + // 21
+				"LOG_CUSER, " + // 22
+				"LOG_MDATE, " + // 23
+				"LOG_MUSER, " + // 24
+				"MAJORITE_TRAITEE, " + // 25
+				"MODE_COM, " + // 26
+				"NH_CAT_ETRANGER, " + // 27
+				"NH_DATE_DEBUT_VALID_AUTORIS, " + // 28
+				"NH_DATE_NAISSANCE, " + // 29
+				"NH_NOM, " + // 30
+				"NH_NO_OFS_COMMUNE_ORIGINE, " + // 31
+				"NH_NO_OFS_NATIONALITE, " + // 32
+				"NH_NUMERO_ASSURE_SOCIAL, " + // 33
+				"NH_PRENOM, " + // 34
+				"NH_SEXE, " + // 35
+				"NUMERO_CA, " + // 36
+				"NUMERO_COMPTE_BANCAIRE, " + // 37
+				"NUMERO_ETABLISSEMENT, " + // 38
+				"NUMERO_INDIVIDU, " + // 39
+				"NUMERO_TELECOPIE, " + // 40
+				"NUMERO_TEL_PORTABLE, " + // 41
+				"NUMERO_TEL_PRIVE, " + // 42
+				"NUMERO_TEL_PROF, " + // 43
+				"OID, " + // 44
+				"PERIODE_DECOMPTE, " + // 45
+				"PERIODICITE_DECOMPTE, " + // 46
+				"PERSONNE_CONTACT, " + // 47
+				"PP_HABITANT, " + // 48
+				"REGION_FISCALE_ID, " + // 49
+				"REINDEX_ON, " + // 50
+				"SANS_LISTE_RECAP, " + // 51
+				"SANS_RAPPEL, " + // 52
+				"TITULAIRE_COMPTE_BANCAIRE " + // 53
 				"from TIERS";
 
 		public static String selectById() {
@@ -388,44 +392,44 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final boolean temp23 = rs.getBoolean(23);
-				final Boolean majoriteTraitee = (rs.wasNull() ? null : temp23);
-				final String temp25 = rs.getString(25);
-				final CategorieEtranger nhCatEtranger = (rs.wasNull() ? null : Enum.valueOf(CategorieEtranger.class, temp25));
-				final int temp26 = rs.getInt(26);
-				final RegDate nhDateDebutValidAutoris = (rs.wasNull() ? null : RegDate.fromIndex(temp26, false));
-				final int temp27 = rs.getInt(27);
-				final RegDate nhDateNaissance = (rs.wasNull() ? null : RegDate.fromIndex(temp27, false));
-				final String nhNom = rs.getString(28);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final boolean temp25 = rs.getBoolean(25);
+				final Boolean majoriteTraitee = (rs.wasNull() ? null : temp25);
+				final String temp27 = rs.getString(27);
+				final CategorieEtranger nhCatEtranger = (rs.wasNull() ? null : Enum.valueOf(CategorieEtranger.class, temp27));
+				final int temp28 = rs.getInt(28);
+				final RegDate nhDateDebutValidAutoris = (rs.wasNull() ? null : RegDate.fromIndex(temp28, false));
 				final int temp29 = rs.getInt(29);
-				final Integer nhNoOfsCommuneOrigine = (rs.wasNull() ? null : temp29);
-				final int temp30 = rs.getInt(30);
-				final Integer nhNoOfsNationalite = (rs.wasNull() ? null : temp30);
-				final String nhNumeroAssureSocial = rs.getString(31);
-				final String nhPrenom = rs.getString(32);
-				final String temp33 = rs.getString(33);
-				final Sexe nhSexe = (rs.wasNull() ? null : Enum.valueOf(Sexe.class, temp33));
-				final String numeroCompteBancaire = rs.getString(35);
-				final long temp37 = rs.getLong(37);
-				final Long numeroIndividu = (rs.wasNull() ? null : temp37);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final boolean temp46 = rs.getBoolean(46);
-				final Boolean ppHabitant = (rs.wasNull() ? null : temp46);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final RegDate nhDateNaissance = (rs.wasNull() ? null : RegDate.fromIndex(temp29, false));
+				final String nhNom = rs.getString(30);
+				final int temp31 = rs.getInt(31);
+				final Integer nhNoOfsCommuneOrigine = (rs.wasNull() ? null : temp31);
+				final int temp32 = rs.getInt(32);
+				final Integer nhNoOfsNationalite = (rs.wasNull() ? null : temp32);
+				final String nhNumeroAssureSocial = rs.getString(33);
+				final String nhPrenom = rs.getString(34);
+				final String temp35 = rs.getString(35);
+				final Sexe nhSexe = (rs.wasNull() ? null : Enum.valueOf(Sexe.class, temp35));
+				final String numeroCompteBancaire = rs.getString(37);
+				final long temp39 = rs.getLong(39);
+				final Long numeroIndividu = (rs.wasNull() ? null : temp39);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final boolean temp48 = rs.getBoolean(48);
+				final Boolean ppHabitant = (rs.wasNull() ? null : temp48);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				PersonnePhysique o = new PersonnePhysique();
 				o.setNumero(numero);
@@ -485,23 +489,23 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final String numeroCompteBancaire = rs.getString(35);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final String numeroCompteBancaire = rs.getString(37);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				AutreCommunaute o = new AutreCommunaute();
 				o.setNumero(numero);
@@ -546,23 +550,23 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final String numeroCompteBancaire = rs.getString(35);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final String numeroCompteBancaire = rs.getString(37);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				Entreprise o = new Entreprise();
 				o.setNumero(numero);
@@ -605,23 +609,23 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final String numeroCompteBancaire = rs.getString(35);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final String numeroCompteBancaire = rs.getString(37);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				MenageCommun o = new MenageCommun();
 				o.setNumero(numero);
@@ -664,25 +668,29 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final int temp34 = rs.getInt(34);
-				final Integer numeroCa = (rs.wasNull() ? null : temp34);
-				final String numeroCompteBancaire = rs.getString(35);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final int temp16 = rs.getInt(16);
+				final Integer districtFiscalId = (rs.wasNull() ? null : temp16);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final int temp36 = rs.getInt(36);
+				final Integer numeroCa = (rs.wasNull() ? null : temp36);
+				final String numeroCompteBancaire = rs.getString(37);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final int temp49 = rs.getInt(49);
+				final Integer regionFiscaleId = (rs.wasNull() ? null : temp49);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				CollectiviteAdministrative o = new CollectiviteAdministrative();
 				o.setNumero(numero);
@@ -694,6 +702,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				o.setComplementNom(complementNom);
 				o.setDateLimiteExclusionEnvoiDeclarationImpot(dateLimiteExclusion);
 				o.setDebiteurInactif(debiteurInactif);
+				o.setIdentifiantDistrictFiscal(districtFiscalId);
 				o.setIndexDirty(indexDirty);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
@@ -707,6 +716,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				o.setNumeroTelephoneProfessionnel(numeroTelProf);
 				o.setOfficeImpotId(oid);
 				o.setPersonneContact(personneContact);
+				o.setIdentifiantRegionFiscale(regionFiscaleId);
 				o.setReindexOn(reindexOn);
 				o.setTitulaireCompteBancaire(titulaireCompteBancaire);
 				res = o;
@@ -726,25 +736,25 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final String numeroCompteBancaire = rs.getString(35);
-				final long temp36 = rs.getLong(36);
-				final Long numeroEtablissement = (rs.wasNull() ? null : temp36);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final String titulaireCompteBancaire = rs.getString(50);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final String numeroCompteBancaire = rs.getString(37);
+				final long temp38 = rs.getLong(38);
+				final Long numeroEtablissement = (rs.wasNull() ? null : temp38);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String personneContact = rs.getString(47);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				Etablissement o = new Etablissement();
 				o.setNumero(numero);
@@ -788,35 +798,37 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				final String complementNom = rs.getString(12);
 				final boolean temp15 = rs.getBoolean(15);
 				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-				final String dpiNom1 = rs.getString(16);
-				final String dpiNom2 = rs.getString(17);
-				final boolean temp18 = rs.getBoolean(18);
-				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-				final Date logCdate = rs.getTimestamp(19);
-				final String logCuser = rs.getString(20);
-				final Timestamp logMdate = rs.getTimestamp(21);
-				final String logMuser = rs.getString(22);
-				final String temp24 = rs.getString(24);
-				final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp24));
-				final String numeroCompteBancaire = rs.getString(35);
-				final String numeroTelecopie = rs.getString(38);
-				final String numeroTelPortable = rs.getString(39);
-				final String numeroTelPrive = rs.getString(40);
-				final String numeroTelProf = rs.getString(41);
-				final int temp42 = rs.getInt(42);
-				final Integer oid = (rs.wasNull() ? null : temp42);
-				final String temp43 = rs.getString(43);
-				final PeriodeDecompte periodeDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodeDecompte.class, temp43));
-				final String temp44 = rs.getString(44);
-				final PeriodiciteDecompte periodiciteDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp44));
-				final String personneContact = rs.getString(45);
-				final int temp47 = rs.getInt(47);
-				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp47, false));
-				final boolean temp48 = rs.getBoolean(48);
-				final Boolean sansListeRecap = (rs.wasNull() ? null : temp48);
-				final boolean temp49 = rs.getBoolean(49);
-				final Boolean sansRappel = (rs.wasNull() ? null : temp49);
-				final String titulaireCompteBancaire = rs.getString(50);
+				final String dpiNom1 = rs.getString(17);
+				final String dpiNom2 = rs.getString(18);
+				final boolean temp19 = rs.getBoolean(19);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp19);
+				final long temp20 = rs.getLong(20);
+				final Long logicielId = (rs.wasNull() ? null : temp20);
+				final Date logCdate = rs.getTimestamp(21);
+				final String logCuser = rs.getString(22);
+				final Timestamp logMdate = rs.getTimestamp(23);
+				final String logMuser = rs.getString(24);
+				final String temp26 = rs.getString(26);
+				final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp26));
+				final String numeroCompteBancaire = rs.getString(37);
+				final String numeroTelecopie = rs.getString(40);
+				final String numeroTelPortable = rs.getString(41);
+				final String numeroTelPrive = rs.getString(42);
+				final String numeroTelProf = rs.getString(43);
+				final int temp44 = rs.getInt(44);
+				final Integer oid = (rs.wasNull() ? null : temp44);
+				final String temp45 = rs.getString(45);
+				final PeriodeDecompte periodeDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodeDecompte.class, temp45));
+				final String temp46 = rs.getString(46);
+				final PeriodiciteDecompte periodiciteDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp46));
+				final String personneContact = rs.getString(47);
+				final int temp50 = rs.getInt(50);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp50, false));
+				final boolean temp51 = rs.getBoolean(51);
+				final Boolean sansListeRecap = (rs.wasNull() ? null : temp51);
+				final boolean temp52 = rs.getBoolean(52);
+				final Boolean sansRappel = (rs.wasNull() ? null : temp52);
+				final String titulaireCompteBancaire = rs.getString(53);
 			
 				DebiteurPrestationImposable o = new DebiteurPrestationImposable();
 				o.setNumero(numero);
@@ -831,6 +843,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				o.setNom1(dpiNom1);
 				o.setNom2(dpiNom2);
 				o.setIndexDirty(indexDirty);
+				o.setLogicielId(logicielId);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
@@ -859,7 +872,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		}
 	}
 
-    @Override
+	@Override
     @SuppressWarnings("unchecked")
     public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
 
@@ -878,7 +891,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 	    }
 
 	    numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
-		    @Override
+			@Override
 		    public List<Long> process(List<Long> ids) {
 			    return template.query(NumerosIndividusMapper.selectByIds(ids), new NumerosIndividusMapper());
 		    }

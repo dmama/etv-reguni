@@ -1449,7 +1449,6 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -1465,6 +1464,8 @@
     <column>NUMERO_RUE</column>
     <column>TIERS_ID</column>
     <column>AUTRE_TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>AdresseSuisse</value>
       <value>4</value>
@@ -1482,7 +1483,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <value>CASE_POSTALE</value>
@@ -1492,6 +1492,8 @@
       <value>1000</value>
       <value>30370</value>
       <value>13110204</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -1511,7 +1513,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <value>CASE_POSTALE</value>
@@ -1521,6 +1522,8 @@
       <null/>
       <null/>
       <value>10536395</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -1540,7 +1543,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <value>CASE_POSTALE</value>
@@ -1550,6 +1552,8 @@
       <value>1000</value>
       <value>30933</value>
       <value>44018109</value>
+      <null/>
+      <null/>
       <null/>
     </row>
   </table>

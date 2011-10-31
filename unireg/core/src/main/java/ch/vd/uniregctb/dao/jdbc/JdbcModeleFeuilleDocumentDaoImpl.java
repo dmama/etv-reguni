@@ -76,7 +76,8 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 				"LOG_MDATE, " + // 7
 				"LOG_MUSER, " + // 8
 				"MODELE_ID, " + // 9
-				"NO_FORMULAIRE " + // 10
+				"NO_FORMULAIRE, " + // 10
+				"SORT_INDEX " + // 11
 				"from MODELE_FEUILLE_DOC";
 
 		public static String selectById() {
@@ -109,6 +110,8 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 			final Timestamp logMdate = rs.getTimestamp(7);
 			final String logMuser = rs.getString(8);
 			final String noFormulaire = rs.getString(10);
+			final int temp11 = rs.getInt(11);
+			final Integer sortIndex = (rs.wasNull() ? null : temp11);
 			
 			ModeleFeuilleDocument o = new ModeleFeuilleDocument();
 			o.setId(id);
@@ -120,6 +123,7 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 			o.setLogModifDate(logMdate);
 			o.setLogModifUser(logMuser);
 			o.setNumeroFormulaire(noFormulaire);
+			o.setIndex(sortIndex);
 			res = o;
 			
 			final Pair<Long, ModeleFeuilleDocument> pair = new Pair<Long, ModeleFeuilleDocument>();

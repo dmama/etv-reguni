@@ -34,12 +34,14 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 
 	private static final AdresseTiersMapper ROW_MAPPER = new AdresseTiersMapper();
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public AdresseTiers get(long forId, JdbcTemplate template) {
 		final Pair<Long, AdresseTiers> pair = (Pair<Long, AdresseTiers>) DataAccessUtils.uniqueResult(template.query(AdresseTiersMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
 		return pair.getSecond();
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Set<AdresseTiers> getForTiers(long tiersId, JdbcTemplate template) {
 		final List<Pair<Long, AdresseTiers>> list = template.query(AdresseTiersMapper.selectByTiersId(), new Object[]{tiersId}, ROW_MAPPER);
@@ -50,11 +52,13 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 		return set;
 	}
 
+	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Long, Set<AdresseTiers>> getForTiers(Collection<Long> tiersId, final JdbcTemplate template) {
 		
 		// Découpe la requête en sous-requêtes si nécessaire
 		final List<Pair<Long, AdresseTiers>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, AdresseTiers>>() {
+			@Override
 			public List<Pair<Long, AdresseTiers>> process(List<Long> ids) {
 				return template.query(AdresseTiersMapper.selectByTiersIds(ids), ROW_MAPPER);
 			}
@@ -88,6 +92,7 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 			return BASE_SELECT + " where ${FOREIGN_KEY} in " + JdbcDaoUtils.buildInClause(tiersId);
 		}
 
+		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			${MAPPING_CODE}
 		}

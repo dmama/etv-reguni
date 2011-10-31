@@ -227,13 +227,14 @@
     <column>RUE</column>
     <column>TEXTE_CASE_POSTALE</column>
     <column>NUMERO_CASE_POSTALE</column>
-    <column>TYPE</column>
     <column>NUMERO_ORDRE_POSTE</column>
     <column>COMPLEMENT_LOCALITE</column>
     <column>NUMERO_POSTAL_LOCALITE</column>
     <column>NUMERO_OFS_PAYS</column>
     <column>AUTRE_TIERS_ID</column>
     <column>PERMANENTE</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>2008-01-01</value>
       <value>8</value>
@@ -247,13 +248,14 @@
       <value><![CDATA[Rue des terreaux]]></value>
       <null/>
       <null/>
-      <null/>
       <value>571</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -268,13 +270,14 @@
       <value><![CDATA[Rue des terreaux]]></value>
       <null/>
       <null/>
-      <null/>
       <value>571</value>
       <null/>
       <null/>
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -294,8 +297,9 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
   </table>
   <table name="FOR_FISCAL">
@@ -922,7 +926,7 @@
     <column>MODELE_DOC_ID</column>
     <column>NO_OFS_FOR_GESTION</column>
     <column>LIBRE</column>
-	<column>NUMERO</column>
+    <column>NUMERO</column>
     <row>
       <value>2008-01-01</value>
       <value>xcitst</value>
@@ -965,19 +969,19 @@
     <column>DECLARATION_ID</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
-	<row>
+    <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>4</value>
       <value>EMISE</value>
       <value>20080115</value>
     </row>
-	<row>
-	  <value>2008-01-01</value>
-	  <value>2</value>
-	  <value>4</value>
-	  <value>SOMMEE</value>
-	  <value>20080715</value>
-	</row>
+    <row>
+      <value>2008-01-01</value>
+      <value>2</value>
+      <value>4</value>
+      <value>SOMMEE</value>
+      <value>20080715</value>
+    </row>
   </table>
 </dataset>

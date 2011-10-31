@@ -83,28 +83,29 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				"ANNULATION_DATE, " + // 3
 				"ANNULATION_USER, " + // 4
 				"AUTRE_TIERS_ID, " + // 5
-				"COMPLEMENT, " + // 6
-				"COMPLEMENT_LOCALITE, " + // 7
-				"DATE_DEBUT, " + // 8
-				"DATE_FIN, " + // 9
-				"LOG_CDATE, " + // 10
-				"LOG_CUSER, " + // 11
-				"LOG_MDATE, " + // 12
-				"LOG_MUSER, " + // 13
-				"NUMERO_APPARTEMENT, " + // 14
-				"NUMERO_CASE_POSTALE, " + // 15
-				"NUMERO_MAISON, " + // 16
-				"NUMERO_OFS_PAYS, " + // 17
-				"NUMERO_ORDRE_POSTE, " + // 18
-				"NUMERO_POSTAL_LOCALITE, " + // 19
-				"NUMERO_RUE, " + // 20
-				"PERMANENTE, " + // 21
-				"RUE, " + // 22
-				"STYPE, " + // 23
-				"TEXTE_CASE_POSTALE, " + // 24
-				"TIERS_ID, " + // 25
-				"TYPE, " + // 26
-				"USAGE_TYPE " + // 27
+				"AUTRE_TYPE, " + // 6
+				"COMPLEMENT, " + // 7
+				"COMPLEMENT_LOCALITE, " + // 8
+				"DATE_DEBUT, " + // 9
+				"DATE_FIN, " + // 10
+				"LOG_CDATE, " + // 11
+				"LOG_CUSER, " + // 12
+				"LOG_MDATE, " + // 13
+				"LOG_MUSER, " + // 14
+				"NUMERO_APPARTEMENT, " + // 15
+				"NUMERO_CASE_POSTALE, " + // 16
+				"NUMERO_MAISON, " + // 17
+				"NUMERO_OFS_PAYS, " + // 18
+				"NUMERO_ORDRE_POSTE, " + // 19
+				"NUMERO_POSTAL_LOCALITE, " + // 20
+				"NUMERO_RUE, " + // 21
+				"PERMANENTE, " + // 22
+				"RUE, " + // 23
+				"STYPE, " + // 24
+				"TEXTE_CASE_POSTALE, " + // 25
+				"TIERS_ID, " + // 26
+				"TYPE_PM, " + // 27
+				"USAGE_TYPE " + // 28
 				"from ADRESSE_TIERS";
 
 		public static String selectById() {
@@ -123,8 +124,8 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
 			final String adrType = rs.getString(1);
-			final long temp25 = rs.getLong(25);
-			final Long tiersId = (rs.wasNull() ? null : temp25);
+			final long temp26 = rs.getLong(26);
+			final Long tiersId = (rs.wasNull() ? null : temp26);
 			final AdresseTiers res;
 			
 			if (adrType.equals("AdresseSuisse")) {
@@ -133,30 +134,30 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final String complement = rs.getString(6);
-				final int temp8 = rs.getInt(8);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
+				final String complement = rs.getString(7);
 				final int temp9 = rs.getInt(9);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final String numeroAppartement = rs.getString(14);
-				final int temp15 = rs.getInt(15);
-				final Integer numeroCasePostale = (rs.wasNull() ? null : temp15);
-				final String numeroMaison = rs.getString(16);
-				final int temp18 = rs.getInt(18);
-				final Integer numeroOrdrePoste = (rs.wasNull() ? null : temp18);
-				final int temp20 = rs.getInt(20);
-				final Integer numeroRue = (rs.wasNull() ? null : temp20);
-				final boolean temp21 = rs.getBoolean(21);
-				final Boolean permanente = (rs.wasNull() ? null : temp21);
-				final String rue = rs.getString(22);
-				final String temp24 = rs.getString(24);
-				final TexteCasePostale texteCasePostale = (rs.wasNull() ? null : Enum.valueOf(TexteCasePostale.class, temp24));
-				final String temp27 = rs.getString(27);
-				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
+				final int temp10 = rs.getInt(10);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final Date logCdate = rs.getTimestamp(11);
+				final String logCuser = rs.getString(12);
+				final Timestamp logMdate = rs.getTimestamp(13);
+				final String logMuser = rs.getString(14);
+				final String numeroAppartement = rs.getString(15);
+				final int temp16 = rs.getInt(16);
+				final Integer numeroCasePostale = (rs.wasNull() ? null : temp16);
+				final String numeroMaison = rs.getString(17);
+				final int temp19 = rs.getInt(19);
+				final Integer numeroOrdrePoste = (rs.wasNull() ? null : temp19);
+				final int temp21 = rs.getInt(21);
+				final Integer numeroRue = (rs.wasNull() ? null : temp21);
+				final boolean temp22 = rs.getBoolean(22);
+				final Boolean permanente = (rs.wasNull() ? null : temp22);
+				final String rue = rs.getString(23);
+				final String temp25 = rs.getString(25);
+				final TexteCasePostale texteCasePostale = (rs.wasNull() ? null : Enum.valueOf(TexteCasePostale.class, temp25));
+				final String temp28 = rs.getString(28);
+				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			
 				AdresseSuisse o = new AdresseSuisse();
 				o.setId(id);
@@ -186,30 +187,30 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final String complement = rs.getString(6);
-				final String complementLocalite = rs.getString(7);
-				final int temp8 = rs.getInt(8);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
+				final String complement = rs.getString(7);
+				final String complementLocalite = rs.getString(8);
 				final int temp9 = rs.getInt(9);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final String numeroAppartement = rs.getString(14);
-				final int temp15 = rs.getInt(15);
-				final Integer numeroCasePostale = (rs.wasNull() ? null : temp15);
-				final String numeroMaison = rs.getString(16);
-				final int temp17 = rs.getInt(17);
-				final Integer numeroOfsPays = (rs.wasNull() ? null : temp17);
-				final String numeroPostalLocalite = rs.getString(19);
-				final boolean temp21 = rs.getBoolean(21);
-				final Boolean permanente = (rs.wasNull() ? null : temp21);
-				final String rue = rs.getString(22);
-				final String temp24 = rs.getString(24);
-				final TexteCasePostale texteCasePostale = (rs.wasNull() ? null : Enum.valueOf(TexteCasePostale.class, temp24));
-				final String temp27 = rs.getString(27);
-				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
+				final int temp10 = rs.getInt(10);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final Date logCdate = rs.getTimestamp(11);
+				final String logCuser = rs.getString(12);
+				final Timestamp logMdate = rs.getTimestamp(13);
+				final String logMuser = rs.getString(14);
+				final String numeroAppartement = rs.getString(15);
+				final int temp16 = rs.getInt(16);
+				final Integer numeroCasePostale = (rs.wasNull() ? null : temp16);
+				final String numeroMaison = rs.getString(17);
+				final int temp18 = rs.getInt(18);
+				final Integer numeroOfsPays = (rs.wasNull() ? null : temp18);
+				final String numeroPostalLocalite = rs.getString(20);
+				final boolean temp22 = rs.getBoolean(22);
+				final Boolean permanente = (rs.wasNull() ? null : temp22);
+				final String rue = rs.getString(23);
+				final String temp25 = rs.getString(25);
+				final TexteCasePostale texteCasePostale = (rs.wasNull() ? null : Enum.valueOf(TexteCasePostale.class, temp25));
+				final String temp28 = rs.getString(28);
+				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			
 				AdresseEtrangere o = new AdresseEtrangere();
 				o.setId(id);
@@ -240,17 +241,17 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final int temp8 = rs.getInt(8);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
 				final int temp9 = rs.getInt(9);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final TypeAdresseCivil stype = TypeAdresseCivil.get(EnumTypeAdresse.getEnum(rs.getString(23)));
-				final String temp27 = rs.getString(27);
-				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
+				final int temp10 = rs.getInt(10);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final Date logCdate = rs.getTimestamp(11);
+				final String logCuser = rs.getString(12);
+				final Timestamp logMdate = rs.getTimestamp(13);
+				final String logMuser = rs.getString(14);
+				final TypeAdresseCivil stype = TypeAdresseCivil.get(EnumTypeAdresse.getEnum(rs.getString(24)));
+				final String temp28 = rs.getString(28);
+				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			
 				AdresseCivile o = new AdresseCivile();
 				o.setId(id);
@@ -272,18 +273,18 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final Long id = (rs.wasNull() ? null : temp2);
 				final Date annulationDate = rs.getTimestamp(3);
 				final String annulationUser = rs.getString(4);
-				final int temp8 = rs.getInt(8);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
 				final int temp9 = rs.getInt(9);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final String temp26 = rs.getString(26);
-				final TypeAdressePM type = (rs.wasNull() ? null : Enum.valueOf(TypeAdressePM.class, temp26));
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
+				final int temp10 = rs.getInt(10);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final Date logCdate = rs.getTimestamp(11);
+				final String logCuser = rs.getString(12);
+				final Timestamp logMdate = rs.getTimestamp(13);
+				final String logMuser = rs.getString(14);
 				final String temp27 = rs.getString(27);
-				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
+				final TypeAdressePM typePm = (rs.wasNull() ? null : Enum.valueOf(TypeAdressePM.class, temp27));
+				final String temp28 = rs.getString(28);
+				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			
 				AdressePM o = new AdressePM();
 				o.setId(id);
@@ -295,7 +296,7 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
 				o.setLogModifUser(logMuser);
-				o.setType(type);
+				o.setType(typePm);
 				o.setUsage(usageType);
 				res = o;
 			}
@@ -307,31 +308,31 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final String annulationUser = rs.getString(4);
 				final long temp5 = rs.getLong(5);
 				final Long autreTiersId = (rs.wasNull() ? null : temp5);
-				final int temp8 = rs.getInt(8);
-				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp8, false));
+				final String temp6 = rs.getString(6);
+				final TypeAdresseTiers autreType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp6));
 				final int temp9 = rs.getInt(9);
-				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
-				final Date logCdate = rs.getTimestamp(10);
-				final String logCuser = rs.getString(11);
-				final Timestamp logMdate = rs.getTimestamp(12);
-				final String logMuser = rs.getString(13);
-				final String temp26 = rs.getString(26);
-				final TypeAdresseTiers type = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp26)); // modifié à la main parce que la colonne TYPE est partagée entre AdresseAutreTiers et AdressePM pour des types différents...
-				final String temp27 = rs.getString(27);
-				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp27));
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp9, false));
+				final int temp10 = rs.getInt(10);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
+				final Date logCdate = rs.getTimestamp(11);
+				final String logCuser = rs.getString(12);
+				final Timestamp logMdate = rs.getTimestamp(13);
+				final String logMuser = rs.getString(14);
+				final String temp28 = rs.getString(28);
+				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			
 				AdresseAutreTiers o = new AdresseAutreTiers();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
 				o.setAnnulationUser(annulationUser);
 				o.setAutreTiersId(autreTiersId);
+				o.setType(autreType);
 				o.setDateDebut(dateDebut);
 				o.setDateFin(dateFin);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
 				o.setLogModifUser(logMuser);
-				o.setType(type);
 				o.setUsage(usageType);
 				res = o;
 			}

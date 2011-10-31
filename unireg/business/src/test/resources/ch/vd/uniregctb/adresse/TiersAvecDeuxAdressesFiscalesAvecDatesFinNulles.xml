@@ -114,7 +114,6 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -130,6 +129,8 @@
     <column>NUMERO_RUE</column>
     <column>AUTRE_TIERS_ID</column>
     <column>TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>AdresseSuisse</value>
       <value>18772241</value>
@@ -142,7 +143,6 @@
       <value>20090829</value>
       <null/>
       <value>COURRIER</value>
-      <null/>
       <null/>
       <value><![CDATA[p.a. PricewaterhouseCoopers SA/Dpt IES]]></value>
       <null/>
@@ -158,6 +158,8 @@
       <value>46491</value>
       <null/>
       <value>10714700</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -172,7 +174,6 @@
       <null/>
       <value>COURRIER</value>
       <null/>
-      <null/>
       <value><![CDATA[p.a. PricewaterhouseCoopers SA/Dpt IES]]></value>
       <null/>
       <value>2895</value>
@@ -187,6 +188,8 @@
       <value>46491</value>
       <null/>
       <value>10714700</value>
+      <null/>
+      <null/>
     </row>
   </table>
 </dataset>

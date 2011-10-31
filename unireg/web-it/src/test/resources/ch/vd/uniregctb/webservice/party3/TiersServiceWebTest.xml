@@ -422,7 +422,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -530,7 +529,7 @@
       <null/>
       <null/>
     </row>
-	<row>
+    <row>
       <value>Entreprise</value>
       <value>312</value>
       <null/>
@@ -583,7 +582,7 @@
       <null/>
       <null/>
     </row>
-	<row>
+    <row>
       <value>Entreprise</value>
       <value>1314</value>
       <null/>
@@ -954,59 +953,59 @@
       <value>Alfred</value>
       <value>MASCULIN</value>
     </row>
-	  <row>
-		<value>PersonnePhysique</value>
-		<value>12900001</value>
-		<null/>
-		<null/>
-		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-		<value>tiers-basic</value>
-		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-		<value>tiers-basic</value>
-		<null/>
-		<null/>
-		<value>0</value>
-		<null/>
-		<value>0</value>
-		<null/>
-		<value>CH9308440717427290198</value>
-		<null/>
-		<value>0764537812</value>
-		<value>032&apos;897&apos;45&apos;32</value>
-		<null/>
-		<value>10</value>
-		<null/>
-		<null/>
-		<value><![CDATA[Lederet Michel]]></value>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<null/>
-		<value>19520123</value>
-		<value>0</value>
-		<null/>
-		<value>Lederet</value>
-		<value>7561234567897</value>
-		<null/>
-		<null/>
-		<value>8100</value>
-		<value>Michel</value>
-		<value>MASCULIN</value>
-	  </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>12900001</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <null/>
+      <null/>
+      <value>0</value>
+      <null/>
+      <value>0</value>
+      <null/>
+      <value>CH9308440717427290198</value>
+      <null/>
+      <value>0764537812</value>
+      <value>032&apos;897&apos;45&apos;32</value>
+      <null/>
+      <value>10</value>
+      <null/>
+      <null/>
+      <value><![CDATA[Lederet Michel]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>19520123</value>
+      <value>0</value>
+      <null/>
+      <value>Lederet</value>
+      <value>7561234567897</value>
+      <null/>
+      <null/>
+      <value>8100</value>
+      <value>Michel</value>
+      <value>MASCULIN</value>
+    </row>
   </table>
   <table name="SITUATION_FAMILLE">
     <column>SITUATION_FAMILLE_TYPE</column>
@@ -2425,26 +2424,26 @@
       <null/>
       <value>12900001</value>
     </row>
-	<row>
-		<value>ForFiscalSecondaire</value>
-		<value>15</value>
-		<null/>
-		<null/>
-		<value><![CDATA[2011-04-27 14:11:41.0]]></value>
-		<value>tiers-basic</value>
-		<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-		<value>tiers-basic</value>
-		<value>20040701</value>
-		<null/>
-		<value>REVENU_FORTUNE</value>
-		<value>5890</value>
-		<value>COMMUNE_OU_FRACTION_VD</value>
-		<null/>
-		<value>ACHAT_IMMOBILIER</value>
-		<value>IMMEUBLE_PRIVE</value>
-		<null/>
-		<value>12900001</value>
-	</row>
+    <row>
+      <value>ForFiscalSecondaire</value>
+      <value>15</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-04-27 14:11:41.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>20040701</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>5890</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <null/>
+      <value>ACHAT_IMMOBILIER</value>
+      <value>IMMEUBLE_PRIVE</value>
+      <null/>
+      <value>12900001</value>
+    </row>
     <row>
       <value>ForFiscalPrincipal</value>
       <value>16</value>
@@ -2905,7 +2904,6 @@
     <column>DATE_FIN</column>
     <column>USAGE_TYPE</column>
     <column>AUTRE_TIERS_ID</column>
-    <column>TYPE</column>
     <column>STYPE</column>
     <column>COMPLEMENT</column>
     <column>NUMERO_APPARTEMENT</column>
@@ -2920,6 +2918,8 @@
     <column>NUMERO_ORDRE_POSTE</column>
     <column>NUMERO_RUE</column>
     <column>TIERS_ID</column>
+    <column>AUTRE_TYPE</column>
+    <column>TYPE_PM</column>
     <row>
       <value>AdresseEtrangere</value>
       <value>1</value>
@@ -2937,7 +2937,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>13</value>
       <value>0</value>
       <value><![CDATA[avenue des Ternes ]]></value>
@@ -2948,6 +2947,8 @@
       <null/>
       <null/>
       <value>34777810</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -2966,7 +2967,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <value><![CDATA[rue recordon]]></value>
@@ -2977,6 +2977,8 @@
       <value>1269</value>
       <null/>
       <value>34777810</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseAutreTiers</value>
@@ -2991,7 +2993,6 @@
       <null/>
       <value>COURRIER</value>
       <value>12100001</value>
-      <value>REPRESENTATION</value>
       <null/>
       <null/>
       <null/>
@@ -3006,6 +3007,8 @@
       <null/>
       <null/>
       <value>34777810</value>
+      <value>REPRESENTATION</value>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3024,7 +3027,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -3035,6 +3037,8 @@
       <null/>
       <value>141554</value>
       <value>12100003</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3053,7 +3057,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -3064,6 +3067,8 @@
       <null/>
       <value>141554</value>
       <value>12500001</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3082,7 +3087,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -3093,6 +3097,8 @@
       <null/>
       <value>32296</value>
       <value>12500001</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3111,7 +3117,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>12</value>
       <value>0</value>
       <null/>
@@ -3122,6 +3127,8 @@
       <null/>
       <value>141554</value>
       <value>12600101</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseEtrangere</value>
@@ -3137,7 +3144,6 @@
       <value>COURRIER</value>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[De Wit Tummers Elisabeth]]></value>
       <null/>
       <null/>
@@ -3151,6 +3157,8 @@
       <null/>
       <null/>
       <value>10035633</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3169,7 +3177,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>81</value>
       <value>0</value>
       <value><![CDATA[Ch. du Devin]]></value>
@@ -3180,6 +3187,8 @@
       <value>160</value>
       <null/>
       <value>20602603</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>AdresseSuisse</value>
@@ -3197,7 +3206,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>23</value>
       <value>19</value>
       <value>0</value>
@@ -3209,46 +3217,48 @@
       <value>104</value>
       <value>83404</value>
       <value>12900001</value>
+      <null/>
+      <null/>
     </row>
   </table>
-	<table name="IMMEUBLE">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_DEBUT</column>
-		<column>DATE_FIN</column>
-		<column>NUMERO_IMMEUBLE</column>
-		<column>NATURE_IMMEUBLE</column>
-		<column>ESTIMATION_FISCALE</column>
-		<column>REF_ESTIM_FISC</column>
-		<column>NOM_COMMUNE</column>
-		<column>GENRE_PROPRIETE</column>
-		<column>PART_PROPRIETE_NUMERATEUR</column>
-		<column>PART_PROPRIETE_DENOMINATEUR</column>
-		<column>CTB_ID</column>
-		<row>
-			<value>1</value>
-			<null />
-			<null />
-			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-			<value>tiers-basic</value>
-			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
-			<value>tiers-basic</value>
-			<value>19760427</value>
-			<null />
-			<value>132/2345</value>
-			<value>Place-jardin</value>
-			<value>860000</value>
-			<value>2002</value>
-			<value>Lausanne</value>
-			<value>COMMUNE</value>
-			<value>1</value>
-			<value>2</value>
-			<value>12900001</value>
-		</row>
-	</table>
+  <table name="IMMEUBLE">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>NUMERO_IMMEUBLE</column>
+    <column>NATURE_IMMEUBLE</column>
+    <column>ESTIMATION_FISCALE</column>
+    <column>REF_ESTIM_FISC</column>
+    <column>NOM_COMMUNE</column>
+    <column>GENRE_PROPRIETE</column>
+    <column>PART_PROPRIETE_NUMERATEUR</column>
+    <column>PART_PROPRIETE_DENOMINATEUR</column>
+    <column>CTB_ID</column>
+    <row>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+      <value>tiers-basic</value>
+      <value>19760427</value>
+      <null/>
+      <value>132/2345</value>
+      <value>Place-jardin</value>
+      <value>860000</value>
+      <value>2002</value>
+      <value>Lausanne</value>
+      <value>COMMUNE</value>
+      <value>1</value>
+      <value>2</value>
+      <value>12900001</value>
+    </row>
+  </table>
 </dataset>
