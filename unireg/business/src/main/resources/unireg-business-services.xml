@@ -107,9 +107,6 @@
 		<property name="sender" ref="evenementExterneSender" />
 		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="modifInterceptor" ref="modificationLogInterceptor"/>
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 

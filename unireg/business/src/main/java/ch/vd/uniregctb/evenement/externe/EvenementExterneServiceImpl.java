@@ -2,18 +2,8 @@ package ch.vd.uniregctb.evenement.externe;
 
 import java.math.BigInteger;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
@@ -24,20 +14,16 @@ import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class EvenementExterneServiceImpl implements EvenementExterneService, InitializingBean {
+public class EvenementExterneServiceImpl implements EvenementExterneService {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementExterneServiceImpl.class);
 
@@ -45,9 +31,6 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
 
-	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
-	private ModificationLogInterceptor modifInterceptor;
 	private DataEventService dataEventService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -62,19 +45,6 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setModifInterceptor(ModificationLogInterceptor modifInterceptor) {
-		this.modifInterceptor = modifInterceptor;
 	}
 
 	public void setDataEventService(DataEventService dataEventService) {
@@ -272,109 +242,5 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		doc.setEvtQuittanceListe(evenement);
 
 		return doc;
-	}
-
-	private static class MigrationResults implements BatchResults<Long, MigrationResults> {
-
-		public final Map<Long, String> erreurs = new HashMap<Long, String>();
-
-		@Override
-		public void addErrorException(Long element, Exception e) {
-			erreurs.put(element, e.getMessage());
-		}
-
-		@Override
-		public void addAll(MigrationResults right) {
-			erreurs.putAll(right.erreurs);
-		}
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		migrateAllQuittancesLR();
-	}
-
-	/**
-	 * Migre le format des quittances LR.
-	 * <p/>
-	 * Précisemment, les colonnes <i>date début</i>, <i>date fin</i> et <i>type</i> n'étaient pas renseignées sur les anciennes quittances LR. Par contre, le message xml d'origine (= le contenu du
-	 * message JMS) était toujours stocké. La migration ci-dessous reprend donc ces messages, interpète le message xml d'origine et renseigne les colonnes qui vont bien.
-	 */
-	@SuppressWarnings({"unchecked"})
-	private void migrateAllQuittancesLR() {
-
-		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final List<Long> ids = t.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return evenementExterneDAO.getIdsQuittancesLRToMigrate();
-			}
-		});
-
-		if (!ids.isEmpty()) {
-
-			LOGGER.warn("--- Début de la migration du format de stockage des quittances LR ---");
-			MigrationResults rapportFinal = new MigrationResults();
-
-			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
-			modifInterceptor.setCompleteOnly(true); // pour éviter d'écraser les dates de création/modification originales
-			try {
-
-				final BatchTransactionTemplate<Long, MigrationResults> template = new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-				template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
-
-					@Override
-					public MigrationResults createSubRapport() {
-						return new MigrationResults();
-					}
-
-					@Override
-					public boolean doInTransaction(List<Long> batch, MigrationResults rapport) throws Exception {
-						migrateQuittancesLR(batch);
-						return true;
-					}
-				});
-
-			}
-			finally {
-				modifInterceptor.setCompleteOnly(false);
-				AuthenticationHelper.popPrincipal();
-			}
-
-			for (Map.Entry<Long, String> s : rapportFinal.erreurs.entrySet()) {
-				LOGGER.error("Impossible de migrer la quittance LR id=" + s.getKey() + ". Erreur=" + s.getValue());
-			}
-
-			LOGGER.warn(
-					"--- Fin de la migration (LR migrées=" + (ids.size() - rapportFinal.erreurs.size()) + ", en erreur=" + rapportFinal.erreurs.size() + ") ---");
-		}
-	}
-
-	private void migrateQuittancesLR(List<Long> ids) throws XmlException, EvenementExterneException {
-
-		for (Long id : ids) {
-			final QuittanceLR quittance = (QuittanceLR) evenementExterneDAO.get(id);
-
-			// Récupère le message xml stocké dans la base
-			final String bussinessId = quittance.getBusinessId();
-			final String message = quittance.getMessage();
-			Assert.notNull(message, "Le message est nul.");
-
-			// Interpète le xml et renseigne les colonnes manquantes
-			final EvenementExterne completeEvent = EvenementExterneListenerImpl.string2event(message, bussinessId);
-			if (completeEvent instanceof QuittanceLR) {
-				final QuittanceLR completeQuittance = (QuittanceLR) completeEvent;
-				if (quittance.getTiers() == null) {
-					final Tiers tiers = tiersDAO.get(completeQuittance.getTiersId());
-					quittance.setTiers(tiers);
-				}
-				quittance.setDateDebut(completeQuittance.getDateDebut());
-				quittance.setDateFin(completeQuittance.getDateFin());
-				quittance.setType(completeQuittance.getType());
-			}
-			else {
-				throw new IllegalArgumentException("Type d'événement inconnu = " + completeEvent.getClass());
-			}
-		}
 	}
 }
