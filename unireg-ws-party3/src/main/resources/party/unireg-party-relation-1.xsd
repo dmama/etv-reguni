@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.1-SNAPSHOT - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
@@ -63,10 +64,12 @@
 						- Représentation : Personne physique -> Tiers
 						- Contact impôt source : Débiteur prestation imposable -> Contribuable
 						- Annule et remplace : Tiers -> Tiers
+						- Enfants : Personne physique -> Personne physique
+						- Parents : Personne physique -> Personne physique
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="relationBetweenPartiesTypeType">
@@ -112,6 +115,18 @@
 			<xs:enumeration value="CANCELS_AND_REPLACES">
 				<xs:annotation>
 					<xs:documentation>Rapport qui existe lorsqu'un tiers à été annulé et remplacé par un autre tiers (correction de doublons)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHILD">
+				<xs:annotation>
+					<xs:documentation>Lien de filiation où l'autre tiers est l'enfant du tiers courant. Les rapports de ce type ne sont renseignés que si la part CHILDREN est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARENT">
+				<xs:annotation>
+					<xs:documentation>Lien de filiation où l'autre tiers est le parent du tiers courant. Les rapports de ce type ne sont renseignés que si la part PARENTS est demandée.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

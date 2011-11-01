@@ -124,6 +124,16 @@
 					<xs:documentation>Les immeubles du contribuable.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="CHILDREN">
+				<xs:annotation>
+					<xs:documentation>Les enfants (naturels et adoptés) du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARENTS">
+				<xs:annotation>
+					<xs:documentation>Les parents (naturels et par adoptation) du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 

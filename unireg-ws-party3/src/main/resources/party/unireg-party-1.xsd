@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.1-SNAPSHOT - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1"
@@ -126,7 +127,7 @@
 			<xs:element maxOccurs="unbounded" minOccurs="0" name="relationsBetweenParties" type="relation:relationBetweenPartiesType">
 				<xs:annotation>
 					<xs:documentation>Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent).
-						Attention ! Cette collection n'est renseignée que si la part RELATIONS_BETWEEN_PARTIES est demandée.
+						Attention ! Cette collection n'est renseignée que si au moins une des parts RELATIONS_BETWEEN_PARTIES, CHILDREN ou PARENTS est demandée.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
