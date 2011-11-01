@@ -106,7 +106,7 @@ public class ModeleFeuilleDocumentController {
 	public String edit(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
 		Commun.verifieLesDroits();
 		if (result.hasErrors()) {
-			return "/edit.do";
+			return "param/feuille-edit";
 		}
 		manager.updateFeuille(view.getIdFeuille(), view.getModeleFeuille());
 
