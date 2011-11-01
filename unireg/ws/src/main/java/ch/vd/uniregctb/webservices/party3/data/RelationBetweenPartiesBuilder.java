@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.webservices.party3.data;
 
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
+import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
+import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
 
@@ -26,6 +28,15 @@ public class RelationBetweenPartiesBuilder {
 			final ch.vd.uniregctb.tiers.RepresentationConventionnelle repres = (ch.vd.uniregctb.tiers.RepresentationConventionnelle) rapport;
 			r.setExtensionToForcedExecution(repres.getExtensionExecutionForcee());
 		}
+		return r;
+	}
+
+	public static RelationBetweenParties newFiliation(RapportFiliation filiation) {
+		final RelationBetweenParties r = new RelationBetweenParties();
+		r.setType(filiation.getType() == RapportFiliation.Type.ENFANT ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
+		r.setDateFrom(DataHelper.coreToWeb(filiation.getDateDebut()));
+		r.setDateTo(DataHelper.coreToWeb(filiation.getDateFin()));
+		r.setOtherPartyNumber(filiation.getAutrePersonnePhysique().getNumero().intValue());
 		return r;
 	}
 }

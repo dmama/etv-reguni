@@ -14,10 +14,11 @@ import static junit.framework.Assert.assertNull;
  */
 public class RelationBetweenPartiesTypeTest extends EnumTest {
 
-	@Test
-	public void testCoherence() {
-		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
-	}
+// Suite à l'ajout des enfants et des parents, les deux enums ne sont plus comparables sur la longueur (SIFISC-2588)
+//	@Test
+//	public void testCoherence() {
+//		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
+//	}
 
 	@Test
 	public void testFromValue() {

@@ -37,10 +37,12 @@ import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -98,19 +101,51 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		wsCacheManager = getBean(PartyWebServiceCacheManager.class, "partyService3CacheManager");
 		wsCacheManager.setCache(cache);
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(123456, date(1965, 4, 13), "Eric", "Bolomey", true);
+				final Individu papa = addIndividu(111111, date(1925, 11, 29), "Papa", "Bolomey", true);
+				ind.setParents(Arrays.asList(papa));
+				final Individu junior = addIndividu(222222, date(2002, 3, 7), "Junior", "Bolomey", true);
+				ind.setEnfants(Arrays.asList(junior));
+			}
+		});
 
-		// Un tiers avec une adresse et un fors fiscal
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				// Un tiers avec avec toutes les parties renseignées
+				final PersonnePhysique eric = addHabitant(123456);
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
-						MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				eric.setNumeroCompteBancaire("CH9308440717427290198");
+
+				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+
+				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+				situation.setDateDebut(date(1989, 5, 1));
+				situation.setNombreEnfants(0);
+				eric.addSituationFamille(situation);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2003);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2003, 1, 10));
+
+				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", GenrePropriete.COMMUNE, 923000, "1994", null, "1");
 				ids.eric = eric.getNumero();
 
+				// le père et l'enfant
+				addHabitant(111111);
+				addHabitant(222222);
+
+				// un débiteur
 				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2000, 1, 1));
 				ids.debiteur = debiteur.getId();
 
@@ -118,12 +153,10 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			}
 		});
 
-		// Un ménage commun avec toutes les parties renseignées
+		// Un ménage commun
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
@@ -136,17 +169,10 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				situation.setNombreEnfants(0);
 				mc.addSituationFamille(situation);
 
-				PeriodeFiscale periode = addPeriodeFiscale(2003);
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(mc, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(di, date(2003, 1, 10));
-
 				addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-
-				addImmeuble(mc, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", GenrePropriete.COMMUNE, 923000, "1994", null, "1");
 
 				ids.monsieur = monsieur.getNumero();
 				ids.madame = madame.getNumero();
@@ -234,7 +260,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		for (PartyPart p : PartyPart.values()) {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-			params.setPartyNumber(ids.menage.intValue());
+			params.setPartyNumber(ids.eric.intValue());
 			params.getParts().add(p);
 			assertOnlyPart(p, cache.getParty(params));
 		}
@@ -243,7 +269,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		for (PartyPart p : PartyPart.values()) {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-			params.setPartyNumber(ids.menage.intValue());
+			params.setPartyNumber(ids.eric.intValue());
 			params.getParts().add(p);
 			assertOnlyPart(p, cache.getParty(params));
 		}
@@ -451,7 +477,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-		params.setPartyNumber(ids.menage.intValue());
+		params.setPartyNumber(ids.eric.intValue());
 
 		// 1. on demande le tiers avec les déclarations et leurs états
 		{
@@ -710,9 +736,12 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
 		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
 		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;
+		boolean checkChildren = PartyPart.CHILDREN == p;
+		boolean checkParents = PartyPart.PARENTS == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses ||
-				checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals || checkCorporationStatuses ||
-				checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties, "La partie [" + p + "] est inconnue");
+				checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals ||
+				checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
+				checkChildren || checkParents, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -722,7 +751,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences");
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences");
 		assertNullOrNotNull(checkManagingTaxResidences, tiers.getManagingTaxResidences(), "managingTaxResidences");
-		assertNullOrNotNull(checkRelationsBetweenParties, tiers.getRelationsBetweenParties(), "relationsBetweenParties");
+		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ")");
 
 		if (tiers instanceof Taxpayer) {
 			Taxpayer ctb = (Taxpayer) tiers;

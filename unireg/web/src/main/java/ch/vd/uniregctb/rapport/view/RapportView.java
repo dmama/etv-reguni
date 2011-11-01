@@ -8,9 +8,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
@@ -26,14 +24,12 @@ import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.TypeActivite;
@@ -149,31 +145,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.toolTipMessage = getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
 	}
 
-	/**
-	 * Constructor pour les rapports de type filiation,
-	 *
-	 * @param reference    l'individu principal
-	 * @param autre        l'autre individu
-	 * @param sens         le sens du rapport
-	 * @param tiersDAO     le tiers DAO
-	 * @param tiersService le tiers Service
-	 */
-	public RapportView(Individu reference, Individu autre, SensRapportEntreTiers sens, TiersDAO tiersDAO, TiersService tiersService) {
+	public RapportView(RapportFiliation filiation, String nomInd, TiersService tiersService) {
+		this.dateDebut = filiation.getDateDebut();
+		this.dateFin = filiation.getDateFin();
+		this.sensRapportEntreTiers = filiation.getType() == RapportFiliation.Type.ENFANT ? SensRapportEntreTiers.OBJET : SensRapportEntreTiers.SUJET;
+		this.typeRapportEntreTiers = TypeRapportEntreTiersWeb.FILIATION;
+		this.numero = filiation.getAutrePersonnePhysique().getNumero();
 
-		this.setSensRapportEntreTiers(sens);
-		this.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-
-		try {
-			final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(autre.getNoTechnique());
-			if (habitant != null) {
-				this.setNumero(habitant.getNumero());
-			}
-		}
-		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-			LOGGER.warn(String.format("Détermination impossible du tiers associé à l'individu %d : %s", autre.getNoTechnique(), e.getMessage()));
-			this.setMessageNumeroAbsent(String.format("Doublon détecté pour individu %d", autre.getNoTechnique()));
-		}
-
+		final Individu autre = filiation.getAutreIndividu();
 		final String nomBrut = tiersService.getNomPrenom(autre);
 		final String nom;
 		if (autre.getDateDeces() != null) {
@@ -189,13 +168,18 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		}
 		this.nomCourrier = new NomCourrierViewPart(nom);
 
-		// le rapport est terminé au décès de l'un des membres
-		if (reference.getDateDeces() != null || autre.getDateDeces() != null) {
-			this.dateFin = RegDateHelper.minimum(reference.getDateDeces(), autre.getDateDeces(), NullDateBehavior.LATEST);
+		if (filiation.getType() == RapportFiliation.Type.ENFANT) {
+			final boolean ferme = dateFin != null;
+			final String nomEnfant = tiersService.getNomPrenom(autre);
+			this.toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, ferme ? "était" : "est", nomInd);
 		}
-
-		// le rapport démarre à la naissance du dernier membre
-		this.dateDebut = RegDateHelper.maximum(reference.getDateNaissance(), autre.getDateNaissance(), NullDateBehavior.EARLIEST);
+		else {
+			final boolean ferme = dateFin != null;
+			final String nomParent = tiersService.getNomPrenom(autre);
+			final String verbe = ferme ? "était" : "est";
+			final String type = autre.isSexeMasculin() ? "le père" : "la mère";
+			this.toolTipMessage = String.format("%s %s %s de %s", nomParent, verbe, type, nomInd);
+		}
 	}
 
 	// ---------------------------------------------------

@@ -1824,6 +1824,126 @@ public class TiersServiceImpl implements TiersService {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public List<RapportFiliation> getRapportsFiliation(PersonnePhysique personnePhysique) {
+
+		final List<RapportFiliation> filiations = new ArrayList<RapportFiliation>();
+		if (!personnePhysique.isConnuAuCivil()) {
+			return Collections.emptyList();
+		}
+
+		final int year = RegDate.get().year();
+
+		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
+		final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), year, enumValues);
+
+		// enfants biologiques
+		final Collection<Individu> enfants = ind.getEnfants();
+		for (Individu enfant : enfants) {
+			RapportFiliation r = createRapportPourEnfant(personnePhysique, ind, enfant);
+			if (r != null) {
+				filiations.add(r);
+			}
+		}
+
+		// enfants adoptés / reconnus
+		final Collection<AdoptionReconnaissance> adoptions = ind.getAdoptionsReconnaissances();
+		if (adoptions != null) {
+			for (AdoptionReconnaissance ar : adoptions) {
+				RapportFiliation r = createRapportPourAdoption(personnePhysique, ind, ar);
+				if (r != null) {
+					filiations.add(r);
+				}
+			}
+		}
+
+		// parents
+		final List<Individu> parents = ind.getParents();
+		if (parents != null) {
+			for (Individu parent : parents) {
+				RapportFiliation r = createRapportPourParents(personnePhysique, ind, parent, year);
+				if (r != null) {
+					filiations.add(r);
+				}
+			}
+		}
+
+		return filiations;
+	}
+
+
+	@Nullable
+	private RapportFiliation createRapportPourEnfant(PersonnePhysique personnePhysique, Individu individu, Individu enfant) {
+
+		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
+		if (ppEnfant == null) {
+			return null;
+		}
+
+		return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
+	}
+
+	@Nullable
+	private RapportFiliation createRapportPourAdoption(PersonnePhysique personnePhysique, Individu individu, AdoptionReconnaissance ar) {
+
+		final Individu enfant = ar.getAdopteReconnu();
+
+		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
+		if (ppEnfant == null) {
+			return null;
+		}
+		
+		final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
+
+		final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+		if (dateDebut != null) {
+			rapportView.setDateDebut(dateDebut);
+		}
+		if (ar.getDateDesaveu() != null) {
+			rapportView.setDateFin(ar.getDateDesaveu());
+		}
+
+		return rapportView;
+	}
+
+	@Nullable
+	private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, Individu parent, int year) {
+
+		final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique());
+		if (ppParent == null) {
+			return null;
+		}
+
+		final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, parent, ppParent, RapportFiliation.Type.PARENT);
+
+		final Individu parentAvecAdoptions = serviceCivilService.getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
+		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parentAvecAdoptions.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
+		if (ar != null) {
+			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+			if (dateDebut != null) {
+				rapportView.setDateDebut(dateDebut);
+			}
+			if (ar.getDateDesaveu() != null && (rapportView.getDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getDateFin()))) {
+				rapportView.setDateFin(ar.getDateDesaveu());
+			}
+		}
+
+		return rapportView;
+	}
+
+	private static AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
+		AdoptionReconnaissance a = null;
+		if (adoptions != null && !adoptions.isEmpty()) {
+			for (AdoptionReconnaissance candidat : adoptions) {
+				if (candidat.getAdopteReconnu().getNoTechnique() == noIndEnfant) {
+					a = candidat;
+					break;
+				}
+			}
+		}
+		return a;
+	}
 
 	@Override
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {

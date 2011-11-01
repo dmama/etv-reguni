@@ -1463,4 +1463,173 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals(Long.valueOf(800423), info.getEgid());
 		assertEquals(Long.valueOf(1), info.getEwid());
 	}
+
+	/**
+	 * [SIFISC-2588] vérifie que le cache gère correctement les parts rapports-entre-tiers enfants, et parents (dont les données correspondantes se retrouvent dans la même collection)
+	 */
+	@Test
+	public void testGetRelationsBetweenPartiesWithChildrenAndParents() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		params.setPartyNumber(10711803); // Cédric Allora
+
+		//
+		// les rapports-entre-tiers sans les enfants et sans les parents
+		//
+
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(1, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel0.getType());
+			assertSameDay(newDate(2010, 9, 11), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10796695, rel0.getOtherPartyNumber());
+		}
+
+		//
+		// les rapports-entre-tiers avec les enfants mais sans les parents
+		//
+
+		params.getParts().add(PartyPart.CHILDREN);
+
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(2, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel0.getType());
+			assertSameDay(newDate(2010, 9, 11), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10796695, rel0.getOtherPartyNumber());
+
+			final RelationBetweenParties rel1 = relations.get(1);
+			assertNotNull(rel1);
+			assertEquals(RelationBetweenPartiesType.CHILD, rel1.getType());
+			assertSameDay(newDate(2010, 11, 4), rel1.getDateFrom());
+			assertNull(rel1.getDateTo());
+			assertEquals(10815138, rel1.getOtherPartyNumber());
+		}
+
+		//
+		// les rapports-entre-tiers avec les enfants et les parents
+		//
+
+		params.getParts().add(PartyPart.PARENTS);
+
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(4, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel0.getType());
+			assertSameDay(newDate(2010, 9, 11), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10796695, rel0.getOtherPartyNumber());
+
+			final RelationBetweenParties rel1 = relations.get(1);
+			assertNotNull(rel1);
+			assertEquals(RelationBetweenPartiesType.CHILD, rel1.getType());
+			assertSameDay(newDate(2010, 11, 4), rel1.getDateFrom());
+			assertNull(rel1.getDateTo());
+			assertEquals(10815138, rel1.getOtherPartyNumber());
+
+			final RelationBetweenParties rel2 = relations.get(2);
+			assertNotNull(rel2);
+			assertEquals(RelationBetweenPartiesType.PARENT, rel2.getType());
+			assertSameDay(newDate(1981, 5, 28), rel2.getDateFrom());
+			assertNull(rel2.getDateTo());
+			assertEquals(10119538, rel2.getOtherPartyNumber());
+
+			final RelationBetweenParties rel3 = relations.get(3);
+			assertNotNull(rel3);
+			assertEquals(RelationBetweenPartiesType.PARENT, rel3.getType());
+			assertSameDay(newDate(1981, 5, 28), rel3.getDateFrom());
+			assertNull(rel3.getDateTo());
+			assertEquals(10119539, rel3.getOtherPartyNumber());
+		}
+
+		//
+		// on redemande une nouvelle fois chacune des parties séparemment (permet de vérifier que le cache ne retourne pas des rapports qui n'ont pas été demandés)
+		//
+
+		params.getParts().clear();
+		params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(1, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel0.getType());
+			assertSameDay(newDate(2010, 9, 11), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10796695, rel0.getOtherPartyNumber());
+		}
+
+		params.getParts().clear();
+		params.getParts().add(PartyPart.CHILDREN);
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(1, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.CHILD, rel0.getType());
+			assertSameDay(newDate(2010, 11, 4), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10815138, rel0.getOtherPartyNumber());
+		}
+
+		params.getParts().clear();
+		params.getParts().add(PartyPart.PARENTS);
+		{
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+
+			final List<RelationBetweenParties> relations = pp.getRelationsBetweenParties();
+			assertNotNull(relations);
+			assertEquals(2, relations.size());
+
+			final RelationBetweenParties rel0 = relations.get(0);
+			assertNotNull(rel0);
+			assertEquals(RelationBetweenPartiesType.PARENT, rel0.getType());
+			assertSameDay(newDate(1981, 5, 28), rel0.getDateFrom());
+			assertNull(rel0.getDateTo());
+			assertEquals(10119538, rel0.getOtherPartyNumber());
+
+			final RelationBetweenParties rel1 = relations.get(1);
+			assertNotNull(rel1);
+			assertEquals(RelationBetweenPartiesType.PARENT, rel1.getType());
+			assertSameDay(newDate(1981, 5, 28), rel1.getDateFrom());
+			assertNull(rel1.getDateTo());
+			assertEquals(10119539, rel1.getOtherPartyNumber());
+		}
+	}
 }

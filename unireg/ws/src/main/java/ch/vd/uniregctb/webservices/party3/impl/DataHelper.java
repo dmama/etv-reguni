@@ -373,6 +373,8 @@ public class DataHelper {
 			case LEGAL_FORMS:
 			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
+			case CHILDREN:
+			case PARENTS:
 				// rien à faire
 				break;
 			default:

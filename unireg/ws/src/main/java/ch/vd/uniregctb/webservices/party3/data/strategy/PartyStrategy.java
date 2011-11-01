@@ -14,9 +14,13 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportFiliation;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.webservices.party3.data.BankAccountBuilder;
 import ch.vd.uniregctb.webservices.party3.data.ManagingTaxResidenceBuilder;
 import ch.vd.uniregctb.webservices.party3.data.RelationBetweenPartiesBuilder;
@@ -101,8 +105,8 @@ public abstract class PartyStrategy<T extends Party> {
 			initAddresses(left, tiers, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
-			initRelationsBetweenParties(left, tiers);
+		if (parts != null && (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES) || parts.contains(PartyPart.CHILDREN) || parts.contains(PartyPart.PARENTS))) {
+			initRelationsBetweenParties(left, tiers, parts, context);
 		}
 
 		if (parts != null && (parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
@@ -120,11 +124,15 @@ public abstract class PartyStrategy<T extends Party> {
 
 	protected void copyParts(T to, T from, @Nullable Set<PartyPart> parts, CopyMode mode) {
 
-		if (parts != null && parts.contains(PartyPart.BANK_ACCOUNTS)) {
+		if (parts == null) {
+			return;
+		}
+
+		if (parts.contains(PartyPart.BANK_ACCOUNTS)) {
 			copyColl(to.getBankAccounts(), from.getBankAccounts());
 		}
 
-		if (parts != null && parts.contains(PartyPart.ADDRESSES)) {
+		if (parts.contains(PartyPart.ADDRESSES)) {
 			copyColl(to.getMailAddresses(), from.getMailAddresses());
 			copyColl(to.getRepresentationAddresses(), from.getRepresentationAddresses());
 			copyColl(to.getResidenceAddresses(), from.getResidenceAddresses());
@@ -132,11 +140,70 @@ public abstract class PartyStrategy<T extends Party> {
 			copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
 		}
 
-		if (parts != null && parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
-			copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
+		final boolean wantRelations = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		final boolean wantChildren = parts.contains(PartyPart.CHILDREN);
+		final boolean wantParents = parts.contains(PartyPart.PARENTS);
+
+		if (wantRelations || wantChildren || wantParents) { // [SIFISC-2588]
+			if (mode == CopyMode.ADDITIVE) {
+				if ((wantRelations && wantChildren && wantParents)
+						|| to.getRelationsBetweenParties() == null || to.getRelationsBetweenParties().isEmpty()) {
+					// la source contient tout ou la destination ne contient rien => on copie tout
+					copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
+				}
+				else {
+					// autrement, on ajoute exclusivement ce qui a été demandé
+					for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
+						switch (relation.getType()) {
+						case CHILD:
+							if (wantChildren) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+							break;
+						case PARENT:
+							if (wantParents) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+							break;
+						default:
+							if (wantRelations) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+						}
+					}
+				}
+			}
+			else { // mode exclusif
+				if (wantRelations && wantChildren && wantParents) {
+					// la source contient tout (par définition) et on demande tout => on copie tout
+					copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
+				}
+				else {
+					// la source contient tout (par définition) et on demande une partie seulement => on copie ce qui a été demandé
+					to.getRelationsBetweenParties().clear();
+					for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
+						switch (relation.getType()) {
+						case CHILD:
+							if (wantChildren) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+							break;
+						case PARENT:
+							if (wantParents) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+							break;
+						default:
+							if (wantRelations) {
+								to.getRelationsBetweenParties().add(relation);
+							}
+						}
+					}
+				}
+			}
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
+		if ((parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
 			/**
 			 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
 			 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
@@ -171,11 +238,11 @@ public abstract class PartyStrategy<T extends Party> {
 			copyColl(to.getOtherTaxResidences(), from.getOtherTaxResidences());
 		}
 
-		if (parts != null && parts.contains(PartyPart.MANAGING_TAX_RESIDENCES)) {
+		if (parts.contains(PartyPart.MANAGING_TAX_RESIDENCES)) {
 			copyColl(to.getManagingTaxResidences(), from.getManagingTaxResidences());
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES))) {
+		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES))) {
 			if (mode == CopyMode.ADDITIVE) {
 				// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
 				// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
@@ -263,22 +330,35 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void initRelationsBetweenParties(Party tiers, final ch.vd.uniregctb.tiers.Tiers right) {
-		// Ajoute les rapports dont le tiers est le sujet
-		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsSujet()) {
-			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
-				continue;
+	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
+		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
+			// Ajoute les rapports dont le tiers est le sujet
+			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsSujet()) {
+				if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
+					continue;
+				}
+
+				tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
 			}
 
-			tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
+			// Ajoute les rapports dont le tiers est l'objet
+			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsObjet()) {
+				if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
+					continue;
+				}
+				tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
+			}
 		}
 
-		// Ajoute les rapports dont le tiers est l'objet
-		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsObjet()) {
-			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
-				continue;
+		if ((parts.contains(PartyPart.CHILDREN) || parts.contains(PartyPart.PARENTS)) && right instanceof PersonnePhysique) { // [SIFISC-2588]
+			final PersonnePhysique pp = (PersonnePhysique) right;
+			final List<RapportFiliation> filiations = context.tiersService.getRapportsFiliation(pp);
+			for (RapportFiliation filiation : filiations) {
+				if (filiation.getType() == RapportFiliation.Type.ENFANT && parts.contains(PartyPart.CHILDREN) ||
+						filiation.getType() == RapportFiliation.Type.PARENT && parts.contains(PartyPart.PARENTS)) {
+					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newFiliation(filiation));
+				}
 			}
-			tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
 		}
 	}
 

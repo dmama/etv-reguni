@@ -170,7 +170,7 @@ public interface TiersService {
 	 * @param dateValidite la date de validité des données retournées
 	 * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
 	 */
-	public List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite);
+	public List<PersonnePhysique> getEnfants(PersonnePhysique pp, @Nullable RegDate dateValidite);
 
 	/**
 	 * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du ménage commun spcécifié.
@@ -1251,5 +1251,14 @@ public interface TiersService {
 	 * @return <b>vrai</b> si le ménage possède au moins une personne physique active à la date spécifiée; <b>faux</b> autrement.
 	 */
 	boolean isMenageActif(MenageCommun menage, @Nullable RegDate date);
+
+	/**
+	 * Détermine et retourne les rapports de filiation de type PARENT ou ENFANT
+	 *
+	 * @param personnePhysique un personne physique
+	 * @return la liste des rapports de filiation trouvés.
+	 */
+	@NotNull
+	List<RapportFiliation> getRapportsFiliation(PersonnePhysique personnePhysique);
 }
 
