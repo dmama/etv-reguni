@@ -3,7 +3,6 @@ package ch.vd.uniregctb.listes.afc;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -38,7 +37,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -211,7 +209,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 	}
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -274,7 +271,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableVaudois() throws Exception {
 
 		final long noIndOrdinaire = 6341423L;
@@ -453,7 +449,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourceContribuableSourcierPur() throws Exception {
 		final long noInd = 6341423L;
 
@@ -506,7 +501,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuNonAssujettiDuTout() throws Exception {
 
 		final long noInd = 6341423L;
@@ -542,7 +536,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneNonAssujettiDuTout() throws Exception {
 
 		final long noInd = 6341423L;
@@ -578,7 +571,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuNonAssujettiFinAnnee() throws Exception {
 
 		final long noInd = 6341423L;
@@ -627,7 +619,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneNonAssujettiFinAnnee() throws Exception {
 
 		final long noInd = 6341423L;
@@ -663,7 +654,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableSourcierPur() throws Exception {
 
 		final long noInd = 6341423L;
@@ -696,7 +686,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableSourcierPur() throws Exception {
 
 		final long noInd = 6341423L;
@@ -729,7 +718,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsCanton() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -776,7 +764,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsCanton() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -814,7 +801,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -861,7 +847,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsCantonVenteDernierImmeubleDansPeriode() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -895,7 +880,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuHorsSuisse() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -942,7 +926,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneHorsSuisse() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
@@ -990,7 +973,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCouple() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1063,7 +1045,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCouple() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1137,7 +1118,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleDivorceDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1241,7 +1221,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleDivorceDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1346,7 +1325,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleVeuvageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1442,7 +1420,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleVeuvageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1526,7 +1503,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuCoupleMariageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1616,7 +1592,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCoupleMariageDansPeriode() throws Exception {
 
 		final long noIndToto = 6341423L;
@@ -1707,7 +1682,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuFractionCommune() throws Exception {
 
 		final long noInd = 6341423L;
@@ -1747,7 +1721,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneFractionCommune() throws Exception {
 
 		final long noInd = 6341423L;
@@ -1787,7 +1760,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1840,7 +1812,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1893,7 +1864,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuablePassageSourceVersOrdinaire() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1947,7 +1917,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -1982,7 +1951,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2055,7 +2023,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneContribuableSourcePartiHC() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2090,7 +2057,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2162,7 +2128,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2196,7 +2161,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneTouchAndGo() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2250,7 +2214,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuOrdinaireCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2303,7 +2266,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRevenuSourcePureCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2337,7 +2299,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFortuneCtbHorsSuisseImmeubleQuiArriveDansLeCanton() throws Exception {
 		final long noInd = 6341423L;
 
@@ -2386,6 +2347,140 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, elt.autoriteFiscaleForPrincipal);
+			Assert.assertFalse(elt.limite);
+		}
+	}
+
+	@Test
+	public void testRevenuOrdinaireDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
+		final long noInd = 6341423L;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
+				i.setNouveauNoAVS("7562025802593");
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				final RegDate dateOuverture = date(2004, 2, 1);
+				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_ORDINAIRE, res.getMode());
+		Assert.assertEquals(1, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+
+		{
+			final ExtractionDonneesRptRevenuOrdinaireResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
+			Assert.assertNotNull(elt);
+			Assert.assertEquals(ppId, elt.noCtb);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertNull(elt.motifOuverture);
+			Assert.assertNull(elt.motifFermeture);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
+			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, elt.autoriteFiscaleForPrincipal);
+		}
+	}
+
+	@Test
+	public void testRevenuSourcePureDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
+		final long noInd = 6341423L;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
+				i.setNouveauNoAVS("7562025802593");
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				final RegDate dateOuverture = date(2004, 2, 1);
+				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, res.getMode());
+		Assert.assertEquals(0, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+	}
+
+	@Test
+	public void testFortuneDiplomateEtrangerAvecImmeubleVaudois() throws Exception {
+		final long noInd = 6341423L;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu i = addIndividu(noInd, date(1965, 2, 21), "Tartempion", "Toto", true);
+				i.setNouveauNoAVS("7562025802593");
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				final RegDate dateOuverture = date(2004, 2, 1);
+				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(TypeExtractionDonneesRpt.FORTUNE, res.getMode());
+		Assert.assertEquals(1, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+
+		{
+			final ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune elt = (ExtractionDonneesRptFortuneResults.InfoPeriodeImpositionFortune) res.getListePeriode().get(0);
+			Assert.assertNotNull(elt);
+			Assert.assertEquals(ppId, elt.noCtb);
+			Assert.assertEquals("Toto", elt.identification.prenom);
+			Assert.assertEquals("Tartempion", elt.identification.nom);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
+			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertNull(elt.motifOuverture);
+			Assert.assertNull(elt.motifFermeture);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
+			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, elt.autoriteFiscaleForPrincipal);
 			Assert.assertFalse(elt.limite);
 		}
 	}

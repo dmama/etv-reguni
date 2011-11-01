@@ -16,6 +16,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
+import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
+import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -26,7 +28,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
 
 /**
  * Classe de base des résultats qui présentent une ligne par période d'imposition (cas des contribuables au rôle ordinaire)
@@ -136,11 +137,10 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			else {
 				// les rattachements économiques sont au mode d'imposition ordinaire, enfin je crois...
 				modeImposition = ModeImposition.ORDINAIRE;
-				final TypeContribuable typeContribuable = periode.getTypeContribuable();
-				if (typeContribuable != TypeContribuable.HORS_CANTON && typeContribuable != TypeContribuable.HORS_SUISSE) {
-					throw new RuntimeException("Rattachement économique avec assujettissement différent de HS ou HC : " + periode);
+				if (!(dernierAssujettissement instanceof HorsSuisse || dernierAssujettissement instanceof HorsCanton)) {
+					throw new RuntimeException("Rattachement économique avec assujettissement différent de HS ou HC : " + dernierAssujettissement);
 				}
-				autoriteFiscaleForPrincipal = (typeContribuable == TypeContribuable.HORS_SUISSE ? TypeAutoriteFiscale.PAYS_HS : TypeAutoriteFiscale.COMMUNE_HC);
+				autoriteFiscaleForPrincipal = (dernierAssujettissement instanceof HorsSuisse ? TypeAutoriteFiscale.PAYS_HS : TypeAutoriteFiscale.COMMUNE_HC);
 			}
 
 			final InfoPeriodeImposition info = buildInfoPeriodeImpositionFromPeriodeImposition(ctb, identification, modeImposition, motifRattachement, periode,
