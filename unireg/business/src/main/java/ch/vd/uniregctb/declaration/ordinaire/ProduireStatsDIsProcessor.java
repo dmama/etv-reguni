@@ -88,9 +88,9 @@ public class ProduireStatsDIsProcessor {
 
 					final Long id = iter.next();
 
-					++ rapport.nbDIsTotal;
-					if (rapport.nbDIsTotal % 100 == 0) {
-						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapport.nbDIsTotal, listeComplete.size()), (rapport.nbDIsTotal * 100) / listeComplete.size());
+					++ rapportFinal.nbDIsTotal;
+					if (rapportFinal.nbDIsTotal % 100 == 0) {
+						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapportFinal.nbDIsTotal, listeComplete.size()), percent);
 					}
 
 					final DeclarationImpotOrdinaire di = diDAO.get(id);
