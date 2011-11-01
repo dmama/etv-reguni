@@ -72,7 +72,7 @@ public class LoadDatabaseJob extends JobDefinition {
 					status.setMessage("Effacement de la base...");
 					dbService.truncateDatabase();
 					status.setMessage("Import de la base en cours...");
-					dbService.loadFromDbunitFile(zipstream, status);
+					dbService.loadFromDbunitFile(zipstream, status, false);
 				}
 				finally {
 					zipstream.close();

@@ -651,18 +651,28 @@ public class DatabaseServiceImpl implements DatabaseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void loadFromDbunitFile(InputStream inputStream, StatusManager status) throws Exception {
+	public void loadFromDbunitFile(InputStream inputStream, StatusManager status, boolean truncateBefore) throws Exception {
 
 		Connection con = DataSourceUtils.getConnection(dataSource);
 		try {
 			DatabaseConnection connection = createNewDatabaseConnection(con);
 
 			XmlDataSet dataSet = new XmlDataSet(inputStream);
+
 			LOGGER.info("Début de l'import de la base de données.");
-			dataEventService.onTruncateDatabase();
-			CompositeOperation operation = new CompositeOperation(DatabaseOperation.DELETE_ALL, new ManagedInsertOperation(status));
+
+			final DatabaseOperation operation;
+			if (truncateBefore) {
+				dataEventService.onTruncateDatabase();
+				operation = new CompositeOperation(DatabaseOperation.DELETE_ALL, new ManagedInsertOperation(status));
+			}
+			else {
+				operation = new ManagedInsertOperation(status);
+			}
+
 			operation.execute(connection, dataSet);
 			dataEventService.onLoadDatabase();
+
 			LOGGER.info("La base de données à été importée.");
 		}
 		catch (Exception e) {

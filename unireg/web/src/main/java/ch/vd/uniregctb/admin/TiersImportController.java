@@ -233,7 +233,7 @@ public class TiersImportController {
 		switch (mode) {
 		case INSERT_APPEND:
 		case CLEAN_INSERT: {
-			dbService.loadFromDbunitFile(inputXML, null);
+			dbService.loadFromDbunitFile(inputXML, null, false);
 			Audit.success("La base de données a été chargée avec le fichier " + filename);
 		}
 		break;

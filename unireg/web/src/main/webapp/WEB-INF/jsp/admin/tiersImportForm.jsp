@@ -33,11 +33,14 @@ function submit(url, methodType, delegateName){
 					<tr class="odd" >
 						<td/>
 						<td colspan="2">
-							<form:radiobutton path="mode" id="mode-clean-insert" value="CLEAN_INSERT"/>
+							<form:radiobutton path="mode" value="CLEAN_INSERT"/>
 							<fmt:message key="label.admin.modeDBUnit.CLEAN_INSERT"/>
 							<br>
-							<form:radiobutton path="mode" id="mode-delete-all" value="DELETE_ALL"/>
+							<form:radiobutton path="mode" value="DELETE_ALL"/>
 							<fmt:message key="label.admin.modeDBUnit.DELETE_ALL"/>
+							<br>
+							<form:radiobutton path="mode" value="INSERT_APPEND"/>
+							<fmt:message key="label.admin.modeDBUnit.INSERT_APPEND"/>
 						</td>
 					</tr>
 				</table>

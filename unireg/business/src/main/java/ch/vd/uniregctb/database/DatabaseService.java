@@ -57,12 +57,12 @@ public interface DatabaseService {
 	/**
 	 * Efface et recharge la base de données avec un fichier DBUnit.
 	 *
-	 * @param inputStream
-	 *            le contenu du fichier DBUnit
-	 * @param status
-	 *            un status manager (optionnel)
+	 * @param inputStream    le contenu du fichier DBUnit
+	 * @param status         un status manager
+	 * @param truncateBefore <b>vrai</b> si la base doit être truncatée avant le load; <b>faux</b> autrement.
+	 * @throws Exception en cas d'erreur
 	 */
-	public void loadFromDbunitFile(InputStream inputStream, StatusManager status) throws Exception;
+	public void loadFromDbunitFile(InputStream inputStream, StatusManager status, boolean truncateBefore) throws Exception;
 
 	/**
 	 * Cette méthode s'assure que la séquence hibernate est initialisée avec une valeur assez grande pour ne pas générer d'ids qui entre en
