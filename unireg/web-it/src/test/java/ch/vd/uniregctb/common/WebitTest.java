@@ -3,6 +3,7 @@ package ch.vd.uniregctb.common;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -15,13 +16,16 @@ import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public abstract class WebitTest extends WithoutSpringTest {
+public abstract class WebitTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
 	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
@@ -53,9 +57,8 @@ public abstract class WebitTest extends WithoutSpringTest {
 		}
 	}
 
-	@Override
+	@Before
 	public void onSetUp() throws Exception {
-		super.onSetUp();
 
 		// Charge les propriétés propre aux tests Web-IT
 		Properties propsWebIT = new Properties();
@@ -97,6 +100,10 @@ public abstract class WebitTest extends WithoutSpringTest {
 		webClient = new WebClient();
 		webClient.setJavaScriptEnabled(false);
 		webClient.setRefreshHandler(new ThreadedRefreshHandler());
+	}
+
+	@After
+	public void onTearDown() throws Exception {
 	}
 
 	protected HtmlPage getHtmlPage(String relativeUrl) throws Exception {
@@ -156,6 +163,24 @@ public abstract class WebitTest extends WithoutSpringTest {
 		assertEquals(nature, input.getValueAttribute());
 	}
 
+	protected static void assertEmpty(Collection<?> coll) {
+		assertTrue(coll == null || coll.isEmpty());
+	}
+
+	protected static void assertEmpty(String message, Collection<?> coll) {
+		assertTrue(message, coll == null || coll.isEmpty());
+	}
+
+	protected static void assertContains(String containee, String container, String msg) {
+		if (container == null || containee == null || !container.contains(containee)) {
+			fail(msg);
+		}
+	}
+
+	protected static void assertContains(String containee, String container) {
+		assertContains(containee, container, "'" + container + "' doesn't contain '" + containee + "'");
+	}
+
 	@SuppressWarnings("unchecked")
 	protected static void assertContains(String contenu, HtmlPage page) throws Exception {
 
@@ -168,7 +193,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 			}
 		}
 		if (!trouve) {
-			Assert.fail("Le corps de la page ne contient pas le texte '" + contenu + "'.");
+			fail("Le corps de la page ne contient pas le texte '" + contenu + "'.");
 		}
 	}
 }

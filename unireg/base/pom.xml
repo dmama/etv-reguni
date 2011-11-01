@@ -17,7 +17,6 @@
 	<description>UniregCTB - Le registre unifie de l'Etat de Vaud</description>
 
 	<modules>
-		<module>../testing</module>
 		<module>../core</module>
 		<module>../business</module>
 		<module>../web</module>
