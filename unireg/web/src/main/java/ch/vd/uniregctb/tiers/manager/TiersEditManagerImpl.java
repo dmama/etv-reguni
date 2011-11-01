@@ -495,27 +495,23 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		// nom
-		tiers.setPersonneContact(complement.getPersonneContact());
-		tiers.setComplementNom(complement.getComplementNom());
+		tiers.setPersonneContact(StringUtils.trimToNull(complement.getPersonneContact()));
+		tiers.setComplementNom(StringUtils.trimToNull(complement.getComplementNom()));
 
 		// téléphone
-		tiers.setNumeroTelecopie(complement.getNumeroTelecopie());
-		tiers.setNumeroTelephonePortable(complement.getNumeroTelephonePortable());
-		tiers.setNumeroTelephonePrive(complement.getNumeroTelephonePrive());
-		tiers.setNumeroTelephoneProfessionnel(complement.getNumeroTelephoneProfessionnel());
-		if (StringUtils.isNotBlank(complement.getAdresseCourrierElectronique())) {
-			tiers.setAdresseCourrierElectronique(complement.getAdresseCourrierElectronique().trim());
-		}
+		tiers.setNumeroTelecopie(StringUtils.trimToNull(complement.getNumeroTelecopie()));
+		tiers.setNumeroTelephonePortable(StringUtils.trimToNull(complement.getNumeroTelephonePortable()));
+		tiers.setNumeroTelephonePrive(StringUtils.trimToNull(complement.getNumeroTelephonePrive()));
+		tiers.setNumeroTelephoneProfessionnel(StringUtils.trimToNull(complement.getNumeroTelephoneProfessionnel()));
+		tiers.setAdresseCourrierElectronique(StringUtils.trimToNull(complement.getAdresseCourrierElectronique()));
 
 		// compte bancaire
 		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
 		if (compteBancaire != null) {
 			final String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getIban());
-			if (ibanSaisi != null) {
-				tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());
-			}
-			tiers.setTitulaireCompteBancaire(compteBancaire.getTitulaireCompteBancaire());
-			tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift()));
+			tiers.setNumeroCompteBancaire(StringUtils.trimToNull(StringUtils.upperCase(ibanSaisi)));
+			tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(compteBancaire.getTitulaireCompteBancaire()));
+			tiers.setAdresseBicSwift(StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift())));
 		}
 	}
 

@@ -199,6 +199,35 @@ public class TiersEditManagerTest extends WebTest {
 		}
 	}
 
+	/**
+	 * SIFISC-2934
+	 */
+	@Test
+	public void testVidageAdresseEmail() throws Exception {
+		final String mail = "toto@titi.com";
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				pp.setAdresseCourrierElectronique(mail);
+				return pp.getNumero();
+			}
+		});
+
+		final TiersEditView view = tiersEditManager.getView(ppId);
+		assertNotNull(view);
+		assertNotNull(view.getComplement());
+		assertEquals(mail, view.getComplement().getAdresseCourrierElectronique());
+
+		view.getComplement().setAdresseCourrierElectronique("");        // vidé par l'opérateur
+		tiersEditManager.save(view);
+
+		final TiersEditView nouvelleView = tiersEditManager.getView(ppId);
+		assertNotNull(nouvelleView);
+		assertNotNull(nouvelleView.getComplement());
+		assertNull(nouvelleView.getComplement().getAdresseCourrierElectronique());
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRefresh() throws AdresseException, ServiceInfrastructureException {
