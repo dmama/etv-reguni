@@ -142,7 +142,7 @@
 
 				// on change le comportement des liens de pagination : au lieu de charger une nouvelle page, on lance
 				// une requête ajax pour charger la nouvelle page dans l onglet courant.
-				$('#dossiersApparentesDiv td.pagelinks a, #dossiersApparentesDiv th.sortable a').each(function(a) {
+				$('#dossiersApparentesDiv td.pagelinks a, #rapport th.sortable a').each(function(a) {
 					//alert($(this).attr('href'));
 					$(this).click(function() {
 						$('#loadingSpinner').show();
@@ -159,25 +159,25 @@
 				<legend><span><fmt:message key="label.filiations"/></span></legend>
 
 				<display:table name="${filiations}" id="filiation" class="display" pagesize="10" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-					<display:column sortable="true" titleKey="label.rapport.tiers">
-							<fmt:message key="option.rapport.entre.tiers.${rapport.sensRapportEntreTiers}.${rapport.typeRapportEntreTiers}"/>
+					<display:column titleKey="label.rapport.tiers">
+							<fmt:message key="option.rapport.entre.tiers.${filiation.sensRapportEntreTiers}.${filiation.typeRapportEntreTiers}"/>
 							<c:if test="${filiation.toolTipMessage != null}">
-								<a href="#tooltip" class="staticTip" id="ret-${filiation_rowNum}">?</a>
-								<div id="ret-${filiation_rowNum}-tooltip" style="display:none;">
+								<a href="#tooltip" class="staticTip" id="fil-${filiation_rowNum}">?</a>
+								<div id="fil-${filiation_rowNum}-tooltip" style="display:none;">
 									<c:out value="${filiation.toolTipMessage}"/>
 								</div>
 							</c:if>
 					</display:column>
 
-					<display:column sortable="true" titleKey="label.date.debut">
+					<display:column titleKey="label.date.debut">
 						<fmt:formatDate value="${filiation.dateDebut}" pattern="dd.MM.yyyy"/>
 					</display:column>
 
-					<display:column sortable="true" titleKey="label.date.fin">
+					<display:column titleKey="label.date.fin">
 						<fmt:formatDate value="${filiation.dateFin}" pattern="dd.MM.yyyy"/>
 					</display:column>
 
-					<display:column sortable="true" titleKey="label.numero.tiers">
+					<display:column titleKey="label.numero.tiers">
 						<c:if test="${filiation.numero != null}">
 							<a href="../tiers/visu.do?id=${filiation.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${filiation.numero}"></unireg:numCTB></a>
 						</c:if>
@@ -185,7 +185,7 @@
 							<div class="flash-warning"><c:out value="${filiation.messageNumeroAbsent}"/></div>
 						</c:if>
 					</display:column>
-					<display:column sortable="true" titleKey="label.nom.raison">
+					<display:column titleKey="label.nom.raison">
 						<c:if test="${filiation.nomCourrier1 != null}">
 							<c:out value="${filiation.nomCourrier1}"/>
 						</c:if>
