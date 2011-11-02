@@ -78,6 +78,12 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 				final MockIndividu individu4 = addIndividu(333905, RegDate.get(1979, 2, 11), "SCHMID", "Christine", false);
 				final MockIndividu individu5 = addIndividu(320073, RegDate.get(1952, 3, 21), "ERTEM", "Sabri", true);
 
+				addIndividu(122937, RegDate.get(1946, 12, 16), "Allora", "Walter", true);
+				addIndividu(122938, RegDate.get(1950, 10, 27), "Allora", "Violette", false);
+				addIndividu(122939, RegDate.get(1981, 5, 26), "Allora", "Cédric", true);
+				addIndividu(857307, RegDate.get(1978, 2, 8), "Allora", "Maude", false);
+				addIndividu(1013955, RegDate.get(2011, 11, 4), "Allora", "Jenny", false);
+
 				addAdresse(individu1, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu2, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu3, TypeAdresseCivil.COURRIER, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
@@ -144,9 +150,9 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(119, nbTiers);
+				assertEquals(126, nbTiers);
 				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(116, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
+				assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
 
 				return null;
 			}
@@ -182,9 +188,9 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 			public Object doInTransaction(TransactionStatus status) {
 
 				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(119, nbTiers);
+				assertEquals(126, nbTiers);
 				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(116, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
+				assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
 
 				return null;
 			}
