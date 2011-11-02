@@ -256,7 +256,7 @@ public class ImportImmeublesProcessor {
 
 		final String numero = StringUtils.trimToNull(data.get(HEADER_NO_IMMEUBLE));
 		if (numero == null) {
-			rapport.addError(numero, ErreurType.BAD_NUMERO, "Le numéro est vide !");
+			rapport.addError(numero, ErreurType.BAD_NUMERO, "");
 			return null;
 		}
 
@@ -297,7 +297,16 @@ public class ImportImmeublesProcessor {
 		}
 
 		final String nomCommune = StringUtils.trimToNull(data.get(HEADER_NOM_COMMUNE));
+		if (nomCommune == null) {
+			rapport.addError(numero, ErreurType.BAD_NOM_COMMUNE, "");
+			return null;
+		}
+		
 		final String nature = StringUtils.trimToNull(data.get(HEADER_NATURE));
+		if (nature == null) {
+			rapport.addError(numero, ErreurType.BAD_NATURE, "");
+			return null;
+		}
 
 		final int estimationFiscale;
 		try {
@@ -393,9 +402,11 @@ public class ImportImmeublesProcessor {
 		immeuble.setProprietaire(proprietaire);
 
 		immeuble.setLogCreationUser("Registre foncier (import)");
-		immeuble.setLogCreationDate(dateModif.asJavaDate());
 		immeuble.setLogModifUser("Registre foncier (import)");
-		immeuble.setLogModifDate(new Timestamp(dateModif.asJavaDate().getTime()));
+		if (dateModif != null) {
+			immeuble.setLogCreationDate(dateModif.asJavaDate());
+			immeuble.setLogModifDate(new Timestamp(dateModif.asJavaDate().getTime()));
+		}
 
 		return immeuble;
 	}

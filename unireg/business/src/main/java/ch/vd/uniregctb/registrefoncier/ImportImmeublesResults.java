@@ -26,7 +26,9 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 		BAD_EF("L'estimation fiscale est malformée"),
 		BAD_GENRE_PROP("Le genre de propriété est malformé"),
 		BAD_PART_PROP("La part de propriété est malformée"),
-		CTB_MENAGE_COMMUN("Le contribuable est un ménage commun");
+		CTB_MENAGE_COMMUN("Le contribuable est un ménage commun"),
+		BAD_NOM_COMMUNE("Le nom de la commune est vide"),
+		BAD_NATURE("La nature de l'immeuble est vide");
 
 		private final String description;
 
