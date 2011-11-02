@@ -20,14 +20,12 @@
 		<display:column titleKey="label.confirmation.editee">
 			<input type="checkbox" name="decede" value="True"   
 			<c:if test="${delai.confirmationEcrite}">checked </c:if> disabled="disabled" />
-			<c:if test="${command.allowedDelai}">
-				<c:if test="${page == 'edit' }">
+				<c:if test="${page == 'visu' }">
 					<c:if test="${delai.confirmationEcrite}">
 						<a href="../declaration/copie-conforme-delai.do?idDelai=${delai.id}" class="pdf" id="print-delai-${delai.id}" onClick="Page_GetArchiveDelai(${delai.id})">&nbsp;</a>
 						<span class="pdf-grayed" id="disabled-print-delai-${delai.id}" style="display: none;">&nbsp;</span>
 					</c:if>
 				</c:if>
-			</c:if>
 		</display:column>
 		<display:column titleKey="label.date.traitement">
 			<c:if test="${delai.annule}"><strike></c:if>
