@@ -52,7 +52,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 			return target.executeUpdate();
 		}
 		finally {
-			tracing.end(start, "executeQuery", sql);
+			tracing.end(start, "executeUpdate", sql);
 		}
 	}
 
