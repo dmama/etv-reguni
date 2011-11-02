@@ -26,11 +26,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-testing</artifactId>
-			<version>${pom.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-ubr</artifactId>
 			<version>${pom.parent.version}</version>
 		</dependency>

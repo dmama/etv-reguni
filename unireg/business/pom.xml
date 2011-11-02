@@ -29,12 +29,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-testing</artifactId>
-			<version>${pom.parent.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
 			<version>${pom.parent.version}</version>
 			<type>test-jar</type>

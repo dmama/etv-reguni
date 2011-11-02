@@ -66,12 +66,6 @@
 			<artifactId>shared-web</artifactId>
 			<version>2.4.1</version>
 		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-testing</artifactId>
-			<version>${pom.parent.version}</version>
-			<scope>test</scope>
-		</dependency>
 	    <dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>

@@ -24,12 +24,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-testing</artifactId>
-			<version>${pom.parent.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-xmlbeans</artifactId>
 			<version>1.39</version>
 		</dependency>

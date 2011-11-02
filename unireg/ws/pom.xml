@@ -62,12 +62,6 @@
 			<version>${pom.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-testing</artifactId>
-			<version>${pom.parent.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-ws-tools</artifactId>
 			<version>1.1</version>
