@@ -39,9 +39,10 @@ ALTER TABLE EVENEMENT_IDENTIFICATION_CTB ADD (TRANSMETTEUR nvarchar2(255) NULL);
 -- [SIFISC-1933] Ajout de l'identifiant district Fiscal et de l'identifiant Region Fiscal pour un TIERS
 --
 ALTER TABLE TIERS ADD (DISTRICT_FISCAL_ID number(19,0));
+CREATE INDEX IDX_TIERS_CA_DISTRICT ON TIERS (DISTRICT_FISCAL_ID);
 
 ALTER TABLE TIERS ADD (REGION_FISCALE_ID number(19,0));
-
+CREATE INDEX IDX_TIERS_CA_REGION ON TIERS (REGION_FISCALE_ID);
 
 --
 -- [SIFISC-1965] Chargement des codes district et région pour les collectivitées administratives.
