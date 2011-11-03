@@ -175,12 +175,11 @@ a.consult {
 }
 
 a.extlink {
-	background-image: url(external-link.png);
+	background-image: url(external-link.gif);
 }
 
 a.infotraitement {
 	background-image: url(info.png);
-
 }
 
 a.consult:hover {
