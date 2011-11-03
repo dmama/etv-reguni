@@ -5,18 +5,22 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -29,9 +33,11 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -68,6 +74,10 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setParametres(getBean(ParametreAppService.class, "parametreAppService"));
 		manager.setValidationService(getBean(ValidationService.class, "validationService"));
 		manager.setBamMessageSender(getBean(BamMessageSender.class, "bamMessageSender"));
+		manager.setTiersService(tiersService);
+		manager.setPeriodeFiscaleDAO(getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"));
+		manager.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
+		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
 	}
 
 	@Test
@@ -598,4 +608,62 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		});
 	}
 
+	@Test
+	public void testCodeSegmentOnNewDi() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+		final int anneeDerniere = anneeCourante - 1;
+		final RegDate debutAnneeDerniere = date(anneeDerniere, 1, 1);
+		final RegDate debutAnneeCourante = date(anneeCourante, 1, 1);
+		final RegDate finAnneeDerniere = debutAnneeCourante.getOneDayBefore();
+		final RegDate finAnneeCourante = date(anneeCourante, 12, 31);
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Arnold", "Duchemin", date(1970, 4, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, debutAnneeDerniere, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
+				final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
+				di.setCodeSegment(6);
+
+				// pour la DI que l'on créera à la main plus bas
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, pfAnneeCourante);
+
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+				view.setTypeAdresseRetour(TypeAdresseRetour.CEDI);
+				view.setContribuable(new TiersGeneralView(ppId));
+				view.setDateDebutPeriodeImposition(debutAnneeCourante.asJavaDate());
+				view.setDateFinPeriodeImposition(finAnneeCourante.asJavaDate());
+				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
+				manager.save(view);
+				return null;
+			}
+		});
+
+		// le code segment doit avoir été transmis à la nouvelle DI
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final Declaration d = pp.getDeclarationActive(finAnneeCourante);
+				assertInstanceOf(DeclarationImpotOrdinaire.class, d);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+				assertEquals(Integer.valueOf(6), di.getCodeSegment());
+				return null;
+			}
+		});
+	}
 }
