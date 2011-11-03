@@ -69,9 +69,9 @@
 				<display:column sortable ="true" titleKey="label.etat.message"  sortName="etat" style="white-space:nowrap">
 						<fmt:message key="option.etat.message.${message.etatMessage}"  />
 				</display:column>
-					<display:column sortable ="true" titleKey="label.montant.message"  sortName="demande.montant" style="white-space:nowrap; text-align:right; padding-right:5px">
-						<c:out value="${message.montant}" />
-					</display:column>
+				<display:column sortable ="true" titleKey="label.montant.message" sortName="demande.montant" class="number" style="white-space:nowrap">
+					<unireg:currency value="${message.montant}"/>
+				</display:column>
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
 						<c:out value="${message.nom}" />
 				</display:column>
