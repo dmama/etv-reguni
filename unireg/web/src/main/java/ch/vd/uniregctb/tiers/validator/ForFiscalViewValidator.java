@@ -50,13 +50,15 @@ public class ForFiscalViewValidator implements Validator {
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
-		ForFiscalView forFiscalView = (ForFiscalView) obj;
-		TypeForFiscal typeFor = TypeForFiscal.getType(forFiscalView.getGenreImpot(), forFiscalView.getMotifRattachement());
-		Tiers tiers = this.tiersService.getTiers(forFiscalView.getNumeroCtb());
+		final ForFiscalView forFiscalView = (ForFiscalView) obj;
+		final TypeForFiscal typeFor = TypeForFiscal.getType(forFiscalView.getGenreImpot(), forFiscalView.getMotifRattachement());
+		final Tiers tiers = this.tiersService.getTiers(forFiscalView.getNumeroCtb());
 		if (forFiscalView.isChangementModeImposition()) {
-			if (forFiscalView.getDateChangement() == null) {
+			if (forFiscalView.getRegDateChangement() == null) {
 				errors.rejectValue("dateChangement", "error.date.changement.vide");
-				return;
+			}
+			else if (RegDate.get().isBefore(forFiscalView.getRegDateChangement())) {
+				errors.rejectValue("dateChangement", "error.date.changement.posterieure.date.jour");
 			}
 		}
 		else {
@@ -229,7 +231,7 @@ public class ForFiscalViewValidator implements Validator {
 					}
 				}
 			}
-			ForDebiteurPrestationImposable dernierForDPI = tiers.getDernierForDebiteur();
+			final ForDebiteurPrestationImposable dernierForDPI = tiers.getDernierForDebiteur();
 			if ((dernierForDPI != null) && (dernierForDPI.getDateFin() != null)) {
 				if (typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE) {
 					if (forFiscalView.getId() == null) {
@@ -249,7 +251,7 @@ public class ForFiscalViewValidator implements Validator {
 
 			//gestion des droits
 			//seul la date de fermeture et le motif de fermeture (si existant) sont éditables
-			String msgErrorForSec = (forFiscalView.getId() == null) ? "error.motif.rattachement.interdit" : "error.tiers.interdit";
+			final String msgErrorForSec = (forFiscalView.getId() == null) ? "error.motif.rattachement.interdit" : "error.tiers.interdit";
 
 			final Niveau acces = SecurityProvider.getDroitAcces(forFiscalView.getNumeroCtb());
 			if (acces == null || acces == Niveau.LECTURE) {

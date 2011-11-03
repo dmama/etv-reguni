@@ -132,4 +132,55 @@ public class ForFiscalViewValidatorTest extends WebTest {
 			Assert.assertEquals(0, validationReussie.getErrorCount());
 		}
 	}
+
+	@Test
+	public void testDateChangementModeImposition() throws Exception {
+
+		final long noCtb = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Tartempion", "Bidule", null, Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		final ForFiscalView view = new ForFiscalView();
+		view.setAnnule(false);
+		view.setChangementModeImposition(true);
+		view.setNumeroCtb(noCtb);
+		view.setNatureTiers(NatureTiers.NonHabitant);
+		view.setModeImposition(ModeImposition.ORDINAIRE);
+
+		// date vide -> ne devrait pas fonctionner
+		{
+			view.setDateChangement((RegDate) null);
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("dateChangement");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.date.changement.vide", error.getCode());
+		}
+
+		// date dans le futur -> ne devrait pas fonctionner
+		{
+			view.setDateChangement(RegDate.get().addDays(1));
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("dateChangement");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.date.changement.posterieure.date.jour", error.getCode());
+		}
+
+		// date à aujourd'hui -> devrait fonctionner
+		{
+			view.setDateChangement(RegDate.get());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getErrorCount());
+		}
+	}
 }
