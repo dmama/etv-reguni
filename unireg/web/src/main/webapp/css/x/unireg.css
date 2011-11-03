@@ -97,6 +97,11 @@ legend a.delete {
 	vertical-align: top;
 }
 
+.display td.number {
+	text-align: right;
+	padding-right: 1px;
+}
+
 .display thead tr {
 	background-color: #fc0;
 }

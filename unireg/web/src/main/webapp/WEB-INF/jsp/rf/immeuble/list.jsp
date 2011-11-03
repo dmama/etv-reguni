@@ -28,7 +28,7 @@
 					<fmt:message key="option.rf.genre.propriete.${immeuble.genrePropriete}" />
 				</display:column>
 				<display:column titleKey="label.part.propriete" property="partPropriete"/>
-				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale"/>
+				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale" class="number" decorator="ch.vd.uniregctb.utils.SwissCurrencyColumnDecorator"/>
 				<display:column titleKey="label.ref.estimation.fiscale" property="referenceEstimationFiscale"/>
 				<display:column style="action">
 					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;" target="_blank"/>
