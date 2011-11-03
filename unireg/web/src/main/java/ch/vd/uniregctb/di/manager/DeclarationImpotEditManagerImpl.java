@@ -760,8 +760,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 			di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 
-			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
+			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, di.getDateFin().year());
 			di.setQualification(derniereQualification);
+
+			final Integer codeSegment = PeriodeImposition.determineCodeSegment(ctb, di.getDateFin().year());
+			di.setCodeSegment(codeSegment);
 
 			final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
 			di.addEtat(emission);
