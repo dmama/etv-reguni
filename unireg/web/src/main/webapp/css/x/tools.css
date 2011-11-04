@@ -39,6 +39,7 @@ a.notes,
 a.replay,
 a.moveUp,
 a.moveDown,
+a.reOpenFor,
 a.padding,
 a.pdf,
 span.pdf-grayed,
@@ -72,6 +73,7 @@ a.notes:hover,
 a.replay:hover,
 a.moveUp:hover,
 a.moveDown:hover,
+a.reOpenFor:hover,
 a.padding:hover,
 a.pdf:hover,
 span.pdf-grayed:hover
@@ -270,4 +272,11 @@ a.moveUp {
 
 a.moveDown {
 	background-image: url(movedown.gif);
+}
+
+a.reOpenFor {
+	background-image: url(key_off.png);
+}
+a.reOpenFor:hover {
+	background-image: url(key_on.png);
 }

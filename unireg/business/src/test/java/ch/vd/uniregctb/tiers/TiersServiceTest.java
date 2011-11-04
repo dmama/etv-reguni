@@ -81,6 +81,7 @@ public class TiersServiceTest extends BusinessTest {
 	private TiersService tiersService;
 	private AdresseService adresseService;
 	private TiersDAO tiersDAO;
+	private ForFiscalDAO forFiscalDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private ValidationService validationService;
 	private EvenementFiscalDAO evenementFiscalDAO;
@@ -91,6 +92,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		forFiscalDAO = getBean(ForFiscalDAO.class, "forFiscalDAO");
 		rapportEntreTiersDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 		validationService = getBean(ValidationService.class, "validationService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
@@ -1363,7 +1365,6 @@ public class TiersServiceTest extends BusinessTest {
 
 	/**
 	 * [UNIREG-1334] Lors de l'annulation d'un for secondaire, on recupère le dernier for principal et non le for principal ouvert car il peut ne pas y en avoir.
-	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -1405,7 +1406,6 @@ public class TiersServiceTest extends BusinessTest {
 
 	/**
 	 * [UNIREG-1443] Correction bug lors de l'ouverture d'un for fiscal secondaire si le contribuable est décédé.
-	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -5332,6 +5332,59 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(ids.fils, enfantsForDeclaration.get(0).getNumero());
 		assertEquals(ids.fille, enfantsForDeclaration.get(1).getNumero());
 		assertEquals(ids.fille2, enfantsForDeclaration.get(2).getNumero());
+	}
+
+
+	@Test
+	public void testTraiterReOuvertureForDebiteur() throws Exception {
+		class Ids {
+			Long idFor1;
+			Long idFor2;
+			Long michelId;
+			Long jeanId;
+		}
+		final Ids ids = new Ids();
+		// mise en place des données fiscales
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				ids.idFor1 = addForDebiteur(dpi, date(2009, 1, 1), date(2010, 12, 31), MockCommune.Bussigny).getId();
+				ids.idFor2 = addForDebiteur(dpi, date(2011, 1, 1), date(2011, 9, 30), MockCommune.Aubonne).getId();
+				PersonnePhysique jean = addNonHabitant("Jean", "zep", null, Sexe.MASCULIN);
+				PersonnePhysique michel = addNonHabitant("michel", "zep", null, Sexe.MASCULIN);
+				ids.jeanId = jean.getNumero();
+				ids.michelId = michel.getNumero();
+				addRapportPrestationImposable(dpi, jean, date(2009, 1, 1), date(2009, 5, 12), false);
+				addRapportPrestationImposable(dpi, michel, date(2009, 1, 1), date(2011, 9, 30), false);
+				return dpi.getNumero();
+
+			}
+		});
+
+		// Reouverture du second for
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				ForFiscal forDebiteur = forFiscalDAO.get(ids.idFor2);
+				tiersService.traiterReOuvertureForDebiteur(forDebiteur);
+				return null;
+			}
+		});
+
+
+		// vérification du for et du rapport ouvert
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Assert.assertNull(dpi.getDernierForDebiteur().getDateFin());
+				final RapportEntreTiers rapportPrestation = dpi.getRapportObjetValidAt(RegDate.get(), TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
+				Assert.assertNotNull(rapportPrestation);
+				Assert.assertEquals(ids.michelId, rapportPrestation.getSujetId());
+				return null;
+			}
+		});
 	}
 
 }

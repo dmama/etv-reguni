@@ -20,6 +20,8 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 
 	public final static String TARGET_ANNULER_FOR = "annulerFor";
 
+	public final static String TARGET_REOUVRIR_FOR = "reOuvrirFor";
+
 	private TiersEditManager tiersEditManager;
 	private ForFiscalManager forFiscalManager;
 
@@ -63,11 +65,14 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
 		if (getTarget() != null) {
-			if (TARGET_ANNULER_FOR.equals(getTarget())) {
-				String idForParam = getEventArgument();
-				if (idForParam != null) {
-					Long idFor = Long.parseLong(idForParam);
+			String idForParam = getEventArgument();
+			if (idForParam != null) {
+				Long idFor = Long.parseLong(idForParam);
+				if (TARGET_ANNULER_FOR.equals(getTarget())) {
 					forFiscalManager.annulerFor(idFor);
+				}
+				else if (TARGET_REOUVRIR_FOR.equals(getTarget())) {
+					forFiscalManager.reouvrirFor(idFor);
 				}
 			}
 		} // button retour liste
@@ -77,7 +82,7 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 		else if (request.getParameter(BUTTON_BACK_TO_VISU) != null) {
 			return new ModelAndView("redirect:../tiers/visu.do?id=" + bean.getTiers().getNumero());
 		}
-		tiersEditManager.refresh(bean,  bean.getTiers().getNumero());
+		tiersEditManager.refresh(bean, bean.getTiers().getNumero());
 
 		return showForm(request, response, errors);
 	}

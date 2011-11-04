@@ -271,4 +271,12 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		}
 	}
 
+	public static class ReOpenForDebiteur extends JspTagRaccourci {
+
+		@Override
+		protected String getCssClass() {
+			return "reOpenFor";
+		}
+	}
+
 }

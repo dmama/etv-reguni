@@ -288,4 +288,13 @@ function annulerFor(idFor) {
 	if(confirm('Voulez-vous vraiment annuler ce for fiscal ?')) {
 		Form.doPostBack("theForm", "annulerFor", idFor);
  	}
-}	
+}
+
+/*
+* Annuler un for
+*/
+function reOuvrirFor(idFor) {
+	if(confirm('Voulez-vous vraiment re-ouvrir ce for fiscal ?')) {
+		Form.doPostBack("theForm", "reOuvrirFor", idFor);
+ 	}
+}

@@ -27,6 +27,13 @@
 	<display:column sortable ="true" titleKey="label.date.fer" sortProperty="dateFermeture">
 		<c:if test="${forFiscal.annule}"><strike></c:if>
 			<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
+			<c:if test="${forFiscal.dateFermeture != null}">
+				<c:if test="${page == 'edit' }">
+					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
+						<unireg:raccourciReOpenForDebiteur onClick="javascript:reOuvrirFor(${forFiscal.id});" tooltip="Re-ouvrîr le for"/>
+					</c:if>
+				</c:if>
+			</c:if>
 		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 	<display:column style="action">
