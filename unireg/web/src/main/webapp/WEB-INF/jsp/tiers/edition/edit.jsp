@@ -107,6 +107,9 @@
 				<c:when test="${command.tiers.numero != null}">
 					<unireg:RetourButton link="visu.do?id=${command.tiers.numero}" checkIfModified="true"/>
 				</c:when>
+				<c:when test="${command.numeroCtbAssocie != null}">
+					<unireg:RetourButton link="visu.do?id=${command.numeroCtbAssocie}" checkIfModified="true"/>
+				</c:when>
 				<c:otherwise>
 					<unireg:RetourButton link="../tiers/list.do" checkIfModified="true"/>
 				</c:otherwise>
