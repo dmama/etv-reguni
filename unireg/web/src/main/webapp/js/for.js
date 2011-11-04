@@ -294,7 +294,7 @@ function annulerFor(idFor) {
 * Annuler un for
 */
 function reOuvrirFor(idFor) {
-	if(confirm('Voulez-vous vraiment re-ouvrir ce for fiscal ?')) {
+	if(confirm('Voulez-vous vraiment ré-ouvrir ce for fiscal ?')) {
 		Form.doPostBack("theForm", "reOuvrirFor", idFor);
  	}
 }

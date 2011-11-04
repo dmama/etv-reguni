@@ -30,7 +30,7 @@
 			<c:if test="${forFiscal.dateFermeture != null}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-						<unireg:raccourciReOpenForDebiteur onClick="javascript:reOuvrirFor(${forFiscal.id});" tooltip="Re-ouvrîr le for"/>
+						<unireg:raccourciReOpenForDebiteur onClick="javascript:reOuvrirFor(${forFiscal.id});" tooltip="Ré-ouvrir le for"/>
 					</c:if>
 				</c:if>
 			</c:if>
