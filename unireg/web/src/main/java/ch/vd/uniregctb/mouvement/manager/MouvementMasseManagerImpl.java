@@ -78,11 +78,11 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	/**
 	 * Doit être appelé dans une transaction
 	 * @param noCa numéro de la collectivité administrative
-	 * @return ID technique du tiers correspondant à cette collectivité administrative
+	 * @return ID technique du tiers correspondant à cette collectivité administrative (ou 0 si cette collectivité est inconnue chez nous)
 	 */
 	private long getIdCollAdmFromNumeroCA(int noCa) {
 		final CollectiviteAdministrative ca = getTiersService().getCollectiviteAdministrative(noCa);
-		return ca.getNumero();
+		return ca != null ? ca.getNumero() : 0L;
 	}
 
 	@Override
