@@ -198,10 +198,6 @@
 				<!-- Mouvements de dossier de masse -->
 				<entry key="/mouvement/consulter.do" value-ref="mouvementMasseConsultationController" />
 				<entry key="/mouvement/traiter.do" value-ref="mouvementMasseTraitementController" />
-				<entry key="/mouvement/imprimer-bordereaux.do" value-ref="mouvementMasseImpressionBordereauxController" />
-				<entry key="/mouvement/detail-bordereau.do" value-ref="mouvementMasseDetailBordereauController" />
-				<entry key="/mouvement/receptionner-bordereaux.do" value-ref="mouvementMasseReceptionBordereauxController" />
-				<entry key="/mouvement/detail-reception-bordereau.do" value-ref="mouvementMasseDetailReceptionBordereauController" />
 				<!-- Tâches en instance / Nouveaux dossiers -->
 				<entry key="/tache/list.do" value-ref="tacheListController" />
 				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />

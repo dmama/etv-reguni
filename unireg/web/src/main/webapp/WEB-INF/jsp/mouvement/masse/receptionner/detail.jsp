@@ -7,7 +7,7 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-        <form:form method="post" id="formReceptionnerMouvements" action="detail-reception-bordereau.do">
+        <form:form method="post" id="formReceptionnerMouvements" action="valider-reception.do">
 
 			<%-- on mets ici dans le champ ''id'' l''identifiant technique du bordereau --%>
 			<%-- afin qu''il soit disponible pour un changement de page suivant un submit --%>
@@ -76,7 +76,7 @@
 
             </script>
 
-            <display:table name="command.mvts" id="mvt" pagesize="15" requestURI="/mouvement/detail-reception-bordereau.do" class="display_table" sort="list">
+            <display:table name="command.mvts" id="mvt" pagesize="15" requestURI="/mouvement/bordereau/detail-reception.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
                 <display:column title="<input type='checkbox' id='selection_all' name='selectAll' onclick='selectAllMouvements(this);'/>">
                     <c:if test="${mvt.etatMouvement == 'RECU_BORDEREAU' && !mvt.annule}">
@@ -87,21 +87,15 @@
                     </c:if>
                 </display:column>
                 <display:column sortable="true" titleKey="label.numero.contribuable">
-                    <c:if test="${mvt.annule}"><strike></c:if>
                     <unireg:numCTB numero="${mvt.contribuable.numero}"/>
-                    <c:if test="${mvt.annule}"></strike></c:if>
                 </display:column>
 				<display:column titleKey="label.nom.raison" >
-					<c:if test="${mvt.annule}"><strike></c:if>
-						<c:forEach var="ligne" items="${mvt.contribuable.nomPrenom}" varStatus="rowCounter">
-                            <c:if test="${rowCounter.count > 1}"><br/></c:if><c:out value="${ligne}"/>
-						</c:forEach>
-					<c:if test="${mvt.annule}"></strike></c:if>
+					<c:forEach var="ligne" items="${mvt.contribuable.nomPrenom}" varStatus="rowCounter">
+						<c:if test="${rowCounter.count > 1}"><br/></c:if><c:out value="${ligne}"/>
+					</c:forEach>
 				</display:column>
 				<display:column titleKey="label.commune.fraction">
-                    <c:if test="${mvt.annule}"><strike></c:if>
 				    <c:out value="${mvt.contribuable.nomCommuneGestion}"/>
-					<c:if test="${mvt.annule}"></strike></c:if>
 				</display:column>
 
             </display:table>
@@ -120,7 +114,7 @@
                     </td>
                     <td width="25%">
                         <div class="navigation-action">
-							<input type="button" id="closeButton" value="Retour" onclick="document.location.href='receptionner-bordereaux.do'"/>
+							<input type="button" id="closeButton" value="Retour" onclick="document.location.href='reception.do'"/>
                         </div>
                     </td>
                     <td width="25%">&nbsp;</td>

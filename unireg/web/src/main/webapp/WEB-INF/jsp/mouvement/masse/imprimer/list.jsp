@@ -10,7 +10,7 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-        <display:table name="command.bordereaux" id="bordereau" pagesize="25" requestURI="/mouvement/imprimer-bordereaux.do" class="display_table" sort="list">
+        <display:table name="command.bordereaux" id="bordereau" pagesize="25" requestURI="/mouvement/bordereau/a-imprimer.do" class="display_table" sort="list">
 
             <c:if test="${command.montreExpediteur}">
                 <display:column sortable="true" titleKey="label.collectivite.administrative">
@@ -30,7 +30,7 @@
             </display:column>
 
             <display:column style="action">
-                <a href="detail-bordereau.do?src=${bordereau.idCollAdmInitiatrice}/${bordereau.noCollAdmInitiatrice}&dest=${bordereau.idCollAdmDestinataire}/${bordereau.noCollAdmDestinataire}&type=${bordereau.type}" class="detail" title="Détail d'un bordereau">&nbsp;</a>
+                <a href="detail-avant-impression.do?src=${bordereau.idCollAdmInitiatrice}/${bordereau.noCollAdmInitiatrice}&dest=${bordereau.idCollAdmDestinataire}/${bordereau.noCollAdmDestinataire}&type=${bordereau.type}" class="detail" title="Détail d'un bordereau">&nbsp;</a>
             </display:column>
 
         </display:table>

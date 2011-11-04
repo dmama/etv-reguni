@@ -2,6 +2,7 @@ package ch.vd.uniregctb.mouvement.view;
 
 import java.util.Date;
 
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.type.Localisation;
@@ -10,7 +11,7 @@ import ch.vd.uniregctb.type.TypeMouvement;
 /**
  * Vue sur les mouvements de dossier
  */
-public class MouvementDetailView implements Comparable<MouvementDetailView> {
+public class MouvementDetailView implements Comparable<MouvementDetailView>, Annulable {
 
 	private static final BaseComparator<MouvementDetailView> comparator = new BaseComparator<MouvementDetailView>(
 			new String[]{"annule", "dateMouvement", "dateExecution"},
@@ -191,6 +192,7 @@ public class MouvementDetailView implements Comparable<MouvementDetailView> {
 		this.dateMouvement = dateMouvement;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

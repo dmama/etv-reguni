@@ -10,12 +10,6 @@ public class BordereauEnvoiReceptionView extends BordereauEnvoiView {
 
 	private long[] selection;
 
-	/**
-	 * Mis à vrai dès qu'une réception de dossier a été effectuée
-	 * (= trigger pour rafraîchir la page sous l'overlay)
-	 */
-	private boolean apresReception = false;
-
 	public List<MouvementDetailView> getMvts() {
 		return mvts;
 	}
@@ -30,14 +24,6 @@ public class BordereauEnvoiReceptionView extends BordereauEnvoiView {
 
 	public void setSelection(long[] selection) {
 		this.selection = selection;
-	}
-
-	public boolean isApresReception() {
-		return apresReception;
-	}
-
-	public void setApresReception(boolean apresReception) {
-		this.apresReception = apresReception;
 	}
 
 	public boolean isAuMoinsUnSelectionnable() {

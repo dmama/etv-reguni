@@ -64,27 +64,10 @@
 		<property name="formView" value="mouvement/masse/traitement/list"/>
 	</bean>
 
-	<bean id="mouvementMasseImpressionBordereauxController" class="ch.vd.uniregctb.mouvement.MouvementMasseImpressionBordereauxController" parent="abstractMouvementMasseController">
-		<property name="sessionForm" value="false"/>
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementMasseImpressionBordereauxView"/>
-		<property name="formView" value="mouvement/masse/imprimer/list"/>
-	</bean>
-
-	<bean id="mouvementMasseDetailBordereauController" class="ch.vd.uniregctb.mouvement.MouvementMasseDetailBordereauController" parent="abstractMouvementMasseController">
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView"/>
-		<property name="formView" value="mouvement/masse/imprimer/detail"/>
+	<bean id="bordereauMouvementDossierController" class="ch.vd.uniregctb.mouvement.BordereauController">
+		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
-	</bean>
-
-	<bean id="mouvementMasseReceptionBordereauxController" class="ch.vd.uniregctb.mouvement.MouvementMasseReceptionBordereauxController" parent="abstractMouvementMasseController">
-		<property name="sessionForm" value="false"/>
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.BordereauEnvoiListView"/>
-		<property name="formView" value="mouvement/masse/receptionner/list"/>
-	</bean>
-
-	<bean id="mouvementMasseDetailReceptionBordereauController" class="ch.vd.uniregctb.mouvement.MouvementMasseDetailReceptionBordereauController" parent="abstractMouvementMasseController">
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView"/>
-		<property name="formView" value="mouvement/masse/receptionner/detail"/>
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 	</bean>
 
 </beans>

@@ -204,4 +204,8 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
+	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelper">
+		<property name="downloadService" ref="editiqueDownloadService"/>
+	</bean>
+
 </beans>

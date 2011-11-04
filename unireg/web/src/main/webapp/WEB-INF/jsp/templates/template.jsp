@@ -168,8 +168,8 @@ function ouvrirAide(url) {
 					        <ul>
 					        <li><a href="<c:url value='/mouvement/consulter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.consulter"/></a></li>
 					        <li><a href="<c:url value='/mouvement/traiter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.traiter"/></a></li>
-					        <li><a href="<c:url value='/mouvement/imprimer-bordereaux.do'/>"><fmt:message key="title.mouvements.dossiers.masse.imprimer.bordereaux"/></a></li>
-					        <li><a href="<c:url value='/mouvement/receptionner-bordereaux.do'/>"><fmt:message key="title.mouvements.dossiers.masse.receptionner"/></a></li>
+					        <li><a href="<c:url value='/mouvement/bordereau/a-imprimer.do'/>"><fmt:message key="title.mouvements.dossiers.masse.imprimer.bordereaux"/></a></li>
+					        <li><a href="<c:url value='/mouvement/bordereau/reception.do'/>"><fmt:message key="title.mouvements.dossiers.masse.receptionner"/></a></li>
 					        </ul>
 					    </li>
 					</authz:authorize>

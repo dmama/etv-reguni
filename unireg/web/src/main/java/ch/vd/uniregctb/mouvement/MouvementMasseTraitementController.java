@@ -16,15 +16,15 @@ public class MouvementMasseTraitementController extends AbstractMouvementMasseRe
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		final MouvementMasseCriteriaTraitementView view = (MouvementMasseCriteriaTraitementView) command;
 		if (view.getRetireMvtId() != null) {
-			checkAccess();
+			MouvementDossierHelper.checkAccess();
 			getMouvementManager().changeEtat(EtatMouvementDossier.RETIRE, view.getRetireMvtId());
 		}
 		else if (view.getReinitMvtId() != null) {
-			checkAccess();
+			MouvementDossierHelper.checkAccess();
 			getMouvementManager().changeEtat(EtatMouvementDossier.A_TRAITER, view.getReinitMvtId());
 		}
 		else if (request.getParameter(INCLURE_BORDEREAU) != null && view.getTabIdsMvts() != null) {
-			checkAccess();
+			MouvementDossierHelper.checkAccess();
 			getMouvementManager().changeEtat(EtatMouvementDossier.A_ENVOYER, view.getTabIdsMvts());
 			view.setTabIdsMvts(null);
 		}

@@ -31,7 +31,7 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 	protected void doFind(HttpServletRequest request, MouvementMasseCriteriaView view) throws ServiceInfrastructureException {
 		final WebParamPagination pagination = getParamPagination(request);
 		final MutableLong total = new MutableLong(0);
-		final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
+		final Integer noCollAdmInitiatrice = MouvementDossierHelper.getNoCollAdmFiltree();
 		final List<MouvementDetailView> results = getMouvementManager().find(view, noCollAdmInitiatrice, pagination, total);
 		view.setResults(results);
 		if (total.longValue() > Integer.MAX_VALUE) {
@@ -66,7 +66,7 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 	}
 
 	private void initView(MouvementMasseCriteriaView view) {
-		final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
+		final Integer noCollAdmInitiatrice = MouvementDossierHelper.getNoCollAdmFiltree();
 		view.init(noCollAdmInitiatrice == null);
 	}
 
@@ -80,7 +80,7 @@ public abstract class AbstractMouvementMasseRechercheController extends Abstract
 		}
 		else if (exporter != null) {
 			final WebParamPagination pagination = getParamPagination(request);
-			final Integer noCollAdmInitiatrice = getNoCollAdmFiltree();
+			final Integer noCollAdmInitiatrice = MouvementDossierHelper.getNoCollAdmFiltree();
 			final ExtractionJob job = getMouvementManager().exportListeRecherchee(view, noCollAdmInitiatrice, pagination.getSorting());
 			flash(String.format("Demande d'export enregistrée (%s)", job.getDescription()));
 		}

@@ -7,7 +7,11 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-        <form:form method="post" id="formImprimerBordereauxMouvements" action="detail-bordereau.do">
+        <form:form method="post" id="formImprimerBordereauxMouvements" action="imprimer-nouveau-bordereau.do">
+
+        	<input type="hidden" name="src" value="${src}"/>
+        	<input type="hidden" name="dest" value="${dest}"/>
+        	<input type="hidden" name="type" value="${type}"/>
 
             <table>
                 <tr>
@@ -77,7 +81,7 @@
 
             </script>
 
-            <display:table name="command.mouvements" id="mvt" pagesize="1000" requestURI="/mouvement/detail-bordereau.do" class="display_table" sort="list">
+            <display:table name="command.mouvements" id="mvt" pagesize="1000" requestURI="/mouvement/bordereau/detail-avant-impression.do" class="display_table" sort="list">
 
 				<c:set var="selectable" value="${mvt.contribuable.nomCommuneGestion != null}"/>
                 <display:column title="<input type='checkbox' id='selection_all' name='selectAll' onclick='selectAllMouvements(this);' checked='true'/>">
@@ -117,7 +121,7 @@
                     </td>
                     <td width="25%">
                         <div class="navigation-action">
-                            <input type="button" id="closeButton" value="Retour" onclick="document.location.href='imprimer-bordereaux.do'"/>
+                            <input type="button" id="closeButton" value="Retour" onclick="document.location.href='a-imprimer.do'"/>
                         </div>
                     </td>
                     <td width="25%">&nbsp;</td>

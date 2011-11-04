@@ -10,7 +10,7 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-        <display:table name="command.bordereaux" id="bordereau" pagesize="25" requestURI="/mouvement/receptionner-bordereaux.do" class="display_table" sort="list">
+        <display:table name="command.bordereaux" id="bordereau" pagesize="25" requestURI="/mouvement/bordereau/reception.do" class="display_table" sort="list">
 
             <display:column sortable="true" titleKey="label.envoi.colladm.emettrice">
                 <c:out value="${bordereau.nomCollAdmEmettrice}"/>
@@ -31,7 +31,7 @@
             </display:column>
 
             <display:column style="action">
-                <a href="detail-reception-bordereau.do?id=${bordereau.id}" class="detail" title="Détail d'un bordereau">&nbsp;</a>
+                <a href="detail-reception.do?id=${bordereau.id}" class="detail" title="Détail d'un bordereau">&nbsp;</a>
             </display:column>
 
         </display:table>
