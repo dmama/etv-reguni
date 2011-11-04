@@ -79,6 +79,6 @@ public class RetourEditiqueControllerHelper implements MessageSourceAware {
 			return onError.doJob(resultat);
 		}
 
-		throw new RuntimeException("Quoi faire avec résultat " + resultat);
+		throw new RuntimeException("Que faire avec résultat ? : " + resultat);
 	}
 }
