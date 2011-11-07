@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
@@ -14,7 +19,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
@@ -77,7 +82,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @param suivant l'assujettissement suivant
 	 */
 	protected Assujettissement(Assujettissement courant, Assujettissement suivant) {
-		Assert.isTrue(courant.isCollatable(suivant));
+		if (!courant.isCollatable(suivant)) {
+			throw new IllegalArgumentException();
+		}
 		this.contribuable = courant.contribuable;
 		this.dateDebut = courant.dateDebut;
 		this.dateFin = suivant.dateFin;
@@ -204,8 +211,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 			ajouteForsPrincipauxFictifs(fors.principaux);
 
 			// Détermination des données d'assujettissement brutes
-			final List<Fraction> fractionnements = new ArrayList<Fraction>();
-			final List<Data> domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, noOfsCommunesVaudoises);
+			final List<Fraction> fractionnements = determineFractionnements(fors.principaux);
+
+			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, noOfsCommunesVaudoises);
+			domicile.compacterNonAssujettissements(); // SIFISC-2939
+			assertCoherenceRanges(domicile);
+
 			final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
 			fusionne(domicile, economique);
 
@@ -320,7 +331,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		if (!collate) {
-			Assert.notNull(range);
+			if (range == null) {
+				throw new IllegalArgumentException("Le range doit être spécifié si collate=false");
+			}
 			list = split(list, range.getDateDebut().year(), range.getDateFin().year());
 		}
 
@@ -346,7 +359,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		for (DateRange current : ranges) {
 			if (previous != null) {
 				if (DateRangeHelper.intersect(previous, current)) {
-					throw new AssujettissementException("L'assujettissement [" + previous + "] entre en collision avec le suivant [" + current + "]");
+					throw new AssujettissementException("Le range [" + previous + "] entre en collision avec le suivant [" + current + "]");
 				}
 			}
 			previous = current;
@@ -357,11 +370,66 @@ public abstract class Assujettissement implements CollatableDateRange {
 		public final RegDate date;
 		public final MotifFor motif;
 
-		private Fraction(RegDate date, MotifFor motif) {
-			Assert.notNull(date);
+		private Fraction(@NotNull RegDate date, MotifFor motif) {
 			this.date = date;
 			this.motif = motif;
 		}
+	}
+
+	/**
+	 * Analyse les fors fiscaux principaux et retourne les dates (et motifs) de fractionnement.
+	 *
+	 * @param principaux une liste de fors fiscaux principaux
+	 * @return une liste de fractionnements (non-modifiable). Cette liste peut-être vide
+	 */
+	@NotNull
+	private static List<Fraction> determineFractionnements(List<ForFiscalPrincipal> principaux) {
+
+		// Détermine les assujettissements pour le rattachement de type domicile
+		final Map<RegDate, Fraction> map = new HashMap<RegDate, Fraction>();
+		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
+		while (iter.hasNext()) {
+			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+
+			// on détermine les fors principaux qui précèdent et suivent immédiatement
+			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
+
+			// on détecte une éventuelle date de fractionnement à l'ouverture
+			if (isFractionOuverture(forPrincipal)) {
+				final RegDate fraction = forPrincipal.current.getDateDebut();
+				MotifFor motifFraction = forPrincipal.current.getMotifOuverture();
+
+				if (forPrincipal.next != null && isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !roleSourcierPur(forPrincipal.current)) {
+					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
+					motifFraction = forPrincipal.next.getMotifOuverture();
+				}
+
+				if (!map.containsKey(fraction)) {
+					map.put(fraction, new Fraction(fraction, motifFraction));
+				}
+			}
+
+			// on détecte une éventuelle date de fractionnement à la fermeture
+			if (isFractionFermeture(forPrincipal)) {
+				final RegDate fraction = forPrincipal.current.getDateFin().getOneDayAfter();
+				final MotifFor motifFraction = forPrincipal.current.getMotifFermeture();
+
+				if (!map.containsKey(fraction)) {
+					map.put(fraction, new Fraction(fraction, motifFraction));
+				}
+			}
+		}
+
+		// On trie par ordre croissant
+		final List<Fraction> fractionnements = new ArrayList<Fraction>(map.values());
+		Collections.sort(fractionnements, new Comparator<Fraction>() {
+			@Override
+			public int compare(Fraction o1, Fraction o2) {
+				return o1.date.compareTo(o2.date);
+			}
+		});
+
+		return Collections.unmodifiableList(fractionnements);
 	}
 
 	/**
@@ -373,13 +441,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static List<Data> determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
+	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
 			AssujettissementException {
 
-		final List<Data> domicile = new ArrayList<Data>();
-
-		RegDate fraction = null; // la dernière date connue de fractionnement de l'assujettissement
-		MotifFor motifFraction = null;
+		final DataList domicile = new DataList();
 
 		// Détermine les assujettissements pour le rattachement de type domicile
 		TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
@@ -389,43 +454,61 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// on détermine les fors principaux qui précèdent et suivent immédiatement
 			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
-			// on détecte une éventuelle date de fractionnement à l'ouverture
-			if (isFractionOuverture(forPrincipal)) {
-				fraction = forPrincipal.current.getDateDebut();
-				motifFraction = forPrincipal.current.getMotifOuverture();
-
-				if (forPrincipal.next != null && isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !roleSourcierPur(forPrincipal.current)) {
-					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
-					motifFraction = forPrincipal.next.getMotifOuverture();
-				}
-
-				fractionnements.add(new Fraction(fraction, motifFraction));
-			}
-
 			// on détermine l'assujettissement pour le for principal courant
 			final Data a = determine(forPrincipal, noOfsCommunesVaudoises);
 			if (a != null) {
-
-				if (fraction != null && fraction.isAfterOrEqual(a.debut)) {
-					a.debut = fraction;
-					if (a.type != Type.NonAssujetti) { // on ne s'intéresse pas au motif d'un non-assujettissement: c'est le motif de début d'un éventuel for secondaire qui nous intéressera.
-						a.motifDebut = motifFraction;
-					}
-				}
-
-				domicile.add(a);
-			}
-
-			// on détecte une éventuelle date de fractionnement à la fermeture
-			if (isFractionFermeture(forPrincipal)) {
-				fraction = (forPrincipal.current.getDateFin() == null ? null : forPrincipal.current.getDateFin().getOneDayAfter());
-				motifFraction = forPrincipal.current.getMotifFermeture();
-
-				fractionnements.add(new Fraction(fraction, motifFraction));
+				// en cas de fractionnement, on réduit les assujettissements.
+				Data aa = reduire(a, forPrincipal.current, fractionnements);
+				domicile.add(aa);
 			}
 		}
 
 		return domicile;
+	}
+
+	private static Data reduire(Data a, ForFiscalPrincipal forSource, List<Fraction> fractions) {
+
+		if (fractions.isEmpty()) {
+			return a;
+		}
+
+		// on détermine les fractionnements immédiatement à gauche et droite du for principal à la source 
+		// de l'assujettissement (logiquement, il n'est pas possible d'avoir un fractionnement à l'intérieur du for)
+		Fraction left = null;
+		Fraction right = null;
+		for (Fraction f : fractions) {
+			if (forSource.getDateDebut() != null && f.date.isBeforeOrEqual(forSource.getDateDebut())) {
+				if (left == null || left.date.isBefore(f.date)) {
+					left = f;
+				}
+			}
+			if (forSource.getDateFin() != null && f.date.isAfterOrEqual(forSource.getDateFin())) {
+				if (right == null || right.date.isAfter(f.date)) {
+					right = f;
+				}
+			}
+		}
+
+		// on réduit l'assujettissement en conséquence
+		if (left != null && left.date.isAfter(a.debut)) {
+			a.debut = left.date;
+
+			if (a.motifDebut == MotifFor.ARRIVEE_HC && left.motif == MotifFor.DEPART_HS) {
+				// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements,
+				// il faut donc garder le motif de début sans changement (voir isCollatable())
+			}
+			else {
+				a.motifDebut = left.motif;
+			}
+		}
+
+
+		if (right != null && right.date.isBefore(a.fin)) {
+			a.fin = right.date.getOneDayBefore();
+			a.motifFin = right.motif;
+		}
+
+		return a;
 	}
 
 	/**
@@ -663,12 +746,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @return <b>true</b> si un départ ou une arrivée hors-Suisse est détecté.
 	 */
 	private static boolean isDepartOuArriveeHorsSuisse(ForFiscalPrincipal left, ForFiscalPrincipal right) {
-		Assert.isFalse(left == null && right == null);
+		if (left == null && right == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final boolean fraction;
 
 		if (left != null && right != null && left.getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE && right.getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
-			Assert.isTrue(left.getDateFin().getOneDayAfter() == right.getDateDebut());
+			if (left.getDateFin().getOneDayAfter() != right.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
 
 			//noinspection SimplifiableIfStatement
 			if (isArriveeHCApresDepartHSMemeAnnee(left) && !roleSourcierPur(left)) {
@@ -765,7 +852,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 *         détecter les faux départs/arrivées hors-canton.
 	 */
 	private static boolean isDepartOuArriveeHorsCanton(ForFiscalPrincipal left, ForFiscalPrincipal right) {
-		Assert.isFalse(left == null && right == null);
+		if (left == null && right == null) {
+			throw new IllegalArgumentException();
+		}
 
 		boolean motifDetecte = (left != null && (left.getMotifFermeture() == MotifFor.ARRIVEE_HC || left.getMotifFermeture() == MotifFor.DEPART_HC));
 		motifDetecte = motifDetecte || (right != null && (right.getMotifOuverture() == MotifFor.ARRIVEE_HC || right.getMotifOuverture() == MotifFor.DEPART_HC));
@@ -823,6 +912,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 		final ForFiscalPrincipal current = forPrincipal.current;
 		final ForFiscalPrincipal next = forPrincipal.next;
+
+		if (current.getDateFin() == null) {
+			return false;
+		}
 
 		final MotifFor motifFermeture = current.getMotifFermeture();
 		final ModeImposition modeImposition = current.getModeImposition();
@@ -941,9 +1034,18 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// la plus avantageuse pour l'ACI : arrivée de HS au 1er janvier de l'année suivante
 			adebut = RegDate.get(debut.year() + 1, 1, 1);
 		}
-		else {
-			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
+		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && isMariageOuDivorce(current.getMotifOuverture())) {
+			// [UNIREG-2432] Exception : si le motif d'ouverture est MARIAGE ou SEPARATION, la date de début est ramenée au 1 janvier de l'année courante.
+			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
 			adebut = getDernier1Janvier(debut);
+		}
+		else {
+			if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+				adebut = getDernier1Janvier(debut);
+			}
+			else { // for hors-Suisse
+				adebut = debut; // le rattachement économmique est limité à la période de validité du for pour les HS
+			}
 		}
 
 		return adebut;
@@ -997,22 +1099,50 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// [UNIREG-3261] sauf si le for courant possède un mode d'imposition source, dans ce cas l'assujettissement est fractionné à la date d'arrivée
 			afin = getDernier31Decembre(fin);
 		}
-		else if (next == null) {
-			// si le for secondaire se ferme mais qu'il n'y a pas de for immédiatement suivant (par exemple: cas du contribuable hors-canton avec immeuble, qui vend son immeuble et
+		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && isDernierForPrincipalDansAnnee(forPrincipal)) {
+			// si le for principal se ferme mais qu'il n'y a pas de for immédiatement suivant (par exemple: cas du contribuable hors-canton avec immeuble, qui vend son immeuble et
 			// dont le for principal hors-canton est fermé à la date de vente), alors il s'agit d'une "fausse" fermeture du for et on le considère valide jusqu'à la fin de l'année.
+			afin = getProchain31Decembre(fin); // le rattachement économique s'étend à toute l'année pour le HC
+		}
+		else {
 			if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
-				afin = getProchain31Decembre(fin); // le rattachement économique s'étend à toute l'année pour le HC
+				afin = getDernier31Decembre(fin);
 			}
 			else {
 				afin = fin; // le rattachement économmique est limité à la période de validité du for pour les HS
 			}
 		}
-		else {
-			// dans tous les autres cas, l'assujettissement finit à la fin de l'année précédente
-			afin = getDernier31Decembre(fin);
-		}
 
 		return afin;
+	}
+
+	/**
+	 * Détermine si le for fiscal principal spécifié est le dernier dans l'année courante (= qu'il existe pas d'autre for fiscal principal valide entre la date de fin du for fiscal et le 31 décembre de
+	 * la même année)
+	 *
+	 * @param forPrincipal un for fiscal principal
+	 * @return <b>vrai</b> si le for spécifiée est le dernier dans l'année; <b>faux</b> autement.
+	 */
+	private static boolean isDernierForPrincipalDansAnnee(ForFiscalPrincipalContext forPrincipal) {
+
+		final RegDate dateFin = forPrincipal.current.getDateFin();
+		if (forPrincipal.next != null || dateFin == null) {
+			return false;
+		}
+
+		// (msi 7.11.2011), c'est pas génial de remonter sur le tiers pour récupérer tous les fors fiscaux, c'est clair. Mais d'un
+		// autre côté, on le fait tellement peu souvent dans le cas réel que ça n'a pas d'impact négatif sur les performances.
+		final List<ForFiscalPrincipal> all = forPrincipal.current.getTiers().getForsFiscauxPrincipauxActifsSorted();
+
+		// si on ne trouve aucun for principal entre la date de fin du for spécifié et la fin de l'année, alors c'est que le for spécifié est le dernier dans l'année
+		final RegDate finAnnee = getProchain31Decembre(dateFin);
+		for (ForFiscalPrincipal f : all) {
+			if (RegDateHelper.isBetween(f.getDateDebut(), dateFin.getOneDayAfter(), finAnnee, NullDateBehavior.EARLIEST)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -1151,12 +1281,6 @@ public abstract class Assujettissement implements CollatableDateRange {
 			if (eco.debut.isBeforeOrEqual(this.debut) && RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
 				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit
 				list = null;
-				if (eco.debut == this.debut && this.motifDebut == null) {
-					this.motifDebut = eco.motifDebut;
-				}
-				if (eco.fin == this.fin && this.motifFin == null) {
-					this.motifFin = eco.motifFin;
-				}
 			}
 			else {
 				list = new ArrayList<Data>(3);
@@ -1185,21 +1309,44 @@ public abstract class Assujettissement implements CollatableDateRange {
 					this.motifFin = eco.motifFin;
 				}
 
-				if (this.debut == eco.debut && this.motifDebut == null) {
-					// si le motif de début manque, on profite de celui du for économique pour le renseigner
-					this.motifDebut = eco.motifDebut;
-				}
-
-				if (this.fin == eco.fin && this.motifFin == null) {
-					// si le motif de fin manque, on profite de celui du for économique pour le renseigner
-					this.motifFin = eco.motifFin;
-				}
 			}
+
+			// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
+			this.motifDebut = merge(this.debut, this.motifDebut, eco.debut, eco.motifDebut);
+			this.motifFin = merge(this.fin, this.motifFin, eco.fin, eco.motifFin);
 
 			// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
 			this.type = getAType(this.typeAut);
 
 			return list;
+		}
+
+		/**
+		 * Fusionne le motif de début/fin d'assujettissement pour raison de domicile avec le motif de début/fin d'assujettissement pour raison économique.
+		 *
+		 * @param dateDomicile  la date de début/fin de l'assujettissement pour raison de domicile
+		 * @param motifDomicile le motif de début/fin de l'assujettissement pour raison de domicile
+		 * @param dateEco       la date de début/fin de l'assujettissement pour raison économique
+		 * @param motifEco      le motif de début/fin de l'assujettissement pour raison économique
+		 * @return le motid de début/fin d'assujettissement résultant.
+		 */
+		private static MotifFor merge(RegDate dateDomicile, MotifFor motifDomicile, RegDate dateEco, MotifFor motifEco) {
+			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifDomicile == MotifFor.INDETERMINE)) {
+				return motifEco;
+			}
+			else {
+				return motifDomicile;
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "Data{" +
+					"debut=" + debut +
+					", fin=" + fin +
+					", type=" + type +
+					", typeAut=" + typeAut +
+					'}';
 		}
 	}
 
@@ -1493,7 +1640,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	/**
-	 * Un for fiscal principal et sont context, c'est-à-dire les fors fiscaux principaux qui précèdent et qui suivent immédiatement.
+	 * Un for fiscal principal et son context, c'est-à-dire les fors fiscaux principaux qui précèdent et qui suivent immédiatement.
 	 */
 	private static class ForFiscalPrincipalContext {
 
@@ -1514,6 +1661,179 @@ public abstract class Assujettissement implements CollatableDateRange {
 			previousprevious = (previous != null && triplet.previousprevious != null && DateRangeHelper.isCollatable(triplet.previousprevious, previous) ? triplet.previousprevious : null);
 			next = (triplet.next != null && DateRangeHelper.isCollatable(current, triplet.next) ? triplet.next : null);
 			nextnext = (next != null && triplet.nextnext != null && DateRangeHelper.isCollatable(next, triplet.nextnext) ? triplet.nextnext : null);
+		}
+	}
+
+	/**
+	 * Liste spécialisée pour contenir des données brutes d'assujettissements.
+	 */
+	private static class DataList extends ArrayList<Data> {
+
+		private int nonAssujettissementCount;
+
+		@SuppressWarnings({"UnusedDeclaration"})
+		private DataList(int initialCapacity) {
+			super(initialCapacity);
+			this.nonAssujettissementCount = 0;
+		}
+
+		private DataList() {
+			this.nonAssujettissementCount = 0;
+		}
+
+		@SuppressWarnings({"UnusedDeclaration"})
+		private DataList(Collection<? extends Data> c) {
+			super(c);
+			this.nonAssujettissementCount = countNonAssujettissements(c);
+		}
+
+		private static int countNonAssujettissements(Collection<? extends Data> c) {
+			if (c instanceof DataList) {
+				return ((DataList) c).nonAssujettissementCount;
+			}
+			else {
+				int count = 0;
+				for (Data data : c) {
+					if (data.type == Type.NonAssujetti) {
+						++count;
+					}
+				}
+				return count;
+			}
+		}
+
+		@Override
+		public Data set(int index, Data element) {
+			Data previous = super.set(index, element);
+			if (previous != null && previous.type == Type.NonAssujetti && (element == null || element.type != Type.NonAssujetti)) {
+				--nonAssujettissementCount;
+			}
+			else if ((previous == null || previous.type!= Type.NonAssujetti) && element != null && element.type == Type.NonAssujetti) {
+				++nonAssujettissementCount;
+			}
+			return previous;
+		}
+
+		@Override
+		public boolean add(Data data) {
+			if (data != null && data.type == Type.NonAssujetti) {
+				++nonAssujettissementCount;
+			}
+			return super.add(data);
+		}
+
+		@Override
+		public void add(int index, Data element) {
+			if (element != null && element.type == Type.NonAssujetti) {
+				++nonAssujettissementCount;
+			}
+			super.add(index, element);
+		}
+
+		@Override
+		public Data remove(int index) {
+			Data removed = super.remove(index);
+			if (removed != null && removed.type == Type.NonAssujetti) {
+				--nonAssujettissementCount;
+			}
+			return removed;
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			boolean removed = super.remove(o);
+			if (removed && ((Data)o).type == Type.NonAssujetti) {
+				--nonAssujettissementCount;
+			}
+			return removed;
+		}
+
+		@Override
+		public void clear() {
+			nonAssujettissementCount = 0;
+			super.clear();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends Data> c) {
+			nonAssujettissementCount += countNonAssujettissements(c);
+			return super.addAll(c);
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends Data> c) {
+			nonAssujettissementCount += countNonAssujettissements(c);
+			return super.addAll(index, c);
+		}
+
+		@Override
+		protected void removeRange(int fromIndex, int toIndex) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			throw new NotImplementedException();
+		}
+
+		/**
+		 * [SIFISC-2939] Compacte la liste en réduisant les non-assujettissements qui chevauchent des assujettissements.
+		 * <p/>
+		 * Dans certains cas particuliers (mais légaux), des non-assujettissements qui couvrent toute une année (du 1er janvier au 31 décembre) coexistent avec des assujettissements normaux (par exemple,
+		 * dans le cas d'un contribuable hors-canton qui possède temporairement un for secondaire dans le canton, attend quelques semaines, puis vient s'installer dans le canton la même année). Dans ces
+		 * cas, cette méthode s'assure que les non-assujettissements laissent gracieusement leurs places aux assujettissements.
+		 */
+		public void compacterNonAssujettissements() {
+			if (nonAssujettissementCount > 0) {
+
+				// on sépare le bon grain de l'ivraie
+				List<Data> nonA = new ArrayList<Data>(nonAssujettissementCount);
+				final List<Data> vraiA = new ArrayList<Data>(size());
+				for (Data data : this) {
+					if (data.type == Type.NonAssujetti) {
+						nonA.add(data);
+					}
+					else {
+						vraiA.add(data);
+					}
+				}
+
+				// on réduit la durée des non-assujettissement si nécessaire
+				final List<Data> list = DateRangeHelper.override(nonA, vraiA, new DateRangeHelper.AdapterCallbackExtended<Data>() {
+					@Override
+					public Data adapt(Data range, RegDate debut, RegDate fin) {
+						throw new IllegalArgumentException("ne devrait pas être appelé");
+					}
+
+					@Override
+					public Data adapt(Data range, RegDate debut, Data surchargeDebut, RegDate fin, Data surchargeFin) {
+						final Data a = new Data(range);
+						if (debut != null) {
+							a.debut = debut;
+							a.motifDebut = surchargeDebut.motifFin;
+						}
+						if (fin != null) {
+							a.fin = fin;
+							a.motifFin = surchargeFin.motifDebut;
+						}
+						return a;
+					}
+
+					@Override
+					public Data duplicate(Data range) {
+						return new Data(range);
+					}
+				});
+
+				// on met-à-jour la liste elle-même
+				clear();
+				addAll(list);
+			}
 		}
 	}
 

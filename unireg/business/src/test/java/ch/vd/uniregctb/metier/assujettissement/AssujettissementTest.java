@@ -429,6 +429,7 @@ public class AssujettissementTest extends MetierTest {
 			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
 		}
 	}	
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	@WebScreenshot(urls = {"/fiscalite/unireg/web/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
@@ -2974,7 +2975,7 @@ public class AssujettissementTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(3, list.size());
 		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 30), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-		assertOrdinaire(date(2004, 7, 1), date(2006, 11, 15), MotifFor.DEPART_HC, MotifFor.DEPART_HS, list.get(1));
+		assertOrdinaire(date(2004, 7, 1), date(2006, 11, 15), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.DEPART_HS, list.get(1));
 		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(2));
 	}
 
@@ -3018,6 +3019,59 @@ public class AssujettissementTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10772397&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "[SIFISC-2939] Cas du contribuable n°10772397 (vérifie que l'algo ne crashe pas dans le cas où un couple hors-canton avec immeuble se marie, se divorce et puis se remarie mais cette fois en étant domicilié dans le canton; le tout dans le même année)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineCoupleHCAvecImmeubleMariageDivorcePuisReconciliationEtArriveeDansLeCantonLeToutLaMemeAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10772397L);
+		addForPrincipal(ctb, date(2010, 5, 12), MotifFor.INDETERMINE, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2010, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
+		addForSecondaire(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(2010, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=30928601&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "[SIFISC-2939] Cas du contribuable n°30928601 (vérifie que l'algo ne crashe pas dans le cas où un contribuable possède deux fors fiscaux hors-Suisse disjoints dans la même année)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineContribuableAvecDeuxForFiscauxPrincipauxHSDisjointsDansLaMemeAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(30928601L);
+		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.INDETERMINE, date(1980, 1, 6), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
+		addForPrincipal(ctb, date(1980, 12, 30), MotifFor.INDETERMINE, MockPays.PaysInconnu);
+		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsSuisse(date(1980, 12, 30), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable n°10003678 (vérifie que l'assujettissement va jusqu'au 31 décembre de l'année courante lors de la vente d'un immeuble d'un contribuable hors-canton alors que le for principal se ferme avec motif mariage)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePseudoMariageMaisVraieVenteImmeubleCtbHorsCanton() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10003678L);
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2003, 1, 1), date(2006,12,31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
 
 	private static Set<Integer> buildSetFromArray(Integer... ints) {
