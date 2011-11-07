@@ -88,6 +88,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 		final ParallelBatchTransactionTemplate<Long, BatchResults> template =
 				new ParallelBatchTransactionTemplate<Long, BatchResults>(ids, 100, nbThreads, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
+		template.setReadonly(true);
 		template.execute(new BatchTransactionTemplate.BatchCallback<Long, BatchResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, BatchResults rapport) throws Exception {
@@ -116,6 +117,9 @@ public class DumpAssujettissementsJob extends JobDefinition {
 			return "contribuable not found";
 		}
 
+		// on force l'initialisation des fors fiscaux, pour faciliter la lecture des performances avec JProfiler
+		ctb.getForsFiscaux().size();
+
 		final List<Assujettissement> list;
 		try {
 			list = Assujettissement.determine(ctb, null, true);
@@ -138,9 +142,11 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	@SuppressWarnings("unchecked")
 	private List<Long> getCtbIds(final StatusManager statusManager) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
+				status.setRollbackOnly();
 				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc");
 				statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
 				return ids;
