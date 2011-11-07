@@ -96,8 +96,8 @@ public class ValidationJobThread extends Thread {
 
 			checkValidation(contribuable, results);
 
-			if (results.calculateAssujettissements) {
-				checkAssujettissements(contribuable, results);
+			if (results.calculatePeriodesImposition) {
+				checkPeriodesImposition(contribuable, results);
 			}
 
 			if (results.calculateAdresses) {
@@ -116,7 +116,7 @@ public class ValidationJobThread extends Thread {
 		}
 	}
 
-	private void checkAssujettissements(final Contribuable contribuable, ValidationJobResults results) {
+	private void checkPeriodesImposition(final Contribuable contribuable, ValidationJobResults results) {
 
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate dateDebut = contribuable.getDateDebutActivite();
@@ -127,23 +127,22 @@ public class ValidationJobThread extends Thread {
 
 		for (int annee = anneeDebut; annee <= anneeFin; ++annee) {
 			try {
-				// on vérifie de toute façon l'assujettissement (au travers des périodes d'imposition)
+				// on vérifie les périodes d'imposition
 				final List<PeriodeImposition> imposition = PeriodeImposition.determine(contribuable, annee);
-				if (results.coherenceAssujetDi) {
-					checkCoherenceAssujettissementAvecDI(contribuable, results, annee, imposition);
+				if (results.coherencePeriodesImpositionWrtDIs) {
+					checkCoherencePeriodeImpositionAvecDI(contribuable, results, annee, imposition);
 				}
 			}
 			catch (Exception e) {
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Calcul impossible de l'assujettissement pour le contribuable n°" + contribuable.getNumero()
-							+ " et l'année" + annee);
+					LOGGER.debug("Calcul impossible de la période d'imposition pour le contribuable n°" + contribuable.getNumero() + " et l'année" + annee);
 				}
-				results.addErrorAssujettissement(contribuable, annee, e);
+				results.addErrorPeriodeImposition(contribuable, annee, e);
 			}
 		}
 	}
 
-	private static void checkCoherenceAssujettissementAvecDI(Contribuable contribuable, ValidationJobResults results, int annee, List<PeriodeImposition> periodesImposition) {
+	private static void checkCoherencePeriodeImpositionAvecDI(Contribuable contribuable, ValidationJobResults results, int annee, List<PeriodeImposition> periodesImposition) {
 
 		// filtrage des di annulées
 		final List<Declaration> toutesDIs = contribuable.getDeclarationsForPeriode(annee, false);
@@ -166,16 +165,16 @@ public class ValidationJobThread extends Thread {
 	private static void checkCoherencePeriodesImpositionAvecDIs(Contribuable contribuable, ValidationJobResults results, int annee, List<PeriodeImposition> periodesImposition, List<Declaration> declarations) {
 
 		if (periodesImposition == null && declarations == null) {
-			// pas d'assujettissement ni di -> pas de problème
+			// pas de période d'imposition ni di -> pas de problème
 		}
 		else if (periodesImposition == null) {
-			// pas d'assujettissement et au moins une DI
+			// pas de période d'imposition et au moins une DI
 			for (Declaration di : declarations) {
 				addErrorCoherenceDiDiSansPeriodeImposition(contribuable, results, di);
 			}
 		}
 		else if (declarations == null) {
-			// au moins un assujettissement, mais pas de DI (pas grave si c'est l'année en cours...)
+			// au moins une période d'imposition, mais pas de DI (pas grave si c'est l'année en cours...)
 			if (annee < RegDate.get().year()) {
 				for (PeriodeImposition pi : periodesImposition) {
 					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
@@ -185,7 +184,7 @@ public class ValidationJobThread extends Thread {
 			}
 		}
 		else {
-			// une (ou plusieurs) DI, une (ou plusieurs) périodes d'assujettissement
+			// une (ou plusieurs) DI, une (ou plusieurs) périodes d'imposition
 
 			// ce sont les DI déjà utilisées (bonnes dates, ou mauvaises dates à corriger) dans une periode d'imposition
 			// d'une autre itération de la boucle des périodes d'imposition

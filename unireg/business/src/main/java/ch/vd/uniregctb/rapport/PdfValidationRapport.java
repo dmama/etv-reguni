@@ -37,8 +37,8 @@ public class PdfValidationRapport extends PdfRapport {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculateAssujettissements));
-					table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherenceAssujetDi));
+					table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculatePeriodesImposition));
+					table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherencePeriodesImpositionWrtDIs));
 					table.addLigne("Calcul des adresses:", Boolean.toString(results.calculateAdresses));
 				}
 			});
@@ -57,8 +57,8 @@ public class PdfValidationRapport extends PdfRapport {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
 					table.addLigne("Nombre de contribuables ne validant pas:", String.valueOf(results.erreursValidation.size()));
-					table.addLigne("Nombre de périodes d'assujettissement qui ne sont pas calculables:", String
-							.valueOf(results.erreursAssujettissement.size()));
+					table.addLigne("Nombre de périodes d'imposition qui ne sont pas calculables:", String
+							.valueOf(results.erreursPeriodesImposition.size()));
 					table.addLigne("Nombre de DIs émises dont les dates ne correspondent pas aux dates d'assujettissement:", String
 							.valueOf(results.erreursCoherenceDI.size()));
 					table.addLigne("Nombre de contribuables dont les adresses ne sont pas calculables:", String
@@ -79,16 +79,16 @@ public class PdfValidationRapport extends PdfRapport {
 		}
 
 		// Assujettissements
-		if (results.calculateAssujettissements) {
-			String filename = "periodes_assujettissements_incalculables.csv";
-			String contenu = asCsvFile(results.erreursAssujettissement, filename, statusManager);
-			String titre = "Liste des périodes d'assujettissement qui ne sont pas calculables";
-			String listVide = "(aucune période d'assujettissement incalculable)";
-			addListeDetaillee(writer, results.erreursAssujettissement.size(), titre, listVide, filename, contenu);
+		if (results.calculatePeriodesImposition) {
+			String filename = "periodes_imposition_incalculables.csv";
+			String contenu = asCsvFile(results.erreursPeriodesImposition, filename, statusManager);
+			String titre = "Liste des périodes d'imposition qui ne sont pas calculables";
+			String listVide = "(aucune période d'imposition incalculable)";
+			addListeDetaillee(writer, results.erreursPeriodesImposition.size(), titre, listVide, filename, contenu);
 		}
 
 		// Cohérence DI
-		if (results.calculateAssujettissements && results.coherenceAssujetDi) {
+		if (results.calculatePeriodesImposition && results.coherencePeriodesImpositionWrtDIs) {
 			String filename = "periodes_dis_incoherentes.csv";
 			String contenu = asCsvFile(results.erreursCoherenceDI, filename, statusManager);
 			String titre = "Liste des DIs émises dont les dates ne correspondent pas aux dates d'assujettissement";

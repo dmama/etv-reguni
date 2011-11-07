@@ -37,7 +37,7 @@ public class ValidationJob extends JobDefinition {
 	public static final String NAME = "ValidationJob";
 	private static final String CATEGORIE = "Stats";
 
-	public static final String ASSUJET = "ASSUJET";
+	public static final String P_IMPOSITION = "P_IMPOSITION";
 	public static final String ADRESSES = "ADRESSES";
 	public static final String DI = "DI";
 	public static final String NB_THREADS = "NB_THREADS";
@@ -55,14 +55,14 @@ public class ValidationJob extends JobDefinition {
 		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param0 = new JobParam();
-		param0.setDescription("Calcul les assujettissements");
-		param0.setName(ASSUJET);
+		param0.setDescription("Calcul les périodes d'imposition");
+		param0.setName(P_IMPOSITION);
 		param0.setMandatory(false);
 		param0.setType(new JobParamBoolean());
 		addParameterDefinition(param0, Boolean.FALSE);
 
 		final JobParam param1 = new JobParam();
-		param1.setDescription("Cohérence date DI / assujettissement");
+		param1.setDescription("Cohérence date DI / p. imposition");
 		param1.setName(DI);
 		param1.setMandatory(false);
 		param1.setType(new JobParamBoolean());
@@ -112,8 +112,8 @@ public class ValidationJob extends JobDefinition {
 
 		final StatusManager statusManager = getStatusManager();
 
-		final boolean calculateAssujettissements = getBooleanValue(params, ASSUJET);
-		final boolean coherenceAssujetDi = getBooleanValue(params, DI);
+		final boolean calculatePeriodesImposition = getBooleanValue(params, P_IMPOSITION);
+		final boolean coherencePeriodesImpositionWrtDIs = getBooleanValue(params, DI);
 		final boolean calculateAdresses = getBooleanValue(params, ADRESSES);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
@@ -122,7 +122,7 @@ public class ValidationJob extends JobDefinition {
 		final List<Long> ids = getCtbIds(statusManager);
 
 		// Processing des contribuables
-		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculateAssujettissements, coherenceAssujetDi, calculateAdresses);
+		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses);
 		processAll(ids, results, nbThreads, statusManager);
 		results.end();
 
@@ -178,8 +178,8 @@ public class ValidationJob extends JobDefinition {
 			if (++i % 100 == 0) {
 				int percent = (i * 100) / ids.size();
 				String message = String.format(
-						"Processing du contribuable %d => invalides(%d) / assujet.(%d) / coherence(%d) / adresses(%d) / total(%d)", id,
-						results.getNbErreursValidation(), results.getNbErreursAssujettissement(), results.getNbErreursCoherenceDI(),
+						"Processing du contribuable %d => invalides(%d) / p.imposition(%d) / coherence(%d) / adresses(%d) / total(%d)", id,
+						results.getNbErreursValidation(), results.getNbErreursPeriodesImposition(), results.getNbErreursCoherenceDI(),
 						results.getNbErreursAdresses(), results.getNbCtbsTotal());
 				statusManager.setMessage(message, percent);
 				if (LOGGER.isDebugEnabled()) {

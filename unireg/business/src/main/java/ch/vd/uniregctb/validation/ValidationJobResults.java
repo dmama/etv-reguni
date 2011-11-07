@@ -15,10 +15,10 @@ import ch.vd.uniregctb.tiers.Contribuable;
 public class ValidationJobResults extends JobResults<Long, ValidationJobResults> {
 
 	public enum ErreurType {
-		INVALIDE("le contribuable ne valide pas."), // -----------------------------------------------------
-		ASSUJETTISSEMENT("l'assujettissement ne peut pas être calculé"), // --------------------------------
-		ADRESSES("les adresses n'ont pas pu être calculées"), // -------------------------------------------
-		DI("Incohérence dans les dates de DI"); // ---------------------------------------------------------
+		INVALIDE("le contribuable ne valide pas."),
+		PERIODES_IMPOSITION("les périodes d'imposition ne peuvent pas être calculées"),
+		ADRESSES("les adresses n'ont pas pu être calculées"),
+		DI("Incohérence dans les dates de DI");
 
 		private final String description;
 
@@ -76,22 +76,22 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	}
 
 	public final RegDate dateTraitement;
-	public final boolean calculateAssujettissements;
-	public final boolean coherenceAssujetDi;
+	public final boolean calculatePeriodesImposition;
+	public final boolean coherencePeriodesImpositionWrtDIs;
 	public final boolean calculateAdresses;
 
 	public int nbCtbsTotal;
 	public final List<Erreur> erreursValidation = new ArrayList<Erreur>();
-	public final List<Erreur> erreursAssujettissement = new ArrayList<Erreur>();
+	public final List<Erreur> erreursPeriodesImposition = new ArrayList<Erreur>();
 	public final List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
 	public final List<Erreur> erreursAdresses = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public ValidationJobResults(RegDate dateTraitement, boolean calculateAssujettissements, boolean coherenceAssujetDi,
+	public ValidationJobResults(RegDate dateTraitement, boolean calculatePeriodesImposition, boolean coherencePeriodesImpositionWrtDIs,
 	                            boolean calculateAdresses) {
 		this.dateTraitement = dateTraitement;
-		this.calculateAssujettissements = calculateAssujettissements;
-		this.coherenceAssujetDi = coherenceAssujetDi;
+		this.calculatePeriodesImposition = calculatePeriodesImposition;
+		this.coherencePeriodesImpositionWrtDIs = coherencePeriodesImpositionWrtDIs;
 		this.calculateAdresses = calculateAdresses;
 	}
 
@@ -107,9 +107,9 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		}
 	}
 
-	public int getNbErreursAssujettissement() {
+	public int getNbErreursPeriodesImposition() {
 		synchronized (this) {
-			return erreursAssujettissement.size();
+			return erreursPeriodesImposition.size();
 		}
 	}
 
@@ -138,11 +138,11 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		}
 	}
 
-	public void addErrorAssujettissement(Contribuable ctb, int annee, Exception exception) {
+	public void addErrorPeriodeImposition(Contribuable ctb, int annee, Exception exception) {
 		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), "Année " + annee + ": " + exception.getMessage(),
-				ErreurType.ASSUJETTISSEMENT);
+				ErreurType.PERIODES_IMPOSITION);
 		synchronized (this) {
-			erreursAssujettissement.add(e);
+			erreursPeriodesImposition.add(e);
 		}
 	}
 
