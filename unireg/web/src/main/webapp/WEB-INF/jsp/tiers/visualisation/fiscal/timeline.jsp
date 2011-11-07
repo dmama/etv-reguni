@@ -99,7 +99,7 @@
 									<td class="principal_hc" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
 									    <a href="#tooltip" class="staticTip" id="ffp-${fp.id}">
     										<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fp.dateDebut}"/>
-    										(<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="sigleCanton" date="${fp.dateDebut}"/>
+    										(<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="sigleCanton" date="${fp.dateDebut}"/>)
 										</a>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
