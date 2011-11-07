@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +47,12 @@ public class BordereauController {
 	// réception des bordereaux
 	private static final String ID = "id";
 
+	/**
+	 * Pattern utilisé pour le passage d'un paramètre "collectivité administrative", composé
+	 * d'un numéro de tiers (long) et du numéro de collectivité administrative (int) correspondant
+	 */
+	private static final Pattern COLL_ADM_PARAM_PATTERN = Pattern.compile("([0-9]{1,18})/([0-9]{1,9})");
+
 	private MouvementMasseManager mouvementManager;
 
 	private ServiceInfrastructureService infraService;
@@ -84,13 +91,13 @@ public class BordereauController {
 	 * @param paramValue valeur du paramètre
 	 * @return chaîne décodée
 	 */
-	private static Pair<Long, Integer> decodeCollAdmParamter(String paramValue) {
+	private static Pair<Long, Integer> decodeCollAdmParameter(String paramValue) {
 		if (paramValue != null) {
-			final StringTokenizer tokenizer = new StringTokenizer(paramValue, "/", false);
-			if (tokenizer.hasMoreTokens()) {
-				final String noTiers = tokenizer.nextToken();
-				final String noCa = tokenizer.nextToken();
-				return new Pair<Long, Integer>(Long.valueOf(noTiers), Integer.valueOf(noCa));
+			final Matcher matcher = COLL_ADM_PARAM_PATTERN.matcher(paramValue);
+			if (matcher.matches()) {
+				final Long noTiers = Long.valueOf(matcher.group(1));
+				final Integer noCa = Integer.valueOf(matcher.group(2));
+				return new Pair<Long, Integer>(noTiers, noCa);
 			}
 		}
 		return null;
@@ -98,8 +105,12 @@ public class BordereauController {
 
 	@RequestMapping(value = "/detail-avant-impression.do", method = RequestMethod.GET)
 	public String getDetailProtoBordereau(Model model, @RequestParam(value = SRC) String source, @RequestParam(value = DEST) String destination, @RequestParam(value = TYPE) TypeMouvement typeMouvement) {
-		final Pair<Long, Integer> src = decodeCollAdmParamter(source);
-		final Pair<Long, Integer> dest = decodeCollAdmParamter(destination);
+		final Pair<Long, Integer> src = decodeCollAdmParameter(source);
+		final Pair<Long, Integer> dest = decodeCollAdmParameter(destination);
+
+		if (src == null || (typeMouvement == TypeMouvement.EnvoiDossier && dest == null)) {
+			return "redirect:/mouvement/bordereau/a-imprimer.do";
+		}
 
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
 		criteria.setTypeMouvement(typeMouvement);
