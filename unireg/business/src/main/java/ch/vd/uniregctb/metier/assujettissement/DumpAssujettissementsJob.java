@@ -7,16 +7,21 @@ import java.util.Map;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 import ch.vd.uniregctb.tiers.Contribuable;
+
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -28,6 +33,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	private static final String CATEGORIE = "Debug";
 
 	public static final String FILENAME = "FILENAME";
+	public static final String NB_THREADS = "NB_THREADS";
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -35,12 +41,19 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	public DumpAssujettissementsJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
-		final JobParam param = new JobParam();
-		param.setDescription("Fichier de sortie (local au serveur)");
-		param.setName(FILENAME);
-		param.setMandatory(true);
-		param.setType(new JobParamString());
-		addParameterDefinition(param, null);
+		final JobParam param0 = new JobParam();
+		param0.setDescription("Fichier de sortie (local au serveur)");
+		param0.setName(FILENAME);
+		param0.setMandatory(true);
+		param0.setType(new JobParamString());
+		addParameterDefinition(param0, null);
+
+		final JobParam param1 = new JobParam();
+		param1.setDescription("Nombre de threads");
+		param1.setName(NB_THREADS);
+		param1.setMandatory(true);
+		param1.setType(new JobParamInteger());
+		addParameterDefinition(param1, 4);
 	}
 
 	@Override
@@ -54,6 +67,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		final StatusManager statusManager = getStatusManager();
 
 		final String filename = getStringValue(params, FILENAME);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		// Chargement des ids des contribuables à processer
 		statusManager.setMessage("Chargement des ids de tous les contribuables...");
@@ -61,7 +75,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 		final FileWriter file = new FileWriter(filename);
 		try {
-			processAll(ids, file, statusManager);
+			processAll(ids, nbThreads, file, statusManager);
 		}
 		finally {
 			file.close();
@@ -70,33 +84,36 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		Audit.success("Le batch de dump des assujettissements est terminé");
 	}
 
-	private void processAll(List<Long> ids, final FileWriter file, final StatusManager statusManager) {
+	private void processAll(List<Long> ids, int nbThreads, final FileWriter file, final StatusManager statusManager) {
 
-		BatchTransactionTemplate<Long, BatchResults> template = new BatchTransactionTemplate<Long, BatchResults>(ids, 100, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
+		final ParallelBatchTransactionTemplate<Long, BatchResults> template =
+				new ParallelBatchTransactionTemplate<Long, BatchResults>(ids, 100, nbThreads, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
 		template.execute(new BatchTransactionTemplate.BatchCallback<Long, BatchResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, BatchResults rapport) throws Exception {
 
 				statusManager.setMessage("Traitement du lot [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
 				for (Long id : batch) {
-					file.write(String.valueOf(id) + ";");
+					String line;
 					try {
-						process(id, file);
+						final StringBuilder sb = new StringBuilder();
+						sb.append(id).append(";").append(process(id)).append('\n');
+						line = sb.toString();
 					}
 					catch (Exception e) {
-						file.write("exception:" + e.getMessage() + "\n");
+						line = "exception:" + e.getMessage() + "\n";
 					}
+					file.write(line);
 				}
 				return true;
 			}
 		});
 	}
 
-	private void process(Long id, FileWriter file) throws IOException {
+	private String process(Long id) throws IOException {
 		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, id);
 		if (ctb == null) {
-			file.write("contribuable not found\n");
-			return;
+			return "contribuable not found";
 		}
 
 		final List<Assujettissement> list;
@@ -104,26 +121,31 @@ public class DumpAssujettissementsJob extends JobDefinition {
 			list = Assujettissement.determine(ctb, null, true);
 		}
 		catch (AssujettissementException e) {
-			file.write("assujettissement exception:" + e.getMessage() + "\n");
-			return;
+			return "assujettissement exception:" + e.getMessage();
 		}
 
 		if (list == null || list.isEmpty()) {
-			file.write("non-assujetti\n");
-			return;
+			return "non-assujetti";
 		}
 
+		final StringBuilder sb = new StringBuilder();
 		for (Assujettissement a : list) {
-			file.write(a.getClass().getSimpleName() + "(" + a.getDateDebut() + "-" + a.getDateFin() + ");");
+			sb.append(a).append(';');
 		}
-		file.write("\n");
+		return sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<Long> getCtbIds(final StatusManager statusManager) {
-		final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc");
-		statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
-		return ids;
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc");
+				statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
+				return ids;
+			}
+		});
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
