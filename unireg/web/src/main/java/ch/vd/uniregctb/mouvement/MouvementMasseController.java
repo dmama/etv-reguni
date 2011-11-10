@@ -41,8 +41,8 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @RequestMapping(value = "/mouvement/masse")
 public class MouvementMasseController {
 
-	private static final String TRAITEMENT_FORM_SESSION_NAME = "MvtDossierMasseTraitementView";
-	private static final String CONSULTATION_FORM_SESSION_NAME = "MvtDossierMasseConsultationView";
+	private static final String TRAITEMENT_CRITERIA_SESSION_NAME = "MvtDossierMasseTraitementView";
+	private static final String CONSULTATION_CRITERIA_SESSION_NAME = "MvtDossierMasseConsultationView";
 
 	private static final String ACTION = "action";
 	private static final int PAGE_SIZE = 25;
@@ -103,7 +103,7 @@ public class MouvementMasseController {
 	private static final SearchCriteriaCustomizer SEARCH_CRITERIA_POUR_TRAITEMENT_CUSTOMIZER = new SearchCriteriaCustomizer() {
 		@Override
 		public String getSessionAttributeName() {
-			return TRAITEMENT_FORM_SESSION_NAME;
+			return TRAITEMENT_CRITERIA_SESSION_NAME;
 		}
 
 		@Override
@@ -125,7 +125,7 @@ public class MouvementMasseController {
 	private static final SearchCriteriaCustomizer SEARCH_CRITERIA_CONSULTATION_CUSTOMIZER = new SearchCriteriaCustomizer() {
 		@Override
 		public String getSessionAttributeName() {
-			return CONSULTATION_FORM_SESSION_NAME;
+			return CONSULTATION_CRITERIA_SESSION_NAME;
 		}
 
 		@Override
@@ -155,8 +155,6 @@ public class MouvementMasseController {
 			session.setAttribute(sessionAttributeName, null);
 		}
 
-		final boolean montrerInitiateur = noCollAdmInitiatrice == null;
-
 		final MouvementMasseCriteriaView criteria;
 		final MouvementMasseResultatRechercheView found;
 		final MouvementMasseCriteriaView inSessionCriteria = (MouvementMasseCriteriaView) session.getAttribute(sessionAttributeName);
@@ -184,7 +182,7 @@ public class MouvementMasseController {
 		model.addAttribute(CRITERIA, criteria);
 		model.addAttribute(FOUND, found);
 		model.addAttribute(MONTRER_EXPORT, found != null && found.getResultSize() > 0);
-		model.addAttribute(MONTRER_INITIATEUR, montrerInitiateur);
+		model.addAttribute(MONTRER_INITIATEUR, noCollAdmInitiatrice == null);
 		model.addAttribute(PAGINATION, ControllerUtils.getPaginatedTableParameters(request, TABLE_ID));
 		return customizer.getViewName();
 	}
@@ -225,13 +223,13 @@ public class MouvementMasseController {
 
 	@RequestMapping(value = "/rechercher-pour-traitement.do", method = RequestMethod.POST)
 	public String rechercherPourTraitement(HttpSession session, @ModelAttribute(CRITERIA) MouvementMasseCriteriaTraitementView view) {
-		session.setAttribute(TRAITEMENT_FORM_SESSION_NAME, view);
+		session.setAttribute(TRAITEMENT_CRITERIA_SESSION_NAME, view);
 		return buildRedirectPourTraitement(null);
 	}
 
-	@RequestMapping(value = "rechercher-pour-consultation.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/rechercher-pour-consultation.do", method = RequestMethod.POST)
 	public String rechercherPourConsultation(HttpSession session, @ModelAttribute(CRITERIA) MouvementMasseCriteriaConsultationView view) {
-		session.setAttribute(CONSULTATION_FORM_SESSION_NAME, view);
+		session.setAttribute(CONSULTATION_CRITERIA_SESSION_NAME, view);
 		return buildRedirectPourConsultation(null);
 	}
 
