@@ -131,6 +131,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Recherche les Tiers correspondants aux critères dans le data model de Unireg
+	 *
 	 * @param tiersCriteria les critères de recherche
 	 * @return la liste des tiers correspondants aux criteres.
 	 * @throws IndexerException
@@ -213,6 +214,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Renvoie la personne physique correspondant au numéro d'individu passé en paramètre.
+	 *
 	 * @param numeroIndividu le numéro de l'individu.
 	 * @return la personne physique correspondante au numéro d'individu passé en paramètre, ou <b>null</b> s'il n'existe pas.
 	 */
@@ -280,6 +282,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * change un habitant en non habitant (en cas de départ HC ou HS)
+	 *
 	 * @param habitant la PP de type Habitant
 	 * @return la même PP de type nonHabitant maintenant
 	 */
@@ -498,6 +501,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Récupère le tiers correspondant à la collectivite administrative avec un numéro donné (crée le tiers s'il n'existe pas).
+	 *
 	 * @param noTechnique le numero technique de la collectivite administrative
 	 * @return le tiers correspondant à la collectivite administrative
 	 */
@@ -588,8 +592,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si un habitant est étranger sans permis C.
+	 *
 	 * @param habitant l'habitant
-	 * @param date la date à laquelle on désire se placer
+	 * @param date     la date à laquelle on désire se placer
 	 * @return true si l'habitant est étranger sans permis C
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
@@ -599,8 +604,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si un habitant est étranger avec permis C.
+	 *
 	 * @param habitant l'habitant
-	 * @param date la date à laquelle on désire se placer
+	 * @param date     la date à laquelle on désire se placer
 	 * @return true si l'habitant est étranger avec permis C
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
@@ -613,9 +619,10 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si un habitant est étranger avec ou sans permis C.
-	 * @param habitant l'habitant
+	 *
+	 * @param habitant    l'habitant
 	 * @param avecPermisC <ul> <li>true pour savoir si l'habitant est etranger avec permis C <li> false pour savoir si l'habitant est etranger sans permis C </ul>
-	 * @param date la date à laquelle on désire se placer
+	 * @param date        la date à laquelle on désire se placer
 	 * @return true si l'habitant est étranger avec ou sans permis C
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
@@ -658,9 +665,10 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * L'individu est-t-il sans permis C en cours de validité ?
-	 * @param individu l'individu
+	 *
+	 * @param individu        l'individu
 	 * @param permisMustExist si true, alors une exception est lancée si l'individu n'a aucun permis en cours
-	 * @param date la date à laquelle on désire se placer
+	 * @param date            la date à laquelle on désire se placer
 	 * @return true si l'individu n'a pas de permis C en cours
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
@@ -786,7 +794,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si une personne physique est étrangère sans permis C.
-	 * @param pp la personne physique
+	 *
+	 * @param pp   la personne physique
 	 * @param date la date à laquelle on désire se placer
 	 * @return true si la personne physique est étrangère sans permis C
 	 * @throws TiersException si la nationalite ne peut être déterminée
@@ -804,8 +813,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si un non habitant est étranger sans permis C.
+	 *
 	 * @param nonHabitant le non habitant
-	 * @param date la date à laquelle on désire se placer
+	 * @param date        la date à laquelle on désire se placer
 	 * @return true si le non habitant est étranger sans permis C
 	 * @throws TiersException si l'habitant ne possède ni nationalité ni permis.
 	 */
@@ -848,8 +858,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Détermine si un habitant est réfugié.
+	 *
 	 * @param habitant l'habitant
-	 * @param date la date à laquelle on désire se placer
+	 * @param date     la date à laquelle on désire se placer
 	 * @return true si l'habitant est réfugié
 	 */
 	@Override
@@ -1063,8 +1074,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers ménage-commun.
+	 *
 	 * @param menageCommun le tiers ménage-commun du menage
-	 * @param date la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
+	 * @param date         la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
 	 * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage.
 	 */
 	@Override
@@ -1085,8 +1097,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Recherche le ménage commun d'une personne physique à une date donnée.
+	 *
 	 * @param personne la personne dont on recherche le ménage.
-	 * @param date la date de référence, ou null pour obtenir le ménage courant.
+	 * @param date     la date de référence, ou null pour obtenir le ménage courant.
 	 * @return le ménage common dont la personne est membre à la date donnée, ou <b>null<b> si aucun ménage n'a été trouvé.
 	 */
 	@Override
@@ -1113,6 +1126,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Recherche le dernier ménage commun d'une personne physique.
+	 *
 	 * @param personne la personne dont on recherche le ménage.
 	 * @return le dernier ménage common dont la personne est membre, ou <b>null<b> si aucun ménage n'a été trouvé.
 	 */
@@ -1145,12 +1159,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Ajoute l'individu spécifié en tant que tiers du ménage commun, à partir de la date spécifiée.
-	 * <b>Attention : le menage et le tiers spécifiés seront automatiques sauvés !</b>
-	 * @param menage le ménage sur lequel le tiers doit être ajouté
-	 * @param tiers le tiers à ajouter au ménage
+	 * Ajoute l'individu spécifié en tant que tiers du ménage commun, à partir de la date spécifiée. <b>Attention : le menage et le tiers spécifiés seront automatiques sauvés !</b>
+	 *
+	 * @param menage    le ménage sur lequel le tiers doit être ajouté
+	 * @param tiers     le tiers à ajouter au ménage
 	 * @param dateDebut la date de début de validité de la relation entre tiers
-	 * @param dateFin la date de fin de validité de la relation entre tiers (peut être nulle)
+	 * @param dateFin   la date de fin de validité de la relation entre tiers (peut être nulle)
 	 * @return le rapport-entre-tiers avec les références mises-à-jour des objets sauvés
 	 */
 	@Override
@@ -1165,6 +1179,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable
+	 *
 	 * @param debiteur
 	 * @param contribuable
 	 * @return le rapport
@@ -1177,6 +1192,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable avec une date de début
+	 *
 	 * @param debiteur
 	 * @param contribuable
 	 * @param dateDebut
@@ -1193,9 +1209,10 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Etabli et sauve en base un rapport entre deux tiers.
+	 *
 	 * @param rapport le rapport à sauver
-	 * @param sujet le tiers sujet considéré
-	 * @param objet le tiers objet considéré
+	 * @param sujet   le tiers sujet considéré
+	 * @param objet   le tiers objet considéré
 	 * @return le rapport sauvé en base
 	 */
 	@Override
@@ -1229,8 +1246,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Clôt l'appartenance menageCommun entre les 2 tiers à la date donnée.
-	 * @param pp la pp
-	 * @param menage le menage
+	 *
+	 * @param pp            la pp
+	 * @param menage        le menage
 	 * @param dateFermeture la date de fermeture du rapport
 	 */
 	@Override
@@ -1254,7 +1272,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Clôt tous les rapports du tiers.
-	 * @param pp la pp
+	 *
+	 * @param pp            la pp
 	 * @param dateFermeture la date de fermeture du rapport
 	 */
 	@Override
@@ -1278,10 +1297,11 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ajoute un rapport prestation imposable
-	 * @param sourcier le sourcier sur lequel le debiteur doit être ajouté
-	 * @param debiteur le debiteur à ajouter au sourcier
-	 * @param dateDebut la date de début de validité de la relation entre tiers
-	 * @param dateFin la date de fin de validité de la relation entre tiers (peut être nulle)
+	 *
+	 * @param sourcier     le sourcier sur lequel le debiteur doit être ajouté
+	 * @param debiteur     le debiteur à ajouter au sourcier
+	 * @param dateDebut    la date de début de validité de la relation entre tiers
+	 * @param dateFin      la date de fin de validité de la relation entre tiers (peut être nulle)
 	 * @param typeActivite le type d'activite
 	 * @param tauxActivite le taux d'activite
 	 * @return le rapport-prestation-imposable avec les références mises-à-jour des objets sauvés
@@ -1302,10 +1322,11 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Crée et sauvegarde en base un ménage-commun avec ces deux parties.
-	 * @param tiers1 un tiers du ménage-commun
-	 * @param tiers2 l'autre tiers du ménage-commun (peut être nul)
+	 *
+	 * @param tiers1    un tiers du ménage-commun
+	 * @param tiers2    l'autre tiers du ménage-commun (peut être nul)
 	 * @param dateDebut la date de début de validité de la relation entre tiers
-	 * @param dateFin la date de fin de validité de la relation entre tiers (peut être nulle)
+	 * @param dateFin   la date de fin de validité de la relation entre tiers (peut être nulle)
 	 * @return l'ensemble tiers-couple sauvé en base avec les références mises-à-jour des objets sauvés.
 	 */
 	@Override
@@ -1337,6 +1358,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Retourne les nom et prénoms de la personne physique spécifiée
+	 *
 	 * @param pp personne physique dont on veut le nom
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
 	 */
@@ -1374,6 +1396,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Récupère l'individu correspondant à l'habitant pour une année donnée
+	 *
 	 * @param annee
 	 * @param attributes
 	 * @return
@@ -1414,14 +1437,15 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ouvre un nouveau for fiscal principal sur un contribuable.
-	 * @param contribuable le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture la date à laquelle le nouveau for est ouvert
-	 * @param motifRattachement le motif de rattachement du nouveau for
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param motifRattachement        le motif de rattachement du nouveau for
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale le type d'autorité fiscale.
-	 * @param modeImposition le mode d'imposition du for fiscal principal
-	 * @param motifOuverture le motif d'ouverture
-	 * @param changeHabitantFlag pour indiquer si le flag habitant doit être mis à jour lors de l'opération.
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture
+	 * @param changeHabitantFlag       pour indiquer si le flag habitant doit être mis à jour lors de l'opération.
 	 * @return le nouveau for fiscal principal
 	 */
 	@Override
@@ -1454,15 +1478,16 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
-	 * @param contribuable le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture la date à laquelle le nouveau for est ouvert
-	 * @param motifRattachement le motif de rattachement du nouveau for
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param motifRattachement        le motif de rattachement du nouveau for
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale le type d'autorité fiscale.
-	 * @param modeImposition le mode d'imposition du for fiscal principal
-	 * @param motifOuverture le motif d'ouverture
-	 * @param dateFermeture la date de fermeture du for	 *
-	 * @param motifFermeture le motif de fermeture
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture
+	 * @param dateFermeture            la date de fermeture du for	 *
+	 * @param motifFermeture           le motif de fermeture
 	 * @param changeHabitantFlag
 	 * @return le nouveau for fiscal principal
 	 */
@@ -1570,7 +1595,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * @param pp une personne physique
+	 * @param pp   une personne physique
 	 * @param date une date de réféence
 	 * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
 	 *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
@@ -1802,12 +1827,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition.
-	 * Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant. Si
-	 * deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI.
-	 * Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
-	 * @param parent le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
-	 * @param enfant qui est succeptible d'être rajouter sur la DI
+	 * L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID
+	 * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI. Si les deux parents ne sont pas en
+	 * ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
+	 *
+	 * @param parent               le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
+	 * @param enfant               qui est succeptible d'être rajouter sur la DI
 	 * @param finPeriodeImposition date de fin de période d'imposition
 	 * @return <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
 	 */
@@ -1834,7 +1859,7 @@ public class TiersServiceImpl implements TiersService {
 					final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 					//Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant.
 					//noinspection SimplifiableIfStatement
-					if (TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
+					if (adresseDomicilePrincipal != null && adresseDomicileConjoint != null && TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
 						return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 
 					}
@@ -2120,13 +2145,14 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ouvre un nouveau for fiscal autre élément imposable sur un contribuable.
-	 * @param contribuable le contribuable sur lequel le nouveau for est ouvert
-	 * @param genreImpot le genre d'impot
-	 * @param dateOuverture la date à laquelle le nouveau for est ouvert
-	 * @param motifRattachement le motif de rattachement du nouveau for
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param genreImpot               le genre d'impot
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param motifRattachement        le motif de rattachement du nouveau for
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale le type d'autorité fiscale
-	 * @param motifOuverture le motif d'ouverture
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale
+	 * @param motifOuverture           le motif d'ouverture
 	 * @return le nouveau for fiscal autre élément imposable
 	 */
 	@Override
@@ -2197,9 +2223,10 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ré-ouvre les rapports de prestation imposables du débiteur qui ont été fermés à la date de désactivation avec une nouvelle date d'ouverture à la réactivation
-	 * @param debiteur le débiteur sur lequel les rapports de prestation imposable doivent être ré-ouverts
+	 *
+	 * @param debiteur          le débiteur sur lequel les rapports de prestation imposable doivent être ré-ouverts
 	 * @param dateDesactivation la date à laquelle les rapports avaient été fermés
-	 * @param dateReactivation la date à laquelle les rapports doivent être ré-ouverts
+	 * @param dateReactivation  la date à laquelle les rapports doivent être ré-ouverts
 	 */
 	@Override
 	public void reopenRapportsPrestation(DebiteurPrestationImposable debiteur, RegDate dateDesactivation, RegDate dateReactivation) {
@@ -2216,7 +2243,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Supprime la date de fermeture des rapports ayant comme date de fin la date passéeé en paramètre
-	 * @param debiteur sur lequel les rapports doivent être réouverts
+	 *
+	 * @param debiteur          sur lequel les rapports doivent être réouverts
 	 * @param dateDesactivation la date à laquelle les rapports avaient été fermés
 	 */
 	private void reopenRapportsPrestationImposableFermesAt(DebiteurPrestationImposable debiteur, RegDate dateDesactivation) {
@@ -2243,9 +2271,10 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Réouvre, pour un tiers, tous ses fors fermés à une date donnée et avec le motif de fermeture spécifié si applicable.
-	 * @param date la date de fermeture
+	 *
+	 * @param date           la date de fermeture
 	 * @param motifFermeture le motif de fermeture
-	 * @param tiers le tiers pour qui les fors seront réouverts
+	 * @param tiers          le tiers pour qui les fors seront réouverts
 	 */
 	@Override
 	public void reopenForsClosedAt(RegDate date, MotifFor motifFermeture, Tiers tiers) {
@@ -2283,8 +2312,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * @param tiers tiers auquel les fors sont associés
-	 * @param reopenedFors listes des fors à sauver
+	 * @param tiers          tiers auquel les fors sont associés
+	 * @param reopenedFors   listes des fors à sauver
 	 * @param forsPrincipaux si <code>true</code>, ne s'occupe que des fors principaux, et si <code>false</code>, que des fors secondaires
 	 */
 	private void addAndSaveReopenedFors(Tiers tiers, List<ForFiscal> reopenedFors, boolean forsPrincipaux) {
@@ -2301,6 +2330,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Réouvre le for et l'assigne au tiers.
+	 *
 	 * @param ff
 	 * @param tiers
 	 */
@@ -2334,7 +2364,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme le for fiscal principal d'un contribuable.
-	 * @param contribuable le contribuable concerné
+	 *
+	 * @param contribuable  le contribuable concerné
 	 * @param dateFermeture la date de fermeture du for
 	 * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
@@ -2350,8 +2381,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme le for fiscal principal d'un contribuable.
+	 *
 	 * @param forFiscalPrincipal le for fiscal principal concerné
-	 * @param dateFermeture la date de fermeture du for
+	 * @param dateFermeture      la date de fermeture du for
 	 * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	@Override
@@ -2398,8 +2430,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme le for fiscal secondaire d'un contribuable.
-	 * @param contribuable le contribuable concerné
-	 * @param dateFermeture la date de fermeture du for
+	 *
+	 * @param contribuable   le contribuable concerné
+	 * @param dateFermeture  la date de fermeture du for
 	 * @param motifFermeture la motif de fermeture du for
 	 * @return le for fiscal secondaire fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
@@ -2589,8 +2622,9 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Annule tous les fors ouverts à la date spécifiée (et qui ne sont pas fermés) sur le contribuable donné et dont le motif d'ouverture correspond à ce qui est indiqué
-	 * @param contribuable contribuable visé
-	 * @param dateOuverture date d'ouverture des fors à annuler
+	 *
+	 * @param contribuable   contribuable visé
+	 * @param dateOuverture  date d'ouverture des fors à annuler
 	 * @param motifOuverture motif d'ouverture des fors à annuler (<code>null</code> possible si tout motif convient)
 	 */
 	@Override
@@ -2663,7 +2697,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Annule toute les périodicités du débiteur qui ont une date de début postérieur à la date passée en paramètre UNIREG-3041
-	 * @param debiteur sur qui on veut annuler les périodicités
+	 *
+	 * @param debiteur  sur qui on veut annuler les périodicités
 	 * @param dateDebut date de référence  calculée par @link #getDateDebutNouvellePeriodicite
 	 */
 	private void annulerPeriodicitePosterieur(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
@@ -2746,10 +2781,11 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme le for fiscal autre élément imposable d'un contribuable.
-	 * @param contribuable le contribuable concerné
+	 *
+	 * @param contribuable                   le contribuable concerné
 	 * @param forFiscalAutreElementImposable le for à fermer
-	 * @param dateFermeture la date de fermeture du for
-	 * @param motifFermeture la motif de fermeture du for
+	 * @param dateFermeture                  la date de fermeture du for
+	 * @param motifFermeture                 la motif de fermeture du for
 	 * @return le for fiscal autre élément imposable fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	@Override
@@ -2770,10 +2806,11 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme le for debiteur d'un contribuable.
-	 * @param debiteur le debiteur concerné
+	 *
+	 * @param debiteur                       le debiteur concerné
 	 * @param forDebiteurPrestationImposable le for débiteur concerné
-	 * @param dateFermeture la date de fermeture du for
-	 * @param fermerRapportsPrestation <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
+	 * @param dateFermeture                  la date de fermeture du for
+	 * @param fermerRapportsPrestation       <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
 	 * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	@Override
@@ -2822,7 +2859,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ferme tous les fors fiscaux d'un contribuable.
-	 * @param contribuable le contribuable concerné.
+	 *
+	 * @param contribuable  le contribuable concerné.
 	 * @param dateFermeture la date de fermeture des fors.
 	 */
 	@Override
@@ -2863,6 +2901,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Fusionne un non habitant avec un habitant
+	 *
 	 * @param habitant
 	 * @param nonHabitant
 	 */
@@ -2902,6 +2941,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
+	 *
 	 * @param tiers le tiers dont on veut débloquer le reboursement automatique.
 	 */
 	private static void resetFlagBlocageRemboursementAutomatiqueSelonFors(Tiers tiers) {
@@ -2927,6 +2967,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Copie les informations Complements
+	 *
 	 * @param tiersCible
 	 * @param tiersSource
 	 */
@@ -2972,6 +3013,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Copie les attributs de ForFiscal
+	 *
 	 * @param forFiscalSource
 	 * @param forFiscalCible
 	 */
@@ -2986,6 +3028,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Copie les attributs de ForFiscalRevenuFortune
+	 *
 	 * @param forFiscalRevenuFortuneSource
 	 * @param forFiscalRevenuFortuneCible
 	 */
@@ -3850,7 +3893,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * @param menage un ménage-commun
+	 * @param menage               un ménage-commun
 	 * @param aussiRapportsAnnules <b>vrai</b> si l'on veut aussi les rapports annulés; <b>faux</b> autrement.
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
 	 */
@@ -4065,6 +4108,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Recherche le menage commun actif auquel est rattaché une personne
+	 *
 	 * @param personne la personne potentiellement rattachée à un ménage commun
 	 * @param periode
 	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
@@ -4196,6 +4240,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
+	 *
 	 * @param tiers
 	 * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
 	 */
@@ -4217,7 +4262,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Recherche la presence d'un for actif sur une période
-	 * @param ctb un contribuable
+	 *
+	 * @param ctb     un contribuable
 	 * @param periode une période
 	 * @return <b>vrai</b> si le contribuable possède au moins un for actif pendant la période spécifiée; <b>faux</b> autrement.
 	 */
