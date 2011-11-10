@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.List;
 
+import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,14 +17,14 @@ public class ImportCodesSegmentJobTest extends BusinessTest {
 
 	@Test
 	public void testNullInputFileParsing() throws Exception {
-		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(null, new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(null, new LoggingStatusManager(LOGGER), null);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
 	}
 
 	@Test
 	public void testEmptyInputFileParsing() throws Exception {
-		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(new byte[0], new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(new byte[0], new LoggingStatusManager(LOGGER), null);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
 	}
@@ -31,7 +32,7 @@ public class ImportCodesSegmentJobTest extends BusinessTest {
 	@Test
 	public void testBasicInputFileParsing() throws Exception {
 		final String content = "NO_CTB;CODE_SEGMENT\n10010010;2\n10010011;5";
-		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), null);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(2, liste.size());
 
@@ -44,7 +45,7 @@ public class ImportCodesSegmentJobTest extends BusinessTest {
 	@Test
 	public void testInputFileParsingWithMoreThanTwoColumns() throws Exception {
 		final String content = "NO_CTB;CODE_SEGMENT;TRALALA\n10010010;2;dghjuze\n10010011;5;261\n10010001;65;";
-		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), null);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(3, liste.size());
 
@@ -59,8 +60,18 @@ public class ImportCodesSegmentJobTest extends BusinessTest {
 	@Test
 	public void testInputFileParsingWithInvalidLines() throws Exception {
 		final String content = "NO_CTB;CODE_SEGMENT\n10010010;2d\n10010011d;5\nTOTO;12353;3";
-		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), null);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
+	}
+
+	@Test
+	public void testInputFileAvecDoublons() throws Exception {
+		final String content = "NO_CTB;CODE_SEGMENT\n10010010;2\n10010011;5\n10010011;5";
+		final MutableInt nbLignesLues = new MutableInt(0);
+		final List<ContribuableAvecCodeSegment> liste = ImportCodesSegmentJob.buildDataFromInputFile(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), nbLignesLues);
+		Assert.assertNotNull(liste);
+		Assert.assertEquals(3, nbLignesLues.intValue());
+		Assert.assertEquals(2, liste.size());
 	}
 }

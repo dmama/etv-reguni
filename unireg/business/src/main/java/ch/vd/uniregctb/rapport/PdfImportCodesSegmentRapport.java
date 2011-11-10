@@ -14,7 +14,7 @@ import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
 
 public class PdfImportCodesSegmentRapport extends PdfRapport {
 
-	public void write(final ImportCodesSegmentResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
+	public void write(final ImportCodesSegmentResults results, final int nbLignesLuesFichierEntree, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
 		Assert.notNull(status);
 
@@ -37,7 +37,8 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 			addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNombreTiersAnalyses()));
+					table.addLigne("Nombre de lignes valides dans le fichier initial :", String.valueOf(nbLignesLuesFichierEntree));
+					table.addLigne("Nombre de données uniques inspectées :", String.valueOf(results.getNombreTiersAnalyses()));
 					table.addLigne("Nombre de codes modifiés :", String.valueOf(results.getTraites().size()));
 					table.addLigne("Nombre de codes laissés en l'état :", String.valueOf(results.getIgnores().size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));

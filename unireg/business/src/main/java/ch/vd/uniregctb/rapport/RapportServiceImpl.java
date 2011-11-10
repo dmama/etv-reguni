@@ -1002,11 +1002,12 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * Génère le rapport d'exécution du batch d'import des codes de segmentation fournis par TAO
 	 * @param results les résultats du batch
+	 * @param nbLignesLuesFichierEntree le nombre de lignes lues dans le fichier d'entrée (indication du nombre de doublons)
 	 * @param status le status manager
 	 * @return le rapport
 	 */
 	@Override
-	public ImportCodesSegmentRapport generateRapport(final ImportCodesSegmentResults results, StatusManager s) {
+	public ImportCodesSegmentRapport generateRapport(final ImportCodesSegmentResults results, final int nbLignesLuesFichierEntree, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportImportCodesSegment";
@@ -1018,7 +1019,7 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportCodesSegmentRapport doc, OutputStream os) throws Exception {
 					final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
+					document.write(results, nbLignesLuesFichierEntree, nom, description, dateGeneration, os, status);
 				}
 			});
 		}
