@@ -9,50 +9,40 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercherMouvementsMasse" action="consulter.do">
-			<fieldset>
-				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
+		<fieldset>
+			<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
+		    <form:form method="post" action="rechercher-pour-consultation.do" commandName="criteria">
 				<form:errors cssClass="error"/>
 				<jsp:include page="form.jsp"/>
-			</fieldset>
+			</form:form>
+		</fieldset>
 
-			<display:table name="command.results" id="mvt" pagesize="25" requestURI="/mouvement/consulter.do" class="display_table" sort="external" size="command.resultSize" partialList="true" >
+		<c:if test="${found != null}">
+			<display:table name="found.results" id="mvt" pagesize="25" requestURI="/mouvement/masse/consulter.do" class="display_table" sort="external" size="found.resultSize" partialList="true" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.mouvement.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.mouvement.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mouvements.trouves" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mouvements.trouves" /></span></display:setProperty>
 
 				<display:column sortable="true" titleKey="label.numero.tiers" sortName="contribuable.numero">
-					<c:if test="${mvt.annule}"><strike></c:if>
-						<unireg:numCTB numero="${mvt.contribuable.numero}" />
-					<c:if test="${mvt.annule}"></strike></c:if>
+					<unireg:numCTB numero="${mvt.contribuable.numero}" />
 				</display:column>
 				<display:column sortable="true" titleKey="label.date.mouvement" sortName="dateMouvement">
-					<c:if test="${mvt.annule}"><strike></c:if>
-                        <fmt:formatDate value="${mvt.dateMouvement}" pattern="dd.MM.yyyy"/>
-					<c:if test="${mvt.annule}"></strike></c:if>
+                    <fmt:formatDate value="${mvt.dateMouvement}" pattern="dd.MM.yyyy"/>
 				</display:column>
 				<display:column titleKey="label.type.mouvement" >
-					<c:if test="${mvt.annule}"><strike></c:if>
-					    <fmt:message key="option.type.mouvement.${mvt.typeMouvement}"/>
-					<c:if test="${mvt.annule}"></strike></c:if>
+				    <fmt:message key="option.type.mouvement.${mvt.typeMouvement}"/>
 				</display:column>
 				<display:column sortable="true" titleKey="label.etat.mouvement" sortName="etat">
-					<c:if test="${mvt.annule}"><strike></c:if>
-					    <fmt:message key="option.etat.mouvement.${mvt.etatMouvement}"/>
-					<c:if test="${mvt.annule}"></strike></c:if>
+				    <fmt:message key="option.etat.mouvement.${mvt.etatMouvement}"/>
 				</display:column>
-				<c:if test="${command.montreInitiateur}">
+				<c:if test="${montrerInitiateur}">
                     <display:column titleKey="label.collectivite.administrative">
-                        <c:if test="${mvt.annule}"><strike></c:if>
-                            <c:out value="${mvt.collectiviteAdministrative}"/>
-                        <c:if test="${mvt.annule}"></strike></c:if>
+                    	<c:out value="${mvt.collectiviteAdministrative}"/>
                     </display:column>
                 </c:if>
 				<display:column titleKey="label.destination.utilisateur" >
-					<c:if test="${mvt.annule}"><strike></c:if>
-						<c:out value="${mvt.destinationUtilisateur}" />
-					<c:if test="${mvt.annule}"></strike></c:if>
+					<c:out value="${mvt.destinationUtilisateur}" />
 				</display:column>
 
                 <display:column style="action">
@@ -61,8 +51,7 @@
                 </display:column>
 
 			</display:table>
-
-		</form:form>
+		</c:if>
 
    </tiles:put>
    

@@ -191,14 +191,15 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="50%" style="text-align: center;">
-			<input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/>
+			<input type="submit" value="<fmt:message key='label.bouton.rechercher'/>"/>
 			&nbsp;
-			<input type="submit" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" />
-			<c:if test="${command.resultSize > 0}">
-				&nbsp;
-				<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
-			</c:if>
+			<input type="button" value="<fmt:message key='label.bouton.effacer'/>" onclick="document.location.href='consulter.do?action=EFFACER'"/>
 		</td>
-		<td width="25%"> &nbsp;</td>
+		<td width="25%">
+			<c:if test="${montrerExport}">
+				<input type="button" value="<fmt:message key='label.bouton.exporter'/>" onclick="document.location.href='consulter.do?action=EXPORTER'"/>
+			</c:if>
+			&nbsp;
+		</td>
 	</tr>
 </table>

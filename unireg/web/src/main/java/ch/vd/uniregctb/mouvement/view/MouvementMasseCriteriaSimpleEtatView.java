@@ -25,8 +25,8 @@ public class MouvementMasseCriteriaSimpleEtatView extends MouvementMasseCriteria
 	}
 
 	@Override
-	public void init(boolean montreInitiateur) {
-		super.init(montreInitiateur);
+	public void init() {
+		super.init();
 		this.etatMouvement = null;
 	}
 

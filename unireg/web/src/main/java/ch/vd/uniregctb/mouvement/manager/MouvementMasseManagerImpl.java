@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.mutable.MutableLong;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -87,14 +87,14 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws ServiceInfrastructureException {
+	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws ServiceInfrastructureException {
 
 		if (view == null) {
 			return null;
 		}
 
 		final MouvementDossierCriteria criteria = createCoreCriteria(view, noCollAdmInitiatrice);
-		final long count = getMouvementDossierDAO().count(criteria);
+		final int count = getMouvementDossierDAO().count(criteria);
 		if (total != null) {
 			total.setValue(count);
 		}

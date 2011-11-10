@@ -41,7 +41,7 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @param criteria
 	 * @return
 	 */
-	long count(MouvementDossierCriteria criteria);
+	int count(MouvementDossierCriteria criteria);
 
 	/**
 	 * Recherche de plusieurs mouvements de dossier par ID en même temps

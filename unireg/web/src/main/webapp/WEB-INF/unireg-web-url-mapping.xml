@@ -195,9 +195,6 @@
 				<!-- Mouvements de dossier -->
 				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
 				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />
-				<!-- Mouvements de dossier de masse -->
-				<entry key="/mouvement/consulter.do" value-ref="mouvementMasseConsultationController" />
-				<entry key="/mouvement/traiter.do" value-ref="mouvementMasseTraitementController" />
 				<!-- Tâches en instance / Nouveaux dossiers -->
 				<entry key="/tache/list.do" value-ref="tacheListController" />
 				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />

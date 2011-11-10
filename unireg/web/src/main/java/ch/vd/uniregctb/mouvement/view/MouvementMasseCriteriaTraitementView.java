@@ -49,8 +49,8 @@ public class MouvementMasseCriteriaTraitementView extends MouvementMasseCriteria
 	}
 
 	@Override
-	public void init(boolean montreInitiateur) {
-		super.init(montreInitiateur);
+	public void init() {
+		super.init();
 		mouvementsPourArchives = false;
 		retireMvtId = null;
 		reinitMvtId = null;

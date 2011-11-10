@@ -357,17 +357,17 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	}
 
 	@Override
-	public long count(MouvementDossierCriteria criteria) {
+	public int count(MouvementDossierCriteria criteria) {
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildCountHql(criteria, params);
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Long>() {
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Integer>() {
 			@Override
-			public Long doInHibernate(Session session) throws HibernateException, SQLException {
+			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				for (int i = 0 ; i < params.size() ; ++ i) {
 					query.setParameter(i, params.get(i));
 				}
-				return (Long) query.uniqueResult();
+				return ((Number) query.uniqueResult()).intValue();
 			}
 		});
 	}

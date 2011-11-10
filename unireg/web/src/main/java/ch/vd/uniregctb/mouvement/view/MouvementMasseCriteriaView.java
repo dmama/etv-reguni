@@ -2,7 +2,6 @@ package ch.vd.uniregctb.mouvement.view;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -73,22 +72,6 @@ public abstract class MouvementMasseCriteriaView {
 	 * Si oui ou non il faut se limiter au dernier mouvement traité de chaque dossier
 	 */
 	private boolean seulementDernierMouvementDossiers;
-
-	/**
-	 * Resultats de la recherche (par page)
-	 */
-	private List<MouvementDetailView> results;
-
-	/**
-	 * Nombre total de résultats trouvés
-	 */
-	private int resultSize;
-
-	/**
-	 * Ne montre la collectivité initiatrice du mouvement que
-	 * si ce flag est <code>true</code>
-	 */
-	private boolean montreInitiateur;
 
 	public Long getNoCtb() {
 		return noCtb;
@@ -212,31 +195,10 @@ public abstract class MouvementMasseCriteriaView {
 		this.noCtbFormatte = noCtbFormatte;
 	}
 
-	public List<MouvementDetailView> getResults() {
-		return results;
-	}
-
-	public void setResults(List<MouvementDetailView> results) {
-		this.results = results;
-	}
-
-	public int getResultSize() {
-		return resultSize;
-	}
-
-	public void setResultSize(int resultSize) {
-		this.resultSize = resultSize;
-	}
-
-	public boolean isMontreInitiateur() {
-		return montreInitiateur;
-	}
-
 	/**
 	 * Nettoyage des critères de recherche et des résultats
-	 * @param montreInitiateur
 	 */
-	public void init(boolean montreInitiateur) {
+	public void init() {
 		this.collAdmDestinataire = null;
 		this.dateMouvementMax = null;
 		this.dateMouvementMin = null;
@@ -247,10 +209,7 @@ public abstract class MouvementMasseCriteriaView {
 		this.noCtb = null;
 		this.noCtbFormatte = null;
 		this.noIndividuDestinataire = null;
-		this.results = null;
-		this.resultSize = 0;
 		this.typeMouvement = null;
-		this.montreInitiateur = montreInitiateur;
 	}
 
 	/**

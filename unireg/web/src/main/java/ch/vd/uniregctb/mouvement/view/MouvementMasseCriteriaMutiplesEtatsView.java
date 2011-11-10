@@ -94,8 +94,8 @@ public class MouvementMasseCriteriaMutiplesEtatsView extends MouvementMasseCrite
 	}
 
 	@Override
-	public void init(boolean montreInitiateur) {
-		super.init(montreInitiateur);
+	public void init() {
+		super.init();
 		wantTous = getDefaultWantTous();
 		wantATraiter = getDefaultWantATraiter();
 		wantAEnvoyer = getDefaultWantAEnvoyer();

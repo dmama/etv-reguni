@@ -37,37 +37,21 @@
 	
 	<bean id="mouvementEditManager" class="ch.vd.uniregctb.mouvement.manager.MouvementEditManagerImpl" parent="abstractMouvementManager"/>
 
-	<bean id="abstractMouvementMasseController" abstract="true" class="ch.vd.uniregctb.mouvement.AbstractMouvementMasseController" parent="abstractMouvementController">
-		<property name="mouvementManager" ref="mouvementMasseManager"/>
-		<property name="sessionForm" value="true"/>
-		<property name="commandName" value="command"/>
-	</bean>
-
-	<bean id="abstractMouvementMasseRechercheController" abstract="true" class="ch.vd.uniregctb.mouvement.AbstractMouvementMasseRechercheController" parent="abstractMouvementMasseController"/>
-
-	<bean id="mouvementMasseConsultationController" class="ch.vd.uniregctb.mouvement.MouvementMasseConsultationController" parent="abstractMouvementMasseRechercheController">
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaSimpleEtatView"/>
-		<property name="formView" value="mouvement/masse/consult/list"/>
-		<property name="validator" ref="mouvementMasseConsultationValidator"/>
-	</bean>
-
 	<bean id="mouvementMasseManager" class="ch.vd.uniregctb.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
 		<property name="mouvementService" ref="mouvementService"/>
 		<property name="bordereauDAO" ref="bordereauMouvementDossierDAO"/>
 		<property name="extractionService" ref="extractionService" />
 	</bean>
 
-	<bean id="mouvementMasseConsultationValidator" class="ch.vd.uniregctb.mouvement.validator.MouvementMasseConsultationValidator"/>
-
-	<bean id="mouvementMasseTraitementController" class="ch.vd.uniregctb.mouvement.MouvementMasseTraitementController" parent="abstractMouvementMasseRechercheController">
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaTraitementView"/>
-		<property name="formView" value="mouvement/masse/traitement/list"/>
-	</bean>
-
 	<bean id="bordereauMouvementDossierController" class="ch.vd.uniregctb.mouvement.BordereauController">
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+	</bean>
+
+	<bean id="mouvementMasseController" class="ch.vd.uniregctb.mouvement.MouvementMasseController">
+		<property name="mouvementManager" ref="mouvementMasseManager"/>
+		<property name="mouvementMapHelper" ref="mouvementMapHelper"/>
 	</bean>
 
 </beans>

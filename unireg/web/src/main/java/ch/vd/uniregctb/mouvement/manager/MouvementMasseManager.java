@@ -2,7 +2,7 @@ package ch.vd.uniregctb.mouvement.manager;
 
 import java.util.List;
 
-import org.apache.commons.lang.mutable.MutableLong;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.ParamPagination;
@@ -30,10 +30,11 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param view la vue où les critères de recherche sont remplis
 	 * @param noCollAdmInitiatrice si non vide, la recherche ne s'effectue que sur les mouvements initiés par cette collectivité administrative
 	 * @param paramPagination pagination à utiliser
-	 * @param total En sortie, le nombre total de mouvements qui satifont aux critères   @return Liste paginée de mouvements (jamais null si la view n'est pas nulle)
+	 * @param total En sortie, le nombre total de mouvements qui satifont aux critères
+	 * @return Liste paginée de mouvements (jamais null si la view n'est pas nulle)
 	 */
 	@Transactional(readOnly = true)
-	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws ServiceInfrastructureException;
+	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableInt total) throws ServiceInfrastructureException;
 
 	/**
 	 * Demande l'export de la liste retournée par les critères donné

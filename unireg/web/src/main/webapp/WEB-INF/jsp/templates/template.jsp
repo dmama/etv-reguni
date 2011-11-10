@@ -166,8 +166,8 @@ function ouvrirAide(url) {
 					<authz:authorize ifAnyGranted="ROLE_MVT_DOSSIER_MASSE">
 					    <li><fmt:message key="title.mouvements.dossiers.masse"/>
 					        <ul>
-					        <li><a href="<c:url value='/mouvement/consulter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.consulter"/></a></li>
-					        <li><a href="<c:url value='/mouvement/traiter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.traiter"/></a></li>
+					        <li><a href="<c:url value='/mouvement/masse/consulter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.consulter"/></a></li>
+					        <li><a href="<c:url value='/mouvement/masse/pour-traitement.do'/>"><fmt:message key="title.mouvements.dossiers.masse.traiter"/></a></li>
 					        <li><a href="<c:url value='/mouvement/bordereau/a-imprimer.do'/>"><fmt:message key="title.mouvements.dossiers.masse.imprimer.bordereaux"/></a></li>
 					        <li><a href="<c:url value='/mouvement/bordereau/reception.do'/>"><fmt:message key="title.mouvements.dossiers.masse.receptionner"/></a></li>
 					        </ul>
