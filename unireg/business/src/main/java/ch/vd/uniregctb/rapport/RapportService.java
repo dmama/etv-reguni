@@ -430,10 +430,11 @@ public interface RapportService {
 	/**
 	 * Génère le rapport d'exécution du batch d'import des codes de segmentation fournis par TAO
 	 * @param results les résultats du batch
+	 * @param nbLignesLuesFichierEntree le nombre de lignes lues dans le fichier d'entrée (indication du nombre de doublons)
 	 * @param status le status manager
 	 * @return le rapport
 	 */
-	ImportCodesSegmentRapport generateRapport(ImportCodesSegmentResults results, StatusManager status);
+	ImportCodesSegmentRapport generateRapport(ImportCodesSegmentResults results, int nbLignesLuesFichierEntree, StatusManager status);
 
 	/**
 	 * Génère le rapport dexécution du batch d'import des immeubles du registre foncier.
