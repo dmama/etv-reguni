@@ -1840,6 +1840,11 @@ public class TiersServiceImpl implements TiersService {
 		try {
 			final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 			final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+			//Les EGID ne peuvent être déterminées, on retourne false
+			if (adresseDomicileEnfant == null || adresseDomicileParent == null) {
+				return false;
+			}
+
 			if (parent instanceof PersonnePhysique) {
 				//Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
 				final boolean hasParentsAvecEgidDifferent =

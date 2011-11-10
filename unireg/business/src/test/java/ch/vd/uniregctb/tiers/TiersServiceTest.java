@@ -5019,6 +5019,72 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 
+	//SIFISC-3053
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationEnfantSansDomicile() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
+				fils.setParents(Arrays.<Individu>asList(mere, pere));
+				fille.setParents(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(1, enfantsForDeclaration.size());
+	}
+
+
 	//2 parents non en couple avec le même EGID.
 	@Test
 	@Transactional
