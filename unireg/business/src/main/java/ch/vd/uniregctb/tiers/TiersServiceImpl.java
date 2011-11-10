@@ -1829,20 +1829,25 @@ public class TiersServiceImpl implements TiersService {
 		return listeEnfants;
 	}
 
-	/** L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition.
-	 * Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant. Si
-	 * deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI.
-	 * Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
+	/**
+	 * L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID
+	 * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI. Si les deux parents ne sont pas en
+	 * ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
 	 *
-	 * @param parent  le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
-	 * @param enfant   qui est succeptible d'être rajouter sur la DI
-	 * @param finPeriodeImposition   date de fin de période d'imposition
-	 * @return     <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
+	 * @param parent               le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
+	 * @param enfant               qui est succeptible d'être rajouter sur la DI
+	 * @param finPeriodeImposition date de fin de période d'imposition
+	 * @return <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
 	 */
 	private boolean isEgidCoherent(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
 		try {
 			final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 			final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+			//Les EGID ne peuvent être déterminées, on retourne false
+			if (adresseDomicileEnfant == null || adresseDomicileParent == null) {
+				return false;
+			}
+
 			if (parent instanceof PersonnePhysique) {
 				//Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
 				final boolean hasParentsAvecEgidDifferent =
@@ -1861,7 +1866,8 @@ public class TiersServiceImpl implements TiersService {
 					final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 					final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
 					//Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant.
-					if (TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
+					//noinspection SimplifiableIfStatement
+					if (adresseDomicilePrincipal != null && adresseDomicileConjoint != null && TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
 						return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 
 					}
@@ -1885,7 +1891,6 @@ public class TiersServiceImpl implements TiersService {
 		//Dans tous les autres cas, on retourne faux, on ne prend pas de risque
 		return false;
 	}
-
 
 	@Override
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
