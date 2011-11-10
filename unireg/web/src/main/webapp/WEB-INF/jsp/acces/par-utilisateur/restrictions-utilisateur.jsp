@@ -80,7 +80,7 @@
 				}
 			</script>
 			<display:table
-					name="command.restrictions" id="restriction" pagesize="10" 
+					name="command.restrictions" id="restriction" pagesize="25"
 					requestURI="${url}"
 					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:column sortable ="false" title="<input type='checkbox'  class='master' onclick='javascript:onClickMaster(this);' />">
