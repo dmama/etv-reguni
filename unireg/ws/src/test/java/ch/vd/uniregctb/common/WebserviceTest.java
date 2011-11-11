@@ -6,8 +6,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
@@ -110,14 +108,5 @@ public abstract class WebserviceTest extends AbstractBusinessTest {
 			serviceInfra.tearDown();
 			throw e;
 		}
-	}
-
-	/**
-	 * @return l'objet BeanPropertyBindingResult renseigné par spring suite à l'exécution d'une méthode 'onSubmit' d'un controller.
-	 */
-	protected BeanPropertyBindingResult getBindingResult(final ModelAndView mav) {
-		final BeanPropertyBindingResult exception = (BeanPropertyBindingResult) mav.getModel().get(
-				"org.springframework.validation.BindingResult.command");
-		return exception;
 	}
 }
