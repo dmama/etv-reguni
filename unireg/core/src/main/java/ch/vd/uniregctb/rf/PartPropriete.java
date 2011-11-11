@@ -56,12 +56,7 @@ public class PartPropriete {
 
 	@Override
 	public String toString() {
-		if (denominateur == 1) {
-			return String.valueOf(numerateur);
-		}
-		else {
-			return String.format("%d/%d", numerateur, denominateur);
-		}
+		return String.format("%d/%d", numerateur, denominateur);
 	}
 
 	public static PartPropriete parse(String s) {
