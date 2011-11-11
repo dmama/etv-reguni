@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Classe de base pour les classes de test de l'assujettissement et des périodes d'imposition.
@@ -80,6 +82,37 @@ public abstract class MetierTest extends BusinessTest {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		return paul;
+	}
+
+	protected EnsembleTiersCouple createMenageSansFor(RegDate dateMariage, @Nullable RegDate datePremiereSeparation) {
+		return createMenageSansFor(null, dateMariage, datePremiereSeparation);
+	}
+
+	protected EnsembleTiersCouple createMenageSansFor(@Nullable Long noTiers, RegDate dateMariage, @Nullable RegDate datePremiereSeparation) {
+		return createMenageSansFor(noTiers, dateMariage, datePremiereSeparation, null, null);
+	}
+
+	protected EnsembleTiersCouple createMenageSansFor(RegDate dateMariage, @Nullable RegDate datePremiereSeparation, @Nullable RegDate dateReconciliation, @Nullable RegDate dateSecondeSeparation) {
+		return createMenageSansFor(null, dateMariage, datePremiereSeparation, dateReconciliation, dateSecondeSeparation);
+	}
+
+	protected EnsembleTiersCouple createMenageSansFor(@Nullable Long noTiers, RegDate dateMariage, @Nullable RegDate datePremiereSeparation, @Nullable RegDate dateReconciliation,
+	                                                  @Nullable RegDate dateSecondeSeparation) {
+
+		final PersonnePhysique principal = addNonHabitant("Jean", "Moulin", date(1934, 1, 1), Sexe.MASCULIN);
+		final PersonnePhysique conjoint = addNonHabitant("Jeanne", "Moulin", date(1934, 1, 1), Sexe.FEMININ);
+
+		// mariage puis séparation
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noTiers, principal, conjoint, dateMariage, datePremiereSeparation);
+		final MenageCommun ctb = ensemble.getMenage();
+
+		if (dateReconciliation != null) {
+			// réconciliation pour re-séparation
+			addAppartenanceMenage(ctb, principal, dateReconciliation, dateSecondeSeparation, false);
+			addAppartenanceMenage(ctb, conjoint, dateReconciliation, dateSecondeSeparation, false);
+		}
+
+		return ensemble;
 	}
 
 	protected EnsembleTiersCouple createMenageCommunMarie(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage) {
@@ -264,18 +297,19 @@ public abstract class MetierTest extends BusinessTest {
 	}
 
 	protected Contribuable createDepartHorsCantonSourcierMixte137Al1_Invalide(@Nullable final Long noTiers, final RegDate dateDepart) throws Exception {
-		return doWithoutValidation(new ExecuteCallback<Contribuable>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-			@Override
-			public Contribuable execute() throws Exception {
-				Contribuable paul = createContribuableSansFor(noTiers);
-				ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				return paul;
-			}
-		});
+		return doWithoutValidation(
+				new ExecuteCallback<Contribuable>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+					@Override
+					public Contribuable execute() throws Exception {
+						Contribuable paul = createContribuableSansFor(noTiers);
+						ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+						ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+						ffp = addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+						ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+						return paul;
+					}
+				});
 	}
 
 	protected Contribuable createDepartHorsCantonSourcierMixte137Al2(RegDate dateDepart) throws Exception {
@@ -558,18 +592,19 @@ public abstract class MetierTest extends BusinessTest {
 	}
 
 	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1_Invalide(@Nullable final Long noTiers, final RegDate dateArrivee) throws Exception {
-		return doWithoutValidation(new ExecuteCallback<Contribuable>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-			@Override
-			public Contribuable execute() throws Exception {
-				Contribuable paul = createContribuableSansFor(noTiers);
-				ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				return paul;
-			}
-		});
+		return doWithoutValidation(
+				new ExecuteCallback<Contribuable>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+					@Override
+					public Contribuable execute() throws Exception {
+						Contribuable paul = createContribuableSansFor(noTiers);
+						ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+						ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+						ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+						ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+						return paul;
+					}
+				});
 	}
 
 	protected Contribuable createArriveeHorsCantonSourcierMixte137Al2(RegDate dateArrivee) throws Exception {
@@ -588,7 +623,8 @@ public abstract class MetierTest extends BusinessTest {
 	protected Contribuable createSourcierPur() throws Exception {
 		Contribuable paul = createContribuableSansFor();
 		addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2002, 2, 21), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens).setModeImposition(ModeImposition.SOURCE);
-		addForPrincipal(paul, date(2002, 2, 22), MotifFor.DEMENAGEMENT_VD, date(2002, 9, 26), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey).setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(paul, date(2002, 2, 22), MotifFor.DEMENAGEMENT_VD, date(2002, 9, 26), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey).setModeImposition(
+				ModeImposition.SOURCE);
 		addForPrincipal(paul, date(2003, 10, 24), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2008, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey).setModeImposition(ModeImposition.SOURCE);
 		addForPrincipal(paul, date(2008, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne).setModeImposition(ModeImposition.SOURCE);
 		
@@ -854,6 +890,17 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(fin, assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+	}
+
+	protected void assertSourcierMixteArt137Al2(RegDate debut, @Nullable MotifFor motifFractDebut, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+		assertNotNull(assujettissement);
+		assertInstanceOf(SourcierMixteArt137Al2.class, assujettissement);
+		final SourcierMixteArt137Al2 a = (SourcierMixteArt137Al2) assujettissement;
+		assertEquals(debut, assujettissement.getDateDebut());
+		assertNull(assujettissement.getDateFin());
+		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
+		assertNull(assujettissement.getMotifFractFin());
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
 	}
 

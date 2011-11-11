@@ -2872,7 +2872,7 @@ public class AssujettissementTest extends MetierTest {
 		// Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement
 		// au 31 décembre pour motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré
 		addForPrincipal(paul, date(2005, 10, 1), MotifFor.ARRIVEE_HC, date(2005, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-		addForPrincipal(paul, date(2006,1, 1), MotifFor.INDETERMINE, date(2006, 12, 31), MotifFor.DEPART_HC, MockCommune.Cossonay);
+		addForPrincipal(paul, date(2006, 1, 1), MotifFor.INDETERMINE, date(2006, 12, 31), MotifFor.DEPART_HC, MockCommune.Cossonay);
 
 		// 2004
 		{
@@ -3028,10 +3028,14 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineCoupleHCAvecImmeubleMariageDivorcePuisReconciliationEtArriveeDansLeCantonLeToutLaMemeAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10772397L);
+		final EnsembleTiersCouple ensemble = createMenageSansFor(date(2000, 1, 1), date(2010, 6, 14), date(2010, 7, 8), date(2011, 6, 6));
+		final MenageCommun ctb = ensemble.getMenage();
+
 		addForPrincipal(ctb, date(2010, 5, 12), MotifFor.INDETERMINE, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2010, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
+
+
 		addForPrincipal(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
 		addForSecondaire(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 				MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3051,7 +3055,7 @@ public class AssujettissementTest extends MetierTest {
 		final Contribuable ctb = createContribuableSansFor(30928601L);
 		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.INDETERMINE, date(1980, 1, 6), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForPrincipal(ctb, date(1980, 12, 30), MotifFor.INDETERMINE, MockPays.PaysInconnu);
-		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = Assujettissement.determine(ctb);
 		assertEquals(1, liste.size());
@@ -3060,10 +3064,110 @@ public class AssujettissementTest extends MetierTest {
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(
+			description = "Vérifie qu'un contribuable PP vaudois avec immeuble qui se marie n'est pas assujetti dans l'année de son mariage")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineMariagePPVaudoisAvecImmeuble() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10003678L);
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage vaudois avec immeuble qui se sépare n'est pas assujetti dans l'année de la séparation")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineSeparationMenageVaudoisAvecImmeuble() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un contribuable PP hors-canton avec immeuble qui se marie n'est pas assujetti dans l'année de son mariage (parce que le motif de fermeture du for secondaire est mariage)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineMariagePPHorsCantonAvecImmeuble() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10003678L);
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage hors-canton avec immeuble qui se sépare n'est pas assujetti dans l'année de sa séparation (parce que le motif de fermeture du for secondaire est séparation)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineSeparationMenageHorsCantonAvecImmeuble() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un contribuable PP vaudois qui vend son immeuble et se marie dans l'année n'est pas assujetti dans l'année de son mariage (le couple recevra un déclaration et devra déclarer son immeuble dessus)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleEtMariageMemeAnneePPVaudois() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10003678L);
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage vaudois qui vend son immeuble et se sépare dans l'année n'est pas assujetti dans l'année de sa séparation (chacun des composants recevra un déclaration et devronz déclarer l'immeuble dessus)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleEtSeparationMemeAnneeMenageVaudois() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
 			description = "Cas du contribuable n°10003678 (vérifie que l'assujettissement va jusqu'au 31 décembre de l'année courante lors de la vente d'un immeuble d'un contribuable hors-canton alors que le for principal se ferme avec motif mariage)")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDeterminePseudoMariageMaisVraieVenteImmeubleCtbHorsCanton() throws Exception {
+	public void testDetermineVenteImmeubleEtMariageMemeAnneePPHorsCanton() throws Exception {
 
 		final Contribuable ctb = createContribuableSansFor(10003678L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
@@ -3071,7 +3175,316 @@ public class AssujettissementTest extends MetierTest {
 
 		final List<Assujettissement> liste = Assujettissement.determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2003, 1, 1), date(2006,12,31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage hors-canton qui vend son immeuble puis se sépare la même année est bien assujetti sur toute l'année de la séparation.")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleEtSeparationMemeAnneeMenageHorsCanton() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un contribuable PP qui arrive de hors-canton avec un immeuble puis se marie n'est pas assujetti sur l'année de son mariage (car l'assujettissment est supposé être reporté sur le couple)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHCAvecImmeublePuisMariageMemeAnneePP() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage qui arrive de hors-canton avec un immeuble puis se sépare n'est pas assujetti sur l'année de la séparation (car les deux composants du couple seront assujettis individuellement et devront déclarer l'immeuble chacun de leur côté)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHCAvecImmeublePuisSeparationMemeAnneeMenage() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable PP n°10000032 (vérifie que l'assujettissement hors-canton pour l'année 2003 est ignoré car il est supposé être reporté sur le couple)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHCVenteImmeublePuisMariageMemeAnneePP() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage qui arrive de hors-canton avec un immeuble, le vend puis se sépare n'est pas assujetti sur l'année de la séparation (car les deux composants du couple seront assujettis individuellement et devront déclarer l'immeuble chacun de leur côté)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHCVenteImmeublePuisSeparationMemeAnneeMenage() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie que l'assujettissement de la PP pour l'année 2003 est ignoré car il est supposé être reporté sur le couple")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisMariageMemeAnneePP() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifique qu'un ménage hors-canton qui vend son immeuble, arrive de hors-canton puis se sépare n'est pas assujetti sur l'année de la séparation (car les deux composants du couple seront assujettis individuellement et devront déclarer l'immeuble chacun de leur côté)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisSeparationMemeAnneeMenage() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie que le contribuable PP est bien assujetti sur toute l'année en raison de sa présence sur sol vaudois le 31 décembre 2003")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisMariageEtEnfinSeparationMemeAnneePP() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertOrdinaire(date(2003, 1, 1), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, list.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage commun hors-canton qui vend son immeuble, arrive de hors-canton, se sépare et se réconcile est bien assujetti sur toute l'année en raison de sa présence sur sol vaudois le 31 décembre 2003")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisSeparationEtEnfinReconciliationMemeAnneeMenage() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertOrdinaire(date(2003, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, list.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie que le contribuable PP est bien assujetti sur toute l'année en tant que hors-canton immeuble en raison de la vente de son immeuble en début d'année (l'effet du mariage est annulé par la séparation dans la même année)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisMariagePuisDepartHCEtEnfinSeparationMemeAnneePP() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.VENTE_IMMOBILIER, list.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie qu'un ménage commun hors-canton qui vend son immeuble, arrive de hors-canton, se sépare, part hors-canton et se réconcile est bien assujetti sur toute l'année comme hors-canton.")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineVenteImmeubleArriveeHCPuisSeparationPuisDepartHCEtEnfinReconciliationMemeAnneeMenage() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
+		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
+		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VENTE_IMMOBILIER, list.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=30928601&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Contribuable hors-canton qui achète et vend deux immeubles à deux moment instants d'une même année (vérifie que l'algo ne crashe pas)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineContribuableAvecDeuxImmeublesHCDisjointsDansLaMemeAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(30928601L);
+		addForPrincipal(ctb, date(2007, 3, 7), MotifFor.INDETERMINE, date(2007, 5, 30), MotifFor.INDETERMINE, MockCommune.Neuchatel);
+		addForPrincipal(ctb, date(2007, 9, 12), MotifFor.INDETERMINE, MockCommune.Geneve);
+		addForSecondaire(ctb, date(2007, 3, 7), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 9, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 11, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10010236&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable n°10010236 (vérifie que l'assujettissement hors-canton pour l'année 2004 est bien présent)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineSourcierMixteHCAchatImmeubleEtArriveeHCMemeAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10010236L);
+		addForPrincipal(ctb, date(2004, 1, 29), MotifFor.INDETERMINE, date(2004, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2004, 2, 1), MotifFor.ARRIVEE_HC, MockCommune.Nyon);
+		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(2, liste.size());
+		assertHorsCanton(date(2004, 1, 1), date(2004, 1, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2004, 2, 1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=36502102&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable n°36502102 (vérifie que le contribuable n'est pas assujetti)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineCtbMariageEtSeparationDeuxFoisDansAnneeEtMotifsBizarres() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(36502102L);
+		addForPrincipal(ctb, date(2001, 5, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 26), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
+		addForPrincipal(ctb, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
+
+		assertEmpty(Assujettissement.determine(ctb));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=36216757&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable PP n°36216757 (vérifie que le contribuable est bien assujetti sur toute l'année, malgré le motif de séparation qui manque)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePPMariageEtSeparationDansAnneeMaisMotifIndetermine() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(36502102L);
+		addForPrincipal(ctb, date(1997, 1, 1), MotifFor.ARRIVEE_HS, date(2000, 3, 24), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Croy);
+		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=36216757&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Vérifie que le ménage est bien assujetti sur toute l'année, malgré le motif de réconciliation qui manque)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineMenageSeparationEtReconciliationDansAnneeMaisMotifIndetermine() throws Exception {
+
+		final Contribuable ctb = createMenageSansFor(10003678L, date(1997, 1, 1), date(2000, 3, 24), date(2000, 10, 3), null).getMenage();
+		addForPrincipal(ctb, date(1997, 1, 1), MotifFor.ARRIVEE_HS, date(2000, 3, 24), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Croy);
+		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(1, liste.size());
+		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10048078&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable PP n°10048078 (vérifie que l'algorithme ne crash pas en cas d'un départ hors-Suisse au 31 décembre)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDepartHorsSuisseLe31Decembre() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10048078L);
+		addForPrincipal(ctb, date(2005, 10, 27), MotifFor.INDETERMINE, date(2007, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+		addForPrincipal(ctb, date(2007, 2, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(ctb, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
+		addForSecondaire(ctb, date(2005, 10, 27), MotifFor.DEBUT_EXPLOITATION, date(2011, 3, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(3, liste.size());
+		assertHorsCanton(date(2005, 1, 1), date(2006, 12, 31), MotifFor.DEBUT_EXPLOITATION, MotifFor.ARRIVEE_HC, liste.get(0));
+		assertOrdinaire(date(2007, 1, 1), date(2007, 12, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, liste.get(1));
+		assertHorsSuisse(date(2007, 12, 31), date(2011, 3, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.FIN_EXPLOITATION, liste.get(2));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=41010811&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable PP n°41010811 (vérifie que l'algorithme calcul bien un assujettissement hors-Suisse de 1 jour pour le 27 décembre 1997)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDepartHorsSuisseEtArriveeHorsSuisseMemeJour() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(41010811L);
+		addForPrincipal(ctb, date(1991, 1, 6), MotifFor.ARRIVEE_HS, date(1997, 12, 26), MotifFor.DEPART_HS, MockCommune.YverdonLesBains);
+		addForPrincipal(ctb, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
+		addForSecondaire(ctb, date(1997, 12, 27), MotifFor.ACHAT_IMMOBILIER, date(1997, 12, 27), MotifFor.VENTE_IMMOBILIER, MockCommune.YverdonLesBains.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForPrincipal(ctb, date(1997, 12, 28), MotifFor.ARRIVEE_HS, MockCommune.YverdonLesBains);
+
+		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		assertEquals(3, liste.size());
+		assertOrdinaire(date(1991, 1, 6), date(1997, 12, 26), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, liste.get(0));
+		assertHorsSuisse(date(1997, 12, 27), date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, liste.get(1));
+		assertOrdinaire(date(1997, 12, 28), null, MotifFor.ARRIVEE_HS, null, liste.get(2));
 	}
 
 	private static Set<Integer> buildSetFromArray(Integer... ints) {

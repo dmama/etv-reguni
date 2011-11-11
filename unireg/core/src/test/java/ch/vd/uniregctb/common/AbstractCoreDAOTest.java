@@ -834,9 +834,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected EnsembleTiersCouple addEnsembleTiersCouple(@Nullable Long noTiers, PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 
-		MenageCommun menage = new MenageCommun();
-		menage.setNumero(noTiers);
-		menage = hibernateTemplate.merge(menage);
+		final MenageCommun menage = addMenageCommun(noTiers);
 		principal = hibernateTemplate.merge(principal);
 		if (conjoint != null) {
 			conjoint = hibernateTemplate.merge(conjoint);
@@ -853,6 +851,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		ensemble.setConjoint(conjoint);
 
 		return ensemble;
+	}
+
+	protected MenageCommun addMenageCommun(Long noTiers) {
+		MenageCommun menage = new MenageCommun();
+		menage.setNumero(noTiers);
+		menage = hibernateTemplate.merge(menage);
+		return menage;
 	}
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {

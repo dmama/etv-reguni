@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -212,8 +213,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 			// Détermination des données d'assujettissement brutes
 			final List<Fraction> fractionnements = determineFractionnements(fors.principaux);
+			final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
 
-			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, noOfsCommunesVaudoises);
+			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
 			domicile.compacterNonAssujettissements(); // SIFISC-2939
 			assertCoherenceRanges(domicile);
 
@@ -366,8 +368,19 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 	}
 
+	/**
+	 * Contient la date et le motif de fractionnement d'un range de dates.
+	 */
 	private static class Fraction {
+		/**
+		 * La date de fractionnement <b>au matin</b>. Au matin, signifie que le fractionnement doit être appliqué à 00:00 le matin du jour spécifié.
+		 * <p/>
+		 * <b>Exemple:</b> Fractionnement du range 2005.01.01-2005.12.31 à la date 2005.05.12 => deux ranges 2005.01.01-2005.05.11 et 2005.05.12-2005.12.31.
+		 */
 		public final RegDate date;
+		/**
+		 * Le motif (= la raison) du fractionnement. Ce motif peut être nul.
+		 */
 		public final MotifFor motif;
 
 		private Fraction(@NotNull RegDate date, MotifFor motif) {
@@ -432,17 +445,150 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return Collections.unmodifiableList(fractionnements);
 	}
 
+	private static class CasParticuliers {
+
+		private boolean menageCommun;
+		private Map<Integer, Mutation> mariagesDivorces = new HashMap<Integer, Mutation>();
+
+		private CasParticuliers(boolean menageCommun) {
+			this.menageCommun = menageCommun;
+		}
+
+		public boolean isMenageCommun() {
+			return menageCommun;
+		}
+
+		public boolean hasMariage(int annee) {
+			final Mutation mutation = mariagesDivorces.get(annee);
+			return mutation != null && mutation.type == Mutation.Type.MARIAGE;
+		}
+
+		public Mutation getMariage(int annee) {
+			final Mutation mutation = mariagesDivorces.get(annee);
+			if (mutation == null || mutation.type != Mutation.Type.MARIAGE) {
+				return null;
+			}
+			return mutation;
+		}
+
+		public boolean hasDivorce(int annee) {
+			final Mutation mutation = mariagesDivorces.get(annee);
+			return mutation != null && mutation.type == Mutation.Type.DIVORCE;
+		}
+
+		public Mutation getDivorce(int annee) {
+			final Mutation mutation = mariagesDivorces.get(annee);
+			if (mutation == null || mutation.type != Mutation.Type.DIVORCE) {
+				return null;
+			}
+			return mutation;
+		}
+
+		private void add(RegDate date, Mutation.Type type) {
+			final Mutation current = new Mutation(date, type);
+			final Mutation previous = mariagesDivorces.put(date.year(), current);
+			if (previous != null && previous.date.isAfter(date)) {
+				throw new IllegalArgumentException("Cas particuliers reçus dans le désordre : ancien [" + previous + "], nouveau [" + current + "]");
+			}
+		}
+
+		public void addMariage(RegDate date) {
+			add(date, Mutation.Type.MARIAGE);
+		}
+
+		public void addDivorce(RegDate date) {
+			final Mutation previous = mariagesDivorces.get(date.year());
+			if (previous == null || previous.type != Mutation.Type.MARIAGE) { // on supporte de détecter deux divorces à la suite
+				add(date, Mutation.Type.DIVORCE);
+			}
+			else {
+				// un mariage suivi d'un divorce s'annulent
+				mariagesDivorces.remove(date.year());
+			}
+		}
+
+		public boolean isEmpty() {
+			return mariagesDivorces.isEmpty();
+		}
+	}
+
+	private static class Mutation {
+
+		public enum Type {
+			MARIAGE,
+			DIVORCE
+		}
+
+		private RegDate date;
+		private Type type;
+
+		private Mutation(RegDate date, Type type) {
+			this.date = date;
+			this.type = type;
+		}
+
+		@Override
+		public String toString() {
+			return "Mutation{" +
+					"date=" + date +
+					", type=" + type +
+					'}';
+		}
+	}
+
+	private static CasParticuliers determineCasParticuliers(Contribuable ctb, List<ForFiscalPrincipal> principaux) {
+		final boolean menageCommun = ctb instanceof MenageCommun;
+		CasParticuliers cas = new CasParticuliers(menageCommun);
+		for (ForFiscalPrincipal f : principaux) {
+			// les mariages et divorces n'ont d'influence que sur les assujettissements à raison de domicile, c'est-à-dire en présence d'un contribuable sur sol vaudois.
+			if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				if (f.getMotifOuverture() == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
+					cas.addMariage(f.getDateDebut());
+				}
+				else if (f.getMotifOuverture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
+					cas.addDivorce(f.getDateDebut());
+				}
+				if (f.getMotifFermeture() == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
+					cas.addMariage(f.getDateFin());
+				}
+				else if (f.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
+					cas.addDivorce(f.getDateFin());
+				}
+
+				final RegDate prochain31Decembre = getProchain31Decembre(f.getDateDebut());
+				if (menageCommun) {
+					final Mutation divorce = cas.getDivorce(f.getDateDebut().year());
+					if (divorce != null && divorce.date.isBefore(prochain31Decembre) && f.isValidAt(prochain31Decembre)) {
+						// pour un ménage commun, s'il y a une séparation/divorce dans l'année et qu'il y a un for fiscal vaudois valide au 31 décembre,
+						// c'est qu'il y a eu une réconciliation/mariage mais que les motifs étaient faux -> on compense
+						cas.addMariage(f.getDateDebut());
+					}
+				}
+				else {
+					final Mutation mariage = cas.getMariage(f.getDateDebut().year());
+					if (mariage != null && mariage.date.isBefore(prochain31Decembre) && f.isValidAt(prochain31Decembre)) {
+						// pour une personne physique, s'il y a un mariage/réconciliation dans l'année et qu'il y a un for fiscal vaudois valide au 31 décembre,
+						// c'est qu'il y a eu une divorce/séparation mais que les motifs étaient faux -> on compense
+						cas.addDivorce(f.getDateDebut());
+					}
+				}
+			}
+		}
+		return cas;
+	}
+
 	/**
 	 * Détermine les données d'assujettissements brutes pour les rattachements de type domicile.
 	 *
 	 * @param principaux             les fors principaux d'un contribuable
 	 * @param fractionnements        une liste vide qui contiendra les fractionnements calculés après l'exécution de la méthode
+	 * @param casParticuliers        les cas particuliers identifiés dans l'historique des fors fiscaux
 	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
-			AssujettissementException {
+	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, CasParticuliers casParticuliers,
+	                                                          @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final DataList domicile = new DataList();
 
@@ -455,18 +601,175 @@ public abstract class Assujettissement implements CollatableDateRange {
 			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
 			// on détermine l'assujettissement pour le for principal courant
-			final Data a = determine(forPrincipal, noOfsCommunesVaudoises);
-			if (a != null) {
-				// en cas de fractionnement, on réduit les assujettissements.
-				Data aa = reduire(a, forPrincipal.current, fractionnements);
-				domicile.add(aa);
+			Data a = determine(forPrincipal, noOfsCommunesVaudoises);
+			if (a == null) {
+				continue;
 			}
+
+			// on fractionne l'assujettissement, si nécessaire
+			a = fractionner(a, forPrincipal.current, fractionnements);
+			if (a == null) {
+				continue;
+			}
+
+			// on traite les cas particuliers, si nécessaire
+			a = traiterCasParticuliers(a, fractionnements, casParticuliers);
+			if (a == null) {
+				continue;
+			}
+
+			domicile.add(a);
 		}
 
 		return domicile;
 	}
 
-	private static Data reduire(Data a, ForFiscalPrincipal forSource, List<Fraction> fractions) {
+	/**
+	 * Applique les règles des cas particuliers sur l'assujettissement courant.
+	 *
+	 * @param data            un assujettissement
+	 * @param fractions       la liste des fractionnements
+	 * @param casParticuliers les cas particuliers à traiter
+	 * @return un assujettissement, éventuellement modifié; ou <b>null</b> si l'assujettissement a disparu suite au traitement.
+	 */
+	private static Data traiterCasParticuliers(Data data, List<Fraction> fractions, CasParticuliers casParticuliers) {
+
+		if (casParticuliers.isEmpty()) {
+			return data;
+		}
+
+		RegDate debut = data.debut;
+		RegDate fin = data.fin;
+
+		if (debut != null) {
+			final Limites limites = Limites.determine(debut, debut, fractions);
+			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().date;
+
+			if (casParticuliers.isMenageCommun() && casParticuliers.hasMariage(debut.year())) {
+				// en cas de mariage, le ménage commun est assumé assujetti depuis le début de l'année (ou depuis le dernier fractionnement)
+				debut = RegDateHelper.maximum(getDernier1Janvier(debut), dernierFractionnement, NullDateBehavior.EARLIEST);
+			}
+
+			if (!casParticuliers.isMenageCommun() && casParticuliers.hasDivorce(debut.year())) {
+				// en cas de divorce, la personne physique est assumée assujettie depuis le début de l'année (ou depuis le dernier fractionnement)
+				debut = RegDateHelper.maximum(getDernier1Janvier(debut), dernierFractionnement, NullDateBehavior.EARLIEST);
+			}
+		}
+		
+		if (fin != null) {
+			final Limites limites = Limites.determine(fin, fin, fractions);
+			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().date;
+			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().date;
+
+			final boolean finDejaFractionnee = (prochainFractionnement != null && fin == prochainFractionnement.getOneDayBefore());
+			if (!finDejaFractionnee) {
+				if (casParticuliers.isMenageCommun()) {
+					final Mutation divorce = casParticuliers.getDivorce(fin.year());
+					if (divorce != null && !is31Decembre(divorce.date)) {
+						// en cas de divorce, le ménage commun n'est plus assujetti à partir du 1er janvier de l'année (ou depuis le dernier fractionnement)
+						fin = RegDateHelper.maximum(RegDate.get(fin.year() - 1, 12, 31), dernierFractionnement, NullDateBehavior.EARLIEST);
+					}
+				}
+
+				if (!casParticuliers.isMenageCommun()) {
+					final Mutation mariage = casParticuliers.getMariage(fin.year());
+					if (mariage != null && !is31Decembre(mariage.date)) {
+						// en cas de mariage, la personne physique n'est plus assujettie à partir du 1er janvier de l'année (ou depuis le dernier fractionnement)
+						fin = RegDateHelper.maximum(RegDate.get(fin.year() - 1, 12, 31), dernierFractionnement, NullDateBehavior.EARLIEST);
+					}
+				}
+			}
+		}
+
+		if (debut != null && fin != null && fin.isBefore(debut)) {
+			// plus d'assujettissement
+			return null;
+		}
+
+		data.debut = debut;
+		data.fin = fin;
+
+		return data;
+	}
+
+	/**
+	 * Limites de fractionnement à gauche et à droite d'une range déterminé.
+	 */
+	private static class Limites {
+
+		private Fraction left;
+		private Fraction right;
+
+		private Limites(Fraction left, Fraction right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		public Fraction getLeft() {
+			return left;
+		}
+
+		public Fraction getRight() {
+			return right;
+		}
+
+		/**
+		 * Détermine les fractionnements immédiatement à gauche (borne inclue) et droite (borne exclue) du range de dates spécifié. Par principe, les fractions à l'intérieur du range sont ignorées.
+		 *
+		 * @param range     un range de dates
+		 * @param fractions une liste de fractions
+		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
+		 */
+		public static Limites determine(DateRange range, List<Fraction> fractions) {
+			return determine(range.getDateDebut(), range.getDateFin(), fractions);
+		}
+
+		/**
+		 * Détermine les fractionnements immédiatement à gauche (borne inclue) et droite (borne exclue) du range de dates spécifié. Par principe, les fractions à l'intérieur du range sont ignorées.
+		 *
+		 * @param dateDebut la date de début du range
+		 * @param dateFin   la date de fin du range
+		 * @param fractions une liste de fractions
+		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
+		 */
+		public static Limites determine(RegDate dateDebut, RegDate dateFin, List<Fraction> fractions) {
+
+			if (fractions.isEmpty()) {
+				return null;
+			}
+
+			Fraction left = null;
+			Fraction right = null;
+			for (Fraction f : fractions) {
+				if (dateDebut != null && f.date.isBeforeOrEqual(dateDebut)) {
+					if (left == null || left.date.isBefore(f.date)) {
+						left = f;
+					}
+				}
+				if (dateFin != null && f.date.isAfter(dateFin)) {
+					if (right == null || right.date.isAfter(f.date)) {
+						right = f;
+					}
+				}
+			}
+
+			if (left == null && right == null) {
+				return null;
+			}
+
+			return new Limites(left, right);
+		}
+	}
+
+	/**
+	 * Applique les régles de fractionnement sur l'assujettissement spécifié.
+	 *
+	 * @param a         un assujettissement
+	 * @param forSource le for principal à la source de l'assujettissement spécifié.
+	 * @param fractions la liste des fractions
+	 * @return un assujettissement, fractionné si nécessaire.
+	 */
+	private static Data fractionner(Data a, ForFiscalPrincipal forSource, List<Fraction> fractions) {
 
 		if (fractions.isEmpty()) {
 			return a;
@@ -474,20 +777,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 		// on détermine les fractionnements immédiatement à gauche et droite du for principal à la source 
 		// de l'assujettissement (logiquement, il n'est pas possible d'avoir un fractionnement à l'intérieur du for)
-		Fraction left = null;
-		Fraction right = null;
-		for (Fraction f : fractions) {
-			if (forSource.getDateDebut() != null && f.date.isBeforeOrEqual(forSource.getDateDebut())) {
-				if (left == null || left.date.isBefore(f.date)) {
-					left = f;
-				}
-			}
-			if (forSource.getDateFin() != null && f.date.isAfterOrEqual(forSource.getDateFin())) {
-				if (right == null || right.date.isAfter(f.date)) {
-					right = f;
-				}
-			}
-		}
+		final Limites limites = Limites.determine(forSource, fractions);
+		final Fraction left = (limites == null ? null : limites.getLeft());
+		final Fraction right = (limites == null ? null : limites.getRight());
 
 		// on réduit l'assujettissement en conséquence
 		if (left != null && left.date.isAfter(a.debut)) {
@@ -503,7 +795,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 
-		if (right != null && right.date.isBefore(a.fin)) {
+		if (right != null && right.date.isBeforeOrEqual(a.fin)) {
 			a.fin = right.date.getOneDayBefore();
 			a.motifFin = right.motif;
 		}
@@ -1014,25 +1306,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
-		if (isDepartOuArriveeHorsSuisse(previous, current)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current, next)) {
-				// fin de l'assujettissement en cours de période fiscale (fractionnement)
-				adebut = debut;
-			}
-			else {
-				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-				// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
-				adebut = getDernier1Janvier(debut);
-			}
-		}
-		else if (previous != null && ((roleSourcierPur(previous) && roleSourcierMixte(current)) || (roleSourcierMixte(previous) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement.
-			adebut = debut;
+		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(current, previous) || isDepartHCApresArriveHSMemeAnnee(current, next))) {
+			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement depuis le début de l'année
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			adebut = getDernier1Janvier(debut);
 		}
 		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && current.getMotifOuverture() == MotifFor.DEPART_HC) {
 			// cas limite du ctb qui part HC et arrive de HS dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
 			// la plus avantageuse pour l'ACI : arrivée de HS au 1er janvier de l'année suivante
-			adebut = RegDate.get(debut.year() + 1, 1, 1);
+			adebut = getProchain1Janvier(debut);
 		}
 		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && isMariageOuDivorce(current.getMotifOuverture())) {
 			// [UNIREG-2432] Exception : si le motif d'ouverture est MARIAGE ou SEPARATION, la date de début est ramenée au 1 janvier de l'année courante.
@@ -1040,6 +1323,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			adebut = getDernier1Janvier(debut);
 		}
 		else {
+			// Cas général
 			if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 				adebut = getDernier1Janvier(debut);
 			}
@@ -1063,35 +1347,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final RegDate fin = current.getDateFin();
-		final MotifFor motifFermeture = current.getMotifFermeture();
 
 		final RegDate afin;
 		if (fin == null) {
 			afin = null;
 		}
-		else if (motifFermeture == MotifFor.VEUVAGE_DECES) {
-			afin = fin;
-		}
-		else if (isDepartOuArriveeHorsSuisse(current, next)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)) {
-				// fin de l'assujettissement en cours de période fiscale (fractionnement)
-				afin = fin;
-			}
-			else {
-				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-				// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
-				afin = getDernier31Decembre(fin);
-			}
-		}
-		// [SIFISC-1769] on applique la même distinction sur le type d'autorité fiscale en cas de passage pur/ordinaire/mixte que dans la méthode isFractionFermeture()
-		else if (next != null && ((roleSourcierPur(current) && roleOrdinaireNonMixte(next)) || (roleOrdinaireNonMixte(current) && roleSourcierPur(next)))) {
-			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
-			afin = fin;
-		}
-		else if (next != null && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
-				((roleSourcierPur(current) && roleSourcierMixte(next)) || (roleSourcierMixte(current) && roleSourcierPur(next)))) {
-			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
-			afin = fin;
+		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(current, next) || isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext))) {
+			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement jusqu'au 31 décembre précédant
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			afin = getDernier31Decembre(fin);
 		}
 		else if (isArriveeHCApresDepartHSMemeAnnee(current) && !roleSourcierPur(current)) {
 			// cas limite du ctb qui part HS et arrive de HC dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
@@ -1105,8 +1370,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 			afin = getProchain31Decembre(fin); // le rattachement économique s'étend à toute l'année pour le HC
 		}
 		else {
+			// Cas général
 			if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
-				afin = getDernier31Decembre(fin);
+				afin = getProchain31Decembre(fin);
 			}
 			else {
 				afin = fin; // le rattachement économmique est limité à la période de validité du for pour les HS
@@ -1160,16 +1426,20 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return afin;
 	}
 
-	private static RegDate getDernier1Janvier(RegDate date) {
-		return RegDate.get(date.year(), 1, 1);
-	}
-
 	/**
 	 * @param date une date
 	 * @return le 31 décembre le plus proche de la date spécifiée et qui ne soit pas dans le passé.
 	 */
 	private static RegDate getProchain31Decembre(RegDate date) {
 		return RegDate.get(date.year(), 12, 31);
+	}
+
+	private static RegDate getDernier1Janvier(RegDate date) {
+		return RegDate.get(date.year(), 1, 1);
+	}
+
+	private static RegDate getProchain1Janvier(RegDate debut) {
+		return RegDate.get(debut.year() + 1, 1, 1);
 	}
 
 	/**
@@ -1331,6 +1601,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		 * @return le motid de début/fin d'assujettissement résultant.
 		 */
 		private static MotifFor merge(RegDate dateDomicile, MotifFor motifDomicile, RegDate dateEco, MotifFor motifEco) {
+			//noinspection deprecation
 			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifDomicile == MotifFor.INDETERMINE)) {
 				return motifEco;
 			}
@@ -1803,6 +2074,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 					}
 				}
 
+				// on fusionne les non-assujettissements qui peuvent l'être
+				nonA = fusionnerNonAssujettissements(nonA);
+
 				// on réduit la durée des non-assujettissement si nécessaire
 				final List<Data> list = DateRangeHelper.override(nonA, vraiA, new DateRangeHelper.AdapterCallbackExtended<Data>() {
 					@Override
@@ -1834,6 +2108,32 @@ public abstract class Assujettissement implements CollatableDateRange {
 				clear();
 				addAll(list);
 			}
+		}
+
+		/**
+		 * Fusionne les non-assujettissement qui s'intersectent. Des non-assujettissements peuvent s'intersecter lorsque - par exemple - un contribuable possède plusieurs fors fiscaux principaux hors-canton
+		 * dans une même année.
+		 *
+		 * @param list une liste de données qui doivent être des non-assujettisssments
+		 * @return la liste fusionnée des non-assujettissments
+		 */
+		private List<Data> fusionnerNonAssujettissements(List<Data> list) {
+			return DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
+				@Override
+				public Data merge(Data left, Data right) {
+					if (left.typeAut != right.typeAut) {
+						throw new IllegalArgumentException("Détecté deux non-assujettissements de type différents qui s'intersectent [" + left + "] et [" + right + "] (erreur dans l'algorithme ?)");
+					}
+					final RegDate debut = RegDateHelper.minimum(left.getDateDebut(), right.getDateDebut(), NullDateBehavior.EARLIEST);
+					final RegDate fin = RegDateHelper.maximum(left.getDateFin(), right.getDateFin(), NullDateBehavior.LATEST);
+					return new Data(debut, fin, left.motifDebut, right.motifFin, Type.NonAssujetti, left.typeAut);
+				}
+
+				@Override
+				public Data duplicate(Data range) {
+					return new Data(range);
+				}
+			});
 		}
 	}
 

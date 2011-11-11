@@ -124,7 +124,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		try {
 			list = Assujettissement.determine(ctb, null, true);
 		}
-		catch (AssujettissementException e) {
+		catch (Exception e) {
 			return "assujettissement exception:" + e.getMessage();
 		}
 
