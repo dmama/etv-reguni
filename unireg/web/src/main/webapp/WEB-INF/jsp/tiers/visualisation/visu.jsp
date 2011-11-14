@@ -106,9 +106,15 @@
 					</authz:authorize>
 				</c:if>
 
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
+					<li id="immeublesTab">
+						<a id="immeublesTabAnchor" href="../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}"><span><fmt:message key="label.immeubles" /></span></a>
+					</li>
+				</authz:authorize>
+
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="remarqueTab">
-						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab""><fmt:message key="label.remarques" /></a>
+						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
 					</li>
 				</authz:authorize>
 			</ul>
@@ -190,30 +196,6 @@
 						// tant pis
 					}
 				}
-
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
-				// [SIFISC-2337] chargement différé (ajax) de la liste des immeubles (si nécessaire seulement)
-				$.get('../rf/immeuble/count.do?ctb=${command.tiersGeneral.numero}', function(data) {
-					if (parseInt(data) > 0) { // si le contribuable possède au moins un immeuble
-						var len = $("#tiersTabs").tabs("length");
-						var immeublesIndex = len - 1; // en avant dernière position
-
-						// ajoute un tab avec la liste des immeubles en avant dernière position (le tab des remarques doit rester le dernier)
-						$("#tiersTabs").tabs("add", '../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}', "Immeubles", immeublesIndex);
-
-						// on renseigne un id de manière à pouvoir sélectionner la tab depuis l'url
-						var immeublesTab = $("#menuTiersTabs li:eq(" + immeublesIndex + ")");
-						immeublesTab.attr('id', 'immeublesTab');
-
-						$('#ui-tabs-2').addClass('ui-tabs-hide'); // work-around pour un bug dans jQuery qui fait qu'une div surnuméraire est créée et qu'elle n'est pas masquée correctement.
-
-						// [SIFISC-2587] sélection automatique de l'onglet immeubles (cas particulier)
-						if (params && params.selectTab && params.selectTab == 'immeublesTab') {
-							$('#tiersTabs').tabs('select', immeublesIndex);
-						}
-					}
-				});
-				</authz:authorize>
 			});
 		</script>
 
