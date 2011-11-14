@@ -7,6 +7,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -73,13 +74,14 @@ public class AccessLogProcessingFilter extends GenericFilterBean {
 		if (servletRequest instanceof HttpServletRequest) {
 			final HttpServletRequest req = (HttpServletRequest) servletRequest;
 
-			final String url = req.getRequestURL().toString();
+			final String sp = req.getServletPath(); // e.g. /tiers/list.do
+			final String url = StringUtils.isBlank(sp) ? req.getRequestURL().toString() : sp;
 			final String queryString = req.getQueryString();
 			if (queryString == null) {
 				return url;
 			}
 			else {
-				return url + "?" + queryString;
+				return String.format("%s?%s", url, queryString);
 			}
 		}
 		else {
