@@ -68,6 +68,7 @@ else
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "srv-access-web.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "unireg-web${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "srv-access-web${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-web" && fetch-logs "web-access${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/")
 
 	# partie WS
 	echo "Webapp WS"
