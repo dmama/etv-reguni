@@ -75,7 +75,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 			details.setIamLastName(lastName);
 			details.setIamRoles(roles);
 
-			LOGGER.info(String.format("Ouverture de la session pour l'utilisateur %s %s", firstName, lastName));
+			LOGGER.info(String.format("Ouverture de la session pour l'utilisateur %s %s (%s)", firstName, lastName, visa));
 
 			final List<GrantedAuthorityImpl> granted = Arrays.asList(new GrantedAuthorityImpl(visa));
 			final User user = new User(visa, "noPwd", true, true, true, true, granted);

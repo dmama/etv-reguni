@@ -18,9 +18,17 @@
 		</layout>
 	</appender>
 
+	<appender name="WEB_ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="File" value="web-access.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+		</layout>
+	</appender>
+
 	<appender name="SERVICE_TRACING" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
-		<param name="File" value="srv-access-web.log"/>
+		<param name="File" value="srv-access-web.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
@@ -58,14 +66,19 @@
 		<level value="ERROR" />
 	</logger>
 
+	<category name="web-access" additivity="false">
+		<priority value="INFO" />
+		<appender-ref ref="WEB_ACCESS" />
+	</category>
+
 	<category name="ServiceTracing" additivity="false">
-	  <priority value="INFO"/>
-	  <appender-ref ref="SERVICE_TRACING"/>
+		<priority value="INFO" />
+		<appender-ref ref="SERVICE_TRACING" />
 	</category>
 
 	<category name="ch.vd.uniregctb.transaction.TransactionManager" additivity="false">
-		<priority value="WARN"/>
-		<appender-ref ref="SERVICE_TRACING"/>
+		<priority value="WARN" />
+		<appender-ref ref="SERVICE_TRACING" />
 	</category>
 
 	<root>

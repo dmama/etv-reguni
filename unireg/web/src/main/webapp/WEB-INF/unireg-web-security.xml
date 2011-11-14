@@ -8,7 +8,7 @@
           http://www.springframework.org/schema/security
           http://www.springframework.org/schema/security/spring-security-3.0.xsd
           http://www.springframework.org/schema/aop
-          http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+          http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
 	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
@@ -24,6 +24,8 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="accessLoggerFilter" class="ch.vd.uniregctb.security.AccessLogProcessingFilter" />
 
 	<!-- Filtre de choix de l'OId -->
 	<bean id="chooseOIDFilter" class="ch.vd.uniregctb.security.ChooseOIDProcessingFilter">
@@ -48,10 +50,10 @@
 			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter" />
 			<security:filter-chain pattern="/ws/**" filters="none" />
 			<security:filter-chain pattern="/remoting/**" filters="none" />
-			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,bypassSecurityFilter,iamAuthFilter" />
+			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
 			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
+			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
 			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>
