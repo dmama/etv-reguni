@@ -24,6 +24,7 @@ public class WsAccessAnalyzer {
 
 		final String htmlFile = commandLine.getOptionValue("html");
 		final boolean localImages = commandLine.hasOption("localImages");
+		final boolean googleChart = commandLine.hasOption("googleChart");
 		final String[] files = commandLine.getArgs();
 		final String proxy = commandLine.getOptionValue("proxy");
 		final boolean timeline = commandLine.hasOption("timeline");
@@ -59,7 +60,7 @@ public class WsAccessAnalyzer {
 		analyzer.analyze(files);
 
 		if (StringUtils.isNotBlank(htmlFile)) {
-			analyzer.printHtml(htmlFile, localImages);
+			analyzer.printHtml(htmlFile, localImages, googleChart);
 		}
 		else {
 			analyzer.print();
@@ -80,6 +81,7 @@ public class WsAccessAnalyzer {
 			Option timeline = new Option("timeline", "analyzes data and outputs the timeline of response times");
 			Option parts = new Option("parts", "analyzes data and outputs parts usage");
 			Option localImages = new Option("localImages", "store images in local folder (with -html)");
+			Option googleChart = new Option("googleChart", "use google chart api to generate chart images (with -html)");
 			Option proxy = OptionBuilder.withArgName("host:port").hasArg().withDescription("use HTTP proxy on given port").create("proxy");
 
 			Options options = new Options();
@@ -90,6 +92,7 @@ public class WsAccessAnalyzer {
 			options.addOption(distribution);
 			options.addOption(parts);
 			options.addOption(localImages);
+			options.addOption(googleChart);
 			options.addOption(proxy);
 
 			// parse the command line arguments

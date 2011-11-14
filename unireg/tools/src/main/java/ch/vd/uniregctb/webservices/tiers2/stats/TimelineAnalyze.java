@@ -1,10 +1,18 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -134,6 +142,63 @@ class TimelineAnalyze extends Analyze {
 						.append(minValues).append("|").append(maxValues).append("&chdl=").append(averageLabel).append("|").append(minLabel).append("|").append(maxLabel).append("&chg=-1.3,-1,1,1")
 						.append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append(title).toString();
 		return new Chart(url, 1000, 200);
+	}
+
+	@Override
+	JFreeChart buildJFreeChart(String method) {
+
+		final List<TimelineData> data = results.get(method);
+		if (data == null) {
+			return null;
+		}
+
+		final ChartValues avgValues2 = new ChartValues(data.size());
+		final ChartValues minValues2 = new ChartValues(data.size());
+		final ChartValues maxValues2 = new ChartValues(data.size());
+		long min = Long.MAX_VALUE;
+		long max = 0;
+		long total = 0;
+		long count = 0;
+		for (int i = 0, timeSize = data.size(); i < timeSize; i++) {
+			final TimelineData range = data.get(i);
+			minValues2.addValue(range.getMin() == Long.MAX_VALUE ? 0 : range.getMin());
+			maxValues2.addValue(range.getMax());
+			avgValues2.addValue(range.getAverage());
+			max = Math.max(max, range.getMax());
+			min = Math.min(min, range.getMin());
+			total += range.getTotal();
+			count += range.getCount();
+		}
+
+		final String averageLabel = "average (" + (total / count) + " ms)";
+		final String minLabel = "min (" + (min == Long.MAX_VALUE ? 0 : min) + " ms)";
+		final String maxLabel = "max (" + max + " ms)";
+		final String title = method + " - Response Time Line " + (excludeCache ? "(Uncached)" : "(Cached)") + " (min/max/avg ms/quarter hour)";
+
+		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		addValues(dataset, averageLabel, avgValues2);
+		addValues(dataset, minLabel, minValues2);
+		addValues(dataset, maxLabel, maxValues2);
+
+		final JFreeChart chart = ChartFactory.createLineChart(title, "time", "response time (ms)", dataset, PlotOrientation.VERTICAL, true, false, false);
+
+		setRenderingDefaults(chart);
+
+		// taille des lignes
+		final CategoryPlot plot = (CategoryPlot) chart.getPlot();
+		final LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+
+		renderer.setSeriesPaint(0, Color.BLACK); // average
+		renderer.setSeriesStroke(0, new BasicStroke(2.0f));
+
+		renderer.setSeriesPaint(1, Color.GREEN); // min
+		renderer.setSeriesStroke(1, new BasicStroke(1.0f));
+
+		renderer.setSeriesPaint(2, Color.RED); // max
+		renderer.setSeriesStroke(2, new BasicStroke(1.0f));
+
+		return chart;
 	}
 
 	@Override

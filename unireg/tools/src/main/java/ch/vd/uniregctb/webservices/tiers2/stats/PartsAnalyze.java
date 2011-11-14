@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+
 class PartsAnalyze extends Analyze {
 
 	private static class MethodData {
@@ -116,6 +120,32 @@ class PartsAnalyze extends Analyze {
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?chtt=").append(title).append("&chs=600x400&cht=p&chd=t:").append(values).append("&chdl=").append(labels).toString();
 		return new Chart(url, 600, 400);
+	}
+
+	@Override
+	JFreeChart buildJFreeChart(String method) {
+		final MethodData data = results.get(method);
+		if (data == null) {
+			return null;
+		}
+
+		final long total = data.getCallCount();
+		final List<PartData> list = new ArrayList<PartData>(data.getParts().values());
+
+		final DefaultPieDataset dataset = new DefaultPieDataset();
+
+		for (int i = 0, size = list.size(); i < size; i++) {
+			final PartData pdata = list.get(i);
+			final float perthousand = ((float) pdata.getCount()) * 1000.0f / (float) total;
+			final String label = String.format("%s (%.1f%% - %d calls)", pdata.getName(), (perthousand / 10.0f), pdata.getCount());
+			dataset.setValue(label, perthousand);
+		}
+
+		final String title = method + " - Parts Usage Distribution";
+
+		final JFreeChart chart = ChartFactory.createPieChart(title, dataset, true, false, false);
+		setRenderingDefaults(chart);
+		return chart;
 	}
 
 	@Override

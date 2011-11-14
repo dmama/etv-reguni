@@ -33,6 +33,11 @@ class Periode implements Comparable<Periode> {
 
 	@Override
 	public String toString() {
+		if (start.getMinutes() == 0) {
 		return String.format("%02d:%02d", start.getHour(), start.getMinutes());
+		}
+		else {
+			return "";
+		}
 	}
 }

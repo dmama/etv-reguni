@@ -1,10 +1,18 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -110,6 +118,45 @@ class DistributionAnalyze extends Analyze {
 				.append("&chxs=0,676767,8,0,l,676767&chxt=x,y&chbh=23,5&chs=1000x200&cht=bvg&chco=76A4FB&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chg=20,50&chtt=")
 				.append(method).append("%20-%20Response%20Time%20Distribution%20(ms/call)").toString();
 		return new Chart(url, 1000, 200);
+	}
+
+	@Override
+	JFreeChart buildJFreeChart(String method) {
+
+		final List<DistributionData> data = results.get(method);
+		if (data == null) {
+			return null;
+		}
+
+		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		for (int i = 0, default_time_rangesLength = DistributionData.DEFAULT_TIME_RANGES.length; i < default_time_rangesLength; i++) {
+			final TimeRange range = DistributionData.DEFAULT_TIME_RANGES[i];
+
+			final String label;
+			if (range.getEnd() == 0) {
+				label = "0 ms";
+			}
+			else if (range.getEnd() == Long.MAX_VALUE) {
+				label = ">" + range.getStart();
+			}
+			else {
+				label = "<" + (range.getEnd() + 1);
+			}
+
+			final DistributionData d = data.get(i);
+			dataset.addValue(d.getCount(), "calls", label);
+		}
+
+		final String title = method + " - Response Time Distribution (ms/call)";
+		final JFreeChart chart = ChartFactory.createBarChart(title, "response time (ms)", "calls", dataset, PlotOrientation.VERTICAL, false, false, false);
+
+		final BarRenderer r = (BarRenderer)chart.getCategoryPlot().getRenderer();
+		r.setBarPainter(new StandardBarPainter());
+		r.setSeriesPaint(0, new Color(118, 164, 251)); // bleu clair
+
+		setRenderingDefaults(chart);
+		return chart;
 	}
 
 	@Override

@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.util.HtmlUtils;
 
@@ -46,7 +48,7 @@ class Analyzer {
 		}
 	}
 
-	public void printHtml(String htmlFile, boolean localImages) throws IOException {
+	public void printHtml(String htmlFile, boolean localImages, boolean useGoogleChart) throws IOException {
 
 		if (!htmlFile.toLowerCase().endsWith(".html") && !htmlFile.toLowerCase().endsWith(".htm")) {
 			htmlFile += ".html";
@@ -67,9 +69,17 @@ class Analyzer {
 
 		for (String method : list) {
 			for (Analyze analyze : analyzes) {
-				final Chart chart = analyze.buildGoogleChart(method);
-				if (chart != null) {
-					content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chart) + "\n";
+				if (useGoogleChart) {
+					final Chart chart = analyze.buildGoogleChart(method);
+					if (chart != null) {
+						content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chart) + "\n";
+					}
+				}
+				else {
+					final JFreeChart chart = analyze.buildJFreeChart(method);
+					if (chart != null) {
+						content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, chart) + "\n";
+					}
 				}
 			}
 			content += "    <hr/>";
@@ -166,5 +176,37 @@ class Analyzer {
 		else {
 			return "<img src=\"" + chart.getUrl() + "\" width=\"" + chart.getWidth() + "\" height=\"" + chart.getHeight() + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 		}
+	}
+
+	private String buildChart(String chartName, String htmlFile, JFreeChart chart) {
+
+		final String dirname = FilenameUtils.removeExtension(htmlFile);
+
+		// on crée un sous-répertoire du même nom (sans l'extension) du fichier html
+		final File dir = new File(dirname);
+		if (!dir.exists() || !dir.isDirectory()) {
+			if (!dir.mkdirs()) {
+				throw new RuntimeException("Unable to create directoy [" + dirname + "]");
+			}
+		}
+
+		final int width = 1500;
+		final int height = 400;
+
+		// on génère l'image et on la stocke dans le sous-répertoire
+		final String imagename = dirname + "/" + chartName + ".png";
+		try {
+			final File file = new File(imagename);
+			ChartUtilities.saveChartAsPNG(file, chart, width, height);
+		}
+		catch (IOException e) {
+			System.err.println("Exception when generating chart [" + chartName + "] : " + e.getMessage());
+			e.printStackTrace();
+			return HtmlUtils.htmlEscape(e.getMessage());
+		}
+
+		// on inclut l'image stockée en local
+		final String imageurl = FilenameUtils.getName(dirname) + "/" + chartName + ".png";
+		return "<img src=\"" + imageurl + "\" width=\"" + width + "\" height=\"" + height + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 	}
 }

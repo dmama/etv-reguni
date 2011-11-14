@@ -52,6 +52,10 @@ public class ChartValues {
 		return total;
 	}
 
+	public Long getAt(int i) {
+		return values.get(i);
+	}
+
 	private static final String simpleEncoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 	/**
