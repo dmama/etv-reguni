@@ -66,27 +66,27 @@
 		<level value="ERROR" />
 	</logger>
 
-	<category name="web-access.GET" additivity="false">
+	<category name="web-access.get" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="WEB_ACCESS" />
 	</category>
 
-	<category name="web-access.POST" additivity="false">
+	<category name="web-access.post" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="WEB_ACCESS" />
 	</category>
 
-	<category name="web-access.PUT" additivity="false">
+	<category name="web-access.put" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="WEB_ACCESS" />
 	</category>
 
-	<category name="web-access.DELETE" additivity="false">
+	<category name="web-access.delete" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="WEB_ACCESS" />
 	</category>
 
-	<category name="web-access.OTHER" additivity="false">
+	<category name="web-access.other" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="WEB_ACCESS" />
 	</category>

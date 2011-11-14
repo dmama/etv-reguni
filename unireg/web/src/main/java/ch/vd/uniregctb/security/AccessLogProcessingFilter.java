@@ -17,11 +17,11 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
  */
 public class AccessLogProcessingFilter extends GenericFilterBean {
 
-	private static final Logger GET = Logger.getLogger("web-access.GET");
-	private static final Logger POST = Logger.getLogger("web-access.POST");
-	private static final Logger PUT = Logger.getLogger("web-access.PUT");
-	private static final Logger DELETE = Logger.getLogger("web-access.DELETE");
-	private static final Logger OTHER = Logger.getLogger("web-access.OTHER");
+	private static final Logger GET = Logger.getLogger("web-access.get");
+	private static final Logger POST = Logger.getLogger("web-access.post");
+	private static final Logger PUT = Logger.getLogger("web-access.put");
+	private static final Logger DELETE = Logger.getLogger("web-access.delete");
+	private static final Logger OTHER = Logger.getLogger("web-access.other");
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
