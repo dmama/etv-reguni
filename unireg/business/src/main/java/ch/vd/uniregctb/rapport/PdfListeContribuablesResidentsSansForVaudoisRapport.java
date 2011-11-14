@@ -8,7 +8,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -88,20 +88,18 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 		String contenu = null;
 		if (ctbIds.size() > 0) {
-			final StringBuilder b = new StringBuilder((ctbIds.size() + 1 ) * 10);
-			b.append("Numéro\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-			final GentilIterator<Long> iterator = new GentilIterator<Long>(ctbIds);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(ctbIds, filename, status, new CsvHelper.FileFiller<Long>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro");
 				}
-				b.append(iterator.next());
-				b.append('\n');
-			}
-			contenu = b.toString();
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, Long elt) {
+					b.append(elt);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -110,23 +108,19 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 		String contenu = null;
 		if (liste.size() > 0) {
-			final StringBuilder b = new StringBuilder((liste.size() + 1 ) * 50);
-			b.append("Numéro" + COMMA + "Raison\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-			final GentilIterator<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore> iterator = new GentilIterator<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore>(liste);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro").append(COMMA).append("Raison");
 				}
 
-				final ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore info = iterator.next();
-				b.append(info.ctbId).append(COMMA);
-				b.append(escapeChars(info.cause.getDescription()));
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore info) {
+					b.append(info.ctbId).append(COMMA);
+					b.append(escapeChars(info.cause.getDescription()));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -135,24 +129,22 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 		String contenu = null;
 		if (liste.size() > 0) {
-			final StringBuilder b = new StringBuilder((liste.size() + 1 ) * 100);
-			b.append("Numéro" + COMMA + "Raison" + COMMA + "Complément\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-			final GentilIterator<ListesResults.Erreur> iterator = new GentilIterator<ListesResults.Erreur>(liste);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro").append(COMMA);
+					b.append("Raison").append(COMMA);
+					b.append("Complément");
 				}
 
-				final ListesResults.Erreur ligne = iterator.next();
-				b.append(ligne.noCtb).append(COMMA);
-				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
-				b.append(escapeChars(ligne.details));
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListesResults.Erreur ligne) {
+					b.append(ligne.noCtb).append(COMMA);
+					b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
+					b.append(escapeChars(ligne.details));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

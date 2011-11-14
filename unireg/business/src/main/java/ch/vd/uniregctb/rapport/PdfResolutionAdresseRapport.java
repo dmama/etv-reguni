@@ -10,7 +10,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 
 /**
@@ -93,31 +93,28 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 	private <T extends ResolutionAdresseResults.InfoAdresse> String getCsvAdresseResolue(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("NUMERO TIERS ").append(COMMA).append("NUMERO ADRESSE").append(COMMA).append("NUMERO RUE").append(COMMA).append("NOM RUE").append(COMMA).append("NOM LOCALITE").append(COMMA)
-					.append("NUMERO ORDRE POSTAL\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NUMERO TIERS ").append(COMMA);
+					b.append("NUMERO ADRESSE").append(COMMA);
+					b.append("NUMERO RUE").append(COMMA);
+					b.append("NOM RUE").append(COMMA);
+					b.append("NOM LOCALITE").append(COMMA);
+					b.append("NUMERO ORDRE POSTAL");
 				}
 
-				final T info = iter.next();
-				b.append(info.tiersId).append(COMMA);
-				b.append(info.adresseId).append(COMMA);
-				b.append(info.rueId).append(COMMA);
-				b.append(info.nomRue).append(COMMA);
-				b.append(info.localite).append(COMMA);
-				b.append(info.numeroOrdrePostal).append(COMMA);
-				b.append("\n");
-
-
-			}
-
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.tiersId).append(COMMA);
+					b.append(info.adresseId).append(COMMA);
+					b.append(info.rueId).append(COMMA);
+					b.append(info.nomRue).append(COMMA);
+					b.append(info.localite).append(COMMA);
+					b.append(info.numeroOrdrePostal);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -129,25 +126,19 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("id de l'adresse").append(COMMA).append("Message d'erreur\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("ADRESSE_ID").append(COMMA).append("ERREUR");
 				}
 
-				T info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.id).append(COMMA);
-				bb.append(info.raison);
-				bb.append('\n');
-
-				b.append(bb);
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.id).append(COMMA);
+					b.append(escapeChars(info.raison));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

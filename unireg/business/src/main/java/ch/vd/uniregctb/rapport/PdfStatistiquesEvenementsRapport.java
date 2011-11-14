@@ -16,6 +16,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
@@ -263,26 +264,20 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 	private static <T extends StatistiqueEvenementInfo> String asCsvFile(List<T> elements, String fileName, StatusManager statusManager) {
 		String contenu = null;
 		if (elements != null && elements.size() > 0) {
-
-			final String message = String.format("Génération du fichier %s", fileName);
-			statusManager.setMessage(message, 0);
-			final StringBuilder b = new StringBuilder();
-
-			// les noms des colonnes
-			b.append(asCsvLine(elements.get(0).getNomsColonnes(), true));
-
-			// les valeurs, ligne par ligne
-			final GentilIterator<T> iterator = new GentilIterator<T>(elements);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					statusManager.setMessage(message, iterator.getPercent());
+			final T first = elements.get(0);
+			contenu = CsvHelper.asCsvFile(elements, fileName, statusManager, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append(asCsvLine(first.getNomsColonnes(), false));
 				}
-				final T element = iterator.next();
-				final String[] valeurs = element.getValeursColonnes();
-				b.append(asCsvLine(valeurs, true));
-			}
 
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T elt) {
+					final String[] valeurs = elt.getValeursColonnes();
+					b.append(asCsvLine(valeurs, false));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -353,7 +348,6 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// première partie : calcul des statistiques
 			final Map<MsgTypeKey, MutableInt> map = new HashMap<MsgTypeKey, MutableInt>();
 			final GentilIterator<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo>(toutesErreurs);
-			int textSize = 0;
 			while (iter.hasNext()) {
 				if (iter.isAtNewPercent()) {
 					statusManager.setMessage(messageCalcul, iter.getPercent());
@@ -365,7 +359,6 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					final MutableInt nb = map.get(key);
 					if (nb == null) {
 						map.put(key, new MutableInt(1));
-						textSize += 2 /*les ;*/ + 2 /*les guillemets autour du message*/ + erreur.type.name().length() + erreur.message.length() + 1 /*le CR*/;
 					}
 					else {
 						nb.increment();
@@ -383,27 +376,23 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			});
 
 			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
-			final String messageRemplissage = String.format("Génération du fichier %s", fileName);
-			statusManager.setMessage(messageRemplissage, 0);
-
-			final String header = String.format("MESSAGE%sTYPE_EVT%sCOUNT\n", COMMA, COMMA);
-			final StringBuilder b = new StringBuilder(textSize + stats.size() * 10 + header.length());    // on suppose qu'aucun message ne sera présent plus d'un milliard de fois...
-			b.append(header);
-
-			final GentilIterator<Map.Entry<MsgTypeKey, MutableInt>> iterStats = new GentilIterator<Map.Entry<MsgTypeKey, MutableInt>>(stats);
-			while (iterStats.hasNext()) {
-				if (iterStats.isAtNewPercent()) {
-					statusManager.setMessage(messageRemplissage, iterStats.getPercent());
+			contenu = CsvHelper.asCsvFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<MsgTypeKey, MutableInt>>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("MESSAGE").append(COMMA);
+					b.append("TYPE_EVT").append(COMMA);
+					b.append("COUNT");
 				}
-				final Map.Entry<MsgTypeKey, MutableInt> stat = iterStats.next();
-				final MsgTypeKey key = stat.getKey();
-				b.append(asCsvField(key.msg)).append(COMMA);
-				b.append(key.type).append(COMMA);
-				b.append(stat.getValue().intValue());
-				b.append('\n');
-			}
 
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, Map.Entry<MsgTypeKey, MutableInt> stat) {
+					final MsgTypeKey key = stat.getKey();
+					b.append(asCsvField(key.msg)).append(COMMA);
+					b.append(key.type).append(COMMA);
+					b.append(stat.getValue().intValue());
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

@@ -100,53 +100,56 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 	}
 
 	private static String buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(liste, filename, status, 70, new CsvHelper.Filler<ListeAssujettisResults.InfoCtbAssujetti>() {
+		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbAssujetti>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("TYPE_ASSUJETTISSEMENT").append(COMMA)
 						.append("DATE_DEBUT").append(COMMA).append("DATE_FIN").append(COMMA)
 						.append("MOTIF_FRAC_DEBUT").append(COMMA).append("MOTIF_FRAC_FIN").append(COMMA);
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ListeAssujettisResults.InfoCtbAssujetti elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ListeAssujettisResults.InfoCtbAssujetti elt) {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(elt.typeAssujettissement).append(COMMA);
 				b.append(RegDateHelper.dateToDisplayString(elt.debutAssujettissement)).append(COMMA);
 				b.append(RegDateHelper.dateToDisplayString(elt.finAssujettissement)).append(COMMA);
 				b.append(elt.motifDebut != null ? elt.motifDebut.getDescription(true) : StringUtils.EMPTY).append(COMMA);
 				b.append(elt.motifFin != null ? elt.motifFin.getDescription(false) : StringUtils.EMPTY);
+				return true;
 			}
 		});
 	}
 
 	private static String buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(liste, filename, status, 30, new CsvHelper.Filler<ListeAssujettisResults.InfoCtbIgnore>() {
+		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbIgnore>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ListeAssujettisResults.InfoCtbIgnore elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ListeAssujettisResults.InfoCtbIgnore elt) {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.cause.description));
+				return true;
 			}
 		});
 	}
 
 	private static String buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(results, filename, status, 100, new CsvHelper.Filler<ListeAssujettisResults.Erreur>() {
+		return CsvHelper.asCsvFile(results, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.Erreur>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ListesResults.Erreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ListesResults.Erreur elt) {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(elt.getDescriptionRaison()).append(COMMA);
 				b.append(asCsvField(elt.details));
+				return true;
 			}
 		});
 	}

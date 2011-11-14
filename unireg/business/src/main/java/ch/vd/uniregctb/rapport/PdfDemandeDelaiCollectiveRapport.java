@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 
@@ -107,20 +107,18 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		String contenu = null;
 		int size = traites.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * traites.size());
-			b.append("Numéro de contribuable").append(COMMA).append("Numéro de déclaration\n");
-
-			final GentilIterator<DemandeDelaiCollectiveResults.Traite> iter = new GentilIterator<DemandeDelaiCollectiveResults.Traite>(traites);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<DemandeDelaiCollectiveResults.Traite>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de contribuable").append(COMMA).append("Numéro de déclaration");
 				}
 
-				DemandeDelaiCollectiveResults.Traite t = iter.next();
-				b.append(t.ctbId).append(COMMA).append(t.diId).append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, DemandeDelaiCollectiveResults.Traite t) {
+					b.append(t.ctbId).append(COMMA).append(t.diId);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

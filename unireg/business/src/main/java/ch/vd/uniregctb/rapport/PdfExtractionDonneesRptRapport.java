@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -123,25 +123,22 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		String contenu = null;
 		final List<ExtractionDonneesRptResults.Erreur> liste = results.getListeErreurs();
 		if (liste.size() > 0) {
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final StringBuilder b = new StringBuilder();
-			b.append("NUMERO_CTB").append(COMMA).append("ERREUR").append(COMMA).append("DESCRIPTION").append("\n");
-
-			final GentilIterator<ExtractionDonneesRptResults.Erreur> iterator = new GentilIterator<ExtractionDonneesRptResults.Erreur>(liste);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NUMERO_CTB").append(COMMA);
+					b.append("ERREUR").append(COMMA);
+					b.append("DESCRIPTION");
 				}
-				final ExtractionDonneesRptResults.Erreur erreur = iterator.next();
-				b.append(erreur.noCtb).append(COMMA);
-				b.append(escapeChars(erreur.getDescriptionRaison())).append(COMMA);
-				b.append(escapeChars(erreur.details)).append("\n");
-			}
 
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListesResults.Erreur erreur) {
+					b.append(erreur.noCtb).append(COMMA);
+					b.append(escapeChars(erreur.getDescriptionRaison())).append(COMMA);
+					b.append(escapeChars(erreur.details));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -156,9 +153,9 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 
 	private <T extends ExtractionDonneesRptResults.InfoCtbBase> String genererListe(List<T> liste, String filename, StatusManager status) {
 		final String[] nomsColonnes = (liste.size() > 0 ? liste.get(0).getNomsColonnes() : null);
-		return CsvHelper.asCsvFile(liste, filename, status, 0, new CsvHelper.Filler<T>() {
+		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				if (nomsColonnes != null) {
 					for (int i = 0 ; i < nomsColonnes.length ; ++ i) {
 						if (i > 0) {
@@ -170,7 +167,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, T elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, T elt) {
 				final Object[] values = elt.getValeursColonnes();
 				for (int i = 0 ; i < values.length ; ++ i) {
 					if (i > 0) {
@@ -178,6 +175,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 					}
 					b.append(getDisplayValue(values[i]));
 				}
+				return values.length > 0;
 			}
 		});
 	}

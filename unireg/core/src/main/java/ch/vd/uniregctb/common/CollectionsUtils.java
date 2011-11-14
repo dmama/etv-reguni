@@ -49,4 +49,34 @@ public class CollectionsUtils extends CollectionUtils {
 
 		return output;
 	}
+
+	/**
+	 * @param collection la collection d'entrée à processer
+	 * @param size la taille (maximale) des portions à découper
+	 * @param <T> le type des éléments contenus dans la collection
+	 * @return une liste de listes des éléments initialement contenus dans la collection d'entrée
+	 */
+	public static <T> List<List<T>> split(Collection<T> collection, int size) {
+		Assert.isTrue(size > 0);
+		final int outputSize = collection.size() / size + 1;
+		final List<List<T>> output = new ArrayList<List<T>>(outputSize);
+
+		List<T> part = null;
+		for (T elt : collection) {
+			if (part == null) {
+				part = new ArrayList<T>(size);
+			}
+			part.add(elt);
+			if (part.size() == size) {
+				output.add(part);
+				part = null;
+			}
+		}
+
+		if (part != null && part.size() > 0) {
+			output.add(part);
+		}
+
+		return output;
+	}
 }

@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 
@@ -78,25 +78,27 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		List<ListeDIsNonEmises.LigneRapport> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
-			StringBuilder b = new StringBuilder("Numéro de contribuale" + COMMA + "Date de début" + COMMA + " Date de fin" + COMMA
-					+ "Raison" + COMMA + "Détails\n");
-
-			final GentilIterator<ListeDIsNonEmises.LigneRapport> iter = new GentilIterator<ListeDIsNonEmises.LigneRapport>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeDIsNonEmises.LigneRapport>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de contribuale").append(COMMA);
+					b.append("Date de début").append(COMMA);
+					b.append("Date de fin").append(COMMA);
+					b.append("Raison").append(COMMA);
+					b.append("Détails");
 				}
-				final ListeDIsNonEmises.LigneRapport ligne = iter.next();
-				b.append(ligne.getNbCtb()).append(COMMA);
-				b.append(ligne.getDateDebut()).append(COMMA);
-				b.append(ligne.getDateFin()).append(COMMA);
-				b.append(ligne.getRaison()).append(COMMA);
-				b.append(ligne.getDetails());
-				b.append('\n');
-			}
-			contenu = b.toString();
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListeDIsNonEmises.LigneRapport ligne) {
+					b.append(ligne.getNbCtb()).append(COMMA);
+					b.append(ligne.getDateDebut()).append(COMMA);
+					b.append(ligne.getDateFin()).append(COMMA);
+					b.append(escapeChars(ligne.getRaison())).append(COMMA);
+					b.append(escapeChars(ligne.getDetails()));
+					return true;
+				}
+			});
 		}
 		return contenu;
-
 	}
 }

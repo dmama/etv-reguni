@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 
@@ -87,29 +87,27 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 	private <T extends TraiterEvenementExterneResult.Traite> String getCsvEvenementTraite(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("Evenement Id").append(COMMA).append("Numero Tiers").append(COMMA).append("Date Debut LR").append(COMMA).append("Date Fin LR").append(COMMA).append("Action\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Evenement Id").append(COMMA);
+					b.append("Numero Tiers").append(COMMA);
+					b.append("Date Debut LR").append(COMMA);
+					b.append("Date Fin LR").append(COMMA);
+					b.append("Action");
 				}
 
-				final T info = iter.next();
-				b.append(info.id).append(COMMA);
-				b.append(info.numeroTiers).append(COMMA);
-				b.append(RegDateHelper.dateToDashString(info.debut)).append(COMMA);
-				b.append(RegDateHelper.dateToDashString(info.fin)).append(COMMA);
-				b.append(info.action).append(COMMA);
-				b.append("\n");
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.id).append(COMMA);
+					b.append(info.numeroTiers).append(COMMA);
+					b.append(info.debut).append(COMMA);
+					b.append(info.fin).append(COMMA);
+					b.append(info.action).append(COMMA);
+					return true;
+				}
+			});
 		}
-
-
 		return contenu;
 	}
 
@@ -120,28 +118,21 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("Evenement Id").append(COMMA).append("Message d'erreur\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Evenement Id").append(COMMA);
+					b.append("Message d'erreur");
 				}
 
-				T info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.evenementId).append(COMMA);
-				bb.append(info.raison);
-				bb.append('\n');
-
-				b.append(bb);
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T erreur) {
+					b.append(erreur.evenementId).append(COMMA);
+					b.append(escapeChars(erreur.raison));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
-
-
 }

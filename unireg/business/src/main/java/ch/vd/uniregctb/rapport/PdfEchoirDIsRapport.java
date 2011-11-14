@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
 
@@ -91,25 +91,22 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		String contenu = null;
 		final int size = disEchues.size();
 		if (size > 0) {
-
-			final StringBuilder b = new StringBuilder(100 * size);
-			b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE").append('\n');
-
-			final GentilIterator<EchoirDIsResults.Echue> iter = new GentilIterator<EchoirDIsResults.Echue>(disEchues);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsResults.Echue>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE");
 				}
 
-				final EchoirDIsResults.Echue info = iter.next();
-				b.append(info.officeImpotID).append(COMMA);
-				b.append(info.ctbId).append(COMMA);
-				b.append(info.diId).append(COMMA);
-				b.append(info.dateDebut.index()).append(COMMA);
-				b.append(info.dateFin.index()).append(COMMA);
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, EchoirDIsResults.Echue info) {
+					b.append(info.officeImpotID).append(COMMA);
+					b.append(info.ctbId).append(COMMA);
+					b.append(info.diId).append(COMMA);
+					b.append(info.dateDebut.index()).append(COMMA);
+					b.append(info.dateFin.index());
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

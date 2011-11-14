@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 
@@ -93,31 +93,28 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 	private <T extends ComparerSituationFamilleResults.SituationsDifferentes> String getCsvSituationsDifferentes(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("SITUATION ID ").append(COMMA).append("NUMERO CTB").append(COMMA).append("ETAT UNIREG").append(COMMA).append("DATE DEBUT UNIREG").append(COMMA).append("ETAT HOST").append(COMMA)
-					.append("DATE DEBUT HOST\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("SITUATION ID ").append(COMMA);
+					b.append("NUMERO CTB").append(COMMA);
+					b.append("ETAT UNIREG").append(COMMA);
+					b.append("DATE DEBUT UNIREG").append(COMMA);
+					b.append("ETAT HOST").append(COMMA);
+					b.append("DATE DEBUT HOST");
 				}
 
-				final T info = iter.next();
-				b.append(info.id).append(COMMA);
-				b.append(info.numeroContribuable).append(COMMA);
-				b.append(info.etatCivil).append(COMMA);
-				b.append(info.dateDebutEtatCivil).append(COMMA);
-				b.append(info.etatCivilHost).append(COMMA);
-				b.append(info.dateDebutEtatCivilHost).append(COMMA);
-				b.append("\n");
-
-
-			}
-
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.id).append(COMMA);
+					b.append(info.numeroContribuable).append(COMMA);
+					b.append(info.etatCivil).append(COMMA);
+					b.append(info.dateDebutEtatCivil).append(COMMA);
+					b.append(info.etatCivilHost).append(COMMA);
+					b.append(info.dateDebutEtatCivilHost);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -129,25 +126,19 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("id de la situation").append(COMMA).append("Message d'erreur\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("id de la situation").append(COMMA).append("Message d'erreur");
 				}
 
-				T info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.id).append(COMMA);
-				bb.append(info.message);
-				bb.append('\n');
-
-				b.append(bb);
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.id).append(COMMA);
+					b.append(escapeChars(info.message));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

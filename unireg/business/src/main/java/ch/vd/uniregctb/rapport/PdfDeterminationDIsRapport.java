@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 
@@ -106,36 +106,26 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<DeterminationDIsResults.Traite>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de l'office d'impôt").append(COMMA);
+					b.append("Numéro de contribuable").append(COMMA);
+					b.append("Début de la période").append(COMMA);
+					b.append("Fin de la période").append(COMMA);
+					b.append("Raison");
+				}
 
-		    StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("Numéro de l'office d'impôt");
-			b.append(COMMA);
-			b.append("Numéro de contribuable");
-			b.append(COMMA);
-			b.append("Début de la période");
-			b.append(COMMA);
-			b.append("Fin de la période");
-			b.append(COMMA);
-			b.append("Raison\n");
-
-			final GentilIterator<DeterminationDIsResults.Traite> iter = new GentilIterator<DeterminationDIsResults.Traite>(list);
-		    while (iter.hasNext()) {
-		        if (iter.isAtNewPercent()) {
-		            status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
-		        }
-
-		        DeterminationDIsResults.Traite info = iter.next();
-		        StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-		        bb.append(info.officeImpotID).append(COMMA);
-		        bb.append(info.noCtb).append(COMMA);
-		        bb.append(info.dateDebut).append(COMMA);
-			    bb.append(info.dateFin).append(COMMA);
-		        bb.append(info.raison.description());
-		        bb.append('\n');
-
-		        b.append(bb);
-		    }
-		    contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, DeterminationDIsResults.Traite info) {
+					b.append(info.officeImpotID).append(COMMA);
+					b.append(info.noCtb).append(COMMA);
+					b.append(info.dateDebut).append(COMMA);
+					b.append(info.dateFin).append(COMMA);
+					b.append(info.raison.description());
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

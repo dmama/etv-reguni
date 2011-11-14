@@ -107,19 +107,20 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
 	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> String asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, AVG_LINE_LEN, new CsvHelper.Filler<T>() {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
 						.append(COMMA).append("NOMBRE ANNEXES IMMEUBLE IMPRIMMEES");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, T elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, T elt) {
 				b.append(elt.officeImpotID != null ? elt.officeImpotID : EMPTY).append(COMMA);
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.nomCtb)).append(COMMA);
 				b.append(elt.nbAnnexeEnvoyee);
+				return true;
 			}
 		});
 	}

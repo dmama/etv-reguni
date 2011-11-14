@@ -93,16 +93,17 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 		final List<ImpressionChemisesTOResults.Erreur> list = results.getErreurs();
 		final int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.Erreur>() {
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ImpressionChemisesTOResults.Erreur>() {
 				@Override
-				public void fillHeader(StringBuilder b) {
+				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("ID_DECLARATION").append(COMMA).append("MESSAGE");
 				}
 
 				@Override
-				public void fillLine(StringBuilder b, ImpressionChemisesTOResults.Erreur elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, ImpressionChemisesTOResults.Erreur elt) {
 					b.append(elt.getIdDeclaration()).append(COMMA);
 					b.append(asCsvField(elt.getDetails()));
+					return true;
 				}
 			});
 		}
@@ -114,9 +115,9 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	    final List<ImpressionChemisesTOResults.ChemiseTO> list = results.getChemisesImprimees();
 	    final int size = list.size();
 	    if (size > 0) {
-		    contenu = CsvHelper.asCsvFile(list, filename, status, 300, new CsvHelper.Filler<ImpressionChemisesTOResults.ChemiseTO>() {
+		    contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ImpressionChemisesTOResults.ChemiseTO>() {
 			    @Override
-			    public void fillHeader(StringBuilder b) {
+			    public void fillHeader(CsvHelper.LineFiller b) {
 				    b.append("OID").append(COMMA);
 				    b.append("NO_CTB").append(COMMA);
 				    b.append("NOM_CTB").append(COMMA);
@@ -126,13 +127,14 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 			    }
 
 			    @Override
-			    public void fillLine(StringBuilder b, ImpressionChemisesTOResults.ChemiseTO elt) {
+			    public boolean fillLine(CsvHelper.LineFiller b, ImpressionChemisesTOResults.ChemiseTO elt) {
 				    b.append(elt.officeImpotID != null ? elt.officeImpotID : EMPTY).append(COMMA);
 				    b.append(elt.noCtb).append(COMMA);
 					b.append(escapeChars(elt.nomCtb)).append(COMMA);
-				    b.append(elt.getDateDebutDi().index()).append(COMMA);
-				    b.append(elt.getDateFinDi().index()).append(COMMA);
-				    b.append(elt.getDateSommationDi().index());
+				    b.append(elt.getDateDebutDi()).append(COMMA);
+				    b.append(elt.getDateFinDi()).append(COMMA);
+				    b.append(elt.getDateSommationDi());
+				    return true;
 			    }
 		    });
 	    }

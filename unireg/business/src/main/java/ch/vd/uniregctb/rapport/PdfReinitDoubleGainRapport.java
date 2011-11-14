@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 
@@ -90,28 +90,24 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		String contenu = null;
 		int size = situations.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * situations.size());
-			b.append("Numéro de l'office d'impôt").append(COMMA).append("Numéro de contribuable").append(COMMA).append(
-					"Numéro de l'ancienne situation de famille").append(COMMA).append("Numéro de la nouvelle situation de famille\n");
-
-			final GentilIterator<ReinitialiserBaremeDoubleGainResults.Situation> iter = new GentilIterator<ReinitialiserBaremeDoubleGainResults.Situation>(situations);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(situations, filename, status, new CsvHelper.FileFiller<ReinitialiserBaremeDoubleGainResults.Situation>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de l'office d'impôt").append(COMMA);
+					b.append("Numéro de contribuable").append(COMMA);
+					b.append("Numéro de l'ancienne situation de famille").append(COMMA);
+					b.append("Numéro de la nouvelle situation de famille");
 				}
 
-				ReinitialiserBaremeDoubleGainResults.Situation situation = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(situation.officeImpotID).append(COMMA);
-				bb.append(situation.ctbId).append(COMMA);
-				bb.append(situation.ancienneId).append(COMMA);
-				bb.append(situation.nouvelleId);
-				bb.append('\n');
-
-				b.append(bb);
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ReinitialiserBaremeDoubleGainResults.Situation situation) {
+					b.append(situation.officeImpotID).append(COMMA);
+					b.append(situation.ctbId).append(COMMA);
+					b.append(situation.ancienneId).append(COMMA);
+					b.append(situation.nouvelleId);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

@@ -10,7 +10,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.StatusManager;
 
 /**
@@ -92,46 +93,41 @@ public class PdfAcomptesRapport extends PdfRapport {
 		final List<AcomptesResults.InfoContribuableAssujetti> list = results.getListeContribuablesAssujettis();
 		final int size = list.size();
 		if (size > 0) {
-
-			final StringBuilder b = new StringBuilder(300 * list.size());
-			b.append("Numéro de contribuable").append(COMMA);
-			b.append("Nom du contribuable principal").append(COMMA);
-			b.append("Prénom du contribuable principal").append(COMMA);
-			b.append("For principal").append(COMMA);
-			b.append("For de gestion").append(COMMA);
-			b.append("Type de population").append(COMMA);
-			b.append("Type d'impôt").append(COMMA);
-			b.append("Période fiscale").append(COMMA);
-			b.append("Fors secondaires").append('\n');
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<AcomptesResults.InfoContribuableAssujetti> iter = new GentilIterator<AcomptesResults.InfoContribuableAssujetti>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(message, iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableAssujetti>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de contribuable").append(COMMA);
+					b.append("Nom du contribuable principal").append(COMMA);
+					b.append("Prénom du contribuable principal").append(COMMA);
+					b.append("For principal").append(COMMA);
+					b.append("For de gestion").append(COMMA);
+					b.append("Type de population").append(COMMA);
+					b.append("Type d'impôt").append(COMMA);
+					b.append("Période fiscale").append(COMMA);
+					b.append("Fors secondaires");
 				}
 
-				final AcomptesResults.InfoContribuableAssujetti ligne = iter.next();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, AcomptesResults.InfoContribuableAssujetti ligne) {
+					final String nom = ligne.getNom() != null ? ligne.getNom().trim() : null;
+					final String prenom = ligne.getPrenom() != null ? ligne.getPrenom().trim() : null;
 
-				final String nom = ligne.getNom() != null ? ligne.getNom().trim() : null;
-				final String prenom = ligne.getPrenom() != null ? ligne.getPrenom().trim() : null;
+					final AcomptesResults.InfoAssujettissementContribuable assujettissementIcc = ligne.getAssujettissementIcc();
+					final AcomptesResults.InfoAssujettissementContribuable assujettissementIfd = ligne.getAssujettissementIfd();
 
-				final AcomptesResults.InfoAssujettissementContribuable assujettissementIcc = ligne.getAssujettissementIcc();
-				final AcomptesResults.InfoAssujettissementContribuable assujettissementIfd = ligne.getAssujettissementIfd();
+					// ICC
+					if (assujettissementIcc != null) {
+						fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIcc, TYPE_IMPOT_ICC, assujettissementIfd != null);
+					}
 
-				// ICC
-				if (assujettissementIcc != null) {
-					fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIcc, TYPE_IMPOT_ICC);
+					// IFD
+					if (assujettissementIfd != null) {
+						fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIfd, TYPE_IMPOT_IFD, false);
+					}
+
+					return assujettissementIcc != null || assujettissementIfd != null;
 				}
-
-				// IFD
-				if (assujettissementIfd != null) {
-					fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIfd, TYPE_IMPOT_IFD);
-				}
-			}
-			contenu = b.toString();
+			});
 		}
 		return contenu;
 	}
@@ -142,26 +138,22 @@ public class PdfAcomptesRapport extends PdfRapport {
 		final List<AcomptesResults.Erreur> list = results.getListeErreurs();
 		final int size = list.size();
 		if (size > 0) {
-
-			final StringBuilder b = new StringBuilder(100 * list.size());
-			b.append("Numéro de contribuable" + COMMA + "Erreur" + COMMA + "Complément\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<AcomptesResults.Erreur> iter = new GentilIterator<AcomptesResults.Erreur>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(message, iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de contribuable").append(COMMA);
+					b.append("Erreur").append(COMMA);
+					b.append("Complément");
 				}
 
-				final AcomptesResults.Erreur ligne = iter.next();
-				b.append(ligne.noCtb).append(COMMA);
-				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
-				b.append(escapeChars(ligne.details));
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListesResults.Erreur ligne) {
+					b.append(ligne.noCtb).append(COMMA);
+					b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
+					b.append(escapeChars(ligne.details));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -172,31 +164,27 @@ public class PdfAcomptesRapport extends PdfRapport {
 		final List<AcomptesResults.InfoContribuableIgnore> list = results.getContribuablesIgnores();
 		final int size = list.size();
 		if (size > 0) {
-
-			final StringBuilder b = new StringBuilder(100 * list.size());
-			b.append("Numéro de contribuable" + COMMA + "Année fiscale" + COMMA + "Complément\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<AcomptesResults.InfoContribuableIgnore> iter = new GentilIterator<AcomptesResults.InfoContribuableIgnore>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(message, iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableIgnore>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de contribuable").append(COMMA);
+					b.append("Année fiscale").append(COMMA);
+					b.append("Complément");
 				}
 
-				final AcomptesResults.InfoContribuableIgnore ligne = iter.next();
-				b.append(ligne.getNumeroCtb()).append(COMMA);
-				b.append(ligne.getAnneeFiscale()).append(COMMA);
-				b.append(escapeChars(ligne.toString()));
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, AcomptesResults.InfoContribuableIgnore ligne) {
+					b.append(ligne.getNumeroCtb()).append(COMMA);
+					b.append(ligne.getAnneeFiscale()).append(COMMA);
+					b.append(escapeChars(ligne.toString()));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
 
-	private void fillLigneBuffer(StringBuilder b, long numeroCtb, String nom, String prenom, AcomptesResults.InfoAssujettissementContribuable assujettissement, String typeImpot) {
+	private void fillLigneBuffer(CsvHelper.LineFiller b, long numeroCtb, String nom, String prenom, AcomptesResults.InfoAssujettissementContribuable assujettissement, String typeImpot, boolean withCR) {
 		b.append(numeroCtb).append(COMMA);
 
 		b.append(escapeChars(nom)).append(COMMA);
@@ -228,7 +216,9 @@ public class PdfAcomptesRapport extends PdfRapport {
 			}
 		}
 
-		b.append('\n');
+		if (withCR) {
+			b.append('\n');
+		}
 	}
 
 }

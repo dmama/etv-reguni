@@ -102,9 +102,9 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
      * Construit le contenu du fichier détaillé des contribuables rapprochés
      */
 	private String ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(listeRapprochee, filename, status, 100, new CsvHelper.Filler<ProprietaireRapproche>() {
+		return CsvHelper.asCsvFile(listeRapprochee, filename, status, new CsvHelper.FileFiller<ProprietaireRapproche>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NumeroFoncier").append(COMMA);
 				b.append("Nom").append(COMMA);
 				b.append("Prénom").append(COMMA);
@@ -125,7 +125,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ProprietaireRapproche elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ProprietaireRapproche elt) {
 				b.append(elt.getNumeroRegistreFoncier()).append(COMMA);
 				b.append(convertNullToEmpty(elt.getNom())).append(COMMA);
 				b.append(convertNullToEmpty(elt.getPrenom())).append(COMMA);
@@ -143,6 +143,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
 				b.append(convertNullToEmpty(elt.getNomCourrier1())).append(COMMA);
 				b.append(convertNullToEmpty(elt.getNomCourrier2())).append(COMMA);
 				b.append(elt.getResultat().getValeur()).append(COMMA);
+				return true;
 			}
 		});
 	}

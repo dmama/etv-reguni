@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 
@@ -96,30 +96,28 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 	private <T extends IdentifierContribuableResults.Identifie> String getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("Business-ID Message").append(COMMA).append("PRENOMS").append(COMMA).append("NOM").append(COMMA).append("NUMERO CTB").append(COMMA).append("NUMERO MENAGE\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Business-ID Message").append(COMMA);
+					b.append("PRENOMS").append(COMMA);
+					b.append("NOM").append(COMMA);
+					b.append("NUMERO CTB").append(COMMA);
+					b.append("NUMERO MENAGE");
 				}
 
-				final T info = iter.next();
-				b.append(escapeChars(info.businessID)).append(COMMA);
-				b.append(escapeChars(info.prenom)).append(COMMA);
-				b.append(escapeChars(info.nom)).append(COMMA);
-				b.append(info.noCtb).append(COMMA);
-				if (info.noCtbMenage != null) {
-					b.append(info.noCtbMenage);
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(escapeChars(info.businessID)).append(COMMA);
+					b.append(escapeChars(info.prenom)).append(COMMA);
+					b.append(escapeChars(info.nom)).append(COMMA);
+					b.append(info.noCtb).append(COMMA);
+					if (info.noCtbMenage != null) {
+						b.append(info.noCtbMenage);
+					}
+					return true;
 				}
-				b.append("\n");
-
-			}
-
-			contenu = b.toString();
+			});
 		}
 		return contenu;
 	}
@@ -127,25 +125,22 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 	private <T extends IdentifierContribuableResults.NonIdentifie> String getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("Business-ID Message").append(COMMA).append("PRENOMS").append(COMMA).append("NOM").append("\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Business-ID Message").append(COMMA);
+					b.append("PRENOMS").append(COMMA);
+					b.append("NOM");
 				}
 
-				final T info = iter.next();
-				b.append(escapeChars(info.businessID)).append(COMMA);
-				b.append(escapeChars(info.prenom)).append(COMMA);
-				b.append(escapeChars(info.nom));
-				b.append("\n");
-			}
-
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(escapeChars(info.businessID)).append(COMMA);
+					b.append(escapeChars(info.prenom)).append(COMMA);
+					b.append(escapeChars(info.nom));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -157,25 +152,20 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
-
-			StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("id du message").append(COMMA).append("Message d'erreur\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("id du message").append(COMMA);
+					b.append("Message d'erreur");
 				}
 
-				T info = iter.next();
-				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-				bb.append(info.messageId).append(COMMA);
-				bb.append(info.raison);
-				bb.append('\n');
-
-				b.append(bb);
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.messageId).append(COMMA);
+					b.append(escapeChars(info.raison));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

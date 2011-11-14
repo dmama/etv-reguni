@@ -6,10 +6,9 @@ import java.util.List;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantAbstractResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
@@ -117,30 +116,22 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 
 		String contenu = null;
 		if (erreurs != null && erreurs.size() > 0) {
-
-			final StringBuilder builder = new StringBuilder((erreurs.size() + 1) * 100);
-			builder.append("NO_CTB" + COMMA + "DESCRIPTION" + COMMA + "COMPLEMENT" + "\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<CorrectionFlagHabitantAbstractResults.ContribuableErreur> iterator = new GentilIterator<CorrectionFlagHabitantAbstractResults.ContribuableErreur>(erreurs);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantAbstractResults.ContribuableErreur>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB").append(COMMA);
+					b.append("DESCRIPTION").append(COMMA);
+					b.append("COMPLEMENT");
 				}
 
-				final CorrectionFlagHabitantAbstractResults.ContribuableErreur erreur = iterator.next();
-				builder.append(erreur.getNoCtb()).append(COMMA);
-				builder.append(erreur.getMessage().getLibelle()).append(COMMA);
-				if (!StringUtils.isEmpty(erreur.getComplementInfo())) {
-					builder.append("\"");
-					builder.append(escapeChars(erreur.getComplementInfo()));
-					builder.append("\"");
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, CorrectionFlagHabitantAbstractResults.ContribuableErreur erreur) {
+					b.append(erreur.getNoCtb()).append(COMMA);
+					b.append(escapeChars(erreur.getMessage().getLibelle())).append(COMMA);
+					b.append(CsvHelper.asCsvField(escapeChars(erreur.getComplementInfo())));
+					return true;
 				}
-				builder.append('\n');
-			}
-			contenu = builder.toString();
+			});
 		}
 		return contenu;
 	}
@@ -149,25 +140,18 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 
 		String contenu = null;
 		if (modifications != null && modifications.size() > 0) {
-
-			final StringBuilder builder = new StringBuilder((modifications.size() + 1) * 10);
-			builder.append("NO_CTB\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<CorrectionFlagHabitantAbstractResults.ContribuableInfo> iterator = new GentilIterator<CorrectionFlagHabitantAbstractResults.ContribuableInfo>(modifications);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(modifications, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantAbstractResults.ContribuableInfo>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB");
 				}
 
-				final CorrectionFlagHabitantAbstractResults.ContribuableInfo modification = iterator.next();
-				builder.append(modification.getNoCtb());
-				builder.append('\n');
-			}
-
-			contenu = builder.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, CorrectionFlagHabitantAbstractResults.ContribuableInfo elt) {
+					b.append(elt.getNoCtb());
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

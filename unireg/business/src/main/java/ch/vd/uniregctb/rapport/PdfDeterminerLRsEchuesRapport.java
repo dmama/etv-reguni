@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 
@@ -99,28 +99,23 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> String getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
 		if (liste != null && liste.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE\n");
-
-			final GentilIterator<T> iter = new GentilIterator<T>(liste);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-				    status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
 				}
 
-				final T info = iter.next();
-				b.append(info.idDebiteur).append(COMMA);
-				b.append(escapeChars(info.nomDebiteur)).append(COMMA);
-				b.append(escapeChars(info.getDescriptionRaison())).append(COMMA);
-				if (!StringUtils.isBlank(info.getCommentaire())) {
-					b.append("\"").append(escapeChars(info.getCommentaire())).append("\"");
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, T info) {
+					b.append(info.idDebiteur).append(COMMA);
+					b.append(escapeChars(info.nomDebiteur)).append(COMMA);
+					b.append(escapeChars(info.getDescriptionRaison())).append(COMMA);
+					if (!StringUtils.isBlank(info.getCommentaire())) {
+						b.append(CsvHelper.asCsvField(escapeChars(info.getCommentaire())));
+					}
+					return true;
 				}
-				b.append("\n");
-			}
-
-			contenu = b.toString();
+			});
 		}
 		return contenu;
 	}
@@ -128,25 +123,21 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 	private String getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
 		String contenu = null;
 		if (lrEchues != null && lrEchues.size() > 0) {
-
-			final StringBuilder b = new StringBuilder(lrEchues.size() * 50);
-			b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("DEBUT_PERIODE_LR").append(COMMA).append("FIN_PERIODE_LR\n");
-
-			final GentilIterator<DeterminerLRsEchuesResults.ResultLrEchue> iter = new GentilIterator<DeterminerLRsEchuesResults.ResultLrEchue>(lrEchues);
-			while (iter.hasNext()) {
-
-				if (iter.isAtNewPercent()) {
-				    status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("DEBUT_PERIODE_LR").append(COMMA).append("FIN_PERIODE_LR");
 				}
 
-				final DeterminerLRsEchuesResults.ResultLrEchue info = iter.next();
-				b.append(info.idDebiteur).append(COMMA);
-				b.append(escapeChars(info.nomDebiteur)).append(COMMA);
-				b.append(info.debutPeriode.index()).append(COMMA);
-				b.append(info.finPeriode.index()).append("\n");
-			}
-
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, DeterminerLRsEchuesResults.ResultLrEchue info) {
+					b.append(info.idDebiteur).append(COMMA);
+					b.append(escapeChars(info.nomDebiteur)).append(COMMA);
+					b.append(info.debutPeriode.index()).append(COMMA);
+					b.append(info.finPeriode.index());
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

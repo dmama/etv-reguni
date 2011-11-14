@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -134,15 +135,20 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 	private String asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
 		final String content;
 		if (list.size() > 0) {
-			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, AVG_LINE_LEN, new CsvHelper.Filler<EnvoiSommationsDIsResults.Info>() {
+			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
 				@Override
-				public void fillHeader(StringBuilder b) {
+				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(list.get(0).getCsvEntete());
 				}
 
 				@Override
-				public void fillLine(StringBuilder b, EnvoiSommationsDIsResults.Info elt) {
-					b.append(elt.getCsv());
+				public boolean fillLine(CsvHelper.LineFiller b, EnvoiSommationsDIsResults.Info elt) {
+					final String csv = elt.getCsv();
+					if (StringUtils.isNotBlank(csv)) {
+						b.append(elt.getCsv());
+						return true;
+					}
+					return false;
 				}
 			});
 		}

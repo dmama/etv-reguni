@@ -8,7 +8,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 
@@ -78,54 +78,38 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CorrectionEtatDeclarationResults.Doublon>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Id du contribuable").append(COMMA);
+					b.append("Id de la déclaration d'impôt").append(COMMA);
+					b.append("Id de l'état").append(COMMA);
+					b.append("Type de l'état").append(COMMA);
+					b.append("Date d'obtention").append(COMMA);
+					b.append("Date de création").append(COMMA);
+					b.append("Utilisateur de création").append(COMMA);
+					b.append("Date de modification").append(COMMA);
+					b.append("Utilisateur de modification").append(COMMA);
+					b.append("Date d'annulation").append(COMMA);
+					b.append("Utilisateur d'annulation");
+				}
 
-		    StringBuilder b = new StringBuilder(AVG_LINE_LEN * list.size());
-			b.append("Id du contribuable");
-			b.append(COMMA);
-			b.append("Id de la déclaration d'impôt");
-			b.append(COMMA);
-			b.append("Id de l'état");
-			b.append(COMMA);
-			b.append("Type de l'état");
-			b.append(COMMA);
-			b.append("Date d'obtention");
-			b.append(COMMA);
-			b.append("Date de création");
-			b.append(COMMA);
-			b.append("Utilisateur de création");
-			b.append(COMMA);
-			b.append("Date de modification");
-			b.append(COMMA);
-			b.append("Utilisateur de modification");
-			b.append(COMMA);
-			b.append("Date d'annulation");
-			b.append(COMMA);
-			b.append("Utilisateur d'annulation\n");
-
-			final GentilIterator<CorrectionEtatDeclarationResults.Doublon> iter = new GentilIterator<CorrectionEtatDeclarationResults.Doublon>(list);
-		    while (iter.hasNext()) {
-		        if (iter.isAtNewPercent()) {
-		            status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
-		        }
-
-		        CorrectionEtatDeclarationResults.Doublon doublon = iter.next();
-		        StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
-			    bb.append(doublon.ctbId).append(COMMA);
-			    bb.append(doublon.diId).append(COMMA);
-			    bb.append(doublon.id).append(COMMA);
-			    bb.append(doublon.type).append(COMMA);
-			    bb.append(doublon.dateObtention).append(COMMA);
-			    bb.append(doublon.logCreationDate).append(COMMA);
-			    bb.append(doublon.logCreationUser).append(COMMA);
-			    bb.append(doublon.logModificationDate).append(COMMA);
-			    bb.append(doublon.logModificationUser).append(COMMA);
-			    bb.append(doublon.annulationDate).append(COMMA);
-			    bb.append(doublon.annulationUser).append(COMMA);
-		        bb.append('\n');
-
-		        b.append(bb);
-		    }
-		    contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, CorrectionEtatDeclarationResults.Doublon doublon) {
+					b.append(doublon.ctbId).append(COMMA);
+					b.append(doublon.diId).append(COMMA);
+					b.append(doublon.id).append(COMMA);
+					b.append(doublon.type).append(COMMA);
+					b.append(doublon.dateObtention).append(COMMA);
+					b.append(doublon.logCreationDate).append(COMMA);
+					b.append(doublon.logCreationUser).append(COMMA);
+					b.append(doublon.logModificationDate).append(COMMA);
+					b.append(doublon.logModificationUser).append(COMMA);
+					b.append(doublon.annulationDate).append(COMMA);
+					b.append(doublon.annulationUser).append(COMMA);
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}

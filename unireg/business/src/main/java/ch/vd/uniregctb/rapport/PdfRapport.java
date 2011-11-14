@@ -240,15 +240,16 @@ public abstract class PdfRapport extends Document {
 	 * Construit le contenu du fichier détaillé des contribuables traités
 	 */
 	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(ctbsTraites, filename, status, 10, new CsvHelper.Filler<Long>() {
+		return CsvHelper.asCsvFile(ctbsTraites, filename, status, new CsvHelper.FileFiller<Long>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, Long elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, Long elt) {
 				b.append(elt);
+				return true;
 			}
 		});
 	}
@@ -257,22 +258,23 @@ public abstract class PdfRapport extends Document {
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
 	protected static <T extends JobResults.Info> String asCsvFile(List<T> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, AVG_LINE_LEN, new CsvHelper.Filler<T>() {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")
 						.append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, T elt) {
-				b.append(elt.officeImpotID != null ? elt.officeImpotID : EMPTY).append(COMMA);
+			public boolean fillLine(CsvHelper.LineFiller b, T elt) {
+				b.append(elt.officeImpotID != null ? elt.officeImpotID.toString() : EMPTY).append(COMMA);
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.nomCtb)).append(COMMA);
 				b.append(escapeChars(elt.getDescriptionRaison()));
 				if (elt.details != null) {
 					b.append(COMMA).append(asCsvField(elt.details));
 				}
+				return true;
 			}
 		});
 	}

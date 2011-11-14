@@ -16,6 +16,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -161,26 +163,6 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return triee;
 	}
 
-	protected static StringBuilder getBuilderWithHeader() {
-		return new StringBuilder("Numéro OFS de la commune" + COMMA + // --------------------------
-		        "Nom de la commune" + COMMA + // -------------------------------------------------------------
-				"Type de contribuable" + COMMA + // ----------------------------------------------------------
-				"Complément type contribuable" + COMMA + // --------------------------------------------------
-		        "Numéro de contribuable" + COMMA + // --------------------------------------------------------
-		        "Nom du contribuable 1" + COMMA + // -----------------------------------------------------------
-		        "Prénom du contribuable 1" + COMMA + // -----------------------------------------------------------
-		        "Nom du contribuable 2" + COMMA + // ------------------------------------------------
-		        "Prénom du contribuable 2" + COMMA + // ------------------------------------------------
-		        "Adresse courrier" + COMMA + // --------------------------------------------------------------
-		        "Date d'ouverture" + COMMA + // --------------------------------------------------------
-				"Motif d'ouverture" + COMMA + // ------------------------------------------------------------
-				"Date de fermeture" + COMMA + // ----------------------------------------------------------
-		        "Motif de fermeture" + COMMA + // --------------------------------------------------------------
-		        "Numéro AVS contribuable 1" + COMMA + // -------------------------------------------------------
-		        "Numéro AVS contribuable 2" + COMMA + // -------------------------------------------------------
-				"Assujettissement\n");
-	}
-
 	protected static String getDescriptionMotif(MotifFor motif, boolean ouverture) {
 		return motif.getDescription(ouverture);
 	}
@@ -210,95 +192,106 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return StringUtils.isBlank(str) ? "" : str;
 	}
 
-	protected final String[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
+	protected final String[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
 		final List<String> fichiers = new ArrayList<String>();
-	    StringBuilder b = null;
-		int index = 0;
 		if (infos != null) {
-			for (ProduireRolesResults.InfoContribuable info : infos) {
+			final List<List<ProduireRolesResults.InfoContribuable>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
+			for (List<ProduireRolesResults.InfoContribuable> portion : decoupage) {
+				final String contenu = CsvHelper.asCsvFile(portion, "...", null, new CsvHelper.FileFiller<ProduireRolesResults.InfoContribuable>() {
+					@Override
+					public void fillHeader(CsvHelper.LineFiller b) {
+						b.append("Numéro OFS de la commune").append(COMMA);
+						b.append("Nom de la commune").append(COMMA);
+						b.append("Type de contribuable").append(COMMA);
+						b.append("Complément type contribuable").append(COMMA);
+						b.append("Numéro de contribuable").append(COMMA);
+						b.append("Nom du contribuable 1").append(COMMA);
+						b.append("Prénom du contribuable 1").append(COMMA);
+						b.append("Nom du contribuable 2").append(COMMA);
+						b.append("Prénom du contribuable 2").append(COMMA);
+						b.append("Adresse courrier").append(COMMA);
+						b.append("Date d'ouverture").append(COMMA);
+						b.append("Motif d'ouverture").append(COMMA);
+						b.append("Date de fermeture").append(COMMA);
+						b.append("Motif de fermeture").append(COMMA);
+						b.append("Numéro AVS contribuable 1").append(COMMA);
+						b.append("Numéro AVS contribuable 2").append(COMMA);
+						b.append("Assujettissement");
+					}
 
-				if (b == null) {
-					b = getBuilderWithHeader();
-				}
-				final long noCtb = info.noCtb;
-				final List<NomPrenom> noms = info.getNomsPrenoms();
-				final List<String> nosAvs = info.getNosAvs();
-				final String[] adresse = info.getAdresseEnvoi();
+					@Override
+					public boolean fillLine(CsvHelper.LineFiller b, ProduireRolesResults.InfoContribuable info) {
+						final long noCtb = info.noCtb;
+						final List<NomPrenom> noms = info.getNomsPrenoms();
+						final List<String> nosAvs = info.getNosAvs();
+						final String[] adresse = info.getAdresseEnvoi();
 
-				final int sizeNoms = noms.size();
-				Assert.isEqual(sizeNoms, nosAvs.size());
+						final int sizeNoms = noms.size();
+						Assert.isEqual(sizeNoms, nosAvs.size());
 
-				// ajout des infos au fichier
-				final String nom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getNom() : null);
-				final String prenom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getPrenom() : null);
-				final String nom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getNom() : null);
-				final String prenom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getPrenom() : null);
-				final String adresseCourrier = asCsvField(adresse);
-				final String typeCtb = asCvsField(info.getTypeCtb());
-				final String complTypeCtb = getComplementTypeContribuable(info);
+						// ajout des infos au fichier
+						final String nom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getNom() : null);
+						final String prenom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getPrenom() : null);
+						final String nom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getNom() : null);
+						final String prenom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getPrenom() : null);
+						final String adresseCourrier = asCsvField(adresse);
+						final String typeCtb = asCvsField(info.getTypeCtb());
+						final String complTypeCtb = getComplementTypeContribuable(info);
 
-				final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
-				final String debut;
-				final String motifOuverture;
-				if (infosOuverture != null) {
-					debut = infosOuverture.getFirst().toString();
-					motifOuverture = emptyInsteadNull(infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : null);
-				}
-				else {
-					debut = "";
-					motifOuverture = "";
-				}
+						final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
+						final String debut;
+						final String motifOuverture;
+						if (infosOuverture != null) {
+							debut = infosOuverture.getFirst().toString();
+							motifOuverture = emptyInsteadNull(infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : null);
+						}
+						else {
+							debut = "";
+							motifOuverture = "";
+						}
 
-				final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
-				final String fin;
-				final String motifFermeture;
-				if (infosFermeture != null) {
-					fin = infosFermeture.getFirst().toString();
-					motifFermeture = emptyInsteadNull(infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : null);
-				}
-				else {
-					fin = "";
-					motifFermeture = "";
-				}
+						final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
+						final String fin;
+						final String motifFermeture;
+						if (infosFermeture != null) {
+							fin = infosFermeture.getFirst().toString();
+							motifFermeture = emptyInsteadNull(infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : null);
+						}
+						else {
+							fin = "";
+							motifFermeture = "";
+						}
 
-				final String assujettissement = info.getTypeAssujettissementAgrege().description();
-				final String numeroAvs1 = emptyInsteadNull(sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : null);
-				final String numeroAvs2 = emptyInsteadNull(sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : null);
+						final String assujettissement = info.getTypeAssujettissementAgrege().description();
+						final String numeroAvs1 = emptyInsteadNull(sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : null);
+						final String numeroAvs2 = emptyInsteadNull(sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : null);
 
-				final int noOfsCommune = accesCommune.getNoOfsCommune(info);
-				final String nomCommune = nomsCommunes.get(noOfsCommune);
+						final int noOfsCommune = accesCommune.getNoOfsCommune(info);
+						final String nomCommune = nomsCommunes.get(noOfsCommune);
 
-				b.append(noOfsCommune).append(COMMA);
-				b.append(nomCommune).append(COMMA);
-				b.append(typeCtb).append(COMMA);
-				b.append(complTypeCtb).append(COMMA);
-				b.append(noCtb).append(COMMA);
-				b.append(nom1).append(COMMA);
-				b.append(prenom1).append(COMMA);
-				b.append(nom2).append(COMMA);
-				b.append(prenom2).append(COMMA);
-				b.append(adresseCourrier).append(COMMA);
-				b.append(debut).append(COMMA);
-				b.append(motifOuverture).append(COMMA);
-				b.append(fin).append(COMMA);
-				b.append(motifFermeture).append(COMMA);
-				b.append(numeroAvs1).append(COMMA);
-				b.append(numeroAvs2).append(COMMA);
-				b.append(assujettissement);
-				b.append("\n");
+						b.append(noOfsCommune).append(COMMA);
+						b.append(nomCommune).append(COMMA);
+						b.append(typeCtb).append(COMMA);
+						b.append(complTypeCtb).append(COMMA);
+						b.append(noCtb).append(COMMA);
+						b.append(nom1).append(COMMA);
+						b.append(prenom1).append(COMMA);
+						b.append(nom2).append(COMMA);
+						b.append(prenom2).append(COMMA);
+						b.append(adresseCourrier).append(COMMA);
+						b.append(debut).append(COMMA);
+						b.append(motifOuverture).append(COMMA);
+						b.append(fin).append(COMMA);
+						b.append(motifFermeture).append(COMMA);
+						b.append(numeroAvs1).append(COMMA);
+						b.append(numeroAvs2).append(COMMA);
+						b.append(assujettissement);
+						return true;
+					}
+				});
 
-				++ index;
-				if (index >= MAX_ROLES_PAR_FICHIER) {
-					fichiers.add(b.toString());
-					index = 0;
-					b = null;
-				}
-			}
-
-			// reliquat
-			if (b != null) {
-				fichiers.add(b.toString());
+				fichiers.add(contenu);
 			}
 		}
 		return fichiers.toArray(new String[fichiers.size()]);

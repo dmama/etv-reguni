@@ -10,7 +10,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 
@@ -79,20 +79,22 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		List<ListeTachesEnInstanceParOID.LigneTacheInstance> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
-			StringBuilder b = new StringBuilder("Numéro de l'OID" + COMMA + "Type de tâche " + COMMA + " Nombre de tâches\n");
-
-			final GentilIterator<ListeTachesEnInstanceParOID.LigneTacheInstance> iter = new GentilIterator<ListeTachesEnInstanceParOID.LigneTacheInstance>(list);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
+			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeTachesEnInstanceParOID.LigneTacheInstance>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro de l'OID").append(COMMA);
+					b.append("Type de tâche").append(COMMA);
+					b.append("Nombre de tâches");
 				}
-				final ListeTachesEnInstanceParOID.LigneTacheInstance ligne = iter.next();
-				b.append(ligne.getNumeroOID()).append(COMMA);
-				b.append(ligne.getTypeTache()).append(COMMA);
-				b.append(ligne.getNombreTache()).append(COMMA);
-				b.append('\n');
-			}
-			contenu = b.toString();
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListeTachesEnInstanceParOID.LigneTacheInstance ligne) {
+					b.append(ligne.getNumeroOID()).append(COMMA);
+					b.append(ligne.getTypeTache()).append(COMMA);
+					b.append(ligne.getNombreTache());
+					return true;
+				}
+			});
 		}
 		return contenu;
 

@@ -89,58 +89,62 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 	}
 
 	private String buildContenuTraites(List<ImportImmeublesResults.Import> traites, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(traites, filename, status, 25, new CsvHelper.Filler<ImportImmeublesResults.Import>() {
+		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Import>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("NO_CONTRIBUABLE");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportImmeublesResults.Import data) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportImmeublesResults.Import data) {
 				b.append(data.getNoImmeuble()).append(COMMA).append(data.getNoContribuable());
+				return true;
 			}
 		});
 	}
 
 	private String buildContenuIgnores(List<ImportImmeublesResults.Ignore> ignores, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(ignores, filename, status, 100, new CsvHelper.Filler<ImportImmeublesResults.Ignore>() {
+		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Ignore>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("RAISON");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportImmeublesResults.Ignore elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportImmeublesResults.Ignore elt) {
 				b.append(elt.noImmeuble).append(COMMA).append(CsvHelper.escapeChars(elt.raison.description()));
+				return true;
 			}
 		});
 	}
 
 	private String buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(averifiers, filename, status, 100, new CsvHelper.Filler<ImportImmeublesResults.AVerifier>() {
+		return CsvHelper.asCsvFile(averifiers, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.AVerifier>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportImmeublesResults.AVerifier elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportImmeublesResults.AVerifier elt) {
 				b.append(elt.noImmeuble).append(COMMA).append(CsvHelper.escapeChars(elt.raison.description())).append(COMMA).append(CsvHelper.escapeChars(elt.details));
+				return true;
 			}
 		});
 	}
 
 	private String buildContenuErreurs(List<ImportImmeublesResults.Erreur> erreurs, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(erreurs, filename, status, 100, new CsvHelper.Filler<ImportImmeublesResults.Erreur>() {
+		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Erreur>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("ERREUR").append(COMMA).append("DETAILS");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportImmeublesResults.Erreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportImmeublesResults.Erreur elt) {
 				b.append(elt.noImmeuble).append(COMMA).append(CsvHelper.escapeChars(elt.raison.description())).append(COMMA);
 				b.append(CsvHelper.escapeChars(elt.details));
+				return true;
 			}
 		});
 	}

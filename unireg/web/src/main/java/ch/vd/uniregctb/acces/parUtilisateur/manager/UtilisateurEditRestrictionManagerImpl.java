@@ -254,15 +254,16 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			final StringBuilder b = new StringBuilder();
 			b.append("Extraction des droits d'accès pour l'utilisateur ");
 			b.append(utilisateurView.getVisaOperateur());
-			b.append(" - " + utilisateurView.getPrenomNom());
+			b.append(" - ");
+			b.append(utilisateurView.getPrenomNom());
 			return b.toString();
 		}
 
 		private String buildCsv(List<DroitAccesUtilisateurView> acces) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
-			return CsvHelper.asCsvFile(acces, filename, null, 150, new CsvHelper.Filler<DroitAccesUtilisateurView>() {
+			return CsvHelper.asCsvFile(acces, filename, null, new CsvHelper.FileFiller<DroitAccesUtilisateurView>() {
 				@Override
-				public void fillHeader(StringBuilder b) {
+				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("TYPE_DROIT").append(CsvHelper.COMMA);
 					b.append("NIVEAU").append(CsvHelper.COMMA);
 					b.append("DATE_DEBUT").append(CsvHelper.COMMA);
@@ -275,7 +276,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 				}
 
 				@Override
-				public void fillLine(StringBuilder b, DroitAccesUtilisateurView elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, DroitAccesUtilisateurView elt) {
 					b.append(elt.getType().name()).append(CsvHelper.COMMA);
 					b.append(elt.getNiveau().name()).append(CsvHelper.COMMA);
 					b.append(RegDateHelper.dateToDisplayString(elt.getDateDebut())).append(CsvHelper.COMMA);
@@ -284,6 +285,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 					b.append(CsvHelper.asCsvField(elt.getPrenomNom())).append(CsvHelper.COMMA);
 					b.append(elt.getLocalite()).append(CsvHelper.COMMA);
 					b.append(RegDateHelper.dateToDashString(elt.getDateNaissance()));
+					return true;
 				}
 			});
 		}

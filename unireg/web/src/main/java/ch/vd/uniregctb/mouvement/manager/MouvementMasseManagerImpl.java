@@ -511,9 +511,9 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 		private String buildCsv(List<MouvementDetailView> mvts) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
-			return CsvHelper.asCsvFile(mvts, filename, null, 150, new CsvHelper.Filler<MouvementDetailView>() {
+			return CsvHelper.asCsvFile(mvts, filename, null, new CsvHelper.FileFiller<MouvementDetailView>() {
 				@Override
-				public void fillHeader(StringBuilder b) {
+				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("CTB_ID").append(CsvHelper.COMMA);
 					b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
 					b.append("TYPE_MOUVEMENT").append(CsvHelper.COMMA);
@@ -523,7 +523,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				}
 
 				@Override
-				public void fillLine(StringBuilder b, MouvementDetailView elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, MouvementDetailView elt) {
 					final ContribuableView ctb = elt.getContribuable();
 					b.append(ctb.getNumero()).append(CsvHelper.COMMA);
 					b.append(CsvHelper.asCsvField(ctb.getNomPrenom())).append(CsvHelper.COMMA);
@@ -531,6 +531,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 					b.append(elt.getEtatMouvement()).append(CsvHelper.COMMA);
 					b.append(CsvHelper.escapeChars(elt.getCollectiviteAdministrative())).append(CsvHelper.COMMA);
 					b.append(CsvHelper.escapeChars(elt.getDestinationUtilisateur()));
+					return true;
 				}
 			});
 		}

@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 
@@ -99,28 +99,22 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 
 		String contenu = null;
 		if (nonTraites != null && nonTraites.size() > 0) {
-			final StringBuilder b = new StringBuilder((nonTraites.size() + 1) * 50);
-
-			b.append("NO_CTB").append(COMMA);
-			b.append("RAISON").append(COMMA);
-			b.append("COMPLEMENT\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<DeterminerMouvementsDossiersEnMasseResults.NonTraite> iterator = new GentilIterator<DeterminerMouvementsDossiersEnMasseResults.NonTraite>(nonTraites);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(nonTraites, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.NonTraite>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB").append(COMMA);
+					b.append("RAISON").append(COMMA);
+					b.append("COMPLEMENT");
 				}
 
-				final DeterminerMouvementsDossiersEnMasseResults.NonTraite nonTraite = iterator.next();
-				b.append(nonTraite.noCtb).append(COMMA);
-				b.append(escapeChars(nonTraite.getTypeInformation())).append(COMMA);
-				b.append(asCsvField(nonTraite.complement.split("\n")));
-				b.append('\n');
-			}
-			contenu = b.toString();
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, DeterminerMouvementsDossiersEnMasseResults.NonTraite nonTraite) {
+					b.append(nonTraite.noCtb).append(COMMA);
+					b.append(escapeChars(nonTraite.getTypeInformation())).append(COMMA);
+					b.append(asCsvField(nonTraite.complement.split("\n")));
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -129,32 +123,26 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 
 		String contenu = null;
 		if (mouvements != null && mouvements.size() > 0) {
-			final StringBuilder b = new StringBuilder((mouvements.size() + 1) * 40);
-
-			b.append("NO_CTB").append(COMMA);
-			b.append("TYPE_MVT").append(COMMA);
-			b.append("OID").append(COMMA);
-			b.append("OID_DEST\n");
-
-			final String message = String.format("Génération du fichier %s", filename);
-			status.setMessage(message, 0);
-
-			final GentilIterator<DeterminerMouvementsDossiersEnMasseResults.Mouvement> iterator = new GentilIterator<DeterminerMouvementsDossiersEnMasseResults.Mouvement>(mouvements);
-			while (iterator.hasNext()) {
-				if (iterator.isAtNewPercent()) {
-					status.setMessage(message, iterator.getPercent());
+			contenu = CsvHelper.asCsvFile(mouvements, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.Mouvement>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB").append(COMMA);
+					b.append("TYPE_MVT").append(COMMA);
+					b.append("OID").append(COMMA);
+					b.append("OID_DEST");
 				}
 
-				final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvt = iterator.next();
-				b.append(mvt.noCtb).append(COMMA);
-				b.append(escapeChars(mvt.getTypeInformation())).append(COMMA);
-				b.append(mvt.oidActuel).append(COMMA);
-				if (mvt instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementOid) {
-					b.append(((DeterminerMouvementsDossiersEnMasseResults.MouvementOid) mvt).oidDestination);
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, DeterminerMouvementsDossiersEnMasseResults.Mouvement mvt) {
+					b.append(mvt.noCtb).append(COMMA);
+					b.append(escapeChars(mvt.getTypeInformation())).append(COMMA);
+					b.append(mvt.oidActuel).append(COMMA);
+					if (mvt instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementOid) {
+						b.append(((DeterminerMouvementsDossiersEnMasseResults.MouvementOid) mvt).oidDestination);
+					}
+					return true;
 				}
-				b.append('\n');
-			}
-			contenu = b.toString();
+			});
 		}
 		return contenu;
 	}

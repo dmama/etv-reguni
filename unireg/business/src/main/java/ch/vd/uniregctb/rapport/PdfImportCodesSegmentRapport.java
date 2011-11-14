@@ -80,44 +80,47 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 	}
 
 	private String buildContenuTraites(List<ImportCodesSegmentResults.Traite> traites, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(traites, filename, status, 25, new CsvHelper.Filler<ImportCodesSegmentResults.Traite>() {
+		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Traite>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("CODE_SEGMENT");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportCodesSegmentResults.Traite elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportCodesSegmentResults.Traite elt) {
 				b.append(elt.noTiers).append(COMMA).append(elt.codeSegment);
+				return true;
 			}
 		});
 	}
 
 	private String buildContenuIgnores(List<ImportCodesSegmentResults.Ignore> ignores, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(ignores, filename, status, 100, new CsvHelper.Filler<ImportCodesSegmentResults.Ignore>() {
+		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Ignore>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportCodesSegmentResults.Ignore elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportCodesSegmentResults.Ignore elt) {
 				b.append(elt.noTiers).append(COMMA).append(CsvHelper.escapeChars(elt.cause));
+				return true;
 			}
 		});
 	}
 
 	private String buildContenuErreurs(List<ImportCodesSegmentResults.Erreur> erreurs, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(erreurs, filename, status, 100, new CsvHelper.Filler<ImportCodesSegmentResults.Erreur>() {
+		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Erreur>() {
 			@Override
-			public void fillHeader(StringBuilder b) {
+			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("ERREUR").append(COMMA).append("DETAILS");
 			}
 
 			@Override
-			public void fillLine(StringBuilder b, ImportCodesSegmentResults.Erreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ImportCodesSegmentResults.Erreur elt) {
 				b.append(elt.noTiers).append(COMMA).append(CsvHelper.escapeChars(elt.type.getDescription())).append(COMMA);
 				b.append(CsvHelper.escapeChars(elt.details));
+				return true;
 			}
 		});
 	}
