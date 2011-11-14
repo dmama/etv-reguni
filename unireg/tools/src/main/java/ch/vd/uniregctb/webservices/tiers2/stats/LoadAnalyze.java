@@ -170,11 +170,11 @@ class LoadAnalyze extends Analyze {
 
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		addValues(dataset, "total", totalValues);
+		addValues(dataset, "total (" + totalValues.getTotal() + ")", totalValues);
 		for (Map.Entry<String, ChartValues> entry : entries) {
 			final String user = entry.getKey();
 			final ChartValues values = entry.getValue();
-			addValues(dataset, user, values);
+			addValues(dataset, user + " (" + values.getTotal() + ")", values);
 		}
 
 		final JFreeChart chart = ChartFactory.createLineChart(title, "time", "calls", dataset, PlotOrientation.VERTICAL, true, false, false);
