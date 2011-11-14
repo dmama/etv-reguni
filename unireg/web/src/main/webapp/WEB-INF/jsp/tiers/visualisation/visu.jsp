@@ -106,11 +106,13 @@
 					</authz:authorize>
 				</c:if>
 
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
-					<li id="immeublesTab">
-						<a id="immeublesTabAnchor" href="../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}"><span><fmt:message key="label.immeubles" /></span></a>
-					</li>
-				</authz:authorize>
+				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
+						<li id="immeublesTab">
+							<a id="immeublesTabAnchor" href="../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}"><span><fmt:message key="label.immeubles" /></span></a>
+						</li>
+					</authz:authorize>
+				</c:if>
 
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="remarqueTab">
