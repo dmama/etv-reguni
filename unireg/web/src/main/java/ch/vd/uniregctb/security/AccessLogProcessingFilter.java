@@ -17,7 +17,11 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
  */
 public class AccessLogProcessingFilter extends GenericFilterBean {
 
-	private static final Logger ACCESS = Logger.getLogger("web-access");
+	private static final Logger GET = Logger.getLogger("web-access.GET");
+	private static final Logger POST = Logger.getLogger("web-access.POST");
+	private static final Logger PUT = Logger.getLogger("web-access.PUT");
+	private static final Logger DELETE = Logger.getLogger("web-access.DELETE");
+	private static final Logger OTHER = Logger.getLogger("web-access.OTHER");
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -32,8 +36,29 @@ public class AccessLogProcessingFilter extends GenericFilterBean {
 			final long duration = (System.nanoTime() - start) / 1000000;
 			final String requestURL = getUrl(servletRequest);
 			final String method = getMethod(servletRequest);
-			ACCESS.info(String.format("[%s] (%d ms) %s: %s", visa, duration, method, requestURL));
+			final Logger logger = getLogger(method);
+			logger.info(String.format("[%s] (%d ms) %s", visa, duration, requestURL));
 		}
+	}
+
+	private static Logger getLogger(String method) {
+		final Logger logger;
+		if ("GET".equals(method)) {
+			logger = GET;
+		}
+		else if ("POST".equals(method)) {
+			logger = POST;
+		}
+		else if ("PUT".equals(method)) {
+			logger = PUT;
+		}
+		else if ("DELETE".equals(method)) {
+			logger = DELETE;
+		}
+		else {
+			logger = OTHER;
+		}
+		return logger;
 	}
 
 	private static String getMethod(ServletRequest servletRequest) {
