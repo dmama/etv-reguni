@@ -130,6 +130,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public Set<Long> getIdsTiersLies(Collection<Long> ids, boolean includeContactsImpotSource) {
+		return target.getIdsTiersLies(ids, includeContactsImpotSource);
+	}
+
+	@Override
 	public List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts) {
 		for (Long id : ids) {
 			if (boostedIds.contains(id)) {

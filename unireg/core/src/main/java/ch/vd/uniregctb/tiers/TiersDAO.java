@@ -52,6 +52,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	}
 
 	/**
+	 * Détermine et retourne l'ensemble des ids des tiers liés (par exemple : lié par un rapport d'appartenance ménage) aux tiers spécifiés par leurs ids.
+	 *
+	 * @param ids                        des ids de tiers (au maximum 500 ids à la fois)
+	 * @param includeContactsImpotSource <b>vrai</b> s'il faut ignorer les rapports de type <i>contact impôt-source</i>.
+	 * @return l'ensemble des ids des tiers liés, en incluant les ids spécifiés en entrée.
+	 */
+	Set<Long> getIdsTiersLies(Collection<Long> ids, boolean includeContactsImpotSource);
+
+	/**
 	 * Charge un seul lot les tiers dont les ids sont spécifiées en paramètre.
 	 * <p>
 	 * <b>Attention !</b> Les tiers chargés de cette manière ne doivent en aucun cas être modifiés et sauvé en base : les collections sont

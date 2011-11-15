@@ -566,6 +566,15 @@ public class PersonnePhysique extends Contribuable {
 		}
 	}
 
+	/**
+	 * Version simple du setter pour la méthode getBatch() du TiersDAO.
+	 *
+	 * @param set un ensemble
+	 */
+	public void setIdentificationsPersonnesForGetBatch(Set<IdentificationPersonne> set) {
+		this.identificationsPersonnes = set;
+	}
+
 	public void addIdentificationPersonne(IdentificationPersonne ident) {
 		if (identificationsPersonnes == null) {
 			identificationsPersonnes = new HashSet<IdentificationPersonne>();

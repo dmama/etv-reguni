@@ -142,6 +142,67 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	@Override
+	public Set<Long> getIdsTiersLies(final Collection<Long> ids, final boolean excludeContactsImpotSource) {
+
+		if (ids == null || ids.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		if (ids.size() > MAX_IN_SIZE) {
+			throw new IllegalArgumentException("Le nombre maximal d'ids est dépassé");
+		}
+
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
+			@SuppressWarnings({"unchecked"})
+			@Override
+			public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+
+				// on complète la liste d'ids avec les tiers liés par rapports
+				final Set<Long> idsDemandes = new HashSet<Long>(ids);
+				final Set<Long> idsLies = new HashSet<Long>();
+
+				// les tiers liés en tant que sujets
+				final Query qsujets = session.createQuery(buildHqlForSujets(excludeContactsImpotSource));
+				qsujets.setParameterList("ids", ids);
+				final List<Long> idsSujets = qsujets.list();
+				idsLies.addAll(idsSujets);
+
+				// les tiers liés en tant qu'objets
+				final Query qobjets = session.createQuery(buildHqlForObjets(excludeContactsImpotSource));
+				qobjets.setParameterList("ids", ids);
+				final List<Long> idsObjets = qobjets.list();
+				idsLies.addAll(idsObjets);
+
+				final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
+				idsFull.addAll(idsLies);
+				
+				return idsFull;
+			}
+
+			private String buildHqlForSujets(boolean excludeContactsImpotSource) {
+				final StringBuilder hqlSujets = new StringBuilder();
+				hqlSujets.append("select r.sujetId from RapportEntreTiers r where r.annulationDate is null");
+				if (excludeContactsImpotSource) {
+					hqlSujets.append(" and r.class != ContactImpotSource");
+				}
+				hqlSujets.append(" and r.objetId in (:ids)");
+				return hqlSujets.toString();
+			}
+
+			private String buildHqlForObjets(boolean excludeContactsImpotSource) {
+				final StringBuilder hqlSujets = new StringBuilder();
+				hqlSujets.append("select r.objetId from RapportEntreTiers r where r.annulationDate is null");
+				if (excludeContactsImpotSource) {
+					hqlSujets.append(" and r.class != ContactImpotSource");
+				}
+				hqlSujets.append(" and r.sujetId in (:ids)");
+				return hqlSujets.toString();
+			}
+		});
+	}
+
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
@@ -159,54 +220,25 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 					session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
 				}
 
-				return getBatch(ids, parts, session);
+				return getBatch(new HashSet<Long>(ids), parts, session);
 			}
 		});
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts, Session session) {
+	private List<Tiers> getBatch(Set<Long> ids, Set<Parts> parts, Session session) {
 		Assert.isTrue(ids.size() <= MAX_IN_SIZE, "Le nombre maximal d'ids est dépassé");
 
-		// on complète la liste d'ids avec les tiers liés par rapports, si nécessaire
-		final Set<Long> idsDemandes = new HashSet<Long>(ids);
-		final Set<Long> idsLies = new HashSet<Long>();
-
-		if (parts != null && parts.contains(Parts.RAPPORTS_ENTRE_TIERS)) {
-			Query qsujets = session.createQuery("select r.sujetId from RapportEntreTiers r where r.objetId in (:ids)");
-			qsujets.setParameterList("ids", ids);
-			final List<Long> idsSujets = qsujets.list();
-			idsLies.addAll(idsSujets);
-
-			Query qobjets = session.createQuery("select r.objetId from RapportEntreTiers r where r.sujetId in (:ids)");
-			qobjets.setParameterList("ids", ids);
-			final List<Long> idsObjets = qobjets.list();
-			idsLies.addAll(idsObjets);
-		}
-
-		final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
-		idsFull.addAll(idsLies);
-
 		// on charge les tiers en vrac
-		// idsFull -> les tiers liés sont nécessaires pour charger les rapport-entre-tiers sans sous-requêtes
-		// TODO (msi) cette étape n'est plus nécessaire depuis que les rapport-entre-tiers ne font que stocker les ids des tiers liés. A supprimer donc.
-		final List<Tiers> full = queryObjectsByIds("from Tiers as t where t.id in (:ids)", idsFull, session);
-		for (Tiers t : full) {
+		final List<Tiers> tiers = queryObjectsByIds("from Tiers as t where t.id in (:ids)", ids, session);
+		for (Tiers t : tiers) {
 			session.setReadOnly(t, true);
-		}
-
-		// [UNIREG-1985] extrait la liste des tiers demandés explicitement, de manière à ne initialiser les collections que sur ceux-ci.
-		final List<Tiers> tiers = new ArrayList<Tiers>(idsDemandes.size());
-		for (Tiers t : full) {
-			if (idsDemandes.contains(t.getNumero())) {
-				tiers.add(t);
-			}
 		}
 
 		{
 			// on charge les identifications des personnes en vrac
 			Query q = session.createQuery("from IdentificationPersonne as a where a.personnePhysique.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<IdentificationPersonne> identifications = q.list();
 
 			// on associe les identifications de personnes avec les tiers à la main
@@ -219,7 +251,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				@Override
 				public void setEntitySet(Tiers tiers, Set<IdentificationPersonne> set) {
 					if (tiers instanceof PersonnePhysique) {
-						((PersonnePhysique) tiers).setIdentificationsPersonnes(set);
+						((PersonnePhysique) tiers).setIdentificationsPersonnesForGetBatch(set);
 					}
 				}
 			}
@@ -228,11 +260,10 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		if (parts != null && parts.contains(Parts.ADRESSES)) {
 			// on charge toutes les adresses en vrac
-			// idsFull -> les adresses des tiers liés sont nécessaires pour calculer les adresses fiscales
-			List<AdresseTiers> adresses = queryObjectsByIds("from AdresseTiers as a where a.tiers.id in (:ids)", idsFull, session);
+			List<AdresseTiers> adresses = queryObjectsByIds("from AdresseTiers as a where a.tiers.id in (:ids)", ids, session);
 
 			// on associe les adresses avec les tiers à la main
-			associate(session, adresses, full, new TiersIdGetter<AdresseTiers>() {
+			associate(session, adresses, tiers, new TiersIdGetter<AdresseTiers>() {
 						@Override
 						public Long getTiersId(AdresseTiers entity) {
 							return entity.getTiers().getId();
@@ -254,7 +285,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			// on charge toutes les declarations en vrac
 			Query q = session.createQuery("from Declaration as d where d.tiers.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<Declaration> declarations = q.list();
 
 			// on associe les déclarations avec les tiers à la main
@@ -275,7 +306,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (parts != null && parts.contains(Parts.FORS_FISCAUX)) {
 			// on charge tous les fors fiscaux en vrac
 			Query q = session.createQuery("from ForFiscal as f where f.tiers.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<ForFiscal> fors = q.list();
 
 			// on associe les fors fiscaux avec les tiers à la main
@@ -297,7 +328,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			// on charge tous les rapports entre tiers en vrac
 			{
 				Query q = session.createQuery("from RapportEntreTiers as r where r.sujetId in (:ids)");
-				q.setParameterList("ids", idsDemandes);
+				q.setParameterList("ids", ids);
 				List<RapportEntreTiers> rapports = q.list();
 
 				// on associe les rapports avec les tiers à la main
@@ -317,7 +348,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			{
 
 				Query q = session.createQuery("from RapportEntreTiers as r where r.objetId in (:ids)");
-				q.setParameterList("ids", idsDemandes);
+				q.setParameterList("ids", ids);
 				List<RapportEntreTiers> rapports = q.list();
 
 				// on associe les rapports avec les tiers à la main
@@ -339,7 +370,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (parts != null && parts.contains(Parts.SITUATIONS_FAMILLE)) {
 			// on charge toutes les situations de famille en vrac
 			Query q = session.createQuery("from SituationFamille as r where r.contribuable.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<SituationFamille> situations = q.list();
 
 			// on associe les situations de famille avec les tiers à la main
@@ -362,7 +393,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (parts != null && parts.contains(Parts.PERIODICITES)) {
 			// on charge toutes les périodicités en vrac
 			Query q = session.createQuery("from Periodicite as p where p.debiteur.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<Periodicite> periodicites = q.list();
 
 			// on associe les périodicités avec les tiers à la main
@@ -385,7 +416,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
 			// on charge tous les immeubles en vrac
 			Query q = session.createQuery("from Immeuble as i where i.proprietaire.id in (:ids)");
-			q.setParameterList("ids", idsDemandes);
+			q.setParameterList("ids", ids);
 			List<Immeuble> immeubles = q.list();
 
 			// on associe les immeubles avec les tiers à la main
@@ -998,6 +1029,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		}
 	};
 
+	@Override
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
 		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
 	}
@@ -1189,7 +1221,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	private static class ForFiscalAccessor<T extends ForFiscal> implements EntityAccessor<Tiers, T> {
 		@Override
 		public Collection<T> getEntities(Tiers tiers) {
-			//noinspection unchecked
+			//noinspection unchecked,RedundantCast
 			return (Collection<T>) tiers.getForsFiscaux();
 		}
 

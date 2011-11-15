@@ -83,7 +83,7 @@ public class BusinessHelper {
 				}
 			}
 			if (!ids.isEmpty()) {
-				warmIndividus(ids, parts, context);
+				warmIndividus(ids, parts, context, true);
 			}
 		}
 
@@ -92,12 +92,13 @@ public class BusinessHelper {
 	/**
 	 * Précharge les individus pour le ids de tiers et les parts spécifiés.
 	 *
-	 * @param ids     des ids de tiers
-	 * @param parts   des parts
-	 * @param context le context d'exécution
+	 * @param ids                      des ids de tiers
+	 * @param parts                    des parts
+	 * @param context                  le context d'exécution
+	 * @param includesComposantsMenage <b>vrai</b> s'il faut inclure les numéros d'individus des personnes physiques faisant partie des ménages communs
 	 */
-	public static void warmIndividus(Set<Long> ids, Set<TiersPart> parts, Context context) {
-		final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
+	public static void warmIndividus(Set<Long> ids, Set<TiersPart> parts, Context context, boolean includesComposantsMenage) {
+		final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, includesComposantsMenage);
 		if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 			try {
 				final AttributeIndividu[] attributs = determineAttributs(parts);

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +75,28 @@ public class MappingThread extends Thread {
 		LOGGER.trace("Chargement des tiers - start");
 		long start = System.nanoTime();
 
-		// charge les tiers
 		final Set<TiersDAO.Parts> coreParts = TiersWebServiceImpl.webToCoreWithForsFiscaux(parts);
-		final List<Tiers> list = context.tiersDAO.getBatch(ids, coreParts);
-		if (list == null || list.isEmpty()) {
+
+		final Set<Long> idsFull;
+		if (coreParts.contains(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS)) {
+			idsFull = context.tiersDAO.getIdsTiersLies(ids, false);
+		}
+		else {
+			idsFull = ids;
+		}
+
+		// on charge les tiers demandés + ceux liés (optim pour le calcul des adresses, notamment)
+		final List<Tiers> listFull = context.tiersDAO.getBatch(idsFull, coreParts);
+		if (listFull == null || listFull.isEmpty()) {
 			return;
+		}
+
+		// on restreint la liste retournée aux tiers demandés
+		final List<Tiers> list = new ArrayList<Tiers>(ids.size());
+		for (Tiers tiers : listFull) {
+			if (ids.contains(tiers.getId())) {
+				list.add(tiers);
+			}
 		}
 
 		loadTiersTime = System.nanoTime() - start;
@@ -90,7 +108,7 @@ public class MappingThread extends Thread {
 			LOGGER.trace("Préchargement des individus - start");
 			start = System.nanoTime();
 
-			BusinessHelper.warmIndividus(ids, parts, context);
+			BusinessHelper.warmIndividus(idsFull, parts, context, false);
 
 			warmIndividusTime = System.nanoTime() - start;
 			LOGGER.trace("Préchargement des individus - end");
