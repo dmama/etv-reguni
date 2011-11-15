@@ -30,7 +30,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.manager.MouvementMasseManager;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaConsultationView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaSimpleEtatView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaTraitementView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseResultatRechercheView;
@@ -130,7 +129,7 @@ public class MouvementMasseController {
 
 		@Override
 		public MouvementMasseCriteriaView createNewEmptyCriteria() {
-			return new MouvementMasseCriteriaSimpleEtatView();
+			return new MouvementMasseCriteriaConsultationView();
 		}
 
 		@Override
