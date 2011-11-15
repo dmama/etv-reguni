@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -2635,12 +2634,12 @@ public class TacheServiceTest extends BusinessTest {
 		}
 	}
 
-	@Ignore(value = "Après la correction du cas jira UNIREG-2378, on a découvert qu'une tâche d'envoi de DI est générée à tort")
+	/**
+	 * [SIFISC-60] Vérifie que la séparation d'un couple HS avec immeuble ne génère pas de tâche d'envoi de DIs suite à la pseudo-fermeture du dernier immeuble.
+	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSeparationSurContribuableHSAvecImmeuble() throws Exception {
-
-		// TODO(msi,jde) Enlever le @Ignore une fois le cas UNIREG-2380 corrigé.
 
 		class Ids {
 			long idLui;
@@ -2671,10 +2670,21 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// séparation
-		final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
-		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+				metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+				return null;
+			}
+		});
 
-		metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+		final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+		assertNotNull(lui);
+		final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
+		assertNotNull(elle);
+		final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+		assertNotNull(mc);
 
 		// vérification des tâches générées : pour lui
 		{
@@ -2682,7 +2692,7 @@ public class TacheServiceTest extends BusinessTest {
 			// (mais une tâche de contrôle de dossier doit avoir été ouverte sur le couple)
 
 			final TacheCriteria criteria = new TacheCriteria();
-			criteria.setContribuable(couple.getPrincipal());
+			criteria.setContribuable(lui);
 			final List<Tache> taches = tacheDAO.find(criteria);
 			assertNotNull(taches);
 			assertEquals(0, taches.size());
@@ -2693,7 +2703,7 @@ public class TacheServiceTest extends BusinessTest {
 			// (mais une tâche de contrôle de dossier doit avoir été ouverte sur le couple)
 
 			final TacheCriteria criteria = new TacheCriteria();
-			criteria.setContribuable(couple.getConjoint());
+			criteria.setContribuable(elle);
 			final List<Tache> taches = tacheDAO.find(criteria);
 			assertNotNull(taches);
 			assertEquals(0, taches.size());
