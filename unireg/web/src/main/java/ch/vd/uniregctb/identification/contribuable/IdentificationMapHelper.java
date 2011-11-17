@@ -395,7 +395,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 	public Map<String, Object> getMaps(final boolean isTraite) {
-		final Map<String, Object> data = new HashMap<String, Object>(3);
+		final Map<String, Object> data = new HashMap<String, Object>(7);
 		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale());
 		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(isTraite));
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
