@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -91,6 +92,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	private final Context context = new Context();
 
 	private GlobalTiersSearcher tiersSearcher;
+	private ExecutorService threadPool;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -160,6 +162,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBamMessageSender(BamMessageSender service) {
 		context.bamSender = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setThreadPool(ExecutorService threadPool) {
+		this.threadPool = threadPool;
 	}
 
 	@Override
@@ -318,39 +325,53 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		final Set<Long> allIds = trim(partyNumbers);
 
-		// on travaille en utilisant plusieurs threads
-		final int nbThreads = Math.max(1, Math.min(5, allIds.size() / 25)); // un thread pour chaque multiple de 25 tiers. Au minimum 1 thread, au maximum 5 threads
-		final List<Set<Long>> list = split(allIds, nbThreads);
-
-		// démarrage des threads
-		final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
-		for (Set<Long> ids : list) {
-			MappingThread t = new MappingThread(ids, date, parts, context, callback);
-			threads.add(t);
-			t.start();
-		}
-
 		final Map<Long, Object> results = new HashMap<Long, Object>();
-
 		long loadTiersTime = 0;
 		long warmIndividusTime = 0;
 		long mapTiersTime = 0;
 
-		// attente de la fin des threads
-		for (MappingThread t : threads) {
-			try {
-				t.join();
-			}
-			catch (InterruptedException e) {
-				// thread interrompu: il ne tourne plus, rien de spécial à faire en fait.
-				LOGGER.warn("Le thread " + t.getId() + " a été interrompu", e);
-			}
-			results.putAll(t.getResults());
+		// on découpe le travail sur plusieurs threads
+		final int nbThreads = Math.max(1, Math.min(10, allIds.size() / 10)); // un thread pour chaque multiple de 10 tiers. Au minimum 1 thread, au maximum 10 threads
 
+		if (nbThreads == 1) {
+			// un seul thread, on utilise le thread courant
+			final MappingThread t = new MappingThread(partyNumbers, date, parts, context, callback);
+			t.run();
+
+			results.putAll(t.getResults());
 			loadTiersTime += t.loadTiersTime;
 			warmIndividusTime += t.warmIndividusTime;
 			mapTiersTime += t.mapTiersTime;
 		}
+		else {
+			// plusieurs threads, on délègue au thread pool
+			final List<Set<Long>> list = split(allIds, nbThreads);
+
+			// démarrage des threads
+			final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
+			for (Set<Long> ids : list) {
+				MappingThread t = new MappingThread(ids, date, parts, context, callback);
+				threads.add(t);
+				threadPool.execute(t);
+			}
+
+			// attente de la fin des threads
+			for (MappingThread t : threads) {
+				try {
+					t.waitForProcessingDone();
+				}
+				catch (InterruptedException e) {
+					// thread interrompu: il ne tourne plus, rien de spécial à faire en fait.
+					LOGGER.warn("Le thread " + Thread.currentThread().getId() + " a été interrompu", e);
+				}
+				results.putAll(t.getResults());
+
+				loadTiersTime += t.loadTiersTime;
+				warmIndividusTime += t.warmIndividusTime;
+				mapTiersTime += t.mapTiersTime;
+			}
+		}
+
 		long totalTime = loadTiersTime + warmIndividusTime + mapTiersTime;
 
 		if (totalTime > 0 && LOGGER.isDebugEnabled()) {

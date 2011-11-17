@@ -19,6 +19,10 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
+	<bean id="wsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="${extprop.webservice.threadpool.minSize}"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
+	</bean>
 
 	<!-- WS - Tiers Service v2 -->
 	<jaxws:endpoint implementor="#tiersService2EndPoint" address="/tiers2" />
@@ -43,6 +47,7 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="threadPool" ref="wsThreadPool" />
 	</bean>
 
 	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
@@ -87,6 +92,7 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="threadPool" ref="wsThreadPool" />
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">

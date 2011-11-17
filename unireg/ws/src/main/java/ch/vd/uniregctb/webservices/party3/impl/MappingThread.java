@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -25,7 +26,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 /**
  * Ce thread reçoit une liste d'ids de tiers à charger de la base et à retourner sous forme des tiers du web-service.
  */
-public class MappingThread extends Thread {
+public class MappingThread implements Runnable {
 
 	private static final Logger LOGGER = Logger.getLogger(MappingThread.class);
 
@@ -36,6 +37,7 @@ public class MappingThread extends Thread {
 	private final MapCallback callback;
 
 	private final Map<Long, Object> results = new HashMap<Long, Object>();
+	private final MutableBoolean processingDone = new MutableBoolean(false);
 
 	public long loadTiersTime;
 	public long warmIndividusTime;
@@ -52,23 +54,43 @@ public class MappingThread extends Thread {
 	@Override
 	public void run() {
 
-		TransactionTemplate template = new TransactionTemplate(context.transactionManager);
-		template.setReadOnly(true); // on ne veut pas modifier la base
+		try {
+			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
+			template.setReadOnly(true); // on ne veut pas modifier la base
 
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				status.setRollbackOnly(); // on ne veut vraiment pas modifier la base
-				return context.hibernateTemplate.execute(new HibernateCallback<Object>() {
-					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
-						session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
-						mapParties();
-						return null;
-					}
-				});
+			template.execute(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					return context.hibernateTemplate.execute(new HibernateCallback<Object>() {
+						@Override
+						public Object doInHibernate(Session session) throws HibernateException, SQLException {
+							session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
+							mapParties();
+							return null;
+						}
+					});
+				}
+			});
+		}
+		finally {
+			synchronized (processingDone) {
+				processingDone.setValue(true);
+				processingDone.notifyAll();
 			}
-		});
+		}
+	}
+
+	/**
+	 * Cet appel ne retourne que lorsque le processing de la méthode 'run' est terminé.
+	 *
+	 * @throws InterruptedException en cas d'interruption du thread appelant.
+	 */
+	public void waitForProcessingDone() throws InterruptedException {
+		synchronized (processingDone) {
+			while (!processingDone.booleanValue()) {
+				processingDone.wait();
+			}
+		}
 	}
 
 	private void mapParties() {
