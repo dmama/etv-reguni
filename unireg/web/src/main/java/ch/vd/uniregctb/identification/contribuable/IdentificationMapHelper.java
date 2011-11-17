@@ -10,6 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.ui.Model;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
@@ -39,6 +40,42 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	private Map<Etat, String> mapEtatMessage;
 
 	private PlatformTransactionManager transactionManager;
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des types d'identification
+	 */
+	public static final String TYPE_MESSAGE_MAP_NAME = "typesMessage";
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des émetteurs
+	 */
+	public static final String EMETTEUR_MAP_NAME = "emetteurs";
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des etats du message
+	 */
+	public static final String ETAT_MESSAGE_MAP_NAME = "etatsMessage";
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des etats du message
+	 */
+	public static final String ERREUR_MESSAGE_MAP_NAME = "erreursMessage";
+
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des priorités
+	 */
+	public static final String PRIORITE_EMETTEUR_MAP_NAME = "priorites";
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des priorités
+	 */
+	public static final String TRAITEMENT_USER_MAP_NAME = "traitementUsers";
+
+	/**
+	 * Le nom de l'attribut utilise pour les periodes fiscales
+	 */
+	public static final String PERIODE_FISCALE_MAP_NAME = "periodesFiscales";
 
 	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
 		this.identCtbDAO = identCtbDAO;
@@ -307,6 +344,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	/**
 	 * Initialise la map des periodes fiscales
+	 *
 	 * @return une map
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale(final boolean isTraite) {
@@ -335,6 +373,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	/**
 	 * Initialise la map des periodes fiscales
+	 *
 	 * @return une map
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale() {
@@ -353,5 +392,24 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		}
 
 		return allPeriodeFiscale;
+	}
+
+	public Map<String, Object> getMaps(final boolean isTraite) {
+		final Map<String, Object> data = new HashMap<String, Object>(3);
+		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale());
+		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(isTraite));
+		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
+		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage());
+		data.put(PRIORITE_EMETTEUR_MAP_NAME, initMapPrioriteEmetteur(isTraite));
+		data.put(ERREUR_MESSAGE_MAP_NAME, initErreurMessage());
+		data.put(TRAITEMENT_USER_MAP_NAME, initMapUser());
+		return data;
+	}
+
+	public void putMapsIntoModel(Model model, boolean isTraite) {
+		final Map<String, Object> maps = getMaps(isTraite);
+		for (Map.Entry<String, Object> entry : maps.entrySet()) {
+			model.addAttribute(entry.getKey(), entry.getValue());
+		}
 	}
 }
