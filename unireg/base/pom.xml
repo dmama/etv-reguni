@@ -661,7 +661,7 @@
 
 		<!-- Framework dependency versions -->
 		<shared-base.version>4.0.0</shared-base.version>
-		<spring.version>3.0.5.RELEASE</spring.version>
+		<spring.version>3.0.6.RELEASE</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
 		<cxf.version>2.4.2-fuse-00-08</cxf.version>
 		<lucene.version>3.0.1</lucene.version>

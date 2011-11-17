@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-fidor</artifactId>
 	<packaging>jar</packaging>
-	<version>2.3.2</version>
+	<version>2.3.3</version>
 
 	<name>Unireg - Client WS fidor</name>
 	<description>UniregCTB - Projet de base pour les classes client du WebService  offert par FIDOR </description>
@@ -122,7 +122,7 @@
 		<copyright.year>2011</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>3.0.5.RELEASE</spring.version>
+		<spring.version>3.0.6.RELEASE</spring.version>
 		<cxf.version>2.4.2-fuse-00-08</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
