@@ -294,8 +294,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement);
 			evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
 
-			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-			evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
+			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de création de DI (pour le moment, il ne s'agit que d'ADDI)
+			final int pf = declaration.getPeriode().getAnnee();
+			if (pf >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
+				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
+			}
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -404,7 +408,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		di.setAnnule(true);
 		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
 		try {
-			evenementDeclarationSender.sendAnnulationEvent(contribuable.getNumero(), di.getPeriode().getAnnee(), dateEvenement);
+			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement d'annulation de DI (pour le moment, il ne s'agit que d'ADDI)
+			final int pf = di.getPeriode().getAnnee();
+			if (pf >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				evenementDeclarationSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
+			}
 		}
 		catch (EvenementDeclarationException e) {
 			throw new RuntimeException(e);
