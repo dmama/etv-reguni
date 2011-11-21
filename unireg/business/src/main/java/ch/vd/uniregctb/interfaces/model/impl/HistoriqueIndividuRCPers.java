@@ -2,8 +2,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
-import ch.vd.evd0001.v2.Identity;
-import ch.vd.evd0001.v2.Person;
+import ch.vd.evd0001.v3.Identity;
+import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import ch.ech.ech0084.v1.PersonInformation;
 
-import ch.vd.evd0001.v2.Person;
+import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Pays;

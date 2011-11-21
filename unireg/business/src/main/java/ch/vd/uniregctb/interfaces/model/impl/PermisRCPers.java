@@ -2,7 +2,7 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
-import ch.vd.evd0001.v2.ResidencePermit;
+import ch.vd.evd0001.v3.ResidencePermit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.Permis;

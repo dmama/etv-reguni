@@ -6,15 +6,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.MaritalData;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
 import ch.ech.ech0084.v1.PersonInformation;
 
-import ch.vd.evd0001.v2.Person;
-import ch.vd.evd0001.v2.PersonIdentification;
-import ch.vd.evd0001.v2.Residence;
+import ch.vd.evd0001.v3.HistoryContact;
+import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.PersonIdentification;
+import ch.vd.evd0001.v3.Residence;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -73,11 +73,11 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
 		this.naissance = EchHelper.partialDateFromEch44(personInformation.getDateOfBirth());
 		this.origines = initOrigins(person);
-		this.tutelle = null; // TODO (rcpers)
+		this.tutelle = null;
 		this.adoptions = null; // TODO (rcpers)
-		this.adresses = initAdresses(person.getContact(), person.getResidence(), infraService);
+		this.adresses = initAdresses(person.getContactHistory(), person.getResidencesHistory(), infraService);
 		this.enfants = null; // TODO (rcpers)
-		this.etatsCivils = initEtatsCivils(person.getMaritalStatus());
+		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
 		this.historique = initHistorique(person);
 		this.parents = initParents(person.getIdentity().getParent());
 		this.permis = initPermis(person);
@@ -129,19 +129,23 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static EtatCivilListImpl initEtatsCivils(MaritalData maritalStatus) {
-		if (maritalStatus == null) { // TODO (rcpers) demander que RCPers expose l'historique des états civils
+	private static EtatCivilListImpl initEtatsCivils(List<MaritalData> maritalStatus) {
+		if (maritalStatus == null) {
 			return null;
 		}
 		final List<EtatCivil> list = new ArrayList<EtatCivil>();
-		list.add(EtatCivilRCPers.get(maritalStatus));
+		for (MaritalData data : maritalStatus) {
+			list.add(EtatCivilRCPers.get(data));
+		}
 		return new EtatCivilListImpl(list);
 	}
 
-	private static Collection<Adresse> initAdresses(MailAddress contact, List<Residence> residence, ServiceInfrastructureService infraService) {
+	private static Collection<Adresse> initAdresses(List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureService infraService) {
 		final List<Adresse> adresses = new ArrayList<Adresse>();
-		if (contact != null) { // TODO (rcpers) demander que RCPers expose l'historique des adresses courrier
-			adresses.add(AdresseRCPers.get(contact, infraService));
+		if (contact != null) {
+			for (HistoryContact hc : contact) {
+				adresses.add(AdresseRCPers.get(hc, infraService));
+			}
 		}
 		if (residence != null) {
 			for (Residence r : residence) {

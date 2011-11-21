@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import ch.vd.evd0001.v2.ListOfPersons;
-import ch.vd.evd0001.v2.Person;
+import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.Person;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +21,7 @@ public class RcPersServiceTest {
 		client.setUsername("sirec01");
 		client.setPassword("welc0me");
 
-		final ListOfPersons list = client.getPeople(Arrays.asList(333528L), null);
+		final ListOfPersons list = client.getPersons(Arrays.asList(333528L), null, false);
 		assertNotNull(list);
 		assertEquals(1, list.getNumberOfResults().intValue());
 

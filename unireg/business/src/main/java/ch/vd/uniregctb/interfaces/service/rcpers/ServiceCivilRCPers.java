@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.evd0001.v2.ListOfPersons;
-import ch.vd.evd0001.v2.Person;
+import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -30,7 +30,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPeople(Arrays.asList(noIndividu), RegDate.get(annee, 12, 31));
+		final ListOfPersons list = client.getPersons(Arrays.asList(noIndividu), RegDate.get(annee, 12, 31), true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}
@@ -51,7 +51,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPeople(nosIndividus, RegDate.get(annee, 12, 31));
+		final ListOfPersons list = client.getPersons(nosIndividus, RegDate.get(annee, 12, 31), true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}

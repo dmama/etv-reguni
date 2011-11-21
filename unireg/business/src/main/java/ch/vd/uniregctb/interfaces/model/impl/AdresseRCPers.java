@@ -7,8 +7,9 @@ import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.evd0001.v2.DwellingAddress;
-import ch.vd.evd0001.v2.Residence;
+import ch.vd.evd0001.v3.DwellingAddress;
+import ch.vd.evd0001.v3.HistoryContact;
+import ch.vd.evd0001.v3.Residence;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -42,11 +43,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final Integer egid;
 	private final Integer ewid;
 
-	public static Adresse get(MailAddress address, ServiceInfrastructureService infraService) {
-		if (address == null) {
+	public static Adresse get(HistoryContact contact, ServiceInfrastructureService infraService) {
+		if (contact == null) {
 			return null;
 		}
-		return new AdresseRCPers(address, infraService);
+		return new AdresseRCPers(contact, infraService);
 	}
 
 	public static Adresse get(Residence residence, ServiceInfrastructureService infraService) {
@@ -56,10 +57,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(residence, infraService);
 	}
 
-	public AdresseRCPers(MailAddress address, ServiceInfrastructureService infraService) {
+	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureService infraService) {
+		final MailAddress address = contact.getContact();
 		final AddressInformation addressInfo = address.getAddressInformation();
 
-		this.dateDebut = null; // TODO (rcpers)
+		this.dateDebut = XmlUtils.xmlcal2regdate(contact.getDate());
 		this.dateFin = null; // TODO (rcpers)
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
