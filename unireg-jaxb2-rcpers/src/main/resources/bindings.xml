@@ -54,6 +54,12 @@
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0021/4/eCH-0021-4-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0021.v4" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0044/1/eCH-0044-1-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0044.v1" />
@@ -86,9 +92,9 @@
 
 	<!-- local XSDs -->
 
-	<jxb:bindings schemaLocation="eVD-0001-2-0.xsd">
+	<jxb:bindings schemaLocation="eVD-0001-3-0.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.evd0001.v2" />
+			<jxb:package name="ch.vd.evd0001.v3" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
