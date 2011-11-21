@@ -14,11 +14,15 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -120,9 +124,53 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				}
 				last = d;
 			}
+
+			if (tiers instanceof Contribuable) {
+				// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
+				final Contribuable ctb = (Contribuable) tiers;
+				try {
+					final List<PeriodeImposition> periodes = PeriodeImposition.determine(ctb, null);
+					for (Declaration d : decls) {
+						if (d.isAnnule()) {
+							continue;
+						}
+						if (d instanceof DeclarationImpotOrdinaire) {
+							validateDI((DeclarationImpotOrdinaire) d, periodes, results);
+						}
+					}
+				}
+				catch (Exception e) {
+					results.addWarning("Impossible de calculer les périodes d'imposition", e);
+				}
+			}
 		}
 
 		return results;
+	}
+
+	private static void validateDI(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
+		boolean intersect = false;
+		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+		if (periodes != null) {
+			for (PeriodeImposition p : periodes) {
+				if (DateRangeHelper.equals(di, p)) {
+					intersect = true;
+					break;
+				}
+				else if (DateRangeHelper.intersect(di, p)) {
+					intersect = true;
+					final String message = String.format("La %s qui va du %s au %s ne correspond pas à la période d'imposition théorique qui va du %s au %s",
+							typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()),
+							RegDateHelper.dateToDisplayString(p.getDateDebut()), RegDateHelper.dateToDisplayString(p.getDateFin()));
+					results.addWarning(message);
+				}
+			}
+		}
+		if (!intersect) {
+			final String message = String.format("La %s qui va du %s au %s ne correspond à aucune période d'imposition théorique",
+					typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
+			results.addWarning(message);
+		}
 	}
 
 	protected ValidationResults validateAdresses(T tiers) {

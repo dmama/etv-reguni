@@ -232,7 +232,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return assujettissements.size() == 0 ? null : assujettissements;
 		}
 		catch (AssujettissementException e) {
-			if (validationService != null) {
+			if (validationService != null && !validationService.isInValidation()) { // on évite les appels récursifs
 				final ValidationResults vr = validationService.validate(ctb);
 				if (vr.hasErrors()) {
 					// si le contribuable ne valide pas, on est un peu plus explicite

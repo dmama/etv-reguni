@@ -489,19 +489,20 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 				final RegDate debutAnnee = date(annee, 1, 1);
 				final RegDate finAnnee = date(annee, 12, 31);
+				final RegDate venteImmeuble = finAnnee.addMonths(-3);
 
 				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
 				pp.setNom(null);        // <-- c'est là le problème de validation
 
 				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
+				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
 						MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, finAnnee, TypeContribuable.HORS_SUISSE, md);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, venteImmeuble, TypeContribuable.HORS_SUISSE, md);
 				final RegDate dateEmission = date(annee + 1, 1, 11);
 				di.addEtat(new EtatDeclarationEmise(dateEmission));
 
@@ -567,6 +568,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final int annee = 2010;
 		final RegDate debutAnnee = date(annee, 1, 1);
 		final RegDate finAnnee = date(annee, 12, 31);
+		final RegDate venteImmeuble = finAnnee.addMonths(-3);
 
 		class Ids {
 			final long idCtb;
@@ -591,8 +593,8 @@ public class TiersWebServiceTest extends WebserviceTest {
 				final ch.vd.uniregctb.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
 				final ch.vd.uniregctb.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.uniregctb.type.Sexe.FEMININ);
 
-				final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, finAnnee, pf, md);
-				final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, finAnnee, pf, md);
+				final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, venteImmeuble, pf, md);
+				final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, venteImmeuble, pf, md);
 
 				liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
 				liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
@@ -602,7 +604,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			private ch.vd.uniregctb.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.uniregctb.type.Sexe sexe) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
 				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, finAnnee.addMonths(-3), ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
+				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
 						MockCommune.Aigle.getNoOFSEtendu(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
 				return pp;
 			}

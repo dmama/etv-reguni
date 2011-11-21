@@ -15,6 +15,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -31,6 +33,8 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertEquals;
@@ -491,7 +495,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		// Sans for secondaire
 		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
 
-			final String tafName = (taf == TypeAutoriteFiscale.COMMUNE_HC ? "hors-canton" : "hors-Suisse");
 			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFSEtendu() : MockPays.Allemagne.getNoOFS());
 			ffp.setTypeAutoriteFiscale(taf);
 
@@ -1080,4 +1083,78 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		assertEquals(1, errors.size());
 		assertEquals("La personne physique appartient à plusieurs ménages communs sur la période [10.07.2005 ; ]", errors.get(0));
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidateUneDeclarationPourUnePeriodeImposition() throws Exception {
+
+		// Création d'un contribuable avec une déclaration qui correspond bien avec une période d'imposition
+		final PersonnePhysique pp = addNonHabitant("Jean", "Rappel", date(1954, 12, 3), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, date(2009, 7, 11), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+		addForPrincipal(pp, date(2009, 7, 12), MotifFor.ARRIVEE_HS, date(2009, 12, 27), MotifFor.DEPART_HC, MockCommune.Bussigny);
+		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		addCedi();
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
+		addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleHC2009);
+
+		final ValidationResults results = validate(pp);
+		assertFalse(results.hasErrors());
+		assertFalse(results.hasWarnings());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidateDeuxDeclarationsPourUnePeriodeImposition() throws Exception {
+
+		// Création d'un contribuable avec deux déclarations pour une période d'imposition
+		final PersonnePhysique pp = addNonHabitant("Jean", "Rappel", date(1954, 12, 3), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, date(2009, 7, 11), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+		addForPrincipal(pp, date(2009, 7, 12), MotifFor.ARRIVEE_HS, date(2009, 12, 27), MotifFor.DEPART_HC, MockCommune.Bussigny);
+		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		addCedi();
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+		final ModeleDocument modeleHS2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
+		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
+		addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 7, 11), TypeContribuable.HORS_SUISSE, modeleHS2009);
+		addDeclarationImpot(pp, periode2009, date(2009, 7, 12), date(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleHC2009);
+
+		final ValidationResults results = validate(pp);
+		assertFalse(results.hasErrors());
+		assertTrue(results.hasWarnings());
+
+		final List<String> warnings = results.getWarnings();
+		assertEquals(2, warnings.size());
+		assertEquals("La déclaration d'impôt ordinaire complète qui va du 01.01.2009 au 11.07.2009 ne correspond pas " +
+				"à la période d'imposition théorique qui va du 01.01.2009 au 31.12.2009", warnings.get(0));
+		assertEquals("La déclaration d'impôt hors-canton immeuble qui va du 12.07.2009 au 31.12.2009 ne correspond pas " +
+				"à la période d'imposition théorique qui va du 01.01.2009 au 31.12.2009", warnings.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidateUneDeclarationPourZeroPeriodeImposition() throws Exception {
+
+		// Création d'un contribuable avec une déclaration mais pas de période d'imposition théorique
+		final PersonnePhysique pp = addNonHabitant("Jean", "Rappel", date(1954, 12, 3), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, MockPays.Danemark);
+
+		addCedi();
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
+		addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleHC2009);
+
+		final ValidationResults results = validate(pp);
+		assertFalse(results.hasErrors());
+		assertTrue(results.hasWarnings());
+
+		final List<String> warnings = results.getWarnings();
+		assertEquals(1, warnings.size());
+		assertEquals("La déclaration d'impôt hors-canton immeuble qui va du 01.01.2009 au 31.12.2009 ne correspond à aucune période d'imposition théorique", warnings.get(0));
+	}
+
 }

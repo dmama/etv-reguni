@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.mutable.MutableInt;
+
 import ch.vd.registre.base.validation.ValidationResults;
 
 /**
@@ -18,6 +20,7 @@ public class ValidationServiceImpl implements ValidationService {
 	private final Map<Class, EntityValidator> validatorMap = new HashMap<Class, EntityValidator>();
 
 	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+	private final ThreadLocal<MutableInt> callDepth = new ThreadLocal<MutableInt>();
 
 	/**
 	 * Façade de validateur qui permet de chaîner plusieurs validateurs sur une même classe
@@ -133,12 +136,34 @@ public class ValidationServiceImpl implements ValidationService {
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public ValidationResults validate(Object object) {
-		final EntityValidator validator = findValidator(object);
-		if (validator != null) {
-			return validator.validate(object);
+		final MutableInt depth = getCallDepth();
+		try {
+			depth.increment();
+			final EntityValidator validator = findValidator(object);
+			if (validator != null) {
+				return validator.validate(object);
+			}
+			else {
+				return new ValidationResults();
+			}
 		}
-		else {
-			return new ValidationResults();
+		finally {
+			depth.decrement();
 		}
+	}
+
+	private MutableInt getCallDepth() {
+		MutableInt depth = callDepth.get();
+		if (depth == null) {
+			depth = new MutableInt(0);
+			callDepth.set(depth);
+		}
+		return depth;
+	}
+
+	@Override
+	public boolean isInValidation() {
+		final MutableInt in = callDepth.get();
+		return in != null && in.intValue() > 0;
 	}
 }

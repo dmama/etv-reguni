@@ -28,4 +28,9 @@ public interface ValidationService {
 	 */
 	ValidationResults validate(Object object);
 
+	/**
+	 * @return <b>vrai</b> si le service est entrain de valider un objet dans le thread courant; <b>faux</b> autrement.
+	 */
+	boolean isInValidation();
+
 }

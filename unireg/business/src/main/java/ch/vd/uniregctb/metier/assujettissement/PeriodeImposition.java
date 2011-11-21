@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
@@ -117,7 +118,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	 * @return une liste de périodes d'imposition contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException s'il n'est pas possible de détermine l'assujettissement.
 	 */
-	public static List<PeriodeImposition> determine(Contribuable contribuable, DateRange range) throws AssujettissementException {
+	public static List<PeriodeImposition> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException {
 		if (range != null && isFullYear(range)) {
 			return determine(contribuable, range.getDateDebut().year());
 		}
