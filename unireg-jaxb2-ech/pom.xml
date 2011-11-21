@@ -7,7 +7,7 @@
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-ech</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
 
 	<name>Unireg - ECH Beans JAXB2</name>
 	<description>Beans JAXB2 pour les eCH utilisés dans Unireg.</description>
@@ -46,6 +46,7 @@
 						<exclude>eCH-0010-3-0.xsd</exclude>
 						<exclude>eCH-0010-4-0.xsd</exclude>
 						<exclude>eCH-0011-3-0.xsd</exclude>
+						<exclude>eCH-0011-5-0.xsd</exclude>
 						<exclude>eCH-0044-1-0.xsd</exclude>
 						<exclude>eCH-0044-2-0.xsd</exclude>
 						<exclude>eCH-0071-1-0.xsd</exclude>
