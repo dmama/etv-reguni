@@ -2,10 +2,11 @@ package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.evd0001.v2.ListOfPersons;
+import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -37,7 +38,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	}
 
 	@Override
-	public ListOfPersons getPeople(Collection<Long> ids, RegDate date) {
+	public ListOfPersons getPersons(Collection<Long> ids, RegDate date, boolean withHistory) {
 
 		final WebClient wc = WebClient.create(baseUrl, username, password, null);
 		wc.path(peoplePath);
@@ -51,11 +52,28 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			wc.path(String.valueOf(id));
 		}
 
+		final MutableBoolean firstParam = new MutableBoolean(true);
+
+		// l'historique
+		if (withHistory) {
+			wc.path(addParam(firstParam, "history"));
+		}
+
 		// la date
 		if (date != null) {
-			wc.path("?date=" + RegDateHelper.dateToDisplayString(date));
+			wc.path(addParam(firstParam, String.format("date=%s", RegDateHelper.dateToDisplayString(date))));
 		}
 
 		return wc.get(ListOfPersons.class);
+	}
+
+	private static String addParam(MutableBoolean firstParam, String s) {
+		if (firstParam.booleanValue()) {
+			firstParam.setValue(false);
+			return new StringBuilder().append('?').append(s).toString();
+		}
+		else {
+			return new StringBuilder().append('&').append(s).toString();
+		}
 	}
 }
