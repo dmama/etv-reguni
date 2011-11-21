@@ -5,6 +5,7 @@
 	<!-- Override du tache service défini dans unireg-businessut-service.xml pour quand même avec une implémentation complète du service -->
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
 		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="diDAO" ref="diDAO" />
 		<property name="diService" ref="diService" />
 		<property name="parametres" ref="parametreAppService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />

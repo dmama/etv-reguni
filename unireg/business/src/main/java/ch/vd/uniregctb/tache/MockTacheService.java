@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -60,7 +61,7 @@ public class MockTacheService implements TacheService {
 	}
 
 	@Override
-	public void synchronizeTachesDIs(Contribuable contribuable) {
+	public void synchronizeTachesDIs(Collection<Long> ctbIds) {
 	}
 
 	@Override

@@ -4070,7 +4070,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertInstanceOf(UpdateDI.class, action);
 
 		final UpdateDI update = (UpdateDI) action;
-		assertSame(di, update.declaration);
+		assertEquals(di.getId(), update.diId);
 		assertEquals(debut, update.periodeImposition.getDateDebut());
 		assertEquals(fin, update.periodeImposition.getDateFin());
 		assertEquals(typeContribuable, update.periodeImposition.getTypeContribuable());
@@ -4081,7 +4081,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertInstanceOf(DeleteDI.class, action);
 
 		final DeleteDI delete = (DeleteDI) action;
-		assertSame(di, delete.declaration);
+		assertEquals(di.getId(), delete.diId);
 		assertEquals(direct, delete.directAnnulation);
 	}
 

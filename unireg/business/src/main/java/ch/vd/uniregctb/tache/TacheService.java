@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -104,14 +105,16 @@ public interface TacheService {
 	List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException;
 
 	/**
-	 * [UNIREG-2305] Cette méthode génére les tâches d'envoi de DIs ou les tâches d'annulation de DIs qui conviennent suite à la modification des fors fiscaux d'un contribuable. Les tâches de
-	 * manipulation de DIs en instance sont inspectées et annulées si nécessaire. Toutes les périodes fiscales sont traitées automatiquement.
-	 * <p>
+	 * Synchronize les tâches d'envoi de DIs pour tous les contribuables spécifiés (UNIREG-2305) (SIFISC-3141).
+	 * <p/>
+	 * <b>Note:</b> cette méthode gère elle-même les transactions et doit donc être utilisée en context non-transactionel.
+	 * <p/>
 	 * <b>Attention !</b> Ne pas appeler cette méthode manuellement : elle est appelée automatiquement depuis un intercepteur après le commit de la transaction.
 	 *
-	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
+	 * @param ctbIds les ids des contribuables dont les tâches doivent être synchronisées.
+	 * @see #synchronizeTachesDIs(ch.vd.uniregctb.tiers.Contribuable)
 	 */
-	void synchronizeTachesDIs(Contribuable contribuable);
+	void synchronizeTachesDIs(Collection<Long> ctbIds);
 
 	/**
 	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance

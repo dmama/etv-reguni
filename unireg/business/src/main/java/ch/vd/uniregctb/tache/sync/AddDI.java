@@ -41,6 +41,11 @@ public class AddDI extends SynchronizeAction {
 	}
 
 	@Override
+	public boolean willChangeEntity() {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return String.format("création d'une tâche d'émission de déclaration d'impôt %s couvrant la période du %s au %s", periodeImposition.getTypeContribuable().description(),
 				RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()), RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));

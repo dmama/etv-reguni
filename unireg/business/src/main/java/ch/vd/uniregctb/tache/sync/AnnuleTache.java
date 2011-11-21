@@ -25,6 +25,11 @@ public class AnnuleTache extends SynchronizeAction {
 	}
 
 	@Override
+	public boolean willChangeEntity() {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		String tacheDetail;
 

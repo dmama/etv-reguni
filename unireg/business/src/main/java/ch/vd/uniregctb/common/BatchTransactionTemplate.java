@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -49,6 +50,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	private final HibernateTemplate hibernateTemplate;
 
 	private boolean readonly;
+	private int propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRED;
 
 	/**
 	 * @param iterator           un itérateur qui retourne les éléments à processer
@@ -285,6 +287,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(readonly);
+		template.setPropagationBehavior(propagationBehavior);
 
 		try {
 			r.processNextBatch = template.execute(new TransactionCallback<Boolean>() {
@@ -369,5 +372,9 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
+	}
+
+	public void setPropagationBehavior(int propagationBehavior) {
+		this.propagationBehavior = propagationBehavior;
 	}
 }

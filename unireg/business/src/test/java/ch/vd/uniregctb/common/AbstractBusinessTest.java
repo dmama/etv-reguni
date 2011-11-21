@@ -413,6 +413,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
+	protected CollectiviteAdministrative addCedi() {
+		return addCollAdm(ServiceInfrastructureService.noCEDI);
+	}
+
 	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid) {
 		return addCollAdm(oid, null, null);
 	}

@@ -35,10 +35,8 @@
 
 	<bean id="tacheSynchronizerInterceptor" class="ch.vd.uniregctb.tache.TacheSynchronizerInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="validationInterceptor" class="ch.vd.uniregctb.validation.ValidationInterceptor">

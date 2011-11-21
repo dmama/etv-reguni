@@ -1,24 +1,13 @@
 package ch.vd.uniregctb.tache;
 
-import javax.transaction.TransactionManager;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -37,10 +26,8 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private static final Logger LOGGER = Logger.getLogger(TacheSynchronizerInterceptor.class);
 
 	private ModificationInterceptor parent;
-	private HibernateTemplate hibernateTemplate;
 	private TacheService tacheService;
 	private TiersService tiersService;
-	private TransactionManager transactionManager;
 
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>();
 	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
@@ -102,16 +89,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
 		setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
 		try {
-
-			final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					synchronizeTaches(set);
-					return null;
-				}
-			});
+			tacheService.synchronizeTachesDIs(set);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -131,21 +109,6 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			}
 			set.clear();
 		}
-	}
-
-	private void synchronizeTaches(final HashSet<Long> ctbIds) {
-		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				for (Long id : ctbIds) {
-					final Contribuable ctb = (Contribuable) session.get(Contribuable.class, id);
-					if (ctb != null) {
-						tacheService.synchronizeTachesDIs(ctb);
-					}
-				}
-				return null;
-			}
-		});
 	}
 
 	@Override
@@ -187,17 +150,9 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		this.parent = parent;
 	}
 
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheService(TacheService tacheService) {
 		this.tacheService = tacheService;
-	}
-
-	public void setTransactionManager(TransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	public void setTiersService(TiersService tiersService) {

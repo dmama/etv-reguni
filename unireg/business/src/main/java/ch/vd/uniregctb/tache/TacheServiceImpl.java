@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.tache;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,8 +11,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,10 +31,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -56,6 +66,7 @@ import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -72,24 +83,23 @@ public class TacheServiceImpl implements TacheService {
 	private static final Logger LOGGER = Logger.getLogger(TacheServiceImpl.class);
 
 	private TacheDAO tacheDAO;
-
+	private DeclarationImpotOrdinaireDAO diDAO;
 	private DeclarationImpotService diService;
-
 	private ParametreAppService parametres;
-
 	private HibernateTemplate hibernateTemplate;
-
 	private ServiceInfrastructureService serviceInfra;
-
 	private TiersService tiersService;
-
 	private PlatformTransactionManager transactionManager;
-
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
+		this.diDAO = diDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -195,7 +205,7 @@ public class TacheServiceImpl implements TacheService {
 			if (dernierForFerme) {
 				genereTacheControleDossier(contribuable);
 			}
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case DEPART_HC:
@@ -208,7 +218,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
 			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le 31.12 de la période fiscale courante.
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case VEUVAGE_DECES:
@@ -218,7 +228,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			// [UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
@@ -228,10 +238,10 @@ public class TacheServiceImpl implements TacheService {
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de séparation (car elles n'ont pas lieu d'être)
 			// [UNIREG-1111] Génère une tâche d'émission de DI
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 		}
 	}
@@ -271,7 +281,7 @@ public class TacheServiceImpl implements TacheService {
 			genereTacheControleDossier(contribuable);
 		}
 
-		// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 	}
 
 	/**
@@ -280,7 +290,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
 	 */
 	private void genereTacheControleDossier(Contribuable contribuable) {
-		genereTacheControleDossier(contribuable,null);
+		genereTacheControleDossier(contribuable, null);
 	}
 
 
@@ -290,7 +300,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
 	 * @param collectivite la collectivité administrative assignée aux tâches nouvellement créées.
 	 */
-	private void genereTacheControleDossier(Contribuable contribuable, CollectiviteAdministrative collectivite) {
+	private void genereTacheControleDossier(Contribuable contribuable, @Nullable CollectiviteAdministrative collectivite) {
 
 		if (!tacheDAO.existsTacheEnInstanceOuEnCours(contribuable.getNumero(), TypeTache.TacheControleDossier)) {
 			//UNIREG-1024 "la tâche de contrôle du dossier doit être engendrée pour l'ancien office d'impôt"
@@ -334,11 +344,15 @@ public class TacheServiceImpl implements TacheService {
 		case ARRIVEE_HC:
 			try {
 				final List<Assujettissement> assujettissements = Assujettissement.determine(contribuable, forFiscal.getDateDebut().year());
-				final int size = (assujettissements == null ? 0 : assujettissements.size());
-				if (size > 1) {
-					if (assujettissements.get(size-1).getMotifFractDebut() == MotifFor.ARRIVEE_HC && assujettissements.get(size-2).getMotifFractFin()== MotifFor.DEPART_HS) {
-						// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
-						genereTacheControleDossier(contribuable);
+				if (assujettissements != null) {
+					final int size = assujettissements.size();
+					if (size > 1) {
+						final Assujettissement dernier = assujettissements.get(size - 1);
+						final Assujettissement avantdernier = assujettissements.get(size - 2);
+						if (dernier.getMotifFractDebut() == MotifFor.ARRIVEE_HC && avantdernier.getMotifFractFin() == MotifFor.DEPART_HS) {
+							// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
+							genereTacheControleDossier(contribuable);
+						}
 					}
 				}
 			}
@@ -352,14 +366,14 @@ public class TacheServiceImpl implements TacheService {
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			generateTacheNouveauDossier(contribuable);
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case CHGT_MODE_IMPOSITION:
 			if (!ancienModeImposition.isAuRole() && modeImposition.isAuRole()) {
 				generateTacheNouveauDossier(contribuable);
 			}
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case VEUVAGE_DECES:
@@ -367,7 +381,7 @@ public class TacheServiceImpl implements TacheService {
 			// [UNIREG-1112] il faut générer les tâches d'envoi de DIs sur le tiers survivant
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
 			// [UNIREG-1198] assignation de la tache au service succession mis en place
-			// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case DEMENAGEMENT_VD:
@@ -400,7 +414,7 @@ public class TacheServiceImpl implements TacheService {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
-		// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 	}
 
 	private void generateTacheNouveauDossier(Contribuable contribuable) {
@@ -410,40 +424,151 @@ public class TacheServiceImpl implements TacheService {
 		tacheDAO.save(tacheNouveauDossier);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void synchronizeTachesDIs(Contribuable contribuable) {
+	public void synchronizeTachesDIs(final Collection<Long> ctbIds) {
 
-		Assert.notNull(contribuable);
+		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<Long, List<SynchronizeAction>>();
 
-		// On détermine les actions nécessaires pour synchroniser les déclarations d'impôt du contribuable avec ses fors fiscaux.
-		final List<SynchronizeAction> actions;
-		try {
-			actions = determineSynchronizeActionsForDIs(contribuable);
-		}
-		catch (AssujettissementException e) {
-			Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + contribuable.getNumero()
-					+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
-					+ " aucune action n'est effectuée.");
-			LOGGER.warn(e, e);
-			return;
-		}
-		if (actions == null || actions.isEmpty()) {
-			return;
-		}
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+					@Override
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-		// On effectue toutes les actions nécessaires
-		final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
+						// détermine tous les actions à effectuer sur les contribuables
+						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActionsForDIs(ctbIds);
+						final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<Long, List<SynchronizeAction>>(actions.size());
+						splitActions(actions, tacheActions, entityActions);
+
+						// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
+						// elles ne peuvent pas provoquer d'erreurs de validation.
+						if (!tacheActions.isEmpty()) {
+							executeTacheActions(tacheActions);
+						}
+						return null;
+					}
+				});
+				return null;
+			}
+		});
+
+		// finalement, on exécute toutes les actions sur les entités dans une ou plusieurs transactions additionnelles (SIFISC-3141)
+		if (!entityActions.isEmpty()) {
+			executeEntityActions(entityActions);
+		}
+	}
+
+	/**
+	 * Exécuter toutes les actions de type 'tache' spécifiées. Cette méthode ne gère <b>pas</b> elle-même les transactions et doit donc être appelée dans un context transactionnel.
+	 *
+	 * @param tacheActions la liste des actions de type 'tache' à effectuer
+	 */
+	private void executeTacheActions(Map<Long, List<SynchronizeAction>> tacheActions) {
+		for (Map.Entry<Long, List<SynchronizeAction>> entry : tacheActions.entrySet()) {
+			executeActions(entry.getKey(), entry.getValue());
+		}
+	}
+
+	/**
+	 * Exécute toutes les actions de type 'entity' spécifiées. Cette méthode gère elle-même les transactions, de manière à pouvoir reprendre le traitement en cas d'erreur de validation après modification
+	 * des entités. Elle ne doit pas être appelée dans un context transactionnel.
+	 *
+	 * @param entityActions la liste des actions de type 'entité' à effectuer.
+	 */
+	private void executeEntityActions(Map<Long, List<SynchronizeAction>> entityActions) {
+
+		// on exécute toutes les actions en lots de 100. Les actions sont groupées par numéro de contribuable, de telle manière que
+		// toutes les actions d'un contribuable soient exécutées dans une même transaction.
+		final BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults> batchTemplate =
+				new BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>(entityActions.entrySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+						transactionManager, null, hibernateTemplate);
+		batchTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		batchTemplate.execute(new BatchTransactionTemplate.BatchCallback<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>() {
+			@Override
+			public boolean doInTransaction(List<Map.Entry<Long, List<SynchronizeAction>>> batch, BatchResults rapport) throws Exception {
+				for (Map.Entry<Long, List<SynchronizeAction>> entry : batch) {
+					executeActions(entry.getKey(), entry.getValue());
+				}
+				return false;
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.error(e, e);
+				}
+			}
+		});
+	}
+
+	private void executeActions(Long ctbId, List<SynchronizeAction> actions) {
+
 		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
-		Assert.notNull(officeSuccessions, "Impossible de trouver l'office des successions !");
-
-		final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions);
-
-		for (SynchronizeAction action : actions) {
-			action.execute(context);
+		if (officeSuccessions == null) {
+			throw new IllegalArgumentException("Impossible de trouver l'office des successions !");
 		}
+
+		final Tiers tiers = tiersService.getTiers(ctbId);
+		if (tiers instanceof Contribuable) {
+			// On effectue toutes les actions nécessaires
+			final Contribuable contribuable = (Contribuable) tiers;
+			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
+
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO);
+
+			for (SynchronizeAction action : actions) {
+				action.execute(context);
+			}
+		}
+	}
+
+	private static void splitActions(Map<Long, List<SynchronizeAction>> actions, Map<Long, List<SynchronizeAction>> tacheActions, Map<Long, List<SynchronizeAction>> entityActions) {
+		for (Map.Entry<Long, List<SynchronizeAction>> entry : actions.entrySet()) {
+			final List<SynchronizeAction> values = entry.getValue();
+			final List<SynchronizeAction> taches = new ArrayList<SynchronizeAction>(values.size());
+			final List<SynchronizeAction> entites = new ArrayList<SynchronizeAction>(values.size());
+			for (SynchronizeAction action : values) {
+				if (action.willChangeEntity()) {
+					entites.add(action);
+				}
+				else {
+					taches.add(action);
+				}
+			}
+			if (!taches.isEmpty()) {
+				tacheActions.put(entry.getKey(), taches);
+			}
+			if (!entites.isEmpty()) {
+				entityActions.put(entry.getKey(), entites);
+			}
+		}
+	}
+
+	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActionsForDIs(Collection<Long> ctbIds) {
+		final Map<Long, List<SynchronizeAction>> map = new HashMap<Long, List<SynchronizeAction>>();
+		for (Long id : ctbIds) {
+			final Tiers tiers = tiersService.getTiers(id);
+			if (tiers instanceof Contribuable) {
+				List<SynchronizeAction> actions;
+				try {
+					actions = determineSynchronizeActionsForDIs((Contribuable) tiers);
+				}
+				catch (AssujettissementException e) {
+					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
+							+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
+							+ " aucune action n'est effectuée.");
+					LOGGER.warn(e, e);
+					actions = null;
+				}
+				if (actions != null && !actions.isEmpty()) {
+					map.put(id, actions);
+				}
+			}
+		}
+		return map;
 	}
 
 	@Override
@@ -573,9 +698,9 @@ public class TacheServiceImpl implements TacheService {
 		// on retranche les déclarations pour lesquelles il existe déjà une tâche d'annulation
 		if (!deleteActions.isEmpty()) {
 			for (int i = deleteActions.size() - 1; i >= 0; i--) {
-				final DeclarationImpotOrdinaire di = deleteActions.get(i).declaration;
+				final Long diId = deleteActions.get(i).diId;
 				for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-					if (annulation.getDeclarationImpotOrdinaire().getId().equals(di.getId())) {
+					if (annulation.getDeclarationImpotOrdinaire().getId().equals(diId)) {
 						deleteActions.remove(i);
 						break;      // pas la peine de l'enlever plusieurs fois...
 					}
@@ -711,7 +836,7 @@ public class TacheServiceImpl implements TacheService {
 		boolean declarationUpdated = false;
 		if (!updateActions.isEmpty()) {
 			for (UpdateDI updateAction : updateActions) {
-				if (updateAction.declaration.getId().equals(declaration.getId())) {
+				if (updateAction.diId.equals(declaration.getId())) {
 					declarationUpdated = true;
 					break;
 				}
@@ -729,6 +854,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
 	 */
+	@SuppressWarnings({"UnusedParameters"})
 	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
 		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
 	}
@@ -936,7 +1062,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 		}
 
-		// [UNIREG-2322] appelé de manière automatique par un intercepteur : synchronizeTachesDIs(contribuable);
+		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 	}
 
 	/**
