@@ -226,7 +226,7 @@ public abstract class XmlEntityAdapter {
 		}
 
 		//TODO(BNM) à adapter en fonction du type de demande reçu. En attente d'une nouvelle XSD
-		if (TYPE_MESSAGE_NCS.equals(xml.getDemande())) {
+		if (TYPE_MESSAGE_NCS.equals(xml.getDemande().getTypeMessage())) {
 			entity.setTypeDemande(TypeDemande.NCS);
 		}
 		else {
