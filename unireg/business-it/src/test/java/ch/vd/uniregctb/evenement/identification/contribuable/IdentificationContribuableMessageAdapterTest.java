@@ -35,8 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Classe de test du handler de messages d'identification de contribuables. Cette classe nécessite une connexion à l'ESB de développement
- * pour fonctionner.
+ * Classe de test du handler de messages d'identification de contribuables. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -97,7 +96,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		clearQueue(INPUT_QUEUE);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.1.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
@@ -137,7 +136,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:contribuable><iden:numeroContribuableIndividuel>123456789</iden:numeroContribuableIndividuel></iden:contribuable></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:contribuable><iden:numeroContribuableIndividuel>123456789</iden:numeroContribuableIndividuel></iden:contribuable></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -151,13 +151,13 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		header.setBusinessId(String.valueOf(message.hashCode()));
 		header.setReplyTo("ReplyToTest");
 		message.setHeader(header);
-        // demande
-        final CriteresPersonne personne = new CriteresPersonne();
-        personne.setNAVS13("1234567890");
-        final Demande demande = new Demande();
-        demande.setPersonne(personne);
-        message.setDemande(demande);
-        // réponse
+		// demande
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNAVS13("1234567890");
+		final Demande demande = new Demande();
+		demande.setPersonne(personne);
+		message.setDemande(demande);
+		// réponse
 		final Reponse reponse = new Reponse();
 		reponse.setErreur(new Erreur(TypeErreur.METIER, "01", "Aucun contribuable ne correspond au message"));
 		reponse.setDate(newUtilDate(2008, 3, 23));
@@ -168,9 +168,11 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
+
 	@Test
 	public void testSendReponseContribuableSansManuel() throws Exception {
 
@@ -181,14 +183,14 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		header.setBusinessId(String.valueOf(message.hashCode()));
 		header.setReplyTo("ReplyToTest");
 		message.setHeader(header);
-        // demande
-        final CriteresPersonne personne = new CriteresPersonne();
-        personne.setNAVS13("1234567890");
-        final Demande demande = new Demande();
+		// demande
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNAVS13("1234567890");
+		final Demande demande = new Demande();
 		demande.setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
-        demande.setPersonne(personne);
-        message.setDemande(demande);
-        // réponse
+		demande.setPersonne(personne);
+		message.setDemande(demande);
+		// réponse
 		final Reponse reponse = new Reponse();
 		String contenuMessage = "Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée";
 		Erreur erreur = new Erreur(TypeErreur.METIER, "01", contenuMessage);
@@ -201,7 +203,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -216,14 +219,14 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		header.setBusinessId(String.valueOf(message.hashCode()));
 		header.setReplyTo("ReplyToTest");
 		message.setHeader(header);
-        // demande
-        final CriteresPersonne personne = new CriteresPersonne();
-        personne.setNAVS13("1234567890");
-        final Demande demande = new Demande();
+		// demande
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNAVS13("1234567890");
+		final Demande demande = new Demande();
 		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-        demande.setPersonne(personne);
-        message.setDemande(demande);
-        // réponse
+		demande.setPersonne(personne);
+		message.setDemande(demande);
+		// réponse
 		final Reponse reponse = new Reponse();
 		reponse.setEnAttenteIdentifManuel(true);
 		reponse.setDate(newUtilDate(2008, 3, 23));
@@ -234,7 +237,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:enAttenteIdentifManuel>true</iden:enAttenteIdentifManuel></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:enAttenteIdentifManuel>true</iden:enAttenteIdentifManuel></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -261,7 +265,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>T</iden:type><iden:code>TestErreurTechnique</iden:code><iden:message>Erreur technique de test</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>T</iden:type><iden:code>TestErreurTechnique</iden:code><iden:message>Erreur technique de test</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -288,7 +293,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -315,9 +321,11 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>02</iden:code><iden:message>Envoi manuel à ACI autre canton</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>02</iden:code><iden:message>Envoi manuel à ACI autre canton</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
+
 	@Test
 	public void testSendReponseErreurVersIs() throws Exception {
 
@@ -341,9 +349,11 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>03</iden:code><iden:message>Envoi manuel à IS</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>03</iden:code><iden:message>Envoi manuel à IS</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
+
 	@Test
 	public void testSendReponseErreurVersOMPI() throws Exception {
 
@@ -367,7 +377,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>04</iden:code><iden:message>Envoi manuel à OIPM</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		final String texte =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>04</iden:code><iden:message>Envoi manuel à OIPM</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
@@ -398,6 +409,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(1, messages.size());
 
 		final IdentificationContribuable m = messages.get(0);
+		assertEquals(TypeDemande.MELDEWESEN, m.getDemande().getTypeDemande());
 		assertNotNull(m);
 
 		final EsbHeader header = m.getHeader();
@@ -412,7 +424,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(PrioriteEmetteur.NON_PRIORITAIRE, demande.getPrioriteEmetteur());
 		assertEquals(2, demande.getPrioriteUtilisateur());
 		assertEquals("ssk-3001-000101", demande.getTypeMessage());
-		assertEquals(Demande.ModeIdentificationType.MANUEL_SANS_ACK,demande.getModeIdentification());
+		assertEquals(Demande.ModeIdentificationType.MANUEL_SANS_ACK, demande.getModeIdentification());
 
 		final CriteresPersonne personne = demande.getPersonne();
 		assertNotNull(personne);
@@ -508,4 +520,37 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertNotNull(error);
 		assertTrue(error.errorMessage.contains("Year in date {2965.01.24} is not valid"));
 	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationNCS() throws Exception {
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+
+		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
+			public void handleDemande(IdentificationContribuable message) {
+				messages.add(message);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_NCS_alfred_hitchcock.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final String url = "";
+		customAttributes.put(IdentificationContribuableMessageHandlerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (messages.isEmpty()) {
+			Thread.sleep(100);
+		}
+		assertEquals(1, messages.size());
+
+		final IdentificationContribuable m = messages.get(0);
+		assertNotNull(m);
+		assertEquals(TypeDemande.NCS, m.getDemande().getTypeDemande());
+	}
+
 }
