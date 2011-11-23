@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.1 - 23 novembre 2011 - ajouté le code de segmentation sur les DIs -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1"
@@ -88,6 +89,16 @@
 					<xs:element name="managingMunicipalityFSOId" type="xs:long">
 						<xs:annotation>
 							<xs:documentation>numéro OFS de la commune du for de gestion à la date de fin de la DI</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="segmentationCode" type="xs:int" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Le code de segmentation TAO (n'est pas forcément renseigné sur les anciennes déclarations).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
