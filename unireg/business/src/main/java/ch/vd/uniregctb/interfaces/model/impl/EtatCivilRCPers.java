@@ -21,7 +21,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	public EtatCivilRCPers(MaritalData maritalStatus) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		this.typeEtatCivil = initiTypeEtatCivil(maritalStatus);
-		this.numeroConjoint = null;
+		this.numeroConjoint = null; // TODO (rpcers)
 	}
 
 	private static TypeEtatCivil initiTypeEtatCivil(MaritalData maritalStatus) {

@@ -13,7 +13,7 @@ import ch.ech.ech0084.v1.PersonInformation;
 
 import ch.vd.evd0001.v3.HistoryContact;
 import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.PersonIdentification;
+import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -74,12 +74,12 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = EchHelper.partialDateFromEch44(personInformation.getDateOfBirth());
 		this.origines = initOrigins(person);
 		this.tutelle = null;
-		this.adoptions = null; // TODO (rcpers)
+		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 		this.adresses = initAdresses(person.getContactHistory(), person.getResidencesHistory(), infraService);
-		this.enfants = null; // TODO (rcpers)
+		this.enfants = initEnfants(person.getRelationship());
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
 		this.historique = initHistorique(person);
-		this.parents = initParents(person.getIdentity().getParent());
+		this.parents = initParents(person.getRelationship());
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
 	}
@@ -155,11 +155,34 @@ public class IndividuRCPers implements Individu, Serializable {
 		return adresses;
 	}
 
-	private static List<Individu> initParents(List<PersonIdentification> parentIds) {
-		if (parentIds == null || parentIds.isEmpty()) {
+	private static Collection<Individu> initEnfants(List<Relationship> relationship) {
+		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		return null;
+		final List<Individu> list = new ArrayList<Individu>();
+		for (Relationship r : relationship) {
+			if ("101".equals(r.getTypeOfRelationship()) || "102".equals(r.getTypeOfRelationship())) {
+				final Long numeroInd = (Long) r.getPersonLink();
+				// TODO (rcpers) s'assurer que le lien vers la personne est bien le numéro d'individu
+				//list.add(enfant);
+			}
+		}
+		return list;
+	}
+
+	private static List<Individu> initParents(List<Relationship> relationship) {
+		if (relationship == null || relationship.isEmpty()) {
+			return null;
+		}
+		final List<Individu> list = new ArrayList<Individu>();
+		for (Relationship r : relationship) {
+			if ("3".equals(r.getTypeOfRelationship()) || "4".equals(r.getTypeOfRelationship())) {
+				final Long numeroInd = (Long) r.getPersonLink();
+				// TODO (rcpers) s'assurer que le lien vers la personne est bien le numéro d'individu
+				//list.add(parent);
+			}
+		}
+		return list;
 	}
 
 	private static Collection<Origine> initOrigins(Person person) {
