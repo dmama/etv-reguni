@@ -98,17 +98,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	/**
 	 * @throws Exception
 	 */
-	public void testCommunes() throws Exception {
-		Canton cantonZH = service.getCantonBySigle("ZH");
-		assertEquals(171, service.getListeCommunes(cantonZH.getNoOFS()).size());
-
-		Canton cantonGE = service.getCantonBySigle("GE");
-		assertEquals(45, service.getListeCommunes(cantonGE.getNoOFS()).size());
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public void testLocalites() throws Exception {
 
 		List<Localite> localites = service.getLocalites();

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -90,27 +92,17 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	/**
-	 * @return la liste des communes du canton de Vaud
-	 */
-	@Override
-	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException {
-		Canton canton = getCanton(cantonOFS);
-		if (canton == null) {
-			return null;
-		}
-		return getListeCommunes(canton);
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
 		List<Commune> communes = new ArrayList<Commune>();
-		for (Commune c : getCommunesDeVaud()) {
-			CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFSEtendu());
-			if (oi != null && oi.getNoColAdm() == oid) {
-				communes.add(c);
+		for (Commune c : getCommunes()) {
+			if (c.isVaudoise()) {
+				CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFSEtendu());
+				if (oi != null && oi.getNoColAdm() == oid) {
+					communes.add(c);
+				}
 			}
 		}
 		return Collections.unmodifiableList(communes);
@@ -120,7 +112,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
 		final List<Commune> list = new ArrayList<Commune>();
 		for (Commune commune : getCommunes()) {
-			if (ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+			if (commune.isVaudoise()) {
 				list.add(commune);
 			}
 		}
@@ -131,7 +123,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
 		final List<Commune> list = new ArrayList<Commune>();
 		for (Commune commune : getCommunes()) {
-			if (!ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+			if (!commune.isVaudoise()) {
 				list.add(commune);
 			}
 		}
@@ -236,11 +228,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
-		return rawService.getListeCommunes(canton);
-	}
-
-	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		return rawService.getListeFractionsCommunes();
 	}
@@ -273,9 +260,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return resultat;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public synchronized List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
 		if (allLocaliteCommune == null) {
@@ -434,7 +418,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		return rawService.getOfficeImpot(noColAdm);
+		final CollectiviteAdministrative coll = rawService.getCollectivite(noColAdm);
+		if (coll instanceof OfficeImpot) {
+			return (OfficeImpot) coll;
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
@@ -447,9 +437,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getOfficesImpot();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
 		List<Rue> locRues = new ArrayList<Rue>();
@@ -499,7 +486,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final List<Commune> list = getCommuneHistoByNumeroOfs(noCommune);
 		return choisirCommune(list, date);
 	}

@@ -317,31 +317,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpot(final int noColAdm) throws ServiceInfrastructureException {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getOfficeImpot(noColAdm);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getOfficeImpot", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noColAdm=%d", noColAdm);
-				}
-			});
-		}
-	}
-
-	@Override
 	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();

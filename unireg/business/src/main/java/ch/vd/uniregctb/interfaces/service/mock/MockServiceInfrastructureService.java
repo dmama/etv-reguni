@@ -398,14 +398,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		return oidByNoColAdm.get(noColAdm);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		return oidByNoOfsCommune.get(noCommune);
 	}

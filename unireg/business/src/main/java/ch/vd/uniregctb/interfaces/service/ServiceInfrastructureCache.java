@@ -647,51 +647,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetOfficeImpot {
-		final int noColAdm;
-
-		private KeyGetOfficeImpot(int noColAdm) {
-			this.noColAdm = noColAdm;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + noColAdm;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetOfficeImpot other = (KeyGetOfficeImpot) obj;
-			return noColAdm == other.noColAdm;
-		}
-	}
-
-	@Override
-	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		final OfficeImpot resultat;
-
-		final KeyGetOfficeImpot key = new KeyGetOfficeImpot(noColAdm);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getOfficeImpot(noColAdm);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (OfficeImpot) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetOfficesImpot {
 
 		@Override

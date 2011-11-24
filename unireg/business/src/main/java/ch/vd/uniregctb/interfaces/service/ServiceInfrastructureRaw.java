@@ -129,13 +129,6 @@ public interface ServiceInfrastructureRaw {
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
 
 	/**
-	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
-	 * @return l'office d'impôt à partir de son numéro de collectivité.
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException;
-
-	/**
 	 * @param noCommune le numéro Ofs d'un commune
 	 * @return l'office d'impôt responsable de la commune spécifiée par son numéro OFS.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure

@@ -96,11 +96,6 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		return hostService.getOfficeImpot(noColAdm);
-	}
-
-	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		return hostService.getOfficeImpotDeCommune(noCommune);
 	}

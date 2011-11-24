@@ -382,20 +382,6 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-		final CollectiviteAdministrative coll = getCollectivite(noColAdm);
-		if (coll instanceof OfficeImpot) {
-			return (OfficeImpot) coll;
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		try {
 			CollectiviteAdministrativeImpl oid = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getOidDeCommune(noCommune));

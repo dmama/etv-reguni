@@ -97,16 +97,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
-		return target.getListeCommunes(canton);
-	}
-
-	@Override
-	public List<Commune> getListeCommunes(int cantonOFS) throws ServiceInfrastructureException {
-		return target.getListeCommunes(cantonOFS);
-	}
-
-	@Override
 	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
 		return target.getListeCommunesByOID(oid);
 	}

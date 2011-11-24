@@ -305,11 +305,6 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException {
-			throw new NotImplementedException();
-		}
-
-		@Override
 		public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
