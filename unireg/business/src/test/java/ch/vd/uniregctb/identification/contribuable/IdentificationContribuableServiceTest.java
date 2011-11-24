@@ -1060,7 +1060,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Arnold", "Duchoux");
+		final IdentificationContribuable message = createDemandeMeldewesen("Arnold", "Duchoux");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1107,7 +1107,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zora", "Larousse");
+		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1162,7 +1162,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.SANS_MANUEL);
+		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.SANS_MANUEL);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1217,7 +1217,63 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora n'est pas trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
+
+
+	@Test
+	public void testHandleDemande_NCS_MANUEL_AVEC_ACK() throws Exception {
+
+		// création d'un contribuable
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemandeNCS("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1273,7 +1329,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1323,7 +1379,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Larousse", "Larousse");
+		final IdentificationContribuable message = createDemandeMeldewesen("Larousse", "Larousse");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1374,7 +1430,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			messageHandler.setThrowExceptionOnSend(true);
 
 			// création et traitement du message d'identification
-			final IdentificationContribuable message = createDemande("Zora", "Larousse");
+			final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
 			doInTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
@@ -1439,7 +1495,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Edouard", "Bonhote", "7569613127861");
+		final IdentificationContribuable message = createDemandeMeldewesen("Edouard", "Bonhote", "7569613127861");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1496,7 +1552,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("George", "Pompidou", "7569613127861");
+		final IdentificationContribuable message = createDemandeMeldewesen("George", "Pompidou", "7569613127861");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1564,7 +1620,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
-		final IdentificationContribuable message = createDemande("Zora", "Larousse");
+		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1951,7 +2007,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// avant 2000, on doit toujours trouver Maya seule, sans ménage commun
 		{
-			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			final IdentificationContribuable demande = createDemandeMeldewesen("Maya", "Labeille", "7569613127861");
 			demande.getDemande().setPeriodeFiscale(1999);
 			service.handleDemande(demande);
 
@@ -1999,11 +2055,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// depuis 2000 jusqu'à 2003, on doit renvoyer le numéro de ménage commun aussi
-		for (int i = 2000 ; i <= 2003 ; ++ i)
-		{
+		for (int i = 2000; i <= 2003; ++i) {
 			messageHandler.reset();
 
-			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			final IdentificationContribuable demande = createDemandeMeldewesen("Maya", "Labeille", "7569613127861");
 			demande.getDemande().setPeriodeFiscale(i);
 			service.handleDemande(demande);
 
@@ -2052,7 +2107,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// depuis 2004, on ne doit à nouveau plus retourner de ménage commun dans la réponse
 		{
-			final IdentificationContribuable demande = createDemande("Maya", "Labeille", "7569613127861");
+			final IdentificationContribuable demande = createDemandeMeldewesen("Maya", "Labeille", "7569613127861");
 			demande.getDemande().setPeriodeFiscale(2004);
 			service.handleDemande(demande);
 
@@ -2066,28 +2121,37 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 	}
 
-	private static IdentificationContribuable createDemande(final String prenoms, final String nom) {
+	private static IdentificationContribuable createDemandeMeldewesen(final String prenoms, final String nom) {
 
-		return createDemande(prenoms, nom, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		return createDemandeMeldewesen(prenoms, nom, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 	}
 
-	private static IdentificationContribuable createDemande(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
+	private static IdentificationContribuable createDemandeMeldewesen(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
 
 		final CriteresPersonne personne = new CriteresPersonne();
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 
-		return createDemande(personne, mode);
+		return createDemandeMeldewesen(personne, mode);
 	}
 
-	private static IdentificationContribuable createDemande(final String prenoms, final String nom, final String noAVS13) {
+	private static IdentificationContribuable createDemandeNCS(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
+
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setPrenoms(prenoms);
+		personne.setNom(nom);
+
+		return createDemandeNCS(personne, mode);
+	}
+
+	private static IdentificationContribuable createDemandeMeldewesen(final String prenoms, final String nom, final String noAVS13) {
 
 		final CriteresPersonne personne = new CriteresPersonne();
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 		personne.setNAVS13(noAVS13);
 
-		return createDemande(personne);
+		return createDemandeMeldewesen(personne);
 	}
 
 
@@ -2115,11 +2179,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return message;
 	}
 
-	private static IdentificationContribuable createDemande(CriteresPersonne personne) {
-		return createDemande(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne) {
+		return createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 	}
 
-	private static IdentificationContribuable createDemande(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
+	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
 		header.setBusinessUser("Test");
@@ -2135,6 +2199,30 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.MELDEWESEN);
+
+		final IdentificationContribuable message = new IdentificationContribuable();
+		message.setHeader(header);
+		message.setDemande(demande);
+
+		return message;
+	}
+
+	private static IdentificationContribuable createDemandeNCS(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessId("123456");
+		header.setBusinessUser("Test");
+		header.setReplyTo("Test");
+
+		final Demande demande = new Demande();
+		demande.setEmetteurId("Test");
+		demande.setMessageId("1111");
+		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setModeIdentification(modeIdentification);
+		demande.setTypeMessage("CS_EMPLOYEUR");
+		demande.setDate(DateHelper.getCurrentDate());
+		demande.setPeriodeFiscale(2010);
+		demande.setPersonne(personne);
+		demande.setTypeDemande(TypeDemande.NCS);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

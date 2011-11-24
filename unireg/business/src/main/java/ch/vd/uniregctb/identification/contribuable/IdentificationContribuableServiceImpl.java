@@ -687,10 +687,25 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void soumettreMessageNCS(IdentificationContribuable message) {
-		// to be implemented...
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Le message n°" + message.getId() + " passe en traitement NCS.");
+		}
+		soumettreMessage(message);
 	}
 
 	private void soumettreMessageMeldewesen(IdentificationContribuable message) {
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Le message n°" + message.getId() + " passe en traitement Meldewesen.");
+		}
+		soumettreMessage(message);
+
+	}
+
+
+	//Methode à spécialiser pour les differentes types de demande dans l'avenir. Pour l'instant elle est
+	// utilisée pour traiter tout type de messages
+	private void soumettreMessage(IdentificationContribuable message) {
 		// Ensuite : effectuer l'identification
 		try {
 			final Demande demande = message.getDemande();
