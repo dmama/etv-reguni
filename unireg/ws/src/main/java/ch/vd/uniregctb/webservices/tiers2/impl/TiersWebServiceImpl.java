@@ -486,7 +486,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		if (nbThreads == 1) {
 			// un seul thread, on utilise le thread courant
-			final MappingThread t = new MappingThread(tiersNumbers, date, parts, context, callback);
+			final MappingThread t = new MappingThread(allIds, date, parts, context, callback);
 			t.run();
 
 			results.putAll(t.getResults());

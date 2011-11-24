@@ -335,7 +335,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		if (nbThreads == 1) {
 			// un seul thread, on utilise le thread courant
-			final MappingThread t = new MappingThread(partyNumbers, date, parts, context, callback);
+			final MappingThread t = new MappingThread(allIds, date, parts, context, callback);
 			t.run();
 
 			results.putAll(t.getResults());
