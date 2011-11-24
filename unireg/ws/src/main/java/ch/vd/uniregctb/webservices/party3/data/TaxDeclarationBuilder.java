@@ -34,6 +34,8 @@ public class TaxDeclarationBuilder {
 			d.setManagingMunicipalityFSOId(numeroOfsForGestion);
 		}
 
+		d.setSegmentationCode(declaration.getCodeSegment()); // SIFISC-2528
+
 		return d;
 	}
 
@@ -95,7 +97,7 @@ public class TaxDeclarationBuilder {
 		final ArrayList<TaxDeclarationStatus> clonedEtats = cloneStatuses(d.getStatuses());
 		if (d instanceof OrdinaryTaxDeclaration) {
 			return new OrdinaryTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((OrdinaryTaxDeclaration) d).getSequenceNumber(),
-					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId(), null);
+					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId(), ((OrdinaryTaxDeclaration) d).getSegmentationCode(), 0, null);
 		}
 		else if (d instanceof WithholdingTaxDeclaration) {
 			return new WithholdingTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((WithholdingTaxDeclaration) d).getPeriodicity(),

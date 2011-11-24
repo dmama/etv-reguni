@@ -35,6 +35,8 @@ import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
@@ -916,5 +918,55 @@ public class TiersWebServiceTest extends WebserviceTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-2528] Vérifie que le code de segmentation est bien retourné par le web-service
+ 	 */
+	@Test
+	public void testGetPartyTaxDeclarationSegmentationOn() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				di.setCodeSegment(2);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int)ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEquals(Integer.valueOf(2), d0.getSegmentationCode());
+		}
 	}
 }
