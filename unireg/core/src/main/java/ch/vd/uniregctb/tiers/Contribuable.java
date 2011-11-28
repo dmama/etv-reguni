@@ -108,7 +108,7 @@ public abstract class Contribuable extends Tiers {
 		// end-user-code
 	}
 
-	@OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_IMM_CTB_ID")
 	public Set<Immeuble> getImmeubles() {
 		return immeubles;
@@ -224,7 +224,7 @@ public abstract class Contribuable extends Tiers {
 		if (immeubles == null) {
 			this.immeubles = new HashSet<Immeuble>();
 		}
-		immeuble.setProprietaire(this);
+		immeuble.setContribuable(this);
 		this.immeubles.add(immeuble);
 	}
 

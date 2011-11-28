@@ -14,6 +14,8 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.rf.PartPropriete;
+import ch.vd.uniregctb.rf.Proprietaire;
+import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -146,10 +148,14 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				assertEquals(date(2001, 1, 9), immeuble0.getDateDebut());
 				assertNull(immeuble0.getDateFin());
 				assertEquals("Revêtement dur", immeuble0.getNature());
-				assertEquals(1200000, immeuble0.getEstimationFiscale());
+				assertEquals(Integer.valueOf(1200000), immeuble0.getEstimationFiscale());
 				assertNull(immeuble0.getReferenceEstimationFiscale());
 				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
 				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
+				assertEquals("B4455", immeuble0.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble0.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble0.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble0.getDerniereMutation());
 				return null;
 			}
 		});
@@ -202,10 +208,14 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				assertEquals(date(2001, 1, 9), immeuble0.getDateDebut());
 				assertNull(immeuble0.getDateFin());
 				assertEquals("Revêtement dur", immeuble0.getNature());
-				assertEquals(1200000, immeuble0.getEstimationFiscale());
+				assertEquals(Integer.valueOf(1200000), immeuble0.getEstimationFiscale());
 				assertNull(immeuble0.getReferenceEstimationFiscale());
 				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
 				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
+				assertEquals("B4455", immeuble0.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble0.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble0.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble0.getDerniereMutation());
 				return null;
 			}
 		});

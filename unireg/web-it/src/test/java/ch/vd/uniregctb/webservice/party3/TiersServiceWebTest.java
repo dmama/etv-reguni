@@ -38,6 +38,8 @@ import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
+import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
@@ -1415,14 +1417,17 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final ImmovableProperty immo0 = immovableProperties.get(0);
 		assertNotNull(immo0);
-		assertEquals("132/2345", immo0.getNumber());
+		assertEquals("132-158-1-1", immo0.getNumber());
 		assertEquals(newDate(1976, 4, 27), immo0.getDateFrom());
 		assertNull(immo0.getDateTo());
 		assertEquals("Lausanne", immo0.getMunicipalityName());
-		assertEquals(860000, immo0.getEstimatedTaxValue());
+		assertEquals(Integer.valueOf(860000), immo0.getEstimatedTaxValue());
 		assertEquals("2002", immo0.getEstimatedTaxValueReference());
 		assertEquals("Place-jardin", immo0.getNature());
 		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, immo0.getOwnershipType());
+		assertEquals(ImmovablePropertyType.IMMOVABLE_PROPERTY, immo0.getType());
+		assertEquals(newDate(1976, 4, 27), immo0.getLastMutationDate());
+		assertEquals(MutationType.PURCHASE, immo0.getLastMutationType());
 
 		final PropertyShare share = immo0.getShare();
 		assertNotNull(share);

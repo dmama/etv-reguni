@@ -8,6 +8,8 @@ import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
+import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
@@ -25,6 +27,8 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.rf.TypeImmeuble;
+import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -650,10 +654,70 @@ public abstract class EnumHelper {
 			return OwnershipType.SIMPLE_CO_OWNERSHIP;
 		case COMMUNE:
 			return OwnershipType.COLLECTIVE_OWNERSHIP;
-		case PAR_ETAGES:
-			return OwnershipType.CONDOMINIUM_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Genre de priopriété inconnu = [" + genre + "]");
+		}
+	}
+
+	public static ImmovablePropertyType coreToWeb(TypeImmeuble type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case BIEN_FOND:
+			return ImmovablePropertyType.IMMOVABLE_PROPERTY;
+		case PPE:
+			return ImmovablePropertyType.CONDOMINIUM_OWNERSHIP;
+		case DROIT_DISTINCT_ET_PERMANENT:
+			return ImmovablePropertyType.DISTINCT_AND_PERMANENT_RIGHT;
+		case PART_DE_COPROPRIETE:
+			return ImmovablePropertyType.CO_OWNERSHIP_SHARE;
+		default:
+			throw new IllegalArgumentException("Type de priopriété inconnu = [" + type + "]");
+		}
+	}
+
+	public static MutationType coreToWeb(TypeMutation type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case ACHAT:
+			return MutationType.PURCHASE;
+		case AUGMENTATION:
+			return MutationType.INCREASE;
+		case CESSION:
+			return MutationType.CESSION;
+		case CONSTITUTION_PPE:
+			return MutationType.CONDOMINIUM_OWNERSHIP_COMPOSITION;
+		case CONSTITUTION_PARTS_PROPRIETE:
+			return MutationType.CO_OWNERSHIP_SHARES_COMPOSITION;
+		case DIVISION_BIEN_FONDS:
+			return MutationType.IMMOVABLE_PROPERTY_DIVISION;
+		case DONATION:
+			return MutationType.GIFT;
+		case DELIVRANCE_LEGS:
+			return MutationType.LEGACY_DELIVERY;
+		case ECHANGE:
+			return MutationType.EXCHANGE;
+		case GROUPEMENT_BIEN_FONDS:
+			return MutationType.IMMOVABLE_PROPERTY_GROUPING;
+		case JUGEMENT:
+			return MutationType.JUDGEMENT;
+		case PARTAGE:
+			return MutationType.SHARING;
+		case REMANIEMENT_PARCELLAIRE:
+			return MutationType.PLOT_REFORM;
+		case REALISATION_FORCEE:
+			return MutationType.COMPULSARY_SALE;
+		case SUCCESSION:
+			return MutationType.INHERITANCE;
+		case TRANSFERT:
+			return MutationType.TRANSFER;
+		case FIN_DE_PROPRIETE:
+			return MutationType.END_OF_OWNERSHIP;
+		default:
+			throw new IllegalArgumentException("Type de mutation inconnu = [" + type + "]");
 		}
 	}
 }

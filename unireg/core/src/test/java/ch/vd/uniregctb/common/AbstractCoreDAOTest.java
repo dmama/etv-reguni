@@ -62,6 +62,9 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.PartPropriete;
+import ch.vd.uniregctb.rf.Proprietaire;
+import ch.vd.uniregctb.rf.TypeImmeuble;
+import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -1102,18 +1105,24 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return f;
 	}
 
-	protected Immeuble addImmeuble(Contribuable tiers, String numero, RegDate dateDebut, @Nullable RegDate dateFin, String nomCommune, String nature, GenrePropriete genrePropriete,
-	                               int estimationFiscale, String referenceEstimationFiscale, @Nullable Integer ancienneEstimationFiscale, String partPropriete) {
+	protected Immeuble addImmeuble(Contribuable tiers, String numero, RegDate dateDebut, @Nullable RegDate dateFin, String nomCommune, String nature, TypeImmeuble typeImmeuble,
+	                               GenrePropriete genrePropriete, int estimationFiscale, String referenceEstimationFiscale, String partPropriete, RegDate dateDerniereMutation,
+	                               TypeMutation derniereMutation) {
 		Immeuble i = new Immeuble();
 		i.setNumero(numero);
+		i.setIdRF("ID-RF-" + numero);
+		i.setProprietaire(new Proprietaire("1111", 1111L));
 		i.setDateDebut(dateDebut);
 		i.setDateFin(dateFin);
 		i.setNomCommune(nomCommune);
 		i.setNature(nature);
+		i.setTypeImmeuble(typeImmeuble);
 		i.setGenrePropriete(genrePropriete);
 		i.setEstimationFiscale(estimationFiscale);
 		i.setReferenceEstimationFiscale(referenceEstimationFiscale);
 		i.setPartPropriete(PartPropriete.parse(partPropriete));
+		i.setDateDerniereMutation(dateDerniereMutation);
+		i.setDerniereMutation(derniereMutation);
 		i = tiersDAO.addAndSave(tiers, i);
 		return i;
 	}

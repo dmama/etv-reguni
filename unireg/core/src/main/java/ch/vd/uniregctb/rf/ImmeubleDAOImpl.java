@@ -35,7 +35,7 @@ public class ImmeubleDAOImpl extends GenericDAOImpl<Immeuble, Long> implements I
 		return getHibernateTemplate().executeFind(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query query = session.createQuery("from Immeuble as i where i.proprietaire.id = :propId");
+				Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId");
 				query.setParameter("propId", proprietaireId);
 				return query.list();
 			}

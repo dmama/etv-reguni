@@ -28,7 +28,13 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 		BAD_PART_PROP("La part de propriété est malformée"),
 		CTB_MENAGE_COMMUN("Le contribuable est un ménage commun"),
 		BAD_NOM_COMMUNE("Le nom de la commune est vide"),
-		BAD_NATURE("La nature de l'immeuble est vide");
+		BAD_NATURE("La nature de l'immeuble est vide"),
+		BAD_ID_PROPRIETAIRE("L'id technique du propriétaire est vide"),
+		BAD_ID_IND_RF("L'id technique de l'individu RF est incorrect"),
+		BAD_ID_IMMEUBLE("L'id technique de l'immeuble RF est vide"),
+		BAD_DATE_DERNIERE_MUTATION("La date de dernière mutation est malformée"),
+		BAD_TYPE_DERNIERE_MUTATION("Le type de la dernière mutation est incorrect"),
+		BAD_TYPE_IMMEUBLE("Le type d'immeuble est incorrect");
 
 		private final String description;
 

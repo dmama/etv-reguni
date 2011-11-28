@@ -8855,6 +8855,9 @@
   </table>
   <table name="IMMEUBLE">
     <column>ID</column>
+    <column>ID_RF</column>
+    <column>ID_PROPRIETAIRE_RF</column>
+    <column>NUMERO_INDIVIDU_RF</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
     <column>LOG_CDATE</column>
@@ -8864,6 +8867,7 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>ESTIMATION_FISCALE</column>
+    <column>TYPE_IMMEUBLE</column>
     <column>GENRE_PROPRIETE</column>
     <column>LIEN_RF</column>
     <column>NATURE_IMMEUBLE</column>
@@ -8872,9 +8876,14 @@
     <column>PART_PROPRIETE_DENOMINATEUR</column>
     <column>PART_PROPRIETE_NUMERATEUR</column>
     <column>REF_ESTIM_FISC</column>
+    <column>DATE_DERNIERE_MUTATION</column>
+    <column>DERNIERE_MUTATION</column>
     <column>CTB_ID</column>
     <row>
       <value>1</value>
+      <value>34637</value>
+      <value>1232</value>
+      <value>47637</value>
       <null/>
       <null/>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
@@ -8884,14 +8893,17 @@
       <value>20000101</value>
       <null/>
       <value>1325000</value>
+      <value>BIEN_FOND</value>
       <value>INDIVIDUELLE</value>
       <value>http://arstechnica.com</value>
       <value>Place-jardin</value>
       <value>Lausanne</value>
-      <value>132/158/1/1</value>
+      <value>132-158-1-1</value>
       <value>2</value>
       <value>1</value>
       <value>1999</value>
+      <value>20000101</value>
+      <value>ACHAT</value>
       <value>10246283</value>
     </row>
   </table>

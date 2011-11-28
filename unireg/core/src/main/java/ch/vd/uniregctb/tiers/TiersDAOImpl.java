@@ -415,7 +415,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
 			// on charge tous les immeubles en vrac
-			Query q = session.createQuery("from Immeuble as i where i.proprietaire.id in (:ids)");
+			Query q = session.createQuery("from Immeuble as i where i.contribuable.id in (:ids)");
 			q.setParameterList("ids", ids);
 			List<Immeuble> immeubles = q.list();
 
@@ -423,7 +423,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			associate(session, immeubles, tiers, new TiersIdGetter<Immeuble>() {
 						@Override
 						public Long getTiersId(Immeuble entity) {
-							return entity.getProprietaire().getId();
+							return entity.getContribuable().getId();
 						}
 					}, new EntitySetSetter<Immeuble>() {
 				@Override

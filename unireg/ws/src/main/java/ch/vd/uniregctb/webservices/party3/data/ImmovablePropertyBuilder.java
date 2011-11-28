@@ -20,6 +20,9 @@ public class ImmovablePropertyBuilder {
 		immo.setNature(immeuble.getNature());
 		immo.setOwnershipType(EnumHelper.coreToWeb(immeuble.getGenrePropriete()));
 		immo.setShare(coreToWeb(immeuble.getPartPropriete()));
+		immo.setType(EnumHelper.coreToWeb(immeuble.getTypeImmeuble()));
+		immo.setLastMutationDate(DataHelper.coreToWeb(immeuble.getDateDerniereMutation()));
+		immo.setLastMutationType(EnumHelper.coreToWeb(immeuble.getDerniereMutation()));
 		return immo;
 	}
 

@@ -22,6 +22,7 @@ public class ImmeubleController {
 
 	private ImmeubleDAO immeubleDAO;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
 		this.immeubleDAO = immeubleDAO;
 	}

@@ -88,9 +88,11 @@ public abstract class LengthConstants {
 	public static final int NUMERO_IMMEUBLE = 20;
 	public static final int NATURE_IMMEUBLE = 255;
 	public static final int GENRE_PROPRIETE = 12;
+	public static final int DERNIERE_MUTATION = 28;
+	public static final int TYPE_IMMEUBLE = 27;
 	public static final int NOM_COMMUNE = 255;
 	public static final int REF_ESTIM_FISCALE = 255;
-	public static final int LIEN_RF = 255;
+	public static final int LIEN_RF = 500;
 
 	public final static int MAXLEN = 2000;
 

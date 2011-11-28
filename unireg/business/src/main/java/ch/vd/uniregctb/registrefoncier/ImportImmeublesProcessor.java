@@ -35,6 +35,9 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.rf.PartPropriete;
+import ch.vd.uniregctb.rf.Proprietaire;
+import ch.vd.uniregctb.rf.TypeImmeuble;
+import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -57,17 +60,23 @@ public class ImportImmeublesProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	private static final String HEADER_NO_CTB = "NO_CTB";
+	private static final String HEADER_ID_PROPRIETAIRE = "ID_PROPRIETAIRE";
+	private static final String HEADER_ID_INDIVIDU_RF = "NO_INDIVIDU";
 	private static final String HEADER_GENRE_PERSONNE = "GENRE_PERSONNE";
+	private static final String HEADER_ID_IMMEUBLE = "ID_IMMEUBLE";
 	private static final String HEADER_NO_IMMEUBLE = "NO_IMMEUBLE";
 	private static final String HEADER_NOM_COMMUNE= "NOM_COMMUNE";
 	private static final String HEADER_NATURE = "NATURE";
 	private static final String HEADER_ESTIMATION_FISCALE = "ESTIMATION_FISCALE";
 	private static final String HEADER_REF_ESTIMATION_FISCALE = "REFERENCE_EF";
 	private static final String HEADER_GENRE_PROPRIETE = "GENRE_PROPRIETE";
+	private static final String HEADER_TYPE_IMMEUBLE = "TYPE_IMMEUBLE";
 	private static final String HEADER_PART_PROPRIETE = "PART_PROPRIETE";
 	private static final String HEADER_DATE_MODIF = "DATE_VALIDATION_RF";
 	private static final String HEADER_DATE_DEBUT = "DATE_DEPOT_PJ";
 	private static final String HEADER_DATE_FIN = "DATE_FIN";
+	private static final String HEADER_DATE_DERNIERE_MUT = "DATE_DERNIERE_MUT";
+	private static final String HEADER_DERNIERE_MUTATION = "DERNIERE_MUTATION";
 	private static final String HEADER_URL = "URL";
 
 	private enum GenrePersonne {
@@ -222,7 +231,7 @@ public class ImportImmeublesProcessor {
 		}
 
 		immeubleDAO.save(immeuble);
-		rapport.addTraite(immeuble.getNumero(), immeuble.getProprietaire().getId());
+		rapport.addTraite(immeuble.getNumero(), immeuble.getContribuable().getId());
 	}
 
 	/**
@@ -260,6 +269,25 @@ public class ImportImmeublesProcessor {
 			return null;
 		}
 
+		final String idProprietaire = data.get(HEADER_ID_PROPRIETAIRE);
+		if (StringUtils.isBlank(idProprietaire)) {
+			rapport.addError(numero, ErreurType.BAD_ID_PROPRIETAIRE, "Id du propriété RF = " + data.get(HEADER_ID_PROPRIETAIRE));
+		}
+
+		final long idIndividuRF;
+		try {
+			idIndividuRF = Long.parseLong(data.get(HEADER_ID_INDIVIDU_RF));
+		}
+		catch (NumberFormatException e) {
+			rapport.addError(numero, ErreurType.BAD_ID_IND_RF, "Id de l'individu RF = " + data.get(HEADER_ID_INDIVIDU_RF));
+			return null;
+		}
+
+		final String idImmeuble = data.get(HEADER_ID_IMMEUBLE);
+		if (StringUtils.isBlank(idImmeuble)) {
+			rapport.addError(numero, ErreurType.BAD_ID_IMMEUBLE, "Id de l'immeuble RF = " + data.get(HEADER_ID_IMMEUBLE));
+		}
+
 		final RegDate dateModif;
 		try {
 			dateModif = parseRegDate(data.get(HEADER_DATE_MODIF));
@@ -284,6 +312,24 @@ public class ImportImmeublesProcessor {
 		}
 		catch (ParseException e) {
 			rapport.addError(numero, ErreurType.BAD_DATE_FIN, "Date = " + data.get(HEADER_DATE_FIN));
+			return null;
+		}
+
+		final RegDate dateDerniereMutation;
+		try {
+			dateDerniereMutation = parseRegDate(data.get(HEADER_DATE_DERNIERE_MUT));
+		}
+		catch (ParseException e) {
+			rapport.addError(numero, ErreurType.BAD_DATE_DERNIERE_MUTATION, "Date = " + data.get(HEADER_DATE_DERNIERE_MUT));
+			return null;
+		}
+
+		final TypeMutation derniereMutation;
+		try {
+			derniereMutation = parseTypeMutation(data.get(HEADER_DERNIERE_MUTATION));
+		}
+		catch (IllegalArgumentException e) {
+			rapport.addError(numero, ErreurType.BAD_TYPE_DERNIERE_MUTATION, "Type = " + data.get(HEADER_DERNIERE_MUTATION));
 			return null;
 		}
 
@@ -318,6 +364,15 @@ public class ImportImmeublesProcessor {
 		}
 
 		final String referenceEstimationFiscale = StringUtils.trimToNull(data.get(HEADER_REF_ESTIMATION_FISCALE));
+
+		final TypeImmeuble typeImmeuble;
+		try {
+			typeImmeuble = parseTypeImmeuble(data.get(HEADER_TYPE_IMMEUBLE));
+		}
+		catch (IllegalArgumentException e) {
+			rapport.addError(numero, ErreurType.BAD_TYPE_IMMEUBLE, "Type = " + data.get(HEADER_TYPE_IMMEUBLE));
+			return null;
+		}
 
 		final GenrePropriete genrePropriete;
 		try {
@@ -389,6 +444,8 @@ public class ImportImmeublesProcessor {
 
 		final Immeuble immeuble = new Immeuble();
 		immeuble.setId(ctbId);
+		immeuble.setIdRF(idImmeuble);
+		immeuble.setProprietaire(new Proprietaire(idProprietaire, idIndividuRF));
 		immeuble.setDateDebut(dateDebut);
 		immeuble.setDateFin(dateFin);
 		immeuble.setNumero(numero);
@@ -396,16 +453,22 @@ public class ImportImmeublesProcessor {
 		immeuble.setNature(nature);
 		immeuble.setEstimationFiscale(estimationFiscale);
 		immeuble.setReferenceEstimationFiscale(referenceEstimationFiscale);
+		immeuble.setTypeImmeuble(typeImmeuble);
 		immeuble.setGenrePropriete(genrePropriete);
 		immeuble.setPartPropriete(partPropriete);
 		immeuble.setLienRegistreFoncier(lienRegistreFoncier);
-		immeuble.setProprietaire(proprietaire);
+		immeuble.setContribuable(proprietaire);
+		immeuble.setDateDerniereMutation(dateDerniereMutation);
+		immeuble.setDerniereMutation(derniereMutation);
 
 		immeuble.setLogCreationUser("Registre foncier (import)");
 		immeuble.setLogModifUser("Registre foncier (import)");
 		if (dateModif != null) {
 			immeuble.setLogCreationDate(dateModif.asJavaDate());
 			immeuble.setLogModifDate(new Timestamp(dateModif.asJavaDate().getTime()));
+		}
+		if (dateDerniereMutation != null) {
+			immeuble.setLogModifDate(new Timestamp(dateDerniereMutation.asJavaDate().getTime()));
 		}
 
 		return immeuble;
@@ -466,6 +529,25 @@ public class ImportImmeublesProcessor {
 		}
 	}
 
+	private static TypeImmeuble parseTypeImmeuble(String s) {
+		for (TypeImmeuble type : TypeImmeuble.values()) {
+			if (type.name().equalsIgnoreCase(s)) { // TODO (msi) vérifier ça par rapport aux données du fichier d'import, éventuellement supprimer la boucle
+				return type;
+			}
+		}
+		return null;
+	}
+
+
+	private static TypeMutation parseTypeMutation(String s) {
+		for (TypeMutation type : TypeMutation.values()) {
+			if (type.name().equalsIgnoreCase(s)) { // TODO (msi) vérifier ça par rapport aux données du fichier d'import, éventuellement supprimer la boucle
+				return type;
+			}
+		}
+		return null;
+	}
+
 	private static GenrePropriete parseGenrePropriete(String s) {
 		final int genre = Integer.parseInt(s);
 		switch (genre) {
@@ -474,7 +556,7 @@ public class ImportImmeublesProcessor {
 		case 2:
 			return GenrePropriete.COPROPRIETE;
 		case 3:
-			return GenrePropriete.PAR_ETAGES;
+			return GenrePropriete.COMMUNE;
 		default:
 			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + "]");
 		}

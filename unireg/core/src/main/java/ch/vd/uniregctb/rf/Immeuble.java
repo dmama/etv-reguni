@@ -34,16 +34,22 @@ import ch.vd.uniregctb.tiers.Contribuable;
 public class Immeuble extends HibernateEntity implements DateRange {
 
 	private Long id;
+	private String idRF;
 	private RegDate dateDebut;
 	private RegDate dateFin;
+	private RegDate dateValidation;
+	private RegDate dateDerniereMutation;
+	private TypeMutation derniereMutation;
 	private String numero;
 	private String nomCommune;
 	private String nature;
-	private int estimationFiscale;
+	private Integer estimationFiscale;
 	private String referenceEstimationFiscale;
+	private TypeImmeuble typeImmeuble;
 	private GenrePropriete genrePropriete;
 	private PartPropriete partPropriete;
-	private Contribuable proprietaire;
+	private Proprietaire proprietaire;
+	private Contribuable contribuable;
 	private URL lienRegistreFoncier;
 
 	/**
@@ -57,6 +63,18 @@ public class Immeuble extends HibernateEntity implements DateRange {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return l'identifiant technique de l'immeuble du RF (à ne pas confondre avec le numéro d'immeuble)
+	 */
+	@Column(name = "ID_RF", nullable = false, length = 40)
+	public String getIdRF() {
+		return idRF;
+	}
+
+	public void setIdRF(String idRF) {
+		this.idRF = idRF;
 	}
 
 	/**
@@ -85,6 +103,32 @@ public class Immeuble extends HibernateEntity implements DateRange {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	/**
+	 * @return la date de la dernière mutation dans le RF
+	 */
+	@Column(name = "DATE_DERNIERE_MUTATION", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDerniereMutation() {
+		return dateDerniereMutation;
+	}
+
+	public void setDateDerniereMutation(RegDate dateDerniereMutation) {
+		this.dateDerniereMutation = dateDerniereMutation;
+	}
+
+	/**
+	 * @return le type de mutation lors du dernier changement.
+	 */
+	@Column(name = "DERNIERE_MUTATION", nullable = false, length = LengthConstants.DERNIERE_MUTATION)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeMutationUserType")
+	public TypeMutation getDerniereMutation() {
+		return derniereMutation;
+	}
+
+	public void setDerniereMutation(TypeMutation derniereMutation) {
+		this.derniereMutation = derniereMutation;
 	}
 
 	/**
@@ -126,12 +170,12 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	/**
 	 * @return l'estimation fiscale en francs suisses.
 	 */
-	@Column(name = "ESTIMATION_FISCALE", nullable = false)
-	public int getEstimationFiscale() {
+	@Column(name = "ESTIMATION_FISCALE", nullable = true)
+	public Integer getEstimationFiscale() {
 		return estimationFiscale;
 	}
 
-	public void setEstimationFiscale(int estimationFiscale) {
+	public void setEstimationFiscale(Integer estimationFiscale) {
 		this.estimationFiscale = estimationFiscale;
 	}
 
@@ -145,6 +189,19 @@ public class Immeuble extends HibernateEntity implements DateRange {
 
 	public void setReferenceEstimationFiscale(String referenceEstimationFiscale) {
 		this.referenceEstimationFiscale = referenceEstimationFiscale;
+	}
+
+	/**
+	 * @return le type d'immeuble.
+	 */
+	@Column(name = "TYPE_IMMEUBLE", nullable = false, length = LengthConstants.TYPE_IMMEUBLE)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeImmeubleUserType")
+	public TypeImmeuble getTypeImmeuble() {
+		return typeImmeuble;
+	}
+
+	public void setTypeImmeuble(TypeImmeuble typeImmeuble) {
+		this.typeImmeuble = typeImmeuble;
 	}
 
 	/**
@@ -176,18 +233,31 @@ public class Immeuble extends HibernateEntity implements DateRange {
 		this.partPropriete = partPropriete;
 	}
 
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "id", column = @Column(name = "ID_PROPRIETAIRE_RF", nullable = false, length = 40)),
+			@AttributeOverride(name = "numeroIndividu", column = @Column(name = "NUMERO_INDIVIDU_RF", nullable = false))
+	})
+	public Proprietaire getProprietaire() {
+		return proprietaire;
+	}
+
+	public void setProprietaire(Proprietaire proprietaire) {
+		this.proprietaire = proprietaire;
+	}
+
 	/**
 	 * @return le propriétaire
 	 */
 	@ManyToOne
 	@JoinColumn(name = "CTB_ID", nullable = false)
 	@Index(name = "IDX_IMM_CTB_ID", columnNames = "CTB_ID")
-	public Contribuable getProprietaire() {
-		return proprietaire;
+	public Contribuable getContribuable() {
+		return contribuable;
 	}
 
-	public void setProprietaire(Contribuable proprietaire) {
-		this.proprietaire = proprietaire;
+	public void setContribuable(Contribuable contribuable) {
+		this.contribuable = contribuable;
 	}
 
 	@Column(name = "LIEN_RF", nullable = true, length = LengthConstants.LIEN_RF)

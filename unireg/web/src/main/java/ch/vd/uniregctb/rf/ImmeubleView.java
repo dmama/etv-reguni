@@ -8,32 +8,72 @@ import ch.vd.uniregctb.tiers.Contribuable;
 @SuppressWarnings({"UnusedDeclaration"})
 public class ImmeubleView {
 
-	private Long id;
-	private String dateDebut;
-	private String dateFin;
-	private String numero;
-	private String nomCommune;
-	private String nature;
-	private int estimationFiscale;
-	private String referenceEstimationFiscale;
-	private GenrePropriete genrePropriete;
-	private String partPropriete;
-	private Contribuable proprietaire;
-	private URL lienRF;
+	private final Long id;
+	private final String dateDebut;
+	private final String dateFin;
+	private final String numero;
+	private final String nomCommune;
+	private final String nature;
+	private final int estimationFiscale;
+	private final String referenceEstimationFiscale;
+	private final TypeImmeuble typeImmeuble;
+	private final GenrePropriete genrePropriete;
+	private final String partPropriete;
+	private final Contribuable contribuable;
+	private final String dateDernierMutation;
+	private final TypeMutation derniereMutation;
+	private final URL lienRF;
 
 	public ImmeubleView(Immeuble immeuble) {
 		this.id = immeuble.getId();
 		this.dateDebut = RegDateHelper.dateToDisplayString(immeuble.getDateDebut());
 		this.dateFin = RegDateHelper.dateToDisplayString(immeuble.getDateFin());
-		this.numero = immeuble.getNumero();
-		this.nomCommune = immeuble.getNomCommune();
+		this.numero = removeNumeroCommune(immeuble.getNumero()); // [SIFISC-3157]
+		this.nomCommune = buildNomCommune(immeuble.getNumero(), immeuble.getNomCommune()); // [SIFISC-3157]
 		this.nature = immeuble.getNature();
 		this.estimationFiscale = immeuble.getEstimationFiscale();
 		this.referenceEstimationFiscale = immeuble.getReferenceEstimationFiscale();
+		this.typeImmeuble = immeuble.getTypeImmeuble();
 		this.genrePropriete = immeuble.getGenrePropriete();
 		this.partPropriete = immeuble.getPartPropriete().toString();
-		this.proprietaire = immeuble.getProprietaire();
+		this.contribuable = immeuble.getContribuable();
+		this.dateDernierMutation = RegDateHelper.dateToDisplayString(immeuble.getDateDerniereMutation());
+		this.derniereMutation = immeuble.getDerniereMutation();
 		this.lienRF = immeuble.getLienRegistreFoncier();
+	}
+
+	private static String buildNomCommune(String numeroImmeuble, String nomCommune) {
+		final String numeroRFCommune = extractNumeroCommune(numeroImmeuble);
+		if (numeroRFCommune == null) {
+			return nomCommune;
+		}
+		return String.format("%s %s", numeroRFCommune, nomCommune);
+	}
+
+	/**
+	 * @param numeroImmeuble un numéro d'immeuble (e.g. "130-12-1-1").
+	 * @return le numéro RF de commune du numéro d'immeuble spécifié (e.g. 130).
+	 */
+	private static String extractNumeroCommune(String numeroImmeuble) {
+		if (numeroImmeuble == null) {
+			return null;
+		}
+		return numeroImmeuble.split("-")[0];
+	}
+
+	/**
+	 * @param numeroImmeuble un numéro d'immeuble (e.g. "130-12-1-1").
+	 * @return le numéro de l'immeuble <b>sans</b> le numéro de commune (e.g. "12-1-1")
+	 */
+	private static String removeNumeroCommune(String numeroImmeuble) {
+		if (numeroImmeuble == null) {
+			return null;
+		}
+		int i = numeroImmeuble.indexOf('-');
+		if (i < 0) {
+			return numeroImmeuble;
+		}
+		return numeroImmeuble.substring(i + 1);
 	}
 
 	public Long getId() {
@@ -68,6 +108,10 @@ public class ImmeubleView {
 		return referenceEstimationFiscale;
 	}
 
+	public TypeImmeuble getTypeImmeuble() {
+		return typeImmeuble;
+	}
+
 	public GenrePropriete getGenrePropriete() {
 		return genrePropriete;
 	}
@@ -76,8 +120,16 @@ public class ImmeubleView {
 		return partPropriete;
 	}
 
-	public Contribuable getProprietaire() {
-		return proprietaire;
+	public Contribuable getContribuable() {
+		return contribuable;
+	}
+
+	public String getDateDernierMutation() {
+		return dateDernierMutation;
+	}
+
+	public TypeMutation getDerniereMutation() {
+		return derniereMutation;
 	}
 
 	public URL getLienRF() {
