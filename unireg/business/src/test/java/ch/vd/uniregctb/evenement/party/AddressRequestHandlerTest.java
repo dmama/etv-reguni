@@ -219,4 +219,62 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			popSecurityProvider();
 		}
 	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testHandleNomTropLong() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Joana", "Marques Gama Caldas Pimenta Duarte", date(1950, 3, 14), Sexe.FEMININ);
+				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+				return pp.getNumero();
+			}
+		});
+
+		pushSecurityProvider(provider);
+		try {
+			final AddressRequest request = new AddressRequest();
+			final UserLogin login = new UserLogin("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber(id.intValue());
+			request.getTypes().add(AddressType.RESIDENCE);
+
+			final AddressResponse response = (AddressResponse) handler.handle(request);
+			assertNotNull(response);
+
+			final List<Address> addresses = response.getAddresses();
+			assertNotNull(addresses);
+			assertEquals(1, addresses.size());
+
+			final Address address = addresses.get(0);
+
+			assertNull(address.getCouple());
+			assertNull(address.getOrganisation());
+
+			final PersonMailAddressInfo person = address.getPerson();
+			assertNotNull(person);
+			assertEquals("Madame", person.getFormalGreeting());
+			assertEquals("Madame", person.getSalutation());
+			assertEquals("Joana", person.getFirstName());
+			assertEquals("Marques Gama Caldas Pimenta Du", person.getLastName());
+			assertNull(person.getTitle());
+
+			final FormattedAddress formatted = address.getFormattedAddress();
+			assertNotNull(formatted);
+			assertEquals("Madame", formatted.getLine1());
+			assertEquals("Joana Marques Gama Caldas Pimenta Duarte", formatted.getLine2());
+			assertEquals("Rue des Uttins", formatted.getLine3());
+			assertEquals("1436 Chamblon", formatted.getLine4());
+			assertNull(formatted.getLine5());
+		}
+		finally {
+			popSecurityProvider();
+		}
+	}
 }
