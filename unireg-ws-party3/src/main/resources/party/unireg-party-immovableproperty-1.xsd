@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.1 - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
 <!-- v1.0beta4 - 13 octobre 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
@@ -40,9 +41,9 @@
 					<xs:documentation>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="estimatedTaxValue" type="xs:int">
+			<xs:element minOccurs="0" name="estimatedTaxValue" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>L'estimation fiscale de l'immeuble.</xs:documentation>
+					<xs:documentation>L'estimation fiscale de l'immeuble. Elle n'est pas renseignée sur les immeubles qui ont été vendus.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="estimatedTaxValueReference" type="xs:string">
@@ -62,9 +63,52 @@
 					<xs:documentation>La part de propriété.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="type" type="immo:immovablePropertyTypeType">
+				<xs:annotation>
+					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastMutationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de la dernière mutation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastMutationType" type="immo:mutationTypeType">
+				<xs:annotation>
+					<xs:documentation>Type de la dernière mutation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:simpleType name="immovablePropertyTypeType">
+		<xs:annotation>
+			<xs:documentation>Le type d'immeuble.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IMMOVABLE_PROPERTY">
+				<xs:annotation>
+					<xs:documentation>Bien-fond.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Propriété par étages.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DISTINCT_AND_PERMANENT_RIGHT">
+				<xs:annotation>
+					<xs:documentation>Droit distinct et permanent.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CO_OWNERSHIP_SHARE">
+				<xs:annotation>
+					<xs:documentation>Part de copropriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="ownershipTypeType">
 		<xs:annotation>
@@ -90,13 +134,6 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
-				<xs:annotation>
-					<xs:documentation>Propriété par étages. La propriété par étages est une forme particulière de copropriété à laquelle a été ajoutée la notion de droit d'usage exclusif sur une
-						partie géographiquement déterminée de l'immeuble, dont bénéficie chaque copropriétaire.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -118,5 +155,102 @@
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:simpleType name="mutationTypeType">
+		<xs:annotation>
+			<xs:documentation>Les types de mutations connus.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PURCHASE">
+				<xs:annotation>
+					<xs:documentation>Achat de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCREASE">
+				<xs:annotation>
+					<xs:documentation>Augmentation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CESSION">
+				<xs:annotation>
+					<xs:documentation>Cession.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP_COMPOSITION">
+				<xs:annotation>
+					<xs:documentation>Constitution de PPE.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CO_OWNERSHIP_SHARES_COMPOSITION">
+				<xs:annotation>
+					<xs:documentation>Constitution de parts de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_DIVISION">
+				<xs:annotation>
+					<xs:documentation>Division de bien-fonds.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GIFT">
+				<xs:annotation>
+					<xs:documentation>Donation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGACY_DELIVERY">
+				<xs:annotation>
+					<xs:documentation>Délivrance de legs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXCHANGE">
+				<xs:annotation>
+					<xs:documentation>Echange.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_GROUPING">
+				<xs:annotation>
+					<xs:documentation>Groupement de bien-fonds.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JUDGEMENT">
+				<xs:annotation>
+					<xs:documentation>Jugement.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SHARING">
+				<xs:annotation>
+					<xs:documentation>Partage.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PLOT_REFORM">
+				<xs:annotation>
+					<xs:documentation>Remaniement parcellaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPULSARY_SALE">
+				<xs:annotation>
+					<xs:documentation>Réalisation forcée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INHERITANCE">
+				<xs:annotation>
+					<xs:documentation>Succession.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSFER">
+				<xs:annotation>
+					<xs:documentation>Transfert.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="END_OF_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Fin de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNDETERMINED">
+				<xs:annotation>
+					<xs:documentation>Type de mutation indéterminé ou inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>
