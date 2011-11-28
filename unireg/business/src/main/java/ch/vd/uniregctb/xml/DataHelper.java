@@ -149,4 +149,13 @@ public abstract class DataHelper {
 			throw new IllegalArgumentException("Unknown AddressType = [" + type + "]");
 		}
 	}
+
+	public static String truncate(String valeur, int nbChar) {
+
+		if (valeur != null && valeur.length() > nbChar) {
+			valeur = valeur.substring(0, nbChar);
+		}
+
+		return valeur;
+	}
 }

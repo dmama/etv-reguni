@@ -84,8 +84,8 @@ public class AddressBuilder {
 			personInfo.setMrMrs(DataHelper.salutations2MrMrs(adresse.getSalutations()));
 			final List<NomPrenom> nomsPrenoms = adresse.getNomsPrenoms();
 			if (!nomsPrenoms.isEmpty()) {
-				personInfo.setFirstName(nomsPrenoms.get(0).getPrenom());
-				personInfo.setLastName(nomsPrenoms.get(0).getNom());
+				personInfo.setFirstName(DataHelper.truncate(nomsPrenoms.get(0).getPrenom(), 30));
+				personInfo.setLastName(DataHelper.truncate(nomsPrenoms.get(0).getNom(), 30));
 			}
 			personInfo.setSalutation(adresse.getSalutations());
 			personInfo.setFormalGreeting(adresse.getFormuleAppel());
@@ -96,7 +96,7 @@ public class AddressBuilder {
 			coupleInfo.setSalutation(adresse.getSalutations());
 			coupleInfo.setFormalGreeting(adresse.getFormuleAppel());
 			for (NomPrenom nomPrenom : adresse.getNomsPrenoms()) {
-				coupleInfo.getNames().add(new PersonName(nomPrenom.getPrenom(), nomPrenom.getNom(), null));
+				coupleInfo.getNames().add(new PersonName(DataHelper.truncate(nomPrenom.getPrenom(), 30), DataHelper.truncate(nomPrenom.getNom(), 30), null));
 			}
 			a.setCouple(coupleInfo);
 		}
@@ -104,16 +104,16 @@ public class AddressBuilder {
 			final OrganisationMailAddressInfo organisationInfo = new OrganisationMailAddressInfo();
 			final List<String> noms = adresse.getNomsPrenomsOuRaisonsSociales();
 			if (noms.size() > 0) {
-				organisationInfo.setOrganisationName(noms.get(0));
+				organisationInfo.setOrganisationName(DataHelper.truncate(noms.get(0), 60));
 			}
 			if (noms.size() > 1) {
-				organisationInfo.setOrganisationNameAddOn1(noms.get(1));
+				organisationInfo.setOrganisationNameAddOn1(DataHelper.truncate(noms.get(1), 60));
 			}
 			if (noms.size() > 2) {
-				organisationInfo.setOrganisationNameAddOn2(noms.get(2));
+				organisationInfo.setOrganisationNameAddOn2(DataHelper.truncate(noms.get(2), 60));
 			}
 			if (adresse.getPourAdresse() != null) {
-				organisationInfo.setLastName(adresse.getPourAdresse());
+				organisationInfo.setLastName(DataHelper.truncate(adresse.getPourAdresse(), 30));
 			}
 			organisationInfo.setFormalGreeting(adresse.getFormuleAppel());
 			a.setOrganisation(organisationInfo);
