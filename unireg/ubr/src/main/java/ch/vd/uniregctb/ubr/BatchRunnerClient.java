@@ -226,7 +226,7 @@ public class BatchRunnerClient {
 					entry.setBytesValue(new DataHandler(new ByteArrayDataSource((byte[]) value, "application/octet-stream")));
 				}
 				else {
-					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + "]");
+					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + ']');
 				}
 				entries.add(entry);
 			}

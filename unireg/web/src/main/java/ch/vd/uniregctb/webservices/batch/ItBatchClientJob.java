@@ -101,7 +101,7 @@ public class ItBatchClientJob extends JobDefinition {
 		final Integer count = getOptionalIntegerValue(params, PARAM_COUNT);
 		final byte[] attachement = getFileContent(params, PARAM_ATTACHEMENT);
 		if (attachement != null) {
-			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + "\n");
+			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + '\n');
 		}
 
 		final Integer duration = getOptionalIntegerValue(params, PARAM_DURATION);

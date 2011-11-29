@@ -120,11 +120,7 @@ public class EnvoiLRsEnMasseProcessor {
 
 	private boolean isdebiteurSansPeriodiciteUnique(DebiteurPrestationImposable dpi) {
 		Periodicite periodicite = dpi.getPeriodiciteAt(RegDate.get());
-		if (PeriodiciteDecompte.UNIQUE.equals(periodicite.getPeriodiciteDecompte())) {
-			return false;
-		}
-		return true;
-
+		return PeriodiciteDecompte.UNIQUE != periodicite.getPeriodiciteDecompte();
 	}
 
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {

@@ -232,7 +232,7 @@ public class ProduireStatsCtbsProcessor {
 				type = TypeContribuable.HORS_SUISSE;
 				break;
 			default:
-				throw new IllegalArgumentException("Type d'autorité fiscale inconnue [" + dernierFor.getTypeAutoriteFiscale() + "]");
+				throw new IllegalArgumentException("Type d'autorité fiscale inconnue [" + dernierFor.getTypeAutoriteFiscale() + ']');
 			}
 		}
 		else if (assujet instanceof SourcierPur) {

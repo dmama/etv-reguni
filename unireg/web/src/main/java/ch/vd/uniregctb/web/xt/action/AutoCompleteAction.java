@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
-
 import org.springmodules.xt.ajax.AjaxEvent;
 import org.springmodules.xt.ajax.action.AbstractExecuteJavascriptAction;
 
@@ -48,7 +47,7 @@ public class AutoCompleteAction extends AbstractExecuteJavascriptAction {
 	protected String getJavascript() {
         StringBuilder function = new StringBuilder();
 
-        function.append(functionName).append("(");
+        function.append(functionName).append('(');
         if (!this.options.isEmpty()) {
             JSONObject json = JSONObject.fromMap(this.options);
             function.append(json.toString());

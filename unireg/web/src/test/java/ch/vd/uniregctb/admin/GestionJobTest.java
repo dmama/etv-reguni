@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.admin;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -13,9 +11,11 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
 
+import static junit.framework.Assert.assertEquals;
+
 public class GestionJobTest extends WithoutSpringTest {
 
-	public class MyJobDefinition extends JobDefinition {
+	public static class MyJobDefinition extends JobDefinition {
 
 		public MyJobDefinition() {
 			super("bla", "cat", 1,"descr");

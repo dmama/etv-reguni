@@ -129,7 +129,7 @@ public class PartyRequestListener extends TransactionalEsbMessageListener implem
 
 		final PartyRequestHandler handler = handlers.get(request.getClass());
 		if (handler == null) {
-			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + request.getClass() + "]");
+			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + request.getClass() + ']');
 		}
 
 		//noinspection unchecked

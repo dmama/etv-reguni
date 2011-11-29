@@ -52,7 +52,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 			}
 		}
 		catch (DonneesCivilesException e) {
-			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour l'année " + year + ".");
+			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour l'année " + year + '.');
 		}
 
 		return resultat;
@@ -245,7 +245,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 				result.add(new HistoriqueCommune(adresse.getDateDebut(), adresse.getDateFin(), communeFiltree));
 			}
 		}
-		if (result.size() == 0) {
+		if (result.isEmpty()) {
 			result.add(new HistoriqueCommune(date.getOneDayBefore(), null, null));
 		}
 		else if (!RegDateHelper.isBeforeOrEqual(result.get(0).getDateDebut(), date, NullDateBehavior.EARLIEST)) {

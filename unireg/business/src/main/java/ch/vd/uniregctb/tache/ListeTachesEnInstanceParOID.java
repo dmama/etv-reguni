@@ -24,7 +24,7 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 		return nombreTacheMoyen;
 	}
 
-	public class LigneTacheInstance {
+	public static class LigneTacheInstance {
 
 		private long numeroOID;
 		private String typeTache;

@@ -153,7 +153,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		adresseExpediteur.setAdresseCourrierLigne2(ca.getNomComplet2());
 		adresseExpediteur.setAdresseCourrierLigne3(ca.getNomComplet3());
 		adresseExpediteur.setAdresseCourrierLigne4(adresse.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(adresse.getNumeroPostal() + " " + adresse.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne5(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(ca.getAdresseEmail());
@@ -241,7 +241,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		adresseExpediteur.setAdresseCourrierLigne2(aciImpotSource.getNomComplet2());
 		adresseExpediteur.setAdresseCourrierLigne3(aciImpotSource.getNomComplet3());
 		adresseExpediteur.setAdresseCourrierLigne4(adresseAciImpotSource.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(adresseAciImpotSource.getNumeroPostal() + " " + adresseAciImpotSource.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne5(adresseAciImpotSource.getNumeroPostal() + ' ' + adresseAciImpotSource.getLocalite());
 		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(aciImpotSource.getAdresseEmail());
@@ -282,7 +282,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		adresseExpediteur.setAdresseCourrierLigne2(IMPOT_A_LA_SOURCE_MIN);
 		adresseExpediteur.setAdresseCourrierLigne3(aci.getNomComplet3());
 		adresseExpediteur.setAdresseCourrierLigne4(aciAdresse.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(aciAdresse.getNumeroPostal() + " " + aciAdresse.getLocalite());
+		adresseExpediteur.setAdresseCourrierLigne5(aciAdresse.getNumeroPostal() + ' ' + aciAdresse.getLocalite());
 		adresseExpediteur.setAdresseCourrierLigne6(null);
 		expediteur.setAdresse(adresseExpediteur);
 		expediteur.setAdrMes(aci.getAdresseEmail());

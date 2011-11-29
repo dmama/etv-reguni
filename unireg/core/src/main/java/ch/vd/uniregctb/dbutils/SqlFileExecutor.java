@@ -35,7 +35,7 @@ public class SqlFileExecutor {
                     String statStr;
                     while ((statStr = input.readLine()) != null) {
 
-                        if (!statStr.equals("") && !statStr.startsWith("#") && !statStr.startsWith("--")) {
+                        if (!statStr.isEmpty() && !statStr.startsWith("#") && !statStr.startsWith("--")) {
 
                             if (statStr.endsWith(";")) {
                                 statStr = statStr.substring(0, statStr.length()-1);

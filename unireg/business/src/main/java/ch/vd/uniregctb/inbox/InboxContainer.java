@@ -62,7 +62,7 @@ public class InboxContainer {
 		final List<InboxElement> liste;
 		synchronized (this) {
 			final Set<InboxElement> set = getUserRelativeSet(visa, false);
-			if (set == null || set.size() == 0) {
+			if (set == null || set.isEmpty()) {
 				liste = Collections.emptyList();
 			}
 			else {
@@ -112,7 +112,7 @@ public class InboxContainer {
 		// facile de retrouver les éléments dans l'autre map directement dans ce sens
 		for (Map.Entry<String, Set<InboxElement>> entry : byUser.entrySet()) {
 			final Set<InboxElement> content = entry.getValue();
-			if (content != null && content.size() > 0) {
+			if (content != null && !content.isEmpty()) {
 				final Iterator<InboxElement> iterator = content.iterator();
 				while (iterator.hasNext()) {
 					final InboxElement element = iterator.next();

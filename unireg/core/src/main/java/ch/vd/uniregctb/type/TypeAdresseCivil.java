@@ -35,7 +35,7 @@ public enum TypeAdresseCivil {
 			return TUTEUR;
 		}
 		else {
-			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + right.getName() + "]");
+			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + right.getName() + ']');
 		}
 	}
 

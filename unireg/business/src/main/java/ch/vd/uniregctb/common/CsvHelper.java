@@ -124,7 +124,7 @@ public abstract class CsvHelper {
 	 */
 	public static <T> String asCsvFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
 		String contenu = null;
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			try {
 				contenu = asCsvFileThroughTempFile(list, fileName, status, filler);
 			}

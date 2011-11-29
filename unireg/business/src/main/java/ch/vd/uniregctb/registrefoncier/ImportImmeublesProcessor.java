@@ -529,7 +529,7 @@ public class ImportImmeublesProcessor {
 			return GenrePersonne.DroitPublic;
 		}
 		else {
-			throw new IllegalArgumentException("Genre de personne inconnu = [" + s + "]");
+			throw new IllegalArgumentException("Genre de personne inconnu = [" + s + ']');
 		}
 	}
 
@@ -562,7 +562,7 @@ public class ImportImmeublesProcessor {
 		case 3:
 			return GenrePropriete.COMMUNE;
 		default:
-			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + "]");
+			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + ']');
 		}
 	}
 

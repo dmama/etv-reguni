@@ -133,7 +133,7 @@ public class DeterminerLRsEchuesProcessor {
 		// on se concentre uniquement sur la période fiscale donnée : si toutes les LR ont été émises
 		// alors on peut échoir les LR
 		final List<DateRange> intersection = DateRangeHelper.intersections(periodeFiscale, nonEmises);
-		if (intersection != null && intersection.size() > 0) {
+		if (intersection != null && !intersection.isEmpty()) {
 			rapport.addDebiteurIgnoreResteLrAEmettre(dpi, intersection);
 		}
 		else {
@@ -185,7 +185,7 @@ public class DeterminerLRsEchuesProcessor {
 						query.setParameter("pf", periodeFiscale);
 
 						@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
-						if (rows != null && rows.size() > 0) {
+						if (rows != null && !rows.isEmpty()) {
 							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>(rows.size());
 							for (Object[] row : rows) {
 								final int indexSommation = ((Number) row[4]).intValue();

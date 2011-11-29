@@ -40,7 +40,7 @@ public class Ec_4001_01_AnnulationMariage_Celibataire_Scenario extends Evenement
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789;
+	private static final long noIndJulie = 6789;
 
 	private Long noHabJulie;
 

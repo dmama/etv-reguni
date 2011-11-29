@@ -89,7 +89,7 @@ public class JspTagToggleAffichage extends BodyTagSupport implements MessageSour
 	public String buildHtml(String display, String onClick, String tooltip, String id) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("<a href=\"");
-		builder.append("#");
+		builder.append('#');
 		builder.append("\" class=\"");
 		builder.append(" noprint");
 

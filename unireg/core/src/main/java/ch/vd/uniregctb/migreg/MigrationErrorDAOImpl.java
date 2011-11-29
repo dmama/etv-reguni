@@ -33,7 +33,7 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 		String query = "from MigrationError m where m.noContribuable = ?";
 
 		final List<?> list = find(query, criteria, FlushMode.MANUAL);
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			Assert.isEqual(1, list.size());
 			error = (MigrationError) list.get(0);
 		}

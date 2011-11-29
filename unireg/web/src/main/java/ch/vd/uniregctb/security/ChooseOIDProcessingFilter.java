@@ -72,7 +72,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 					}
 				}
 				if (oi == null) {
-					throw new AuthenticationFailedException("L'OID choisi [" + oid + "] ne fait pas partie des collectivités de l'utilisateur [" + username + "]");
+					throw new AuthenticationFailedException("L'OID choisi [" + oid + "] ne fait pas partie des collectivités de l'utilisateur [" + username + ']');
 				}
 			}
 

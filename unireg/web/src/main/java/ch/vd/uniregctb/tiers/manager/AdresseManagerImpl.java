@@ -397,7 +397,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 				}
 
 			}
-			else {
+			else if (adresse instanceof AdresseEtrangere) {
 
 				AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
 
@@ -407,6 +407,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 				adresseView.setPaysOFS(pays.getNoOFS());
 				adresseView.setLocaliteNpa(adresseEtrangere.getNumeroPostalLocalite());
 				adresseView.setComplementLocalite(adresseEtrangere.getComplementLocalite());
+			}
+			else {
+				throw new IllegalArgumentException("Type d'adresse inconnu = [" + adresse.getClass().getSimpleName() + ']');
 			}
 		}
 

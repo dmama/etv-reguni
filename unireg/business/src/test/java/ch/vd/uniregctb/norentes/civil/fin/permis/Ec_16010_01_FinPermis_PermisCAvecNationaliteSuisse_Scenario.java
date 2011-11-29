@@ -45,7 +45,7 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 		return NAME;
 	}
 
-	private final long noIndRoberto = 97136; // roberto
+	private static final long noIndRoberto = 97136; // roberto
 
 	private long noHabRoberto;
 

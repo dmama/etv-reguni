@@ -82,7 +82,7 @@ public abstract class XmlEntityAdapter {
 			t = ch.vd.fiscalite.registre.identificationContribuable.TypeErreurType.Enum.forInt(2);
 			break;
 		default:
-			throw new IllegalArgumentException("Type d'erreur inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type d'erreur inconnu = [" + type + ']');
 		}
 		return t;
 	}
@@ -154,7 +154,7 @@ public abstract class XmlEntityAdapter {
 		case FEMININ:
 			return ch.vd.fiscalite.registre.identificationContribuable.SexeType.Enum.forInt(2);
 		default:
-			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + "]");
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']');
 		}
 	}
 

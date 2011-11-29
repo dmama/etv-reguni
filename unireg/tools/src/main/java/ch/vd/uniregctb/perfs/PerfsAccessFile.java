@@ -101,7 +101,7 @@ public class PerfsAccessFile {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
-				if (line.trim().equals("")) {
+				if (line.trim().isEmpty()) {
 					continue;
 				}
 

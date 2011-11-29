@@ -142,7 +142,7 @@ public abstract class BusinessItTestApplication {
 				String packageName = getClass().getPackage().getName();
 				packageName = packageName.replace('.', '/');
 
-				String name = "classpath:" + packageName + "/" + filename;
+				String name = "classpath:" + packageName + '/' + filename;
 				file = ResourceUtils.getFile(name);
 			}
 			catch (Exception ignored) {

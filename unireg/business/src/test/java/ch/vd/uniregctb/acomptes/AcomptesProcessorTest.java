@@ -167,7 +167,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 						}
 						b.append(idIterator.next());
 					}
-					fail("Encore des contribuables trouvés ? (" + b.toString() + ")");
+					fail("Encore des contribuables trouvés ? (" + b.toString() + ')');
 				}
 				return null;
 			}
@@ -245,7 +245,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		final List<ListesResults.Erreur> erreurs = results.getListeErreurs();
 		Assert.assertNotNull(erreurs);
-		if (erreurs.size() > 0) {
+		if (!erreurs.isEmpty()) {
 			for (ListesResults.Erreur erreur : erreurs) {
 				LOGGER.error(String.format("Trouvé erreur sur le contribuable %s : %s (%s)", erreur.noCtb, erreur.getDescriptionRaison(), erreur.details));
 			}

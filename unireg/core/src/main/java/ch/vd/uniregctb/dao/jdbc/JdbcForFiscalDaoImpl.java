@@ -329,7 +329,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + forType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + forType + ']');
 			}
 			
 			final Pair<Long, ForFiscal> pair = new Pair<Long, ForFiscal>();

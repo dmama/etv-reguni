@@ -90,7 +90,7 @@ public class UniregProperties implements InitializingBean {
 			else {
 				value = properties.getString(key);
 			}
-			str += " * " + key + " => " + value + "\n";
+			str += " * " + key + " => " + value + '\n';
 		}
 		return str;
 	}

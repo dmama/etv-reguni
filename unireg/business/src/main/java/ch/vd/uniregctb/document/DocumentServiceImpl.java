@@ -95,7 +95,7 @@ public class DocumentServiceImpl implements DocumentService {
 				subpath, f.getName()
 		};
 		List<Document> list = hibernateTemplate.find("from Document as doc where doc.subPath = ? and doc.fileName = ?", params);
-		if (list != null && list.size() > 0) {
+		if (list != null && !list.isEmpty()) {
 			// le fichier existe -> ok
 			return;
 		}
@@ -277,9 +277,9 @@ public class DocumentServiceImpl implements DocumentService {
 	private String buildFileName(String nom, String fileExtension, Date d) {
 		StringBuilder b = new StringBuilder();
 		b.append(new SimpleDateFormat("yyyyMMdd_kkmmss").format(d));
-		b.append("_");
+		b.append('_');
 		b.append(nom.replaceAll("[^-+0-9a-zA-Z._]", "_"));
-		b.append(".").append(fileExtension);
+		b.append('.').append(fileExtension);
 		String filename = b.toString();
 		return filename;
 	}

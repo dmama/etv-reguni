@@ -437,9 +437,9 @@ public final class RegexValidator implements Serializable {
     @Override
 	public String toString() {
         if (pattern != null) {
-            return "RegexValidator{" + pattern.pattern() + "}";
+            return "RegexValidator{" + pattern.pattern() + '}';
         } else {
-            return "RegexValidator[" + patterns.length + "]";
+            return "RegexValidator[" + patterns.length + ']';
         }
     }
 

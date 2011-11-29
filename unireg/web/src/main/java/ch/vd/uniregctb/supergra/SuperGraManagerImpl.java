@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +75,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
 	private List<String> annotatedClass;
-	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
+	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<EntityType, List<Class<? extends HibernateEntity>>>(EntityType.class);
 
 	/**
 	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.

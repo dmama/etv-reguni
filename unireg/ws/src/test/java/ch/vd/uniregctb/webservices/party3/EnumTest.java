@@ -34,7 +34,7 @@ public abstract class EnumTest extends WithoutSpringTest {
 					break;
 				}
 			}
-			final String message = "La constant [" + a.name() + "] n'existe pas dans l'enum [" + container.getSimpleName() + "]";
+			final String message = "La constant [" + a.name() + "] n'existe pas dans l'enum [" + container.getSimpleName() + ']';
 			assertNotNull(message, found);
 		}
 	}

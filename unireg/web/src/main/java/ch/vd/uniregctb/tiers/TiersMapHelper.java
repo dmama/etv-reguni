@@ -2,10 +2,10 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -476,7 +476,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<PeriodeDecompte, String> getPeriodeDecomptes() {
 		if (mapPeriodeDecompte == null) {
-			mapPeriodeDecompte = new TreeMap<PeriodeDecompte, String>();
+			mapPeriodeDecompte = new EnumMap<PeriodeDecompte, String>(PeriodeDecompte.class);
 			PeriodeDecompte[] periodesDecompte = PeriodeDecompte.values();
 			for (PeriodeDecompte aPeriodesDecompte : periodesDecompte) {
 				String periodeDecompteNom = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPeriodeDecompte + aPeriodesDecompte);

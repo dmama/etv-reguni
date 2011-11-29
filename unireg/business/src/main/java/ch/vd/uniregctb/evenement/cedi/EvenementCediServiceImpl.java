@@ -69,13 +69,13 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		final int annee = scan.getPeriodeFiscale();
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + ".");
+			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 
 		final int noSequenceDI = scan.getNoSequenceDI();
 		final DeclarationImpotOrdinaire declaration = findDeclaration(noSequenceDI, declarations);
 		if (declaration == null) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + " avec le numéro de séquence " + noSequenceDI + ".");
+			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + " avec le numéro de séquence " + noSequenceDI + '.');
 		}
 
 		// on envoie l'information au BAM
@@ -140,7 +140,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Type de document inconnu = [" + typeDocumentScanne + "]");
+				throw new IllegalArgumentException("Type de document inconnu = [" + typeDocumentScanne + ']');
 			}
 		}
 	}

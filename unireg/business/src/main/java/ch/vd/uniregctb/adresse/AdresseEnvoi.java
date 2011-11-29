@@ -14,8 +14,8 @@ public class AdresseEnvoi implements Serializable {
 
 	private static final long serialVersionUID = -1580808921461842994L;
 
-	private final int MAX_LIGNES = 6;
-	private final int MANDATORY = 0;
+	private static final int MAX_LIGNES = 6;
+	private static final int MANDATORY = 0;
 
 	private static class Data {
 

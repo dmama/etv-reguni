@@ -33,6 +33,6 @@ public class HorsSuisse extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "HorsSuisse(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "HorsSuisse(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

@@ -56,9 +56,9 @@ public class EmailNotificationService implements NotificationService {
 		else {
 			text = "L'exception est ci-dessous est survenue pour la " + occurenceCount + "ème fois :\n";
 		}
-		text += " - date        : " + DATE_FORMAT.format(date) + "\n";
-		text += " - application : " + applicationName + "\n";
-		text += " - url         : " + url + "\n";
+		text += " - date        : " + DATE_FORMAT.format(date) + '\n';
+		text += " - application : " + applicationName + '\n';
+		text += " - url         : " + url + '\n';
 		text += " - utilisateur : " + user;
 
 		// Extrait la call-stack

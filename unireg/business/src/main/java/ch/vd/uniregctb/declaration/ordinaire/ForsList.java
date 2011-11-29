@@ -70,7 +70,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	 * @return le premier for de la liste, ou <b>null</b> si la liste est vide
 	 */
 	public T first() {
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
 		else {

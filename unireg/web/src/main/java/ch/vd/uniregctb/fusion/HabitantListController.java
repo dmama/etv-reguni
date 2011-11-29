@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.fusion;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -24,7 +23,7 @@ public class HabitantListController  extends  AbstractTiersListController {
 	public static final String HABITANT_CRITERIA_NAME = "habitantCriteria";
 	public static final String HABITANT_LIST_ATTRIBUTE_NAME = "list";
 
-	private final String NUMERO_NON_HABITANT_PARAMETER_NAME = "numeroNonHab";
+	private static final String NUMERO_NON_HABITANT_PARAMETER_NAME = "numeroNonHab";
 
 	private FusionListManager fusionListManager;
 

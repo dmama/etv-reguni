@@ -37,7 +37,7 @@ public class BatchPartyBuilder {
 			b.setExceptionInfo(((WebServiceException) value).getFaultInfo());
 		}
 		else {
-			throw new IllegalArgumentException("Type de valeur inconnu = [" + value + "]");
+			throw new IllegalArgumentException("Type de valeur inconnu = [" + value + ']');
 		}
 		return b;
 	}

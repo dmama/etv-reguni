@@ -41,7 +41,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 		return "Obtention d'un permis C sur un sourcier dont le for de domicile n'est pas vaudois";
 	}
 
-	private final long noIndMomo = 54321; // momo
+	private static final long noIndMomo = 54321; // momo
 	private MockIndividu indMomo;
 
 	private long noCtbMomo;

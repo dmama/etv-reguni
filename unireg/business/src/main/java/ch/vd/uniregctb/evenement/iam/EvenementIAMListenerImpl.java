@@ -114,10 +114,10 @@ public class EvenementIAMListenerImpl extends TransactionalEsbMessageListener im
 			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
 				if (!first) {
-					builder.append("\n");
+					builder.append('\n');
 				}
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				builder.append("Message: ").append(error.getErrorCode()).append(' ').append(error.getMessage()).append('\n');
+				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append('\n');
 				first = false;
 			}
 			throw new XmlException(builder.toString());

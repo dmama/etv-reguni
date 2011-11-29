@@ -115,7 +115,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 	private String genererListeErreurs(List<CorrectionFlagHabitantAbstractResults.ContribuableErreur> erreurs, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (erreurs != null && erreurs.size() > 0) {
+		if (erreurs != null && !erreurs.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantAbstractResults.ContribuableErreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -139,7 +139,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 	private String genererListeModifications(List<CorrectionFlagHabitantAbstractResults.ContribuableInfo> modifications, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (modifications != null && modifications.size() > 0) {
+		if (modifications != null && !modifications.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(modifications, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantAbstractResults.ContribuableInfo>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

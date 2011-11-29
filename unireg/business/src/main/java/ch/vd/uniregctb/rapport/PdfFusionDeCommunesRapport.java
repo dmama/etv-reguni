@@ -127,7 +127,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			s.append(commune.getNomMinuscule());
 		}
 
-		s.append(" (").append(noOfs).append(")");
+		s.append(" (").append(noOfs).append(')');
 		return s.toString();
 	}
 

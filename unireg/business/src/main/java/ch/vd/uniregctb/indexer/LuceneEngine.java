@@ -352,7 +352,7 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
-		return booleanQuery.clauses() != null && booleanQuery.clauses().size() > 0 ? booleanQuery : null;
+		return booleanQuery.clauses() != null && !booleanQuery.clauses().isEmpty() ? booleanQuery : null;
 	}
 
 	/**

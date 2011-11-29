@@ -172,7 +172,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice) {
 		final List<ProtoBordereauMouvementDossier> protos = getMouvementDossierDAO().getAllProtoBordereaux(noCollAdmInitiatrice);
-		if (protos != null && protos.size() > 0) {
+		if (protos != null && !protos.isEmpty()) {
 			final List<BordereauListElementView> list = new ArrayList<BordereauListElementView>(protos.size());
 			for (ProtoBordereauMouvementDossier proto : protos) {
 				list.add(getView(proto));
@@ -200,7 +200,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 		final List<BordereauMouvementDossier> bordereaux = bordereauDAO.getBordereauxAReceptionner(noCollAdmReceptrice);
-		if (bordereaux != null && bordereaux.size() > 0) {
+		if (bordereaux != null && !bordereaux.isEmpty()) {
 			final List<BordereauEnvoiView> liste = new ArrayList<BordereauEnvoiView>(bordereaux.size());
 			for (BordereauMouvementDossier b : bordereaux) {
 				liste.add(getView(b));
@@ -226,7 +226,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(rollbackFor = Throwable.class)
 	public void receptionnerMouvementsEnvoi(long[] idsMouvements) {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvements);
-		if (mvts != null && mvts.size() > 0) {
+		if (mvts != null && !mvts.isEmpty()) {
 			for (MouvementDossier mvt : mvts) {
 				if (mvt instanceof EnvoiDossierVersCollectiviteAdministrative) {
 					final EnvoiDossierVersCollectiviteAdministrative envoi = (EnvoiDossierVersCollectiviteAdministrative) mvt;
@@ -401,7 +401,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 					}
 				}
 
-				if (mvtsTries.size() > 0) {
+				if (!mvtsTries.isEmpty()) {
 					final List<MouvementDetailView> infos = getViews(mvtsTries, false, true);
 					rapport.addMouvements(infos);
 				}
@@ -489,7 +489,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				b.append(" vers la collectivité administrative ").append(noCaDestinataire);
 			}
 			final Collection<EtatMouvementDossier> etatsMouvement = criteria.getEtatsMouvement();
-			if (etatsMouvement != null && etatsMouvement.size() > 0) {
+			if (etatsMouvement != null && !etatsMouvement.isEmpty()) {
 				b.append(" dans l'état ");
 				final int size = etatsMouvement.size();
 				final List<EtatMouvementDossier> etats = new ArrayList<EtatMouvementDossier>(etatsMouvement);

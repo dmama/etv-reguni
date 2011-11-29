@@ -33,7 +33,7 @@ public class Ec_7001_03_AnnulationReconciliation_Celibataire_Scenario extends Ab
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789;
+	private static final long noIndJulie = 6789;
 	private final RegDate dateDebut = RegDate.get(1995, 4, 19);
 	private final RegDate dateFictive = RegDate.get(2008, 1, 1);
 	private final MockCommune commune = MockCommune.Lausanne;

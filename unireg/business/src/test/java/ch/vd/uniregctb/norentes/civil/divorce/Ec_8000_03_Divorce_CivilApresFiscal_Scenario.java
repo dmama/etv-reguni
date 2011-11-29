@@ -51,8 +51,8 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final long noIndPierre = 569550; // Pierre
-	private final long noIndKarina = 569531; // Karina
+	private static final long noIndPierre = 569550; // Pierre
+	private static final long noIndKarina = 569531; // Karina
 
 	private MockIndividu indPierre;
 	private MockIndividu indKarina;

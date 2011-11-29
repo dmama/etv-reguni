@@ -266,7 +266,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			}
 
 			if (partyNumbers.size() > MAX_BATCH_SIZE) {
-				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + '.';
 				LOGGER.error(message);
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INVALID_REQUEST);
 			}

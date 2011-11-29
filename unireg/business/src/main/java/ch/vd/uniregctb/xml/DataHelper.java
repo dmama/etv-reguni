@@ -126,7 +126,7 @@ public abstract class DataHelper {
 		case MONDE:
 			return TariffZone.OTHER_COUNTRIES;
 		default:
-			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + "]");
+			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
 		}
 	}
 
@@ -146,7 +146,7 @@ public abstract class DataHelper {
 		case DEBT_PROSECUTION_OF_OTHER_PARTY:
 			return TypeAdresseFiscale.POURSUITE_AUTRE_TIERS;
 		default:
-			throw new IllegalArgumentException("Unknown AddressType = [" + type + "]");
+			throw new IllegalArgumentException("Unknown AddressType = [" + type + ']');
 		}
 	}
 

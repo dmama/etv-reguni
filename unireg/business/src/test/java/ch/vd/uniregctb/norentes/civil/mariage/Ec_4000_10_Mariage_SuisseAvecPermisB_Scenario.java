@@ -48,8 +48,8 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 		return NAME;
 	}
 
-	private final long noIndMaria = 3913649; // maria
-	private final long noIndRafa = 1215487; // raph'
+	private static final long noIndMaria = 3913649; // maria
+	private static final long noIndRafa = 1215487; // raph'
 
 	private MockIndividu indMaria;
 	private MockIndividu indRafa;

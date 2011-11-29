@@ -122,7 +122,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 	private String genererListeErreurs(ExtractionDonneesRptResults results, String filename, StatusManager status) {
 		String contenu = null;
 		final List<ExtractionDonneesRptResults.Erreur> liste = results.getListeErreurs();
-		if (liste.size() > 0) {
+		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -152,7 +152,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 	}
 
 	private <T extends ExtractionDonneesRptResults.InfoCtbBase> String genererListe(List<T> liste, String filename, StatusManager status) {
-		final String[] nomsColonnes = (liste.size() > 0 ? liste.get(0).getNomsColonnes() : null);
+		final String[] nomsColonnes = (!liste.isEmpty() ? liste.get(0).getNomsColonnes() : null);
 		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

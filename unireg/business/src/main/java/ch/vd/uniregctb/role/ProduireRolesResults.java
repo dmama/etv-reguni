@@ -399,7 +399,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				return forGestion.ofsCommune;
 			}
 			else {
-				throw new RuntimeException("Ne devrait pas être appelé sur un contribuable sans aucun for (" + noCtb + ")");
+				throw new RuntimeException("Ne devrait pas être appelé sur un contribuable sans aucun for (" + noCtb + ')');
 			}
 		}
 

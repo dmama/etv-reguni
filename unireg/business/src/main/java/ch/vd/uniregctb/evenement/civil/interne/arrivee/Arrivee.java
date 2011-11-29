@@ -206,7 +206,7 @@ public class Arrivee extends Mouvement {
 				}
 			}
 			catch (ServiceInfrastructureException e) {
-				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (" + e.getMessage() + ")", e));
+				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (" + e.getMessage() + ')', e));
 			}
 
 			verifierMouvementIndividu(this, false, erreurs, warnings);
@@ -372,7 +372,7 @@ public class Arrivee extends Mouvement {
 			}
 		}
 		catch (ServiceInfrastructureException e) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est introuvable (" + e.getMessage() + ")", e));
+			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est introuvable (" + e.getMessage() + ')', e));
 		}
 	}
 
@@ -401,7 +401,7 @@ public class Arrivee extends Mouvement {
 			 */
 		}
 		catch (ServiceInfrastructureException e) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est introuvable (" + e.getMessage() + ")", e));
+			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est introuvable (" + e.getMessage() + ')', e));
 		}
 	}
 
@@ -522,12 +522,12 @@ public class Arrivee extends Mouvement {
 						warnings.add(new EvenementCivilExterneErreur("ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 					}
 					if (forFiscal == null) {
-						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + "]");
+						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + ']');
 						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
 								false);
 					}
 					else {
-						Audit.info(numeroEvenement, "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + "]");
+						Audit.info(numeroEvenement, "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + ']');
 						updateForFiscalPrincipal(habitant, dateOuverture, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
 					}
 				}
@@ -660,7 +660,7 @@ public class Arrivee extends Mouvement {
 					nouveau.setValue(true);
 				}
 			}
-			else if (nonHabitants.size() == 0 || !behavior.isErrorOnMultiples()) {
+			else if (nonHabitants.isEmpty() || !behavior.isErrorOnMultiples()) {
 				final PersonnePhysique nouvelHabitant = new PersonnePhysique(true);
 				nouvelHabitant.setNumeroIndividu(individu.getNoTechnique());
 				Audit.info(evenementId, "Un tiers a été créé pour le nouvel arrivant");
@@ -694,7 +694,7 @@ public class Arrivee extends Mouvement {
 	private static RegDate findDateDebutMenageAvant(Individu individu, RegDate limiteSuperieureEtDefaut) {
 		final EtatCivilList etatsCivils = individu.getEtatsCivils();
 		final RegDate dateDebutMenage;
-		if (etatsCivils != null && etatsCivils.size() > 0) {
+		if (etatsCivils != null && !etatsCivils.isEmpty()) {
 			final ListIterator<EtatCivil> iterator = etatsCivils.listIterator(etatsCivils.size());
 			RegDate candidate = limiteSuperieureEtDefaut;
 			while (iterator.hasPrevious()) {
@@ -1059,12 +1059,12 @@ public class Arrivee extends Mouvement {
 					warnings.add(new EvenementCivilExterneErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 				}
 				if (ffpMenage == null) {
-					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + "]");
+					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
 					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
 							false);
 				}
 				else {
-					Audit.info(arrivee.getNumeroEvenement(), "Mise-à-jour for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + "]");
+					Audit.info(arrivee.getNumeroEvenement(), "Mise-à-jour for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
 					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
 				}
 			}
@@ -1314,7 +1314,7 @@ public class Arrivee extends Mouvement {
 					 */
 					if (menageCommun != null) {
 						throw new EvenementCivilException("Plus d'un ménage commun trouvé pour la personne = ["
-								+ personne.toString() + "]");
+								+ personne.toString() + ']');
 					}
 					menageCommun = (MenageCommun) context.getTiersDAO().get(rapportSujet.getObjetId());
 				}
@@ -1351,10 +1351,10 @@ public class Arrivee extends Mouvement {
 						if (ancienMenage != null) {
 							final String message;
 							if (conjoint != null) {
-								message = "Plus d'un ménage commun trouvé pour les contribuables [" + principal.getNumero() + ", " + conjoint.getNumero() + "]";
+								message = "Plus d'un ménage commun trouvé pour les contribuables [" + principal.getNumero() + ", " + conjoint.getNumero() + ']';
 							}
 							else {
-								message = "Plus d'un ménage commun trouvé pour le contribuable [" + principal.getNumero() + "]";
+								message = "Plus d'un ménage commun trouvé pour le contribuable [" + principal.getNumero() + ']';
 							}
 
 							throw new EvenementCivilException(message);

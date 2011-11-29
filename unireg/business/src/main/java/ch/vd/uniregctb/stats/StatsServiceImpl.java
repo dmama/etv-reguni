@@ -303,7 +303,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			keys.addAll(loadMonitors.keySet());
 		}
 
-		if (keys.size() == 0) {
+		if (keys.isEmpty()) {
 			return StringUtils.EMPTY;
 		}
 

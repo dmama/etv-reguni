@@ -65,7 +65,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		// 2. s'ils sont tous annulés, alors on trie les liens et on en prend au maximum deux
 		final Set<PersonnePhysique> personnesPhysiques;
 		final Map<PersonnePhysique, RapportEntreTiers> personnes = tiersService.getToutesPersonnesPhysiquesImpliquees(menage);
-		if (personnes != null && personnes.size() > 0) {
+		if (personnes != null && !personnes.isEmpty()) {
 			final Set<PersonnePhysique> nonAnnules = new HashSet<PersonnePhysique>(2);
 			for (Map.Entry<PersonnePhysique, RapportEntreTiers> entry : personnes.entrySet()) {
 				if (!entry.getValue().isAnnule()) {
@@ -75,7 +75,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			Assert.isTrue(nonAnnules.size() <= 2, "Plus de deux personnes avec lien non-annulé dans le ménage " + menage.getNumero());
 
 			// s'il y a des liens non-annulés, on ne va pas chercher plus loin
-			if (nonAnnules.size() > 0) {
+			if (!nonAnnules.isEmpty()) {
 				personnesPhysiques = nonAnnules;
 			}
 			else {

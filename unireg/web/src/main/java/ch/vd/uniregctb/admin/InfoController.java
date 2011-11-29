@@ -204,7 +204,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 			for (String name : names) {
 				Cache cache = cacheManager.getCache(name);
 				Statistics stats = cache.getStatistics();
-				status += stats.toString() + "\n";
+				status += stats.toString() + '\n';
 			}
 			status = HtmlHelper.renderMultilines(status);
 		}

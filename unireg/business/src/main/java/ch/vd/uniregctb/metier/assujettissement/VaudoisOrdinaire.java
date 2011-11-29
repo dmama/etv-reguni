@@ -33,6 +33,6 @@ public class VaudoisOrdinaire extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "VaudoisOrdinaire(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "VaudoisOrdinaire(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

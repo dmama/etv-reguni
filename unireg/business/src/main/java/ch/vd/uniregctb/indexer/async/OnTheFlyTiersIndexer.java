@@ -146,7 +146,7 @@ public class OnTheFlyTiersIndexer {
 						LOGGER.trace("Demande de suppression du dernier thread d'indexation...");
 					}
 					final String name = queue.removeLastWorker();
-					LOGGER.info("Supprimé le thread d'indexation " + name + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ")");
+					LOGGER.info("Supprimé le thread d'indexation " + name + " (threadSize=" + (threadSize - 1) + ", queueSize=" + queueSize + ')');
 				}
 				catch (DeadThreadException e) {
 					LOGGER.warn(String.format("Le thread d'indexation %s était déjà mort", e.getThreadName()));
@@ -159,7 +159,7 @@ public class OnTheFlyTiersIndexer {
 					LOGGER.trace("Demande d'ajout d'un nouveau thread d'indexation...");
 				}
 				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly"));
-				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ")");
+				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ')');
 			}
 		}
 	}

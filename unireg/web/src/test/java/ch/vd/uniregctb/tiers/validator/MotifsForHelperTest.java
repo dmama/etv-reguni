@@ -19,7 +19,7 @@ public class MotifsForHelperTest extends WithoutSpringTest {
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.Habitant, GenreImpot.REVENU_FORTUNE, motifRattachement);
 			final List<MotifFor> motifsOuverture = MotifsForHelper.getMotifsOuverture(type);
 			Assert.assertNotNull("Rattachement " + motifRattachement, motifsOuverture);
-			Assert.assertTrue("Rattachement " + motifRattachement, motifsOuverture.size() > 0);
+			Assert.assertTrue("Rattachement " + motifRattachement, !motifsOuverture.isEmpty());
 		}
 	}
 
@@ -29,7 +29,7 @@ public class MotifsForHelperTest extends WithoutSpringTest {
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.Habitant, GenreImpot.REVENU_FORTUNE, motifRattachement);
 			final List<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
 			Assert.assertNotNull("Rattachement " + motifRattachement, motifsFermeture);
-			Assert.assertTrue("Rattachement " + motifRattachement, motifsFermeture.size() > 0);
+			Assert.assertTrue("Rattachement " + motifRattachement, !motifsFermeture.isEmpty());
 		}
 	}
 }

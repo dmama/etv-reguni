@@ -61,7 +61,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		final int annee = quittance.getPeriodeFiscale();
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
-			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + ".");
+			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 
 		// on envoie l'information au BAM

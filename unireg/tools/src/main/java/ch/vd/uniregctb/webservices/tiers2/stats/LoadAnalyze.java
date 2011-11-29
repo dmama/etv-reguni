@@ -53,7 +53,7 @@ class LoadAnalyze extends Analyze {
 		//		final String labels = "|00:00|01:00|02:00|03:00|04:00|05:00";
 		StringBuilder labels = new StringBuilder();
 		for (int i = 0; i < Periode.DEFAULT_PERIODES.length; i++) {
-			labels.append("|");
+			labels.append('|');
 			if (i % 4 == 0) { // on ne met un label que sur les heures piles
 				final Periode periode = Periode.DEFAULT_PERIODES[i];
 				labels.append(periode);
@@ -86,7 +86,7 @@ class LoadAnalyze extends Analyze {
 
 		final Long max = totalValues.getMax();
 		final String valuesRange = "0," + max;
-		final String totalLabel = "total%20(" + totalValues.getTotal() + ")";
+		final String totalLabel = "total%20(" + totalValues.getTotal() + ')';
 
 		final StringBuilder allValues = new StringBuilder();
 		final StringBuilder allLabels = new StringBuilder();
@@ -97,7 +97,7 @@ class LoadAnalyze extends Analyze {
 		allValues.append(totalValues.toSimpleEncoding(max));
 		allLabels.append(totalLabel);
 		allColors.append("000000");
-		linesWidth.append("2");
+		linesWidth.append('2');
 
 		// Trie par ordre décroissant du nombre d'appels les données d'appels par méthode
 		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<Map.Entry<String, ChartValues>>(valuesPerUser.entrySet());
@@ -110,7 +110,7 @@ class LoadAnalyze extends Analyze {
 
 		for (Map.Entry<String, ChartValues> entry : entries) {
 			allValues.append(',').append(entry.getValue().toSimpleEncoding(max));
-			final String label = entry.getKey() + "%20(" + entry.getValue().getTotal() + ")";
+			final String label = entry.getKey() + "%20(" + entry.getValue().getTotal() + ')';
 			allLabels.append('|').append(label);
 			allColors.append(',').append(Colors.forUser(entry.getKey()));
 			linesWidth.append("|1");
@@ -170,11 +170,11 @@ class LoadAnalyze extends Analyze {
 
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		addValues(dataset, "total (" + totalValues.getTotal() + ")", totalValues);
+		addValues(dataset, "total (" + totalValues.getTotal() + ')', totalValues);
 		for (Map.Entry<String, ChartValues> entry : entries) {
 			final String user = entry.getKey();
 			final ChartValues values = entry.getValue();
-			addValues(dataset, user + " (" + values.getTotal() + ")", values);
+			addValues(dataset, user + " (" + values.getTotal() + ')', values);
 		}
 
 		final JFreeChart chart = ChartFactory.createLineChart(title, "time", "calls", dataset, PlotOrientation.VERTICAL, true, false, false);
@@ -199,13 +199,13 @@ class LoadAnalyze extends Analyze {
 		final StringBuilder header = new StringBuilder();
 		header.append("Nom de méthode;");
 		for (Periode periode : Periode.DEFAULT_PERIODES) {
-			header.append(periode).append(";");
+			header.append(periode).append(';');
 		}
 		System.out.println(header);
 
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
-			line.append(method).append(";");
+			line.append(method).append(';');
 			final LoadData data = results.get(method);
 			for (LoadPoint t : data.getList()) {
 				line.append(t).append(';');

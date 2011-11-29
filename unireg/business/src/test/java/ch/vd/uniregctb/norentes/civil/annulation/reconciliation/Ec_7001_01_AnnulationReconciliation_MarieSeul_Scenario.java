@@ -32,7 +32,7 @@ public class Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario extends Abst
 		return NAME;
 	}
 
-	private final long noIndPierre = 12345; // Pierre
+	private static final long noIndPierre = 12345; // Pierre
 
 	private long noHabPierre;
 	private long noMenage;

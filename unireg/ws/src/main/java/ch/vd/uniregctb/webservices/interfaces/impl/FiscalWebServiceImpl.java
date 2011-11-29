@@ -81,7 +81,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 		// Aucun individu trouvé ou plusieurs individu trouvé
 		if (resultsUnireg.isEmpty() || resultsUnireg.size() > 1) {
 			tiersCriteria = new TiersCriteria();
-			tiersCriteria.setNomRaison(parameters.getPrenom() + " " + parameters.getNom());
+			tiersCriteria.setNomRaison(parameters.getPrenom() + ' ' + parameters.getNom());
 			tiersCriteria.setTypeRechercheDuNom(TypeRecherche.CONTIENT);
 			tiersCriteria.setTypeTiers(TypeTiers.PERSONNE_PHYSIQUE);
 
@@ -140,7 +140,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 							assujettissement = Assujettissement.determine(menage, periode);
 						}
 						catch (AssujettissementException e1) {
-							LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + periode + " "
+							LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + periode + ' '
 									+ e1.getMessage(), e1);
 						}
 						// Si la periode de recherche courrante ne donne rien, on recherche une période antérieur
@@ -152,7 +152,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 									assujettissement = Assujettissement.determine(menage, periode);
 								}
 								catch (AssujettissementException e) {
-									LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + i + " "
+									LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + i + ' '
 											+ e.getMessage(), e);
 								}
 

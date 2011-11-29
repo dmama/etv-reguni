@@ -237,7 +237,7 @@ public class EvenementCivilTest extends BusinessTest {
 
 	private void assertNomIndexer(String nom, String prenom, final Long tiersId) {
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison(prenom + " " + nom);
+		criteria.setNomRaison(prenom + ' ' + nom);
 		final List<TiersIndexedData> res = searcher.search(criteria);
 		assertNotNull(res);
 		assertEquals(1, res.size());
@@ -245,7 +245,7 @@ public class EvenementCivilTest extends BusinessTest {
 		final TiersIndexedData res0 = res.get(0);
 		assertNotNull(res0);
 		assertEquals(tiersId, res0.getNumero());
-		assertEquals(prenom + " " + nom, res0.getNom1());
+		assertEquals(prenom + ' ' + nom, res0.getNom1());
 	}
 
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {

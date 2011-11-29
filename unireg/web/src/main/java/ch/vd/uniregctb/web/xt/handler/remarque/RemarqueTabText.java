@@ -7,6 +7,6 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
  */
 public class RemarqueTabText extends SimpleText {
 	public RemarqueTabText(int count) {
-		super(count == 0 ? "Remarques" : "Remarques (" + count + ")");
+		super(count == 0 ? "Remarques" : "Remarques (" + count + ')');
 	}
 }

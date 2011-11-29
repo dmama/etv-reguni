@@ -22,7 +22,7 @@ public abstract class EchHelper {
 		case FEMININ:
 			return "2";
 		default:
-			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + "]");
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']');
 		}
 	}
 
@@ -37,7 +37,7 @@ public abstract class EchHelper {
 			return Sexe.FEMININ;
 		}
 		else {
-			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + "]");
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']');
 		}
 	}
 
@@ -146,7 +146,7 @@ public abstract class EchHelper {
 			return TypeEtatCivil.PACS_ANNULE;
 		}
 		else {
-			throw new IllegalArgumentException("Type de marital status inconnu = [" + maritalStatus + "]");
+			throw new IllegalArgumentException("Type de marital status inconnu = [" + maritalStatus + ']');
 		}
 	}
 }

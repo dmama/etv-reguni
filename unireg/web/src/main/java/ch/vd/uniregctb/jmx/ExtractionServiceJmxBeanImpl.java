@@ -42,7 +42,7 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 	public List<String> getQueueContent() {
 		final List<ExtractionJob> extraction = extractionService.getQueueContent(null);
 		final List<String> descriptions;
-		if (extraction.size() > 0) {
+		if (!extraction.isEmpty()) {
 			descriptions = new ArrayList<String>(extraction.size());
 			for (ExtractionJob info : extraction) {
 				descriptions.add(info.toString());

@@ -71,7 +71,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 			case DEBITEUR_PRESTATION_IMPOSABLE:
 				return DEBITEUR_PRESTATION_IMPOSABLE;
 			default:
-				throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+				throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 			}
 		}
 	}

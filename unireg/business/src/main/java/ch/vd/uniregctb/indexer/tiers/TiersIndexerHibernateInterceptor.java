@@ -178,7 +178,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 					final BatchIterator<Long> batchIterator = new StandardBatchIterator<Long>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
 					while (batchIterator.hasNext()) {
 						final Collection<Long> subSet = batchIterator.next();
-						if (subSet != null && subSet.size() > 0) {
+						if (subSet != null && !subSet.isEmpty()) {
 							query.setParameterList("ids", subSet);
 							query.executeUpdate();
 						}

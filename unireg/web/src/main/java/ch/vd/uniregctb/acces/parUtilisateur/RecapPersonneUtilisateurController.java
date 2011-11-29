@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.acces.parUtilisateur;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -27,8 +26,8 @@ public class RecapPersonneUtilisateurController extends AbstractSimpleFormContro
 
 	public final static String TYPE_DROIT_ACCES_NOM_MAP_NAME = "typesDroitAcces";
 
-	private final String NUMERO_INDIVIDU_OPERATEUR_PARAMETER_NAME = "noIndividuOperateur";
-	private final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_INDIVIDU_OPERATEUR_PARAMETER_NAME = "noIndividuOperateur";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	public final static String TARGET_ANNULER_RESTRICTION = "annulerRestriction";
 

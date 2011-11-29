@@ -54,7 +54,7 @@ public class AdressesTiers {
 		if (existante != null) {
 			AdressesResolutionException exception = new AdressesResolutionException("Deux adresses fiscales de type " + type.name() + " se recoupent. Adresse existante = [" + existante.getDateDebut()
 					+ ", " + existante.getDateFin() + "] et nouvelle adresse = [" + nouvelle.getDateDebut() + ", " + existante.getDateFin()
-					+ "]");
+					+ ']');
 			exception.addAdresse(existante);
 			exception.addAdresse(nouvelle);
 			throw exception;

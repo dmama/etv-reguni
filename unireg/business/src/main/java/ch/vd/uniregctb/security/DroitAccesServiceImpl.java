@@ -120,7 +120,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 	private void copieDroitsAcces(Collection<DroitAcces> droitsSource, Collection<DroitAcces> droitsDestination, RegDate dateReference, CopieDroitCallback callback) throws DroitAccesException {
 
-		if (droitsSource.size() > 0) {
+		if (!droitsSource.isEmpty()) {
 
 			for (DroitAcces src : droitsSource) {
 

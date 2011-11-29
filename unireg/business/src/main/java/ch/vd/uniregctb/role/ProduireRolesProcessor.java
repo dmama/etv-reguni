@@ -280,7 +280,7 @@ public class ProduireRolesProcessor {
 			}
 		}
 
-		if (ppByNoIndividu.size() > 0) {
+		if (!ppByNoIndividu.isEmpty()) {
 			// remplit le cache des individus...
 			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), 2400, AttributeIndividu.ADRESSES);
 
@@ -430,7 +430,7 @@ public class ProduireRolesProcessor {
 			throw new ServiceException(e);
 		}
 
-		if (nosOfsCommunes.size() > 0 || !nullSiAucuneCommune) {
+		if (!nosOfsCommunes.isEmpty() || !nullSiAucuneCommune) {
 			final GroupementCommunes groupement = new GroupementCommunesPourOID(nosOfsCommunes);
 			return doRun(anneePeriode, nbThreads, statusMessagePrefixe, status, progressCalculator, new VarianteProductionRole<ProduireRolesOIDsResults>() {
 
@@ -666,7 +666,7 @@ public class ProduireRolesProcessor {
 					assujettissementAnneePrecedente = Collections.emptyList();
 				}
 			}
-			return assujettissementAnneePrecedente.size() == 0 ? null : assujettissementAnneePrecedente;
+			return assujettissementAnneePrecedente.isEmpty() ? null : assujettissementAnneePrecedente;
 		}
 
 		public List<Assujettissement> getAssujettissementAnneePeriode() {
@@ -1008,7 +1008,7 @@ public class ProduireRolesProcessor {
 	 */
 	protected List<Long> getIdsOfAllContribuablesSurCommunes(final int annee, final Collection<Integer> noOfsCommunes) {
 
-		if (noOfsCommunes == null || noOfsCommunes.size() == 0) {
+		if (noOfsCommunes == null || noOfsCommunes.isEmpty()) {
 			return Collections.emptyList();
 		}
 		else {

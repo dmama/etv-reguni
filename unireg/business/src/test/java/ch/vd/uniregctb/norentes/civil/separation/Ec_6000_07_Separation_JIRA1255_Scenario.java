@@ -53,8 +53,8 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 		return NAME;
 	}
 
-	private final long noIndPatrick = 366345; // Patrick
-	private final long noIndSylvie = 367312; // Sylvie
+	private static final long noIndPatrick = 366345; // Patrick
+	private static final long noIndSylvie = 367312; // Sylvie
 
 	private MockIndividu indPatrick;
 	private MockIndividu indSylvie;

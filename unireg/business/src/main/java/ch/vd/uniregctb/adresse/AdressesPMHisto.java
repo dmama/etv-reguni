@@ -70,15 +70,15 @@ public class AdressesPMHisto {
 	 */
 	public RegDate getVeryFirstDate() {
 		RegDate first = RegDate.getLateDate();
-		if (sieges.size() > 0) {
+		if (!sieges.isEmpty()) {
 			AdresseEntreprise a = sieges.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebutValidite(), NullDateBehavior.EARLIEST);
 		}
-		if (courriers.size() > 0) {
+		if (!courriers.isEmpty()) {
 			AdresseEntreprise a = courriers.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebutValidite(), NullDateBehavior.EARLIEST);
 		}
-		if (facturation.size() > 0) {
+		if (!facturation.isEmpty()) {
 			AdresseEntreprise a = facturation.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebutValidite(), NullDateBehavior.EARLIEST);
 		}
@@ -90,15 +90,15 @@ public class AdressesPMHisto {
 	 */
 	public RegDate getVeryLastDate() {
 		RegDate last = RegDate.getEarlyDate();
-		if (sieges.size() > 0) {
+		if (!sieges.isEmpty()) {
 			AdresseEntreprise a = sieges.get(sieges.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFinValidite(), NullDateBehavior.EARLIEST);
 		}
-		if (courriers.size() > 0) {
+		if (!courriers.isEmpty()) {
 			AdresseEntreprise a = courriers.get(courriers.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFinValidite(), NullDateBehavior.EARLIEST);
 		}
-		if (facturation.size() > 0) {
+		if (!facturation.isEmpty()) {
 			AdresseEntreprise a = facturation.get(facturation.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFinValidite(), NullDateBehavior.EARLIEST);
 		}

@@ -38,8 +38,8 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 		return "Contrôle de la date d'ouverture du rapport d'appartenance ménage créé lors de l'arrivée d'un couple sur le sol cantonal";
 	}
 
-	private final long noIndAntonio = 250797;
-	private final long noIndAnneLaure = 250798;
+	private static final long noIndAntonio = 250797;
+	private static final long noIndAnneLaure = 250798;
 
 	private MockIndividu indAntonio;
 	private MockIndividu indAnneLaure;

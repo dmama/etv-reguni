@@ -71,7 +71,7 @@ public class PerfsThread extends Thread {
 		public abstract String description();
 
 		protected String getOperateurDescription() {
-			return login.getUserId() + "/" + login.getOid();
+			return login.getUserId() + '/' + login.getOid();
 		}
 
 		protected String getPartsDescription() {
@@ -85,7 +85,7 @@ public class PerfsThread extends Thread {
 						s = e.name();
 					}
 					else {
-						s += "+" + e.name();
+						s += '+' + e.name();
 					}
 				}
 				return s;
@@ -174,7 +174,7 @@ public class PerfsThread extends Thread {
 			final String nomCourrier;
 			if (party instanceof NaturalPerson) {
 				NaturalPerson pp =(NaturalPerson) party;
-				nomCourrier = pp.getIdentification().getFirstName() + " " + pp.getIdentification().getOfficialName();
+				nomCourrier = pp.getIdentification().getFirstName() + ' ' + pp.getIdentification().getOfficialName();
 			}
 			else if (party instanceof CommonHousehold) {
 				CommonHousehold mc = (CommonHousehold) party;
@@ -182,7 +182,7 @@ public class PerfsThread extends Thread {
 				if (pp1 == null) {
 					return null;
 				}
-				nomCourrier = pp1.getIdentification().getFirstName() + " " + pp1.getIdentification().getOfficialName();
+				nomCourrier = pp1.getIdentification().getFirstName() + ' ' + pp1.getIdentification().getOfficialName();
 			}
 			else {
 				return null;

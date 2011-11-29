@@ -84,8 +84,8 @@ public abstract class HibernateEntityUtils {
 		}
 
 		final Class<?> clazz = getEntityClass(expected);
-		Assert.isEqual(clazz, getEntityClass(actual), "[" + path + "]");
-		Assert.isEqual(expected.getKey(), actual.getKey(), "[" + path + "]");
+		Assert.isEqual(clazz, getEntityClass(actual), '[' + path + ']');
+		Assert.isEqual(expected.getKey(), actual.getKey(), '[' + path + ']');
 
 		final EntityKey key = new EntityKey(expected);
 		if (checkedSet.contains(key)) {
@@ -131,7 +131,7 @@ public abstract class HibernateEntityUtils {
 				continue;
 			}
 
-			final String propPath = path + "/" + desc.getName();
+			final String propPath = path + '/' + desc.getName();
 
 			final Object expectedValue = getter.invoke(expected);
 			final Object actualValue = getter.invoke(actual);
@@ -148,7 +148,7 @@ public abstract class HibernateEntityUtils {
 					assertListEquals((List<HibernateEntity>) expectedValue, (List<HibernateEntity>) actualValue, propPath, checkedSet);
 				}
 				else {
-					Assert.fail("[" + propPath + "] Only list and set are supported");
+					Assert.fail('[' + propPath + "] Only list and set are supported");
 				}
 			}
 			if (expectedValue instanceof HibernateEntity) {
@@ -156,9 +156,9 @@ public abstract class HibernateEntityUtils {
 			}
 			else {
 				if (expectedValue.getClass().isArray()) {
-					Assert.fail("[" + propPath + "] Arrays are not supported");
+					Assert.fail('[' + propPath + "] Arrays are not supported");
 				}
-				Assert.isEqual(expectedValue, actualValue, "[" + propPath + "]");
+				Assert.isEqual(expectedValue, actualValue, '[' + propPath + ']');
 			}
 		}
 	}
@@ -172,17 +172,17 @@ public abstract class HibernateEntityUtils {
 	}
 
 	private static void assertListEquals(List<HibernateEntity> expected, List<HibernateEntity> actual, String path, Set<EntityKey> checkedSet) throws Exception {
-		Assert.isEqual(expected.size(), actual.size(), "[" + path + "]");
+		Assert.isEqual(expected.size(), actual.size(), '[' + path + ']');
 		for (int i = 0, expectedSize = expected.size(); i < expectedSize; i++) {
 			final HibernateEntity e = expected.get(i);
 			final HibernateEntity a = actual.get(i);
-			assertEntityEquals(e, a, path + "/" + a.getKey(), checkedSet);
+			assertEntityEquals(e, a, path + '/' + a.getKey(), checkedSet);
 		}
 	}
 
 	@SuppressWarnings({"SuspiciousMethodCalls"})
 	private static void assertSetEquals(Set<HibernateEntity> expected, Set<HibernateEntity> actual, String path, Set<EntityKey> checkedSet) throws Exception {
-		Assert.isEqual(expected.size(), actual.size(), "[" + path + "]");
+		Assert.isEqual(expected.size(), actual.size(), '[' + path + ']');
 
 		final Map<Long, HibernateEntity> actualMap = new HashMap<Long, HibernateEntity>(actual.size());
 		for (HibernateEntity a : actual) {
@@ -191,8 +191,8 @@ public abstract class HibernateEntityUtils {
 
 		for (HibernateEntity e : expected) {
 			HibernateEntity a = actualMap.get(e.getKey());
-			final String subPath = path + "/" + a.getKey();
-			Assert.notNull(a, "[" + subPath + "]");
+			final String subPath = path + '/' + a.getKey();
+			Assert.notNull(a, '[' + subPath + ']');
 			assertEntityEquals(e, a, subPath, checkedSet);
 		}
 	}
@@ -203,10 +203,10 @@ public abstract class HibernateEntityUtils {
 		}
 		if (expected == null || actual == null) {
 			if (expected == null) {
-				Assert.fail("[" + path + "] Expected is null but actual is " + actual);
+				Assert.fail('[' + path + "] Expected is null but actual is " + actual);
 			}
 			else {
-				Assert.fail("[" + path + "] Actual is null but expected is " + expected);
+				Assert.fail('[' + path + "] Actual is null but expected is " + expected);
 			}
 		}
 	}

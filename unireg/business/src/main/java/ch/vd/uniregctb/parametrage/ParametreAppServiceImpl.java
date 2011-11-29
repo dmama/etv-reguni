@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.parametrage;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -29,7 +29,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	private ParametreAppDAO dao;
 	private PlatformTransactionManager transactionManager;
 
-	private final Map<ParametreEnum, ParametreApp> parametres = new HashMap<ParametreEnum, ParametreApp>();
+	private final Map<ParametreEnum, ParametreApp> parametres = new EnumMap<ParametreEnum, ParametreApp>(ParametreEnum.class);
 
 	/**
 	 * Initialisation des parametres
@@ -287,7 +287,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setFeteNationale(Integer[] val) {
 		assert val.length == 2;
-		setValeur(feteNationale, "" + val[0] + "." + val[1]);
+		setValeur(feteNationale, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
@@ -298,7 +298,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setLendemainNouvelAn(Integer[] val) {
 		assert val.length == 2;
-		setValeur(lendemainNouvelAn, "" + val[0] + "." + val[1]);
+		setValeur(lendemainNouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
@@ -314,13 +314,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setNoel(Integer[] val) {
 		assert val.length == 2;
-		setValeur(noel, "" + val[0] + "." + val[1]);
+		setValeur(noel, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setNouvelAn(Integer[] val) {
 		assert val.length == 2;
-		setValeur(nouvelAn, "" + val[0] + "." + val[1]);
+		setValeur(nouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
@@ -342,6 +342,6 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
 		   assert val.length == 2;
-		setValeur(dateExclusionDecedeEnvoiDI, "" + val[0] + "." + val[1]);
+		setValeur(dateExclusionDecedeEnvoiDI, String.valueOf(val[0]) + '.' + val[1]);
 	}
 }

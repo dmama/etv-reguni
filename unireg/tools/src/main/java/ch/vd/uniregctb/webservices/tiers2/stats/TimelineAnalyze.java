@@ -95,7 +95,7 @@ class TimelineAnalyze extends Analyze {
 		//		final String labels = "|00:00|01:00|02:00|03:00|04:00|05:00";
 		StringBuilder labels = new StringBuilder();
 		for (int i = 0; i < Periode.DEFAULT_PERIODES.length; i++) {
-			labels.append("|");
+			labels.append('|');
 			if (i % 4 == 0) { // on ne met un label que sur les heures piles
 				final Periode periode = Periode.DEFAULT_PERIODES[i];
 				labels.append(periode);
@@ -138,8 +138,8 @@ class TimelineAnalyze extends Analyze {
 		final String title = "%20-%20Response%20Time%20Line%20" + (excludeCache ? "(Uncached)%20" : "(Cached)%20") + "(min/max/avg%20ms/quarter%20hour)";
 		final String url =
 				new StringBuilder().append("http://chart.apis.google.com/chart?").append("chxl=1:").append(labels).append("&chxr=0,").append(valuesRange).append("&chxt=y,x&chxtc=1,4")
-						.append("&chs=1000x200").append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append("|")
-						.append(minValues).append("|").append(maxValues).append("&chdl=").append(averageLabel).append("|").append(minLabel).append("|").append(maxLabel).append("&chg=-1.3,-1,1,1")
+						.append("&chs=1000x200").append("&cht=lc").append("&chco=000000,008000,AA0033").append("&chds=").append(valuesRange).append("&chd=t:").append(avgValues).append('|')
+						.append(minValues).append('|').append(maxValues).append("&chdl=").append(averageLabel).append('|').append(minLabel).append('|').append(maxLabel).append("&chg=-1.3,-1,1,1")
 						.append("&chls=2|1,4,4|1,4,4").append("&chtt=").append(method).append(title).toString();
 		return new Chart(url, 1000, 200);
 	}
@@ -209,13 +209,13 @@ class TimelineAnalyze extends Analyze {
 		final StringBuilder header = new StringBuilder();
 		header.append("Nom de méthode;");
 		for (Periode periode : Periode.DEFAULT_PERIODES) {
-			header.append(periode).append(";");
+			header.append(periode).append(';');
 		}
 		System.out.println(header);
 
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
-			line.append(method).append(";");
+			line.append(method).append(';');
 			final List<TimelineData> data = results.get(method);
 			for (TimelineData t : data) {
 				line.append(t).append(';');

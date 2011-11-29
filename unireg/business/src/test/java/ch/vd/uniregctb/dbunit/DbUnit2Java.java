@@ -160,7 +160,7 @@ public class DbUnit2Java extends BusinessTest {
 		final String instance = info.nextInstanceName();
 		entityInstanceNames.put(o, instance);
 
-		String n = clazz + " " + instance + " = new " + clazz + "();";
+		String n = clazz + ' ' + instance + " = new " + clazz + "();";
 		System.out.println(n);
 
 		Property parentProp = null;
@@ -173,7 +173,7 @@ public class DbUnit2Java extends BusinessTest {
 
 			if (prop.isCollection()) {
 				// on initialise une collection vide, comme le fait Hibernate
-				String s = instance + "." + toSetter(prop.getName()) + "(new HashSet());";
+				String s = instance + '.' + toSetter(prop.getName()) + "(new HashSet());";
 				System.out.println(s);
 			}
 			else {
@@ -193,7 +193,7 @@ public class DbUnit2Java extends BusinessTest {
 				}
 				else {
 					// on initialise la valeur trouvée
-					String s = instance + "." + toSetter(prop.getName()) + "(" + toCode(value) + ");";
+					String s = instance + '.' + toSetter(prop.getName()) + '(' + toCode(value) + ");";
 					System.out.println(s);
 				}
 			}
@@ -202,7 +202,7 @@ public class DbUnit2Java extends BusinessTest {
 		if (parentProp != null && !(o instanceof Declaration)) {
 			final String parentInstanceName = entityInstanceNames.get(parent);
 			Assert.notNull(parentInstanceName);
-			String s = parentInstanceName + ".add" + info.baseClass.getSimpleName() + "(" + instance + ");";
+			String s = parentInstanceName + ".add" + info.baseClass.getSimpleName() + '(' + instance + ");";
 			System.out.println(s);
 
 			// On sauve le parent qui va sauver l'instance
@@ -261,17 +261,17 @@ public class DbUnit2Java extends BusinessTest {
 		}
 		else if (value instanceof RegDate) {
 			final RegDate rd = (RegDate) value;
-			return "RegDate.get(" + rd.year() + ", " + rd.month() + ", " + rd.day() + ")";
+			return "RegDate.get(" + rd.year() + ", " + rd.month() + ", " + rd.day() + ')';
 		}
 		else if (value instanceof Enum) {
 			final Enum e = (Enum) value;
-			return e.getDeclaringClass().getSimpleName() + "." + e.name();
+			return e.getDeclaringClass().getSimpleName() + '.' + e.name();
 		}
 		else if (value instanceof Long) {
-			return value.toString() + "L";
+			return value.toString() + 'L';
 		}
 		else if (value instanceof String) {
-			return "\"" + value.toString() + "\"";
+			return '\"' + value.toString() + '\"';
 		}
 		else if (value instanceof HibernateEntity) {
 			final HibernateEntity entity = (HibernateEntity) value;

@@ -26,7 +26,7 @@ public enum TypeTutelle {
 			return CONSEIL_LEGAL;
 		}
 		else {
-			throw new IllegalArgumentException("Type de tutelle inconnu = [" + right.getName() + "]");
+			throw new IllegalArgumentException("Type de tutelle inconnu = [" + right.getName() + ']');
 		}
 	}
 }

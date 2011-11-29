@@ -69,8 +69,8 @@ public class ServletRequestLoggingFilter implements Filter {
 		StringBuilder b = new StringBuilder();
 		b.append("\nProcessing ").append(url).append(" (for ").append(serverName).append(" at ").append(now).append(") [").append(method)
 				.append("]\n");
-		b.append("  Session ID: ").append(session).append("\n");
-		b.append("  Parameters: ").append(toString(map)).append("\n");
+		b.append("  Session ID: ").append(session).append('\n');
+		b.append("  Parameters: ").append(toString(map)).append('\n');
 
 		System.out.println(b.toString());
 	}
@@ -98,7 +98,7 @@ public class ServletRequestLoggingFilter implements Filter {
 			return "null";
 		}
 		StringBuilder b = new StringBuilder();
-		b.append("\"").append(s).append("\"");
+		b.append('\"').append(s).append('\"');
 		return b.toString();
 	}
 
@@ -132,12 +132,12 @@ public class ServletRequestLoggingFilter implements Filter {
 		final StringBuilder b = new StringBuilder();
 		b.append('{');
 		boolean first = true;
-		for (Object k : map.keySet()) {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			if (!first) {
 				b.append(", ");
 			}
-			Object v = map.get(k);
-			b.append(toString(k)).append("=").append(toString(v));
+			Object v = entry.getValue();
+			b.append(toString(entry.getKey())).append('=').append(toString(v));
 			first = false;
 		}
 		b.append('}');

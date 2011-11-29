@@ -225,7 +225,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 				builder.append(", ");
 			}
 		}
-		builder.append("}");
+		builder.append('}');
 		return builder.toString();
 	}
 }

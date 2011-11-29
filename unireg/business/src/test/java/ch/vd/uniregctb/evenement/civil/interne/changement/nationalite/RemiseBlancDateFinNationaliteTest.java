@@ -85,7 +85,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		remiseBlancFinNationalite.validate(erreurs, warnings);
-		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
+		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {

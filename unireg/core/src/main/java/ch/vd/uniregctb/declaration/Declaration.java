@@ -445,7 +445,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	@Transient
 	public RegDate getDelaiAccordeAu() {
 		RegDate dateMax = null;
-		Set<DelaiDeclaration> echeances = getDelais();
+		Set<DelaiDeclaration> echeances = delais;
 		if (echeances != null) {
 			for (DelaiDeclaration echeance : echeances) {
 				if (!echeance.isAnnule()) {
@@ -464,7 +464,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	@Transient
 	public RegDate getPremierDelai() {
 		RegDate premierDelai = null;
-		Set<DelaiDeclaration> delais = getDelais();
+		Set<DelaiDeclaration> delais = this.delais;
 		if (delais != null) {
 			for (DelaiDeclaration delai : delais) {
 				if (!delai.isAnnule()) {

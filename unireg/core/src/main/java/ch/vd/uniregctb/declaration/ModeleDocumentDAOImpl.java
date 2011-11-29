@@ -34,7 +34,7 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 				periode, type.name()
 		}, mode);
 
-		if (list != null && list.size() > 0) {
+		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {
 				throw new RuntimeException("Trouvé plus d'un modèle de document pour la période fiscale [" + periode.getAnnee()
 						+ "] et le type de document [" + type.name() + "].");
@@ -61,7 +61,7 @@ public class ModeleDocumentDAOImpl extends GenericDAOImpl<ModeleDocument, Long> 
 				periode, TypeDocument.LISTE_RECAPITULATIVE.name()
 		}, mode);
 
-		if (list != null && list.size() > 0) {
+		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {
 				throw new RuntimeException("Trouvé plus d'un modèle de document pour la période fiscale [" + periode.getAnnee()
 						+ "] et le type de document [" + TypeDocument.LISTE_RECAPITULATIVE.name() + "].");

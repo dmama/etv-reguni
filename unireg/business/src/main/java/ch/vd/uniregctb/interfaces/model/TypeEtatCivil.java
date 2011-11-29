@@ -49,7 +49,7 @@ public enum TypeEtatCivil {
 			return VEUF;
 		}
 		else {
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + right.getName()+"]");
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + right.getName()+ ']');
 		}
 	}
 

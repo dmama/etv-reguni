@@ -81,7 +81,7 @@ public class AdressesFiscales {
 		if (existante != null) {
 			Assert.fail("Deux adresses fiscales de type " + type.name() + " se recoupent. Adresse existante = [" + existante.getDateDebut()
 					+ ", " + existante.getDateFin() + "] et nouvelle adresse = [" + nouvelle.getDateDebut() + ", " + nouvelle.getDateFin()
-					+ "]");
+					+ ']');
 		}
 	}
 }

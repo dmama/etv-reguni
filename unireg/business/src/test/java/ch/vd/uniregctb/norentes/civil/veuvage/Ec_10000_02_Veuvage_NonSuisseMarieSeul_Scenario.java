@@ -47,7 +47,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private final long noIndMikkel = 34897; // Mikkel
+	private static final long noIndMikkel = 34897; // Mikkel
 
 	private MockIndividu indMikkel;
 

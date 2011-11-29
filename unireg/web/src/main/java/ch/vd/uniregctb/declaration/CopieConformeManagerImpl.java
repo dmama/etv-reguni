@@ -47,7 +47,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 			return lrService.getCopieConformeSommationLR((DeclarationImpotSource) declaration);
 		}
 		else {
-			throw new IllegalArgumentException("La déclaration n'est ni une DI ni une LR (" + declaration.getClass().getName() + ")");
+			throw new IllegalArgumentException("La déclaration n'est ni une DI ni une LR (" + declaration.getClass().getName() + ')');
 		}
 	}
 

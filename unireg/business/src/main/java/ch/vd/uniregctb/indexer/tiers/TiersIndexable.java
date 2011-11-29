@@ -184,7 +184,7 @@ public abstract class TiersIndexable {
 
 	protected static StringBuilder addValue(StringBuilder s, String value) {
 		if (s.length() > 0) {
-			s.append(" ");
+			s.append(' ');
 		}
 		return s.append(value);
 	}

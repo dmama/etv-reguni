@@ -117,12 +117,12 @@ public class TiersImportController {
 		}
 
 		if (!fileName.startsWith("/")) {
-			fileName = "/" + SCRIPTS_FOLDER_PATH + "/" + fileName;
+			fileName = '/' + SCRIPTS_FOLDER_PATH + '/' + fileName;
 		}
 		final InputStream inputXML = getClass().getResourceAsStream(fileName);
 
 		if (inputXML == null) {
-			Flash.error("Impossible de trouver le script '" + HtmlUtils.htmlEscape(fileName) + "'");
+			Flash.error("Impossible de trouver le script '" + HtmlUtils.htmlEscape(fileName) + '\'');
 			return "redirect:list.do";
 		}
 
@@ -192,7 +192,7 @@ public class TiersImportController {
 			LOGGER.debug("Added file " + filename + " (" + description + ") to list of loadable DBunit file");
 
 			// Juste pour vérifier que le fichier existe!
-			URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + "/" + filename);
+			URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + '/' + filename);
 			Assert.notNull(scriptFile, "Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
 
 			LoadableFileDescription descr = new LoadableFileDescription(description, filename);

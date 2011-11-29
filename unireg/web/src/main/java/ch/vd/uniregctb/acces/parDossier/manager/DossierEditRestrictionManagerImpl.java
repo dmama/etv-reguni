@@ -81,7 +81,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 					prenomNom = operator.getPrenom();
 				}
 				if (operator.getNom() != null) {
-					prenomNom = prenomNom + " " + operator.getNom();
+					prenomNom = prenomNom + ' ' + operator.getNom();
 				}
 				droitAccesView.setPrenomNom(prenomNom);
 				droitAccesView.setVisaOperateur(operator.getCode());

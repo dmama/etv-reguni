@@ -30,7 +30,7 @@ public class Ec_18000_11_Arrivee_HS_Habitant_Scenario extends EvenementCivilScen
 		return TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS;
 	}
 
-	private final long noIndAntoine = 1020206L;
+	private static final long noIndAntoine = 1020206L;
 	private long evenementId;
 
 

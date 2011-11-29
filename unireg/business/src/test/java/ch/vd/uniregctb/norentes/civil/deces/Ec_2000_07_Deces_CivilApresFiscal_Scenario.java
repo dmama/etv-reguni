@@ -51,7 +51,7 @@ public class Ec_2000_07_Deces_CivilApresFiscal_Scenario extends EvenementCivilSc
 		return NAME;
 	}
 
-	private final long noIndGuillaume = 43252;
+	private static final long noIndGuillaume = 43252;
 
 	private MockIndividu indGuillaume;
 

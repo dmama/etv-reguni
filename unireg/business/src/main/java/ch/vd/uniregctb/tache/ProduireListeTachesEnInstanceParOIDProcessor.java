@@ -79,7 +79,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 												"						 WHERE " +
 												"						  tache.etat = 'EN_INSTANCE'" +
 												" AND tache.annulationDate is null " +
-												" AND tache.dateEcheance <="+dateTraitement.index()+")";
+												" AND tache.dateEcheance <="+dateTraitement.index()+ ')';
 
 
 		double nombreTotalTaches = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreTache));

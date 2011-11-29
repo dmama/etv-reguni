@@ -23,7 +23,7 @@ public class IndexationManagerImpl implements IndexationManager {
 
 		final Long indNo = getNumeroIndividu(id);
 		if (indNo != null) {
-			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + indNo + ")");
+			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + indNo + ')');
 			// on en profite pour forcer l'éviction des données cachées pour l'individu
 			dataEventService.onIndividuChange(indNo);
 		}

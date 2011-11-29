@@ -42,8 +42,8 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321; // Momo
-	private final long noIndBea = 23456; // Béa
+	private static final long noIndMomo = 54321; // Momo
+	private static final long noIndBea = 23456; // Béa
 
 	protected MockIndividu indMomo;
 	protected MockIndividu indBea;

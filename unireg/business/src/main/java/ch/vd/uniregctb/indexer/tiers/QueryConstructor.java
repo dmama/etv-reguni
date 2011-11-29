@@ -98,7 +98,7 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					break;
 				default:
-					throw new IndexerException("Type de tiers inconnu = [" + typeTiers + "]");
+					throw new IndexerException("Type de tiers inconnu = [" + typeTiers + ']');
 				}
 			}
 			if (query.getClauses().length > 0) {
@@ -200,7 +200,7 @@ public class QueryConstructor {
 					query.add(queryAutresFors, should);
 				}
 			}
-			if (query.clauses().size() > 0) {
+			if (!query.clauses().isEmpty()) {
 				fullQuery.add(query, BooleanClause.Occur.MUST);
 			}
 		}

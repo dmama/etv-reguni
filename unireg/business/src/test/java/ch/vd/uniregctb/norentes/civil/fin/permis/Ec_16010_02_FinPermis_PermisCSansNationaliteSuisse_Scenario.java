@@ -45,7 +45,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 		return NAME;
 	}
 
-	private final long noIndRosa = 238947;  // rosa
+	private static final long noIndRosa = 238947;  // rosa
 
 	private long noHabRosa;
 

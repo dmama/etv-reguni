@@ -132,7 +132,7 @@ public class AutoCompleteInfraController {
 							}
 							else {
 								// [UNIREG-3293] on renseigne la localité entre parenthèses pour permettre de distinguer deux rues avec le même nom
-								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + " " + localite.getNomAbregeMinuscule() + ")";
+								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + ' ' + localite.getNomAbregeMinuscule() + ')';
 							}
 							list.add(new Item(rue.getDesignationCourrier(), description, String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
 						}
@@ -147,7 +147,7 @@ public class AutoCompleteInfraController {
 				for (Localite localite : localites) {
 					if (StringComparator.toLowerCaseWithoutAccent(localite.getNomAbregeMinuscule()).startsWith(term) ||
 							String.valueOf(localite.getNPA()).startsWith(term)) { // [UNIREG-3390] recherche par numéro de NPA
-						final String description = localite.getNomAbregeMinuscule() + " (" + localite.getNPA() + ")";
+						final String description = localite.getNomAbregeMinuscule() + " (" + localite.getNPA() + ')';
 						list.add(new Item(localite.getNomAbregeMinuscule(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
 					}
 				}
@@ -159,7 +159,7 @@ public class AutoCompleteInfraController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ')';
 						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
@@ -171,7 +171,7 @@ public class AutoCompleteInfraController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ')';
 						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
@@ -183,7 +183,7 @@ public class AutoCompleteInfraController {
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomMinuscule()).startsWith(term)) {
-						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ")";
+						final String description = commune.getNomMinuscule() + " (" + commune.getNoOFSEtendu() + ')';
 						list.add(new Item(commune.getNomMinuscule(), description, String.valueOf(commune.getNoOFSEtendu())));
 					}
 				}
@@ -197,7 +197,7 @@ public class AutoCompleteInfraController {
 				for (Pays p : pays) {
 					if (p.isValide() && (!etatsOnly || p.isEtatSouverain())) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
 						if (StringComparator.toLowerCaseWithoutAccent(p.getNomMinuscule()).startsWith(term)) {
-							final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ")";
+							final String description = p.getNomMinuscule() + " (" + p.getNoOFS() + ')';
 							list.add(new Item(p.getNomMinuscule(), description, String.valueOf(p.getNoOFS())));
 						}
 					}

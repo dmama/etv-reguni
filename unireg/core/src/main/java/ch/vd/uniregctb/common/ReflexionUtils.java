@@ -123,7 +123,7 @@ public abstract class ReflexionUtils {
 				else {
 					s.append(", ");
 				}
-				s.append(descriptor.getName()).append("=").append(toString(value, showNull, processed));
+				s.append(descriptor.getName()).append('=').append(toString(value, showNull, processed));
 			}
 			s.append('}');
 

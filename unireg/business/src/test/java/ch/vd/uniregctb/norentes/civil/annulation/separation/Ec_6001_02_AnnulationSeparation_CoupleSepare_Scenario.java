@@ -38,8 +38,8 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 	private final RegDate dateMariage = RegDate.get(1986, 4, 8);
 	private final RegDate dateSeparation = RegDate.get(2004, 3, 2);
 
-	private final long noIndMomo = 54321; // Maurice
-	private final long noIndBea = 23456; // Béatrice
+	private static final long noIndMomo = 54321; // Maurice
+	private static final long noIndBea = 23456; // Béatrice
 
 	private long noHabMomo;
 	private long noHabBea;

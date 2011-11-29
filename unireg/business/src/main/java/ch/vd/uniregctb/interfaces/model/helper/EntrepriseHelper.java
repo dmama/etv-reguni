@@ -33,7 +33,7 @@ public abstract class EntrepriseHelper {
 			type = TypeAutoriteFiscale.PAYS_HS;
 			break;
 		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale PM inconnu = [" + ffp.getTypeAutoriteFiscale() + "]");
+			throw new IllegalArgumentException("Type d'autorité fiscale PM inconnu = [" + ffp.getTypeAutoriteFiscale() + ']');
 		}
 		return type;
 	}

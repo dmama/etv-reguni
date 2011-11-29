@@ -197,7 +197,7 @@ public class LuceneWriter extends LuceneEngine {
 	private static String print(Document doc) {
 
 		final StringBuilder buffer = new StringBuilder();
-		buffer.append("{");
+		buffer.append('{');
 
 		final List<Fieldable> fields = doc.getFields();
 		for (int i = 0, fieldsSize = fields.size(); i < fieldsSize; i++) {
@@ -212,14 +212,14 @@ public class LuceneWriter extends LuceneEngine {
 				value = d.toString();
 			}
 
-			buffer.append(name).append(":\"").append(value).append("\"");
+			buffer.append(name).append(":\"").append(value).append('\"');
 
 			if (i != fields.size() - 1) {
 				buffer.append(", ");
 			}
 		}
 
-		buffer.append("}");
+		buffer.append('}');
 		return buffer.toString();
 	}
 
@@ -314,7 +314,7 @@ public class LuceneWriter extends LuceneEngine {
 	 * @return une chaîne de caractère qui représente l'id du document lucene
 	 */
 	private String generateDocumentID(String typeValue, long id) {
-		return typeValue.toLowerCase() + "-" + id;
+		return typeValue.toLowerCase() + '-' + id;
 	}
 
 	/**

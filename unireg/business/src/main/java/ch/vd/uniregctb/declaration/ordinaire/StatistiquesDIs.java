@@ -115,7 +115,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
 	}
 
-	public final class Value {
+	public static final class Value {
 		public int nombre;
 	}
 

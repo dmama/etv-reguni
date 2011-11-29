@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.rapport;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -24,7 +23,7 @@ public class RapportListController extends  AbstractTiersListController {
 
 	private RapportListManager rapportListManager;
 
-	private final String NUMERO_TIERS_PARAMETER_NAME = "numero";
+	private static final String NUMERO_TIERS_PARAMETER_NAME = "numero";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
 	public static final String ACTION_PARAMETER_EFFACER = "effacer";

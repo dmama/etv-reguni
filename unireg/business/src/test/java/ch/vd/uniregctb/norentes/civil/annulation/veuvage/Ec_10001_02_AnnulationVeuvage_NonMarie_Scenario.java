@@ -42,8 +42,8 @@ public class Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321; // momo
-	private final long noIndBea = 23456; // bea
+	private static final long noIndMomo = 54321; // momo
+	private static final long noIndBea = 23456; // bea
 
 	private long noHabMomo;
 	private long noHabBea;

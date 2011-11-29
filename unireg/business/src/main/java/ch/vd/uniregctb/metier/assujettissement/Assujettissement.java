@@ -122,7 +122,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	@Override
 	public boolean isCollatable(DateRange next) {
 		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
-		final boolean departHSEtArriveeHC = (this.getMotifFractFin() == MotifFor.DEPART_HS && ((Assujettissement) next).getMotifFractDebut() == MotifFor.ARRIVEE_HC);
+		final boolean departHSEtArriveeHC = (this.motifFin == MotifFor.DEPART_HS && ((Assujettissement) next).motifDebut == MotifFor.ARRIVEE_HC);
 		return getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next) && !departHSEtArriveeHC;
 	}
 
@@ -229,7 +229,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 			assertCoherenceRanges(assujettissements);
 
-			return assujettissements.size() == 0 ? null : assujettissements;
+			return assujettissements.isEmpty() ? null : assujettissements;
 		}
 		catch (AssujettissementException e) {
 			if (validationService != null && !validationService.isInValidation()) { // on évite les appels récursifs
@@ -361,7 +361,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		for (DateRange current : ranges) {
 			if (previous != null) {
 				if (DateRangeHelper.intersect(previous, current)) {
-					throw new AssujettissementException("Le range [" + previous + "] entre en collision avec le suivant [" + current + "]");
+					throw new AssujettissementException("Le range [" + previous + "] entre en collision avec le suivant [" + current + ']');
 				}
 			}
 			previous = current;
@@ -488,7 +488,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			final Mutation current = new Mutation(date, type);
 			final Mutation previous = mariagesDivorces.put(date.year(), current);
 			if (previous != null && previous.date.isAfter(date)) {
-				throw new IllegalArgumentException("Cas particuliers reçus dans le désordre : ancien [" + previous + "], nouveau [" + current + "]");
+				throw new IllegalArgumentException("Cas particuliers reçus dans le désordre : ancien [" + previous + "], nouveau [" + current + ']');
 			}
 		}
 
@@ -899,10 +899,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		final Assujettissement courant = triplet.current;
 
 		if (courant instanceof SourcierPur) {
-			final RegDate debut = courant.getDateDebut();
-			final RegDate fin = courant.getDateFin();
-			final MotifFor motifDebut = courant.getMotifFractDebut();
-			final MotifFor motifFin = courant.getMotifFractFin();
+			final RegDate debut = courant.dateDebut;
+			final RegDate fin = courant.dateFin;
+			final MotifFor motifDebut = courant.motifDebut;
+			final MotifFor motifFin = courant.motifFin;
 
 			// faut-il adapter la date de début ?
 			final Assujettissement precedent = triplet.previous;
@@ -910,7 +910,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 				// on doit arrondir au début du mois
 				final RegDate newDebut = RegDate.get(debut.year(), debut.month(), 1);
 				if (newDebut != debut) {
-					if (precedent != null && precedent.getDateFin().getOneDayAfter() == debut) {
+					if (precedent != null && precedent.dateFin.getOneDayAfter() == debut) {
 						final AdaptionResult r = adapteDateFin(precedent, newDebut.getOneDayBefore(), assujettissements);
 						if (r == AdaptionResult.LISTE_MODIFIEE) {
 							res = AdaptionResult.LISTE_MODIFIEE;
@@ -927,7 +927,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 					// on doit arrondir à la fin du mois
 					final RegDate newFin = RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
 					if (newFin != fin) {
-						if (suivant != null && suivant.getDateDebut().getOneDayBefore() == fin) {
+						if (suivant != null && suivant.dateDebut.getOneDayBefore() == fin) {
 							final AdaptionResult r = adapteDateDebut(suivant, newFin.getOneDayAfter(), assujettissements);
 							if (r == AdaptionResult.LISTE_MODIFIEE) {
 								res = AdaptionResult.LISTE_MODIFIEE;
@@ -959,7 +959,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 *         la liste et que cette dernière a donc été modifiée.
 	 */
 	private static AdaptionResult adapteDateFin(Assujettissement precedent, RegDate newDateFin, List<Assujettissement> assujettissements) {
-		if (precedent.getDateDebut().isBeforeOrEqual(newDateFin)) {
+		if (precedent.dateDebut.isBeforeOrEqual(newDateFin)) {
 			precedent.setDateFin(newDateFin);
 			return AdaptionResult.LISTE_NON_MODIFIEE;
 		}
@@ -991,7 +991,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 *         liste et que cette dernière a donc été modifiée.
 	 */
 	private static AdaptionResult adapteDateDebut(Assujettissement suivant, RegDate newDateDebut, List<Assujettissement> assujettissements) {
-		if (suivant.getDateFin() == null || newDateDebut.isBeforeOrEqual(suivant.getDateFin())) {
+		if (suivant.dateFin == null || newDateDebut.isBeforeOrEqual(suivant.dateFin)) {
 			suivant.setDateDebut(newDateDebut);
 			return AdaptionResult.LISTE_NON_MODIFIEE;
 		}
@@ -1460,7 +1460,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
 			actif = true;
 		}
-		else if (fors.secondairesDansLaPeriode.size() > 0) {
+		else if (!fors.secondairesDansLaPeriode.isEmpty()) {
 			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
 				if (ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffs.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
 					actif = true;
@@ -1700,7 +1700,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + current.getTypeAutoriteFiscale() + "]");
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + current.getTypeAutoriteFiscale() + ']');
 		}
 
 		return data;
@@ -1849,7 +1849,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 				assujettissement = null;
 				break;
 			default:
-				throw new IllegalArgumentException("Type inconnu = [" + a.type + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + a.type + ']');
 			}
 			if (assujettissement != null) {
 				assujettissements.add(assujettissement);

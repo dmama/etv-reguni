@@ -204,7 +204,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		// 3. sinon (assujettissement n-2 mais pas n-1 ni n), mouvement vers les archives sauf si dernier mouvement déjà comme ça
 
 		// rien à faire si pas d'assujettissement du tout depuis plus de deux ans!
-		if (assujettissements != null && assujettissements.size() > 0) {
+		if (assujettissements != null && !assujettissements.isEmpty()) {
 
 			final List<ForGestion> histoForGestion = tiersService.getForsGestionHisto(ctb);
 

@@ -19,7 +19,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
  */
 public final class ForFiscalComparator implements Comparator<ForFiscal> {
 
-	private final class ForFiscalWrapper implements DateRange {
+	private static final class ForFiscalWrapper implements DateRange {
 
 		private final RegDate dateDebut;
 		private final RegDate dateFin;

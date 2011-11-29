@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 public class BeanUtilsTest {
 	
-	public class Class1 {
+	public static class Class1 {
 		public String getP1() {return "";}
 		public void setP1() {}
 		public String getP2() {return "";}
@@ -17,7 +17,7 @@ public class BeanUtilsTest {
 		public void setP3() {}
 	}
 	
-	public class Class2 {
+	public static class Class2 {
 		public String getP1() {return "";}
 		public void setP1() {}
 		public String getP2() {return "";}

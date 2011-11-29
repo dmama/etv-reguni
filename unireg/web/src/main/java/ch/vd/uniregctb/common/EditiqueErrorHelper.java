@@ -32,9 +32,9 @@ public abstract class EditiqueErrorHelper {
 
 		final String complement = getComplementErreur(resultat);
 		if (complement != null) {
-			builder.append(" (").append(complement).append(")");
+			builder.append(" (").append(complement).append(')');
 		}
-		builder.append(".");
+		builder.append('.');
 		return builder.toString();
 	}
 }

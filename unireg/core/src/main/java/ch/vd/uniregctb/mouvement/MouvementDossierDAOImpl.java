@@ -144,7 +144,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 				b.append(") AND (other.dateMouvement > mvt.dateMouvement OR (other.dateMouvement = mvt.dateMouvement AND other.logModifDate > mvt.logModifDate))");
 			}
-			b.append(")");
+			b.append(')');
 		}
 	}
 
@@ -218,7 +218,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		final Collection<EtatMouvementDossier> etatsDemandes;
 		if (criteria.isSeulementDerniersMouvements()) {
 			// si on doit filtrer sur les derniers mouvements seulement, seuls les mouvements traités doivent revenir
-			if (criteria.getEtatsMouvement() != null && criteria.getEtatsMouvement().size() > 0) {
+			if (criteria.getEtatsMouvement() != null && !criteria.getEtatsMouvement().isEmpty()) {
 				final Set<EtatMouvementDossier> temp = new HashSet<EtatMouvementDossier>(criteria.getEtatsMouvement().size());
 				for (EtatMouvementDossier etat : criteria.getEtatsMouvement()) {
 					if (etat.isTraite()) {
@@ -239,7 +239,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		}
 
 		if (etatsDemandes != null) {
-			if (etatsDemandes.size() == 0) {
+			if (etatsDemandes.isEmpty()) {
 				// aucun etat!
 				b.append(" AND 1=0");
 			}
@@ -248,7 +248,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 				boolean first = true;
 				for (EtatMouvementDossier etat : etatsDemandes) {
 					if (first) {
-						b.append("?");
+						b.append('?');
 						first = false;
 					}
 					else {
@@ -256,7 +256,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 					}
 					params.add(etat.name());
 				}
-				b.append(")");
+				b.append(')');
 			}
 			else {
 				b.append(" AND mvt.etat = ?");
@@ -388,7 +388,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 			for (int i = 1 ; i < ids.length ; ++ i) {
 				builder.append(",?");
 			}
-			builder.append(")");
+			builder.append(')');
 		}
 
 		final String hql = builder.toString();
@@ -407,7 +407,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 		// [UNIREG-2872] tri dans l'ordre des ids donnés en entrée
 		final List<MouvementDossier> listeFinale;
-		if (found != null && found.size() > 0) {
+		if (found != null && !found.isEmpty()) {
 			final Map<Long, MouvementDossier> map = new HashMap<Long, MouvementDossier>(found.size());
 			for (MouvementDossier mvt : found) {
 				map.put(mvt.getId(), mvt);
@@ -458,7 +458,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 			public List<ProtoBordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
 				final List<Object[]> rows = (List<Object[]>) query.list();
-				if (rows != null && rows.size() > 0) {
+				if (rows != null && !rows.isEmpty()) {
 					final List<ProtoBordereauMouvementDossier> liste = new ArrayList<ProtoBordereauMouvementDossier>(rows.size());
 					for (Object[] row : rows) {
 						final String typeStr = (String) row[0];
@@ -484,7 +484,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 							liste.add(proto);
 						}
 					}
-					return liste.size() > 0 ? liste : null;
+					return !liste.isEmpty() ? liste : null;
 				}
 				else {
 					return null;

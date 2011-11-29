@@ -314,7 +314,7 @@ public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + documentType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + documentType + ']');
 			}
 			
 			final Pair<Long, Declaration> pair = new Pair<Long, Declaration>();

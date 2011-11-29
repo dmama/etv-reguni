@@ -42,9 +42,9 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 		return NAME;
 	}
 
-	private final long noIndJuliette = 43252;
+	private static final long noIndJuliette = 43252;
 
-	private final long noIndHeidi = 43134;
+	private static final long noIndHeidi = 43134;
 
 	private MockIndividu indJuliette;
 

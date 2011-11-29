@@ -41,8 +41,8 @@ public class Ec_2001_03_AnnulationDeces_Marie_Scenario extends EvenementCivilSce
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;
-	private final long noIndBea = 23456;
+	private static final long noIndMomo = 54321;
+	private static final long noIndBea = 23456;
 
 	private long noHabMomo;
 	private long noHabBea;

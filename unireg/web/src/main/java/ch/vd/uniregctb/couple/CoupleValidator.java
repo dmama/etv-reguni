@@ -254,7 +254,7 @@ public class CoupleValidator implements Validator {
 			return habitantVD;
 		}
 		else {
-			throw new IllegalArgumentException("Type de tiers non géré [" + tiers.getClass().getSimpleName() + "]");
+			throw new IllegalArgumentException("Type de tiers non géré [" + tiers.getClass().getSimpleName() + ']');
 		}
 	}
 

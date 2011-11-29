@@ -33,6 +33,6 @@ public class Indigent extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "Indigent(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "Indigent(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

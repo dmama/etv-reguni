@@ -187,7 +187,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 	private ValidationResults validateAdresses(List<AdresseTiers> sorted) {
 
-		if (sorted == null || sorted.size() == 0) {
+		if (sorted == null || sorted.isEmpty()) {
 			return null;
 		}
 
@@ -268,7 +268,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 					}
 				}
 
-				if (intersectingRanges.size() > 0) {
+				if (!intersectingRanges.isEmpty()) {
 					Collections.sort(intersectingRanges, new DateRangeComparator<DateRange>());
 
 					merge = new ArrayList<DateRange>(intersectingRanges.size());

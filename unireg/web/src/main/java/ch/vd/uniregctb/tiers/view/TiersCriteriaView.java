@@ -333,4 +333,9 @@ public class TiersCriteriaView {
 	public TiersCriteria asCore() {
 		return criteria;
 	}
+
+	@Override
+	public String toString() {
+		return criteria.toString();
+	}
 }

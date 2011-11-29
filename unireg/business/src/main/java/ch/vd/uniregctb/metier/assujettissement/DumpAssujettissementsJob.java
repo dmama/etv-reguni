@@ -98,11 +98,11 @@ public class DumpAssujettissementsJob extends JobDefinition {
 					String line;
 					try {
 						final StringBuilder sb = new StringBuilder();
-						sb.append(id).append(";").append(process(id)).append('\n');
+						sb.append(id).append(';').append(process(id)).append('\n');
 						line = sb.toString();
 					}
 					catch (Exception e) {
-						line = "exception:" + e.getMessage() + "\n";
+						line = "exception:" + e.getMessage() + '\n';
 					}
 					file.write(line);
 				}

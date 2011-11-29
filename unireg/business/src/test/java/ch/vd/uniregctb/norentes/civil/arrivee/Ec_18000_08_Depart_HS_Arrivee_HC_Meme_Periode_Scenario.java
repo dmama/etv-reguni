@@ -46,7 +46,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		return NAME;
 	}
 
-	private final long noIndAlain = 123456L;
+	private static final long noIndAlain = 123456L;
 
 	private MockIndividu indAlain;
 

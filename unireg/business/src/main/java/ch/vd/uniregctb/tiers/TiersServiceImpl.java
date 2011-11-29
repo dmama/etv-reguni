@@ -873,7 +873,7 @@ public class TiersServiceImpl implements TiersService {
 			individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(), AttributeIndividu.PERMIS);
 		}
 		catch (Exception e) {
-			throw new RuntimeException("Erreur dans la récupération de l'individu avec ses permis (" + habitant.getNumeroIndividu() + ")",
+			throw new RuntimeException("Erreur dans la récupération de l'individu avec ses permis (" + habitant.getNumeroIndividu() + ')',
 					e);
 		}
 
@@ -985,7 +985,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
 		final Set<PersonnePhysique> personnes = getPersonnesPhysiques(menageCommun);
-		if (personnes.size() > 0) {
+		if (!personnes.isEmpty()) {
 			final List<PersonnePhysique> liste = new ArrayList<PersonnePhysique>(personnes);
 			final PersonnePhysique tiers1 = liste.get(0);
 			if (liste.size() > 1) {
@@ -1035,7 +1035,7 @@ public class TiersServiceImpl implements TiersService {
 		final PersonnePhysique principal;
 		final PersonnePhysique conjoint;
 
-		if (personnes != null && personnes.size() > 0) {
+		if (personnes != null && !personnes.isEmpty()) {
 			if (personnes.size() == 1) {
 				// Détermination des tiers principal et secondaire
 				final Iterator<PersonnePhysique> iter = personnes.iterator();
@@ -1257,7 +1257,7 @@ public class TiersServiceImpl implements TiersService {
 			if (rapportObjet.getDateFin() == null && rapportObjet.getSujetId().equals(pp.getId()) && !rapportObjet.isAnnule()) {
 
 				if (!RegDateHelper.isAfterOrEqual(dateFermeture, rapportObjet.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					final String msg = String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début");
+					final String msg = "On ne peut fermer le rapport d'appartenance ménage avant sa date de début";
 					throw new RuntimeException(msg);
 				}
 
@@ -2063,7 +2063,7 @@ public class TiersServiceImpl implements TiersService {
 			if (forFiscalPrincipal.getDateDebut().year() == RegDate.get().year()) {
 				// Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
 				final List<Declaration> dis = contribuable.getDeclarationsForPeriode(RegDate.get().year(), false);
-				if (dis != null && dis.size() > 0) {
+				if (dis != null && !dis.isEmpty()) {
 					Collections.sort(dis, new DateRangeComparator<Declaration>());
 					final Declaration di = dis.get(dis.size() - 1);
 					// Le contribuable a une DI libre, on ajuste la periode d'imposition
@@ -3223,7 +3223,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final CollectiviteAdministrative ca = getCollectiviteAdministrative(oid, true);
 		if (ca == null) {
-			throw new IllegalArgumentException("Impossible de trouver la collectivité correspondant à l'office d'impôt n°" + oid + ".");
+			throw new IllegalArgumentException("Impossible de trouver la collectivité correspondant à l'office d'impôt n°" + oid + '.');
 		}
 
 		return ca;
@@ -3304,7 +3304,7 @@ public class TiersServiceImpl implements TiersService {
 			// [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
 			// était vide... le seul scénario auquel je pense est si cette méthode est appelée deux fois
 			// (double-click sur le bouton d'annulation, concurrence entre deux sessions...)
-			if (fors.size() == 0) {
+			if (fors.isEmpty()) {
 				throw new ValidationException(forPrincipal, "Tous les fors principaux sont déjà annulés.");
 			}
 
@@ -3329,7 +3329,7 @@ public class TiersServiceImpl implements TiersService {
 		else if (forFiscal instanceof ForDebiteurPrestationImposable) {
 			final ForDebiteurPrestationImposable forDPI = (ForDebiteurPrestationImposable) forFiscal;
 			final ForsParType fors = tiers.getForsParType(true);
-			if (fors.dpis.size() == 0) {
+			if (fors.dpis.isEmpty()) {
 				throw new ValidationException(forDPI, "Tous les fors débiteurs sont déjà annulés.");
 			}
 
@@ -3440,7 +3440,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxSorted();
-		if (forsFiscaux == null || forsFiscaux.size() == 0) {
+		if (forsFiscaux == null || forsFiscaux.isEmpty()) {
 			return null;
 		}
 
@@ -3549,7 +3549,7 @@ public class TiersServiceImpl implements TiersService {
 				 */
 				forGestion = (ForFiscalRevenuFortune) forsActiviteIndependante.get(0);
 			}
-			else if (forsImmeuble.size() == 1 && forsActiviteIndependante.size() == 0) {
+			else if (forsImmeuble.size() == 1 && forsActiviteIndependante.isEmpty()) {
 				/*
 				 * [Spec] Il n’existe aucun for secondaire ouvert à raison d’une activité indépendante mais un ou plusieurs fors secondaires
 				 * ouverts à raison d’un immeuble privé : dans ce cas, le for de gestion est le for ouvert le plus ancien à raison d’un
@@ -3614,7 +3614,7 @@ public class TiersServiceImpl implements TiersService {
 		List<ForGestion> results = new ArrayList<ForGestion>();
 
 		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxSorted();
-		if (forsFiscaux == null || forsFiscaux.size() == 0) {
+		if (forsFiscaux == null || forsFiscaux.isEmpty()) {
 			return results;
 		}
 
@@ -3697,7 +3697,7 @@ public class TiersServiceImpl implements TiersService {
 		// teste aussi l'absence de fors fiscaux non annulés)
 		if (tiers instanceof PersonnePhysique
 				&& tiers.isDebiteurInactif()
-				&& tiers.getForsFiscauxNonAnnules(false).size() == 0) {
+				&& tiers.getForsFiscauxNonAnnules(false).isEmpty()) {
 			str = "inactif";
 		}
 
@@ -3705,7 +3705,7 @@ public class TiersServiceImpl implements TiersService {
 		else if (tiers instanceof Contribuable) {
 			try {
 				final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable) tiers, date.year());
-				if (assujettissements != null && assujettissements.size() > 0) {
+				if (assujettissements != null && !assujettissements.isEmpty()) {
 					final Assujettissement valide = DateRangeHelper.rangeAt(assujettissements, date);
 					if (valide != null) {
 						str = valide.getDescription();
@@ -4143,7 +4143,7 @@ public class TiersServiceImpl implements TiersService {
 					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
 					 */
 					if (menageCommun != null) {
-						throw new TiersException("Plus d'un ménage commun trouvé pour la personne = [" + personne.toString() + "]");
+						throw new TiersException("Plus d'un ménage commun trouvé pour la personne = [" + personne.toString() + ']');
 					}
 
 					menageCommun = (MenageCommun) tiersDAO.get(rapportSujet.getObjetId());
@@ -4165,7 +4165,7 @@ public class TiersServiceImpl implements TiersService {
 		noTiers.add(tiers.getNumero());
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
 		final List<EvenementCivilExterne> liste;
-		if (nosIndividus.size() > 0) {
+		if (!nosIndividus.isEmpty()) {
 			liste = evenementCivilExterneDAO.getEvenementsCivilsNonTraites(nosIndividus);
 		}
 		else {
@@ -4208,11 +4208,11 @@ public class TiersServiceImpl implements TiersService {
 				}
 				final String ligne2 = ca.getNomComplet2();
 				if (StringUtils.isNotBlank(ligne2)) {
-					nom += " " + ligne2.trim();
+					nom += ' ' + ligne2.trim();
 				}
 				final String ligne3 = ca.getNomComplet3();
 				if (StringUtils.isNotBlank(ligne3)) {
-					nom += " " + ligne3.trim();
+					nom += ' ' + ligne3.trim();
 				}
 			}
 		}

@@ -168,7 +168,7 @@ public class MouvementMasseController {
 			}
 
 			// si la page demandée dans la pagination n'existe plus, on revient à la page 1 (= on supprime les infos de pagination)
-			if (found != null && found.getResults().size() == 0 && found.getResultSize() > 0) {
+			if (found != null && found.getResults().isEmpty() && found.getResultSize() > 0) {
 				return customizer.getRedirectToPage();
 			}
 		}

@@ -22,7 +22,7 @@ public class JspTagDateOffset extends BodyTagSupport {
 
 			if (DateConstants.TIME_OFFSET != 0) {
 				final String message = "Attention ! Pour le testing, la date courante de l'application est décalée de " + DateHelper.getTimeOffsetAsString(DateConstants.TIME_OFFSET, false) +
-						". La date courante est donc le " + RegDateHelper.dateToDisplayString(RegDate.get()) + ".";
+						". La date courante est donc le " + RegDateHelper.dateToDisplayString(RegDate.get()) + '.';
 				out.print("<div class=\"flash-error\">" + HttpUtilities.htmlEncode(message) + "</div>");
 			}
 

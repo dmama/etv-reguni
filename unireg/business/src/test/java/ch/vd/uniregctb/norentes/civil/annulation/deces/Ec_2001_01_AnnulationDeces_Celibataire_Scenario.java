@@ -38,7 +38,7 @@ public class Ec_2001_01_AnnulationDeces_Celibataire_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789;
+	private static final long noIndJulie = 6789;
 
 	private long noHabJulie;
 

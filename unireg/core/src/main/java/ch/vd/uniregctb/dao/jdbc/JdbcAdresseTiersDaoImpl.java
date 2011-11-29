@@ -337,7 +337,7 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + adrType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + adrType + ']');
 			}
 			
 			final Pair<Long, AdresseTiers> pair = new Pair<Long, AdresseTiers>();

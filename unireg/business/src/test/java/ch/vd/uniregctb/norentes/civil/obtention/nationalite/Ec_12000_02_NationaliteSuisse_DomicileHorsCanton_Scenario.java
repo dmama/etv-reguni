@@ -60,7 +60,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 		this.adresseService = adresseService;
 	}
 
-	private final long noIndJulie = 6789; // julie
+	private static final long noIndJulie = 6789; // julie
 
 	private MockIndividu indJulie;
 

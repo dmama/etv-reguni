@@ -64,7 +64,7 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 		if (mineur) {
 			final Contribuable ctb = couple != null ? couple.getMenage() : pp;
 			final List<ForFiscal> fors = ctb.getForsFiscauxNonAnnules(false);
-			if (fors == null || fors.size() == 0) {
+			if (fors == null || fors.isEmpty()) {
 				Audit.info(getNumeroEvenement(), String.format("Aucun for non-annulé existant sur le contribuable %s (%s) : rien à faire",
 						FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()),
 						couple != null ? "ménage de personnes physiques mineures" : "mineur"));

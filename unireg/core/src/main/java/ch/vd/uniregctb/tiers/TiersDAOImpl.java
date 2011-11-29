@@ -68,7 +68,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		final List<?> list = find(query, criteria, mode);
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			return (Tiers) list.get(0);
 		}
 		else {
@@ -700,7 +700,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 					// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
 					final List<Object[]> rows = query.list();
-					if (rows != null && rows.size() > 0) {
+					if (rows != null && !rows.isEmpty()) {
 						final List<Long> res = new ArrayList<Long>(rows.size());
 						for (Object[] row : rows) {
 							final Number ppId = (Number) row[0];

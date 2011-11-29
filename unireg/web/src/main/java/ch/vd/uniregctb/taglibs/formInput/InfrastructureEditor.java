@@ -115,7 +115,7 @@ public class InfrastructureEditor implements Editor {
 						"\tautocomplete_infra('" + category.getTag() + "', '#" + id + "', true, function(item) {\n" +
 						"\t\t$('#" + getHiddenId(id) + "').val(item ? item.id1 : null);\n" +
 						"\t\t$('#numCommune').val(item ? item.id2 : null);\n" +
-						"\n" +
+						'\n' +
 						"\t\t// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence\n" +
 						"\t\tautocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {\n" +
 						"\t\t\tif (i) {\n" +
@@ -169,7 +169,7 @@ public class InfrastructureEditor implements Editor {
 		return communeId == null ? null : communeId.toString();
 	}
 	private static String getHiddenId(String id) {
-		return "_" + id + "Id";
+		return '_' + id + "Id";
 	}
 
 	private static Long parseLong(String value) {
@@ -200,7 +200,7 @@ public class InfrastructureEditor implements Editor {
 					return commune.getNomMinuscule();
 				}
 				else {
-					return commune.getNomMinuscule() + " (" + commune.getSigleCanton() + ")";
+					return commune.getNomMinuscule() + " (" + commune.getSigleCanton() + ')';
 				}
 			}
 		case ETAT:

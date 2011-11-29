@@ -38,7 +38,7 @@ public enum TypeAdresseFiscale {
 		case POURSUITE:
 			return POURSUITE;
 		default:
-			throw new IllegalArgumentException("Type d'adresse tiers inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type d'adresse tiers inconnu = [" + type + ']');
 		}
 	}
 }

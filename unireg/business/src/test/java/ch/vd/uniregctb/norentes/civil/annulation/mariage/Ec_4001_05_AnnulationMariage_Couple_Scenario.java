@@ -85,8 +85,8 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		serviceCivilService.setUp(serviceCivil);
 	}
 
-	private final long noIndAlexandre = 2000465; // Alexandre
-	private final long noIndSylvie = 2000457; // Sylvie
+	private static final long noIndAlexandre = 2000465; // Alexandre
+	private static final long noIndSylvie = 2000457; // Sylvie
 
 	private long noHabAlexandre;
 	private long noHabSylvie;

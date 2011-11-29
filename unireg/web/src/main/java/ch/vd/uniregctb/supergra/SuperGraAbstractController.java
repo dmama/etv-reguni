@@ -174,7 +174,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 			final SuperGraSession session = getSession(request);
 			session.getOptions().setShowDetails(show);
 
-			flash("Les détails sont maintenant " + (show ? "visibles" : "masqués") + ".");
+			flash("Les détails sont maintenant " + (show ? "visibles" : "masqués") + '.');
 			return OK_CONTINUE;
 		}
 

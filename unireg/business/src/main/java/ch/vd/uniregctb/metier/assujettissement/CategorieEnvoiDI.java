@@ -92,7 +92,7 @@ public enum CategorieEnvoiDI {
 				return VAUDOIS_VAUDTAX;
 			}
 			else {
-				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
+				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + ']');
 			}
 		case VAUDOIS_DEPENSE:
 			return VAUDOIS_DEPENSE;
@@ -104,7 +104,7 @@ public enum CategorieEnvoiDI {
 				return HC_ACTIND_VAUDTAX;
 			}
 			else {
-				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
+				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + ']');
 			}
 		case HORS_SUISSE:
 			if (format == FormatDIOrdinaire.COMPLETE) {
@@ -114,7 +114,7 @@ public enum CategorieEnvoiDI {
 				return HS_VAUDTAX;
 			}
 			else {
-				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
+				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + ']');
 			}
 		case DIPLOMATE_SUISSE:
 			if (format == FormatDIOrdinaire.COMPLETE) {
@@ -124,10 +124,10 @@ public enum CategorieEnvoiDI {
 				return DIPLOMATE_SUISSE_IMMEUBLE_VAUDTAX;
 			}
 			else {
-				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
+				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + ']');
 			}
 		default:
-			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeContribuable + "]");
+			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeContribuable + ']');
 		}
 	}
 }

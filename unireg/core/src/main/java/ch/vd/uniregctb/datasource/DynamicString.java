@@ -40,7 +40,7 @@ public class DynamicString implements FactoryBean, InitializingBean {
 			instance = postgresqlProperty;
 		}
 		else {
-			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + "]");
+			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
 	}
 

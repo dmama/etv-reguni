@@ -49,12 +49,12 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 
 		final Contribuable ctb = decomposition.contribuable;
 		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, decomposition.annee);
-		if (assujettissements == null || assujettissements.size() == 0) {
+		if (assujettissements == null || assujettissements.isEmpty()) {
 			throw new ContribuableIgnoreException(NON_ASSUJETTI);
 		}
 
 		final String raisonExclusion = filterAssujettissements(ctb, assujettissements);
-		if (assujettissements.size() == 0) {
+		if (assujettissements.isEmpty()) {
 			if (StringUtils.isBlank(raisonExclusion)) {
 				throw new RuntimeException("Tous les assujettissements de la période fiscale " + periodeFiscale + " ont été filtrés sans explication");
 			}

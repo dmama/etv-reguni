@@ -37,14 +37,14 @@ public class JspTagUser extends BodyTagSupport {
 		}
 
 		if (nom != null) {
-			str.append(" ");
+			str.append(' ');
 			str.append(nom);
 		}
 
 		if (oid != null) {
 			str.append(" (");
 			str.append(oid);
-			str.append(")");
+			str.append(')');
 		}
 
 		return str.toString();

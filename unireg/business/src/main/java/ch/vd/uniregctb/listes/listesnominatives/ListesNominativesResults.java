@@ -168,7 +168,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
 		final String nom1;
 		final String nom2;
-		if (raisonSociale.size() > 0) {
+		if (!raisonSociale.isEmpty()) {
 			nom1 = raisonSociale.get(0);
 			if (raisonSociale.size() > 1) {
 				nom2 = raisonSociale.get(1);

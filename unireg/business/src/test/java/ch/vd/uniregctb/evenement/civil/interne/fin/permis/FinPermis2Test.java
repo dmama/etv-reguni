@@ -80,7 +80,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		finPermis.validate(erreurs, warnings);
-		assertTrue("La fin de permis C devrait être ignorée", erreurs.size() == 0);
+		assertTrue("La fin de permis C devrait être ignorée", erreurs.isEmpty());
 
 		finPermis.handle(warnings);
 	}
@@ -122,7 +122,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		finPermis.validate(erreurs, warnings);
-		assertTrue("La fin de permis non C devrait être ignorée", erreurs.size() == 0);
+		assertTrue("La fin de permis non C devrait être ignorée", erreurs.isEmpty());
 
 		finPermis.handle(warnings);
 

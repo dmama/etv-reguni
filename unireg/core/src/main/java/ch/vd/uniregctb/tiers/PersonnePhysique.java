@@ -197,7 +197,7 @@ public class PersonnePhysique extends Contribuable {
 		if (habitant)
 			return "Contribuable PP";
 		//si non habitant
-		if (getForsFiscauxNonAnnules(false).size() > 0) {
+		if (!getForsFiscauxNonAnnules(false).isEmpty()) {
 			return "Contribuable PP";
 		}
 		return "Autre tiers";

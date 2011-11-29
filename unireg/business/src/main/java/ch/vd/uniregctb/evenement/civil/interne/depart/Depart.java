@@ -166,7 +166,7 @@ public class Depart extends Mouvement {
 
 				// fors non-annulés sur le contribuable actif à la date de l'événement
 				final List<ForFiscal> tousFors = contribuable.getForsFiscauxNonAnnules(false);
-				if (tousFors == null || tousFors.size() == 0) {
+				if (tousFors == null || tousFors.isEmpty()) {
 					// pas de fors non-annulés -> tout va bien, on accepte l'événement sans autre
 					Audit.info(getNumeroEvenement(), "Commune de départ inconnue mais contribuable sans for, départ traité sans autre");
 					return null;

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.perfs;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -44,7 +43,7 @@ public class PerfsAccessFileIterator {
 		this.startTime = System.currentTimeMillis();
 		this.calls = file.getCalls();
 		this.targetCount = targetCount;
-		Assert.isTrue(calls.size() > 0 || targetCount == 0);
+		Assert.isTrue(!calls.isEmpty() || targetCount == 0);
 
 		this.i = -1;
 		this.count = -1;

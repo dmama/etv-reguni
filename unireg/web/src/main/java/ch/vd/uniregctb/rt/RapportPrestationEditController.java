@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.rt;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -20,13 +19,13 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 
 	protected final Logger LOGGER = Logger.getLogger(RapportPrestationEditController.class);
 
-	private final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
-	private final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
-	private final String PROVENANCE_PARAMETER_NAME = "provenance";
+	private static final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
+	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
+	private static final String PROVENANCE_PARAMETER_NAME = "provenance";
 
-	private final String PROVENANCE_SOURCIER_VALUE = "sourcier";
-	private final String PROVENANCE_DEBITEUR_VALUE = "debiteur";
-	private final String PROVENANCE_LISTE_RAPPORTS = "listeRPI";
+	private static final String PROVENANCE_SOURCIER_VALUE = "sourcier";
+	private static final String PROVENANCE_DEBITEUR_VALUE = "debiteur";
+	private static final String PROVENANCE_LISTE_RAPPORTS = "listeRPI";
 
 
 	private RapportPrestationEditManager rapportPrestationEditManager;

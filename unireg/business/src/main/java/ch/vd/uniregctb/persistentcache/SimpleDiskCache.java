@@ -45,7 +45,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 	public void afterPropertiesSet() throws Exception {
 		File dir = new File(storeDir);
 		if (!dir.exists() && !dir.mkdirs()) {
-			throw new RuntimeException("Impossible de créer le répertoire [" + storeDir + "]");
+			throw new RuntimeException("Impossible de créer le répertoire [" + storeDir + ']');
 		}
 	}
 
@@ -77,7 +77,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 			object = (T) ois.readObject();
 		}
 		catch (Throwable e) {
-			LOGGER.warn("Impossible de lire l'objet avec la clé [" + key.getId() + "," + key.getComplement() + "]", e);
+			LOGGER.warn("Impossible de lire l'objet avec la clé [" + key.getId() + ',' + key.getComplement() + ']', e);
 			// le fichier est corrumpu ou illisible -> on l'efface
 			File file = new File(filename);
 			//noinspection ResultOfMethodCallIgnored
@@ -162,7 +162,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 			oos.writeObject(object);
 		}
 		catch (Throwable e) {
-			LOGGER.warn("Impossible d'écrire l'objet avec la clé [" + key.getId() + "," + key.getComplement() + "]", e);
+			LOGGER.warn("Impossible d'écrire l'objet avec la clé [" + key.getId() + ',' + key.getComplement() + ']', e);
 			//noinspection ResultOfMethodCallIgnored
 			tempfile.delete();
 			return;
@@ -203,7 +203,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 				}
 				if (++i > 10) {
 					// après 10 essais, on laisse tomber
-					throw new RuntimeException("Impossible de créer le répertoire [" + path + "]");
+					throw new RuntimeException("Impossible de créer le répertoire [" + path + ']');
 				}
 			}
 		}
@@ -218,12 +218,12 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 			if (!file.delete()) {
 				//noinspection ResultOfMethodCallIgnored
 				tempfile.delete();
-				throw new RuntimeException("Impossible d'effacer le fichier [" + filename + "]");
+				throw new RuntimeException("Impossible d'effacer le fichier [" + filename + ']');
 			}
 			if (++i > 100) {
 				//noinspection ResultOfMethodCallIgnored
 				tempfile.delete();
-				throw new RuntimeException("Impossible de renommer le fichier [" + tempfile + "] en [" + filename + "]");
+				throw new RuntimeException("Impossible de renommer le fichier [" + tempfile + "] en [" + filename + ']');
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		if (files != null) {
 			for (File f : files) {
 				if (!f.delete()) {
-					throw new RuntimeException("Impossible de supprimer le fichier [" + f + "]");
+					throw new RuntimeException("Impossible de supprimer le fichier [" + f + ']');
 				}
 			}
 		}

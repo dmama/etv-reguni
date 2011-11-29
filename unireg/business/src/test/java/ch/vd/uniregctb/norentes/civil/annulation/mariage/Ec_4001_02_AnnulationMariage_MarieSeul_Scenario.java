@@ -41,7 +41,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private final class LocalMockServiceCivil extends DefaultMockServiceCivil {
+	private static final class LocalMockServiceCivil extends DefaultMockServiceCivil {
 
 		public void annuleMariage(final MockIndividu individu) {
 			final MockIndividu conjoint = individu.getConjoint();
@@ -67,7 +67,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		serviceCivilService.setUp(localMockServiceCivil);
 	}
 
-	private final long noIndPierre = 12345; // Pierre
+	private static final long noIndPierre = 12345; // Pierre
 
 	private long noHabPierre;
 	private long noMenage;

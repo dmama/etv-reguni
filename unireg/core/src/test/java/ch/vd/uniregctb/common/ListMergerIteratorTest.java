@@ -30,7 +30,7 @@ public class ListMergerIteratorTest extends WithoutSpringTest {
 
 				while (iter.hasNext()) {
 					final T enTrop = iter.next();
-					b.append(" ").append(enTrop);
+					b.append(' ').append(enTrop);
 				}
 				Assert.fail(b.toString());
 			}
@@ -46,7 +46,7 @@ public class ListMergerIteratorTest extends WithoutSpringTest {
 			final StringBuilder b = new StringBuilder();
 			b.append("Eléments manquants :");
 			for (T missing : resultatAttendu.subList(index, resultatAttendu.size())) {
-				b.append(" ").append(missing);
+				b.append(' ').append(missing);
 			}
 			Assert.fail(b.toString());
 		}

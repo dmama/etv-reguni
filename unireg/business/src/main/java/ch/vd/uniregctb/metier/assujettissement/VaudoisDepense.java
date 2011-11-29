@@ -33,6 +33,6 @@ public class VaudoisDepense extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "VaudoisDepense(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "VaudoisDepense(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

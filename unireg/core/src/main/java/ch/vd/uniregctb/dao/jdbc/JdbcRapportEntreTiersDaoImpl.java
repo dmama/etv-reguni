@@ -435,7 +435,7 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + rapportEntreTiersType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + rapportEntreTiersType + ']');
 			}
 			
 			return res;

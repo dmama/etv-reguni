@@ -312,7 +312,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		for (char c : poppins.toCharArray()) {
 			message = message + c;
 		}
-		message += " (" + id + ")";
+		message += " (" + id + ')';
 		LOGGER.error(message);
 	}
 

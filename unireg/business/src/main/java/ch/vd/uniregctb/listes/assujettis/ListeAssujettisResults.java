@@ -112,7 +112,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		CauseIgnorance causeIgnorance = null;
 
 		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, anneeFiscale);
-		if (assujettissements == null || assujettissements.size() == 0) {
+		if (assujettissements == null || assujettissements.isEmpty()) {
 			causeIgnorance = CauseIgnorance.NON_ASSUJETTI;
 		}
 		else {
@@ -128,7 +128,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 				}
 
 				// s'il ne reste plus rien, c'est que le contribuable était toujours sourcier pur...
-				if (assujettissements.size() == 0) {
+				if (assujettissements.isEmpty()) {
 					causeIgnorance = CauseIgnorance.SOURCIER_PUR;
 				}
 			}

@@ -189,7 +189,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	/**
 	 * Cette classe permet de construire une clé secondaire (id) à partir d'une clé primaire (id + complement).
 	 */
-	private class KeyIdKeyCreator implements SecondaryKeyCreator {
+	private static class KeyIdKeyCreator implements SecondaryKeyCreator {
 
 		private final EntryBinding<Long> secKeyBinding;
 		private final EntryBinding<ObjectKey> primareyKeyBinding;

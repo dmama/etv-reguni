@@ -27,7 +27,7 @@ public enum TypeAdressePM {
 			return FACTURATION;
 		}
 		else {
-			throw new IllegalArgumentException("Type d'adresse PM inconnu = [" + right.getName() + "]");
+			throw new IllegalArgumentException("Type d'adresse PM inconnu = [" + right.getName() + ']');
 		}
 	}
 }

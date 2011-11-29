@@ -98,7 +98,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 	private String genererListeDossiersNonTraites(List<DeterminerMouvementsDossiersEnMasseResults.NonTraite> nonTraites, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (nonTraites != null && nonTraites.size() > 0) {
+		if (nonTraites != null && !nonTraites.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(nonTraites, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.NonTraite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -122,7 +122,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 	private String genererListeMouvements(List<DeterminerMouvementsDossiersEnMasseResults.Mouvement> mouvements, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (mouvements != null && mouvements.size() > 0) {
+		if (mouvements != null && !mouvements.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(mouvements, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.Mouvement>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

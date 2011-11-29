@@ -21,6 +21,6 @@ public final class WebServiceException extends Exception {
 	}
 
 	public WebServiceException(String message, Throwable cause) {
-		super(message + ":" + cause.getMessage());
+		super(message + ':' + cause.getMessage());
 	}
 }

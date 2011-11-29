@@ -158,7 +158,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	}
 
 	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier, boolean isExtraction) throws ServiceInfrastructureException {
-		if (mvts != null && mvts.size() > 0) {
+		if (mvts != null && !mvts.isEmpty()) {
 			prefetchIndividus(mvts);
 			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
 			for (MouvementDossier mvt : mvts) {

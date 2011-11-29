@@ -43,7 +43,7 @@ public abstract class IndexableData {
 		Document d = new Document();
 
 		d.add(new Field(LuceneEngine.F_ENTITYID, id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		d.add(new Field(LuceneEngine.F_DOCID, type.toLowerCase() + "-" + id, Field.Store.YES, Field.Index.NOT_ANALYZED));
+		d.add(new Field(LuceneEngine.F_DOCID, type.toLowerCase() + '-' + id, Field.Store.YES, Field.Index.NOT_ANALYZED));
 		d.add(new Field(LuceneEngine.F_DOCTYPE, type.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		d.add(new Field(LuceneEngine.F_DOCSUBTYPE, (subType == null ? "" : subType.toLowerCase()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 

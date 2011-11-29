@@ -64,7 +64,7 @@ public class ForsParTypeAt {
 				autresImpots.add((ForFiscalAutreImpot) ff);
 			}
 			else {
-				throw new IllegalArgumentException("Type de for fiscal inconnu = [" + ff.getClass() + "]");
+				throw new IllegalArgumentException("Type de for fiscal inconnu = [" + ff.getClass() + ']');
 			}
 		}
 

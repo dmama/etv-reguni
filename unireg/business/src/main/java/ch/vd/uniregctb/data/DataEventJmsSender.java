@@ -178,7 +178,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			event.setType(ch.vd.fiscalite.registre.databaseEvent.DataType.PM);
 			break;
 		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 		}
 
 		final EsbMessage m = esbMessageFactory.createMessage();

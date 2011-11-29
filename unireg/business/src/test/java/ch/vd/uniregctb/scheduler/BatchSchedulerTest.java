@@ -211,7 +211,7 @@ public class BatchSchedulerTest extends JobTest {
 		final Calendar cal = GregorianCalendar.getInstance();
 		cal.add(Calendar.SECOND, 3);
 		final String cron = String.format("%d %d %d * * ?", cal.get(Calendar.SECOND), cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY));
-		LOGGER.debug("cron = \"" + cron + "\"");
+		LOGGER.debug("cron = \"" + cron + '\"');
 
 		// Schedule le cron
 		final JobDefinition job = batchScheduler.getJob(LoggingJob.NAME);

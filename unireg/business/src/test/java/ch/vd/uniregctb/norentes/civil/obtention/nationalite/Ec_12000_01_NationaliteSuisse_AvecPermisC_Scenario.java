@@ -43,7 +43,7 @@ public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario extends Evenemen
 		return TypeEvenementCivil.NATIONALITE_SUISSE;
 	}
 
-	private final long noIndJulie = 6789; // julie
+	private static final long noIndJulie = 6789; // julie
 
 	private MockIndividu indJulie;
 

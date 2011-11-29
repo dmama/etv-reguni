@@ -34,6 +34,6 @@ public class SourcierPur extends Sourcier {
 
 	@Override
 	public String toString() {
-		return "SourcierPur(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "SourcierPur(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.acces.parDossier;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -42,7 +41,7 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	private final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)

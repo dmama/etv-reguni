@@ -196,7 +196,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		List<DateRange> lrTrouveesIn = null;
 		DateRange periodeInteressante = new DateRangeHelper.Range(null, dateFinPeriode);
 		final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
-		if (fors != null && fors.size() > 0) {
+		if (fors != null && !fors.isEmpty()) {
 
 			// d'abord on cherche les périodes d'activité d'après les fors non-annulés (seulement
 			// la partie d'entre elles qui tient jusqu'à la fin de la période donnée en paramètre)
@@ -215,7 +215,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 			// si aucune période d'activité dans la période intéressante (avant la date de fin),
 			// pas la peine d'aller plus loin
-			if (periodesActivite.size() > 0) {
+			if (!periodesActivite.isEmpty()) {
 
 				// ici, on va prendre la période max (pour limiter l'appel à la méthode du DAO)
 				final List<RegDate> boundaries = DateRangeHelper.extractBoundaries(periodesActivite);
@@ -238,7 +238,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 				// idéalement, tous les ranges, une fois les "collate" effectués, devraient être les mêmes
 				final List<DateRange> lrManquantes;
-				if (lrTrouveesIn.size() == 0) {
+				if (lrTrouveesIn.isEmpty()) {
 					lrManquantes = periodesActivite;
 				}
 				else {
@@ -250,7 +250,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 				// maintenant, à partir de cette liste de ranges où il devrait y avoir une LR mais il n'y en a pas
 				// il faut extraire les périodes de LR
-				if (lrManquantes.size() > 0) {
+				if (!lrManquantes.isEmpty()) {
 					final List<DateRange>lrManquantesAjustees = ajusterSelonPeriodeFiscale(lrManquantes);
 					lrPeriodiquesManquantes = extrairePeriodesAvecPeriodicites(dpi, lrManquantesAjustees);
 				}

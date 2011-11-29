@@ -40,7 +40,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789; // julie
+	private static final long noIndJulie = 6789; // julie
 
 	private MockIndividu indJulie;
 

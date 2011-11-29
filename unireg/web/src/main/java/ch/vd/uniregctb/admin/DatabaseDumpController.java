@@ -129,7 +129,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 		String mimetype = this.getServletContext().getMimeType(filename);
 		response.setContentType(mimetype);
 		response.setContentLength(content.size());
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + '\"');
 		FileCopyUtils.copy(content.toByteArray(), out);
 	}
 

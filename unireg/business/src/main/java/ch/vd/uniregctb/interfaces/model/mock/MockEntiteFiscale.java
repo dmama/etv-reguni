@@ -31,22 +31,16 @@ public abstract class MockEntiteFiscale implements EntiteFiscale {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 36;
-		int result = 1;
-		result = prime * result + code;
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final MockEntiteFiscale that = (MockEntiteFiscale) o;
+		return code == null ? that.code == null : code.equals(that.code);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MockEntiteFiscale other = (MockEntiteFiscale) obj;
-		return code == other.code;
+	public int hashCode() {
+		return code == null ? 0 : code.hashCode();
 	}
 }

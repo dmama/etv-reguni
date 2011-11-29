@@ -63,7 +63,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 		return NAME;
 	}
 
-	private final long noIndSebastien = 844770;
+	private static final long noIndSebastien = 844770;
 
 	private MockIndividu indSebastien;
 
@@ -136,7 +136,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			final List<Declaration> declarations = sebastien.getDeclarationsSorted();
 			assertNotNull(declarations, "Liste des DI nulle");
-			assertTrue(declarations.size() > 0, "Mauvais nombre de déclarations");
+			assertTrue(!declarations.isEmpty(), "Mauvais nombre de déclarations");
 
 			// vérification que les adresses civiles sont à Bex
 			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false));
@@ -209,7 +209,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			diCriteria.setContribuable(sebastien.getNumero());
 			final List<DeclarationImpotOrdinaire> dis = diDAO.find(diCriteria);
 			assertNotNull(dis, "Liste des DI nulle");
-			assertTrue(dis.size() > 0, "Mauvais nombre de déclarations");
+			assertTrue(!dis.isEmpty(), "Mauvais nombre de déclarations");
 
 			int nombreTachesDevantEtreGenerees = 0;
 			for (DeclarationImpotOrdinaire di : dis) {

@@ -98,7 +98,7 @@ public class ParamPeriodeController extends AbstractController {
 	 */
 	private PeriodeFiscale retrouverPeriodeSelectionnee(final HttpServletRequest request, List<PeriodeFiscale> periodes) {
 
-		assert periodes.size() > 0 : "la liste des periodes doit comporter au moins un element";
+		assert !periodes.isEmpty() : "la liste des periodes doit comporter au moins un element";
 
 		PeriodeFiscale periodeSelectionnee = null;
 
@@ -106,7 +106,7 @@ public class ParamPeriodeController extends AbstractController {
 			periodeSelectionnee = (PeriodeFiscale) CollectionUtils.find(periodes, new Predicate(){
 				@Override
 				public boolean evaluate(Object o) {
-					return ((PeriodeFiscale)o).getId().equals(Long.valueOf(getPeriodeIdFromRequest(request))); 
+					return ((PeriodeFiscale)o).getId().equals(getPeriodeIdFromRequest(request));
 				}
 			});
 		}
@@ -133,12 +133,12 @@ public class ParamPeriodeController extends AbstractController {
 			modeleSelectionne = (ModeleDocument) CollectionUtils.find(modeles, new Predicate(){
 				@Override
 				public boolean evaluate(Object o) {
-					return ((ModeleDocument)o).getId().equals(Long.valueOf(getModeleIdFromRequest(request))); 
+					return ((ModeleDocument)o).getId().equals(getModeleIdFromRequest(request));
 				}
 			});
 		}
 
-		if (modeleSelectionne == null && modeles.size() > 0) {
+		if (modeleSelectionne == null && !modeles.isEmpty()) {
 			modeleSelectionne = modeles.toArray(new ModeleDocument[modeles.size()])[0];
 		}
 		

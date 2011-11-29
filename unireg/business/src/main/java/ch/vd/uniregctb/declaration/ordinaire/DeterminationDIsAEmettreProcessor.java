@@ -139,7 +139,7 @@ public class DeterminationDIsAEmettreProcessor {
 		final int premierePeriodeFiscale = parametres.getPremierePeriodeFiscale();
 		if (anneePeriode < premierePeriodeFiscale) {
 			throw new DeclarationException("La période fiscale " + anneePeriode
-					+ " est antérieure à la première période fiscale paramétrée [" + premierePeriodeFiscale + "]");
+					+ " est antérieure à la première période fiscale paramétrée [" + premierePeriodeFiscale + ']');
 		}
 
 		// Vérification de la date de traitement. La spec dit : la période fiscale doit être échue et la période d'envoi de masse ne doit
@@ -326,7 +326,7 @@ public class DeterminationDIsAEmettreProcessor {
 				// problème, mais il doit avoir été détecté lors de la création de la tâche
 				break;
 			default:
-				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + "]");
+				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + ']');
 			}
 		}
 	}
@@ -387,7 +387,7 @@ public class DeterminationDIsAEmettreProcessor {
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + "]");
+				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + ']');
 			}
 		}
 	}
@@ -471,7 +471,7 @@ public class DeterminationDIsAEmettreProcessor {
 			case INTERSECTE:
 				// une autre déclaration existe qui occupe partiellement le range, il y a un problème
 				final String message = "Déclaration d'impôt [id=" + checkDI.object.getId() + ", début=" + checkDI.object.getDateDebut() + ", fin=" +
-						checkDI.object.getDateFin() + "]. Période d'imposition calculée [début=" + details.getDateDebut() + ", fin=" + details.getDateFin() + "]";
+						checkDI.object.getDateFin() + "]. Période d'imposition calculée [début=" + details.getDateDebut() + ", fin=" + details.getDateFin() + ']';
 				if (rapport.get() != null) {
 					rapport.get().addErrorDeclarationCollision(contribuable, message);
 				}

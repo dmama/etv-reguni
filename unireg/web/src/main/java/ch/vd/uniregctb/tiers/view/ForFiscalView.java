@@ -174,7 +174,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		case PAYS_HS:
 			return numeroForFiscalPays;
 		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnu =[" + typeAutoriteFiscale + "]");
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu =[" + typeAutoriteFiscale + ']');
 		}
 	}
 

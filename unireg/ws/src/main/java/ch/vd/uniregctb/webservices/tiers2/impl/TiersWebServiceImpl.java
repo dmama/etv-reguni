@@ -378,7 +378,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 			if (params.tiersNumbers.size() > MAX_BATCH_SIZE) {
-				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + '.';
 				LOGGER.error(message);
 				throw new BusinessException(message);
 			}
@@ -443,7 +443,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 			if (params.tiersNumbers.size() > MAX_BATCH_SIZE) {
-				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + '.';
 				LOGGER.error(message);
 				throw new BusinessException(message);
 			}

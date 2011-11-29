@@ -156,7 +156,7 @@ public abstract class EAN13ModulusCheckDigit implements EAN13CheckDigit {
             return Character.getNumericValue(character);
         } else {
             throw new EAN13CheckDigitException("Invalid Character[" +
-                    leftPos + "] = '" + character + "'");
+                    leftPos + "] = '" + character + '\'');
         }
     }
 

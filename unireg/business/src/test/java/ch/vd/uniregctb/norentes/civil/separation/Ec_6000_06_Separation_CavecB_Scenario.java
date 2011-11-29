@@ -44,8 +44,8 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 		return NAME;
 	}
 
-	private final long noIndEsad = 6544; // Esad
-	private final long noIndAida = 7981; // Aida
+	private static final long noIndEsad = 6544; // Esad
+	private static final long noIndAida = 7981; // Aida
 
 	private MockIndividu indEsad;
 	private MockIndividu indAida;

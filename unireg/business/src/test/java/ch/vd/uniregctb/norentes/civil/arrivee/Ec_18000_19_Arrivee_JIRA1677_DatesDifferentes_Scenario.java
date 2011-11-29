@@ -43,8 +43,8 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		return "Contrôle de la date d'ouverture du rapport d'appartenance ménage créé lors de l'arrivée d'un couple (à deux dates différentes) sur le sol cantonal";
 	}
 
-	private final long noIndOlivier = 960713;
-	private final long noIndAlexandra = 960714;
+	private static final long noIndOlivier = 960713;
+	private static final long noIndAlexandra = 960714;
 
 	private MockIndividu indOlivier;
 	private MockIndividu indAlexandra;

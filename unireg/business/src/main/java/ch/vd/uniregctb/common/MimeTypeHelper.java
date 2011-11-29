@@ -56,6 +56,6 @@ public abstract class MimeTypeHelper {
 		// si on est ici, c'est qu'on n'a pas trouvé d'extension pour le mimeType donné et que
 		// le nom du mimetype contient un ";" (exemple : "text/plain; charset=UTF-8"
 		// -> dans ce cas, on refait la recherche de l'extension sur la première partie du mimetype seulement
-		return getFileExtensionForType(mimeType.substring(0, mimeType.indexOf(";")));
+		return getFileExtensionForType(mimeType.substring(0, mimeType.indexOf(';')));
 	}
 }

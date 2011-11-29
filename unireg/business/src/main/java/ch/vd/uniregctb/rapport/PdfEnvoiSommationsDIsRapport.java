@@ -134,7 +134,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 	@SuppressWarnings({"unchecked"})
 	private String asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
 		final String content;
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

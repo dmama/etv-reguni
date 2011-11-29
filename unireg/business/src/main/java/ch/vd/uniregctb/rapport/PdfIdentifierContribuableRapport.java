@@ -95,7 +95,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 
 	private <T extends IdentifierContribuableResults.Identifie> String getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
-		if (liste != null && liste.size() > 0) {
+		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -124,7 +124,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 
 	private <T extends IdentifierContribuableResults.NonIdentifie> String getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
-		if (liste != null && liste.size() > 0) {
+		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

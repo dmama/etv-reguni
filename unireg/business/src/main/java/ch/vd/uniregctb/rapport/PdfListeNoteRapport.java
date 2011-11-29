@@ -94,7 +94,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 
 	private <T extends ListeNoteResults.InfoContribuableAvecNote> String getCsvContribuablesNotes(List<T> liste, String filename, StatusManager status, final int periode) {
 		String contenu = null;
-		if (liste != null && liste.size() > 0) {
+		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

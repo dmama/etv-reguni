@@ -320,7 +320,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, aujourdhui, lrTrouvees);
 			final DateRange periodeInteressante = new DateRangeHelper.Range(null, aujourdhui);
 			//[UNIREG-3120] la LR à ajouter doit recouper au moins une période d'activité du débiteur
-			if (lrManquantes != null && lrManquantes.size() > 0
+			if (lrManquantes != null && !lrManquantes.isEmpty()
 					&& (periodeInteressante.isValidAt(lrManquantes.get(0).getDateFin()) || periodeInteressante.isValidAt(lrManquantes.get(0).getDateDebut()))
 					&& !DateRangeHelper.intersect(lrManquantes.get(0), lrTrouvees)) {
 				lrEditView.setDateDebutPeriode(lrManquantes.get(0).getDateDebut());

@@ -40,7 +40,7 @@ public class TracingManager {
 			String cn = lastCall.getClassName();
 			int lastPoint = cn.lastIndexOf('.');
 			cn = cn.substring(lastPoint + 1, cn.length());
-			String description = prefix + cn + "." + lastCall.getMethodName();
+			String description = prefix + cn + '.' + lastCall.getMethodName();
 
 			// Create and add it to stack
 			TracePoint parent = TracingManager.getLastTracePoint();
@@ -193,7 +193,7 @@ public class TracingManager {
 		TracePoint tp = null;
 
 		Stack<TracePoint> points = getStackForThread();
-		if (points.size() > 0) {
+		if (!points.isEmpty()) {
 			tp = points.peek();
 		} else {
 			String description = Thread.currentThread().getName();

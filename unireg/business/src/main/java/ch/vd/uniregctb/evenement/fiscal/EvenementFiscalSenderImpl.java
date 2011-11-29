@@ -130,7 +130,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 			object = creerEvenementFiscal((EvenementFiscalNaissance) evenement);
 		}
 		else {
-			throw new EvenementFiscalException("Type d'événement inconnu = [" + evenement.getClass() + "]");
+			throw new EvenementFiscalException("Type d'événement inconnu = [" + evenement.getClass() + ']');
 		}
 
 		return object;

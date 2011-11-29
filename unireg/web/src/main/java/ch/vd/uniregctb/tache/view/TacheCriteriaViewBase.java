@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.tache.view;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
-import org.apache.log4j.Logger;
-
-import java.io.Serializable;
-import java.util.Date;
 
 public class TacheCriteriaViewBase implements Serializable {
 
 	private static final long serialVersionUID = -1984186456557111180L;
 	private static final Logger LOGGER = Logger.getLogger(TacheCriteriaViewBase.class);
-	private final String TOUS = "TOUS";
+	private static final String TOUS = "TOUS";
 
 	private String typeTache;
 	private String etatTache;

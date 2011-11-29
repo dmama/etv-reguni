@@ -173,10 +173,10 @@ public class SecurityDebugConfig implements InitializingBean {
 
 				// Bypass par user
 				final Map<String, String> all = properties.getAllProperties();
-				for (String k : all.keySet()) {
-					if (k.startsWith("extprop.ifosec.bypass.procedures.")) {
-						String user = k.substring("extprop.ifosec.bypass.procedures.".length());
-						String procedures = all.get(k);
+				for (Map.Entry<String, String> entry : all.entrySet()) {
+					if (entry.getKey().startsWith("extprop.ifosec.bypass.procedures.")) {
+						String user = entry.getKey().substring("extprop.ifosec.bypass.procedures.".length());
+						String procedures = entry.getValue();
 						IfoSecBypass bypass = new IfoSecBypass(user, oid, ifoSecBypassOIDSigle, procedures);
 						ifoSecService.addBypass(bypass);
 					}

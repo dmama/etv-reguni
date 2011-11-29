@@ -51,7 +51,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 		return NAME;
 	}
 
-	private final long noIndPierre = 12345; // Pierre
+	private static final long noIndPierre = 12345; // Pierre
 
 	private MockIndividu indPierre;
 

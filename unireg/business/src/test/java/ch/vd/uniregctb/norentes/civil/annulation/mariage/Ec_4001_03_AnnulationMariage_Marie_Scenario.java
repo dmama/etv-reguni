@@ -55,8 +55,8 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		});
 	}
 
-	private final long noIndMomo = 54321; // Maurice
-	private final long noIndBea = 23456; // Béatrice
+	private static final long noIndMomo = 54321; // Maurice
+	private static final long noIndBea = 23456; // Béatrice
 
 	private long noHabMomo;
 	private long noHabBea;

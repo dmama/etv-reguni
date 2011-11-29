@@ -69,7 +69,7 @@ public class TiersVisuController extends AbstractTiersController {
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 
-		if (idParam != null && !idParam.equals("")) {
+		if (idParam != null && !idParam.isEmpty()) {
 			Long id = Long.parseLong(idParam);
 
 			// vérification des droits d'accès au dossier du contribuable
@@ -99,7 +99,7 @@ public class TiersVisuController extends AbstractTiersController {
 			}
 			tiersVisuView.setAllowed(isAllowed);
 		}
-		if (idTacheTraiteParam != null && !idTacheTraiteParam.equals("")) {
+		if (idTacheTraiteParam != null && !idTacheTraiteParam.isEmpty()) {
 			Long idTache = Long.parseLong(idTacheTraiteParam);
 			tacheListManager.traiteTache(idTache);
 		}
@@ -130,7 +130,7 @@ public class TiersVisuController extends AbstractTiersController {
 		mav.addObject(URL_RETOUR_SESSION_NAME, session.getAttribute(URL_RETOUR_SESSION_NAME));
 		mav.addObject(PAGE_SIZE_NAME, PAGE_SIZE);
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		if (idParam != null && !idParam.equals("")) {
+		if (idParam != null && !idParam.isEmpty()) {
 			Long numeroDebiteur = Long.parseLong(idParam);
 			mav.addObject(RESULT_SIZE_NAME, tiersVisuManager.countRapportsPrestationImposable(numeroDebiteur, rapportsPrestationHisto));
 		}

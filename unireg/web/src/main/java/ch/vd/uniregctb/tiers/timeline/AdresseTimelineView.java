@@ -2,9 +2,9 @@ package ch.vd.uniregctb.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -31,7 +31,7 @@ public class AdresseTimelineView {
 	 * Représente une ligne dans la table
 	 */
 	public static class Row {
-		public Map<AdresseCouche, TimelineCell> columns = new TreeMap<AdresseCouche, TimelineCell>();
+		public Map<AdresseCouche, TimelineCell> columns = new EnumMap<AdresseCouche, TimelineCell>(AdresseCouche.class);
 		public final DateRange periode;
 
 		public Row(DateRange periode, List<AdresseCouche> cols) {

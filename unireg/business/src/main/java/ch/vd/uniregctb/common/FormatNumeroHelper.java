@@ -28,10 +28,10 @@ public class FormatNumeroHelper {
 				s = sNumero;
 			}
 			else if ( size <= 5) {
-				s = sNumero.substring(0, size -2) + "." + sNumero.substring(size - 2);
+				s = sNumero.substring(0, size -2) + '.' + sNumero.substring(size - 2);
 			}
 			else {
-				s = sNumero.substring(0, size - 5) + "." + sNumero.substring(size - 5, size - 2) + "." + sNumero.substring(size - 2);
+				s = sNumero.substring(0, size - 5) + '.' + sNumero.substring(size - 5, size - 2) + '.' + sNumero.substring(size - 2);
 			}
 		}
 
@@ -69,7 +69,7 @@ public class FormatNumeroHelper {
 		if (sNumero != null && Pattern.matches("[0-9]*", sNumero)) {
 			rtr = sNumero;
 			if (sNumero.length() == 13) {
-				rtr = sNumero.substring(0, 3) + "." + sNumero.substring(3, 7) + "." + sNumero.substring(7, 11) + "."
+				rtr = sNumero.substring(0, 3) + '.' + sNumero.substring(3, 7) + '.' + sNumero.substring(7, 11) + '.'
 						+ sNumero.substring(11, sNumero.length());
 			}
 
@@ -90,10 +90,10 @@ public class FormatNumeroHelper {
 
 		if (sNumero != null && Pattern.matches("[0-9]*", sNumero)) {
 			if (sNumero.length() == 8 || sNumero.length() == 11) {
-				rtr = sNumero.substring(0, 3) + "." + sNumero.substring(3, 5) + "." + sNumero.substring(5, 8);
+				rtr = sNumero.substring(0, 3) + '.' + sNumero.substring(3, 5) + '.' + sNumero.substring(5, 8);
 			}
 			if (sNumero.length() == 11) {
-				rtr += "." + sNumero.substring(8, 11);
+				rtr += '.' + sNumero.substring(8, 11);
 			}
 		}
 		return rtr;
@@ -130,15 +130,15 @@ public class FormatNumeroHelper {
 		}
 		int size = date.length();
 		if (size == 8) {
-			return (date.substring(6, 8) + "." + date.substring(4, 6) + "." + date.substring(0, 4));
+			return (date.substring(6, 8) + '.' + date.substring(4, 6) + '.' + date.substring(0, 4));
 		}
 		if (size == 6) {
-			return (date.substring(4, 6) + "." + date.substring(0, 4));
+			return (date.substring(4, 6) + '.' + date.substring(0, 4));
 		}
 		Pattern p = Pattern.compile("^(\\d{4})\\.(\\d{2})\\.(\\d{2})$");
 		Matcher m = p.matcher(date);
 		if (m.matches()) {
-			return (m.group(3) + "." + m.group(2) + "." + m.group(1));
+			return (m.group(3) + '.' + m.group(2) + '.' + m.group(1));
 		}
 		return date;
 	}
@@ -147,15 +147,15 @@ public class FormatNumeroHelper {
 
 		if (s != null) {
 
-			if (s.indexOf(".") != -1) {
+			if (s.indexOf('.') != -1) {
 
 				s = s.replace(".", "");
 			}
-			if (s.indexOf("-") != -1) {
+			if (s.indexOf('-') != -1) {
 
 				s = s.replace("-", "");
 			}
-			if (s.indexOf("/") != -1) {
+			if (s.indexOf('/') != -1) {
 
 				s = s.replace("/", "");
 			}
@@ -187,7 +187,7 @@ public class FormatNumeroHelper {
 		for (int i=0; i<nbreSeparateurs; i++) {
 			noRefFormate = noRefFormate + StringUtils.substring(noRef, 0, block) ;
 			if (i < nbreSeparateurs -1) {
-				noRefFormate = noRefFormate + " ";
+				noRefFormate = noRefFormate + ' ';
 				noRef = StringUtils.substring(noRef, block);
 			}
 			else {
@@ -196,7 +196,7 @@ public class FormatNumeroHelper {
 		}
 		if ((noRef != null) && (noRef.length() > 0)) {
 			if (tailleNoReference > block) {
-				noRefFormate = noRefFormate + " " + noRef;
+				noRefFormate = noRefFormate + ' ' + noRef;
 			}
 			else {
 				noRefFormate = noRef;

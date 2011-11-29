@@ -69,7 +69,7 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
 		finNationalite.validate(erreurs, warnings);
-		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.size() == 0);
+		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());
 	}
 
 	private FinNationalite createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {

@@ -45,7 +45,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 			}
 		}
 
-		if (listeAFiltrer.size() == 0) {
+		if (listeAFiltrer.isEmpty()) {
 			return NON_ASSUJETTI_31_12;
 		}
 
@@ -53,7 +53,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 		// faut l'ignorer dans le cadre de l'extraction "fortune"
 		final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(finAnnee);
 		boolean trouveVaudois = false;
-		if (fors != null && fors.size() > 0) {
+		if (fors != null && !fors.isEmpty()) {
 			for (ForFiscal ff : fors) {
 				if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					trouveVaudois = true;

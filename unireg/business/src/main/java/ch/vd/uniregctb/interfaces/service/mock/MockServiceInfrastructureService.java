@@ -376,7 +376,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 				if (commune != null) {
 					throw new RuntimeException(
 							"Le bâtiment avec l'egid [" + egid + "] est enregistré dans deux communes en même temps : numéro Ofs [" + commune.getNoOFSEtendu() + "] et numéro Ofs [" +
-									lien.getCommune().getNoOFSEtendu() + "]");
+									lien.getCommune().getNoOFSEtendu() + ']');
 				}
 				commune = lien.getCommune();
 			}

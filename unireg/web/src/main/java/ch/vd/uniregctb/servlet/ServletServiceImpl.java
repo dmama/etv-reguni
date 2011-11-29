@@ -39,7 +39,7 @@ public class ServletServiceImpl implements ServletService, ServletContextAware {
 		if (contentLength != null) {
 			response.setContentLength(contentLength);
 		}
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + '\"');
 
 		// Copie le fichier dans le flux de réponse de manière continue, pour éviter d'avoir tout le fichier en mémoire.
 		stream(is, out);

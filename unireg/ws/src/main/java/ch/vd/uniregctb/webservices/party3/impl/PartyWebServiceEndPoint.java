@@ -314,7 +314,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			checkGeneralReadAccess(params.getLogin());
 
 			if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.getLogin().getUserId(), params.getLogin().getOid())) {
-				throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + params.getLogin().getUserId() + "/" + params.getLogin().getOid() +
+				throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + params.getLogin().getUserId() + '/' + params.getLogin().getOid() +
 						") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 			}
 
@@ -377,7 +377,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		// un nouvel appel est en train de débuter
 		load.incrementAndGet();
 
-		if (login == null || login.getUserId() == null || login.getOid() == 0 || login.getUserId().trim().equals("")) {
+		if (login == null || login.getUserId() == null || login.getOid() == 0 || login.getUserId().trim().isEmpty()) {
 			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.", BusinessExceptionCode.INVALID_REQUEST);
 		}
 
@@ -404,7 +404,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	private static void checkLimitedReadAccess(UserLogin login) throws WebServiceException {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid()) &&
 				!SecurityProvider.isGranted(Role.VISU_LIMITE, login.getUserId(), login.getOid())) {
-			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + login.getUserId() + "/" + login.getOid()
+			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid()
 					+ ") n'a pas les droits d'accès en lecture sur l'application.");
 		}
 	}
@@ -418,7 +418,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	private static void checkGeneralReadAccess(UserLogin login) throws WebServiceException {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
-			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + login.getUserId() + "/" + login.getOid()
+			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid()
 					+ ") n'a pas les droits d'accès en lecture complète sur l'application.");
 		}
 	}
@@ -433,7 +433,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	private static void checkPartyReadAccess(long partyId) throws WebServiceException {
 		final Niveau acces = SecurityProvider.getDroitAcces(partyId);
 		if (acces == null) {
-			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + partyId);
 		}
 	}
@@ -468,7 +468,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			}
 			final Niveau niveau = niveaux.get(i);
 			if (niveau == null) {
-				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
 				entry.setParty(null);
 				entry.setExceptionInfo(new AccessDeniedExceptionInfo(message, null));
@@ -486,7 +486,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	private static void checkPartyWriteAccess(long partyId) throws WebServiceException {
 		final Niveau acces = SecurityProvider.getDroitAcces(partyId);
 		if (acces == null || acces == Niveau.LECTURE) {
-			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+			throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en écriture sur le tiers n° " + partyId);
 		}
 	}

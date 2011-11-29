@@ -508,7 +508,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else {
-			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + "]");
+			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
 		}
 	}
 

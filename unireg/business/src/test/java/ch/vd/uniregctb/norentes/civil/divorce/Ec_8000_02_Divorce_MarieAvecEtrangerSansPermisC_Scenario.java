@@ -43,8 +43,8 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321; // momo
-	private final long noIndBea = 23456; // bea
+	private static final long noIndMomo = 54321; // momo
+	private static final long noIndBea = 23456; // bea
 
 	private MockIndividu indMomo;
 	private MockIndividu indBea;

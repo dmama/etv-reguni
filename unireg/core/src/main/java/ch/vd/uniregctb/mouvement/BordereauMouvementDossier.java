@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
@@ -66,7 +65,7 @@ public class BordereauMouvementDossier extends HibernateEntity {
 	@Transient
 	public CollectiviteAdministrative getExpediteur() {
 		final CollectiviteAdministrative exp;
-		if (contenu != null && contenu.size() > 0) {
+		if (contenu != null && !contenu.isEmpty()) {
 			final MouvementDossier mvt = contenu.iterator().next();
 			if (mvt instanceof EnvoiDossier) {
 				exp = ((EnvoiDossier) mvt).getCollectiviteAdministrativeEmettrice();
@@ -90,7 +89,7 @@ public class BordereauMouvementDossier extends HibernateEntity {
 	@Transient
 	public CollectiviteAdministrative getDestinataire() {
 		final CollectiviteAdministrative dest;
-		if (contenu != null && contenu.size() > 0) {
+		if (contenu != null && !contenu.isEmpty()) {
 			final MouvementDossier mvt = contenu.iterator().next();
 			if (mvt instanceof EnvoiDossierVersCollectiviteAdministrative) {
 				dest = ((EnvoiDossierVersCollectiviteAdministrative) mvt).getCollectiviteAdministrativeDestinataire();

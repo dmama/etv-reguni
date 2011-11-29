@@ -270,7 +270,7 @@ public class GestionBatchController extends AbstractEnhancedSimpleFormController
 					typedValue = file.getBytes();
 				}
 				else {
-					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + "]");
+					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + ']');
 				}
 				params.put(param.getKey(), typedValue);
 			}

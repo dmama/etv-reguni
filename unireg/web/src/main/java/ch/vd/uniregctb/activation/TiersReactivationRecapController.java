@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.activation;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -17,7 +16,7 @@ import ch.vd.uniregctb.common.AbstractSimpleFormController;
 public class TiersReactivationRecapController  extends AbstractSimpleFormController {
 
 	protected final Logger LOGGER = Logger.getLogger(TiersReactivationRecapController.class);
-	private final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	private TiersReactivationRecapManager tiersReactivationRecapManager;
 

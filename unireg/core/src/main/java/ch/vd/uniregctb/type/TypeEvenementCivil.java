@@ -157,7 +157,7 @@ public enum TypeEvenementCivil {
 	}
 
 	public String getFullDescription() {
-		return description + " (" + id +")";
+		return description + " (" + id + ')';
 	}
 
 	public boolean isIgnore() {

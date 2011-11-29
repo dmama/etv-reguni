@@ -66,7 +66,7 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 			instance = i;
 		}
 		else {
-			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + "]");
+			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
 
 		if (instance instanceof InitializingBean) {

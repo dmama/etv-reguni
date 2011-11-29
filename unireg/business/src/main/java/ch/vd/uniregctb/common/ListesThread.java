@@ -166,7 +166,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 		final Set<AttributeIndividu> attributes = new HashSet<AttributeIndividu>();
 		fillAttributesIndividu(attributes);
 		final AttributeIndividu[] attributesArray;
-		if (attributes.size() > 0) {
+		if (!attributes.isEmpty()) {
 			attributesArray = attributes.toArray(new AttributeIndividu[attributes.size()]);
 		}
 		else {

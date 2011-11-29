@@ -42,7 +42,7 @@ public class Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario extends EvenementC
 		return NAME;
 	}
 
-	private final long noIndAndre = 92647; // andré
+	private static final long noIndAndre = 92647; // andré
 
 	private MockIndividu indAndre;
 

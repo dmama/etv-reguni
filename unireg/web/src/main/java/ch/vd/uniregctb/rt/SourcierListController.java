@@ -26,7 +26,7 @@ public class SourcierListController  extends  AbstractTiersListController implem
 
 	protected final Logger LOGGER = Logger.getLogger(SourcierListController.class);
 
-	private final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
+	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
 	public static final String ACTION_PARAMETER_EFFACER = "effacer";

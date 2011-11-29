@@ -48,7 +48,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 		return "Contrôle de la date de création du for lors d'une arrivée HS d'un sourcier sans permis au moment de l'arrivée";
 	}
 
-	private final long numeroIndividu = 960713;
+	private static final long numeroIndividu = 960713;
 	private final RegDate dateArrivee = date(2010, 10, 30);
 	private final RegDate datePermis = dateArrivee.addMonths(1);
 	private final RegDate dateNaissance = date(1956, 3, 15);

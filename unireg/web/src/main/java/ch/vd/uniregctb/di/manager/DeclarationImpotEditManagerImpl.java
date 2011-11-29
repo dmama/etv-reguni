@@ -165,7 +165,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 		criterion.setContribuable(tiers);
 		List<Tache> taches = tacheDAO.find(criterion);
-		if (taches != null && taches.size() != 0) {
+		if (taches != null && !taches.isEmpty()) {
 			for (Tache t : taches) {
 				TacheAnnulationDeclarationImpot tache = (TacheAnnulationDeclarationImpot) t;
 				tache.setEtat(TypeEtatTache.TRAITE);
@@ -258,7 +258,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				criteres.setAnnee(range.getDateDebut().year());
 				criteres.setContribuable(numeroCtb);
 				final List<DeclarationImpotOrdinaire> dis = diDAO.find(criteres);
-				if (dis != null && dis.size() > 0) {
+				if (dis != null && !dis.isEmpty()) {
 					for (DeclarationImpotOrdinaire di : dis) {
 						if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
 							final EtatDeclaration etat = di.getDernierEtat();
@@ -416,7 +416,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		if (!DateRangeHelper.equals(elu, range)) {
 			throw new ValidationException(contribuable, "La période de déclaration spécifiée " + range
-					+ " ne corresponds pas à la période d'imposition théorique " + DateRangeHelper.toString(elu) + ".");
+					+ " ne corresponds pas à la période d'imposition théorique " + DateRangeHelper.toString(elu) + '.');
 		}
 
 		// on vérifie qu'il n'existe pas déjà une déclaration
@@ -795,7 +795,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 			criterion.setContribuable(ctb);
 			final List<Tache> taches = tacheDAO.find(criterion);
-			if (taches != null && taches.size() != 0) {
+			if (taches != null && !taches.isEmpty()) {
 				for (Tache t : taches) {
 					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
 					if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
@@ -1060,7 +1060,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 					final int nbreFeuilles;
-					if (numerosFormulairesBatch.size() > 0 && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+					if (!numerosFormulairesBatch.isEmpty() && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
 						if (numerosFormulairesBatch.contains(modeleFeuilleDocument.getNumeroFormulaire())) {
 							nbreFeuilles = 1;
 						}

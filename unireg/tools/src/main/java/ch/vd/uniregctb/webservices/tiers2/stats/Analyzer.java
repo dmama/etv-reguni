@@ -72,13 +72,13 @@ class Analyzer {
 				if (useGoogleChart) {
 					final Chart chart = analyze.buildGoogleChart(method);
 					if (chart != null) {
-						content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, localImages, chart) + "\n";
+						content += "    " + buildChart(method + '_' + analyze.name(), htmlFile, localImages, chart) + '\n';
 					}
 				}
 				else {
 					final JFreeChart chart = analyze.buildJFreeChart(method);
 					if (chart != null) {
-						content += "    " + buildChart(method + "_" + analyze.name(), htmlFile, chart) + "\n";
+						content += "    " + buildChart(method + '_' + analyze.name(), htmlFile, chart) + '\n';
 					}
 				}
 			}
@@ -119,7 +119,7 @@ class Analyzer {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Erreur lors du parsing du fichier [" + filename + "]");
+			System.err.println("Erreur lors du parsing du fichier [" + filename + ']');
 		}
 	}
 
@@ -141,12 +141,12 @@ class Analyzer {
 			final File dir = new File(dirname);
 			if (!dir.exists() || !dir.isDirectory()) {
 				if (!dir.mkdirs()) {
-					throw new RuntimeException("Unable to create directoy [" + dirname + "]");
+					throw new RuntimeException("Unable to create directoy [" + dirname + ']');
 				}
 			}
 
 			// on récupère l'image générée par Google et on la stocke dans le sous-répertoire
-			final String imagename = dirname + "/" + chartName + ".png";
+			final String imagename = dirname + '/' + chartName + ".png";
 			InputStream is = null;
 			OutputStream os = null;
 			try {
@@ -170,7 +170,7 @@ class Analyzer {
 			}
 
 			// on inclut l'image stockée en local
-			final String imageurl = FilenameUtils.getName(dirname) + "/" + chartName + ".png";
+			final String imageurl = FilenameUtils.getName(dirname) + '/' + chartName + ".png";
 			return "<img src=\"" + imageurl + "\" width=\"" + chart.getWidth() + "\" height=\"" + chart.getHeight() + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 		}
 		else {
@@ -186,7 +186,7 @@ class Analyzer {
 		final File dir = new File(dirname);
 		if (!dir.exists() || !dir.isDirectory()) {
 			if (!dir.mkdirs()) {
-				throw new RuntimeException("Unable to create directoy [" + dirname + "]");
+				throw new RuntimeException("Unable to create directoy [" + dirname + ']');
 			}
 		}
 
@@ -194,7 +194,7 @@ class Analyzer {
 		final int height = 400;
 
 		// on génère l'image et on la stocke dans le sous-répertoire
-		final String imagename = dirname + "/" + chartName + ".png";
+		final String imagename = dirname + '/' + chartName + ".png";
 		try {
 			final File file = new File(imagename);
 			ChartUtilities.saveChartAsPNG(file, chart, width, height);
@@ -206,7 +206,7 @@ class Analyzer {
 		}
 
 		// on inclut l'image stockée en local
-		final String imageurl = FilenameUtils.getName(dirname) + "/" + chartName + ".png";
+		final String imageurl = FilenameUtils.getName(dirname) + '/' + chartName + ".png";
 		return "<img src=\"" + imageurl + "\" width=\"" + width + "\" height=\"" + height + "\" alt=\"" + chartName + "\"/><br/><br/><br/>";
 	}
 }

@@ -208,7 +208,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 		b.append(typeImpot).append(COMMA);
 		b.append(assujettissement.anneeFiscale).append(COMMA);
 
-		if (assujettissement.ofsForsSecondaires.size() > 0) {
+		if (!assujettissement.ofsForsSecondaires.isEmpty()) {
 			final Iterator<Integer> iterator = assujettissement.ofsForsSecondaires.iterator();
 			b.append(iterator.next());
 			while (iterator.hasNext()) {

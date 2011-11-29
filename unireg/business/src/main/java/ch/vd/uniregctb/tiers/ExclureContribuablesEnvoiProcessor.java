@@ -9,10 +9,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Processor qui applique la date limite d'exclusion à tous les contribuables spécifiés par leur numéros, et génère un rapport.
@@ -23,7 +23,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(ExclureContribuablesEnvoiProcessor.class);
 
-	private final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;

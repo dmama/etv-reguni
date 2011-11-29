@@ -52,8 +52,8 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 		return NAME;
 	}
 
-	private final long noIndGeorgette = 937931L;
-	private final long noIndJean = 312580L;
+	private static final long noIndGeorgette = 937931L;
+	private static final long noIndJean = 312580L;
 
 	private long noCtbJean;
 

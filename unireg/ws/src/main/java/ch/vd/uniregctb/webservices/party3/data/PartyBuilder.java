@@ -58,7 +58,7 @@ public class PartyBuilder {
 	public static <T extends Party> void copyParts(T to, T from, Set<PartyPart> parts) {
 		final PartyStrategy<T> s = (PartyStrategy<T>) strategies.get(to.getClass());
 		if (s == null) {
-			throw new IllegalArgumentException("Pas de stratégie pour la classe [" + to.getClass() + "]");
+			throw new IllegalArgumentException("Pas de stratégie pour la classe [" + to.getClass() + ']');
 		}
 		s.copyParts(to, from, parts);
 	}
@@ -67,7 +67,7 @@ public class PartyBuilder {
 	public static <T extends Party> T clone(T tiers, Set<PartyPart> parts) {
 		final PartyStrategy<T> s = (PartyStrategy<T>) strategies.get(tiers.getClass());
 		if (s == null) {
-			throw new IllegalArgumentException("Pas de stratégie pour la classe [" + tiers.getClass() + "]");
+			throw new IllegalArgumentException("Pas de stratégie pour la classe [" + tiers.getClass() + ']');
 		}
 		return s.clone(tiers, parts);
 	}

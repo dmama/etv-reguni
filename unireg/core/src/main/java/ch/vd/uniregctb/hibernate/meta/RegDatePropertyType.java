@@ -13,6 +13,6 @@ public class RegDatePropertyType extends UserTypePropertyType {
 
 	@Override
 	public String getConvertMethod(String value) {
-		return "RegDate.fromIndex(" + value + ", " + (regDateUserType.isAllowPartial() ? "true" : "false") + ")";
+		return "RegDate.fromIndex(" + value + ", " + (regDateUserType.isAllowPartial() ? "true" : "false") + ')';
 	}
 }

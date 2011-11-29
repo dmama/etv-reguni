@@ -106,8 +106,8 @@ public class AutoCompleteSecurityController {
 				for (Operateur operateur : operateurs) {
 					if (operateur.getCode().toLowerCase().startsWith(term) || StringComparator.toLowerCaseWithoutAccent(operateur.getNom()).startsWith(term) ||
 							StringComparator.toLowerCaseWithoutAccent(operateur.getPrenom()).startsWith(term)) {
-						final String label = operateur.getNom() + " " + operateur.getPrenom();
-						list.add(new Item(label, label + " (" + operateur.getCode() + ")", operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
+						final String label = operateur.getNom() + ' ' + operateur.getPrenom();
+						list.add(new Item(label, label + " (" + operateur.getCode() + ')', operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
 					}
 					if (list.size() >= 50) { // [SIFISC-482] on limite à 50 le nombre de résultats retournés
 						break;

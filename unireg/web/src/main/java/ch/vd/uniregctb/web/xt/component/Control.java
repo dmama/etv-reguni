@@ -61,7 +61,7 @@ public class Control implements Component {
 	}
 
 	public boolean hasControls() {
-		return (controls != null && controls.size() > 0);
+		return (controls != null && !controls.isEmpty());
 	}
 
 	final void addedControl(Control control) {

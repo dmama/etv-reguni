@@ -76,11 +76,11 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 	private static String format(@Nullable String message, Date expected, Date actual) {
 		String formatted = "";
 		if (message != null) {
-			formatted = message + " ";
+			formatted = message + ' ';
 		}
-		final String stringExpected = (expected == null ? "null" : expected.getYear() + "." + expected.getMonth() + "." + expected.getDay());
-		final String stringActual = (actual == null ? "null" : actual.getYear() + "." + actual.getMonth() + "." + actual.getDay());
-		return formatted + "expected:<" + stringExpected + "> but was:<" + stringActual + ">";
+		final String stringExpected = (expected == null ? "null" : expected.getYear() + "." + expected.getMonth() + '.' + expected.getDay());
+		final String stringActual = (actual == null ? "null" : actual.getYear() + "." + actual.getMonth() + '.' + actual.getDay());
+		return formatted + "expected:<" + stringExpected + "> but was:<" + stringActual + '>';
 	}
 
 	public static boolean sameDay(Date left, Date right) {

@@ -314,7 +314,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
 		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date du mariage", DATE_UNION_HETERO, forCommun.getDateDebut());
 
-		Assert.assertTrue("Il aurait dû y avoir au moins un for fiscal secondaire", menageCommun.getForsParType(false).secondaires.size() > 0);
+		Assert.assertTrue("Il aurait dû y avoir au moins un for fiscal secondaire", !menageCommun.getForsParType(false).secondaires.isEmpty());
 		
 		/*
 		 * Evénements fiscaux devant être générés :

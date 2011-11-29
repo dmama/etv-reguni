@@ -35,7 +35,7 @@ public class TracingCache implements Ehcache {
 	private long lastDumpStats = 0L;
 	private final HashMap<String, Stats> stats = new HashMap<String, Stats>();
 
-	private class Stats {
+	private static class Stats {
 		String methodName;
 		int nbHits = 0;
 		int nbMisses = 0;

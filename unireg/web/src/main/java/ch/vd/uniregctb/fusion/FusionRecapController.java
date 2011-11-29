@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.fusion;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -18,8 +17,8 @@ public class FusionRecapController  extends AbstractSimpleFormController {
 
 	protected final Logger LOGGER = Logger.getLogger(FusionRecapController.class);
 
-	private final String NUMERO_NON_HABITANT_PARAMETER_NAME = "numeroNonHab";
-	private final String NUMERO_HABITANT_NAME = "numeroHab";
+	private static final String NUMERO_NON_HABITANT_PARAMETER_NAME = "numeroNonHab";
+	private static final String NUMERO_HABITANT_NAME = "numeroHab";
 
 	private FusionRecapManager fusionRecapManager;
 

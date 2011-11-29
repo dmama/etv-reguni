@@ -196,7 +196,7 @@ public enum ParametreEnum {
 			};
 		}
 		else {
-			throw new IncorrectDayMonthException("'" + string + "' ne matche avec la expression régulière suivant : " + regexp);
+			throw new IncorrectDayMonthException('\'' + string + "' ne matche avec la expression régulière suivant : " + regexp);
 		}
 	}
 

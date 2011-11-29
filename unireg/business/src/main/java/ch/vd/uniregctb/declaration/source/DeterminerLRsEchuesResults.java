@@ -119,14 +119,14 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 		@Override
 		public String getCommentaire() {
-			if (periodesEncoreACouvrir != null && periodesEncoreACouvrir.size() > 0) {
+			if (periodesEncoreACouvrir != null && !periodesEncoreACouvrir.isEmpty()) {
 				final StringBuilder b = new StringBuilder();
 				for (DateRange periode : periodesEncoreACouvrir) {
 					if (b.length() > 0) {
 						b.append(", ");
 					}
-					b.append("[").append(RegDateHelper.dateToDisplayString(periode.getDateDebut()));
-					b.append(",").append(RegDateHelper.dateToDisplayString(periode.getDateFin())).append("]");
+					b.append('[').append(RegDateHelper.dateToDisplayString(periode.getDateDebut()));
+					b.append(',').append(RegDateHelper.dateToDisplayString(periode.getDateFin())).append(']');
 				}
 				if (periodesEncoreACouvrir.size() > 1) {
 					return String.format("Les périodes %s ne sont pas couvertes par les LR émises", b.toString());

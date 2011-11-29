@@ -48,7 +48,7 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 		return NAME;
 	}
 
-	private final long noIndCharles = 782551;
+	private static final long noIndCharles = 782551;
 	private MockIndividu indCharles;
 	private long noHabCharles;
 

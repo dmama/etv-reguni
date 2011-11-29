@@ -383,7 +383,7 @@ public class HtmlTextWriter extends TextWriter {
                 AddedStyle a = styles[i];
                 if (onStyleAttributeRender(a.name, a.value, a.key)) {
                     if (a.key == HtmlTextWriterStyle.BackgroundImage) {
-                        a.value = "url(" + HttpUtilities.UrlPathEncode(a.value) + ")";
+                        a.value = "url(" + HttpUtilities.UrlPathEncode(a.value) + ')';
                     }
                     writeStyleAttribute(a.name, a.value, false);
                 }

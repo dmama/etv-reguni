@@ -59,7 +59,7 @@ public abstract class EnumHelper {
 		case VEUF:
 			return MaritalStatus.WIDOWED;
 		default:
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + "]");
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
 		}
 	}
 
@@ -85,7 +85,7 @@ public abstract class EnumHelper {
 		case VEUF:
 			return MaritalStatus.WIDOWED;
 		default:
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + "]");
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
 		}
 	}
 
@@ -108,7 +108,7 @@ public abstract class EnumHelper {
 		case REGULIERS:
 			return DebtorCategory.REGULAR;
 		default:
-			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + "]");
+			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + ']');
 		}
 	}
 
@@ -127,7 +127,7 @@ public abstract class EnumHelper {
 		case RETOURNEE:
 			return TaxDeclarationStatusType.RETURNED;
 		default:
-			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
 		}
 	}
 
@@ -160,7 +160,7 @@ public abstract class EnumHelper {
 		case SUCCESSION:
 			return TaxType.INHERITANCE;
 		default:
-			throw new IllegalArgumentException("Genre d'impôt inconnu = [" + genreImpot + "]");
+			throw new IllegalArgumentException("Genre d'impôt inconnu = [" + genreImpot + ']');
 		}
 	}
 
@@ -197,7 +197,7 @@ public abstract class EnumHelper {
 		case SEJOUR_SAISONNIER:
 			return TaxLiabilityReason.SEASONAL_JOURNEY;
 		default:
-			throw new IllegalArgumentException("Motif de rattachement inconnu = [" + rattachement + "]");
+			throw new IllegalArgumentException("Motif de rattachement inconnu = [" + rattachement + ']');
 		}
 	}
 
@@ -214,7 +214,7 @@ public abstract class EnumHelper {
 		case PAYS_HS:
 			return TaxationAuthorityType.FOREIGN_COUNTRY;
 		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + typeForFiscal + "]");
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + typeForFiscal + ']');
 		}
 	}
 
@@ -237,7 +237,7 @@ public abstract class EnumHelper {
 		case MIXTE_137_2:
 			return TaxationMethod.MIXED_137_2;
 		default:
-			throw new IllegalArgumentException("Mode d'imposition inconnu = [" + mode + "]");
+			throw new IllegalArgumentException("Mode d'imposition inconnu = [" + mode + ']');
 		}
 	}
 
@@ -254,7 +254,7 @@ public abstract class EnumHelper {
 		case SITE_WEB:
 			return CommunicationMode.WEB_SITE;
 		default:
-			throw new IllegalArgumentException("Mode de communicaiton inconnu = [" + mode + "]");
+			throw new IllegalArgumentException("Mode de communicaiton inconnu = [" + mode + ']');
 		}
 	}
 
@@ -303,7 +303,7 @@ public abstract class EnumHelper {
 		case A:
 			return WithholdingTaxDeclarationPeriod.Y;
 		default:
-			throw new IllegalArgumentException("Type de période de décompte inconnu = [" + periodeDecompte + "]");
+			throw new IllegalArgumentException("Type de période de décompte inconnu = [" + periodeDecompte + ']');
 		}
 	}
 
@@ -324,7 +324,7 @@ public abstract class EnumHelper {
 		case UNIQUE:
 			return WithholdingTaxDeclarationPeriodicity.ONCE;
 		default:
-			throw new IllegalArgumentException("Type de périodicité décompte inconnu = [" + periodiciteDecompte + "]");
+			throw new IllegalArgumentException("Type de périodicité décompte inconnu = [" + periodiciteDecompte + ']');
 		}
 	}
 
@@ -359,7 +359,7 @@ public abstract class EnumHelper {
 		case _13_NON_ATTRIBUEE:
 			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
 		default:
-			throw new IllegalArgumentException("Catégorie d'étranger inconnue = [" + categorie + "]");
+			throw new IllegalArgumentException("Catégorie d'étranger inconnue = [" + categorie + ']');
 		}
 	}
 
@@ -392,7 +392,7 @@ public abstract class EnumHelper {
 		case SUISSE_SOURCIER:
 			return NaturalPersonCategory.SWISS;
 		default:
-			throw new IllegalArgumentPositionException("Type de permis inconnu = [" + permis + "]");
+			throw new IllegalArgumentPositionException("Type de permis inconnu = [" + permis + ']');
 		}
 	}
 
@@ -419,7 +419,7 @@ public abstract class EnumHelper {
 		case TUTELLE:
 			return RelationBetweenPartiesType.GUARDIAN;
 		default:
-			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');
 		}
 	}
 
@@ -434,7 +434,7 @@ public abstract class EnumHelper {
 		case NORMAL:
 			return WithholdingTaxTariff.NORMAL;
 		default:
-			throw new IllegalArgumentException("Type de tarif inconnu = [" + tarif + "]");
+			throw new IllegalArgumentException("Type de tarif inconnu = [" + tarif + ']');
 		}
 	}
 
@@ -451,7 +451,7 @@ public abstract class EnumHelper {
 		case PRINCIPALE:
 			return ActivityType.MAIN;
 		default:
-			throw new IllegalArgumentException("Type d'activité inconnu = [" + typeActivite + "]");
+			throw new IllegalArgumentException("Type d'activité inconnu = [" + typeActivite + ']');
 		}
 	}
 
@@ -471,7 +471,7 @@ public abstract class EnumHelper {
 		case DECLARATION_IMPOT_HC_IMMEUBLE:
 			return DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION;
 		default:
-			throw new IllegalArgumentException("Type de document inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de document inconnu = [" + type + ']');
 		}
 	}
 
@@ -526,7 +526,7 @@ public abstract class EnumHelper {
 		case VEUVAGE_DECES:
 			return LiabilityChangeReason.WIDOWHOOD_DEATH;
 		default:
-			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + "]");
+			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
 		}
 	}
 
@@ -543,7 +543,7 @@ public abstract class EnumHelper {
 		case PHONETIQUE:
 			return SearchMode.PHONETIC;
 		default:
-			throw new IllegalArgumentException("Type de recherche inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de recherche inconnu = [" + type + ']');
 		}
 	}
 
@@ -560,7 +560,7 @@ public abstract class EnumHelper {
 		case PHONETIC:
 			return TiersCriteria.TypeRecherche.PHONETIQUE;
 		default:
-			throw new IllegalArgumentException("Type de recherche inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de recherche inconnu = [" + type + ']');
 		}
 	}
 
@@ -575,7 +575,7 @@ public abstract class EnumHelper {
 		case MASCULIN:
 			return Sex.MALE;
 		default:
-			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + "]"); // certainement qu'il vient d'une autre dimension
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']'); // certainement qu'il vient d'une autre dimension
 		}
 	}
 
@@ -625,7 +625,7 @@ public abstract class EnumHelper {
 		case MONDE:
 			return TariffZone.OTHER_COUNTRIES;
 		default:
-			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + "]");
+			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
 		}
 	}
 
@@ -639,7 +639,7 @@ public abstract class EnumHelper {
 		case IBAN:
 			return AccountNumberFormat.IBAN;
 		default:
-			throw new IllegalArgumentException("Format de compte bancaire inconnu = [" + format + "]");
+			throw new IllegalArgumentException("Format de compte bancaire inconnu = [" + format + ']');
 		}
 	}
 
@@ -655,7 +655,7 @@ public abstract class EnumHelper {
 		case COMMUNE:
 			return OwnershipType.COLLECTIVE_OWNERSHIP;
 		default:
-			throw new IllegalArgumentException("Genre de priopriété inconnu = [" + genre + "]");
+			throw new IllegalArgumentException("Genre de priopriété inconnu = [" + genre + ']');
 		}
 	}
 
@@ -673,7 +673,7 @@ public abstract class EnumHelper {
 		case PART_DE_COPROPRIETE:
 			return ImmovablePropertyType.CO_OWNERSHIP_SHARE;
 		default:
-			throw new IllegalArgumentException("Type de priopriété inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de priopriété inconnu = [" + type + ']');
 		}
 	}
 
@@ -717,7 +717,7 @@ public abstract class EnumHelper {
 		case FIN_DE_PROPRIETE:
 			return MutationType.END_OF_OWNERSHIP;
 		default:
-			throw new IllegalArgumentException("Type de mutation inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de mutation inconnu = [" + type + ']');
 		}
 	}
 }

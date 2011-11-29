@@ -24,7 +24,7 @@ public class CompareThread extends Thread {
 		this.portHost = portHost;
 		this.recherche = recherche;
 
-		LOGGER.info("[thread-" + this.getId() + "] parametres recherche " + recherche.getNom() + " " + recherche.getPrenom());
+		LOGGER.info("[thread-" + this.getId() + "] parametres recherche " + recherche.getNom() + ' ' + recherche.getPrenom());
 
 	}
 

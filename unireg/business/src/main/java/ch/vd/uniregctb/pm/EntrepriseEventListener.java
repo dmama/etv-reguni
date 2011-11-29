@@ -64,9 +64,9 @@ public class EntrepriseEventListener extends TransactionalEsbMessageListener imp
 		if (!doc.validate(validateOptions)) {
 			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				builder.append('\n');
+				builder.append("Message: ").append(error.getErrorCode()).append(' ').append(error.getMessage()).append('\n');
+				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append('\n');
 			}
 
 			final String errorMessage = builder.toString();
@@ -76,7 +76,7 @@ public class EntrepriseEventListener extends TransactionalEsbMessageListener imp
 		else {
 
 			// Traite le message
-			AuthenticationHelper.pushPrincipal("JMS-PmEvent(" + msg.getMessageId() + ")");
+			AuthenticationHelper.pushPrincipal("JMS-PmEvent(" + msg.getMessageId() + ')');
 			try {
 
 				if (doc instanceof EvtEntrepriseDocument) {

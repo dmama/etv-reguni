@@ -43,7 +43,7 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 		return TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE;
 	}
 
-	private final long noIndConceicao = 899126; // Conceiçao
+	private static final long noIndConceicao = 899126; // Conceiçao
 
 	protected MockIndividu indConceicao;
 

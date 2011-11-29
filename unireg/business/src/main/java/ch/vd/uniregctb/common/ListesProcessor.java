@@ -114,7 +114,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		status.setMessage(String.format("Traitement des %d %s", nbEltsTrouves, getDenominationContribuablesComptes()));
 
 		// attente "active" de la fin des threads
-		while (threads.size() > 0) {
+		while (!threads.isEmpty()) {
 
 			// tous les threads terminés sont enlevés de la liste
 			final Iterator<T> iterator = threads.iterator();

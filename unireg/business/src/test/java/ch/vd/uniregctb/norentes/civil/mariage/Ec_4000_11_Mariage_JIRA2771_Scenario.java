@@ -55,8 +55,8 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 		return NAME;
 	}
 
-	private final long noIndAlfredo = 211605; // Alfredo
-	private final long noIndArmando = 363623; // Armando
+	private static final long noIndAlfredo = 211605; // Alfredo
+	private static final long noIndArmando = 363623; // Armando
 
 	private MockIndividu indAlfredo;
 	private MockIndividu indArmando;

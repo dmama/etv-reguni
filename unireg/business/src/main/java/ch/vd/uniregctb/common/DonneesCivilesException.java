@@ -62,7 +62,7 @@ public class DonneesCivilesException extends Exception {
 			builder.append(descriptionContexte);
 		}
 		if (builder.length() > 0) {
-			builder.append("\n");
+			builder.append('\n');
 		}
 
 		final int size = errors.size();
@@ -70,7 +70,7 @@ public class DonneesCivilesException extends Exception {
 			final String error = errors.get(i);
 			builder.append(error);
 			if (i < size - 1) {
-				builder.append("\n");
+				builder.append('\n');
 			}
 		}
 		return builder.toString();

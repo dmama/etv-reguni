@@ -156,16 +156,16 @@ class PartsAnalyze extends Analyze {
 		final StringBuilder header = new StringBuilder();
 		header.append("Nom de méthode;");
 		for (TimeRange range : DistributionData.DEFAULT_TIME_RANGES) {
-			header.append(range).append(";");
+			header.append(range).append(';');
 		}
 		System.out.println(header);
 
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
-			line.append(method).append(";");
+			line.append(method).append(';');
 			MethodData mdata = results.get(method);
 			for (PartData pdata : mdata.getParts().values()) {
-				line.append(pdata.getName()).append("=").append(pdata.getCount()).append(';');
+				line.append(pdata.getName()).append('=').append(pdata.getCount()).append(';');
 			}
 			System.out.println(line);
 		}

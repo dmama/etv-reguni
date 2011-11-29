@@ -63,7 +63,7 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 			instance = i;
 		}
 		else {
-			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + "]");
+			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
 
 		if (instance instanceof InitializingBean) {

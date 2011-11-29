@@ -371,7 +371,7 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
-		Assert.isTrue(nomCourrier.size() > 0);
+		Assert.isTrue(!nomCourrier.isEmpty());
 		nomCourrier1 = nomCourrier.get(0);
 		if (nomCourrier.size() > 1) {
 			nomCourrier2 = nomCourrier.get(1);

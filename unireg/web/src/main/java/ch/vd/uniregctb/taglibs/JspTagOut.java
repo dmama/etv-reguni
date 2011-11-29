@@ -166,7 +166,7 @@ public class JspTagOut extends BodyTagSupport {
 				displayDate = "";
 			}
 			else {
-				throw new IllegalArgumentException("Unknown date class = [" + value.getClass() + "]");
+				throw new IllegalArgumentException("Unknown date class = [" + value.getClass() + ']');
 			}
 
 			return displayDate;

@@ -332,7 +332,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 					case ECRITURE:
 						if (LOGGER.isTraceEnabled()) {
 							LOGGER.trace("Trouvé l'autorisation [ECRITURE] de l'opérateur [" + operateur.getCode() + "] sur le dossier n° "
-									+ ppId + ".");
+									+ ppId + '.');
 						}
 						granted = Niveau.ECRITURE;
 						break;
@@ -340,7 +340,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 						if (granted == null) {
 							if (LOGGER.isTraceEnabled()) {
 								LOGGER.trace("Trouvé l'autorisation [LECTURE] de l'opérateur [" + operateur.getCode()
-										+ "] sur le dossier n° " + ppId + ".");
+										+ "] sur le dossier n° " + ppId + '.');
 							}
 							granted = Niveau.LECTURE;
 						}
@@ -354,7 +354,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 						if (restricted == null) {
 							if (LOGGER.isTraceEnabled()) {
 								LOGGER.trace("Trouvé l'interdiction [ECRITURE] de l'opérateur [" + operateur.getCode()
-										+ "] sur le dossier n° " + ppId + ".");
+										+ "] sur le dossier n° " + ppId + '.');
 							}
 							restricted = Niveau.ECRITURE;
 						}
@@ -362,7 +362,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 					case LECTURE:
 						if (LOGGER.isTraceEnabled()) {
 							LOGGER.trace("Trouvé l'interdiction [LECTURE] de l'opérateur [" + operateur.getCode() + "] sur le dossier n° "
-									+ ppId + ".");
+									+ ppId + '.');
 						}
 						restricted = Niveau.LECTURE;
 						break;
@@ -373,7 +373,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 				if (d.getType() == TypeDroitAcces.AUTORISATION) {
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("Trouvé une autorisation d'un autre opérateur que [" + operateur.getCode() + "] sur le dossier n° "
-								+ ppId + ".");
+								+ ppId + '.');
 					}
 					otherOperatorsGranted = true;
 				}

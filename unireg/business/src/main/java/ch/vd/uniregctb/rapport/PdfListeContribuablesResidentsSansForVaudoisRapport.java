@@ -87,7 +87,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 	private String buildListeContribuablesIdentifies(List<Long> ctbIds, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (ctbIds.size() > 0) {
+		if (!ctbIds.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(ctbIds, filename, status, new CsvHelper.FileFiller<Long>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -107,7 +107,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 	private String buildContribuablesIgnores(List<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore> liste, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (liste.size() > 0) {
+		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -128,7 +128,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 	private String buildErreurs(List<ListesResults.Erreur> liste, String filename, StatusManager status) {
 
 		String contenu = null;
-		if (liste.size() > 0) {
+		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

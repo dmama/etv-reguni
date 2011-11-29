@@ -42,7 +42,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 		return NAME;
 	}
 
-	private final long noIndAndre = 92647;
+	private static final long noIndAndre = 92647;
 
 	private MockIndividu indAndre;
 	private long noHabAndre;

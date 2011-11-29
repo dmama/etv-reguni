@@ -44,10 +44,10 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 		return NAME;
 	}
 
-	private final long noIndJeanMarc = 132720;
-	private final long noIndJoseph = 226478;
-	private final long noIndAmelie = 845875;
-	private final long noIndStephanie = 387602;
+	private static final long noIndJeanMarc = 132720;
+	private static final long noIndJoseph = 226478;
+	private static final long noIndAmelie = 845875;
+	private static final long noIndStephanie = 387602;
 
 	private MockIndividu indJeanMarc;
 	private MockIndividu indAmelie;

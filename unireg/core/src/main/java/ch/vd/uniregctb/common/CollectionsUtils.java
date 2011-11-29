@@ -73,7 +73,7 @@ public class CollectionsUtils extends CollectionUtils {
 			}
 		}
 
-		if (part != null && part.size() > 0) {
+		if (part != null && !part.isEmpty()) {
 			output.add(part);
 		}
 

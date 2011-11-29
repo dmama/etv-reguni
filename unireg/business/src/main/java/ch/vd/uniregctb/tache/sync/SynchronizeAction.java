@@ -11,4 +11,7 @@ public abstract class SynchronizeAction {
 	 *         modifiées.
 	 */
 	public abstract boolean willChangeEntity();
+
+	@Override
+	public abstract String toString();
 }

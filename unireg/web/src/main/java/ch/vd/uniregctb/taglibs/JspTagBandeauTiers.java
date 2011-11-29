@@ -296,7 +296,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
 				s.append(message("label.tiers.evts.non.traites"));
 				for (Long no : nos) {
-					s.append(" ").append(no);
+					s.append(' ').append(no);
 				}
 				s.append("</center></td></tr>\n");
 			}
@@ -455,7 +455,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					s.append("\t<td width=\"50%\">");
 					s.append(message("option.periodicite.decompte." + periodiciteDecompte.name()));
 					if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE && periodeDecompte != null) {
-						s.append("&nbsp;(").append(message("option.periode.decompte." + periodeDecompte.name())).append(")");
+						s.append("&nbsp;(").append(message("option.periode.decompte." + periodeDecompte.name())).append(')');
 					}
 					s.append("</td>\n");
 					s.append("\t<td width=\"25%\">&nbsp;</td>\n");
@@ -658,7 +658,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			image = "debiteur.png";
 			break;
 		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 		}
 
 		final String basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");

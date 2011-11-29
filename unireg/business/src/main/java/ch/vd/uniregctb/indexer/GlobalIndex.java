@@ -409,7 +409,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		});
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Removing done of " + type + "-" + id);
+			LOGGER.trace("Removing done of " + type + '-' + id);
 		}
 	}
 

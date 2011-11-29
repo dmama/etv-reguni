@@ -145,12 +145,12 @@ public abstract class BamMessageHelper {
 			if (!d.isAnnule() && d instanceof DeclarationImpotOrdinaire) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 				if (bNoSequences.length() > 0) {
-					bNoSequences.append(";");
+					bNoSequences.append(';');
 				}
 				bNoSequences.append(buildNoSequence(di));
 
 				if (bPeriodes.length() > 0) {
-					bPeriodes.append(";");
+					bPeriodes.append(';');
 				}
 				bPeriodes.append(buildPeriode(di));
 			}
@@ -195,7 +195,7 @@ public abstract class BamMessageHelper {
 	 */
 	@Nullable
 	private static Map<String, String> extractHeaders(Collection<String> keysToExtract, @Nullable Map<String, String> source) {
-		if (source != null && keysToExtract != null && source.size() > 0 && keysToExtract.size() > 0) {
+		if (source != null && keysToExtract != null && !source.isEmpty() && !keysToExtract.isEmpty()) {
 			final Map<String, String> dest = new HashMap<String, String>(Math.min(keysToExtract.size(), source.size()));
 			for (String key : keysToExtract) {
 				final String value = source.get(key);
@@ -203,7 +203,7 @@ public abstract class BamMessageHelper {
 					dest.put(key, value);
 				}
 			}
-			return dest.size() > 0 ? dest : null;
+			return !dest.isEmpty() ? dest : null;
 		}
 		else {
 			return null;

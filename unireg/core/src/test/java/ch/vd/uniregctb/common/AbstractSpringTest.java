@@ -165,15 +165,15 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	private static String format(String message, Date expected, Date actual) {
 		String formatted = "";
 		if (message != null) {
-			formatted = message + " ";
+			formatted = message + ' ';
 		}
 		Calendar cal1 = Calendar.getInstance();
 		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(expected);
 		cal2.setTime(actual);
-		final String stringExpected = cal1.get(Calendar.YEAR) + "." + cal1.get(Calendar.MONTH) + "." + cal1.get(Calendar.DAY_OF_MONTH);
-		final String stringActual = cal2.get(Calendar.YEAR) + "." + cal2.get(Calendar.MONTH) + "." + cal2.get(Calendar.DAY_OF_MONTH);
-		return formatted + "expected:<" + stringExpected + "> but was:<" + stringActual + ">";
+		final String stringExpected = cal1.get(Calendar.YEAR) + "." + cal1.get(Calendar.MONTH) + '.' + cal1.get(Calendar.DAY_OF_MONTH);
+		final String stringActual = cal2.get(Calendar.YEAR) + "." + cal2.get(Calendar.MONTH) + '.' + cal2.get(Calendar.DAY_OF_MONTH);
+		return formatted + "expected:<" + stringExpected + "> but was:<" + stringActual + '>';
 	}
 
 	private static boolean sameDay(Date left, Date right) {
@@ -212,7 +212,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 	protected static void assertInstanceOf(Class<?> clazz, Object object) {
 		if (!clazz.isAssignableFrom(object.getClass())) {
-			fail("expected instance of:<" + clazz.getName() + "> but was:<" + object.getClass().getName() + ">");
+			fail("expected instance of:<" + clazz.getName() + "> but was:<" + object.getClass().getName() + '>');
 		}
 	}
 
@@ -292,7 +292,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		}
 	}
 
-	public class TxCallbackException extends RuntimeException {
+	public static class TxCallbackException extends RuntimeException {
 
 		private static final long serialVersionUID = -626013776510807208L;
 

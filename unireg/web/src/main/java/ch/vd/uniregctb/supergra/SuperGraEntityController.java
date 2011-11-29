@@ -196,7 +196,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 						if (i > 0 && i == newdeltasSize - 1) {
 							list += " et ";
 						}
-						list += "'" + a.getName() + "'";
+						list += '\'' + a.getName() + '\'';
 					}
 					message = "Les attributs " + list + " ont été changés.";
 				}

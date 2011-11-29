@@ -49,9 +49,9 @@ public class TiersCriteriaValidator implements Validator {
 		// Si le noOfsFor est null, mais que forAll est pas null
 		// C'est que l'autocomplete a pas marché
 		//   => Avertir l'utilisateur
-		if (	(bean.getNoOfsFor() == null || bean.getNoOfsFor().equals(""))
+		if (	(bean.getNoOfsFor() == null || bean.getNoOfsFor().isEmpty())
 				&&
-				(bean.getForAll() != null && !bean.getForAll().equals(""))
+				(bean.getForAll() != null && !bean.getForAll().isEmpty())
 			)
 		{
 			bean.setForAll(null);

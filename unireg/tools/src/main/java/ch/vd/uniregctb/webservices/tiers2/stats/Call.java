@@ -135,7 +135,7 @@ class Call {
 		int start = line.indexOf("parts=[");
 		if (start >= 0) {
 			start += 7;
-			int end = line.indexOf("]", start);
+			int end = line.indexOf(']', start);
 			String partsAsString = line.substring(start, end);
 			parts = Arrays.asList(partsAsString.split(", "));
 		}

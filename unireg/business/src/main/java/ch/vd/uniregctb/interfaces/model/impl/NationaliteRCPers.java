@@ -42,7 +42,7 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 			p = infraService.getPays(noOfsPays);
 		}
 		else {
-			throw new IllegalArgumentException("Code nationality status inconnu = [" + status + "]");
+			throw new IllegalArgumentException("Code nationality status inconnu = [" + status + ']');
 		}
 		return p;
 	}

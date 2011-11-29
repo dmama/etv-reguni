@@ -98,7 +98,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 
 	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> String getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
-		if (liste != null && liste.size() > 0) {
+		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -122,7 +122,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 
 	private String getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
 		String contenu = null;
-		if (lrEchues != null && lrEchues.size() > 0) {
+		if (lrEchues != null && !lrEchues.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

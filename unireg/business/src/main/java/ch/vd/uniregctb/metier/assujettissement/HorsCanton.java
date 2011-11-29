@@ -33,6 +33,6 @@ public class HorsCanton extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "HorsCanton(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "HorsCanton(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

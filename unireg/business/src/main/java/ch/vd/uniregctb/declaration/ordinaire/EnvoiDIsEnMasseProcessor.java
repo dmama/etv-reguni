@@ -172,7 +172,7 @@ public class EnvoiDIsEnMasseProcessor {
 						batch = batch.subList(0, reducedSize);
 					}
 
-					if (batch.size() > 0) {
+					if (!batch.isEmpty()) {
 						traiterBatch(batch, anneePeriode, categorie, dateTraitement);
 					}
 
@@ -411,7 +411,7 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		final List<DeclarationImpotOrdinaire> list = dcache.getDeclarationsInRange(contribuable, tache, false);
-		if (list.size() > 0 && !simul) {
+		if (!list.isEmpty() && !simul) {
 
 			// Il existe déjà une (ou plusieurs) déclarations
 			if (list.size() == 1 && correspondent(list.get(0), tache)) {
@@ -422,7 +422,7 @@ public class EnvoiDIsEnMasseProcessor {
 				rapport.addIgnoreDIDejaExistante(contribuable, tache.getDateDebut(), tache.getDateFin());
 			}
 			else {
-				String message = "La tâche [id=" + tache.getId() + ", période=" + tache.getDateDebut() + "-" + tache.getDateFin() + "] est en conflit avec " + list.size() +
+				String message = "La tâche [id=" + tache.getId() + ", période=" + tache.getDateDebut() + '-' + tache.getDateFin() + "] est en conflit avec " + list.size() +
 						" déclaration(s) d'impôt pré-existante(s) sur le contribuable [" + numeroCtb + "]. Aucune nouvelle déclaration n'est créée et la tâche reste en instance.";
 				Audit.error(message);
 				rapport.addErrorDICollision(contribuable, tache.getDateDebut(), tache.getDateFin(), message);
@@ -579,8 +579,8 @@ public class EnvoiDIsEnMasseProcessor {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Création de la DI #" + di.getId() + " contribuable=[" + di.getTiers().getNumero() + "] periode=["
-					+ di.getDateDebut() + ";" + di.getDateFin() + "] type=[" + di.getTypeContribuable() + "] forGestion=["
-					+ di.getNumeroOfsForGestion() + "]");
+					+ di.getDateDebut() + ';' + di.getDateFin() + "] type=[" + di.getTypeContribuable() + "] forGestion=["
+					+ di.getNumeroOfsForGestion() + ']');
 		}
 
 		return di;
@@ -663,7 +663,7 @@ public class EnvoiDIsEnMasseProcessor {
 		else {
 			// Traitement normal
 			final ParametrePeriodeFiscale ppf = periode.getParametrePeriodeFiscale(di.getTypeContribuable());
-			Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + "]");
+			Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + ']');
 
 			dateRetourAccorde = ppf.getTermeGeneralSommationEffectif(); // [UNIREG-1976] le délai de retour accordé est toujours la date effective
 			dateRetourImprime = ppf.getTermeGeneralSommationReglementaire(); // [UNIREG-1740] la date de retour imprimée est toujours la date réglementaire
@@ -896,8 +896,8 @@ public class EnvoiDIsEnMasseProcessor {
 		public List<DeclarationImpotOrdinaire> getDeclarationsInRange(final Contribuable contribuable, final DateRange range, boolean annuleesIncluses) {
 
 			if (!DateRangeHelper.within(range, baseRange)) {
-				Assert.fail("Le range [" + range.getDateDebut() + ";" + range.getDateFin() + "] n'est pas compris dans le range de base ["
-						+ baseRange.getDateDebut() + ";" + baseRange.getDateFin() + "]");
+				Assert.fail("Le range [" + range.getDateDebut() + ';' + range.getDateFin() + "] n'est pas compris dans le range de base ["
+						+ baseRange.getDateDebut() + ';' + baseRange.getDateFin() + ']');
 			}
 			List<DeclarationImpotOrdinaire> list = map.get(contribuable.getNumero());
 
@@ -907,7 +907,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 			// si le range spécifié ne corresponds pas à celui utilisé pour initialiser le cache, on retrie la liste en conséquence
 			final boolean sameRange = DateRangeHelper.equals(range, baseRange);
-			if (list.size() > 0 && (!annuleesIncluses || !sameRange)) {
+			if (!list.isEmpty() && (!annuleesIncluses || !sameRange)) {
 				final List<DeclarationImpotOrdinaire> listeFiltree = new ArrayList<DeclarationImpotOrdinaire>(list.size());
 				for (DeclarationImpotOrdinaire di : list) {
 					if ((annuleesIncluses || !di.isAnnule()) && (sameRange || DateRangeHelper.intersect(di, range))) {

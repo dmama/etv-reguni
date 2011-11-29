@@ -70,8 +70,8 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 	private final RegDate dateMariage = RegDate.get(2002, 1, 6); 			// 06.01.2002
 	private final RegDate dateSeparation = RegDate.get(2008, 5, 5); 		// 05.05.2008
 
-	private final long noIndAndrea = 650499; // Andrea
-	private final long noIndLiliana = 671500; // Liliana
+	private static final long noIndAndrea = 650499; // Andrea
+	private static final long noIndLiliana = 671500; // Liliana
 
 	private long noHabAndrea;
 	private long noHabLiliana;

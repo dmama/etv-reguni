@@ -54,9 +54,9 @@ public class DataEventJmsListener extends TransactionalEsbMessageListener implem
 		if (!doc.validate(validateOptions)) {
 			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				builder.append('\n');
+				builder.append("Message: ").append(error.getErrorCode()).append(' ').append(error.getMessage()).append('\n');
+				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append('\n');
 			}
 
 			final String errorMsg = builder.toString();
@@ -66,7 +66,7 @@ public class DataEventJmsListener extends TransactionalEsbMessageListener implem
 		else {
 
 			// Traite le message
-			AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ")");
+			AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ')');
 			try {
 
 				if (doc instanceof DataChangeEventDocument) {

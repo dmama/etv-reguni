@@ -33,7 +33,7 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 			b.append(" AND mvt.collectiviteAdministrativeDestinataire.numeroCollectiviteAdministrative = ?");
 			params.add(noCollAdmReceptrice);
 		}
-		b.append(")");
+		b.append(')');
 		final String hql = b.toString();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<BordereauMouvementDossier>>() {

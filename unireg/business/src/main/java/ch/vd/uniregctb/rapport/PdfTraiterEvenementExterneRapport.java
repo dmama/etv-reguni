@@ -86,7 +86,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 
 	private <T extends TraiterEvenementExterneResult.Traite> String getCsvEvenementTraite(List<T> liste, String filename, StatusManager status) {
 		String contenu = null;
-		if (liste != null && liste.size() > 0) {
+		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {

@@ -43,7 +43,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789; // julie
+	private static final long noIndJulie = 6789; // julie
 
 	private MockIndividu indJulie;
 

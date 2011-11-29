@@ -39,7 +39,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
-	private final int batchSize = BATCH_SIZE;
+	private static final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<ComparerForFiscalEtCommuneResults>();
 
 	public ComparerForFiscalEtCommuneProcessor(TiersDAO tiersDAO, PlatformTransactionManager transactionManager, AdresseService aService,

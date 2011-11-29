@@ -35,7 +35,7 @@ public class Ec_18000_05_Arrivee_RollBack_1_Scenario extends EvenementCivilScena
 		return NAME;
 	}
 
-	private final long noIndAlain = 122456L;
+	private static final long noIndAlain = 122456L;
 
 	private MockIndividu indAlain;
 

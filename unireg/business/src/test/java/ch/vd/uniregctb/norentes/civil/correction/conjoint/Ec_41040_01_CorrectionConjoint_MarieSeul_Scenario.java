@@ -45,8 +45,8 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 		return NAME;
 	}
 
-	private final long noIndRafa = 3913648; // rafa
-	private final long noIndMaria = 3913649; // maria
+	private static final long noIndRafa = 3913648; // rafa
+	private static final long noIndMaria = 3913649; // maria
 
 	private MockIndividu indRafa;
 	private MockIndividu indMaria;

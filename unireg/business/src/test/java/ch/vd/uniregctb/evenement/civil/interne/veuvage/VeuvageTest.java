@@ -232,7 +232,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
-		assertTrue("Le validate doit échouer car l'individu est marié", erreurs.size() > 0);
+		assertTrue("Le validate doit échouer car l'individu est marié", !erreurs.isEmpty());
 		
 	}
 	
@@ -251,7 +251,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		veuvage.checkCompleteness(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
-		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", erreurs.size() > 0);
+		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", !erreurs.isEmpty());
 	}
 	
 	protected Veuvage createVeuvage(Individu individu) {

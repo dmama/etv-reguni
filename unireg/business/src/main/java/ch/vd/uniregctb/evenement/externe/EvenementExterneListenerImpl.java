@@ -115,9 +115,9 @@ public class EvenementExterneListenerImpl extends TransactionalEsbMessageListene
 		if (!evt.validate(validateOptions)) {
 			StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				builder.append('\n');
+				builder.append("Message: ").append(error.getErrorCode()).append(' ').append(error.getMessage()).append('\n');
+				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append('\n');
 			}
 			throw new XmlException(builder.toString());
 		}

@@ -37,8 +37,8 @@ public class Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;  // momo
-	private final long noIndPierre = 6789; // pierre
+	private static final long noIndMomo = 54321;  // momo
+	private static final long noIndPierre = 6789; // pierre
 
 	private MockIndividu indMomo;
 	private MockIndividu indPierre;

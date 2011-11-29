@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ReflexionUtilsTest {
 
-	class A {
+	static class A {
 		String nom;
 
 		A() {

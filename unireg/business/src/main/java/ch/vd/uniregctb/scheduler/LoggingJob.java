@@ -64,7 +64,7 @@ public class LoggingJob extends JobDefinition {
 	}
 
 	protected void setPercentDone(int done, int whole) {
-		LOGGER.debug("LogginJob: " + done + " on " + whole + "%");
+		LOGGER.debug("LogginJob: " + done + " on " + whole + '%');
 		setRunningMessage(done + " on " + whole + " (" + (done / (float) whole * 100) + "%) done...");
 	}
 

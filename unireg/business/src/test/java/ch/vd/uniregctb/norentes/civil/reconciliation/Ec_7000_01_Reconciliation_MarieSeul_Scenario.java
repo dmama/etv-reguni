@@ -40,7 +40,7 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final long noIndPierre = 12345; // Pierre
+	private static final long noIndPierre = 12345; // Pierre
 
 	private MockIndividu indPierre;
 

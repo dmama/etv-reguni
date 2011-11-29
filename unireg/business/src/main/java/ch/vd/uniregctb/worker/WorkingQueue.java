@@ -102,7 +102,7 @@ public class WorkingQueue<T> {
 		this.listeners = new ArrayList<Listener<T>>();
 		for (int i = 0; i < nbThreads; ++i) {
 			SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
-			l.setName(worker.getName() + "-" + i);
+			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
@@ -119,7 +119,7 @@ public class WorkingQueue<T> {
 		this.listeners = new ArrayList<Listener<T>>();
 		for (int i = 0; i < nbThreads; ++i) {
 			BatchListener<T> l = new BatchListener<T>(this, queue, worker);
-			l.setName(worker.getName() + "-" + i);
+			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
@@ -130,7 +130,7 @@ public class WorkingQueue<T> {
 		this.listeners = new ArrayList<Listener<T>>();
 		for (int i = 0; i < nbThreads; ++i) {
 			SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
-			l.setName(worker.getName() + "-" + i);
+			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
@@ -141,7 +141,7 @@ public class WorkingQueue<T> {
 		this.listeners = new ArrayList<Listener<T>>();
 		for (int i = 0; i < nbThreads; ++i) {
 			BatchListener<T> l = new BatchListener<T>(this, queue, worker);
-			l.setName(worker.getName() + "-" + i);
+			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
@@ -164,7 +164,7 @@ public class WorkingQueue<T> {
 		final Element<T> d = new Element<T>(data);
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("inprocessing.add(" + d + ")");
+			LOGGER.trace("inprocessing.add(" + d + ')');
 		}
 
 		synchronized (inprocessing) {
@@ -179,7 +179,7 @@ public class WorkingQueue<T> {
 		final Element<T> d = new Element<T>(data);
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("inprocessing.add(" + d + ")");
+			LOGGER.trace("inprocessing.add(" + d + ')');
 		}
 
 		synchronized (inprocessing) {
@@ -193,7 +193,7 @@ public class WorkingQueue<T> {
 		finally {
 			if (!res) {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("inprocessing.remove(" + d + ")");
+					LOGGER.trace("inprocessing.remove(" + d + ')');
 				}
 				synchronized (inprocessing) {
 					inprocessing.remove(d);
@@ -258,7 +258,7 @@ public class WorkingQueue<T> {
 	public String addNewWorker(SimpleWorker<T> worker) {
 		synchronized (listeners) {
 			final SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
-			final String name = worker.getName() + "-" + listeners.size();
+			final String name = worker.getName() + '-' + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
 			l.start();
@@ -275,7 +275,7 @@ public class WorkingQueue<T> {
 	public String addNewWorker(BatchWorker<T> worker) {
 		synchronized (listeners) {
 			final BatchListener<T> l = new BatchListener<T>(this, queue, worker);
-			final String name = worker.getName() + "-" + listeners.size();
+			final String name = worker.getName() + '-' + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
 			l.start();
@@ -449,7 +449,7 @@ public class WorkingQueue<T> {
 
 	private void removeFromInProcessing(Element<T> e) {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("inprocessing.remove(" + e + ")");
+			LOGGER.trace("inprocessing.remove(" + e + ')');
 		}
 		synchronized (inprocessing) {
 			if (!inprocessing.remove(e)) {
@@ -464,7 +464,7 @@ public class WorkingQueue<T> {
 
 	private void removeFromInProcessing(List<Element<T>> list) {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("inprocessing.remove(" + Arrays.toString(list.toArray()) + ")");
+			LOGGER.trace("inprocessing.remove(" + Arrays.toString(list.toArray()) + ')');
 		}
 		synchronized (inprocessing) {
 			for (Element<T> e : list) {
@@ -614,7 +614,7 @@ public class WorkingQueue<T> {
 					master.processingSuccessful(e);
 				}
 				catch (Exception exception) {
-					LOGGER.error("Erreur dans le traitement de l'élément [" + e + "]", exception);
+					LOGGER.error("Erreur dans le traitement de l'élément [" + e + ']', exception);
 					master.processingFailed(e);
 					throw new RuntimeException(exception);
 				}
@@ -663,7 +663,7 @@ public class WorkingQueue<T> {
 					master.processingSuccessful(list);
 				}
 				catch (Exception e) {
-					LOGGER.error("Erreur dans le traitement du lot [" + Arrays.toString(list.toArray()) + "]", e);
+					LOGGER.error("Erreur dans le traitement du lot [" + Arrays.toString(list.toArray()) + ']', e);
 					master.processingFailed(list);
 					throw new RuntimeException(e);
 				}

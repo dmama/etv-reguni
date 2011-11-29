@@ -42,8 +42,8 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 		return NAME;
 	}
 
-	private final long noIndRafa = 3913648; // rafa
-	private final long noIndMaria = 3913649; // maria
+	private static final long noIndRafa = 3913648; // rafa
+	private static final long noIndMaria = 3913649; // maria
 
 	private MockIndividu indRafa;
 	private MockIndividu indMaria;

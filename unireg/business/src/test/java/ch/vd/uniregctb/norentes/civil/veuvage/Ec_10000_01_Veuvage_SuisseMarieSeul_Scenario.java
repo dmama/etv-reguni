@@ -45,7 +45,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final long noIndPierre = 12345; // Pierre
+	private static final long noIndPierre = 12345; // Pierre
 
 	private MockIndividu indPierre;
 

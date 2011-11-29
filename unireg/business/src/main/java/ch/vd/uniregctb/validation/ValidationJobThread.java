@@ -146,14 +146,14 @@ public class ValidationJobThread extends Thread {
 
 		// filtrage des di annulées
 		final List<Declaration> toutesDIs = contribuable.getDeclarationsForPeriode(annee, false);
-		List<Declaration> dis = toutesDIs == null || toutesDIs.size() == 0 ? null : new ArrayList<Declaration>(toutesDIs.size());
+		List<Declaration> dis = toutesDIs == null || toutesDIs.isEmpty() ? null : new ArrayList<Declaration>(toutesDIs.size());
 		if (dis != null) {
 			for (Declaration di : toutesDIs) {
 				if (!di.isAnnule()) {
 					dis.add(di);
 				}
 			}
-			if (dis.size() == 0) {
+			if (dis.isEmpty()) {
 				// toutes ont été annulées !
 				dis = null;
 			}
@@ -217,7 +217,7 @@ public class ValidationJobThread extends Thread {
 					}
 				}
 
-				if (diCandidates.size() > 0) {
+				if (!diCandidates.isEmpty()) {
 					Declaration di = null;
 					for (Declaration candidate : diCandidates) {
 						if (di == null) {
@@ -237,7 +237,7 @@ public class ValidationJobThread extends Thread {
 
 			// ensuite, on associe un à un les élements restant dans chacune des collections
 			final int nbDeclarationNonAssociees = declarations.size() - diUtilisees.size();
-			if (nbDeclarationNonAssociees > 0 && periodesImposition.size() > 0) {
+			if (nbDeclarationNonAssociees > 0 && !periodesImposition.isEmpty()) {
 				final List<Declaration> diNonUtilisees = new ArrayList<Declaration>(nbDeclarationNonAssociees);
 				for (Declaration di : declarations) {
 					if (!diUtilisees.contains(di)) {

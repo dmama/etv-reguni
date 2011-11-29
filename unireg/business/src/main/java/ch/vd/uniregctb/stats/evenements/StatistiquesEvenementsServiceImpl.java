@@ -92,7 +92,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				query.setParameter("debutActivite", debutActivite.index());
 
 				final List<Object[]> result = query.list();
-				if (result != null && result.size() > 0) {
+				if (result != null && !result.isEmpty()) {
 					final Map<Integer, Integer> map = new HashMap<Integer, Integer>(result.size());
 					for (Object[] row : result) {
 						final Integer code = Integer.valueOf((String) row[0]);
@@ -237,7 +237,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				if (!first) {
 					b.append(", ");
 				}
-				b.append("'").append(etat.name()).append("'");
+				b.append('\'').append(etat.name()).append('\'');
 				first = false;
 			}
 		}
@@ -297,7 +297,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
 				final List<Object[]> results = query.list();
-				if (results != null && results.size() > 0) {
+				if (results != null && !results.isEmpty()) {
 					final List<T> liste = new ArrayList<T>(results.size());
 					for (Object[] row : results) {
 						final T element = callback.onRow(row);
@@ -320,13 +320,13 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
-				if (sqlParameters != null && sqlParameters.size() > 0) {
+				if (sqlParameters != null && !sqlParameters.isEmpty()) {
 					for (Map.Entry<String, Object> entry : sqlParameters.entrySet()) {
 						query.setParameter(entry.getKey(), entry.getValue());
 					}
 				}
 				final List<Object[]> result = query.list();
-				if (result != null && result.size() > 0) {
+				if (result != null && !result.isEmpty()) {
 					final Map<T, Integer> map = new HashMap<T, Integer>(result.size());
 					for (Object[] row : result) {
 						final T modalite = Enum.valueOf(enumClass, (String) row[0]);

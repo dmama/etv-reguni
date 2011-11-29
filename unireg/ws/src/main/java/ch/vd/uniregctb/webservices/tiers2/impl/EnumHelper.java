@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
@@ -27,7 +27,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
 
 public abstract class EnumHelper {
 
-	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new HashMap<TypePermis, PersonnePhysique.Categorie>();
+	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new EnumMap<TypePermis, PersonnePhysique.Categorie>(TypePermis.class);
 
 	public static EtatCivil coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
@@ -157,7 +157,7 @@ public abstract class EnumHelper {
 			return null;
 		}
 
-		if (typePermis2Categorie.size() == 0) {
+		if (typePermis2Categorie.isEmpty()) {
 			initTypePermis2Categorie();
 		}
 
@@ -167,7 +167,7 @@ public abstract class EnumHelper {
 	}
 
 	private static synchronized void initTypePermis2Categorie() {
-		if (typePermis2Categorie.size() == 0) {
+		if (typePermis2Categorie.isEmpty()) {
 			typePermis2Categorie.put(TypePermis.ANNUEL, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
 			typePermis2Categorie.put(TypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
 			typePermis2Categorie.put(TypePermis.DIPLOMATE, PersonnePhysique.Categorie._11_DIPLOMATE);

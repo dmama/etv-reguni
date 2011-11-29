@@ -865,7 +865,7 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + tiersType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + tiersType + ']');
 			}
 			
 			return res;

@@ -51,8 +51,8 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		return NAME;
 	}
 
-	private final long noIndSebastien = 844770;
-	private final long noIndGloria = 646404;
+	private static final long noIndSebastien = 844770;
+	private static final long noIndGloria = 646404;
 
 	private MockIndividu indSebastien;
 	private MockIndividu indGloria;

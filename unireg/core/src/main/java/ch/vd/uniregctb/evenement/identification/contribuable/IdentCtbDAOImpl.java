@@ -68,7 +68,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		}
 		final String avecTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
 		final String sansTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 ";
-		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + "'" + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
+		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
 
 		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
 		final int maxResult = paramPagination.getTaillePage();
@@ -118,7 +118,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		final String avecTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
 		final String sansTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where 1=1 ";
-		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + "'" + queryWhere : sansTypeDemande + queryWhere;
+		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere : sansTypeDemande + queryWhere;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 		return count;
 	}
@@ -129,7 +129,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
 		if (typeDemande != null) {
-			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + "'";
+			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + '\'';
 		}
 		return getHibernateTemplate().find(query);
 	}
@@ -139,7 +139,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String query = " select distinct identificationContribuable.demande.typeMessage" +
 				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
 		if (typeDemande != null) {
-			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + "'";
+			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + '\'';
 		}
 		return getHibernateTemplate().find(query);
 	}

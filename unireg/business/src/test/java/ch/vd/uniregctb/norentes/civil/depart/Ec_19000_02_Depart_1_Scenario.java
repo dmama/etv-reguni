@@ -48,7 +48,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 		return NAME;
 	}
 
-	private final long noIndAlain = 122456L;
+	private static final long noIndAlain = 122456L;
 
 	private MockIndividu indAlain;
 

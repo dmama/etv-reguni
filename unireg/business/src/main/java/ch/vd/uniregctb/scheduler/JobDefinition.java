@@ -178,7 +178,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	public void interrupt() {
 		setStatut(JobStatut.JOB_INTERRUPTING);
 		if (!logDisabled) {
-			LOGGER.info("<" + name + "> interrupted flag set");
+			LOGGER.info('<' + name + "> interrupted flag set");
 		}
 	}
 
@@ -218,7 +218,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 */
 	public void setStatut(JobStatut statut) {
 		if (!logDisabled) {
-			LOGGER.debug("<" + name + "> status changed from " + this.statut + " to " + statut);
+			LOGGER.debug('<' + name + "> status changed from " + this.statut + " to " + statut);
 		}
 		this.statut = statut;
 	}

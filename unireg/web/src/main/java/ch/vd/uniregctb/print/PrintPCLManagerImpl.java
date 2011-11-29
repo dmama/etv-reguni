@@ -62,7 +62,7 @@ public class PrintPCLManagerImpl implements PrintPCLManager {
 	}
 
 	private static final byte[] DEBUT_LOCALAPP = String.format("<?xml version=\"1.0\" encoding='%s'?><tasklist name=\"printPCLList\"><task name=\"printPCL\" action=\"print\"><print><parameter>", Charset.defaultCharset().name()).getBytes();
-	private static final byte[] FIN_LOCALAPP = String.format("</parameter></print></task></tasklist>").getBytes();
+	private static final byte[] FIN_LOCALAPP = "</parameter></print></task></tasklist>".getBytes();
 
 	@Override
 	public boolean isAttachmentContent() {

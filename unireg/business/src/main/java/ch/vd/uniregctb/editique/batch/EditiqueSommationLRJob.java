@@ -71,7 +71,7 @@ public class EditiqueSommationLRJob extends JobDefinition {
 		// Sommation des LRs
 		final EnvoiSommationLRsResults results = listeRecapService.sommerAllLR(categorie, dateFinPeriode, dateTraitement, status);
 		if (results == null) {
-			Audit.error( String.format("L'envoi en masse des sommations de LRs  a échoué"));
+			Audit.error("L'envoi en masse des sommations de LRs  a échoué");
 			return;
 		}
 

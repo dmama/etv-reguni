@@ -134,7 +134,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 				current += ids.size();
 
 				final int percent = (current * 100) / total;
-				status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + ids.get(0) + ")", percent);
+				status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + ids.get(0) + ')', percent);
 				
 				oidInterceptor.updateOfficeID(ids);
 				return null;

@@ -118,7 +118,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			allowed = SecurityProvider.isGranted(Role.MODIF_VD_ORD) || SecurityProvider.isGranted(Role.MODIF_VD_SOURC);
 			break;
 		default:
-			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeCtb + "]");
+			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeCtb + ']');
 		}
 
 		return allowed;

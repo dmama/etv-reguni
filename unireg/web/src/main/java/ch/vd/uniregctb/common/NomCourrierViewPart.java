@@ -25,7 +25,7 @@ public class NomCourrierViewPart {
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
-		if (nomCourrier != null && nomCourrier.size() > 0) {
+		if (nomCourrier != null && !nomCourrier.isEmpty()) {
 			nomCourrier1 = nomCourrier.get(0);
 			if (nomCourrier.size() > 1) {
 				nomCourrier2 = nomCourrier.get(1);

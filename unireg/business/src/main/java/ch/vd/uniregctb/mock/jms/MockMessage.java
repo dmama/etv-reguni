@@ -203,7 +203,7 @@ public class MockMessage implements Message {
      */
     @Override
     public final String getJMSMessageID() throws JMSException {
-        return this.destination.toString() + "-" +this.getJMSTimestamp();
+        return this.destination.toString() + '-' +this.getJMSTimestamp();
     }
 
     /**

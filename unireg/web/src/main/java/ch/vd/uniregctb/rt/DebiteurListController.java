@@ -26,7 +26,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 
 	protected final Logger LOGGER = Logger.getLogger(DebiteurListController.class);
 
-	private final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
+	private static final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
 	public static final String ACTION_PARAMETER_EFFACER = "effacer";

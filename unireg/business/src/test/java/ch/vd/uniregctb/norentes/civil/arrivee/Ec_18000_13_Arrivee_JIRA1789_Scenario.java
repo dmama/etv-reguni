@@ -60,8 +60,8 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		return TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE;
 	}
 
-	private final long noIndAntonio = 250797;
-	private final long noIndAnneLaure = 250798;
+	private static final long noIndAntonio = 250797;
+	private static final long noIndAnneLaure = 250798;
 	
 	private MockIndividu indAntonio;
 	private MockIndividu indAnneLaure;

@@ -43,7 +43,7 @@ public class RapprocherCtbProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(RapprocherCtbProcessor.class);
 
-	private final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
@@ -182,7 +182,7 @@ public class RapprocherCtbProcessor {
 			}
 		}
 
-		if (ppByNoIndividu.size() > 0) {
+		if (!ppByNoIndividu.isEmpty()) {
 			// remplit le cache des individus...
 			final List<Individu> individus = serviceCivil.getIndividus(ppByNoIndividu.keySet(), 2400, AttributeIndividu.ADRESSES);
 

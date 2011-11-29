@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -176,7 +177,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final Map<Etat, String> mapEtat = new HashMap<Etat, String>();
+		final Map<Etat, String> mapEtat = new EnumMap<Etat, String>(Etat.class);
 		final List<Etat> typesMessage = template.execute(new TransactionCallback<List<Etat>>() {
 			@Override
 			public List<Etat> doInTransaction(TransactionStatus status) {

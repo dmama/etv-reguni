@@ -208,7 +208,7 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + type + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + type + ']');
 			}
 			
 			final Pair<Long, EtatDeclaration> pair = new Pair<Long, EtatDeclaration>();

@@ -56,8 +56,8 @@ public class Ec_4001_04_AnnulationMariage_CoupleSepare_Scenario extends Evenemen
 		});
 	}
 
-	private final long noIndMomo = 54321; // Maurice
-	private final long noIndBea = 23456; // Béatrice
+	private static final long noIndMomo = 54321; // Maurice
+	private static final long noIndBea = 23456; // Béatrice
 
 	private long noHabMomo;
 	private long noHabBea;

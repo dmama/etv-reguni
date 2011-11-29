@@ -53,7 +53,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
 		this.numTechnique = target.getNoTechnique();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
+		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
 		this.district = null;
@@ -67,7 +67,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNumTechMere();
 		this.numTechnique = target.getNoTechnique();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
+		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
 		this.district = null;
@@ -81,7 +81,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.sigleCanton = target.getSigleCanton();
 		this.numTechMere = target.getNoOFSFaitiere() == null ? 0 : target.getNoOFSFaitiere();
 		this.numTechnique = target.getNoTechnique();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(getSigleCanton());
+		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = (target.getNoOFSFaitiere() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
 		this.district = DistrictImpl.get(target.getDistrict());
@@ -112,7 +112,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	@Override
 	public int getNoOFS() {
-		return getNoOFSEtendu();
+		return noOFSEtendu;
 	}
 
 	@Override

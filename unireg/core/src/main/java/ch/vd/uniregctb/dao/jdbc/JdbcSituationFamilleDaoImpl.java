@@ -182,7 +182,7 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 				res = o;
 			}
 			else {
-				throw new IllegalArgumentException("Type inconnu = [" + situationFamilleType + "]");
+				throw new IllegalArgumentException("Type inconnu = [" + situationFamilleType + ']');
 			}
 			
 			final Pair<Long, SituationFamille> pair = new Pair<Long, SituationFamille>();

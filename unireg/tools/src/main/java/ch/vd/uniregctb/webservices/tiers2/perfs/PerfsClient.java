@@ -193,7 +193,7 @@ public class PerfsClient {
 	public PerfsClient(String serviceUrl, String username, String password, Query query, Integer queriesCount, int threadCount, long ctbId) throws Exception {
 		LOGGER.info("Démarrage du test");
 		LOGGER.info(" - url           = " + serviceUrl);
-		LOGGER.info(" - query         = {" + query.description() + "}");
+		LOGGER.info(" - query         = {" + query.description() + '}');
 		if (queriesCount != null) {
 			LOGGER.info(" - count         = " + queriesCount);
 		}
@@ -212,7 +212,7 @@ public class PerfsClient {
 			String accessFilename, Integer batch) throws Exception {
 		LOGGER.info("Démarrage du test");
 		LOGGER.info(" - url     = " + serviceUrl);
-		LOGGER.info(" - query   = {" + query.description() + "}");
+		LOGGER.info(" - query   = {" + query.description() + '}');
 		if (queriesCount != null) {
 			LOGGER.info(" - count   = " + queriesCount);
 		}

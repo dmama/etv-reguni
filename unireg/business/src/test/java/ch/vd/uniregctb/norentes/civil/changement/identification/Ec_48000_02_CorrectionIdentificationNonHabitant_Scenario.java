@@ -43,7 +43,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;  // momo
+	private static final long noIndMomo = 54321;  // momo
 
 	private long noHabMomo;
 
@@ -116,7 +116,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsNouveau);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 0, "Un tiers est déjà trouvé par la nouvelle valeur du numéro AVS");
+			Assert.isTrue(list.isEmpty(), "Un tiers est déjà trouvé par la nouvelle valeur du numéro AVS");
 		}
 	}
 
@@ -152,7 +152,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsOriginal);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 0, "Un tiers est encore trouvé par l'ancienne valeur du numéro AVS");
+			Assert.isTrue(list.isEmpty(), "Un tiers est encore trouvé par l'ancienne valeur du numéro AVS");
 		}
 		{
 			final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(noIndMomo);

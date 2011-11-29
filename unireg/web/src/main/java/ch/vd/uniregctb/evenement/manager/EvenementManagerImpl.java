@@ -171,10 +171,10 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 			}
 		}
 
-		if (tiersAssocies.size() > 0) {
+		if (!tiersAssocies.isEmpty()) {
 			evtView.setTiersAssocies(tiersAssocies);
 		}
-		if (erreursTiersAssocies.size() > 0) {
+		if (!erreursTiersAssocies.isEmpty()) {
 			evtView.setErreursTiersAssocies(erreursTiersAssocies);
 		}
 

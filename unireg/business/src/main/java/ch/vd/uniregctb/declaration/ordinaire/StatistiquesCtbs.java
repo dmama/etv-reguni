@@ -135,7 +135,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
 	}
 
-	public final class Value {
+	public static final class Value {
 		public int nombre;
 	}
 

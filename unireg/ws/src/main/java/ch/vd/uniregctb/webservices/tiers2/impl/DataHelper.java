@@ -216,7 +216,7 @@ public class DataHelper {
 		case PERSONNE_PHYSIQUE:
 			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
 		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + "]");
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + ']');
 		}
 	}
 
@@ -387,7 +387,7 @@ public class DataHelper {
 				// rien à faire
 				break;
 			default:
-				throw new IllegalArgumentException("Type de parts inconnue = [" + p + "]");
+				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
 			}
 		}
 

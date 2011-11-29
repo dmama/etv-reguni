@@ -281,10 +281,10 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	public void _testPerf() {
 		Map<String, PerformanceLog> logs = PerformanceLogsRepository.getInstance().getLogs("dao");
-		for (String item : logs.keySet()) {
-			PerformanceLog log = logs.get(item);
+		for (Map.Entry<String, PerformanceLog> entry : logs.entrySet()) {
+			PerformanceLog log = entry.getValue();
 
-			LOGGER.warn("Item: " + item + " Log: " + log);
+			LOGGER.warn("Item: " + entry.getKey() + " Log: " + log);
 		}
 
 		logs = null;

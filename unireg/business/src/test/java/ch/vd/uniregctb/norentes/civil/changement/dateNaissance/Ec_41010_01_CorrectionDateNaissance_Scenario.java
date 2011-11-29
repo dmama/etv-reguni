@@ -44,7 +44,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;  // momo
+	private static final long noIndMomo = 54321;  // momo
 
 	private long noHabMomo;
 

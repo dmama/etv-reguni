@@ -266,7 +266,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 							final EvenementCivilExterneCriteria criteres = new EvenementCivilExterneCriteria();
 							criteres.setEtat(EtatEvenementCivil.A_TRAITER);
 							final List<EvenementCivilExterne> evts = evenementCivilExterneDAO.find(criteres, null);
-							if (evts != null && evts.size() > 0) {
+							if (evts != null && !evts.isEmpty()) {
 
 								LOGGER.info(String.format("Trouvé %d événements civils 'A_TRAITER'", evts.size()));
 

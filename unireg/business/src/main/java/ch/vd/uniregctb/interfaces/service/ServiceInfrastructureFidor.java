@@ -4,7 +4,7 @@ import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -337,15 +337,15 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 					final String patternTaoIS = getUrl("TAOIS", "default");
 					final String patternSipf = getUrl("SIPF", "explorer");
 
-					final Map<ApplicationFiscale, String> map = new HashMap<ApplicationFiscale, String>();
+					final Map<ApplicationFiscale, String> map = new EnumMap<ApplicationFiscale, String>(ApplicationFiscale.class);
 					map.put(ApplicationFiscale.TAO_PP, patternTaoPP);
 					map.put(ApplicationFiscale.TAO_BA, patternTaoBA);
 					map.put(ApplicationFiscale.TAO_IS, patternTaoIS);
 					map.put(ApplicationFiscale.SIPF, patternSipf); // [UNIREG-2409]
 					LOGGER.info("URLs externes (FiDoR) :\n" +
-							" * TAOPP = " + patternTaoPP + "\n" +
-							" * TAOBA = " + patternTaoBA + "\n" +
-							" * TAOIS = " + patternTaoIS + "\n" +
+							" * TAOPP = " + patternTaoPP + '\n' +
+							" * TAOBA = " + patternTaoBA + '\n' +
+							" * TAOIS = " + patternTaoIS + '\n' +
 							" * SIPF = " + patternSipf);
 
 					urlsApplication = map;

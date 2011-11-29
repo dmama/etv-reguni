@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -71,7 +71,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, InitializingBean {
 
-	private static final Map<TypeEvenementCivil, EvenementCivilTranslationStrategy> strategies = new HashMap<TypeEvenementCivil, EvenementCivilTranslationStrategy>();
+	private static final Map<TypeEvenementCivil, EvenementCivilTranslationStrategy> strategies = new EnumMap<TypeEvenementCivil, EvenementCivilTranslationStrategy>(TypeEvenementCivil.class);
 
 	static {
 		strategies.put(TypeEvenementCivil.ANNUL_ARRIVEE_SECONDAIRE, new AnnulationArriveeTranslationStrategy());
@@ -154,7 +154,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 	public EvenementCivilInterne toInterne(EvenementCivilExterne event, EvenementCivilOptions options) throws EvenementCivilException {
 		final EvenementCivilTranslationStrategy strategy = strategies.get(event.getType());
 		if (strategy == null) {
-			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement de type = [" + event.getType() + "]");
+			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement de type = [" + event.getType() + ']');
 		}
 		return strategy.create(event, context, options);
 	}

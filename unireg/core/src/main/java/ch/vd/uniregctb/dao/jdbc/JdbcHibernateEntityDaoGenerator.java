@@ -22,9 +22,9 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntityUtils;
 import ch.vd.uniregctb.hibernate.meta.JoinPropertyType;
+import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.PropertyType;
-import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.UserTypePropertyType;
 
 public class JdbcHibernateEntityDaoGenerator {
@@ -94,14 +94,14 @@ public class JdbcHibernateEntityDaoGenerator {
 			final Property p = properties.get(i);
 			p.setIndex(i + 1);
 			final boolean last = (i == propSize - 1);
-			baseSelect += "\"" + p.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
+			baseSelect += '\"' + p.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + '\n';
 
 			if (p.isPrimaryKey()) {
 				Assert.isNull(primaryKey);
 				primaryKey = p.getColumnName();
 			}
 			if (p.isParentForeignKey()) {
-				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + p.getColumnName() + "]");
+				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + p.getColumnName() + ']');
 				foreignKey = p;
 			}
 			if (p.isDiscriminator()) {
@@ -110,7 +110,7 @@ public class JdbcHibernateEntityDaoGenerator {
 				discriminantVar = toVar(p.getColumnName());
 			}
 		}
-		baseSelect += "\"from " + table + "\"";
+		baseSelect += "\"from " + table + '\"';
 		Assert.notNull(primaryKey);
 
 		mappingCode += "\n";
@@ -149,11 +149,11 @@ public class JdbcHibernateEntityDaoGenerator {
 				}
 			}
 
-			mappingCode += "\n" + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
+			mappingCode += '\n' + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
 
 			for (Property p : e.getProperties()) {
 				if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
-					mappingCode += tab + "o." + toSetter(p.getName()) + "(" + toVar(p.getColumnName()) + ");\n";
+					mappingCode += tab + "o." + toSetter(p.getName()) + '(' + toVar(p.getColumnName()) + ");\n";
 				}
 			}
 
@@ -205,34 +205,34 @@ public class JdbcHibernateEntityDaoGenerator {
 		
 		if (colType.needNullCheck()) {
 
-			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + " " + toTempVar(p) + " = " + generateGetValue(p) + ";\n";
+			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + ' ' + toTempVar(p) + " = " + generateGetValue(p) + ";\n";
 			if (colType instanceof UserTypePropertyType) {
 				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(p)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(p)) + ");\n";
 			}
 			else if (colType instanceof JoinPropertyType) {
 				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(p)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(p)) + ");\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + toTempVar(p) + ");\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + toTempVar(p) + ");\n";
 			}
 		}
 		else {
 			if (colType instanceof UserTypePropertyType) {
 				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + userType.getConvertMethod(generateGetValue(p)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = " + userType.getConvertMethod(generateGetValue(p)) + ";\n";
 			}
 			else if (colType instanceof JoinPropertyType) {
 				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + joinType.getConvertMethod(generateGetValue(p)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = " + joinType.getConvertMethod(generateGetValue(p)) + ";\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + generateGetValue(p) + ";\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + ' ' + toVar(p.getColumnName()) + " = " + generateGetValue(p) + ";\n";
 			}
 
 		}
@@ -246,7 +246,7 @@ public class JdbcHibernateEntityDaoGenerator {
 	private String generateGetValue(Property p) {
 		final int index = p.getIndex();
 		Assert.isTrue(index > 0);
-		return "rs." + p.getType().getResultGetter() + "(" + index + ")";
+		return "rs." + p.getType().getResultGetter() + '(' + index + ')';
 	}
 
 	private String toSetter(String property) {
@@ -261,7 +261,7 @@ public class JdbcHibernateEntityDaoGenerator {
 	 */
 	private String toVar(String columnName) {
 		Assert.notNull(columnName);
-		Assert.isTrue(columnName.length() > 1, "Nom de colonne trop court = [" + columnName + "]");
+		Assert.isTrue(columnName.length() > 1, "Nom de colonne trop court = [" + columnName + ']');
 		StringBuffer sb = new StringBuffer();
 		Matcher m = Pattern.compile("_([a-z])([a-z]*)", Pattern.CASE_INSENSITIVE).matcher(columnName.toLowerCase());
 		while (m.find()) {
@@ -271,11 +271,11 @@ public class JdbcHibernateEntityDaoGenerator {
 	}
 
 	private String replace(String line, String pattern, String value) {
-		final int index = line.indexOf("${" + pattern + "}");
+		final int index = line.indexOf("${" + pattern + '}');
 		if (index >= 0) {
 			final String before = line.substring(0, index);
 			if (StringUtils.isBlank(before)) {
-				value = value.replaceAll("\\n", "\n" + before);
+				value = value.replaceAll("\\n", '\n' + before);
 			}
 		}
 		return line.replaceAll("\\$\\{" + pattern + "\\}", value);

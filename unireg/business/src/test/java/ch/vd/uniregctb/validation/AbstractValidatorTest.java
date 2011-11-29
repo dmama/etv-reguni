@@ -52,7 +52,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 	private static void dumpMessages(List<String> expected, List<String> actual) {
 		final StringBuilder b = new StringBuilder();
 		b.append("Expected message(s):\n");
-		if (expected == null || expected.size() == 0) {
+		if (expected == null || expected.isEmpty()) {
 			b.append('\t').append("<None>").append('\n');
 		}
 		else {
@@ -61,7 +61,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 			}
 		}
 		b.append("Actual message(s):\n");
-		if (actual == null || actual.size() == 0) {
+		if (actual == null || actual.isEmpty()) {
 			b.append('\t').append("<None>").append('\n');
 		}
 		else {

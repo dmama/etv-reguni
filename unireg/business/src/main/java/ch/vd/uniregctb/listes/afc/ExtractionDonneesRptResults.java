@@ -256,7 +256,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 			noCtbConjoint = conjoint != null ? conjoint.getNumero() : null;
 		}
 		else {
-			throw new IllegalArgumentException("Type de tiers non-supporté : " + ctb.getClass().getName() + " (" + ctb.getNumero() + ")");
+			throw new IllegalArgumentException("Type de tiers non-supporté : " + ctb.getClass().getName() + " (" + ctb.getNumero() + ')');
 		}
 
 		return new InfoIdentificationCtb(nom, prenom, numeroAvs, dateNaissance, noCtbPrincipal, noCtbConjoint);

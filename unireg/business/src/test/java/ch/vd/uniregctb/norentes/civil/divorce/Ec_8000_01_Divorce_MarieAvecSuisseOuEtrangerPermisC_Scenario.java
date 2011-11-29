@@ -46,8 +46,8 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321; // momo
-	private final long noIndBea = 23456; // bea
+	private static final long noIndMomo = 54321; // momo
+	private static final long noIndBea = 23456; // bea
 
 	private MockIndividu indMomo;
 	private MockIndividu indBea;

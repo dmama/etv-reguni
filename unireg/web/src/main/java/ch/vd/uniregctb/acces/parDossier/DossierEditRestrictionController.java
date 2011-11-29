@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.acces.parDossier;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -27,7 +26,7 @@ public class DossierEditRestrictionController extends AbstractSimpleFormControll
 
 	protected final Logger LOGGER = Logger.getLogger(DossierEditRestrictionController.class);
 
-	private final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	public final static String TARGET_ANNULER_RESTRICTION = "annulerRestriction";
 

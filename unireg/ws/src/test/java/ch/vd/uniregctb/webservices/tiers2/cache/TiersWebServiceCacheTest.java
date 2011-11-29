@@ -678,7 +678,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 					eric = entry.tiers;
 				}
 				else {
-					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + "]");
+					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + ']');
 				}
 			}
 			assertNoPart(monsieur);
@@ -766,7 +766,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 					eric = entry.tiers;
 				}
 				else {
-					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + "]");
+					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + ']');
 				}
 			}
 			assertNoPart(monsieur);

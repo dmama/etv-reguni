@@ -57,8 +57,8 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 		this.infraService = infraService;
 	}
 
-	private final long noIndRafa = 3913648; // rafa
-	private final long noIndMaria = 3913649; // maria
+	private static final long noIndRafa = 3913648; // rafa
+	private static final long noIndMaria = 3913649; // maria
 
 	private MockIndividu indRafa;
 	private MockIndividu indMaria;

@@ -64,11 +64,11 @@ public abstract class WithoutSpringTest {
 	}
 
 	public static void assertContains(String containee, String container) {
-		assertContains(containee, container, "'" + container + "' doesn't contain '" + containee + "'");
+		assertContains(containee, container, '\'' + container + "' doesn't contain '" + containee + '\'');
 	}
 
 	public static void assertNotContains(String containee, String container) {
-		assertNotContains(containee, container, "'" + container + "' contains '" + containee + "'");
+		assertNotContains(containee, container, '\'' + container + "' contains '" + containee + '\'');
 	}
 
 	public static void assertNotContains(String containee, String container, String msg) {

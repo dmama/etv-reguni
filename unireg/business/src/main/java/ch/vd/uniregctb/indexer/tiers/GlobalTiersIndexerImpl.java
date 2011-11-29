@@ -223,7 +223,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             statusManager = new LoggingStatusManager(LOGGER, Level.DEBUG);
         }
 
-        Audit.info("Réindexation de la base de données (mode = " + mode + ")");
+        Audit.info("Réindexation de la base de données (mode = " + mode + ')');
 
         if (mode == Mode.FULL) {
             // Ecrase l'indexe lucene sur le disque local
@@ -379,7 +379,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 			throw new IndexerException(msg);
 		}
 		else if (statusManager.interrupted()) {
-			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés/total = " + i + "/" + size);
+			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés/total = " + i + '/' + size);
 		}
 		else {
 			Audit.success("L'indexation s'est terminée avec succès. Nombre de tiers réindexés = " + size);
@@ -557,7 +557,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         if (tiers instanceof PersonnePhysique) {
             // Habitant
             List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-            if (rapports != null && rapports.size() > 0) {
+            if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
                     MenageCommun menage = (MenageCommun) tiersDAO.get(r.getObjetId());
                     list.add(menage);
@@ -568,7 +568,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         // MenageCommun
         else if (tiers instanceof MenageCommun) {
             List<RapportEntreTiers> rapports = TiersHelper.getRapportObjetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-            if (rapports != null && rapports.size() > 0) {
+            if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
                     PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
                     list.add(pp);

@@ -54,7 +54,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 		return "Contrôle de la récupération d'un ancien non-habitant lors d'une arrivée le jour de l'an (UNIREG-2730)";
 	}
 
-	private final long numeroIndividu = 960713;
+	private static final long numeroIndividu = 960713;
 	private final RegDate dateArrivee = date(2007, 1, 1);
 	private final RegDate dateNaissance = date(1956, 3, 15);
 

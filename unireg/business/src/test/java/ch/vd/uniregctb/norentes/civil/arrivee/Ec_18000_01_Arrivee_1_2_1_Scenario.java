@@ -52,10 +52,10 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 	}
 
 
-	private final long noIndAlain = 123456L;
-	private final long noIndJanine = 223456L;
-	private final long noIndJulien = 423456L;
-	private final long noIndFanny = 323456L;
+	private static final long noIndAlain = 123456L;
+	private static final long noIndJanine = 223456L;
+	private static final long noIndJulien = 423456L;
+	private static final long noIndFanny = 323456L;
 
 	private MockIndividu indAlain;
 	private MockIndividu indJanine;

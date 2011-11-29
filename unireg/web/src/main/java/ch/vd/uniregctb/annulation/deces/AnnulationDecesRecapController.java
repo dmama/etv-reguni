@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.annulation.deces;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -19,7 +18,7 @@ public class AnnulationDecesRecapController extends AbstractSimpleFormController
 
 	protected final Logger LOGGER = Logger.getLogger(DecesRecapController.class);
 
-	private final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	private AnnulationDecesRecapManager annulationDecesRecapManager;
 

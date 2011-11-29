@@ -76,7 +76,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			throw e;
 		}
 		catch (RuntimeException e) {
-			LOGGER.error("Problème avec la requête = [" + criteria + "]", e);
+			LOGGER.error("Problème avec la requête = [" + criteria + ']', e);
 			throw e;
 		}
 
@@ -239,7 +239,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 	}
 
-	private final class TopCallback implements SearchCallback {
+	private static final class TopCallback implements SearchCallback {
 		
 		private final TopList<TiersIndexedData> list;
 

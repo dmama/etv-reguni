@@ -98,7 +98,7 @@ public class Naissance extends EvenementCivilInterne {
 			PersonnePhysique bebe = new PersonnePhysique(true);
 			bebe.setNumeroIndividu(individu.getNoTechnique());
 			bebe = (PersonnePhysique) context.getTiersDAO().save(bebe);
-			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ")");
+			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
 
 			context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
 

@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.lr;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -75,7 +74,7 @@ public class ListeRecapListController extends AbstractListeRecapController {
 		mav.addObject(RESULT_SIZE_NAME, 0);
 
 		if(buttonEffacer == null) {
-			if ((errors == null) || (errors.getAllErrors() == null) ||  (errors.getAllErrors().size() == 0)) {
+			if ((errors == null) || (errors.getAllErrors() == null) ||  (errors.getAllErrors().isEmpty())) {
 				final HttpSession session = request.getSession();
 
 				final ListeRecapCriteria bean = (ListeRecapCriteria) session.getAttribute(LR_CRITERIA_NAME);

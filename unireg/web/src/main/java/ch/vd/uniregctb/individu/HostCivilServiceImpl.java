@@ -173,7 +173,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
 		final Collection<Origine> origines = getServiceCivilService().getOrigines(numeroIndividu, DateHelper.getCurrentYear());
-		if (origines != null && origines.size() > 0) {
+		if (origines != null && !origines.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Origine origine : origines) {
 				if (b.length() > 0) {
@@ -191,7 +191,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
 
 		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, DateHelper.getCurrentYear());
-		if (nationalites != null && nationalites.size() > 0) {
+		if (nationalites != null && !nationalites.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Nationalite nationalite : nationalites) {
 				if (nationalite.getDateFinValidite() == null) {

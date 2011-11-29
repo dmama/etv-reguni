@@ -240,7 +240,7 @@ public class TiersManager implements MessageSourceAware {
 
 	private AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
 		AdoptionReconnaissance a = null;
-		if (adoptions != null && adoptions.size() > 0) {
+		if (adoptions != null && !adoptions.isEmpty()) {
 			for (AdoptionReconnaissance candidat : adoptions) {
 				if (candidat.getAdopteReconnu().getNoTechnique() == noIndEnfant) {
 					a = candidat;
@@ -442,7 +442,7 @@ public class TiersManager implements MessageSourceAware {
 					nomObjet = new ArrayList<String>();
 					nomObjet.add(e.getMessage());
 				}
-				if (nomObjet != null && nomObjet.size() != 0) {
+				if (nomObjet != null && !nomObjet.isEmpty()) {
 					rapportView.setNomCourrier(nomObjet);
 				}
 
@@ -582,7 +582,7 @@ public class TiersManager implements MessageSourceAware {
 			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else {
-			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + "]");
+			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
 		}
 	}
 

@@ -15,7 +15,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 	//private static final Logger LOGGER = Logger.getLogger(SimpleGlobalIndexTest.class);
 
-	private final String path = "tmp/globalIndex";
+	private static final String path = "tmp/globalIndex";
 	private GlobalIndex globalIndex;
 	private final static int maxHits = 100;
 

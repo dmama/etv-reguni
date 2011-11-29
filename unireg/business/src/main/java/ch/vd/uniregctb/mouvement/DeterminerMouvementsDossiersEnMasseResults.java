@@ -147,7 +147,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 	private void addIgnore(long numero, RegDate date, Raison raison) {
 		boolean dejaConnu = false;
-		if (ignores.size() > 0) {
+		if (!ignores.isEmpty()) {
 			final NonTraite precedent = ignores.get(ignores.size() - 1);
 			dejaConnu = (precedent.noCtb == numero && precedent.type == raison);
 			if (dejaConnu && date != null) {

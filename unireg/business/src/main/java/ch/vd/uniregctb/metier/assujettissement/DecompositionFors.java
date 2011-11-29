@@ -157,6 +157,6 @@ public abstract class DecompositionFors implements DateRange {
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}
 }

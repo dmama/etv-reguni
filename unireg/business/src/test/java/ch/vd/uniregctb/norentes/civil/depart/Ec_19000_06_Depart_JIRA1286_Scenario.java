@@ -36,7 +36,7 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 		return NAME;
 	}
 
-	private final long noIndIan = 874791;
+	private static final long noIndIan = 874791;
 
 	private MockIndividu indIan;
 	

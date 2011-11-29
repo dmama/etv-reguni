@@ -10,9 +10,9 @@ public class NorentesFrameworkTestScenario extends EvenementCivilScenario {
 	public static final String NAME = "NorentesFrameworkTestScenario";
 
 	private long noHab = 0;
-	private final long noInd1 = 54321L;
-	private final long noInd2 = 12345L;
-	private final long noInd3 = 23456L;
+	private static final long noInd1 = 54321L;
+	private static final long noInd2 = 12345L;
+	private static final long noInd3 = 23456L;
 
 	public NorentesFrameworkTestScenario() {
 	}

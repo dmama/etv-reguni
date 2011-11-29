@@ -242,7 +242,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 */
 	private static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
 		Commune resultat = null;
-		if (candidats != null && candidats.size() > 0) {
+		if (candidats != null && !candidats.isEmpty()) {
 			if (candidats.size() == 1) {
 				resultat = candidats.get(0);
 			}
@@ -534,7 +534,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException {
 		final String sigle = commune.getSigleCanton();
-		if (sigle == null || sigle.equals("")) {
+		if (sigle == null || sigle.isEmpty()) {
 			final int noOfs = commune.getNoOFS();
 			final Canton canton = getCantonByCommune(noOfs);
 			return getVaud().equals(canton);

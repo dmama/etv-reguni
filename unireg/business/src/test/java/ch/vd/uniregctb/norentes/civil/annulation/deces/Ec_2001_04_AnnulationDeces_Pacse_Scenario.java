@@ -40,8 +40,8 @@ public class Ec_2001_04_AnnulationDeces_Pacse_Scenario extends EvenementCivilSce
 		return NAME;
 	}
 
-	private final long noIndDavid = 45678;
-	private final long noIndJulien = 56789;
+	private static final long noIndDavid = 45678;
+	private static final long noIndJulien = 56789;
 
 	private long noHabDavid;
 	private long noHabJulien;

@@ -141,7 +141,7 @@ public class IndexerBatchException extends RuntimeException {
 				builder.append(", ");
 			}
 		}
-		builder.append("}");
+		builder.append('}');
 		return builder.toString();
 	}
 

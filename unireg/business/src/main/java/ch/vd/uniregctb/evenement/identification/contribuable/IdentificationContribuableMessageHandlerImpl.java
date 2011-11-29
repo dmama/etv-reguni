@@ -91,9 +91,9 @@ public class IdentificationContribuableMessageHandlerImpl extends TransactionalE
 		if (!doc.validate(validateOptions)) {
 			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
-				builder.append("\n");
-				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
-				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				builder.append('\n');
+				builder.append("Message: ").append(error.getErrorCode()).append(' ').append(error.getMessage()).append('\n');
+				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append('\n');
 			}
 
 			final String errorMessage = builder.toString();
@@ -114,7 +114,7 @@ public class IdentificationContribuableMessageHandlerImpl extends TransactionalE
 
 				Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
 
-				AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
+				AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ')');
 				try {
 					demandeHandler.handleDemande(message);
 					hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification

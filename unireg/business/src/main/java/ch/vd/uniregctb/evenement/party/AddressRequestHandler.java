@@ -41,12 +41,12 @@ public class AddressRequestHandler implements PartyRequestHandler<AddressRequest
 		final UserLogin login = request.getLogin();
 		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
-					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + "/" + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
+					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}
 
 		if (SecurityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
 			throw new ServiceException(new AccessDeniedExceptionInfo(
-					"L'utilisateur spécifié (" + login.getUserId() + "/" + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + ".", null));
+					"L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + '.', null));
 		}
 
 		// Récupération du tiers

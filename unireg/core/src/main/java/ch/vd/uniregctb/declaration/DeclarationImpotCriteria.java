@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.Pair;
 
 public class DeclarationImpotCriteria {
 
-	private final String TOUS = "TOUS";
+	private static final String TOUS = "TOUS";
 
 	private Integer annee;
 

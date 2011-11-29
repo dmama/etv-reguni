@@ -62,7 +62,7 @@ public class CorrectionFlagHabitantProcessor {
 
 		statusManager.setMessage("Phase 1 : Identification des personnes physiques concernées");
 		final List<Long> ids = getIdsPPAvecFlagHabitantPasDroit();
-		if (ids != null && ids.size() > 0) {
+		if (ids != null && !ids.isEmpty()) {
 
 			final String messageStatus = String.format("Phase 1 : Traitement de %d personnes physiques", ids.size());
 			statusManager.setMessage(messageStatus, 0);
@@ -157,7 +157,7 @@ public class CorrectionFlagHabitantProcessor {
 			statusManager.setMessage(String.format("Phase %d : %s", numeroPhase, traitement.getMessageInitial()));
 			final List<Long> ids = traitement.getIdsMenagesATraiter();
 
-			if (ids != null && ids.size() > 0 && !statusManager.interrupted()) {
+			if (ids != null && !ids.isEmpty() && !statusManager.interrupted()) {
 
 				final String messageStatus = String.format("Phase %d : Traitement de %d ménages communs", numeroPhase, ids.size());
 				statusManager.setMessage(messageStatus, 0);

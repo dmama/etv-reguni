@@ -52,7 +52,7 @@ public abstract class ContextBindingManager {
 		Object value = map.get(key);
 		if (value != null && logger.isDebugEnabled()) {
 			logger.debug("Retrieved value [" + value + "] for key [" + key + "] bound to thread [" +
-					Thread.currentThread().getName() + "]");
+					Thread.currentThread().getName() + ']');
 		}
 		return value;
 	}
@@ -73,12 +73,12 @@ public abstract class ContextBindingManager {
 		}
 		if (map.containsKey(key)) {
 			throw new IllegalStateException("Already value [" + map.get(key) + "] for key [" + key +
-					"] bound to thread [" + Thread.currentThread().getName() + "]");
+					"] bound to thread [" + Thread.currentThread().getName() + ']');
 		}
 		map.put(key, value);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bound value [" + value + "] for key [" + key + "] to thread [" +
-					Thread.currentThread().getName() + "]");
+					Thread.currentThread().getName() + ']');
 		}
 	}
 
@@ -93,7 +93,7 @@ public abstract class ContextBindingManager {
 		Map<Object, Object> map = (Map<Object, Object>) resources.get();
 		if (map == null || !map.containsKey(key)) {
 			throw new IllegalStateException(
-					"No value for key [" + key + "] bound to thread [" + Thread.currentThread().getName() + "]");
+					"No value for key [" + key + "] bound to thread [" + Thread.currentThread().getName() + ']');
 		}
 		Object value = map.remove(key);
 		// remove entire ThreadLocal if empty
@@ -102,7 +102,7 @@ public abstract class ContextBindingManager {
 		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("Removed value [" + value + "] for key [" + key + "] from thread [" +
-					Thread.currentThread().getName() + "]");
+					Thread.currentThread().getName() + ']');
 		}
 		return value;
 	}

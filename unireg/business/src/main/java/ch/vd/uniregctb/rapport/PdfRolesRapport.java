@@ -147,7 +147,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 */
 	protected static List<ProduireRolesResults.InfoContribuable> getListeTriee(Collection<ProduireRolesResults.InfoContribuable> col) {
 
-		if (col == null || col.size() == 0) {
+		if (col == null || col.isEmpty()) {
 			return null;
 		}
 

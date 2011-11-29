@@ -38,7 +38,7 @@ public class Ec_18000_02_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 		return TypeEvenementCivil.ARRIVEE_DANS_COMMUNE;
 	}
 
-	private final long noIndAntoine = 1020206L;
+	private static final long noIndAntoine = 1020206L;
 
 	private MockIndividu indAntoine;
 

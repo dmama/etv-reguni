@@ -61,7 +61,7 @@ public class TiersPickerController extends CommonSimpleFormController implements
 			components = fullSearch(buttonId, id, nomraison, localite, datenaissance, noavs, filter);
 		}
 		else {
-			throw new IllegalArgumentException("Type d'action ajax inconnue = [" + event.getEventId() + "]");
+			throw new IllegalArgumentException("Type d'action ajax inconnue = [" + event.getEventId() + ']');
 		}
 
 		final AjaxResponse response = new AjaxResponseImpl();

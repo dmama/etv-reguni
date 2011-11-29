@@ -40,7 +40,7 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 			instance = (Dialect) postgresqlDialectClass.newInstance();
 		}
 		else {
-			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + "]");
+			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
 	}
 

@@ -178,7 +178,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			clause = "from " + typeTache.name() + " tache where 1=1 ";
 		}
 		if (criterion.isInvertTypeTache()) {
-			clause += " and tache.class != " + typeTache.name() + " ";
+			clause += " and tache.class != " + typeTache.name() + ' ';
 		}
 
 		// Contribuable

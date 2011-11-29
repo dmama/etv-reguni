@@ -16,8 +16,8 @@ public class RapportEditController extends AbstractRapportPrestationController {
 
 	protected final Logger LOGGER = Logger.getLogger(RapportEditController.class);
 
-	private final String NUMERO_TIERS_PARAMETER_NAME = "numeroTiers";
-	private final String NUMERO_TIERS_LIE_PARAMETER_NAME = "numeroTiersLie";
+	private static final String NUMERO_TIERS_PARAMETER_NAME = "numeroTiers";
+	private static final String NUMERO_TIERS_LIE_PARAMETER_NAME = "numeroTiersLie";
 
 	private RapportEditManager rapportEditManager;
 

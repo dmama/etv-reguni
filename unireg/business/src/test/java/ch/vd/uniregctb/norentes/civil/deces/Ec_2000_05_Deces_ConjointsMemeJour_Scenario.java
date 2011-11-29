@@ -42,9 +42,9 @@ public class Ec_2000_05_Deces_ConjointsMemeJour_Scenario extends EvenementCivilS
 		return NAME;
 	}
 
-	private final long noIndHamlet = 43252;
+	private static final long noIndHamlet = 43252;
 
-	private final long noIndHeidi = 43134;
+	private static final long noIndHeidi = 43134;
 
 	private MockIndividu indHamlet;
 

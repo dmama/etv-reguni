@@ -36,8 +36,8 @@ public class Ec_25001_01_AnnulationTutelle_Scenario extends EvenementCivilScenar
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;  // momo
-	private final long noIndPierre = 6789; // pierre
+	private static final long noIndMomo = 54321;  // momo
+	private static final long noIndPierre = 6789; // pierre
 
 	private MockIndividu indMomo;
 	private MockIndividu indPierre;

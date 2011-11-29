@@ -40,8 +40,8 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		return NAME;
 	}
 
-	private final long noIndCharles = 124095;
-	private final long noIndNora = 128157;
+	private static final long noIndCharles = 124095;
+	private static final long noIndNora = 128157;
 
 	private MockIndividu indCharles;
 	private MockIndividu indNora;

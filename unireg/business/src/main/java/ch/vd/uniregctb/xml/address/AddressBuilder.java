@@ -103,7 +103,7 @@ public class AddressBuilder {
 		else {
 			final OrganisationMailAddressInfo organisationInfo = new OrganisationMailAddressInfo();
 			final List<String> noms = adresse.getNomsPrenomsOuRaisonsSociales();
-			if (noms.size() > 0) {
+			if (!noms.isEmpty()) {
 				organisationInfo.setOrganisationName(DataHelper.truncate(noms.get(0), 60));
 			}
 			if (noms.size() > 1) {

@@ -88,7 +88,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 		// un nouvel appel commence
 		appelsEnCours.incrementAndGet();
 
-		if (login == null || login.userId == null || login.oid == null || login.userId.trim().equals("")) {
+		if (login == null || login.userId == null || login.oid == null || login.userId.trim().isEmpty()) {
 			throw new WebServiceException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
 

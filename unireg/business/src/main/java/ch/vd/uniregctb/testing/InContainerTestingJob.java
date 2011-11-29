@@ -51,7 +51,7 @@ public class InContainerTestingJob extends JobDefinition {
 			for (InContainerTest test : tests) {
 				boolean err = runMethod(test);
 				if (err) {
-					if (!methodsInError.equals("")) {
+					if (!methodsInError.isEmpty()) {
 						methodsInError += " ";
 					}
 					methodsInError += test.getClass().getSimpleName();
@@ -77,17 +77,17 @@ public class InContainerTestingJob extends JobDefinition {
 			if ( !method.isAnnotationPresent(Test.class) )
 				continue;
 			try {
-				LOGGER.info("Run method: " + test.getClass().getSimpleName()+"."+method.getName());
+				LOGGER.info("Run method: " + test.getClass().getSimpleName()+ '.' +method.getName());
 				runBefore(test, method);
-				LOGGER.info("Test SUCCESS: " + test.getClass().getSimpleName()+"."+method.getName());
+				LOGGER.info("Test SUCCESS: " + test.getClass().getSimpleName()+ '.' +method.getName());
 			}
 			catch (InvocationTargetException e) {
 				error = true;
-				LOGGER.error("ERROR: Method "+test.getClass().getSimpleName()+"."+method.getName(), e);
+				LOGGER.error("ERROR: Method "+test.getClass().getSimpleName()+ '.' +method.getName(), e);
 			}
 			catch (Exception e) {
 				error = true;
-				LOGGER.error("Method "+test.getClass().getSimpleName()+"."+method.getName()+" : "+e.getMessage());
+				LOGGER.error("Method "+test.getClass().getSimpleName()+ '.' +method.getName()+" : "+e.getMessage());
 				LOGGER.debug(e, e);
 			}
 			finally {
@@ -132,12 +132,12 @@ public class InContainerTestingJob extends JobDefinition {
 			}
 
 			DefaultTransactionAttribute transactionDefinition =  new DefaultTransactionAttribute ();
-			transactionDefinition.setName(testMethod.getClass().getSimpleName()+"."+testMethod.getName());
+			transactionDefinition.setName(testMethod.getClass().getSimpleName()+ '.' +testMethod.getName());
 
 			if (transactionDefinition != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Explicit transaction definition [" + transactionDefinition + "] found for test context [" + testMethod
-							+ "]");
+							+ ']');
 				}
 				TransactionContext txContext = new TransactionContext(getTransactionManager(), transactionDefinition);
 				startNewTransaction(testMethod, txContext);
@@ -160,7 +160,7 @@ public class InContainerTestingJob extends JobDefinition {
 			++this.transactionsStarted;
 			if (logger.isInfoEnabled()) {
 				logger.info("Began transaction (" + this.transactionsStarted + "): transaction manager [" + txContext.transactionManager
-						+ "]; rollback [" + isRollback(testMethod) + "]");
+						+ "]; rollback [" + isRollback(testMethod) + ']');
 			}
 		}
 
@@ -168,12 +168,12 @@ public class InContainerTestingJob extends JobDefinition {
 			boolean rollback = isRollback(testMethod);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Ending transaction for test context [" + testMethod + "]; transaction manager ["
-						+ txContext.transactionStatus + "]; rollback [" + rollback + "]");
+						+ txContext.transactionStatus + "]; rollback [" + rollback + ']');
 			}
 			txContext.endTransaction(rollback);
 			if (logger.isInfoEnabled()) {
 				logger.info((rollback ? "Rolled back" : "Committed") + " transaction after test execution for test context [" + testMethod
-						+ "]");
+						+ ']');
 			}
 		}
 
@@ -184,14 +184,14 @@ public class InContainerTestingJob extends JobDefinition {
 				boolean rollbackOverride = rollbackAnnotation.value();
 				if (logger.isDebugEnabled()) {
 					logger.debug("Method-level @Rollback(" + rollbackOverride + ") overrides default rollback [" + rollback
-							+ "] for test context [" + testMethod + "]");
+							+ "] for test context [" + testMethod + ']');
 				}
 				rollback = rollbackOverride;
 			}
 			else {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No method-level @Rollback override: using default rollback [" + rollback + "] for test context ["
-							+ testMethod + "]");
+							+ testMethod + ']');
 				}
 			}
 			return rollback;

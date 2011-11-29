@@ -106,7 +106,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			// dans ce cas, la raison sociale vue plus haut est nom1 et nom2
 
 			data.setAutresNom(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
-			data.setNom1(raisonSociale.size() > 0 ? raisonSociale.get(0) : null);
+			data.setNom1(!raisonSociale.isEmpty() ? raisonSociale.get(0) : null);
 			data.setNom2(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
 		}
 		else {

@@ -57,8 +57,8 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 		return TypeEvenementCivil.SEPARATION;
 	}
 
-	private final long noIndMomo = 54321; // momo
-	private final long noIndBea = 23456; // bea
+	private static final long noIndMomo = 54321; // momo
+	private static final long noIndBea = 23456; // bea
 
 	private MockIndividu indMomo;
 	private MockIndividu indBea;

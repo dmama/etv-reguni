@@ -43,7 +43,7 @@ public class Ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Scenario extends Maria
 		return NAME;
 	}
 
-	private final long noIndMaria = 3913649; // maria
+	private static final long noIndMaria = 3913649; // maria
 
 	private MockIndividu indMaria;
 

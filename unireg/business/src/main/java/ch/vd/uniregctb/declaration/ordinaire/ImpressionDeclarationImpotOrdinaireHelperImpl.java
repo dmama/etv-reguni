@@ -436,7 +436,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final CollectiviteAdministrative col = getRetourCollectiviteAdministrative(informationsDocument);
 		if (col == null) {
 			final String numeroDoc = informationsDocument.getIdDocument().toString();
-			throw new EditiqueException("Impossible de déterminer la collectivité administrative de retour sur la DI numéro=[" + numeroDoc + "]");
+			throw new EditiqueException("Impossible de déterminer la collectivité administrative de retour sur la DI numéro=[" + numeroDoc + ']');
 		}
 
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
@@ -533,8 +533,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		adresseRetour.setADRES1RETOUR(cedi.getNomComplet1());
 		adresseRetour.setADRES2RETOUR(cedi.getNomComplet2());
 
-		adresseRetour.setADRES3RETOUR(cedi.getNomCourt() + " " + officeImpotId);
-		adresseRetour.setADRES4RETOUR(adrCedi.getNumeroPostal() + " " + adrCedi.getLocalite());
+		adresseRetour.setADRES3RETOUR(cedi.getNomCourt() + ' ' + officeImpotId);
+		adresseRetour.setADRES4RETOUR(adrCedi.getNumeroPostal() + ' ' + adrCedi.getLocalite());
 		adresseRetour.setADRES5RETOUR(null);
 		adresseRetour.setADRES6RETOUR(null);
 	}
@@ -897,7 +897,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		try {
 			List<String> noms = adresseService.getNomCourrier(pp, null, false);
 			Assert.isTrue(noms.size() == 1);
-			return adresseService.getFormulePolitesse(pp).salutations() + " " + noms.get(0);
+			return adresseService.getFormulePolitesse(pp).salutations() + ' ' + noms.get(0);
 		}
 		catch (AdresseException e) {
 			throw new EditiqueException(e);

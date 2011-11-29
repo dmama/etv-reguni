@@ -100,8 +100,8 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		serviceCivilService.setUp(serviceCivil);
 	}
 
-	private final long noIndJaime = 2000465; // Jaime
-	private final long noIndDeborah = 2000457; // Deborah
+	private static final long noIndJaime = 2000465; // Jaime
+	private static final long noIndDeborah = 2000457; // Deborah
 
 	private long noHabJaime;
 	private long noHabDeborah;

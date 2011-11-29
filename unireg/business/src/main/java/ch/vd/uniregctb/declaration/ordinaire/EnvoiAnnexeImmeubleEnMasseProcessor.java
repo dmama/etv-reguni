@@ -129,7 +129,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 					batch = batch.subList(0, reducedSize);
 				}
 
-				if (batch.size() > 0) {
+				if (!batch.isEmpty()) {
 					traiterBatch(batch, anneePeriode, dateTraitement);
 				}
 

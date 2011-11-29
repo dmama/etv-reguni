@@ -256,18 +256,18 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;
 		if (dpi.getCategorieImpotSource() == CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS) {
-			libTit = libTit + " " + CAS_MAJ ;
+			libTit = libTit + ' ' + CAS_MAJ ;
 		}
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.ADMINISTRATEURS) {
-			libTit = libTit + " " + ADM_MAJ ;
+			libTit = libTit + ' ' + ADM_MAJ ;
 		}
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PRESTATIONS_PREVOYANCE) {
-			libTit = libTit + " " + PRE_MAJ ;
+			libTit = libTit + ' ' + PRE_MAJ ;
 		}
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
-			libTit = libTit + " " + HYP_MAJ ;
+			libTit = libTit + ' ' + HYP_MAJ ;
 		}
-		libTit = libTit + " " + lr.getPeriode().getAnnee().toString();
+		libTit = libTit + ' ' + lr.getPeriode().getAnnee().toString();
 		tit.setLibTit(libTit);
 		final Tit[] tits = new Tit[1];
 		tits[0] = tit;
@@ -332,7 +332,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		final BVRSTD bvrstd = lrlcbvr.addNewBVRSTD();
 		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
-		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + " " + lr.getPeriode().getAnnee().toString());
+		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + ' ' + lr.getPeriode().getAnnee().toString());
 		//TODO (FDE) Se renseigner sur le numéro de collectivité concerné
 		bvrstd.setVersPourLigne1("Département des finances");
 		bvrstd.setVersPourLigne2("Administration des impôts");

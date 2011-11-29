@@ -32,7 +32,7 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 				prenomNom = operateur.getPrenom();
 			}
 			if (operateur.getNom() != null) {
-				prenomNom = prenomNom + " " + operateur.getNom();
+				prenomNom = prenomNom + ' ' + operateur.getNom();
 			}
 			utilisateurView.setPrenomNom(prenomNom);
 			utilisateurView.setVisaOperateur(operateur.getCode());

@@ -54,7 +54,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	@Override
 	public boolean isActif() {
-		return this.metadata.size() > 0;
+		return !this.metadata.isEmpty();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 			Check check = findCheck(etape, targetClass);
 			list.add(new EtapeAttribute(etape, check));
 		}
-		LOGGER.info("Registering scenario: " + scenario.getName() + " (Scenarios: " + scenariosBeanNames.size() + ")");
+		LOGGER.info("Registering scenario: " + scenario.getName() + " (Scenarios: " + scenariosBeanNames.size() + ')');
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	@Override
 	public void runFirst(NorentesScenario scenario) {
-		Assert.isTrue(scenario.getEtapeAttributes().size() > 0);
+		Assert.isTrue(!scenario.getEtapeAttributes().isEmpty());
 		runToStep(scenario, scenario.getEtapeAttributes().iterator().next().getIndex());
 	}
 

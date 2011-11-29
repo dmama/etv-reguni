@@ -71,8 +71,8 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	private EvenementFiscalService evenementFiscalService;
 
 	//JIRA 1996
-	private final int noIndCharles = 782551;
-	private final int noIndGeorgette = 782552;
+	private static final int noIndCharles = 782551;
+	private static final int noIndGeorgette = 782552;
 
 	private MockIndividu indCharles;
 	private MockIndividu indGorgette;
@@ -804,7 +804,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
-		assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + " " + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
+		assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + ' ' + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
 	}
 
 	/**
@@ -829,7 +829,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
-		assertEquals("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + "" + dateAttendu, dateAttendu, forFiscalPrincipalFerme.getDateFin());
+		assertEquals("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + dateAttendu, dateAttendu, forFiscalPrincipalFerme.getDateFin());
 	}
 
 	/**
@@ -1566,9 +1566,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		depart.checkCompleteness(erreurs, warnings);
-		if (erreurs.size() == 0) {
+		if (erreurs.isEmpty()) {
 			depart.validate(erreurs, warnings);
-			if (erreurs.size() == 0) {
+			if (erreurs.isEmpty()) {
 				depart.handle(warnings);
 			}
 		}

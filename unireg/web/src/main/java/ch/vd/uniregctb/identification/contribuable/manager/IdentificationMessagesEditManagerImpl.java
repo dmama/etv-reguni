@@ -65,7 +65,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		}
 		if (identificationContribuable.getDemande().getPersonne().getPrenoms() != null) {
 			if (!"".equals(nomRaison)) {
-				nomRaison = nomRaison + " " + identificationContribuable.getDemande().getPersonne().getPrenoms();
+				nomRaison = nomRaison + ' ' + identificationContribuable.getDemande().getPersonne().getPrenoms();
 			}
 			else {
 				nomRaison = identificationContribuable.getDemande().getPersonne().getPrenoms();

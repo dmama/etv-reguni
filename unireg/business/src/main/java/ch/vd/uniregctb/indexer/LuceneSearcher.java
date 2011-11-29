@@ -92,7 +92,7 @@ public class LuceneSearcher extends LuceneEngine {
 		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Lucene query: '" + query.toString() + "'");
+			LOGGER.trace("Lucene query: '" + query.toString() + '\'');
 		}
 
 		try {
@@ -117,7 +117,7 @@ public class LuceneSearcher extends LuceneEngine {
 		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Lucene query: '" + query.toString() + "'");
+			LOGGER.trace("Lucene query: '" + query.toString() + '\'');
 		}
 
 		final TopDocs topDocs;
@@ -144,7 +144,7 @@ public class LuceneSearcher extends LuceneEngine {
 
 	public TopDocs search(String queryString, int maxHits) {
 
-		if (queryString == null || queryString.equals("")) {
+		if (queryString == null || queryString.isEmpty()) {
 			throw new IndexerException("Received empty query expression!");
 		}
 
@@ -178,19 +178,19 @@ public class LuceneSearcher extends LuceneEngine {
 
 	public TopDocs search(String typeName, List<String> fieldNames, List<String> fieldValues, int maxHits) throws IndexerException {
 
-		String queryString = "";
+		StringBuilder queryString = new StringBuilder();
 
 		if (typeName != null) {
-			queryString = F_DOCTYPE + ":" + typeName;
+			queryString.append(F_DOCTYPE).append(":").append(typeName);
 		}
 		for (int i = 0; i < fieldNames.size(); i++) {
 			if (queryString.length() > 0) {
-				queryString += " AND ";
+				queryString.append(" AND ");
 			}
-			queryString += fieldNames.get(i).toUpperCase() + ":\"" + fieldValues.get(i) + "\"";
+			queryString.append(fieldNames.get(i).toUpperCase()).append(":\"").append(fieldValues.get(i)).append('\"');
 		}
 
-		return search(queryString, maxHits);
+		return search(queryString.toString(), maxHits);
 	}
 
 	public int numDocs() {

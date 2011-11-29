@@ -41,7 +41,7 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789; // julie
+	private static final long noIndJulie = 6789; // julie
 
 	private MockIndividu indJulie;
 

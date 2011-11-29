@@ -40,8 +40,8 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 		return NAME;
 	}
 
-	private final long noIndJulie = 6789;	// julie
-	private final long noIndBea = 23456;	// bea
+	private static final long noIndJulie = 6789;	// julie
+	private static final long noIndBea = 23456;	// bea
 
 	private MockIndividu indJulie;
 	private MockIndividu indBea;

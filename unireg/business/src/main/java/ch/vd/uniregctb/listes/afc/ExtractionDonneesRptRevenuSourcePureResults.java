@@ -34,6 +34,6 @@ public class ExtractionDonneesRptRevenuSourcePureResults extends ExtractionDonne
 			}
 		}
 
-		return listeAFiltrer.size() == 0 ? ASSUJETTI_ORDINAIRE : null;
+		return listeAFiltrer.isEmpty() ? ASSUJETTI_ORDINAIRE : null;
 	}
 }

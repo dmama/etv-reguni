@@ -48,10 +48,10 @@ class BooleanEditor implements Editor {
 		tagWriter.startTag("input");
 		tagWriter.writeAttribute("type", "hidden");
 		if (StringUtils.isNotBlank(id)) {
-			tagWriter.writeAttribute("id", "_" + id); // <--- le préfix '_' de l'id est important ici !
+			tagWriter.writeAttribute("id", '_' + id); // <--- le préfix '_' de l'id est important ici !
 		}
 		if (StringUtils.isNotBlank(path)) {
-			tagWriter.writeAttribute("name", "_" + path); // <--- le préfix '_' du nom est important ici !
+			tagWriter.writeAttribute("name", '_' + path); // <--- le préfix '_' du nom est important ici !
 		}
 		tagWriter.writeAttribute("value", "true");
 		tagWriter.endTag();

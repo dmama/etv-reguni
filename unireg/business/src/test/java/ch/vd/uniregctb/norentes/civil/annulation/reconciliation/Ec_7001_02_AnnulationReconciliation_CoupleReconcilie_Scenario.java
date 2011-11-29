@@ -39,8 +39,8 @@ public class Ec_7001_02_AnnulationReconciliation_CoupleReconcilie_Scenario exten
 	private final RegDate dateSeparation = RegDate.get(2004, 3, 2);
 	private final RegDate dateReconciliation = RegDate.get(2005, 7, 14);
 
-	private final long noIndMomo = 54321; // Maurice
-	private final long noIndBea = 23456; // Béatrice
+	private static final long noIndMomo = 54321; // Maurice
+	private static final long noIndBea = 23456; // Béatrice
 
 	private long noHabMomo;
 	private long noHabBea;

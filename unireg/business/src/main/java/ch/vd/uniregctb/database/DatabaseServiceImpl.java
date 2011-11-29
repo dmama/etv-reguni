@@ -186,7 +186,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.setIgnoreWarnings(false);
 
-		final String sql = "select max(NUMERO) from TIERS where TIERS_TYPE in (" + listeEntite + ")";
+		final String sql = "select max(NUMERO) from TIERS where TIERS_TYPE in (" + listeEntite + ')';
 
 		long id = template.queryForLong(sql);
 		max = (id > max ? id : max);
@@ -469,7 +469,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final int count = batches.size();
 
 			for (int i = 0; i < count && !status.interrupted(); i++) {
-				status.setMessage(message + " (lot " + i + "/" + count + ")...");
+				status.setMessage(message + " (lot " + i + '/' + count + ")...");
 				final List<Long> batch = batches.get(i);
 				final QueryDataSet q = callback.execute(batch, connection);
 
@@ -641,7 +641,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private static String generateSeparatedId(Collection<Long> ids) {
 		StringBuilder b = new StringBuilder();
 		for (Long id : ids) {
-			b.append(id.toString()).append(",");
+			b.append(id.toString()).append(',');
 		}
 		final String s = b.toString();
 		return s.substring(0, s.length() - 1); // supprime la dernière virgule

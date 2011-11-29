@@ -55,7 +55,7 @@ public class Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 		return NAME;
 	}
 
-	private final long noIndMaria = 3913649; // maria
+	private static final long noIndMaria = 3913649; // maria
 
 	private MockIndividu indMaria;
 

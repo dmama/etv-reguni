@@ -2,7 +2,7 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -232,7 +232,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				for (PersonnePhysique pp : listResultat) {
 					ids.add(pp.getNumero());
 				}
-				final String message = "Nombre de contribuable(s) trouvé(s) = " + listResultat.size() + " (" + ArrayUtils.toString(ids.toArray()) + ")";
+				final String message = "Nombre de contribuable(s) trouvé(s) = " + listResultat.size() + " (" + ArrayUtils.toString(ids.toArray()) + ')';
 				LOGGER.info(message);
 			}
 		}
@@ -509,7 +509,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		}
 		if (criteresAdresse.getLigneAdresse2() != null) {
-			complement = complement + " " + criteresAdresse.getLigneAdresse2();
+			complement = complement + ' ' + criteresAdresse.getLigneAdresse2();
 
 		}
 		adresseCourrier.setComplement(complement);
@@ -747,7 +747,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 							ids.add(pp.getNumero());
 						}
 						LOGGER.debug("Le message n°" + message.getId() + " doit être traité manuellement. "
-								+ "Nombre de contribuable(s) trouvé(s) = " + list.size() + " (" + ArrayUtils.toString(ids.toArray()) + ")");
+								+ "Nombre de contribuable(s) trouvé(s) = " + list.size() + " (" + ArrayUtils.toString(ids.toArray()) + ')');
 					}
 				}
 			}
@@ -1049,7 +1049,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			return false; // critère non respecté
 		}
 
-		final String critereCasePostale = texteCasePostale + " " + numeroCasePostale;
+		final String critereCasePostale = texteCasePostale + ' ' + numeroCasePostale;
 		return casePostale.toString().equalsIgnoreCase(critereCasePostale);
 	}
 
@@ -1207,7 +1207,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria) {
 		int res = 0;
-		Map<IdentificationContribuable.Etat, Integer> resultatStats = new HashMap<IdentificationContribuable.Etat, Integer>();
+		Map<IdentificationContribuable.Etat, Integer> resultatStats = new EnumMap<Etat, Integer>(IdentificationContribuable.Etat.class);
 
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 
@@ -1260,7 +1260,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			Operateur operateur = serviceSecuriteService.getOperateur(visaUser);
 
 			if (operateur != null) {
-				nom = operateur.getPrenom() + " " + operateur.getNom();
+				nom = operateur.getPrenom() + ' ' + operateur.getNom();
 			}
 		}
 

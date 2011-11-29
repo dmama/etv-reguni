@@ -3726,7 +3726,7 @@ public class AssujettissementTest extends MetierTest {
 
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
 		final Set<Integer> actives;
-		if (noOfsCommunesActives != null && noOfsCommunesActives.size() > 0) {
+		if (noOfsCommunesActives != null && !noOfsCommunesActives.isEmpty()) {
 			actives = new HashSet<Integer>(noOfsCommunesActives);
 		}
 		else {

@@ -41,7 +41,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(services);
-		if (services.size() > 0) {
+		if (!services.isEmpty()) {
 			averagers = new HashMap<String, LoadAverager>(services.size());
 			for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
 				final String serviceName = entry.getKey();
@@ -69,7 +69,7 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 
 	@Override
 	public void destroy() throws Exception {
-		if (averagers != null && averagers.size() > 0) {
+		if (averagers != null && !averagers.isEmpty()) {
 			for (LoadAverager averager : averagers.values()) {
 				if (averager != null) {
 					averager.stop();

@@ -473,7 +473,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 				rapportsMenage.add(rapport);
 			}
 			else {
-				fail("Type de rapport-entre-tiers non attendu [" + rapport.getType().name() + "]");
+				fail("Type de rapport-entre-tiers non attendu [" + rapport.getType().name() + ']');
 			}
 		}
 

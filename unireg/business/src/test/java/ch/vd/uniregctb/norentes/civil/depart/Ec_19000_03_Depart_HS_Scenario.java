@@ -52,8 +52,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 		return NAME;
 	}
 
-	private final long noIndCedric = 844770;
-	private final long noIndSandra = 844771;
+	private static final long noIndCedric = 844770;
+	private static final long noIndSandra = 844771;
 
 	private MockIndividu indCedric;
 	private MockIndividu indSandra;
@@ -243,10 +243,10 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
 
 			final PersonnePhysique cedric = (PersonnePhysique) tiersDAO.get(noHabCedric);
-			assertTrue(cedric.getForsFiscaux() == null || cedric.getForsFiscaux().size() == 0, "");
+			assertTrue(cedric.getForsFiscaux() == null || cedric.getForsFiscaux().isEmpty(), "");
 
 			final PersonnePhysique sandra = (PersonnePhysique) tiersDAO.get(noHabSandra);
-			assertTrue(sandra.getForsFiscaux() == null || sandra.getForsFiscaux().size() == 0, "");
+			assertTrue(sandra.getForsFiscaux() == null || sandra.getForsFiscaux().isEmpty(), "");
 
 			final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
 			final List<ForFiscal> list = menage.getForsFiscauxSorted();

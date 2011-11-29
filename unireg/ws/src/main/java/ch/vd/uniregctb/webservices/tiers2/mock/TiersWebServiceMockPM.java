@@ -619,7 +619,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			final String prenom = string2String(next[8]);
 			final String nom = string2String(next[9]);
 			if (prenom != null && nom != null) {
-				pm.personneContact = prenom + " " + nom;
+				pm.personneContact = prenom + ' ' + nom;
 			}
 
 			pm.designationAbregee = string2String(next[10]);

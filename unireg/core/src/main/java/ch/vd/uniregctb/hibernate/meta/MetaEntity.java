@@ -113,7 +113,7 @@ public class MetaEntity {
 			if (a instanceof DiscriminatorValue) {
 				final DiscriminatorValue d = (DiscriminatorValue) a;
 				if (discriminatorValue != null) {
-					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminatorValue + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + "]");
+					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminatorValue + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + ']');
 				}
 				discriminatorValue = d.value();
 			}
@@ -236,7 +236,7 @@ public class MetaEntity {
 			}
 
 			if (!estColonne) {
-				LOGGER.warn("No @Transient nor @Column annotation found on descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "]");
+				LOGGER.warn("No @Transient nor @Column annotation found on descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + ']');
 				continue;
 			}
 
@@ -259,7 +259,7 @@ public class MetaEntity {
 					propertyType = new TypeAdresseCivilLegacyPropertyType((TypeAdresseCivilLegacyUserType) userType);
 				}
 				else {
-					throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + "]");
+					throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + ']');
 				}
 
 			}

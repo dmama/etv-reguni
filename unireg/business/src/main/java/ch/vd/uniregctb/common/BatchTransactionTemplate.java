@@ -235,7 +235,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 *
 	 * @author xsifnr
 	 */
-	private class ExecuteInTransactionResult {
+	private static class ExecuteInTransactionResult {
 
 		/**
 		 * true si la transaction a été committée

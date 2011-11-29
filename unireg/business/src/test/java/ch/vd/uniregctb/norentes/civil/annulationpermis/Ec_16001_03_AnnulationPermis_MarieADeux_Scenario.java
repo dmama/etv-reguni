@@ -41,8 +41,8 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321; // momo
-	private final long noIndBea = 23456; // bea
+	private static final long noIndMomo = 54321; // momo
+	private static final long noIndBea = 23456; // bea
 
 	private MockIndividu indMomo;
 	private MockIndividu indBea;

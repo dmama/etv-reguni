@@ -41,7 +41,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		    }
 		    if (idComposants.size() > 2) {
 		        vr.addError("Le ménage commun est lié avec plus de 2 personnes physiques distinctes [n°="
-		                + ArrayUtils.toString(idComposants.toArray()) + "]");
+		                + ArrayUtils.toString(idComposants.toArray()) + ']');
 		    }
 		}
 
@@ -78,7 +78,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		        DateRange intersection = DateRangeHelper.intersection(f, periodes);
 		        if (intersection == null || !DateRangeHelper.equals(f, intersection)) {
 		            vr.addError("Le for fiscal [" + f
-		                    + "] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + mc.getNumero() + "]");
+		                    + "] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + mc.getNumero() + ']');
 		        }
 		    }
 		}

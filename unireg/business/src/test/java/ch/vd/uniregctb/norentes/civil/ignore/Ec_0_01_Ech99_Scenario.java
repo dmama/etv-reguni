@@ -41,7 +41,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 		this.evtCivilExterneDAO = evtCivilExterneDAO;
 	}
 
-	private final long noIndAlain = 123456L;
+	private static final long noIndAlain = 123456L;
 	private MockIndividu indAlain;
 
 	@Override

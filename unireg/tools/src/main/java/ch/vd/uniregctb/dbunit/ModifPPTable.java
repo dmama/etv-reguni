@@ -104,7 +104,7 @@ public class ModifPPTable implements ITable {
 			}
 			Column addColumn = new Column(addColumnName, addColumnType);
 			l.add(addColumn);
-			return l.toArray(new Column[] {});
+			return l.toArray(new Column[l.size()]);
 		}
 
 		@Override

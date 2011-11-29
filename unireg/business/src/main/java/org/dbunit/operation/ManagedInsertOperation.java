@@ -30,7 +30,7 @@ public class ManagedInsertOperation extends InsertOperation {
 			}
 			if (row % 100 == 0) {
 				statusManager
-						.setMessage("Insertion de la ligne " + row + " dans la table " + table.getTableMetaData().getTableName() + ".");
+						.setMessage("Insertion de la ligne " + row + " dans la table " + table.getTableMetaData().getTableName() + '.');
 			}
 		}
 		return super.equalsIgnoreMapping(ignoreMapping, table, row);

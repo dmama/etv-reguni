@@ -112,14 +112,14 @@ public class TiersEditValidator implements Validator {
 							}
 						}
 
-						if (tiersView.getSdateNaissance() != null && !tiersView.getSdateNaissance().equals("")) {
+						if (tiersView.getSdateNaissance() != null && !tiersView.getSdateNaissance().isEmpty()) {
 							if (dateNais == null || dateNais.isAfter(RegDate.get())) {
 								errors.rejectValue("sdateNaissance", "error.dateNaissance.invalide");
 								errors.reject("onglet.error.civil");
 							}
 						}
 
-						if (tiersView.getSdateDeces() != null && !tiersView.getSdateDeces().equals("")) {
+						if (tiersView.getSdateDeces() != null && !tiersView.getSdateDeces().isEmpty()) {
 							RegDate dateDeces = null;
 							try {
 								dateDeces = RegDateHelper.displayStringToRegDate(tiersView.getSdateDeces(), true);

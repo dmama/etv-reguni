@@ -58,13 +58,13 @@ class DistributionAnalyze extends Analyze {
 		final StringBuilder header = new StringBuilder();
 		header.append("Nom de méthode;");
 		for (TimeRange range : DistributionData.DEFAULT_TIME_RANGES) {
-			header.append(range).append(";");
+			header.append(range).append(';');
 		}
 		System.out.println(header);
 
 		for (String method : methods) {
 			final StringBuilder line = new StringBuilder();
-			line.append(method).append(";");
+			line.append(method).append(';');
 			final List<DistributionData> time = results.get(method);
 			for (DistributionData data : time) {
 				line.append(data.getCount()).append(';');

@@ -80,7 +80,7 @@ public class PerfsThread extends Thread {
 		public abstract String description();
 
 		protected String getOperateurDescription() {
-			return login.getUserId() + "/" + login.getOid();
+			return login.getUserId() + '/' + login.getOid();
 		}
 
 		protected String getPartsDescription() {
@@ -94,7 +94,7 @@ public class PerfsThread extends Thread {
 						s = e.name();
 					}
 					else {
-						s += "+" + e.name();
+						s += '+' + e.name();
 					}
 				}
 				return s;
@@ -156,7 +156,7 @@ public class PerfsThread extends Thread {
 
 		@Override
 		public String description() {
-			return "operateur=" + getOperateurDescription() + ", date=" + date.getYear() + "." + date.getMonth() + "." + date.getDay()
+			return "operateur=" + getOperateurDescription() + ", date=" + date.getYear() + '.' + date.getMonth() + '.' + date.getDay()
 					+ ", parts=" + getPartsDescription();
 		}
 	}
@@ -267,7 +267,7 @@ public class PerfsThread extends Thread {
 			final String nomCourrier;
 			if (tiers instanceof PersonnePhysique) {
 				PersonnePhysique pp =(PersonnePhysique) tiers;
-				nomCourrier = pp.getPrenom() + " " + pp.getNom();
+				nomCourrier = pp.getPrenom() + ' ' + pp.getNom();
 			}
 			else if (tiers instanceof MenageCommun) {
 				MenageCommun mc = (MenageCommun) tiers;
@@ -275,7 +275,7 @@ public class PerfsThread extends Thread {
 				if (pp1 == null) {
 					return null;
 				}
-				nomCourrier = pp1.getPrenom() + " " + pp1.getNom();
+				nomCourrier = pp1.getPrenom() + ' ' + pp1.getNom();
 			}
 			else {
 				return null;

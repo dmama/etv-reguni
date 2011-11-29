@@ -25,7 +25,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 
 	private static final Logger LOGGER = Logger.getLogger(DeclarationImpotOrdinaireDAOImpl.class);
 
-	private final String TOUS = "TOUS";
+	private static final String TOUS = "TOUS";
 
 	public DeclarationImpotOrdinaireDAOImpl() {
 		super(DeclarationImpotOrdinaire.class);
@@ -138,7 +138,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		List<Object> criteria = new ArrayList<Object>();
 		criteria.add(numeroCtb);
 		List<EtatDeclaration> list = getHibernateTemplate().find(query, criteria.toArray());
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 

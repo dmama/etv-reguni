@@ -107,7 +107,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			numeroTiersLie = rapportEntreTiers.getObjetId();
 			break;
 		default:
-			throw new IllegalArgumentException("Sens de rapport-entre-tiers inconnu =[" + editingFrom + "]");
+			throw new IllegalArgumentException("Sens de rapport-entre-tiers inconnu =[" + editingFrom + ']');
 		}
 
 		// on récupère les tiers eux-mêmes, et quelques infos supplémentaires

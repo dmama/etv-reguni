@@ -57,7 +57,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 		final Individu individu = getIndividu();
 		final Permis permis = individu.getPermisActif(getDate());
 		if (permis == null || permis.getTypePermis() != TypePermis.ETABLISSEMENT) {
-			Audit.info(getNumeroEvenement(), String.format("Permis autre que permis C à la date de l'événement : ignoré"));
+			Audit.info(getNumeroEvenement(), "Permis autre que permis C à la date de l'événement : ignoré");
 		}
 		else {
 			// nous avons donc une modification de date de début d'un permis C
@@ -83,9 +83,9 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 
 					if (mineurs) {
 						final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(aujourdhui);
-						if (fors == null || fors.size() == 0) {
+						if (fors == null || fors.isEmpty()) {
 							ignorable = true;
-							Audit.info(getNumeroEvenement(), String.format("Permis C sur mineur sans for (à la date de traitement) : ignoré"));
+							Audit.info(getNumeroEvenement(), "Permis C sur mineur sans for (à la date de traitement) : ignoré");
 						}
 					}
 				}

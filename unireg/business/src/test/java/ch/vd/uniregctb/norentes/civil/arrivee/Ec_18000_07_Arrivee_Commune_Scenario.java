@@ -43,7 +43,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		return "Arrivée d'un individu provenant d'une autre commune vaudoise.";
 	}
 
-	private final long noIndAdrienne = 203674;
+	private static final long noIndAdrienne = 203674;
 
 	private MockIndividu indAdrienne;
 

@@ -313,14 +313,14 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 			if (dateDebutEtatCivil == null) {
 				List<ForFiscalPrincipal> fors = habitant.getForsFiscauxPrincipauxActifsSorted();
-				if (fors != null && fors.size() > 0) {
+				if (fors != null && !fors.isEmpty()) {
 					dateDebutEtatCivil = fors.get(0).getDateDebut();
 				}
 			}
 		}
 		else {
 			List<ForFiscalPrincipal> fors = habitant.getForsFiscauxPrincipauxActifsSorted();
-			if (fors != null && fors.size() > 0) {
+			if (fors != null && !fors.isEmpty()) {
 				dateDebutEtatCivil = fors.get(0).getDateDebut();
 			}
 			else {

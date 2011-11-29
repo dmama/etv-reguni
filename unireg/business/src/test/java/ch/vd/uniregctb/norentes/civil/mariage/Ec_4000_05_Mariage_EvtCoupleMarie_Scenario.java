@@ -46,8 +46,8 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 		return NAME;
 	}
 
-	private final long noIndJeanBruno = 737533; // Jean-Bruno
-	private final long noIndChristelle = 736876; // Christelle
+	private static final long noIndJeanBruno = 737533; // Jean-Bruno
+	private static final long noIndChristelle = 736876; // Christelle
 
 	private MockIndividu indJeanBruno;
 	private MockIndividu indChristelle;

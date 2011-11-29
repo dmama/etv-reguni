@@ -71,7 +71,7 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 
 		@Override
 		public String getDescriptionRaison() {
-			return raison.description + " " + details;
+			return raison.description + ' ' + details;
 		}
 	}
 

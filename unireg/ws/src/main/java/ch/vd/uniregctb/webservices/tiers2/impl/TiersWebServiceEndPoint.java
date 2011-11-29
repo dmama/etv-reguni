@@ -571,7 +571,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 
 			if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
 				throw new AccessDeniedException(
-						"L'utilisateur spécifié (" + params.login.userId + "/" + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+						"L'utilisateur spécifié (" + params.login.userId + '/' + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 			}
 
 			final List<ReponseQuittancementDeclaration> reponses = service.quittancerDeclarations(params);
@@ -657,7 +657,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		// un nouvel appel est en train de débuter
 		appelsEnCours.incrementAndGet();
 
-		if (login == null || login.userId == null || login.oid == null || login.userId.trim().equals("")) {
+		if (login == null || login.userId == null || login.oid == null || login.userId.trim().isEmpty()) {
 			throw new BusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
 
@@ -683,7 +683,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	private static void checkLimitedReadAccess(UserLogin login) throws AccessDeniedException {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid) &&
 				!SecurityProvider.isGranted(Role.VISU_LIMITE, login.userId, login.oid)) {
-			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + "/" + login.oid
+			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + '/' + login.oid
 					+ ") n'a pas les droits d'accès en lecture sur l'application.");
 		}
 	}
@@ -696,7 +696,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 */
 	private static void checkGeneralReadAccess(UserLogin login) throws AccessDeniedException {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid)) {
-			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + "/" + login.oid
+			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + '/' + login.oid
 					+ ") n'a pas les droits d'accès en lecture complète sur l'application.");
 		}
 	}
@@ -710,7 +710,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	private static void checkTiersReadAccess(long tiersId) throws AccessDeniedException {
 		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
 		if (acces == null) {
-			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + tiersId);
 		}
 	}
@@ -745,7 +745,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			}
 			final Niveau niveau = niveaux.get(i);
 			if (niveau == null) {
-				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.number;
 				entry.tiers = null;
 				entry.exceptionMessage = message;
@@ -784,7 +784,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			}
 			final Niveau niveau = niveaux.get(i);
 			if (niveau == null) {
-				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.number;
 				entry.tiers = null;
 				entry.exceptionMessage = message;
@@ -802,7 +802,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	private static void checkTiersWriteAccess(long tiersId) throws AccessDeniedException {
 		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
 		if (acces == null || acces == Niveau.LECTURE) {
-			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + "/"
+			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en écriture sur le tiers n° " + tiersId);
 		}
 	}

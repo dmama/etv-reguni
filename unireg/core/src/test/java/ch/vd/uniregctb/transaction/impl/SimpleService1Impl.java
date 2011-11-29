@@ -15,14 +15,14 @@ public class SimpleService1Impl extends SimpleServiceImpl implements SimpleServi
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
 	public void insertLineRequiresNew(int id, String msg) {
 
-		LOGGER.info("insertLine("+id+", "+msg+")");
+		LOGGER.info("insertLine("+id+", "+msg+ ')');
 		dao.insertData(id, msg);
 		//readLine(id);
 	}
 
 	@Override
 	public void updateLineException(int id, String msg) {
-		LOGGER.info("updateLineException("+id+", "+msg+")");
+		LOGGER.info("updateLineException("+id+", "+msg+ ')');
 		dao.updateData(id, msg);
 		throw new RuntimeException();
 	}

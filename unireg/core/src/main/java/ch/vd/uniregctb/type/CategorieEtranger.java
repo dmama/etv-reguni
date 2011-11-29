@@ -129,7 +129,7 @@ public enum CategorieEtranger {
 			return _09_A_PROTEGER_S;
 		}
 		else {
-			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + "]");
+			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + ']');
 		}
 	}
 }

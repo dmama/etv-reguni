@@ -37,7 +37,7 @@ public class TiersPickerResultsTable extends Table {
 			row.addTableData(new TableData(getNumeroContribuable(data)));
 			row.addTableData(new TableData(getNomRaisonSocialeComponent(data)));
 			row.addTableData(new TableData(new SimpleText(getDateNaissance(data))));
-			row.addTableData(new TableData(new SimpleText(data.getNpa() + " " + data.getLocaliteOuPays())));
+			row.addTableData(new TableData(new SimpleText(data.getNpa() + ' ' + data.getLocaliteOuPays())));
 			row.addTableData(new TableData(new SimpleText(data.getForPrincipal())));
 			addTableRow(row);
 		}

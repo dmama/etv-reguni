@@ -38,6 +38,6 @@ public abstract class WebServiceException extends Exception {
 	}
 
 	protected static String buildMessage(String message, Throwable cause) {
-		return message + ":" + buildMessage(cause);
+		return message + ':' + buildMessage(cause);
 	}
 }

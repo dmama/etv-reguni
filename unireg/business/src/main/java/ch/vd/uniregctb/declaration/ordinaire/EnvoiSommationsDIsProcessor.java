@@ -48,7 +48,7 @@ public class EnvoiSommationsDIsProcessor  {
 	 */
 	private static final Logger LOGGER = Logger.getLogger(EnvoiSommationsDIsProcessor.class);
 
-	private final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final DeclarationImpotOrdinaireDAO declarationImpotOrdinaireDAO;

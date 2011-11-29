@@ -66,7 +66,7 @@ public enum TypePermis {
 			return SUISSE_SOURCIER;
 		}
 		else {
-			throw new IllegalArgumentException("Type de permis inconnu  = [" + right.getName() + "]");
+			throw new IllegalArgumentException("Type de permis inconnu  = [" + right.getName() + ']');
 		}
 	}
 

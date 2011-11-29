@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.annulation.couple;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -18,7 +17,7 @@ public class AnnulationCoupleRecapController extends AbstractSimpleFormControlle
 
 	protected final Logger LOGGER = Logger.getLogger(AnnulationCoupleRecapController.class);
 
-	private final String NUMERO_COUPLE_PARAMETER_NAME = "numeroCple";
+	private static final String NUMERO_COUPLE_PARAMETER_NAME = "numeroCple";
 
 	private AnnulationCoupleRecapManager annulationCoupleRecapManager;
 

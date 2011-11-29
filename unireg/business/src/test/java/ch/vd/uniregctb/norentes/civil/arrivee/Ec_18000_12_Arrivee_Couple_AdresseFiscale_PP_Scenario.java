@@ -63,8 +63,8 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 	private final RegDate dateMariage = date(1970, 1, 1);
 	private final RegDate dateArriveeBex = date(1980, 1, 1);
 	private final RegDate dateArriveeLausanne = date(2008, 11, 13);
-	private final long noIndAntoine = 1020206L;
-	private final long noIndCleo = 1020207L;
+	private static final long noIndAntoine = 1020206L;
+	private static final long noIndCleo = 1020207L;
 	private long evenementId;
 	private MockIndividu indAntoine;
 	private MockIndividu indCleo;

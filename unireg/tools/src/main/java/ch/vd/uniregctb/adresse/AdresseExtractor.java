@@ -81,7 +81,7 @@ public class AdresseExtractor {
 		final List<List<Long>> lots = new ArrayList<List<Long>>(nbLots);
 		for (int i = 0 ; i < nbLots ; ++ i) {
 			final List<Long> lot = ctbs.subList(i * TAILLE_LOT, Math.min((i + 1) * TAILLE_LOT, ctbs.size()));
-			if (lot.size() > 0) {
+			if (!lot.isEmpty()) {
 				lots.add(lot);
 			}
 		}

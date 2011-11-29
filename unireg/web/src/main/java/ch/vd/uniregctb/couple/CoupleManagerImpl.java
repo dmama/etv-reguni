@@ -194,7 +194,7 @@ public class CoupleManagerImpl implements CoupleManager {
 
 					// [UNIREG-2893] recopie des droits d'accès éventuels sur le non-habitant vers les nouveaux membres du couple
 					final Set<DroitAcces> droits = pp.getDroitsAccesAppliques();
-					if (droits != null && droits.size() > 0) {
+					if (droits != null && !droits.isEmpty()) {
 						try {
 							if (premierPP != null) {
 								droitAccesService.copieDroitsAcces(pp, premierPP);
@@ -235,7 +235,7 @@ public class CoupleManagerImpl implements CoupleManager {
 			return metierService.fusionneMenages((MenageCommun) couple.getPremierTiers(), (MenageCommun) couple.getSecondTiers(), remarque, etatCivil);
 		}
 		default:
-			throw new IllegalArgumentException("Type d'union inconnu = [" + typeUnion + "]");
+			throw new IllegalArgumentException("Type d'union inconnu = [" + typeUnion + ']');
 		}
 	}
 

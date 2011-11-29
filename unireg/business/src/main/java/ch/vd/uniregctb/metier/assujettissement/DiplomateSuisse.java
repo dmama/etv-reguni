@@ -33,6 +33,6 @@ public class DiplomateSuisse extends Assujettissement {
 
 	@Override
 	public String toString() {
-		return "DiplomateSuisse(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "DiplomateSuisse(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

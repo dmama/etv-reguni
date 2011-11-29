@@ -3,11 +3,10 @@
  */
 package ch.vd.uniregctb.common;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,7 +52,7 @@ public class PerformanceListController extends ParameterizableViewController {
 		ModelAndView mav = super.handleRequestInternal(request, response);
 
 		layer = request.getParameter("layer");
-		if (layer == null || layer.equals("")) {
+		if (layer == null || layer.isEmpty()) {
 			layer = "all"; // Default
 		}
 
@@ -65,10 +64,10 @@ public class PerformanceListController extends ParameterizableViewController {
 			logs = new HashMap<String, PerformanceLog>();
 
 			Map<String, Map<String, PerformanceLog>> layers = repo.getLayers();
-			for (String uri : layers.keySet()) {
-				Map<String, PerformanceLog> log = layers.get(uri);
-				for (String key : log.keySet()) {
-					logs.put(key, log.get(key));
+			for (Map.Entry<String, Map<String, PerformanceLog>> stringMapEntry : layers.entrySet()) {
+				Map<String, PerformanceLog> log = stringMapEntry.getValue();
+				for (Map.Entry<String, PerformanceLog> stringPerformanceLogEntry : log.entrySet()) {
+					logs.put(stringPerformanceLogEntry.getKey(), stringPerformanceLogEntry.getValue());
 				}
 			}
 		}

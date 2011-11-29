@@ -134,7 +134,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFSEtendu());
 		    if (infoCommune == null) {
 		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomMinuscule()
-		                + "(n°ofs " + commune.getNoOFSEtendu() + ")");
+		                + "(n°ofs " + commune.getNoOFSEtendu() + ')');
 		        continue;
 		    }
 

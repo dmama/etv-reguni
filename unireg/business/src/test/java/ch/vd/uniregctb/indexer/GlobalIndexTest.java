@@ -183,7 +183,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		int before = globalIndex.getApproxDocCount();
 
-		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 
 		globalIndex.indexEntity(new SimpleData(123456L, "TheType", null, "value1"));
 		assertHits(1, LuceneEngine.F_DOCID + ":TheType-123456");
@@ -204,9 +204,9 @@ public class GlobalIndexTest extends BusinessTest {
 	@Test
 	public void testSearchStringQuery() throws Exception {
 
-		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 		assertHits(2, LuceneEngine.F_ENTITYID + ":1234");
-		assertHits(5, LuceneEngine.F_DOCTYPE + ":" + TYPE);
+		assertHits(5, LuceneEngine.F_DOCTYPE + ':' + TYPE);
 		assertHits(1, "DESCR:SoCiété");
 		assertHits(2, "NOM:jean");
 		assertHits(1, "NOM:GARS");
@@ -262,7 +262,7 @@ public class GlobalIndexTest extends BusinessTest {
 		// Wildcard Query
 		{
 			Term term = LuceneEngine.getTerm("DESCR", "POR");
-			term = new Term(term.field(), "*" + term.text() + "*");
+			term = new Term(term.field(), '*' + term.text() + '*');
 			WildcardQuery baseQuery = new WildcardQuery(term);
 			assertHits(2, baseQuery);
 		}
@@ -270,7 +270,7 @@ public class GlobalIndexTest extends BusinessTest {
 		// Wildcard Query
 		{
 			Term term = LuceneEngine.getTerm("NOM", "DeT");
-			term = new Term(term.field(), "*" + term.text());
+			term = new Term(term.field(), '*' + term.text());
 			WildcardQuery baseQuery = new WildcardQuery(term);
 			assertHits(2, baseQuery);
 		}
@@ -429,7 +429,7 @@ public class GlobalIndexTest extends BusinessTest {
 	public void testRemoveDocumentNeCherchePlus() throws IndexerException, ParseException {
 
 		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 
 		// 2 hits avec ID=2345
 		assertHits(2, LuceneEngine.F_ENTITYID + ":2345");
@@ -444,7 +444,7 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(0, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 
 		// We should have 2 documents with ID=2345
 		assertHits(2, LuceneEngine.F_ENTITYID + ":2345");
@@ -466,7 +466,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertEquals(data.length, dc);
 
 		// Un hit avec TYPE=TYPE and ID=2345
-		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-2345");
+		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-2345");
 
 		// 2 hits avec ID=1234
 		assertHits(2, "NUMERO:1234");
@@ -475,7 +475,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(2, "NUMERO:2345");
 
 		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 
 		// Remove one HIT (ID=1234 AND type=DocType)
 		{
@@ -488,7 +488,7 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
+		assertHits(0, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
 
 		// We should have one document with ID=2345
 		assertHits(1, LuceneEngine.F_ENTITYID + ":1234");

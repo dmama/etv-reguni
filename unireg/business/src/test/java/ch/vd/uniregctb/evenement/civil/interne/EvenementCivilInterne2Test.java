@@ -40,7 +40,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private EvenementCivilContext context;
 	
-	private class DummyEvenementCivilInterne extends EvenementCivilInterne {
+	private static class DummyEvenementCivilInterne extends EvenementCivilInterne {
 
 		protected DummyEvenementCivilInterne(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
 		                                     EvenementCivilContext context) {

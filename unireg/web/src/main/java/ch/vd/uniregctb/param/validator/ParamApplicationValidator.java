@@ -33,7 +33,7 @@ public class ParamApplicationValidator implements Validator {
 				errors.rejectValue(p.name(), "error.param." + p.getType());
 			} catch (Exception e) {
 				L.error(e.getMessage(), e);
-				throw new RuntimeException("Erreur lors de la lecture de la propriété '" + p.name() + "'", e);
+				throw new RuntimeException("Erreur lors de la lecture de la propriété '" + p.name() + '\'', e);
 			}
 		}
 	}

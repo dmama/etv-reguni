@@ -163,6 +163,6 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 
 	private static String buildDeclarationDetails(Declaration di) {
 		return "Déclaration id=" + di.getId() + " (du " + RegDateHelper.dateToDisplayString(di.getDateDebut()) + " au "
-				+ RegDateHelper.dateToDisplayString(di.getDateFin()) + ")";
+				+ RegDateHelper.dateToDisplayString(di.getDateFin()) + ')';
 	}
 }

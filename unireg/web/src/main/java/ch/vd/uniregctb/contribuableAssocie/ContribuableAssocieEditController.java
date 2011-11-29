@@ -16,8 +16,8 @@ public class ContribuableAssocieEditController extends AbstractSimpleFormControl
 
 	protected final Logger LOGGER = Logger.getLogger(ContribuableAssocieEditController.class);
 
-	private final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
-	private final String NUMERO_CONTRIBUABLE_PARAMETER_NAME = "numeroContribuable";
+	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
+	private static final String NUMERO_CONTRIBUABLE_PARAMETER_NAME = "numeroContribuable";
 
 	private ContribuableAssocieEditManager contribuableAssocieEditManager;
 

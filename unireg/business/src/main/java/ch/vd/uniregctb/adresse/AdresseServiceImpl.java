@@ -720,13 +720,13 @@ public class AdresseServiceImpl implements AdresseService {
 
 		String line;
 		if (tiers instanceof PersonnePhysique) {
-			line = POUR_ADRESSE + " " + tiersService.getNomPrenom((PersonnePhysique) tiers);
+			line = POUR_ADRESSE + ' ' + tiersService.getNomPrenom((PersonnePhysique) tiers);
 		}
 		else if (tiers instanceof MenageCommun) {
 			MenageCommun menageCommun = (MenageCommun) tiers;
 			/* Récupère la vue historique complète du ménage (date = null) */
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, null);
-			line = POUR_ADRESSE + " " + tiersService.getNomPrenom(ensemble.getPrincipal());
+			line = POUR_ADRESSE + ' ' + tiersService.getNomPrenom(ensemble.getPrincipal());
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
 				line += " et " + tiersService.getNomPrenom(conjoint);
@@ -734,19 +734,19 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			line = POUR_ADRESSE + " " + debiteur.getComplementNom();
+			line = POUR_ADRESSE + ' ' + debiteur.getComplementNom();
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
 			final CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
-			line = POUR_ADRESSE + " " + getRaisonSociale(collectivite);
+			line = POUR_ADRESSE + ' ' + getRaisonSociale(collectivite);
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			final AutreCommunaute autre = (AutreCommunaute) tiers;
-			line = POUR_ADRESSE + " " + autre.getNom();
+			line = POUR_ADRESSE + ' ' + autre.getNom();
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			line = POUR_ADRESSE + " " + getRaisonSociale(entreprise);
+			line = POUR_ADRESSE + ' ' + getRaisonSociale(entreprise);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] non-implémenté");
@@ -896,7 +896,7 @@ public class AdresseServiceImpl implements AdresseService {
 			return complement;
 		}
 		else {
-			return POUR_ADRESSE + " " + complement;
+			return POUR_ADRESSE + ' ' + complement;
 		}
 	}
 
@@ -1802,7 +1802,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private void ajouteCoucheAdressesTiers(Tiers tiers, AdresseSandwich adresses, AdresseCouche nomCouche, List<AdresseTiers> adressesSurchargees, @Nullable AdresseGenerique.Source sourceSurcharge,
 	                                       @Nullable Boolean defaultSurcharge, int callDepth, boolean strict) throws AdresseException {
 
-		if (adressesSurchargees == null || adressesSurchargees.size() == 0) {
+		if (adressesSurchargees == null || adressesSurchargees.isEmpty()) {
 			return;
 		}
 
@@ -1973,7 +1973,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (callDepth >= MAX_CALL_DEPTH) {
 			AdressesResolutionException exception = new AdressesResolutionException(
 					"Cycle infini détecté dans la résolution des adresses ! " + "Veuillez vérifier les adresses (et les rapports-entre-tiers) des tiers n°"
-							+ tiers.getNumero() + " et n°" + autreTiers.getNumero() + ".");
+							+ tiers.getNumero() + " et n°" + autreTiers.getNumero() + '.');
 			exception.addTiers(tiers);
 			exception.addTiers(autreTiers);
 			if (adresseSurchargee != null) {

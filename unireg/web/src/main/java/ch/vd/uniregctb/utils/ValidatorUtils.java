@@ -97,7 +97,7 @@ public class ValidatorUtils {
 	 *            le receveur
 	 */
 	public static void rejectErrors(List<String> sourceErrors, Errors errors) {
-		if (sourceErrors != null && sourceErrors.size() != 0) {
+		if (sourceErrors != null && !sourceErrors.isEmpty()) {
 			for (String error : sourceErrors) {
 				errors.reject("global.error.msg", error);
 			}
@@ -120,10 +120,10 @@ public class ValidatorUtils {
 	 * @return
 	 */
 	public static String formatAffichageErreur(List<String> erreurs) {
-		String affErreur = "";
+		StringBuilder affErreur = new StringBuilder();
 		for (String erreur : erreurs) {
-			affErreur = affErreur + /*"<br>" +*/ erreur;
+			affErreur.append(erreur);
 		}
-		return affErreur;
+		return affErreur.toString();
 	}
 }

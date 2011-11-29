@@ -21,8 +21,8 @@ public class TiersAnnulationRecapController extends AbstractSimpleFormController
 
 	protected final Logger LOGGER = Logger.getLogger(TiersAnnulationRecapController.class);
 
-	private final String NUMERO_PARAMETER_NAME = "numero";
-	private final String NUMERO_REMPLACANT_PARAMETER_NAME = "numeroRemplacant";
+	private static final String NUMERO_PARAMETER_NAME = "numero";
+	private static final String NUMERO_REMPLACANT_PARAMETER_NAME = "numeroRemplacant";
 	private TiersAnnulationRecapManager tiersAnnulationRecapManager;
 
 	public void setTiersAnnulationRecapManager(TiersAnnulationRecapManager tiersAnnulationRecapManager) {

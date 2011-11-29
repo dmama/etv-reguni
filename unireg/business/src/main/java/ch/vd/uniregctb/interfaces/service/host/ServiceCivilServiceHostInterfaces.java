@@ -40,12 +40,12 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 	@Override
 	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ")");
+			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ')');
 		}
 		try {
 			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)));
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("End of getIndividu(" + noIndividu + ", " + annee + ")");
+				LOGGER.trace("End of getIndividu(" + noIndividu + ", " + annee + ')');
 			}
 			if (ind != null) {
 				assertCoherence(noIndividu, ind.getNoTechnique());

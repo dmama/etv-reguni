@@ -185,7 +185,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 				});
 
 				final List<IdentifiantDeclaration> ids;
-				if (aSommer != null && aSommer.size() > 0) {
+				if (aSommer != null && !aSommer.isEmpty()) {
 					ids = new ArrayList<IdentifiantDeclaration>(aSommer.size());
 					for (Object[] elts : aSommer) {
 						final long idLr = ((Number) elts[0]).longValue();

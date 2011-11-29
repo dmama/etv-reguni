@@ -45,7 +45,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 
 		final Contribuable ctb = decomposition.contribuable;
 		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, decomposition.annee);
-		if (assujettissements == null || assujettissements.size() == 0) {
+		if (assujettissements == null || assujettissements.isEmpty()) {
 			throw new ContribuableIgnoreException(NON_ASSUJETTI);
 		}
 
@@ -87,13 +87,13 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 
 		// s'il y a eu un assujettissement, mais pas de période d'imposition, on parle de non-assujetti
 		// au rôle ordinaire
-		if (periodes.size() == 0) {
+		if (periodes.isEmpty()) {
 			throw new ContribuableIgnoreException(NON_ASSUJETTI_ROLE_ORDINAIRE);
 		}
 
 		// selon l'extraction voulue, certaines périodes d'impositions peuvent être exclues
 		final String raisonExclusion = filterPeriodes(ctb, periodes);
-		if (periodes.size() == 0) {
+		if (periodes.isEmpty()) {
 			if (StringUtils.isBlank(raisonExclusion)) {
 				throw new RuntimeException("Toutes les périodes d'imposition de la période fiscale " + periodeFiscale + " ont été filtrées sans explication");
 			}

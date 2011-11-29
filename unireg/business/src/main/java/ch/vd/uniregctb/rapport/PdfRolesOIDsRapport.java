@@ -224,7 +224,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		{
 			final OfficeImpot office = getOfficeImpot(results.noColOID);
 			final String[] contenu = asCsvFiles(nomsCommunes, infoOid, status);
-			writeFichierDetail(results, writer, contenu, infoOid.size() == 0, String.format("OID%02d", office.getNoColAdm()));
+			writeFichierDetail(results, writer, contenu, infoOid.isEmpty(), String.format("OID%02d", office.getNoColAdm()));
 		}
 	}
 

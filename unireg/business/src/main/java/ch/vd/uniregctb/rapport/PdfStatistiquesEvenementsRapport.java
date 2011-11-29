@@ -145,7 +145,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 						final Map<Integer, Integer> ignores = civils.getIgnores();
 
-						if (ignores.size() > 0) {
+						if (!ignores.isEmpty()) {
 							table.addLigne("Code reçu", "Nombre");
 							table.setHeaderRows(1);
 
@@ -263,7 +263,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 	private static <T extends StatistiqueEvenementInfo> String asCsvFile(List<T> elements, String fileName, StatusManager statusManager) {
 		String contenu = null;
-		if (elements != null && elements.size() > 0) {
+		if (elements != null && !elements.isEmpty()) {
 			final T first = elements.get(0);
 			contenu = CsvHelper.asCsvFile(elements, fileName, statusManager, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -284,7 +284,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 	private static <T extends Enum<T>> String asCsvFile(Map<T, Integer> tous, Map<T, Integer> nouveaux, RegDate dateReference, Class<T> enumClass, String fileName, StatusManager statusManager) {
 		String contenu = null;
-		if (tous != null && tous.size() > 0) {
+		if (tous != null && !tous.isEmpty()) {
 			final String message = String.format("Génération du fichier %s", fileName);
 			statusManager.setMessage(message, 0);
 			final StringBuilder b = new StringBuilder();
@@ -340,7 +340,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 	private String buildStatsMessagesErreursParType(List<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
 		String contenu = null;
-		if (toutesErreurs != null && toutesErreurs.size() > 0) {
+		if (toutesErreurs != null && !toutesErreurs.isEmpty()) {
 
 			final String messageCalcul = String.format("Calcul des statistiques pour le fichier %s", fileName);
 			statusManager.setMessage(messageCalcul, 0);

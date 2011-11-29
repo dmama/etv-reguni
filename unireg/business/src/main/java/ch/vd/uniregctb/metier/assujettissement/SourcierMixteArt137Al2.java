@@ -31,6 +31,6 @@ public class SourcierMixteArt137Al2 extends SourcierMixte {
 
 	@Override
 	public String toString() {
-		return "SourcierMixteArt137Al2(" + getDateDebut() + " - " + getDateFin() + ")";
+		return "SourcierMixteArt137Al2(" + getDateDebut() + " - " + getDateFin() + ')';
 	}
 }

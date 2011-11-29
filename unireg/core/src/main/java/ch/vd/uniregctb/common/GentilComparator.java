@@ -18,7 +18,7 @@ public final class GentilComparator<T> implements Comparator<T> {
 	public GentilComparator(List<T> ordre) {
 		this.ordre = ordre;
 		Assert.notNull(ordre);
-		Assert.isTrue(ordre.size() > 0);
+		Assert.isTrue(!ordre.isEmpty());
 	}
 
 	@Override

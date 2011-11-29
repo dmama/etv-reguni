@@ -92,7 +92,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsSujet = menage.getRapportsSujet();
-			assertTrue(rapportsSujet == null || rapportsSujet.size() == 0);
+			assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsObjet = menage.getRapportsObjet();
 			assertNotNull(rapportsObjet);
@@ -121,7 +121,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsObjet = habitant1.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.size() == 0);
+			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = habitant1.getRapportsSujet();
 			assertNotNull(rapportsSujet);
@@ -143,7 +143,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsObjet = habitant2.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.size() == 0);
+			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = habitant2.getRapportsSujet();
 			assertNotNull(rapportsSujet);
@@ -222,7 +222,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			assertTrue(pupille.getNumeroIndividu() == 23456L);
 
 			final Set<RapportEntreTiers> rapportsSujet = tuteur.getRapportsSujet();
-			assertTrue(rapportsSujet == null || rapportsSujet.size() == 0);
+			assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsObjet = tuteur.getRapportsObjet();
 			assertNotNull(rapportsObjet);
@@ -245,7 +245,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			assertTrue(pupille.getNumeroIndividu() == 23456L);
 
 			final Set<RapportEntreTiers> rapportsObjet = pupille.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.size() == 0);
+			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = pupille.getRapportsSujet();
 			assertNotNull(rapportsSujet);

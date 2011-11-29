@@ -55,7 +55,7 @@ public class AnnuleTache extends SynchronizeAction {
 			tacheDetail = "de transmission de dossier";
 		}
 		else {
-			throw new IllegalArgumentException("Type de tache inconnue = [" + tache.getClass().getSimpleName() + "]");
+			throw new IllegalArgumentException("Type de tache inconnue = [" + tache.getClass().getSimpleName() + ']');
 		}
 
 		return "annulation de la tâche " + tacheDetail;

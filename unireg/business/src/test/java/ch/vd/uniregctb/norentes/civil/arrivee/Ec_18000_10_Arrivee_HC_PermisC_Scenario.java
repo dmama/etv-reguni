@@ -40,7 +40,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 		return TypeEvenementCivil.ARRIVEE_DANS_COMMUNE;
 	}
 
-	private final long noIndAntoine = 1020206L;
+	private static final long noIndAntoine = 1020206L;
 
 	private MockIndividu indAntoine;
 

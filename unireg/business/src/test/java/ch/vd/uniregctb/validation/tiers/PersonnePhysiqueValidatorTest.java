@@ -306,8 +306,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// debugValidationResults(hab.validate());
 		final List<String> erreurs = new ArrayList<String>();
-		erreurs.add(String.format("Le for principal qui commence le 22.01.2007 chevauche le for précédent"));
-		erreurs.add(String.format("Le for principal qui commence le 01.03.2007 chevauche le for précédent"));
+		erreurs.add("Le for principal qui commence le 22.01.2007 chevauche le for précédent");
+		erreurs.add("Le for principal qui commence le 01.03.2007 chevauche le for précédent");
 		assertValidation(erreurs, null, validate(hab));
 	}
 

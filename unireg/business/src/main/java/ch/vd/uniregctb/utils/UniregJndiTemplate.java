@@ -29,7 +29,7 @@ public class UniregJndiTemplate extends JndiTemplate {
 			final String key = (String) entry.getKey();
 			final String value = (String) entry.getValue();
 
-			if (!value.equals("")) {
+			if (!value.isEmpty()) {
 				newEnv.setProperty(key, value);
 
 				final String valueToDisplay;

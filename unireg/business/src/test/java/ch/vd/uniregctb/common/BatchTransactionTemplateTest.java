@@ -81,7 +81,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		final StringBuilder b = new StringBuilder("Traitement du batch");
 		for (Long idx : batchPP) {
 			final String str = Long.toString(idx);
-			b.append(" ");
+			b.append(' ');
 			for (char c : str.toCharArray()) {
 				b.append((char) (c - '0' + 'A'));
 			}

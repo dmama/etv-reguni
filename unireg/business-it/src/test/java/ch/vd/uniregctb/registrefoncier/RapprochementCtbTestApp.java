@@ -90,7 +90,7 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 				String packageName = getClass().getPackage().getName();
 				packageName = packageName.replace('.', '/');
 
-				String name = "classpath:" + packageName + "/" + filename;
+				String name = "classpath:" + packageName + '/' + filename;
 				file = ResourceUtils.getFile(name);
 			}
 			catch (Exception ignored) {
@@ -130,7 +130,7 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 
 	}
 
-	public class JobStatusManager implements StatusManager {
+	public static class JobStatusManager implements StatusManager {
 
 		public JobStatusManager() {
 		}

@@ -40,7 +40,7 @@ class DropColumnTable implements ITable {
 					l.remove(i);
 				}
 			}
-			return l.toArray(new Column[] {});
+			return l.toArray(new Column[l.size()]);
 		}
 
 		@Override
@@ -82,7 +82,7 @@ class DropColumnTable implements ITable {
 	@Override
 	public Object getValue(int row, String column) throws DataSetException {
 		if (dropColumnName.equals(column)) {
-			throw new NoSuchColumnException(dropColumnMetaData.getTableName() + "." + column);
+			throw new NoSuchColumnException(dropColumnMetaData.getTableName() + '.' + column);
 		}
 		return table.getValue(row, column);
 	}

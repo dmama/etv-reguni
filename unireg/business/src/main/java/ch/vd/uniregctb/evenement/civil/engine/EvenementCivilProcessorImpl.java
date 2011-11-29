@@ -414,7 +414,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		/* 2 - Iteration sur les ids des événements civils */
 		final List<Long> aRelancer = new ArrayList<Long>(ids);
 		aRelancer.removeAll(evenementsExclus);
-		if (aRelancer.size() > 0) {
+		if (!aRelancer.isEmpty()) {
 			traiteEvenements(aRelancer, false, false, null);
 		}
 	}

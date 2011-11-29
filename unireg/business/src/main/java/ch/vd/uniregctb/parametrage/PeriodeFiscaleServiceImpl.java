@@ -34,7 +34,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 	@Override
 	public PeriodeFiscale initNouvellePeriodeFiscale() {
 		List<PeriodeFiscale> list = dao.getAllDesc();
-		if (list == null || list.size() == 0) {
+		if (list == null || list.isEmpty()) {
 			// Aucune période fiscale, création de la premiere.
 			Integer anneePremierePeriode = parametreAppService.getPremierePeriodeFiscale();
 			PeriodeFiscale premierePeriodeFiscale =  new PeriodeFiscale();

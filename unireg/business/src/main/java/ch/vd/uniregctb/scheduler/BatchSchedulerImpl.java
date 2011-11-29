@@ -73,8 +73,8 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 
 		// Check that there is no job with the same sort order
-		for (String key : jobs.keySet()) {
-			JobDefinition value = jobs.get(key);
+		for (Map.Entry<String, JobDefinition> stringJobDefinitionEntry : jobs.entrySet()) {
+			JobDefinition value = stringJobDefinitionEntry.getValue();
 			if (value.getSortOrder() == job.getSortOrder()) {
 				throw new SchedulerException("Duplicate sort order for job " + job.getName() + ": " + job.getSortOrder());
 			}
@@ -133,7 +133,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	public JobDefinition startJob(String jobName, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
-		LOGGER.info("Lancement du job <" + jobName + ">");
+		LOGGER.info("Lancement du job <" + jobName + '>');
 		JobDefinition job = jobs.get(jobName);
 		Assert.notNull(job, "Le job <" + jobName + "> n'existe pas");
 		return startJob(job, params);
@@ -341,7 +341,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		// en cours s'arrêtent proprement
 		final long maxWait = timeoutOnStopAll * 60000L;
 		final long startWait = System.currentTimeMillis();
-		while (arretDemande.size() > 0) {
+		while (!arretDemande.isEmpty()) {
 
 			try {
 				Thread.sleep(1000);
@@ -363,11 +363,11 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 
 			final long now = System.currentTimeMillis();
 			if (now - startWait > maxWait) {
-				if (arretDemande.size() > 0) {
+				if (!arretDemande.isEmpty()) {
 					final StringBuilder b = new StringBuilder();
 					b.append("Le ou les jobs suivants semblent ne pas vouloir s'arrêter (tant pis pour eux !) :\n");
 					for (JobDefinition job : arretDemande) {
-						b.append("\t").append(job.getName()).append("\n");
+						b.append('\t').append(job.getName()).append('\n');
 					}
 					LOGGER.warn(b.toString());
 

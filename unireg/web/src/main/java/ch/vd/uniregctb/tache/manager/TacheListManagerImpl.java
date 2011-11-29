@@ -51,7 +51,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	protected static final Logger LOGGER = Logger.getLogger(TacheListManagerImpl.class);
 
-	private final int DELAI_RETOUR_DI = 60;
+	private static final int DELAI_RETOUR_DI = 60;
 
 	private TacheDAO tacheDAO;
 	private TiersService tiersService;
@@ -138,7 +138,7 @@ public class TacheListManagerImpl implements TacheListManager {
 			}
 			catch (Exception e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Arrays.asList("<erreur: " + e.getMessage() + ">"));
+				tacheView.setNomCourrier(Arrays.asList("<erreur: " + e.getMessage() + '>'));
 			}
 
 			tacheView.setTypeTache(tache.getClass().getSimpleName());

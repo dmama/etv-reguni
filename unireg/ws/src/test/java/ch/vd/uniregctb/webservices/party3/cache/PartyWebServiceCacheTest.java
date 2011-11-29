@@ -619,7 +619,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 					eric = entry.getParty();
 				}
 				else {
-					fail("Le batch contient un numéro de tiers inconnu = [" + entry.getNumber() + "]");
+					fail("Le batch contient un numéro de tiers inconnu = [" + entry.getNumber() + ']');
 				}
 			}
 			assertNoPart(monsieur);
@@ -753,7 +753,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences");
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences");
 		assertNullOrNotNull(checkManagingTaxResidences, tiers.getManagingTaxResidences(), "managingTaxResidences");
-		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ")");
+		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ')');
 
 		if (tiers instanceof Taxpayer) {
 			Taxpayer ctb = (Taxpayer) tiers;

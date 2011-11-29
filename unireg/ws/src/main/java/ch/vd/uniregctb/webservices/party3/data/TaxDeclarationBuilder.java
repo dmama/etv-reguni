@@ -104,7 +104,7 @@ public class TaxDeclarationBuilder {
 					((WithholdingTaxDeclaration) d).getCommunicationMode(), null);
 		}
 		else {
-			throw new IllegalArgumentException("Type de déclaration d'impôt inconnu = [" + d.getClass() + "]");
+			throw new IllegalArgumentException("Type de déclaration d'impôt inconnu = [" + d.getClass() + ']');
 		}
 	}
 

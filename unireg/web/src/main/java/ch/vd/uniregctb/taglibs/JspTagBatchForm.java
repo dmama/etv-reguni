@@ -152,7 +152,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	private static String getBatchParamId(GestionJob job, JobParam param) {
 		final StringBuilder b = new StringBuilder();
-		b.append(job.getName()).append("_").append(param.getName());
+		b.append(job.getName()).append('_').append(param.getName());
 		return b.toString();
 	}
 
@@ -163,7 +163,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final StringBuilder b = new StringBuilder();
 		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"text\" size=\"12\"");
 		if (defaultBalue != null) {
-			b.append(" value=\"").append(defaultBalue).append("\"");
+			b.append(" value=\"").append(defaultBalue).append('\"');
 		}
 		b.append("/>");
 		return b.toString();
@@ -202,11 +202,11 @@ public class JspTagBatchForm extends BodyTagSupport {
 			b.append("<option/>\n");
 		}
 		for (Enum<?> e : enums) {
-			b.append("<option value=\"").append(e.toString()).append("\"");
+			b.append("<option value=\"").append(e.toString()).append('\"');
 			if (defaultValue == e) {
 				b.append(" selected=\"selected\"");
 			}
-			b.append(">").append(e.toString()).append("</option>\n");
+			b.append('>').append(e.toString()).append("</option>\n");
 		}
 		b.append("</select>");
 		return b.toString();
@@ -222,9 +222,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final String id = getBatchParamId(job, param);
 
 		// input
-		b.append("<input  type=\"text\" name=\"").append(name).append("\"");
+		b.append("<input  type=\"text\" name=\"").append(name).append('\"');
 		if (defaultValue != null) {
-			b.append(" value=\"").append(RegDateHelper.dateToDisplayString(defaultValue)).append("\"");
+			b.append(" value=\"").append(RegDateHelper.dateToDisplayString(defaultValue)).append('\"');
 		}
 		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />\n");
 
@@ -253,7 +253,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final StringBuilder b = new StringBuilder();
 		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"file\" size=\"20\"");
 		if (defaultBalue != null) {
-			b.append(" value=\"").append(defaultBalue).append("\"");
+			b.append(" value=\"").append(defaultBalue).append('\"');
 		}
 		b.append("/>");
 		return b.toString();

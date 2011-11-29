@@ -360,7 +360,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		if (original == null) {
 			return null;
 		}
-		else if (original.size() == 0) {
+		else if (original.isEmpty()) {
 			return Collections.emptyList();
 		}
 		else {
@@ -546,7 +546,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = buildLimitedCollectionBeforeYear(enfants, annee, ENFANT_LIMITATOR);
 		}
-		if (etatsCivils != null && etatsCivils.size() > 0) {
+		if (etatsCivils != null && !etatsCivils.isEmpty()) {
 			final FreezableEtatCivilList etatsCivilsTemp = new FreezableEtatCivilList(etatsCivils, false);
 			final Iterator<EtatCivil> iterator = etatsCivilsTemp.iterator();
 			while (iterator.hasNext()) {
@@ -559,7 +559,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			etatsCivils = etatsCivilsTemp;
 		}
 		historiqueIndividu = buildLimitedCollectionBeforeYear(historiqueIndividu, annee, HISTORIQUE_LIMITATOR);
-		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.size() == 0 ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];
+		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.isEmpty() ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];
 
 		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = buildLimitedCollectionBeforeYear(nationalites, annee, NATIONALITE_LIMITATOR);

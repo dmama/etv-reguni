@@ -158,7 +158,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 		@Override
 		public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
 			
-			AuthenticationHelper.pushPrincipal("[" + NAME + " " + AuthenticationHelper.getCurrentPrincipal() + "]");
+			AuthenticationHelper.pushPrincipal('[' + NAME + ' ' + AuthenticationHelper.getCurrentPrincipal() + ']');
 			try {
 				
 				final Set<ForFiscalPrincipal> fors = getFors(batch);

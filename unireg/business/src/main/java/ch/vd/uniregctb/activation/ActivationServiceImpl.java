@@ -85,7 +85,7 @@ public class ActivationServiceImpl implements ActivationService {
 
 		// s'il n'y a pas de for actif à la date de désactivation, il faut carrément annuler le tiers complètement
 		final List<ForFiscal> forsFiscauxValides = tiers.getForsFiscauxValidAt(dateAnnulation);
-		if (forsFiscauxValides == null || forsFiscauxValides.size() == 0) {
+		if (forsFiscauxValides == null || forsFiscauxValides.isEmpty()) {
 			tiers.setAnnule(true);
 		}
 	}
@@ -101,7 +101,7 @@ public class ActivationServiceImpl implements ActivationService {
 	private static void checkForsEnConflitAvecDesactivation(Tiers tiers, RegDate dateDesactivation) throws ActivationServiceException {
 		final RegDate seuilPourForBloquant = dateDesactivation.getOneDayAfter();
 		final List<ForFiscal> fors = tiers.getForsFiscauxNonAnnules(false);
-		if (fors != null && fors.size() > 0) {
+		if (fors != null && !fors.isEmpty()) {
 			for (ForFiscal ff : fors) {
 				if (RegDateHelper.isAfterOrEqual(ff.getDateDebut(), seuilPourForBloquant, NullDateBehavior.EARLIEST) ||
 						(ff.getDateFin() != null && ff.getDateFin().isAfterOrEqual(seuilPourForBloquant))) {
@@ -120,7 +120,7 @@ public class ActivationServiceImpl implements ActivationService {
 	private static void checkDeclarationsEnConflitAvecDesactivation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 		final RegDate seuilPourDeclarationBloquante = dateAnnulation.getOneDayAfter();
 		final List<Declaration> declarations = tiers.getDeclarationsSorted();
-		if (declarations != null && declarations.size() > 0) {
+		if (declarations != null && !declarations.isEmpty()) {
 
 			// puisqu'elles sont triées, il suffit de trouver la dernière déclaration non annulée et de la tester
 			Declaration nonAnnulee = null;

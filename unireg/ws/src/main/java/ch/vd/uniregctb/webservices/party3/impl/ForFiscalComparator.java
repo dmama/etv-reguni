@@ -18,7 +18,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
  */
 public final class ForFiscalComparator implements Comparator<TaxResidence> {
 
-	private final class ForFiscalWrapper implements DateRange {
+	private static final class ForFiscalWrapper implements DateRange {
 
 		private final RegDate dateDebut;
 		private final RegDate dateFin;

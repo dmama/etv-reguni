@@ -322,7 +322,7 @@ public class MetierServiceImpl implements MetierService {
 						source = donneesConjoint;
 					}
 
-					final boolean conjointInconnuAuFiscal = conjoint == null || conjoint.getForsFiscauxNonAnnules(false).size() == 0;
+					final boolean conjointInconnuAuFiscal = conjoint == null || conjoint.getForsFiscauxNonAnnules(false).isEmpty();
 					final boolean tousArrivesMariesOuSeulUnDeDeuxConnuAuFiscal = (donneesPrincipal != null && (conjointInconnuAuFiscal || donneesConjoint != null))
 							|| (donneesPrincipal == null && donneesConjoint != null && principal.getForsFiscauxNonAnnules(false).isEmpty());
 
@@ -528,8 +528,8 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	private void createForsSecondairesApresMariage(RegDate date, MenageCommun menage, List<ForFiscalSecondaire> forsSecondairesDuPrincipal, List<ForFiscalSecondaire> forsSecondairesDuConjoint,
 	                                               MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
-		final boolean principalHasFors = forsSecondairesDuPrincipal != null && forsSecondairesDuPrincipal.size() > 0;
-		final boolean conjointHasFors = forsSecondairesDuConjoint != null && forsSecondairesDuConjoint.size() > 0;
+		final boolean principalHasFors = forsSecondairesDuPrincipal != null && !forsSecondairesDuPrincipal.isEmpty();
+		final boolean conjointHasFors = forsSecondairesDuConjoint != null && !forsSecondairesDuConjoint.isEmpty();
 		if (principalHasFors && conjointHasFors) {
 			// les deux ont des fors secondaires : on va éliminer les doublons
 			final int sumOfSizes = forsSecondairesDuPrincipal.size() + forsSecondairesDuConjoint.size();
@@ -975,8 +975,8 @@ public class MetierServiceImpl implements MetierService {
 		final MenageCommun menageChoisi = getMenageForFusion(menagePrincipal, menageConjoint);
 		final MenageCommun autreMenage = (menageChoisi == menagePrincipal ? menageConjoint : menagePrincipal);
 
-		final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menageChoisi).toArray(new PersonnePhysique[0])[0];
-		final PersonnePhysique conjoint = tiersService.getPersonnesPhysiques(autreMenage).toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menageChoisi).iterator().next();
+		final PersonnePhysique conjoint = tiersService.getPersonnesPhysiques(autreMenage).iterator().next();
 
 		final ForFiscalPrincipal forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
 		final ModeImposition impositionMenage = (forFPMenage == null ? null : forFPMenage.getModeImposition());

@@ -178,11 +178,11 @@ public class AdressesCivilesHisto {
 	 */
 	public RegDate getVeryFirstDate() {
 		RegDate first = RegDate.getLateDate();
-		if (principales != null && principales.size() > 0) {
+		if (principales != null && !principales.isEmpty()) {
 			Adresse a = principales.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
 		}
-		if (courriers != null && courriers.size() > 0) {
+		if (courriers != null && !courriers.isEmpty()) {
 			Adresse a = courriers.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
 		}
@@ -194,11 +194,11 @@ public class AdressesCivilesHisto {
 	 */
 	public RegDate getVeryLastDate() {
 		RegDate last = RegDate.getEarlyDate();
-		if (principales != null && principales.size() > 0) {
+		if (principales != null && !principales.isEmpty()) {
 			Adresse a = principales.get(principales.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
 		}
-		if (courriers != null && courriers.size() > 0) {
+		if (courriers != null && !courriers.isEmpty()) {
 			Adresse a = courriers.get(courriers.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
 		}

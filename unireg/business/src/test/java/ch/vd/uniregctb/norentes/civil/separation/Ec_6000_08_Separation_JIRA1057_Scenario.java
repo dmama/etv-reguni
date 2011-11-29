@@ -42,8 +42,8 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		return NAME;
 	}
 
-	private final long noIndMomo = 54321;
-	private final long noIndBea = 23456;
+	private static final long noIndMomo = 54321;
+	private static final long noIndBea = 23456;
 
 	private final RegDate dateMariage = RegDate.get(1978, 1, 6);			// 06.01.1978
 	private final RegDate dateSeparation = RegDate.get(2008, 1, 1);			// 01.01.2008

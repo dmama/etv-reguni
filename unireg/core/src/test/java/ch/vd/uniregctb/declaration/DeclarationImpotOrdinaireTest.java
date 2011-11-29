@@ -21,7 +21,7 @@ public class DeclarationImpotOrdinaireTest {
 				assertCodeControleIsValid(codeControle);
 			}
 			catch (Exception e) {
-				System.err.println("Code de contrôle généré : [" + codeControle + "]");
+				System.err.println("Code de contrôle généré : [" + codeControle + ']');
 				throw e;
 			}
 		}

@@ -45,7 +45,7 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 		return NAME;
 	}
 
-	private final long noIndAlain = 122456L;
+	private static final long noIndAlain = 122456L;
 
 	private MockIndividu indAlain;
 

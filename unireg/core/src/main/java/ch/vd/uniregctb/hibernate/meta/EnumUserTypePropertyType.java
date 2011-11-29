@@ -9,7 +9,7 @@ public class EnumUserTypePropertyType extends UserTypePropertyType {
 
 	@Override
 	public String getConvertMethod(String value) {
-		return "Enum.valueOf(" + javaType.getSimpleName() + ".class, " + value + ")";
+		return "Enum.valueOf(" + javaType.getSimpleName() + ".class, " + value + ')';
 	}
 
 	@Override

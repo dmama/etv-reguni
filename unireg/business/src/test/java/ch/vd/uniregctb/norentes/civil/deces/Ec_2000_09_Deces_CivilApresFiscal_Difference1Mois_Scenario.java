@@ -52,7 +52,7 @@ public class Ec_2000_09_Deces_CivilApresFiscal_Difference1Mois_Scenario extends 
 		return NAME;
 	}
 
-	private final long noIndGuillaume = 43252;
+	private static final long noIndGuillaume = 43252;
 
 	private MockIndividu indGuillaume;
 

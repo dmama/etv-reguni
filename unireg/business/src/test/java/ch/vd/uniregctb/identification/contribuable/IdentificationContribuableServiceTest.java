@@ -68,7 +68,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	/**
 	 * Fake message handler pour intercepter les réponses émises.
 	 */
-	private final class TestMessageHandler implements IdentificationContribuableMessageHandler {
+	private static final class TestMessageHandler implements IdentificationContribuableMessageHandler {
 
 		private final List<IdentificationContribuable> sentMessages = new ArrayList<IdentificationContribuable>();
 		private boolean throwExceptionOnSend = false;
@@ -98,7 +98,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 	}
 
-	private final class PPComparator implements Comparator<PersonnePhysique> {
+	private static final class PPComparator implements Comparator<PersonnePhysique> {
 		@Override
 		public int compare(PersonnePhysique o1, PersonnePhysique o2) {
 			return o1.getNumero().compareTo(o2.getNumero());

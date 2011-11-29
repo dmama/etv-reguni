@@ -20,7 +20,7 @@ public class Ec_1000_03_Naissance_HabitantSansIndividuScenario extends Evenement
 
 	public static final String NAME = "1000_03_Naissance";
 
-	private final long noIndividu = 983254L;
+	private static final long noIndividu = 983254L;
 
 	@Override
 	public String getName() {

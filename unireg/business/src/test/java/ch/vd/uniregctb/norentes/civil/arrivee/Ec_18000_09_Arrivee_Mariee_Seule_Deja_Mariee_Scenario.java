@@ -48,8 +48,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 		return NAME;
 	}
 
-	private final long noIndGeorgette = 937931L;
-	private final long noIndJean = 312580L;
+	private static final long noIndGeorgette = 937931L;
+	private static final long noIndJean = 312580L;
 
 	private long noCtbMenageCommun;
 	private long noCtbJean;

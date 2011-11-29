@@ -92,7 +92,7 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 	}
 
 	private static void fillMap(Map<UUID, ExtractionJob> map, List<ExtractionJob> src) {
-		if (src != null && src.size() > 0) {
+		if (src != null && !src.isEmpty()) {
 			for (ExtractionJob job : src) {
 				map.put(job.getUuid(), job);
 			}

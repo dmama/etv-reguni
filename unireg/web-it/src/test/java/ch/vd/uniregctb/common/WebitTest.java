@@ -181,7 +181,7 @@ public abstract class WebitTest {
 	}
 
 	protected static void assertContains(String containee, String container) {
-		assertContains(containee, container, "'" + container + "' doesn't contain '" + containee + "'");
+		assertContains(containee, container, '\'' + container + "' doesn't contain '" + containee + '\'');
 	}
 
 	@SuppressWarnings("unchecked")

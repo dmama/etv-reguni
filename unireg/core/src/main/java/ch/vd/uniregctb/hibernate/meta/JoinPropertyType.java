@@ -8,6 +8,6 @@ public class JoinPropertyType extends PropertyType {
 	}
 
 	public String getConvertMethod(String value) {
-		return "get" + getJavaType().getSimpleName() + "(" + value + ")";
+		return "get" + getJavaType().getSimpleName() + '(' + value + ')';
 	}
 }

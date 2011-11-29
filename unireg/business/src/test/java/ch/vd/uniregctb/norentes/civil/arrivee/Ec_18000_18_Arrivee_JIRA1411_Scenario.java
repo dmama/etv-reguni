@@ -61,7 +61,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 	}
 
 	private final RegDate dateArriveeLausanne = date(2009, 7, 15);
-	private final long noIndAntoine = 1020206L;
+	private static final long noIndAntoine = 1020206L;
 	private long evenementId;
 	private MockIndividu indAntoine;
 	private long noHabAntoine;

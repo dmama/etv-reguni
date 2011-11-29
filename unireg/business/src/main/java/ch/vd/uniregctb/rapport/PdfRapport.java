@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -211,7 +211,7 @@ public abstract class PdfRapport extends Document {
 			details.add(new Chunk(listVide));
 		}
 		else {
-			details.add(new Chunk("(voir le fichier attaché " + filename + ")"));
+			details.add(new Chunk("(voir le fichier attaché " + filename + ')'));
 		}
 
 		add(details);

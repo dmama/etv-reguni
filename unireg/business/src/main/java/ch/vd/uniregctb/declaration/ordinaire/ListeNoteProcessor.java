@@ -259,7 +259,7 @@ public class ListeNoteProcessor {
 
 	}
 
-	private class InfoForFerme implements DateRange {
+	private static class InfoForFerme implements DateRange {
 		public final long numeroCtb;
 		public final long idFor;
 		public RegDate dateDebut;

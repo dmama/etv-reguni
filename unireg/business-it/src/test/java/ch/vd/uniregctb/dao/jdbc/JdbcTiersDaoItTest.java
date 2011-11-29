@@ -298,7 +298,7 @@ public class JdbcTiersDaoItTest extends AbstractSpringTest {
 		if (!areRecursiveEquals(hibernateTiers, jdbcTiers)) {
 			String message = "Les données récupérées par le dao Jdbc et le dao Hibernate pour le tiers n°" + id + " ne correspondent pas :\n";
 			try {
-				message += " - hibernate:\n" + ToStringBuilder.reflectionToString(hibernateTiers) + "\n";
+				message += " - hibernate:\n" + ToStringBuilder.reflectionToString(hibernateTiers) + '\n';
 				message += " - jdbc:\n" + ToStringBuilder.reflectionToString(jdbcTiers) + "\n\n";
 			}
 			catch (Exception e) {

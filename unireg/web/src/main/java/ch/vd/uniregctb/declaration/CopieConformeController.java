@@ -106,7 +106,7 @@ public class CopieConformeController {
 			return String.format("redirect:%s", previousPage);
 		}
 		else {
-			return String.format("redirect:/404.do");
+			return "redirect:/404.do";
 		}
 	}
 }

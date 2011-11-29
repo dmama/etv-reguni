@@ -336,7 +336,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 			fillCompteBancaireDepuisMandataireEtablissement(cb, m.getNumeroMandataire(), context.servicePM);
 			break;
 		default:
-			throw new IllegalArgumentException("Type de mandataire inconnu =[" + m.getTypeMandataire() + "]");
+			throw new IllegalArgumentException("Type de mandataire inconnu =[" + m.getTypeMandataire() + ']');
 		}
 	}
 
@@ -469,7 +469,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		case PAYS_HS:
 			return Siege.TypeSiege.PAYS_HS;
 		default:
-			throw new IllegalArgumentException("Type de no Ofs inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de no Ofs inconnu = [" + type + ']');
 		}
 	}
 
@@ -552,7 +552,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 				commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, null);
 			}
 			catch (ServiceInfrastructureException e) {
-				throw new RuntimeException("Impossible de récupérer la commune avec le numéro Ofs = [" + noOfs + "]", e);
+				throw new RuntimeException("Impossible de récupérer la commune avec le numéro Ofs = [" + noOfs + ']', e);
 			}
 			if (commune == null) {
 				throw new RuntimeException("La commune avec le numéro Ofs = [" + noOfs + "] n'existe pas.");
@@ -567,7 +567,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		case PAYS_HS:
 			return ForFiscal.TypeAutoriteFiscale.PAYS_HS;
 		default:
-			throw new IllegalArgumentException("Type de no Ofs inconnu = [" + type + "]");
+			throw new IllegalArgumentException("Type de no Ofs inconnu = [" + type + ']');
 		}
 	}
 
