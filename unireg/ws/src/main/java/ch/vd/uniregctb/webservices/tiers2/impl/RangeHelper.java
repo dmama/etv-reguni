@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
 import ch.vd.uniregctb.webservices.tiers2.data.Range;
 
@@ -66,5 +71,48 @@ public abstract class RangeHelper {
 		final boolean finPremierApresDebutSecond = (premier.getDateFin() == null || second.getDateDebut() == null || isAfterOrEqual(premier.getDateFin(), second.getDateDebut()));
 
 		return (debutPremierAvantFinSecond && finPremierApresDebutSecond);
+	}
+
+	public static <T extends Range> T getAt(List<T> ranges, @Nullable Date date) {
+		T range = null;
+		if (ranges != null) {
+			for (T r : ranges) {
+				if (isDateInRange(date, r)) {
+					range = r;
+					break;
+				}
+			}
+		}
+		return range;
+	}
+
+	public static <T extends Range> List<T> getAllAt(List<T> ranges, Date date) {
+		List<T> list = null;
+		if (ranges != null) {
+			for (T r : ranges) {
+				if (isDateInRange(date, r)) {
+					if (list == null) {
+						list = new ArrayList<T>();
+					}
+					list.add(r);
+				}
+			}
+		}
+		return list;
+	}
+
+	public static <T extends Range> List<T> getAllAt(List<T> ranges, Range periode) {
+		List<T> list = null;
+		if (ranges != null) {
+			for (T r : ranges) {
+				if (RangeHelper.intersect(r, periode)) {
+					if (list == null) {
+						list = new ArrayList<T>();
+					}
+					list.add(r);
+				}
+			}
+		}
+		return list;
 	}
 }

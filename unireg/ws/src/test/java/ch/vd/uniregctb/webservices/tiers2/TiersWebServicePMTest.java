@@ -9,7 +9,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -20,7 +19,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
@@ -29,7 +27,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
-import ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
@@ -40,14 +38,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @SuppressWarnings({"JavaDoc"})
-public class TiersWebServiceWithPMTest extends WebserviceTest {
+public class TiersWebServicePMTest extends WebserviceTest {
 
-	private TiersWebServiceWithPM service;
+	private TiersWebService service;
 	private UserLogin login;
 	private TiersDAO tiersDAO;
 
@@ -55,17 +54,8 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		final TiersWebService bean = getBean(TiersWebService.class, "tiersService2Bean");
+		service = getBean(TiersWebService.class, "tiersService2Bean");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-
-		service = new TiersWebServiceWithPM();
-		service.setServicePM(servicePM);
-		service.setServiceInfra(serviceInfra);
-		service.setAdresseService(adresseService);
-		service.setTarget(bean);
-		service.setTiersDAO(tiersDAO);
-		service.setNoOfsTranslator(new NoOfsTranslatorImpl());
 
 		login = new UserLogin("iamtestuser", 22);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -98,18 +88,14 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		paramsBloc.blocage = false;
 		paramsBloc.login = login;
 		paramsBloc.tiersNumber = noBCV;
-		service.setTiersBlocRembAuto(paramsBloc);
-
-		// on s'assure que le code de blocage de remboursement est à maintenant à false
-		{
-			final PersonneMorale bcv = (PersonneMorale) service.getTiers(params);
-			assertNotNull(bcv);
-			assertFalse(bcv.blocageRemboursementAutomatique);
+		try {
+			service.setTiersBlocRembAuto(paramsBloc);
+			fail();
 		}
-
-		// on s'assure que l'entreprise a été crée dans la base
-		final Entreprise bcv = (Entreprise) tiersDAO.get(noBCV);
-		assertNotNull(bcv);
+		catch (BusinessException e) {
+			// changer le code de remboursement d'un PM inexistante n'est plus permis depuis que les coquilles vides des PMs ont été créées
+			assertEquals("Le tiers n°20222 n'existe pas.", e.getMessage());
+		}
 	}
 
 	@Test

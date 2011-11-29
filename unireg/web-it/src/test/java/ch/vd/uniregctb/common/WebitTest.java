@@ -147,6 +147,9 @@ public abstract class WebitTest {
 		// Vérification que tout s'est bien passé
 		final String content = resultat.getWebResponse().getContentAsString();
 		assertContains("Les tiers suivants sont présents dans la base de données", content, "Le script DB unit ne s'est pas importé correctement !");
+
+		// on attend que l'événement de chargement de la base arrive dans le web-service
+		Thread.sleep(500);
 	}
 
 	protected void assertNatureTiers(String nature, long tiersId) throws Exception {

@@ -30,6 +30,7 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 	</bean>
 
 	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">

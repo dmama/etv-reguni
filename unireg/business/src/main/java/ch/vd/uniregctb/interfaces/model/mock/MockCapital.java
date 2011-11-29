@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
 
@@ -58,5 +60,10 @@ public class MockCapital implements Capital {
 
 	public void setEditionFosc(EditionFosc editionFosc) {
 		this.editionFosc = editionFosc;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

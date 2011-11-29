@@ -6,6 +6,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.webservices.tiers2.impl.RangeHelper;
+
 /**
  * Informations associées à une personne morale pour une date donnée.
  * <p/>
@@ -135,6 +139,51 @@ public class PersonneMorale extends Contribuable {
 		this.numeroIPMRO = pm.numeroIPMRO;
 		copyParts(pm, parts);
 	}
+
+	public PersonneMorale(PersonneMoraleHisto pmHisto, @Nullable Date date) {
+		this.numero = pmHisto.numero;
+		this.adresseCourrierElectronique = pmHisto.adresseCourrierElectronique;
+		this.adresseEnvoi = pmHisto.adresseEnvoi;
+		this.adresseDomicileFormattee = pmHisto.adresseDomicileFormattee;
+		this.adresseRepresentationFormattee = pmHisto.adresseRepresentationFormattee;
+		this.adressePoursuiteFormattee = pmHisto.adressePoursuiteFormattee;
+		this.blocageRemboursementAutomatique = pmHisto.blocageRemboursementAutomatique;
+		this.complementNom = pmHisto.complementNom;
+		this.comptesBancaires = pmHisto.comptesBancaires;
+		this.dateBouclementFutur = pmHisto.dateBouclementFutur;
+		this.dateDebutActivite = pmHisto.dateDebutActivite;
+		this.dateFinActivite = pmHisto.dateFinActivite;
+		this.dateFinDernierExerciceCommercial = pmHisto.dateFinDernierExerciceCommercial;
+		this.designationAbregee = pmHisto.designationAbregee;
+		this.numeroIPMRO = pmHisto.numeroIPMRO;
+		this.numeroTelecopie = pmHisto.numeroTelecopie;
+		this.numeroTelPortable = pmHisto.numeroTelPortable;
+		this.numeroTelPrive = pmHisto.numeroTelPrive;
+		this.numeroTelProf = pmHisto.numeroTelProf;
+		this.personneContact = pmHisto.personneContact;
+		this.raisonSociale1 = pmHisto.raisonSociale1;
+		this.raisonSociale2 = pmHisto.raisonSociale2;
+		this.raisonSociale3 = pmHisto.raisonSociale3;
+
+		this.adresseCourrier = RangeHelper.getAt(pmHisto.adressesCourrier, date);
+		this.adresseDomicile = RangeHelper.getAt(pmHisto.adressesDomicile, date);
+		this.adressePoursuite = RangeHelper.getAt(pmHisto.adressesPoursuite, date);
+		this.adresseRepresentation = RangeHelper.getAt(pmHisto.adressesRepresentation, date);
+		this.assujettissementLIC = RangeHelper.getAt(pmHisto.assujettissementsLIC, date);
+		this.assujettissementLIFD = RangeHelper.getAt(pmHisto.assujettissementsLIFD, date);
+		this.autresForsFiscaux = RangeHelper.getAllAt(pmHisto.autresForsFiscaux, date);
+		this.capital = RangeHelper.getAt(pmHisto.capitaux, date);
+		this.declaration = RangeHelper.getAt(pmHisto.declarations, date);
+		this.etat = RangeHelper.getAt(pmHisto.etats, date);
+		this.forFiscalPrincipal = RangeHelper.getAt(pmHisto.forsFiscauxPrincipaux, date);
+		this.forGestion = RangeHelper.getAt(pmHisto.forsGestions, date);
+		this.formeJuridique = RangeHelper.getAt(pmHisto.formesJuridiques, date);
+		this.periodeImposition = RangeHelper.getAt(pmHisto.periodesImposition, date);
+		this.regimeFiscalIFD = RangeHelper.getAt(pmHisto.regimesFiscauxIFD, date);
+		this.regimeFiscalICC = RangeHelper.getAt(pmHisto.regimesFiscauxICC, date);
+		this.siege = RangeHelper.getAt(pmHisto.sieges, date);
+	}
+
 
 	private void copyParts(PersonneMorale pm, Set<TiersPart> parts) {
 

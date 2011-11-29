@@ -40,12 +40,14 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
@@ -64,6 +66,8 @@ import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMoraleHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
@@ -181,6 +185,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServicePM(ServicePersonneMoraleService service) {
+		context.servicePM = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setThreadPool(ExecutorService threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -248,6 +257,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommun(menage, params.parts, date, context);
 			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise) {
+				final Entreprise entreprise = (Entreprise) tiers;
+				final PersonneMoraleHisto histo = new PersonneMoraleHisto(entreprise, params.parts, context);
+				data = new PersonneMorale(histo, params.date);
+			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
 				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
 				data = new Debiteur(debiteur, params.parts, date, context);
@@ -288,6 +302,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommunHisto(menage, params.periode, params.parts, context);
 			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise) {
+				final Entreprise entreprise = (Entreprise) tiers;
+				final PersonneMoraleHisto histo = new PersonneMoraleHisto(entreprise, params.parts, context);
+				data = new PersonneMoraleHisto(histo, params.periode);
+			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
 				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
 				data = new DebiteurHisto(debiteur, params.periode, params.parts, context);
@@ -327,6 +346,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
 				BusinessHelper.warmIndividus(menage, params.parts, context);
 				data = new MenageCommunHisto(menage, params.parts, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise) {
+				final Entreprise entreprise = (Entreprise) tiers;
+				data = new PersonneMoraleHisto(entreprise, params.parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
 				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
@@ -375,6 +398,11 @@ public class TiersWebServiceImpl implements TiersWebService {
 						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
 							t = new MenageCommun(menage, parts, date, context);
+						}
+						else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise) {
+							final Entreprise entreprise = (Entreprise) tiers;
+							final PersonneMoraleHisto histo = new PersonneMoraleHisto(entreprise, parts, context);
+							t = new PersonneMorale(histo, params.date);
 						}
 						else if (tiers instanceof DebiteurPrestationImposable) {
 							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
@@ -432,6 +460,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
 							t = new MenageCommunHisto(menage, parts, context);
+						}
+						else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise) {
+							final Entreprise entreprise = (Entreprise) tiers;
+							t = new PersonneMoraleHisto(entreprise, parts, context);
 						}
 						else if (tiers instanceof DebiteurPrestationImposable) {
 							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
@@ -660,7 +692,9 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 */
 	@Override
 	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
-		throw new TechnicalException("Fonctionnalité pas encore implémentée.");
+		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
+				context.servicePM.findEvenements(params.tiersNumber, params.codeEvenement, DataHelper.webToCore(params.dateMinimale), DataHelper.webToCore(params.dateMaximale));
+		return DataHelper.events2web(list);
 	}
 
 	@Override

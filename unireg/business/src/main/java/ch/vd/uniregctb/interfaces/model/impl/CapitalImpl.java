@@ -2,7 +2,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
 
@@ -57,5 +59,10 @@ public class CapitalImpl implements Capital, Serializable {
 	@Override
 	public EditionFosc getEditionFosc() {
 		return editionFosc;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

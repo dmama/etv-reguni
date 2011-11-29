@@ -44,7 +44,10 @@ import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
 import ch.vd.uniregctb.webservices.tiers2.data.AdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoi;
 import ch.vd.uniregctb.webservices.tiers2.data.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.Assujettissement;
+import ch.vd.uniregctb.webservices.tiers2.data.Capital;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
@@ -479,5 +482,48 @@ public class DataHelper {
 			throw new IllegalArgumentException("Le type de source = [" + source + "] n'est pas représentable comme type d'adresse autre tiers");
 		}
 
+	}
+
+	public static Capital host2web(ch.vd.uniregctb.interfaces.model.Capital c) {
+		ch.vd.registre.base.utils.Assert.notNull(c);
+		Capital capital = new Capital();
+		capital.dateDebut = coreToWeb(c.getDateDebut());
+		capital.dateFin = coreToWeb(c.getDateFin());
+		capital.capitalAction = c.getCapitalAction();
+		capital.capitalLibere = c.getCapitalLibere();
+		capital.editionFosc = host2web(c.getEditionFosc());
+		return capital;
+	}
+
+	public static Capital.EditionFosc host2web(ch.vd.uniregctb.interfaces.model.EditionFosc e) {
+		ch.vd.registre.base.utils.Assert.notNull(e);
+		Capital.EditionFosc edition = new Capital.EditionFosc();
+		edition.anneeFosc = e.getAnnee();
+		edition.noFosc = e.getNumero();
+		return edition;
+	}
+
+	public static Assujettissement host2web(ch.vd.uniregctb.interfaces.model.AssujettissementPM a) {
+		ch.vd.registre.base.utils.Assert.notNull(a);
+		Assujettissement assujet = new Assujettissement();
+		assujet.dateDebut = coreToWeb(a.getDateDebut());
+		assujet.dateFin = coreToWeb(a.getDateFin());
+		assujet.type = Assujettissement.TypeAssujettissement.ILLIMITE;
+		return assujet;
+	}
+
+	public static List<EvenementPM> events2web(List<ch.vd.uniregctb.interfaces.model.EvenementPM> events) {
+		if (events == null || events.isEmpty()) {
+			return null;
+		}
+		final List<EvenementPM> list = new ArrayList<EvenementPM>();
+		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
+			EvenementPM event = new EvenementPM();
+			event.tiersNumber = e.getNumeroPM();
+			event.dateEvenement = coreToWeb(e.getDate());
+			event.codeEvenement = e.getCode();
+			list.add(event);
+		}
+		return list;
 	}
 }
