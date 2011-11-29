@@ -112,7 +112,7 @@
 		</display:column>
 		<display:column sortable="true" titleKey="label.absence.capital.libere.normale" property="absenceCapitalLibereNormale"/>
 		<display:column sortable="true" titleKey="label.edition.fosc">
-			N°<c:out value="${capitaux.editionFosc.numero}"/> de l'année <c:out value="${capitaux.editionFosc.annee}"/> 
+			N°<c:out value="${capitaux.editionFosc.numero}"/> du <unireg:regdate regdate="${capitaux.editionFosc.dateParution}"/>
 		</display:column>
 	</display:table>
 

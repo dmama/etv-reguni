@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
 
 /**
@@ -9,6 +10,7 @@ public class MockEditionFosc implements EditionFosc {
 
 	private int annee;
 	private int numero;
+	private RegDate dateParution;
 
 	@Override
 	public int getAnnee() {
@@ -26,5 +28,14 @@ public class MockEditionFosc implements EditionFosc {
 
 	public void setNumero(int numero) {
 		this.numero = numero;
+	}
+
+	@Override
+	public RegDate getDateParution() {
+		return dateParution;
+	}
+
+	public void setDateParution(RegDate dateParution) {
+		this.dateParution = dateParution;
 	}
 }
