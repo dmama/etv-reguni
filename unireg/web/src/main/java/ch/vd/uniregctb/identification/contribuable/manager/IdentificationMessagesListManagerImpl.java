@@ -125,7 +125,6 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
 	 *
-	 *
 	 * @param bean
 	 * @param pagination
 	 * @param typeDemande
@@ -144,7 +143,6 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
-	 *
 	 *
 	 * @param bean
 	 * @param pagination
@@ -200,19 +198,6 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
 		return count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, null);
-	}
-
-	/**
-	 * Cherche et compte les identifications correspondant à l'etat en cours
-	 *
-	 * @param criterion
-	 * @param typeDemande
-	 * @return
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public int countEnCoursSeul(IdentificationContribuableCriteria criterion) {
-		return countEnCoursSeul(criterion);
 	}
 
 	/**

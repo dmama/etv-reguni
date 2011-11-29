@@ -131,7 +131,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
-				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean);
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, null);
 			}
 			else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.NCS);
