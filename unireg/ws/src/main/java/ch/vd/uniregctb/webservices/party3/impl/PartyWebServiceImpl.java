@@ -66,11 +66,13 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
@@ -165,6 +167,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServicePM(ServicePersonneMoraleService service) {
+		context.servicePM = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setThreadPool(ExecutorService threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -227,6 +234,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 				BusinessHelper.warmIndividus(menage, parts, context);
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
+			else if (tiers instanceof Entreprise) {
+				final Entreprise entreprise = (Entreprise) tiers;
+				data = PartyBuilder.newCorporation(entreprise, parts, context);
+			}
 			else if (tiers instanceof DebiteurPrestationImposable) {
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 				data = PartyBuilder.newDebtor(debiteur, parts, context);
@@ -272,6 +283,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
 							t = PartyBuilder.newCommonHousehold(menage, parts, context);
+						}
+						else if (tiers instanceof Entreprise) {
+							final Entreprise entreprise = (Entreprise) tiers;
+							t = PartyBuilder.newCorporation(entreprise, parts, context);
 						}
 						else if (tiers instanceof DebiteurPrestationImposable) {
 							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
@@ -509,7 +524,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
-		throw ExceptionHelper.newTechnicalException("Fonctionnalité pas encore implémentée.");
+		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
+				context.servicePM.findEvenements(params.getCorporationNumber(), params.getEventCode(), DataHelper.webToCore(params.getStartDate()), DataHelper.webToCore(params.getEndDate()));
+		return DataHelper.events2web(list);
 	}
 
 	@Override

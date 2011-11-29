@@ -94,6 +94,7 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="threadPool" ref="wsThreadPool" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">

@@ -23,12 +23,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.corporation.v1.CorporationEvent;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -468,5 +470,20 @@ public class DataHelper {
 			return null;
 		}
 		return new DatePartiallyKnown(right.getYearMonthDay(), right.getYearMonth(), right.getYear());
+	}
+
+	public static SearchCorporationEventsResponse events2web(List<ch.vd.uniregctb.interfaces.model.EvenementPM> events) {
+		if (events == null || events.isEmpty()) {
+			return null;
+		}
+		final SearchCorporationEventsResponse response = new SearchCorporationEventsResponse();
+		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
+			CorporationEvent event = new CorporationEvent();
+			event.setPartyNumber(e.getNumeroPM().intValue());
+			event.setDate(coreToWeb(e.getDate()));
+			event.setCode(e.getCode());
+			response.getEvents().add(event);
+		}
+		return response;
 	}
 }

@@ -11,29 +11,10 @@
 	<!-- Ce fichier contient les implémentations spéciales 'PM' des beans qui permettent à Unireg de faire le passe-plat entre le host et les applications avals.
 		Ces beans pourront être supprimés lorsque la migration PM aura eut lieu. -->
 
-	<!-- Version PM du Web-service Tiers 3 -->
-	<bean id="partyService3PM" class="ch.vd.uniregctb.webservices.party3.impl.pm.PartyWebServiceWithPM">
-		<property name="target" ref="partyService3Impl" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="adresseService" ref="adresseService" />
-		<property name="serviceInfra" ref="serviceInfrastructureService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
-	</bean>
-
 	<!-- Version PM du tiers DAO -->
 	<bean id="tiersDAOPM" class="ch.vd.uniregctb.webservices.common.pm.TiersDAOWithPM">
 		<property name="target" ref="tiersDAO" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
-	</bean>
-
-	<!-- redéfinition du cache avec le service PM 3 comme target -->
-	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
-		<property name="target" ref="partyService3PM" /> <!-- override -->
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceParty3" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<!-- redéfinition du service provider cache avec le dao PM comme tiers DAO -->

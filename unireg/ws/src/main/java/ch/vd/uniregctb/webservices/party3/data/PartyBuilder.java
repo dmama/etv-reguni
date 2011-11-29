@@ -14,6 +14,7 @@ import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.party3.data.strategy.CommonHouseholdStrategy;
 import ch.vd.uniregctb.webservices.party3.data.strategy.CorporationStrategy;
 import ch.vd.uniregctb.webservices.party3.data.strategy.DebtorStrategy;
@@ -47,6 +48,10 @@ public class PartyBuilder {
 
 	public static Debtor newDebtor(DebiteurPrestationImposable right, Set<PartyPart> parts, Context context) throws WebServiceException {
 		return debtorStrategy.newFrom(right, parts, context);
+	}
+
+	public static Corporation newCorporation(Entreprise entreprise, Set<PartyPart> parts, Context context) throws WebServiceException {
+		return corporationStrategy.newFrom(entreprise, parts, context);
 	}
 
 	@SuppressWarnings({"unchecked"})
