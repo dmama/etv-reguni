@@ -10,6 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -34,6 +35,13 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		super.onSetUp();
 		final ModificationLogInterceptor modificationLogInterceptor = getBean(ModificationLogInterceptor.class, "modificationLogInterceptor");
 		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, modificationLogInterceptor);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(12345, date(1945, 1, 1), "Chtöpötz", "Madeleine", false);
+			}
+		});
 	}
 
 	@Override
@@ -108,12 +116,37 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testRunFichierAvecUnImmeubleEtContribuableConnu() throws Exception {
+	public void testRunFichierAvecUnImmeubleEtContribuableInconnuAuCivil() throws Exception {
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				addNonHabitant(12345678L, "Madeleine", "Chtöpötz", date(1945, 1, 1), Sexe.FEMININ);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertEquals(1, res.nbLignes);
+		assertEquals(0, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(1, res.erreurs.size());
+
+		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+		assertNotNull(erreur0);
+		assertEquals("132/3129", erreur0.getNoImmeuble());
+		assertEquals("La personne physique est inconnue au contrôle des habitants", erreur0.getDescriptionRaison());
+	}
+
+	@Test
+	public void testRunFichierAvecUnImmeubleEtContribuableConnu() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addHabitant(12345678L, 12345);
 				return null;
 			}
 		});
@@ -167,7 +200,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addNonHabitant(12345678L, "Madeleine", "Chtöpötz", date(1945, 1, 1), Sexe.FEMININ);
+				addHabitant(12345678L, 12345);
 				return null;
 			}
 		});

@@ -432,6 +432,10 @@ public class ImportImmeublesProcessor {
 			rapport.addIgnore(numero, IgnoreType.CTB_ENTREPRISE);
 			return null;
 		}
+		else if (proprietaire instanceof PersonnePhysique && !((PersonnePhysique) proprietaire).isConnuAuCivil()) {
+			rapport.addError(numero, ErreurType.PP_INCONNUE_AU_CIVIL, "Le contribuable n°" + proprietaire.getNumero() + " est inconnu au contrôle des habitants.");
+			return null;
+		}
 		else if (!(proprietaire instanceof PersonnePhysique)) {
 			rapport.addError(numero, ErreurType.BAD_CTB_TYPE, "Le contribuable n°" + proprietaire.getNumero() + " est de type [" + proprietaire.getClass().getSimpleName() + "].");
 			return null;

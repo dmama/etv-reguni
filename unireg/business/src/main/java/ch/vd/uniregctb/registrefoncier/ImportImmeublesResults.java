@@ -15,6 +15,7 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION),
 		CTB_INCONNU("Le contribuable n'existe pas"),
+		PP_INCONNUE_AU_CIVIL("La personne physique est inconnue au contrôle des habitants"),
 		BAD_NUMERO("Le numéro est vide"),
 		BAD_CTB_TYPE("Le type de contribuable est incorrect"),
 		BAD_GENRE_PERSONNE("Le genre de personne est malformé"),
