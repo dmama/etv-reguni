@@ -110,7 +110,6 @@ public interface IdentificationMessagesListManager {
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
 	 *
-	 *
 	 * @param bean
 	 * @param pagination
 	 * @param typeDemande
@@ -125,7 +124,6 @@ public interface IdentificationMessagesListManager {
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
-	 *
 	 *
 	 * @param bean
 	 * @param pagination
@@ -148,15 +146,6 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande typeDemande);
-
-	/**
-	 * Cherche et compte les identifications correspondant à l'etat en cours
-	 *
-	 * @param criterion
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	public int countEnCoursSeul(IdentificationContribuableCriteria criterion);
 
 
 	/**
