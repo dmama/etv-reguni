@@ -5,23 +5,23 @@
 
 
 	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandlerImpl" parent="esbMessageListener" lazy-init="true">
-		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="esbMessageFactory" ref="esbMessageFactory" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="demandeHandler" ref="identCtbService" />
 	</bean>
 
 	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
 			</bean>
 		</property>
-		<property name="messageListener" ref="identCtbMessageHandler"/>
-		<property name="transactionManager" ref="transactionManager"/>
+		<property name="messageListener" ref="identCtbMessageHandler" />
+		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
 	</bean>
 
