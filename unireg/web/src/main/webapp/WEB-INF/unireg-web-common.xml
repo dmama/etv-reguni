@@ -84,8 +84,6 @@
 	</bean>
 
 	<bean id="oidController" class="ch.vd.uniregctb.security.ChooseOIDController">
-		<property name="commandClass" value="ch.vd.uniregctb.security.ChooseOIDView" />
-		<property name="formView" value="security/chooseOID" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 

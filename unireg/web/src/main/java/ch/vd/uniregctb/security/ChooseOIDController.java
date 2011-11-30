@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.security;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,25 +10,28 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CommonSimpleFormController;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 /**
- * Ce contrôleur récupère la liste des offices d'impôts à choix pour un utilisateur.<p> <b>Note:</b> Lorsque l'utilisateur choisit un office d'impôt et valide le formulaire (voir
- * <i>chooseOID.jsp</i>), il est automatiquement redirigé sur la page <i>index.do</i>. Avant d'y parvenir, le filtre <i>IFOSecAuthenticationProcessingFilter</i> est appelé, et celui va lire l'OID
- * choisi par l'utilisateur et renseigner les valeurs qui vont bien dans le profil de sécurité courant. C'est pourquoi ce contrôleur ne fait rien dans le <i>onSubmit</i> : tout est fait par le filtre
- * <i>IFOSecAuthenticationProcessingFilter</i>.
+ * Ce contrôleur gère l'écran de sélection de l'office d'impôt de district (OID). Ce contrôleur est automatiquement appelé par le filtre {@link ChooseOIDProcessingFilter} lorsqu'un utilisateur doit
+ * choisir son OID de travail.
  */
-public class ChooseOIDController extends CommonSimpleFormController {
+@Controller
+public class ChooseOIDController {
 
 	private ServiceSecuriteService serviceSecurite;
 
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		final ChooseOIDView view = (ChooseOIDView) super.formBackingObject(request);
+	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.GET)
+	public String chooseOID(Model mav, HttpSession session) {
 
 		final UniregSecurityDetails details = getProfilSecuriteCourant();
 		if (details != null) {
@@ -37,6 +41,24 @@ public class ChooseOIDController extends CommonSimpleFormController {
 			details.setIfoSecProfil(null);
 		}
 
+		final ChooseOIDView view = new ChooseOIDView();
+		view.setInitialUrl(getInitialUrl(session));
+		view.setOfficesImpot(getOfficesImpot());
+		mav.addAttribute("command", view);
+
+		return "security/chooseOID";
+	}
+
+	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.POST)
+	public String chooseOID(@Valid @ModelAttribute("command") final ChooseOIDView view, HttpSession session) {
+		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		return addParam("redirect:" + view.getInitialUrl(), ChooseOIDProcessingFilter.IFOSEC_OID_REQUEST_KEY + "=" + view.getSelectedOID());
+	}
+
+	/**
+	 * @return les offices d'impôt autorisés pour l'utilisateur courant
+	 */
+	private List<CollectiviteAdministrative> getOfficesImpot() {
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
 		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 		if (list != null && list.size() > 1) {
@@ -49,9 +71,28 @@ public class ChooseOIDController extends CommonSimpleFormController {
 				}
 			});
 		}
-		view.setOfficesImpot(list);
+		return list;
+	}
 
-		return view;
+	/**
+	 * Récupère la destination initiale de l'utilisateur, avant que le filtre n'intercepte l'appel
+	 *
+	 * @param session la session http
+	 * @return l'url de destination
+	 */
+	private static String getInitialUrl(HttpSession session) {
+		final Object e = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		if (e instanceof MultipleOIDFoundException) {
+			final MultipleOIDFoundException exception = (MultipleOIDFoundException) e;
+			return exception.getInitialUrl();
+		}
+		else {
+			return "index.do";
+		}
+	}
+
+	private static String addParam(String baseUrl, String param) {
+		return baseUrl + (baseUrl.contains("?") ? "&" : "?") + param;
 	}
 
 	/**

@@ -1,22 +1,18 @@
 package ch.vd.uniregctb.security;
 
-import java.util.List;
-
 import org.springframework.security.core.AuthenticationException;
-
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
 
 public class MultipleOIDFoundException extends AuthenticationException {
 
-	private static final long serialVersionUID = 7716081770572018516L;
-	private final List<CollectiviteAdministrative> collectivites;
+	private static final long serialVersionUID = -7099048733355638873L;
+	private final String initialUrl;
 
-	public MultipleOIDFoundException(String msg, List<CollectiviteAdministrative> collectivites) {
+	public MultipleOIDFoundException(String msg, String initialUrl) {
 		super(msg);
-		this.collectivites = collectivites;
+		this.initialUrl = initialUrl;
 	}
 
-	public List<CollectiviteAdministrative> getCollectivites() {
-		return collectivites;
+	public String getInitialUrl() {
+		return initialUrl;
 	}
 }

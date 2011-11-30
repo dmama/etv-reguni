@@ -2,6 +2,8 @@ package ch.vd.uniregctb.security;
 
 import java.util.Hashtable;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.securite.model.ProfilOperateur;
 
 public class UniregSecurityDetails extends Hashtable<String, Object> implements IAMDetails, IFOSecDetails {
@@ -55,7 +57,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public void setIfoSecProfil(ProfilOperateur ifosecProfil) {
+	public void setIfoSecProfil(@Nullable ProfilOperateur ifosecProfil) {
 		this.ifoSecProfil = ifosecProfil;
 	}
 
@@ -65,7 +67,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public void setIfoSecOID(Integer ifoSecOID) {
+	public void setIfoSecOID(@Nullable Integer ifoSecOID) {
 		this.ifoSecOID = ifoSecOID;
 	}
 
@@ -75,7 +77,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public void setIfoSecOIDSigle(String ifoSecOIDSigle) {
+	public void setIfoSecOIDSigle(@Nullable String ifoSecOIDSigle) {
 		this.ifoSecOIDSigle = ifoSecOIDSigle;
 	}
 }

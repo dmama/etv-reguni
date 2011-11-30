@@ -7,11 +7,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.URLHelper;
 
 /**
  * Ce filtre permet de récupérer de logger les accès aux page web de l'application (voir SIFISC-3085).
@@ -72,17 +72,7 @@ public class AccessLogProcessingFilter extends GenericFilterBean {
 
 	private static String getUrl(ServletRequest servletRequest) {
 		if (servletRequest instanceof HttpServletRequest) {
-			final HttpServletRequest req = (HttpServletRequest) servletRequest;
-
-			final String sp = req.getServletPath(); // e.g. /tiers/list.do
-			final String url = StringUtils.isBlank(sp) ? req.getRequestURL().toString() : sp;
-			final String queryString = req.getQueryString();
-			if (queryString == null) {
-				return url;
-			}
-			else {
-				return String.format("%s?%s", url, queryString);
-			}
+			return URLHelper.getTargetUrl((HttpServletRequest) servletRequest);
 		}
 		else {
 			return "n/a";

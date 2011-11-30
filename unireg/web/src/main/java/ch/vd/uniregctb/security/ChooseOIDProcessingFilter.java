@@ -16,6 +16,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.URLHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 /**
@@ -58,8 +59,8 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				final String oidStr = request.getParameter(IFOSEC_OID_REQUEST_KEY);
 				if (StringUtils.isBlank(oidStr)) {
 					// plusieurs OIDs => on redirige vers l'écran de choix
-					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do")
-							.onAuthenticationFailure(request, response, new MultipleOIDFoundException("Plusieurs OID trouvés, obligé de choisir", collectivites));
+					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,
+							new MultipleOIDFoundException("Plusieurs OID trouvés, obligé de choisir", URLHelper.getTargetUrl(request)));
 					return;
 				}
 
@@ -85,6 +86,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
 		this.serviceSecurite = serviceSecurite;
 	}

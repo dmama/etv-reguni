@@ -8,15 +8,16 @@
 	
 	<tiles:put name="title" type="String">Veuillez sélectionner un OID de travail</tiles:put>
 	<tiles:put name="body" type="String">
-		<form action="index.do">
-			<p>
-			<select name="<%=ChooseOIDProcessingFilter.IFOSEC_OID_REQUEST_KEY%>">
+		<form:form method="post">
+			<p/>
+			<form:hidden path="initialUrl"/>
+			<form:select path="selectedOID">
 				<c:forEach items="${command.officesImpot}" var="oi">
-					<option value="${oi.noColAdm}">${oi.nomCourt}</option>
+					<form:option value="${oi.noColAdm}"><c:out value="${oi.nomCourt}"/></form:option>
 				</c:forEach>
-			</select>
+			</form:select>
 
-			<input type="submit" value="Choisir" />
-		</form>
+			<input type="submit" value="Choisir"/>
+		</form:form>
 	</tiles:put>
 </tiles:insert>
