@@ -31,7 +31,7 @@
 				<display:column titleKey="label.estimation.fiscale" property="estimationFiscale" class="number" decorator="ch.vd.uniregctb.utils.SwissCurrencyColumnDecorator"/>
 				<display:column titleKey="label.ref.estimation.fiscale" property="referenceEstimationFiscale"/>
 				<display:column style="action">
-					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;" target="_blank"/>
+					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;" target="_blank">&nbsp;</a>
 					<unireg:consulterLog entityNature="Immeuble" entityId="${immeuble.id}"/>
 				</display:column>
 			</display:table>
