@@ -142,6 +142,7 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), params.getDi().getTiers().getNumero(), construitIdArchivageDocument(params), params.getDateAccord());
 	}
 
+	@Override
 	public String construitIdArchivageDocument(ImpressionConfirmationDelaiHelperParams params) {
 
 		final String idDelai = createStringIdDelai(params);

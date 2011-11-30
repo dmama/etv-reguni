@@ -19,6 +19,7 @@ import ch.vd.technical.esb.marshaler.JmsMarshaler;
 @Transactional(rollbackFor = Throwable.class)
 public abstract class TransactionalEsbMessageListener extends AbstractEsbMessageListener {
 
+	@Override
 	public final void onMessage(Message message) {
 
 		Assert.notNull(esbTemplate, "esbSyncTemplate must be set, check for overriding method");

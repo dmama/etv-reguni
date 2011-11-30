@@ -431,6 +431,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		this.natureForFiscal = natureForFiscal;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

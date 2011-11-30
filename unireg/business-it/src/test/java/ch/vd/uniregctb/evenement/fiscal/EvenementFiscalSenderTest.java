@@ -67,6 +67,7 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 	}
 
+	@Override
 	@After
 	public void tearDown() {
 		AuthenticationHelper.popPrincipal();
