@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -10,16 +11,13 @@ import ch.vd.uniregctb.common.Constants;
 
 public class IndexerFormatHelper {
 
-	public static String formatNumeroAVS(String noAVS) {
+	private static Pattern PATTERN= Pattern.compile("[-. \t]");
 
+	public static String formatNumeroAVS(String noAVS) {
 		if (noAVS != null) {
-			String noAVS2 = noAVS.trim();
-			noAVS2 = noAVS2.replaceAll("\\.", "");
-			noAVS2 = noAVS2.replaceAll(" ", "");
-			noAVS2 = noAVS2.replaceAll("-", "");
-			return noAVS2;
+			noAVS = PATTERN.matcher(noAVS).replaceAll("");
 		}
-		return null;
+		return noAVS;
 	}
 
 	/**
