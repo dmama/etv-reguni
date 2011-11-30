@@ -20,8 +20,8 @@
 		<jsp:include page="mouvement.jsp"/>
 		<!-- Fin Mouvement dossier -->
 		<!-- Debut Boutons -->
-		<input type="button" name="retourMvt" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourEdition(${command.contribuable.numero});" />
-		<input type="submit" name="sauverMvt" value="<fmt:message key="label.bouton.sauver" />" onClick="javascript:return Page_SauverMvt(event || window.event, this);" />
+		<input type="button" name="retourMvt" value="<fmt:message key="label.bouton.retour" />" onclick="javascript:Page_RetourEdition(${command.contribuable.numero});" />
+		<input type="submit" name="sauverMvt" value="<fmt:message key="label.bouton.sauver" />" />
 		<!-- Fin Boutons -->
 	</form:form>
 	<script type="text/javascript" language="Javascript1.3">
@@ -43,17 +43,7 @@
 				if ( status)
 					document.location.href='edit-contribuable.do?numero=' + numero ;
 			}
-			 	
 
-		 	function Page_SauverMvt(ev, el) {
-		 		var sauver = true;
-				if ( Modifier.isModified)
-					sauver =confirm(Modifier.messageSaveSubmitConfirmation);
-				if(!sauver)
-					return Event.stop(ev);
-				return true;
-		 	}
-		 			 	
-	</script>	
+	</script>
 	</tiles:put>
 </tiles:insert>
