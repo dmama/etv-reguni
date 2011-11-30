@@ -32,7 +32,7 @@
 				 * Initialisation de l'observeur du flag 'modifier'
 				 */
 				Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
-				Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver cette déclaration d\'impôt ?';
+				Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce mouvement de dossier ?';
 				Modifier.messageOverConfirmation = "Voulez-vous vraiment quitter cette page sans sauver ?";
 			});
 
@@ -44,8 +44,12 @@
 					document.location.href='edit-contribuable.do?numero=' + numero ;
 			}
 			 	
-		 	function Page_SauverMvt(ev, el) {		 		
-				if(!confirm('Voulez-vous vraiment sauver ce mouvement de dossier ?'))
+
+		 	function Page_SauverMvt(ev, el) {
+		 		var sauver = true;
+				if ( Modifier.isModified)
+					sauver =confirm(Modifier.messageSaveSubmitConfirmation);
+				if(!sauver)
 					return Event.stop(ev);
 				return true;
 		 	}
