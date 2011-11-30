@@ -38,7 +38,7 @@
 				<display:column titleKey="label.date.debut" property="dateDebut"/>
 				<display:column titleKey="label.date.fin" property="dateFin"/>
 				<display:column class="action" style="width:38px">
-					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;" target="_blank"/>
+					<a href="<c:out value="${immeuble.lienRF}"/>" class="extlink" title="Lien vers le registre foncier" style="margin-right: 0.5em;" target="_blank">&nbsp;</a>
 					<unireg:consulterLog entityNature="Immeuble" entityId="${immeuble.id}"/>
 				</display:column>
 			</display:table>
