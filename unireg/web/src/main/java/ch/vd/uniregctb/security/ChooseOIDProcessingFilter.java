@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -56,15 +57,13 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				oi = collectivites.get(0);
 			}
 			else {
-				final String oidStr = request.getParameter(IFOSEC_OID_PARAM);
-				if (StringUtils.isBlank(oidStr)) {
+				final Integer oid = getIntegerParam(request, IFOSEC_OID_PARAM);
+				if (oid == null) {
 					// plusieurs OIDs => on redirige vers l'écran de choix
 					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,
 							new MultipleOIDFoundException("Vous avez plusieurs OIDs, merci d'en choisir un.", URLHelper.getTargetUrl(request)));
 					return;
 				}
-
-				final Integer oid = Integer.parseInt(oidStr);
 
 				for (CollectiviteAdministrative ca : collectivites) {
 					if (ca.getNoColAdm() == oid) {
@@ -74,8 +73,11 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				}
 				if (oi == null) {
 					// l'OID choisi (ou prérempli) n'est pas autorisé => on redirige vers l'écran de choix
+					final String targetUrl = URLHelper.getTargetUrl(request);
+					LOGGER.warn(String.format("Tentative de login sur l'OID %d non-autorisé pour l'utilisateur %s %s (%s) !",
+							oid, AuthenticationHelper.getFirstName(), AuthenticationHelper.getLastName(), targetUrl));
 					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,
-							new UnauthorizedOIDException("Vous n'avez pas l'autorisation de vous connecter sur l'OID numéro " + oid + " !", URLHelper.getTargetUrl(request)));
+							new UnauthorizedOIDException("Vous n'avez pas l'autorisation de vous connecter sur l'OID numéro " + oid + " !", targetUrl));
 					return;
 				}
 			}
@@ -87,6 +89,23 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 		}
 
 		filterChain.doFilter(servletRequest, servletResponse);
+	}
+
+	@Nullable
+	private static Integer getIntegerParam(HttpServletRequest request, String paramName) {
+
+		final String val = request.getParameter(paramName);
+		if ("{OID}".equals(val)) {
+			// [SIFISC-1035] l'autre application fiscale n'a pas renseigné l'OID et Fidor n'a pas résolu le paramètre => inutile de chercher plus loin
+			return null;
+		}
+		
+		try {
+			return Integer.parseInt(val);
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
