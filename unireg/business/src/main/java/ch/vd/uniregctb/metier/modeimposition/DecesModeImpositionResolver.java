@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Résolution du nouveau mode d'imposition pour le cas décès.
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  * @author Pavel BLANCO
  *
  */
-public class DecesModeImpositionResolver extends TiersModeImpositionResolver {
+public class DecesModeImpositionResolver extends TerminaisonCoupleModeImpositionResolver {
 
 	final private DivorceModeImpositionResolver resolver;
 
@@ -21,8 +22,8 @@ public class DecesModeImpositionResolver extends TiersModeImpositionResolver {
 	}
 
 	@Override
-	public Imposition resolve(Contribuable survivant, RegDate date, ModeImposition impositionCouple) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable survivant, RegDate date, ModeImposition impositionCouple, TypeAutoriteFiscale futurTypeAutoriteFiscale) throws ModeImpositionResolverException {
 		// la spec dit "comme séparation/divorce"
-		return resolver.resolve(survivant, date, impositionCouple);
+		return resolver.resolve(survivant, date, impositionCouple, futurTypeAutoriteFiscale);
 	}
 }

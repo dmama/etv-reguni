@@ -4,9 +4,6 @@ import org.apache.commons.lang.StringUtils;
 
 public class ModeImpositionResolverException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7241663335622467756L;
 
 	public ModeImpositionResolverException(String message) {

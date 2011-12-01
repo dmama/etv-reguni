@@ -38,8 +38,8 @@ import ch.vd.uniregctb.metier.modeimposition.DivorceModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.FusionMenagesResolver;
 import ch.vd.uniregctb.metier.modeimposition.MariageModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver.Imposition;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
+import ch.vd.uniregctb.metier.modeimposition.TerminaisonCoupleModeImpositionResolver;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -234,10 +234,10 @@ public class MetierServiceImpl implements MetierService {
 
 		RegDate dateEffective = date;
 
-		final ModeImpositionResolver mariageResolver = new MariageModeImpositionResolver(tiersService, numeroEvenement);
-		final Imposition imposition;
+		final MariageModeImpositionResolver mariageResolver = new MariageModeImpositionResolver(tiersService, numeroEvenement);
+		final ModeImpositionResolver.Imposition imposition;
 		try {
-			imposition = mariageResolver.resolve(menageCommun, dateEffective, null);
+			imposition = mariageResolver.resolve(menageCommun, dateEffective);
 		}
 		catch (ModeImpositionResolverException ex) {
 			throw new MetierServiceException(ex.getMessage(), ex);
@@ -984,10 +984,10 @@ public class MetierServiceImpl implements MetierService {
 		final RapportEntreTiers premierRapport = menageChoisi.getPremierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE, principal);
 		final RegDate dateDebut = premierRapport.getDateDebut();
 
-		ModeImpositionResolver fusionResolver = new FusionMenagesResolver(tiersService, menageChoisi, autreMenage);
-		Imposition imposition = null;
+		final FusionMenagesResolver fusionResolver = new FusionMenagesResolver(tiersService, menageChoisi, autreMenage);
+		ModeImpositionResolver.Imposition imposition = null;
 		try {
-			imposition = fusionResolver.resolve(menageChoisi, dateDebut, null);
+			imposition = fusionResolver.resolve(menageChoisi, dateDebut);
 		}
 		catch (ModeImpositionResolverException ex) {
 			throw new MetierServiceException(ex.getMessage(), ex);
@@ -1444,15 +1444,13 @@ public class MetierServiceImpl implements MetierService {
 
 			// S'il existe un for sur le ménage (non indigents)
 			if (forMenage != null) {
-				final ModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
+				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
-						false);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
-							false);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
 				}
 			}
 
@@ -1664,7 +1662,7 @@ public class MetierServiceImpl implements MetierService {
 	 * @return le for créé.
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
-	                                                                        ModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag, Long numeroEvenement,
+	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag, Long numeroEvenement,
 	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
 		try {
@@ -1717,10 +1715,9 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			if (noOfsEtendu != null) {
-				final Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition());
-				return tiersService
-						.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture,
-								changeHabitantFlag);
+				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale);
+				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(),
+				                                           motifOuverture, changeHabitantFlag);
 			}
 			else {
 				return null;
@@ -2266,7 +2263,7 @@ public class MetierServiceImpl implements MetierService {
 
 						Audit.info(numeroEvenement, String.format("Ouverture du for fiscal sur le tiers survivant (%d)", veuf.getNumero()));
 
-						final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
+						final DecesModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
 
 						// d'abord le for fiscal principal
 						final ForFiscalPrincipal ffp =

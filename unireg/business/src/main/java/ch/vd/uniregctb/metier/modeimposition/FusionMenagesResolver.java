@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  * @author Pavel BLANCO
  *
  */
-public class FusionMenagesResolver extends MariageModeImpositionResolver implements ModeImpositionResolver {
+public class FusionMenagesResolver extends MariageModeImpositionResolver {
 
 	private final MenageCommun premierMenage;
 	private final MenageCommun secondMenage;
@@ -26,7 +26,7 @@ public class FusionMenagesResolver extends MariageModeImpositionResolver impleme
 	}
 
 	@Override
-	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition imposition) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable contribuable, RegDate date) throws ModeImpositionResolverException {
 		final ForFiscalPrincipal forFPPrincipal = premierMenage.getForFiscalPrincipalAt(null);
 		final ForFiscalPrincipal forFPConjoint = secondMenage.getForFiscalPrincipalAt(null);
 		

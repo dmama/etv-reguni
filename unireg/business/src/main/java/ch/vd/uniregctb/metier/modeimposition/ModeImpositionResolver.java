@@ -1,24 +1,22 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 
 /**
- * Interface pour la résolution du nouveau mode d'imposition pour un contribuable.
- * 
- * @author Pavel BLANCO
- *
+ * Classe de base pour les resolvers de mode d'imposition
  */
-public interface ModeImpositionResolver {
-	
+public abstract class ModeImpositionResolver {
+
 	public class Imposition {
+
 		private RegDate dateDebut;
 		private ModeImposition modeImposition;
-		
+
 		public Imposition() {
 		}
-		
+
 		public Imposition(RegDate dateDebut, ModeImposition modeImposition) {
 			this.dateDebut = dateDebut;
 			this.modeImposition = modeImposition;
@@ -40,18 +38,14 @@ public interface ModeImpositionResolver {
 			this.modeImposition = modeImposition;
 		}
 	}
-	
-	/**
-	 * Calcule du nouveau mode d'imposition pour le contribuable à la date et en prenant en compte son ancien mode d'imposition.
-	 * 
-	 * @param contribuable le contribuable
-	 * @param date date à partir de laquelle le mode d'imposition sera appliqué
-	 * @param imposition l'ancien mode d'imposition
-	 * @return le nouveau mode d'imposition
-	 * 
-	 * @throws ModeImpositionResolverException
-	 */
-	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition imposition) throws ModeImpositionResolverException;
-	
-}
 
+	private final TiersService tiersService;
+
+	public ModeImpositionResolver(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	protected TiersService getTiersService() {
+		return tiersService;
+	}
+}

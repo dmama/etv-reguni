@@ -20,7 +20,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  * @author Pavel BLANCO
  *
  */
-public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
+public class MariageModeImpositionResolver extends CreationCoupleModeImpositionResolver {
 
 	private final Long numeroEvenement;
 
@@ -31,16 +31,13 @@ public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
 
 	/**
 	 * Calcule le nouveau mode d'imposition lors d'un mariage.
-
 	 * @param contribuable le nouveau MenageCommun
 	 * @param date la date de mariage
-	 * @param imposition ignoré car un nouveau ménage commun ne doit pas avoir un mode d'imposition valide.
-	 * @return le nouveau mode d'imposition
-	 * 
-	 * @see ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.ModeImposition)
+	 *
+	 * @see CreationCoupleModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.Contribuable, ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
-	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition imposition) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable contribuable, RegDate date) throws ModeImpositionResolverException {
 		if (!(contribuable instanceof MenageCommun)) {
 			throw new ModeImpositionResolverException("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()) + " n'est pas un ménage commun");
 		}
