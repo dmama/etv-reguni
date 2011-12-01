@@ -9,7 +9,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  */
 public abstract class ModeImpositionResolver {
 
-	public class Imposition {
+	public static class Imposition {
 
 		private RegDate dateDebut;
 		private ModeImposition modeImposition;
