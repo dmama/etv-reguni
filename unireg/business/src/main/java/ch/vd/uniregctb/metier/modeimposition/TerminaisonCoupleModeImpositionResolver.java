@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -30,6 +28,6 @@ public abstract class TerminaisonCoupleModeImpositionResolver extends ModeImposi
 	 *
 	 * @throws ModeImpositionResolverException en cas de souci
 	 */
-	public abstract Imposition resolve(Contribuable contribuable, RegDate date, @Nullable ModeImposition ancienModeImposition, @Nullable TypeAutoriteFiscale futurTypeAutoriteFiscale) throws ModeImpositionResolverException;
+	public abstract Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition ancienModeImposition, TypeAutoriteFiscale futurTypeAutoriteFiscale) throws ModeImpositionResolverException;
 
 }
