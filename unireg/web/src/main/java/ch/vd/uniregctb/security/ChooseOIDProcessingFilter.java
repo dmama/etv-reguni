@@ -27,7 +27,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 
 	private final static Logger LOGGER = Logger.getLogger(ChooseOIDProcessingFilter.class);
 
-	public static final String IFOSEC_OID_REQUEST_KEY = "_ifosec-oid-key";
+	public static final String IFOSEC_OID_PARAM = "ifosec-oid";
 
 	private ServiceSecuriteService serviceSecurite;
 
@@ -56,11 +56,11 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				oi = collectivites.get(0);
 			}
 			else {
-				final String oidStr = request.getParameter(IFOSEC_OID_REQUEST_KEY);
+				final String oidStr = request.getParameter(IFOSEC_OID_PARAM);
 				if (StringUtils.isBlank(oidStr)) {
 					// plusieurs OIDs => on redirige vers l'écran de choix
 					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,
-							new MultipleOIDFoundException("Plusieurs OID trouvés, obligé de choisir", URLHelper.getTargetUrl(request)));
+							new MultipleOIDFoundException("Vous avez plusieurs OIDs, merci d'en choisir un.", URLHelper.getTargetUrl(request)));
 					return;
 				}
 
@@ -73,7 +73,10 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 					}
 				}
 				if (oi == null) {
-					throw new AuthenticationFailedException("L'OID choisi [" + oid + "] ne fait pas partie des collectivités de l'utilisateur [" + username + ']');
+					// l'OID choisi (ou prérempli) n'est pas autorisé => on redirige vers l'écran de choix
+					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,
+							new UnauthorizedOIDException("Vous n'avez pas l'autorisation de vous connecter sur l'OID numéro " + oid + " !", URLHelper.getTargetUrl(request)));
+					return;
 				}
 			}
 

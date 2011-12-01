@@ -2,6 +2,8 @@ package ch.vd.uniregctb.security;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.UrlEncodedQueryString;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 /**
@@ -50,9 +54,9 @@ public class ChooseOIDController {
 	}
 
 	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.POST)
-	public String chooseOID(@Valid @ModelAttribute("command") final ChooseOIDView view, HttpSession session) {
+	public String chooseOID(@Valid @ModelAttribute("command") final ChooseOIDView view, HttpSession session) throws URISyntaxException {
 		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-		return addParam("redirect:" + view.getInitialUrl(), ChooseOIDProcessingFilter.IFOSEC_OID_REQUEST_KEY + "=" + view.getSelectedOID());
+		return "redirect:" + setParam(view.getInitialUrl(), ChooseOIDProcessingFilter.IFOSEC_OID_PARAM, String.valueOf(view.getSelectedOID()));
 	}
 
 	/**
@@ -84,6 +88,12 @@ public class ChooseOIDController {
 		final Object e = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 		if (e instanceof MultipleOIDFoundException) {
 			final MultipleOIDFoundException exception = (MultipleOIDFoundException) e;
+			Flash.message(exception.getMessage());
+			return exception.getInitialUrl();
+		}
+		else if (e instanceof UnauthorizedOIDException) {
+			final UnauthorizedOIDException exception = (UnauthorizedOIDException) e;
+			Flash.warning(exception.getMessage());
 			return exception.getInitialUrl();
 		}
 		else {
@@ -91,8 +101,21 @@ public class ChooseOIDController {
 		}
 	}
 
-	private static String addParam(String baseUrl, String param) {
-		return baseUrl + (baseUrl.contains("?") ? "&" : "?") + param;
+	/**
+	 * Ajoute ou met-à-jour un paramètre sur une URL.
+	 *
+	 * @param url        une url
+	 * @param paramName  le nom du paramètre
+	 * @param paramValue la valeur du paramètre
+	 * @return l'url avec le paramètre ajouté ou mis-à-jour
+	 * @throws URISyntaxException si l'url d'entrée n'est pas valide
+	 */
+	private static String setParam(String url, String paramName, String paramValue) throws URISyntaxException {
+		URI uri = new URI(url);
+		final UrlEncodedQueryString queryString = UrlEncodedQueryString.parse(uri);
+		queryString.set(paramName, paramValue);
+		uri = queryString.apply(uri);
+		return uri.toString();
 	}
 
 	/**
