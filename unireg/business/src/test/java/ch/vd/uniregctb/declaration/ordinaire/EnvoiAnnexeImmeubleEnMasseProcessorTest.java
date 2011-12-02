@@ -19,8 +19,6 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
@@ -36,20 +34,16 @@ import static junit.framework.Assert.assertNull;
 public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 
 	private EnvoiAnnexeImmeubleEnMasseProcessor processor;
-	private HibernateTemplate hibernateTemplate;
-	private ParametreAppService parametreAppService;
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		final HibernateTemplate hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		final ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
-		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
-		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 
