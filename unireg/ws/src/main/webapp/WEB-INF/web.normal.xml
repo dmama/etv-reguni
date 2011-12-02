@@ -18,7 +18,6 @@
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			/WEB-INF/unireg-ws-*.xml
-			/WEB-INF/unireg-override-ws-*.xml
 		</param-value>
 	</context-param>
 	
