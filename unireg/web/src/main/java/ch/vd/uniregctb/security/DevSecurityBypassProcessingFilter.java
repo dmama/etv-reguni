@@ -37,7 +37,8 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 		if (SecurityContextHolder.getContext().getAuthentication() == null && (SecurityDebugConfig.isIamDebug() || SecurityDebugConfig.isIfoSecDebug())) {
 
-			if (!UniregModeHelper.getEnvironnement().equals("Developpement") && !UniregModeHelper.getEnvironnement().equals("Hudson")) {
+			final String environnement = UniregModeHelper.getEnvironnement();
+			if (!environnement.equals("Developpement") && !environnement.equals("Hudson") && !environnement.equals("Standalone")) {
 				LOGGER.warn("Le bypass des fonctionnalités de sécurité n'est disponible qu'en développement. Aucune fonction bypassée.");
 			}
 			else if (!SecurityDebugConfig.isIamDebug()) {

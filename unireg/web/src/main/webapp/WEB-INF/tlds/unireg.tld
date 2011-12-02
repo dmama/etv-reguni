@@ -333,24 +333,71 @@
 	</tag>
 
 	<tag>
-		<name>devEnv</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagDevEnv</tag-class>
-		<body-content>JSP</body-content>
-		<description>Permet d'afficher du contenu uniquement dans l'environnement de développement</description>
-	</tag>
-
-	<tag>
-		<name>standalone</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagStandalone</tag-class>
-		<body-content>JSP</body-content>
-		<description>Permet d'afficher du contenu uniquement si l'application est en mode standalone</description>
-	</tag>
-
-	<tag>
 		<name>environnement</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagEnvironnement</tag-class>
 		<body-content>JSP</body-content>
 		<description>Nom de l'environnement de déploiement d'après la propriété externe extprop.environnement</description>
+	</tag>
+
+	<tag>
+		<name>ifEnv</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfEnv</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement dans les environnements spécifiés.</description>
+		<attribute>
+			<name>devel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en développement</description>
+		</attribute>
+		<attribute>
+			<name>hudson</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu sous Hudson</description>
+		</attribute>
+		<attribute>
+			<name>integration</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en intégration</description>
+		</attribute>
+		<attribute>
+			<name>integrationPo</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en intégration de post-production</description>
+		</attribute>
+		<attribute>
+			<name>standalone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en mode standalone</description>
+		</attribute>
+		<attribute>
+			<name>validation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en validation</description>
+		</attribute>
+		<attribute>
+			<name>preProduction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en pré-production</description>
+		</attribute>
+		<attribute>
+			<name>production</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en production</description>
+		</attribute>
+		<attribute>
+			<name>postProduction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Affiche le contenu en post-production</description>
+		</attribute>
 	</tag>
 
 	<tag>

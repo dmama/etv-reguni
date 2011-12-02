@@ -226,13 +226,10 @@ function ouvrirAide(url) {
 						<unireg:testMode>
 						<li><fmt:message key="label.action.testing" />
 							<ul>
-								<unireg:devEnv>
+								<unireg:ifEnv devel="true" standalone="true">
 									<li><a href="<c:url value='/admin/tiersImport/list.do'/>"><fmt:message key="title.charger.tiers" /></a></li>
-								</unireg:devEnv>
+								</unireg:ifEnv>
 								<li><a href="<c:url value='/admin/dbpreview.do'/>"><fmt:message key="title.preview.tiers" /></a></li>
-								<%-- (msi, 11.03.2011) je pense que cet écran ne fonctionne plus depuis longtemps
-								<li><a href="<c:url value='/admin/evenementExterne/main.do'/>"><fmt:message key="title.admin.evtExterne" /></a></li>
-								--%>
 							</ul>
 						</li>
 						</unireg:testMode>

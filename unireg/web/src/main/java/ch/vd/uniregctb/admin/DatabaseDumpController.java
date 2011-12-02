@@ -54,7 +54,8 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
-		if (!UniregModeHelper.getEnvironnement().equals("Developpement")) {
+		final String environnement = UniregModeHelper.getEnvironnement();
+		if (!environnement.equals("Developpement") && !environnement.equals("Standalone")) {
 			flashError("Cette fonctionalité n'est disponible qu'en développement !");
 			return new ModelAndView(new RedirectView("tiersImport/list.do"));
 		}
