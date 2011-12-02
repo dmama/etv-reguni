@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -18,7 +19,9 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -195,7 +198,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 					noOfsCommune = forGestion.getNoOfsCommune();
 				}
 
-				final InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, 0, anneePeriode, dateReference,
+				// [SIFISC-3291] Tentative d'estimation du numéro de séquence de la DI envoyée
+				final int noSequence = getNoSequenceAnnexeImmeuble(ctb, pi);
+				final InformationsDocumentAdapter infoFormulaireImmeuble = new InformationsDocumentAdapter(ctb, noSequence, anneePeriode, dateReference,
 						dateReference, dateReference, noOfsCommune, cache.cedi.getId(), Qualification.MANUEL, pi.getCodeSegment(),
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, null);
 
@@ -207,6 +212,27 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 
 		}
+	}
+
+	protected static int getNoSequenceAnnexeImmeuble(Contribuable ctb, DateRange pi) {
+		final List<Declaration> decls = ctb.getDeclarationsForPeriode(pi.getDateFin().year(), true);
+		final int noSequence;
+		if (decls == null || decls.isEmpty()) {
+			noSequence = 1;
+		}
+		else {
+			final Declaration declFinPeriode = ctb.getDeclarationActive(pi.getDateFin());
+			if (declFinPeriode != null) {
+				// il y a déjà une DI valide à la fin de la période considérée... on reprend donc le même numéro!
+				noSequence = ((DeclarationImpotOrdinaire) declFinPeriode).getNumero();
+			}
+			else {
+				// attribution d'un nouveau numéro -> la prochaine fois que l'on générera une DI, c'est ce numéro
+				// qui sera utilisé... On espère juste que c'est bien cette DI qui sera finalement envoyée au contribuable...
+				noSequence = decls.size() + 1;
+			}
+		}
+		return noSequence;
 	}
 
 	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
