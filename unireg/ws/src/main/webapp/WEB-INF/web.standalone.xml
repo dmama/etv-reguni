@@ -46,8 +46,8 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Web-service Tiers v1</web-resource-name>
-			<url-pattern>/tiers</url-pattern>
+			<web-resource-name>Web-service Tiers v2</web-resource-name>
+			<url-pattern>/tiers2</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -58,8 +58,8 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Web-service Tiers v2</web-resource-name>
-			<url-pattern>/tiers2</url-pattern>
+			<web-resource-name>Web-service Party v3</web-resource-name>
+			<url-pattern>/party3</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
