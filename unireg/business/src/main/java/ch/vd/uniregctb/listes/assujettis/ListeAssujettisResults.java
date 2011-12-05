@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -28,6 +29,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	private final List<InfoCtbAssujetti> assujettis = new LinkedList<InfoCtbAssujetti>();
 	private final List<InfoCtbIgnore> ignores = new LinkedList<InfoCtbIgnore>();
 	private int nbCtbAssujettis = 0;
+	private final AssujettissementService assujettissementService;
 
 	public static abstract class InfoCtb<T extends InfoCtb> implements Comparable<T> {
 		public final long noCtb;
@@ -99,11 +101,13 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 	}
 
-	public ListeAssujettisResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, TiersService tiersService) {
+	public ListeAssujettisResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, TiersService tiersService,
+	                              AssujettissementService assujettissementService) {
 		super(dateTraitement, nombreThreads, tiersService);
 		this.anneeFiscale = anneeFiscale;
 		this.avecSourciersPurs = avecSourciersPurs;
 		this.seulementAssujettisFinAnnee = seulementAssujettisFinAnnee;
+		this.assujettissementService = assujettissementService;
 	}
 
 	@Override
@@ -111,7 +115,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 
 		CauseIgnorance causeIgnorance = null;
 
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, anneeFiscale);
+		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, anneeFiscale);
 		if (assujettissements == null || assujettissements.isEmpty()) {
 			causeIgnorance = CauseIgnorance.NON_ASSUJETTI;
 		}

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
@@ -46,11 +47,13 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, diService, 100, transactionManager, serviceCivilCacheWarmer);
+		processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, diService, 100, transactionManager, serviceCivilCacheWarmer,
+				periodeImpositionService);
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
 		serviceLogger.setLevel(Level.FATAL);

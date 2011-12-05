@@ -11,16 +11,22 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 
 public class UNIREG1472 {
 	
 	private EnvoiSommationsDIsProcessor processor;
-		
+
 	@Before
 	public void init () {
-		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null);
+		final AssujettissementService assujettissementService = new AssujettissementServiceImpl();
+		final PeriodeImpositionServiceImpl periodeImpositionService = new PeriodeImpositionServiceImpl();
+		periodeImpositionService.setAssujettissementService(assujettissementService);
+		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService);
 	}
 	
 	@Test

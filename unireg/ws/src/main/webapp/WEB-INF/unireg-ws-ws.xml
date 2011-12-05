@@ -49,6 +49,8 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="threadPool" ref="wsThreadPool" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
@@ -95,6 +97,8 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="threadPool" ref="wsThreadPool" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
@@ -131,6 +135,7 @@
 	<bean id="fiscalServiceBean" class="ch.vd.uniregctb.webservices.interfaces.impl.FiscalWebServiceImpl">		
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />		
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 </beans>

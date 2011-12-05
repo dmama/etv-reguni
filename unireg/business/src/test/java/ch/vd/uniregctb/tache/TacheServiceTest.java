@@ -37,6 +37,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
@@ -126,6 +127,7 @@ public class TacheServiceTest extends BusinessTest {
 	private MetierService metierService;
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO  diDAO;
+	private PeriodeImpositionService periodeImpositionService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -136,6 +138,7 @@ public class TacheServiceTest extends BusinessTest {
 		metierService = getBean(MetierService.class, "metierService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
+		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2880,7 +2883,7 @@ public class TacheServiceTest extends BusinessTest {
 		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		// (précondition) La déclaration d'impôt est optionnelle
-		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);
 		assertNotNull(periodes);
 		assertEquals(1, periodes.size());
 
@@ -2906,7 +2909,7 @@ public class TacheServiceTest extends BusinessTest {
 		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 		// (précondition) La déclaration d'impôt est remplacée par une note à l'administration fiscale de l'autre canton
-		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);
 		assertNotNull(periodes);
 		assertEquals(1, periodes.size());
 
@@ -2931,7 +2934,7 @@ public class TacheServiceTest extends BusinessTest {
 		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 
 		// (précondition) La déclaration d'impôt est envoyée par la confédération, ce n'est pas la responsabilité du canton
-		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);
 		assertNotNull(periodes);
 		assertEquals(1, periodes.size());
 

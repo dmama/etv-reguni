@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -24,6 +25,7 @@ public class MouvementServiceImpl implements MouvementService {
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 	private EditiqueCompositionService editiqueService;
+	private AssujettissementService assujettissementService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -33,6 +35,7 @@ public class MouvementServiceImpl implements MouvementService {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementDossierDAO(MouvementDossierDAO mouvementDossierDAO) {
 		this.mouvementDossierDAO = mouvementDossierDAO;
 	}
@@ -45,8 +48,14 @@ public class MouvementServiceImpl implements MouvementService {
 		this.transactionManager = transactionManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueCompositionService editiqueService) {
 		this.editiqueService = editiqueService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -54,7 +63,8 @@ public class MouvementServiceImpl implements MouvementService {
 	 */
 	@Override
 	public DeterminerMouvementsDossiersEnMasseResults traiteDeterminationMouvements(RegDate dateTraitement, boolean archivesSeulement, StatusManager statusManager)  {
-		final DeterminerMouvementsDossiersEnMasseProcessor processor = new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager);
+		final DeterminerMouvementsDossiersEnMasseProcessor processor =
+				new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService);
 		return processor.run(dateTraitement, archivesSeulement, statusManager);
 	}
 

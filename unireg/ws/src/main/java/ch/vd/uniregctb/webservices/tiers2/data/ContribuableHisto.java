@@ -117,7 +117,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 		}
 
 		if (parts != null && parts.contains(TiersPart.ASSUJETTISSEMENTS)) {
-			initAssujettissements(contribuable, range);
+			initAssujettissements(context, contribuable, range);
 		}
 
 		if (parts != null && parts.contains(TiersPart.PERIODE_IMPOSITION)) {
@@ -125,7 +125,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 		}
 	}
 
-	private void initAssujettissements(ch.vd.uniregctb.tiers.Contribuable contribuable, final Range range)
+	private void initAssujettissements(Context context, ch.vd.uniregctb.tiers.Contribuable contribuable, final Range range)
 			throws BusinessException {
 
 		this.assujettissementsLIC = new ArrayList<Assujettissement>();
@@ -137,7 +137,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 		 */
 		final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
 		try {
-			list = ch.vd.uniregctb.metier.assujettissement.Assujettissement.determine(contribuable, null, true /* collate */);
+			list = context.assujettissementService.determine(contribuable, null, true /* collate */);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);
@@ -173,7 +173,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 
 		final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;
 		try {
-			list = ch.vd.uniregctb.metier.assujettissement.PeriodeImposition.determine(contribuable, range);
+			list = context.periodeImpositionService.determine(contribuable, range);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);

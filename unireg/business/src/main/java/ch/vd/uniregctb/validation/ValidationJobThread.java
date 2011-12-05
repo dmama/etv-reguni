@@ -20,6 +20,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -40,19 +41,21 @@ public class ValidationJobThread extends Thread {
 	private final AdresseService adresseService;
 	private final int premiereAnneeFiscale;
 	private final ValidationService validationService;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	private final BlockingQueue<Long> queue;
 	private final ValidationJobResults results; // accès concurrents sur cette variable !
 
 	public ValidationJobThread(BlockingQueue<Long> queue, ValidationJobResults results, TiersDAO tiersDAO,
 	                           PlatformTransactionManager transactionManager, AdresseService adresseService,
-	                           ParametreAppService parametreService, ValidationService validationService) {
+	                           ParametreAppService parametreService, ValidationService validationService, PeriodeImpositionService periodeImpositionService) {
 		this.queue = queue;
 		this.results = results;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
 		this.adresseService = adresseService;
 		this.validationService = validationService;
+		this.periodeImpositionService = periodeImpositionService;
 
 		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscale();
 	}
@@ -128,7 +131,7 @@ public class ValidationJobThread extends Thread {
 		for (int annee = anneeDebut; annee <= anneeFin; ++annee) {
 			try {
 				// on vérifie les périodes d'imposition
-				final List<PeriodeImposition> imposition = PeriodeImposition.determine(contribuable, annee);
+				final List<PeriodeImposition> imposition = periodeImpositionService.determine(contribuable, annee);
 				if (results.coherencePeriodesImpositionWrtDIs) {
 					checkCoherencePeriodeImpositionAvecDI(contribuable, results, annee, imposition);
 				}

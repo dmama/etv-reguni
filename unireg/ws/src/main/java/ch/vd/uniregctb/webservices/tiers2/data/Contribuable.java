@@ -87,7 +87,7 @@ public abstract class Contribuable extends Tiers {
 			 */
 			final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
 			try {
-				list = ch.vd.uniregctb.metier.assujettissement.Assujettissement.determine(contribuable, null, true);
+				list = context.assujettissementService.determine(contribuable, null, true);
 			}
 			catch (AssujettissementException e) {
 				LOGGER.error(e, e);
@@ -110,7 +110,7 @@ public abstract class Contribuable extends Tiers {
 			if (year >= premierePeriodeFiscale) {
 				final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;
 				try {
-					list = ch.vd.uniregctb.metier.assujettissement.PeriodeImposition.determine(contribuable, year);
+					list = context.periodeImpositionService.determine(contribuable, year);
 				}
 				catch (AssujettissementException e) {
 					LOGGER.error(e, e);

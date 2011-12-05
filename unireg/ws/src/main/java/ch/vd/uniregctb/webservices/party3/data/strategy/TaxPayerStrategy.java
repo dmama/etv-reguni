@@ -41,7 +41,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 
 		if (parts != null && (parts.contains(PartyPart.TAX_LIABILITIES) || parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
-			initTaxLiabilities(to, ctb, parts);
+			initTaxLiabilities(to, ctb, parts, context);
 		}
 
 		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
@@ -88,14 +88,14 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 	}
 
-	private static void initTaxLiabilities(Taxpayer left, ch.vd.uniregctb.tiers.Contribuable right, Set<PartyPart> parts) throws WebServiceException {
+	private static void initTaxLiabilities(Taxpayer left, Contribuable right, Set<PartyPart> parts, Context context) throws WebServiceException {
 		/*
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
 		 * correct avec le collate.
 		 */
 		final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
 		try {
-			list = ch.vd.uniregctb.metier.assujettissement.Assujettissement.determine(right, null, true /* collate */);
+			list = context.assujettissementService.determine(right, null, true /* collate */);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);
@@ -128,7 +128,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;
 		try {
-			list = ch.vd.uniregctb.metier.assujettissement.PeriodeImposition.determine(contribuable, range);
+			list = context.periodeImpositionService.determine(contribuable, range);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e, e);

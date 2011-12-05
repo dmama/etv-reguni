@@ -30,6 +30,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -49,19 +50,18 @@ public class ProduireStatsDIsProcessor {
 	final Logger LOGGER = Logger.getLogger(ProduireStatsDIsProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
-
 	private final ServiceInfrastructureService infraService;
-
 	private final PlatformTransactionManager transactionManager;
-
 	private final DeclarationImpotOrdinaireDAO diDAO;
+	private final AssujettissementService assujettissementService;
 
 	public ProduireStatsDIsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService,
-			PlatformTransactionManager transactionManager, 	DeclarationImpotOrdinaireDAO diDAO) {
+	                                 PlatformTransactionManager transactionManager, DeclarationImpotOrdinaireDAO diDAO, AssujettissementService assujettissementService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.transactionManager = transactionManager;
 		this.diDAO = diDAO;
+		this.assujettissementService = assujettissementService;
 	}
 
 	public StatistiquesDIs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
@@ -179,7 +179,7 @@ public class ProduireStatsDIsProcessor {
 		final int annee = di.getPeriode().getAnnee();
 		List<Assujettissement> assujettissements;
 		try {
-			assujettissements = Assujettissement.determine(contribuable, annee);
+			assujettissements = assujettissementService.determine(contribuable, annee);
 		}
 		catch (AssujettissementException e) {
 			assujettissements = null;

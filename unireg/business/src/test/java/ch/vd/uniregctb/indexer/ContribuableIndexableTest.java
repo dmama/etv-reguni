@@ -49,6 +49,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -142,6 +143,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setTiersDAO(tiersDAO);
 		tiersService.setServicePM(servicePM);
 		tiersService.setValidationService(null);
+		tiersService.setAssujettissementService(new AssujettissementServiceImpl());
 
 		adresseService = new AdresseServiceImpl();
 		adresseService.setServiceInfra(new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService()));

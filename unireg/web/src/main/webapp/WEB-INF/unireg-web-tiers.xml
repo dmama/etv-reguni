@@ -68,6 +68,8 @@
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="adresseTimelineController" class="ch.vd.uniregctb.tiers.timeline.AdresseTimelineController">

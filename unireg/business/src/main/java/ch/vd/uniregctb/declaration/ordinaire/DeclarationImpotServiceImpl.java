@@ -39,7 +39,9 @@ import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -54,46 +56,30 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	// private final Logger LOGGER = Logger.getLogger(DeclarationImpotServiceImpl.class);
 
 	private EvenementFiscalService evenementFiscalService;
-
 	private EditiqueCompositionService editiqueCompositionService;
-
 	private EditiqueService editiqueService;
-
 	private HibernateTemplate hibernateTemplate;
-
 	private PlatformTransactionManager transactionManager;
-
 	private PeriodeFiscaleDAO periodeDAO;
-
 	private TacheDAO tacheDAO;
-
 	private ModeleDocumentDAO modeleDAO;
-
 	private DeclarationImpotOrdinaireDAO diDAO;
-
 	private DelaisService delaisService;
-
 	private ServiceInfrastructureService infraService;
-
 	private AdresseService adresseService;
-
 	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
-
 	private ImpressionSommationDIHelper impressionSommationDIHelper;
-
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-
 	private TiersService tiersService;
-
 	private ParametreAppService parametres;
-
 	private ValidationService validationService;
-
 	private EvenementDeclarationSender evenementDeclarationSender;
+	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
+	private PeriodeImpositionService periodeImpositionService;
+	private AssujettissementService assujettissementService;
 
 	private int tailleLot = 100; // valeur par défaut
 
-	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
 
 	public DeclarationImpotServiceImpl() {
 	}
@@ -102,7 +88,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
-	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender) {
+	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender, PeriodeImpositionService periodeImpositionService,
+	                                   AssujettissementService assujettissementService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -118,6 +105,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.validationService = validationService;
 		this.evenementFiscalService = evenementFiscalService;
 		this.evenementDeclarationSender = evenementDeclarationSender;
+		this.periodeImpositionService = periodeImpositionService;
+		this.assujettissementService = assujettissementService;
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -200,6 +189,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.impressionConfirmationDelaiHelper = impressionConfirmationDelaiHelper;
 	}
 
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -215,7 +212,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-				parametres, tiersService, transactionManager, validationService);
+				parametres, tiersService, transactionManager, validationService, periodeImpositionService);
 		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
 	}
 
@@ -236,7 +233,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
 	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbMax, StatusManager status) throws DeclarationException {
 		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-				this, tailleLot, transactionManager, serviceCivilCacheWarmer);
+				this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService);
 		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
 
@@ -246,7 +243,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
-		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO);
+		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO, assujettissementService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -256,7 +253,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -267,7 +264,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
 			throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
-				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService);
+				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService, periodeImpositionService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -426,7 +423,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
-		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager);
+		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
+				periodeImpositionService);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 	}
 

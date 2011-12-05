@@ -43,15 +43,23 @@ import static org.junit.Assert.assertEquals;
 //		WebScreenshotTransactionalTestExecutionListener.class},
 //		inheritListeners = false)
 @SuppressWarnings({"JavaDoc", "deprecation"})
-public class AssujettissementTest extends MetierTest {
+public class AssujettissementServiceTest extends MetierTest {
+
+	private AssujettissementService service;
+	
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		service = getBean(AssujettissementService.class, "assujettissementService");
+	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000001&print=true&title=${methodName}")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineAucunFor() throws Exception {
 		final Contribuable paul = createContribuableSansFor(10000001L);
-		assertEmpty(Assujettissement.determine(paul, 2008));
-		assertEmpty(Assujettissement.determine(paul, RANGE_2002_2010, true));
+		assertEmpty(service.determine(paul, 2008));
+		assertEmpty(service.determine(paul, RANGE_2002_2010, true));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000002&print=true&title=${methodName}")
@@ -60,12 +68,12 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineUnForSimple() throws Exception {
 
 		final Contribuable paul = createUnForSimple(10000002L);
-		List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+		List<Assujettissement> list = service.determine(paul, 2008);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
 
-		list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+		list = service.determine(paul, RANGE_2002_2010, true);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(2002, 1, 1), date(2010, 12, 31), null, null, list.get(0));
@@ -82,25 +90,25 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2007);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2007);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2007);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2007);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2007));
+			assertEmpty(service.determine(ensemble.getMenage(), 2007));
 		}
 		
 		// 2008
 		{
-			assertEmpty(Assujettissement.determine(ensemble.getPrincipal(), 2008));
-			assertEmpty(Assujettissement.determine(ensemble.getConjoint(), 2008));
+			assertEmpty(service.determine(ensemble.getPrincipal(), 2008));
+			assertEmpty(service.determine(ensemble.getConjoint(), 2008));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), 2008);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), 2008);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
@@ -108,17 +116,17 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
@@ -136,25 +144,25 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2008));
+			assertEmpty(service.determine(ensemble.getMenage(), 2008));
 		}
 
 		// 2009
 		{
-			assertEmpty(Assujettissement.determine(ensemble.getPrincipal(), 2009));
-			assertEmpty(Assujettissement.determine(ensemble.getConjoint(), 2009));
+			assertEmpty(service.determine(ensemble.getPrincipal(), 2009));
+			assertEmpty(service.determine(ensemble.getConjoint(), 2009));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), 2009);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), 2009);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
@@ -162,17 +170,17 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
@@ -192,10 +200,10 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(ensemble.getPrincipal(), 2007));
-			assertEmpty(Assujettissement.determine(ensemble.getConjoint(), 2007));
+			assertEmpty(service.determine(ensemble.getPrincipal(), 2007));
+			assertEmpty(service.determine(ensemble.getConjoint(), 2007));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), 2007);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), 2007);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
@@ -203,32 +211,32 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2008));
+			assertEmpty(service.determine(ensemble.getMenage(), 2008));
 		}
 		
 		// 2002-2010
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
@@ -248,10 +256,10 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(ensemble.getPrincipal(), 2007));
-			assertEmpty(Assujettissement.determine(ensemble.getConjoint(), 2007));
+			assertEmpty(service.determine(ensemble.getPrincipal(), 2007));
+			assertEmpty(service.determine(ensemble.getConjoint(), 2007));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), 2007);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), 2007);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
@@ -259,32 +267,32 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2008));
+			assertEmpty(service.determine(ensemble.getMenage(), 2008));
 		}
 		
 		// 2002-2010
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
-			final List<Assujettissement> assujetMenage = Assujettissement.determine(ensemble.getMenage(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetMenage = service.determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
@@ -306,47 +314,47 @@ public class AssujettissementTest extends MetierTest {
 		
 		// 2007
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2007);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2007);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2007);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2007);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2007));
+			assertEmpty(service.determine(ensemble.getMenage(), 2007));
 		}
 
 		// 2008
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), 2008));
+			assertEmpty(service.determine(ensemble.getMenage(), 2008));
 		}
 
 		// 2002-2010
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetPrincipal = service.determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2002, 1, 1), date(2010, 12, 31), null, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
+			final List<Assujettissement> assujetConjoint = service.determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2002, 1, 1), date(2010, 12, 31), null, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(ensemble.getMenage(), RANGE_2002_2010, true));
+			assertEmpty(service.determine(ensemble.getMenage(), RANGE_2002_2010, true));
 		}
 	}
 
@@ -365,25 +373,25 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le principal et le conjoint doivent être assujettis normalement
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(principal, 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(conjoint, 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(conjoint, 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+			assertEmpty(service.determine(menage, 2008)); // mariage pas encore actif
 		}
 		
 		// 2009 : le principal et le conjoint ne doivent plus être assujettis, mais le ménage doit l'être
 		{
-			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
-			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(service.determine(conjoint, 2009)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
@@ -405,10 +413,10 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 : le ménage doit être assujetti en raison de son immeuble
 		{
-			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(conjoint, 2007)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
@@ -416,17 +424,17 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le ménage ne doit plus être assujetti, et le principal et le conjoint doivent l'être normalement
 		{
-			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujetPrincipal = service.determine(principal, 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
-			final List<Assujettissement> assujetConjoint = Assujettissement.determine(conjoint, 2008);
+			final List<Assujettissement> assujetConjoint = service.determine(conjoint, 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+			assertEmpty(service.determine(menage, 2008)); // mariage plus actif
 		}
 	}	
 
@@ -445,21 +453,21 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le principal doit être assujetti en raison de son immeuble
 		{
-			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujettissements = service.determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
 
-			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+			assertEmpty(service.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(service.determine(menage, 2008)); // mariage pas encore actif
 		}
 
 		// 2009 : le principal ne doit plus être assujetti, mais le ménage doit l'être en raison de son immeuble
 		{
-			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
-			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(service.determine(conjoint, 2009)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
@@ -481,10 +489,10 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 : le ménage doit être assujetti en raison de son immeuble
 		{
-			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(conjoint, 2007)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
@@ -492,13 +500,13 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
 		{
-			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujettissements = service.determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
 
-			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+			assertEmpty(service.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(service.determine(menage, 2008)); // mariage plus actif
 		}
 	}
 
@@ -517,21 +525,21 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le principal doit être assujetti en raison de son immeuble
 		{
-			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujettissements = service.determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
 
-			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+			assertEmpty(service.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(service.determine(menage, 2008)); // mariage pas encore actif
 		}
 
 		// 2009 : le principal ne doit plus être assujetti, mais le ménage doit l'être en raison de son immeuble
 		{
-			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
-			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(service.determine(conjoint, 2009)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
@@ -553,10 +561,10 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 : le ménage doit être assujetti en raison de son immeuble
 		{
-			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(service.determine(conjoint, 2007)); // aucun for vaudois
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			final List<Assujettissement> assujettissements = service.determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsSuisse(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
@@ -564,13 +572,13 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
 		{
-			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			final List<Assujettissement> assujettissements = service.determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
 			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
 
-			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
-			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+			assertEmpty(service.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(service.determine(menage, 2008)); // mariage plus actif
 		}
 	}
 	
@@ -583,7 +591,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -591,12 +599,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			assertEmpty(Assujettissement.determine(paul, 2008));
+			assertEmpty(service.determine(paul, 2008));
 		}
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -612,7 +620,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // un départ-hc au 31 décembre correspond bien à une fin d'assujettissement (cas limite, il est vrai)
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -620,7 +628,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -636,7 +644,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -644,7 +652,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
@@ -652,7 +660,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -669,7 +677,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -677,7 +685,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
@@ -685,7 +693,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -702,7 +710,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -710,7 +718,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (départ puis vente)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// La période d'assujettissement en raison d'un rattachement économique s'étend à toute l'année (art. 8 al. 6 LI).
@@ -719,7 +727,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -736,7 +744,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -744,7 +752,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// fractionnement de l'assujettissement
@@ -754,7 +762,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -762,7 +770,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -781,7 +789,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -789,7 +797,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] pas de fractionnement dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
@@ -798,7 +806,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -806,7 +814,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -824,7 +832,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -832,7 +840,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
@@ -842,7 +850,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -850,7 +858,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierMixteArt137Al2(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -867,7 +875,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -875,7 +883,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// fractionnement de l'assujettissement
@@ -885,7 +893,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -893,7 +901,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -910,12 +918,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(paul, 2007));
+			assertEmpty(service.determine(paul, 2007));
 		}
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -923,7 +931,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -931,7 +939,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -947,7 +955,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
@@ -955,7 +963,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -963,7 +971,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -971,7 +979,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
@@ -988,12 +996,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(paul, 2007));
+			assertEmpty(service.determine(paul, 2007));
 		}
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -1001,7 +1009,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -1009,7 +1017,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -1027,7 +1035,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -1035,7 +1043,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] pas de fractionnement à la date d'arrivée dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
@@ -1044,7 +1052,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -1052,7 +1060,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -1070,7 +1078,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -1078,7 +1086,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
@@ -1088,7 +1096,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -1096,7 +1104,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -1113,7 +1121,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire pendant son séjour en suisse, et non-assujetti hors-Suisse
@@ -1122,7 +1130,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
@@ -1138,7 +1146,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire pendant son séjour en suisse, et non-assujetti hors-Suisse
@@ -1147,7 +1155,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1163,7 +1171,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// ordinaire pendant son séjour en Suisse
@@ -1174,7 +1182,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
@@ -1191,7 +1199,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1199,7 +1207,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
@@ -1207,7 +1215,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1226,7 +1234,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 (hors-canton)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1234,7 +1242,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (hors-canton -> hors-Suisse)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
@@ -1243,7 +1251,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009 (hors-Suisse)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -1251,7 +1259,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(ctb, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1271,7 +1279,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			final List<Assujettissement> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, null, list.get(0));
@@ -1279,7 +1287,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 (départ HS et arrivée HC dans l'année -> pas moyen de connaître la date d'arrivée de HS dans l'autre canton, on prend toute la période restante par défaut)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2007, 1, 1), dateDepart, null, MotifFor.DEPART_HS, list.get(0));
@@ -1288,7 +1296,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
@@ -1306,7 +1314,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 (hors-canton)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1314,7 +1322,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (hors-canton -> hors-Suisse)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
@@ -1323,7 +1331,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009 (hors-Suisse)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -1331,7 +1339,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(ctb, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -1354,7 +1362,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1363,7 +1371,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse jusqu'à la date de la vente de l'immeuble
@@ -1372,13 +1380,13 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertEmpty(list);
 		}
 
 		// 2000-2008
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2000_2008, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsSuisse(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -1395,7 +1403,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			final List<Assujettissement> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1404,7 +1412,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse jusqu'à la date d'arrivée
@@ -1415,7 +1423,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
@@ -1440,7 +1448,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			final List<Assujettissement> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1449,7 +1457,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse jusqu'à la date d'arrivée
@@ -1461,7 +1469,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
@@ -1484,7 +1492,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			final List<Assujettissement> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1493,7 +1501,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-2759] hors-canton toute l'année car son court passage comme vaudois ordinaire ne compte pas (règle des déménagements entre cantons) et
@@ -1503,7 +1511,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-canton toute l'année
@@ -1528,7 +1536,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			final List<Assujettissement> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-canton toute l'année
@@ -1537,7 +1545,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [UNIREG-2759] vaudois ordinaire jusqu'à son départ, puis hors-Suisse.
@@ -1547,7 +1555,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1574,7 +1582,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pure hors-Suisse toute l'année
@@ -1583,7 +1591,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2010
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			final List<Assujettissement> list = service.determine(ctb, 2010);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur hors-Suisse jusqu'à l'arrivee
@@ -1596,7 +1604,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2011
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2011);
+			final List<Assujettissement> list = service.determine(ctb, 2011);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pure hors-canton toute l'année
@@ -1621,7 +1629,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pur VD toute l'année
@@ -1630,7 +1638,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur VD jusqu'à son départ HS
@@ -1643,7 +1651,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2010
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			final List<Assujettissement> list = service.determine(ctb, 2010);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pur VD toute l'année
@@ -1670,7 +1678,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pur HS toute l'année
@@ -1679,7 +1687,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2010
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			final List<Assujettissement> list = service.determine(ctb, 2010);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur HS jusqu'à l'arrivée
@@ -1692,7 +1700,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2011
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2011);
+			final List<Assujettissement> list = service.determine(ctb, 2011);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pur HS toute l'année
@@ -1717,7 +1725,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1726,7 +1734,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse jusqu'à la date d'arrivée
@@ -1737,7 +1745,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
@@ -1746,7 +1754,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2000_2008, true);
+			final List<Assujettissement> list = service.determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertHorsSuisse(date(2000, 1, 1), dateArrivee.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, list.get(0));
@@ -1765,12 +1773,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			assertEmpty(Assujettissement.determine(ctb, 2006));
+			assertEmpty(service.determine(ctb, 2006));
 		}
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
@@ -1778,7 +1786,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
@@ -1801,13 +1809,13 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertEmpty(list);
 		}
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse non-assujetti avant l'arrivée, ordinaire ensuite
@@ -1818,7 +1826,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1827,7 +1835,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2000_2008, true);
+			final List<Assujettissement> list = service.determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
@@ -1853,13 +1861,13 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertEmpty(list);
 		}
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// assujetti comme ordinaire pendant son passage en suisse
@@ -1870,7 +1878,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -1879,7 +1887,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2000_2008, true);
+			final List<Assujettissement> list = service.determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
@@ -1896,7 +1904,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// sourcier pure les deux premiers mois (=> arrondi au mois)
@@ -1907,7 +1915,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -1926,7 +1934,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pure jusqu'à mi-décembre -> l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année
@@ -1935,7 +1943,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
@@ -1943,7 +1951,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -1966,7 +1974,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// passage du rôle source à ordinaire implicite -> assujetti en tant que sourcier sur toute l'année à cause de l'arrondi en fin de mois
@@ -1975,7 +1983,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
@@ -1983,7 +1991,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifFor.INDETERMINE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2000,7 +2008,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2008,7 +2016,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2010, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2024,7 +2032,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2032,7 +2040,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2010, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2051,7 +2059,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2059,7 +2067,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2067,7 +2075,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2075,7 +2083,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2097,7 +2105,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2106,7 +2114,7 @@ public class AssujettissementTest extends MetierTest {
 		// 2007
 		{
 			// passage sourcier pure à sourcier mixte -> fractionnement de l'assujettissement
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// TODO (msi) voir s'il est possible d'exposer le motif d'ouverture du for secondaire (qui est plus précis que celui du for principal)
@@ -2116,7 +2124,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2124,7 +2132,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2141,7 +2149,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2149,7 +2157,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2004, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2176,7 +2184,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2005 (ordinaire)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, list.get(0));
@@ -2184,7 +2192,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006 (passage à la source pure le 16 janvier)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // <--- une seule période (voir commentaire de la méthode)
 			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2192,7 +2200,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2218,7 +2226,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2005
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2005, 1, 1), date(2005, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2226,7 +2234,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006 (passage au rôle ordinaire le 17 décembre)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // <--- une seule période (voir commentaire de la méthode)
 			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2234,7 +2242,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
@@ -2251,7 +2259,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 1999
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 1999);
+			final List<Assujettissement> list = service.determine(paul, 1999);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -2259,7 +2267,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2000 (nomination comme diplomate suisse basé à l'étanger)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2000);
+			final List<Assujettissement> list = service.determine(paul, 2000);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
@@ -2267,7 +2275,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2001 (achat d'un immeuble au 13 juin)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2001);
+			final List<Assujettissement> list = service.determine(paul, 2001);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse.
@@ -2276,7 +2284,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 1999-2010
 		{
-			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_1999_2010, true);
+			List<Assujettissement> list = service.determine(paul, RANGE_1999_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
@@ -2297,7 +2305,7 @@ public class AssujettissementTest extends MetierTest {
 		final RegDate dateVente = date(2009, 3, 24);
 		final Contribuable ctb = createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(10000053L, dateVente);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+		final List<Assujettissement> list = service.determine(ctb, 2009);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertHorsSuisse(date(2009, 1, 1), dateVente, null, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -2313,12 +2321,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(ctb, 2007));
+			assertEmpty(service.determine(ctb, 2007));
 		}
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
@@ -2326,7 +2334,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
@@ -2334,7 +2342,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2010
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2010);
+			final List<Assujettissement> list = service.determine(ctb, 2010);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2010, 1, 1), date(2010, 12, 31), null, null, list.get(0));
@@ -2342,7 +2350,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2011
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2011);
+			final List<Assujettissement> list = service.determine(ctb, 2011);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2011, 1, 1), date(2011, 12, 31), null, null, list.get(0));
@@ -2350,7 +2358,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007-2011
 		{
-			List<Assujettissement> list = Assujettissement.determine(ctb, new DateRangeHelper.Range(date(2007, 1, 1), date(2011, 12, 31)), true);
+			List<Assujettissement> list = service.determine(ctb, new DateRangeHelper.Range(date(2007, 1, 1), date(2011, 12, 31)), true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), date(2011, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
@@ -2374,12 +2382,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(ctb, 2007));
+			assertEmpty(service.determine(ctb, 2007));
 		}
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertHorsSuisse(immeuble1.getDateDebut(), immeuble1.getDateFin(), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -2388,7 +2396,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			assertEmpty(Assujettissement.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -2408,7 +2416,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2416,7 +2424,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertSourcierPur(date(2008, 1, 1), dateAchat.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2426,7 +2434,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
+			final List<Assujettissement> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2443,7 +2451,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
@@ -2451,7 +2459,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (vente de l'immeuble en cours d'année)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -2460,7 +2468,7 @@ public class AssujettissementTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(Assujettissement.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -2474,7 +2482,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
@@ -2482,7 +2490,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (fin d'activité indépendante en cours d'année)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.FIN_EXPLOITATION, list.get(0));
@@ -2491,7 +2499,7 @@ public class AssujettissementTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(Assujettissement.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -2505,7 +2513,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
@@ -2513,7 +2521,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (décès en cours d'année)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, list.get(0));
@@ -2522,7 +2530,7 @@ public class AssujettissementTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(Assujettissement.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -2536,7 +2544,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			final List<Assujettissement> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
@@ -2544,7 +2552,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008 (décès en cours d'année)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			final List<Assujettissement> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, list.get(0));
@@ -2553,7 +2561,7 @@ public class AssujettissementTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(Assujettissement.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -2572,7 +2580,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2002);
+			final List<Assujettissement> list = service.determine(ctb, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertHorsSuisse(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.DEMENAGEMENT_VD, list.get(0));
@@ -2580,7 +2588,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2003 (arrivée au 1er janvier)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2003);
+			final List<Assujettissement> list = service.determine(ctb, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
@@ -2588,7 +2596,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2004
 		{
-			final List<Assujettissement> list = Assujettissement.determine(ctb, 2004);
+			final List<Assujettissement> list = service.determine(ctb, 2004);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2004, 1, 1), date(2004, 12, 31), null, null, list.get(0));
@@ -2621,12 +2629,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002
 		{
-			assertEmpty(Assujettissement.determine(paul, 2002));
+			assertEmpty(service.determine(paul, 2002));
 		}
 
 		// 2003 (arrivée indéterminée)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2634,7 +2642,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2004
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			final List<Assujettissement> list = service.determine(paul, 2004);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2004, 1, 1), date(2004, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2642,7 +2650,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2005 (départ hors-Suisse)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2005, 12, 18), null, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2650,17 +2658,17 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			assertEmpty(Assujettissement.determine(paul, 2006));
+			assertEmpty(service.determine(paul, 2006));
 		}
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(paul, 2007));
+			assertEmpty(service.determine(paul, 2007));
 		}
 
 		// 2008 (arrivée de hors-Suisse + achat immobilier)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2008, 7, 7), date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2668,7 +2676,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2009
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2697,12 +2705,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2000
 		{
-			assertEmpty(Assujettissement.determine(paul, 2000));
+			assertEmpty(service.determine(paul, 2000));
 		}
 
 		// 2001 (arrivée HS)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2001);
+			final List<Assujettissement> list = service.determine(paul, 2001);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2710,7 +2718,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2002);
+			final List<Assujettissement> list = service.determine(paul, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2718,7 +2726,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2003 (fausse arrivée HS + changement mode d'imposition)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2747,12 +2755,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2001
 		{
-			assertEmpty(Assujettissement.determine(paul, 2001));
+			assertEmpty(service.determine(paul, 2001));
 		}
 
 		// 2002 (achat immeuble puis arrivée HC)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2002);
+			final List<Assujettissement> list = service.determine(paul, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2002, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
@@ -2760,7 +2768,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2003
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2003, 1, 1), date(2003, 12, 31), null, null, list.get(0));
@@ -2768,7 +2776,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007 (départ HS)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2007, 1, 1), date(2007, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
@@ -2776,7 +2784,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2008
 		{
-			assertEmpty(Assujettissement.determine(paul, 2008));
+			assertEmpty(service.determine(paul, 2008));
 		}
 	}
 
@@ -2793,12 +2801,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002
 		{
-			assertEmpty(Assujettissement.determine(paul, 2002));
+			assertEmpty(service.determine(paul, 2002));
 		}
 
 		// 2003 (arrivée HS sourcier pure + départ HS sourcier mixte 137 al. 1 + arrivée HS sourcier mixte 137 al. 2)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 27), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2808,7 +2816,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2004
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			final List<Assujettissement> list = service.determine(paul, 2004);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2004, 1, 1), date(2004, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2828,12 +2836,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2002
 		{
-			assertEmpty(Assujettissement.determine(paul, 2002));
+			assertEmpty(service.determine(paul, 2002));
 		}
 
 		// 2003 (achat immeuble)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al1(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2841,7 +2849,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2004 (arrivée hors-canton)
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			final List<Assujettissement> list = service.determine(paul, 2004);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierMixteArt137Al1(date(2004, 1, 1), date(2004, 7, 26), null, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2850,7 +2858,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2005
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2005, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -2876,12 +2884,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2004
 		{
-			assertEmpty(Assujettissement.determine(paul, 2004));
+			assertEmpty(service.determine(paul, 2004));
 		}
 
 		// 2005
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
@@ -2889,7 +2897,7 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2006
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
@@ -2897,12 +2905,12 @@ public class AssujettissementTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(Assujettissement.determine(paul, 2004));
+			assertEmpty(service.determine(paul, 2004));
 		}
 
 		// 2004-2007
 		{
-			final List<Assujettissement> list = Assujettissement.determine(paul);
+			final List<Assujettissement> list = service.determine(paul);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2005, 1, 1), date(2006, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, list.get(0));
@@ -2925,7 +2933,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(paul, date(2005, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel);
 		addForSecondaire(paul, date(2004, 3, 2), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> list = Assujettissement.determine(paul);
+		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
 		assertEquals(3, list.size());
 		assertOrdinaire(date(1995, 11, 2), date(1997, 3, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
@@ -2944,7 +2952,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final Contribuable paul = createSourcierMixteHorsSuisseAvecImmeuble_Invalide();
 
-		final List<Assujettissement> list = Assujettissement.determine(paul);
+		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
 		assertEquals(2, list.size());
 		assertSourcierMixteArt137Al1(date(2004, 5, 6), date(2006, 7, 31), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, list.get(0));
@@ -2971,7 +2979,7 @@ public class AssujettissementTest extends MetierTest {
 
 		addForSecondaire(paul, date(2004, 6, 15), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> list = Assujettissement.determine(paul);
+		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
 		assertEquals(3, list.size());
 		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 30), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
@@ -2996,7 +3004,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2009, 8, 19), MotifFor.ARRIVEE_HS, date(2009, 12, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2009, 12, 14), MotifFor.DEPART_HS, MockPays.EtatsUnis);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(2, list.size());
 		assertSourcierPur(date(2003, 1, 1), date(2009, 8, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
@@ -3015,7 +3023,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
@@ -3040,7 +3048,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 				MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(2010, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
@@ -3057,7 +3065,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(1980, 12, 30), MotifFor.INDETERMINE, MockPays.PaysInconnu);
 		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsSuisse(date(1980, 12, 30), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
 	}
@@ -3074,7 +3082,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
@@ -3091,7 +3099,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
@@ -3108,7 +3116,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
@@ -3125,7 +3133,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
@@ -3141,7 +3149,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
@@ -3157,7 +3165,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
@@ -3173,7 +3181,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
@@ -3189,7 +3197,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
@@ -3207,7 +3215,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3223,7 +3231,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3238,7 +3246,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3253,7 +3261,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3268,7 +3276,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3283,7 +3291,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000032&print=true&title=${methodName}&description=${docDescription}")
@@ -3299,7 +3307,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(2003, 1, 1), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, list.get(0));
@@ -3318,7 +3326,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(2003, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, list.get(0));
@@ -3337,7 +3345,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -3356,7 +3364,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
 
-		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VENTE_IMMOBILIER, list.get(0));
@@ -3375,7 +3383,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2007, 3, 7), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2007, 9, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 11, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
 	}
@@ -3393,7 +3401,7 @@ public class AssujettissementTest extends MetierTest {
 		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
 		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(2, liste.size());
 		assertHorsCanton(date(2004, 1, 1), date(2004, 1, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, liste.get(0));
 		assertSourcierMixteArt137Al2(date(2004, 2, 1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
@@ -3410,7 +3418,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2001, 5, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 26), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
 		addForPrincipal(ctb, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
 
-		assertEmpty(Assujettissement.determine(ctb));
+		assertEmpty(service.determine(ctb));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=36216757&print=true&title=${methodName}&description=${docDescription}")
@@ -3425,7 +3433,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
 	}
@@ -3442,7 +3450,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
 	}
@@ -3460,7 +3468,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForSecondaire(ctb, date(2005, 10, 27), MotifFor.DEBUT_EXPLOITATION, date(2011, 3, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(3, liste.size());
 		assertHorsCanton(date(2005, 1, 1), date(2006, 12, 31), MotifFor.DEBUT_EXPLOITATION, MotifFor.ARRIVEE_HC, liste.get(0));
 		assertOrdinaire(date(2007, 1, 1), date(2007, 12, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, liste.get(1));
@@ -3480,7 +3488,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(1997, 12, 27), MotifFor.ACHAT_IMMOBILIER, date(1997, 12, 27), MotifFor.VENTE_IMMOBILIER, MockCommune.YverdonLesBains.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(1997, 12, 28), MotifFor.ARRIVEE_HS, MockCommune.YverdonLesBains);
 
-		final List<Assujettissement> liste = Assujettissement.determine(ctb);
+		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(3, liste.size());
 		assertOrdinaire(date(1991, 1, 6), date(1997, 12, 26), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, liste.get(0));
 		assertHorsSuisse(date(1997, 12, 27), date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, liste.get(1));
@@ -3495,11 +3503,11 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
-		final List<Assujettissement> listeLausanneSansFor = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertNull(listeLausanneSansFor);
 
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-		final List<Assujettissement> listeLausanneAvecForARenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanneAvecForARenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertNull(listeLausanneAvecForARenens);
 	}
 
@@ -3512,15 +3520,15 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 	}
@@ -3535,19 +3543,19 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsSuisse(date(2000, 9, 4), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsSuisse(date(2005, 6, 24), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 
-		final List<Assujettissement> listeCroyRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeCroyRenens.size());
 		assertHorsSuisse(date(2002, 7, 12), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
@@ -3562,23 +3570,23 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeAubonne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
+		final List<Assujettissement> listeAubonne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
 		assertEquals(1, listeAubonne.size());
 		assertOrdinaire(date(2000, 6, 1), null, MotifFor.ARRIVEE_HS, null, listeAubonne.get(0));
 
-		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 6, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 
-		final List<Assujettissement> listeCroyRenens = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
 		assertEquals(1, listeCroyRenens.size());
 		assertHorsCanton(date(2002, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
@@ -3606,15 +3614,15 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listePrilly = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Prilly.getNoOFSEtendu()));
+		final List<Assujettissement> listePrilly = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Prilly.getNoOFSEtendu()));
 		assertEquals(1, listePrilly.size());
 		assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2005, 2, 18), MotifFor.INDETERMINE, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
 
-		final List<Assujettissement> listeBussigny = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFSEtendu()));
+		final List<Assujettissement> listeBussigny = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFSEtendu()));
 		assertNull(listeBussigny);
 
 		// c'est ici que cela explosait !
-		final List<Assujettissement> listeVevey = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
+		final List<Assujettissement> listeVevey = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
 		assertEquals(1, listeVevey.size());
 		assertSourcierMixteArt137Al2(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
@@ -3634,7 +3642,7 @@ public class AssujettissementTest extends MetierTest {
 		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
 		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = Assujettissement.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
+		final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
 		assertEquals(1, liste.size());
 		assertSourcierMixteArt137Al2(date(2007, 1, 1), null, MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
@@ -3643,7 +3651,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveForPrincipal() throws Exception {
 		final Contribuable ctb = createUnForSimple();
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, RANGE_2000_2008, false);
+		final List<Assujettissement> assujettissements = service.determine(ctb, RANGE_2000_2008, false);
 		for (Assujettissement a : assujettissements) {
 			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
 		}
@@ -3653,7 +3661,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActivePourHCImmeuble() throws Exception {
 		final Contribuable ctb = createHorsCantonAvecImmeuble(date(2006, 3, 12));
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, RANGE_2006_2008, false);
+		final List<Assujettissement> assujettissements = service.determine(ctb, RANGE_2006_2008, false);
 		for (Assujettissement a : assujettissements) {
 			assertCommunesActives(a, Arrays.asList(MockCommune.Aubonne.getNoOFS()));
 		}
@@ -3666,7 +3674,7 @@ public class AssujettissementTest extends MetierTest {
 		addForSecondaire(ctb, date(2007, 4, 12), MotifFor.ACHAT_IMMOBILIER, date(2008, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		for (int annee = 2006 ; annee < 2010 ; ++ annee) {
-			final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, annee);
+			final List<Assujettissement> assujettissements = service.determine(ctb, annee);
 			final List<Integer> communesActives = new ArrayList<Integer>(2);
 			communesActives.add(MockCommune.Lausanne.getNoOFS());
 			if (annee >= 2007 && annee <= 2008) {
@@ -3686,7 +3694,7 @@ public class AssujettissementTest extends MetierTest {
 		addForPrincipal(ctb, date(2006, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Leysin);
 
 		for (int annee = 2005 ; annee <= 2007 ; ++ annee) {
-			final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, annee);
+			final List<Assujettissement> assujettissements = service.determine(ctb, annee);
 			final List<Integer> communeActive = Arrays.asList(annee < 2006 ? MockCommune.Lausanne.getNoOFS() : MockCommune.Leysin.getNoOFS());
 			for (Assujettissement a : assujettissements) {
 				assertCommunesActives(a, communeActive);
@@ -3698,7 +3706,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveDecesDansAnnee() throws Exception {
 		final Contribuable ctb = createDecesVaudoisOrdinaire(date(1990, 4, 21), date(2005, 5, 12));
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, 2005);
+		final List<Assujettissement> assujettissements = service.determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
 			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
 		}
@@ -3708,7 +3716,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveDepartHS() throws Exception {
 		final Contribuable ctb = createDepartHorsSuisse(date(2005, 5, 12));
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, 2005);
+		final List<Assujettissement> assujettissements = service.determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
 			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
 		}
@@ -3718,7 +3726,7 @@ public class AssujettissementTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveDepartHSAvecImmeuble() throws Exception {
 		final Contribuable ctb = createDepartHorsSuisseAvecImmeuble(date(2005, 5, 12));
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, 2005);
+		final List<Assujettissement> assujettissements = service.determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
 			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
 		}

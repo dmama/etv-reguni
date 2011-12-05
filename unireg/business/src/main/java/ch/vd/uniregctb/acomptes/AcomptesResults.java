@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -41,6 +42,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     private final List<InfoContribuableAssujetti> contribuablesAssujettis = new LinkedList<InfoContribuableAssujetti>();
 
 	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<InfoContribuableIgnore>();
+	private AssujettissementService assujettissementService;
 
 	public static class InfoContribuableAssujetti {
         private final long numeroCtb;
@@ -138,9 +140,10 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		}
 	}
 
-    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService) {
+    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService, AssujettissementService assujettissementService) {
         super(dateTraitement, nombreThreads, tiersService);
         this.anneeFiscale = anneeFiscale;
+	    this.assujettissementService = assujettissementService;
     }
 
     /**
@@ -248,7 +251,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 				&& 	(forGestion.getSousjacent().getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE)) {
 			noOfsForGestion = forGestion.getNoOfsCommune();
 			try {
-				final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, anneeFiscale);
+				final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, anneeFiscale);
 				if (assujettissements != null) {
 					final Assujettissement assujettissement = assujettissements.get(assujettissements.size() - 1);
 					if ((assujettissement instanceof VaudoisOrdinaire) || (assujettissement instanceof Indigent)) {

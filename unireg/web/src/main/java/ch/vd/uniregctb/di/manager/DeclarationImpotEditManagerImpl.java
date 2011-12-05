@@ -65,6 +65,7 @@ import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -102,36 +103,22 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotEditManagerImpl.class);
 
 	private TiersGeneralManager tiersGeneralManager;
-
 	private DeclarationImpotOrdinaireDAO diDAO;
-
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
-
 	private DeclarationImpotService diService;
-
 	private TiersDAO tiersDAO;
-
 	private TiersService tiersService;
-
 	private EvenementFiscalService evenementFiscalService;
-
 	private ModeleDocumentDAO modeleDocumentDAO;
-
 	private TacheDAO tacheDAO;
-
 	private EditiqueCompositionService editiqueCompositionService;
-
 	private MessageSource messageSource;
-
 	private DelaisService delaisService;
-
 	private DelaiDeclarationDAO delaiDeclarationDAO;
-
 	private ValidationService validationService;
-
 	private ParametreAppService parametres;
-
 	private BamMessageSender bamMessageSender;
+	private PeriodeImpositionService periodeImpositionService;
 
 	/**
 	 * Contrôle que la DI existe
@@ -340,7 +327,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// on calcul les périodes d'imposition du contribuable
 		final List<PeriodeImposition> periodes;
 		try {
-			periodes = PeriodeImposition.determine(contribuable, annee);
+			periodes = periodeImpositionService.determine(contribuable, annee);
 		}
 		catch (AssujettissementException e) {
 			throw new ValidationException(contribuable, "Impossible de calculer l'assujettissement pour la raison suivante : " + e.getMessage());
@@ -697,7 +684,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 			final TypeContribuable typeContribuable;
 			final boolean diLibre;
-			final List<PeriodeImposition> periodesImposition = PeriodeImposition.determine(ctb, dateDebut.year());
+			final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb, dateDebut.year());
 			if (periodesImposition != null) {
 				final PeriodeImposition dernierePeriode = periodesImposition.get(periodesImposition.size() - 1);
 				typeContribuable = dernierePeriode.getTypeContribuable();
@@ -1178,6 +1165,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBamMessageSender(BamMessageSender bamMessageSender) {
 		this.bamMessageSender = bamMessageSender;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	@Override

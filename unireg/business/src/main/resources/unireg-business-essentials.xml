@@ -62,6 +62,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="validationService" ref="validationService" />
 		<property name="validationInterceptor" ref="validationInterceptor" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">
@@ -134,6 +135,8 @@
 		<property name="validationService" ref="validationService" />
 		<property name="evenementDeclarationSender" ref="evenementDeclarationSender" />
 		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />
@@ -184,8 +187,12 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
-	<bean id="assujettissementSpringInitializer" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementSpringInitializer">
+	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
 		<property name="validationService" ref="validationService" />
+	</bean>
+
+	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
@@ -194,7 +201,10 @@
 		<property name="validationService" ref="validationService" />
 	</bean>
 
-	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator" />
+	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator">
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator" />
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
 	<bean id="autreCommunauteValidator" class="ch.vd.uniregctb.validation.tiers.AutreCommunauteValidator" parent="contribuableValidator" />

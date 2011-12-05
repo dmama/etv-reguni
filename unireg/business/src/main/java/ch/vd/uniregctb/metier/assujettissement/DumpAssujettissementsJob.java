@@ -37,6 +37,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
+	private AssujettissementService assujettissementService;
 
 	public DumpAssujettissementsJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -122,7 +123,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 		final List<Assujettissement> list;
 		try {
-			list = Assujettissement.determine(ctb, null, true);
+			list = assujettissementService.determine(ctb, null, true);
 		}
 		catch (Exception e) {
 			return "assujettissement exception:" + e.getMessage();
@@ -160,6 +161,10 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	@Override

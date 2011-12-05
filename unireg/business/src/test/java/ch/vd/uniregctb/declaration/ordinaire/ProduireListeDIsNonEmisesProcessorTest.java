@@ -16,6 +16,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -42,8 +43,10 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
-		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer, validationService);
+		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer, validationService,
+				periodeImpositionService);
 	}
 
 	@Test

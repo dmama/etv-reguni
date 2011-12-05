@@ -6,6 +6,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -14,8 +15,9 @@ public class ExtractionDonneesRptRevenuSourcePureResults extends ExtractionDonne
 
 	private static final String ASSUJETTI_ORDINAIRE = "Assujetti au rôle ordinaire";
 
-	public ExtractionDonneesRptRevenuSourcePureResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
-		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+	public ExtractionDonneesRptRevenuSourcePureResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
+	                                                   AssujettissementService assujettissementService) {
+		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService, assujettissementService);
 	}
 
 	@Override

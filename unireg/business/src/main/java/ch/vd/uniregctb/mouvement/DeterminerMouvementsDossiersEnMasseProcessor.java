@@ -26,6 +26,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -49,14 +50,16 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 	private final MouvementDossierDAO mouvementDossierDAO;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
+	private final AssujettissementService assujettissementService;
 
 	public DeterminerMouvementsDossiersEnMasseProcessor(TiersService tiersService, TiersDAO tiersDAO, MouvementDossierDAO mouvementDossierDAO, HibernateTemplate hibernateTemplate,
-	                                                   PlatformTransactionManager transactionManager) {
+	                                                    PlatformTransactionManager transactionManager, AssujettissementService assujettissementService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.mouvementDossierDAO = mouvementDossierDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
+		this.assujettissementService = assujettissementService;
 	}
 
 	protected static class RangesUtiles {
@@ -173,7 +176,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 		rapport.addContribuableInspecte();
 
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, rangesUtiles.rangeGlobal, true);
+		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rangesUtiles.rangeGlobal, true);
 
 		// les sourciers purs n'ont pas de dossier ni d'OID de gestion (seuls les contribuables au rôle en ont un)
 		// donc pas de mouvement à programmer pour eux...

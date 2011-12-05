@@ -43,6 +43,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionFors;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
@@ -84,23 +85,18 @@ public class ProduireRolesProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
-
 	private final ServiceInfrastructureService infraService;
-
 	private final TiersDAO tiersDAO;
-
 	private final PlatformTransactionManager transactionManager;
-	
 	private final AdresseService adresseService;
-	
 	private final TiersService tiersService;
-
 	private final ServiceCivilService serviceCivilService;
-
 	private final ValidationService validationService;
+	private final AssujettissementService assujettissementService;
 
 	public ProduireRolesProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersDAO tiersDAO, PlatformTransactionManager transactionManager,
-	                                     AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivilService, ValidationService validationService) {
+	                              AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivilService, ValidationService validationService,
+	                              AssujettissementService assujettissementService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersDAO = tiersDAO;
@@ -109,6 +105,7 @@ public class ProduireRolesProcessor {
 		this.tiersService = tiersService;
 		this.serviceCivilService = serviceCivilService;
 		this.validationService = validationService;
+		this.assujettissementService = assujettissementService;
 	}
 
 	private static interface GroupementCommunes {
@@ -555,7 +552,7 @@ public class ProduireRolesProcessor {
 	 */
 	private void processAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapport, GroupementCommunes groupement) throws TraitementException {
 
-		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport);
+		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport, assujettissementService);
 
 		// traite les assujettissements
 		final List<Assujettissement> assujettissements = assujettissementContainer.getAssujettissementAnneePeriode();
@@ -644,15 +641,17 @@ public class ProduireRolesProcessor {
 		private final int anneePeriode;
 		private final Contribuable ctb;
 		private final ProduireRolesResults rapport;
+		private final AssujettissementService assujettissementService;
 
 		private final DecompositionForsAnneeComplete forsAnneePeriode;
 		private final List<Assujettissement> assujettissementAnneePeriode;
 		private List<Assujettissement> assujettissementAnneePrecedente;
 
-		private AssujettissementContainer(Contribuable ctb, int anneePeriode, ProduireRolesResults rapport) throws TraitementException {
+		private AssujettissementContainer(Contribuable ctb, int anneePeriode, ProduireRolesResults rapport, AssujettissementService assujettissementService) throws TraitementException {
 			this.anneePeriode = anneePeriode;
 			this.ctb = ctb;
 			this.rapport = rapport;
+			this.assujettissementService = assujettissementService;
 			this.forsAnneePeriode = new DecompositionForsAnneeComplete(ctb, anneePeriode);
 			this.assujettissementAnneePeriode = determineAssujettissement(forsAnneePeriode, ctb, rapport);
 		}
@@ -677,9 +676,9 @@ public class ProduireRolesProcessor {
 			return forsAnneePeriode;
 		}
 
-		private static List<Assujettissement> determineAssujettissement(DecompositionForsAnneeComplete fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
+		private List<Assujettissement> determineAssujettissement(DecompositionForsAnneeComplete fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
 			try {
-				return Assujettissement.determine(fors.contribuable, fors, false);
+				return assujettissementService.determine(fors.contribuable, fors, false);
 			}
 			catch (AssujettissementException e) {
 				rapport.addErrorErreurAssujettissement(ctb, e.getMessage());
@@ -890,7 +889,7 @@ public class ProduireRolesProcessor {
 		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}
 
-	private static TypeAssujettissement getTypeAssujettissementPourCommunes(Set<Integer> communes, Assujettissement assujettissement, int anneePeriode) throws AssujettissementException {
+	private TypeAssujettissement getTypeAssujettissementPourCommunes(Set<Integer> communes, Assujettissement assujettissement, int anneePeriode) throws AssujettissementException {
 
 		// l'assujettissement est-il actif sur au moins une commune du groupement ?
 		boolean communeActive = false;
@@ -913,7 +912,7 @@ public class ProduireRolesProcessor {
 				// ok, l'assujettissement global est poursuivi dans la PF suivante, mais peut-être pas pour la commune considérée
 				// -> il faut le re-calculer !
 
-				final List<Assujettissement> assujettissementsCommune = Assujettissement.determinePourCommunes(assujettissement.getContribuable(), communes);
+				final List<Assujettissement> assujettissementsCommune = assujettissementService.determinePourCommunes(assujettissement.getContribuable(), communes);
 				final Assujettissement assujettissementDebutAnneeSuivante = DateRangeHelper.rangeAt(assujettissementsCommune, RegDate.get(anneePeriode + 1, 1, 1));
 				if (assujettissementDebutAnneeSuivante == null) {
 					typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;

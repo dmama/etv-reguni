@@ -19,6 +19,7 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
@@ -44,6 +45,7 @@ public class TiersAdresseValidator implements Validator {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private ServiceInfrastructureService serviceInfra;
+	private AssujettissementService assujettissementService;
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
@@ -55,6 +57,10 @@ public class TiersAdresseValidator implements Validator {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -267,7 +273,7 @@ public class TiersAdresseValidator implements Validator {
 				final Contribuable ctb = (Contribuable) tiers;
 				final boolean isHabitant = isHabitant(ctb);
 				final Contribuable assujettissable = getContribuableAssujettissable(ctb);
-				final List<Assujettissement> assujettissement = Assujettissement.determine(assujettissable);
+				final List<Assujettissement> assujettissement = assujettissementService.determine(assujettissable);
 				final Assujettissement assujettissementCourant = assujettissement != null ? DateRangeHelper.rangeAt(assujettissement, RegDate.get()) : null;
 				if (assujettissementCourant == null) {
 					// non-assujetti

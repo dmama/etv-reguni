@@ -19,6 +19,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -35,6 +36,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 
 	private TiersService tiersService;
 	private GlobalTiersSearcher tiersSearcher;
+	private AssujettissementService assujettissementService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -137,7 +139,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 						List<Assujettissement> assujettissement = null;
 						// On recherche un assujetissement du ménage sur la période
 						try {
-							assujettissement = Assujettissement.determine(menage, periode);
+							assujettissement = assujettissementService.determine(menage, periode);
 						}
 						catch (AssujettissementException e1) {
 							LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + periode + ' '
@@ -149,7 +151,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 							for (int i = parameters.getAnnee(); i >= contribuable.getDateDebutActivite().year(); i--) {
 								periode = i;
 								try {
-									assujettissement = Assujettissement.determine(menage, periode);
+									assujettissement = assujettissementService.determine(menage, periode);
 								}
 								catch (AssujettissementException e) {
 									LOGGER.error("Exception dans la recherche d'assujettissement du ménage: période : " + i + ' '
@@ -202,5 +204,10 @@ public class FiscalWebServiceImpl implements Fiscal {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 }

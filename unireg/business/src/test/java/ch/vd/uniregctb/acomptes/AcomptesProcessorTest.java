@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -58,9 +59,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final TiersService tiersService = getBean(TiersServiceImpl.class, "tiersService");
 		final TiersDAO tiersDAO = getBean(TiersDAOImpl.class, "tiersDAO");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO);
+		processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
 	}
 
 	@Test

@@ -36,7 +36,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -78,6 +80,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	private Long idCedi;
 	private Long idOidLausanne;
 	private Long idAci;
+	private PeriodeImpositionService periodeImpositionService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -98,6 +101,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		validationService = getBean(ValidationService.class, "validationService");
 		final EvenementDeclarationSender evenementDeclarationSender = new MockEvenementDeclarationSender();
+		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -105,8 +110,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 * création du service à la main de manière à pouvoir appeler les méthodes protégées (= en passant par Spring on se prend un proxy
 		 * et seul l'interface publique est accessible)
 		 */
-		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService,
-				infraService, tiersService, impressionDIHelper, transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender);
+		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIHelper,
+				transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService, assujettissementService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du service
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
@@ -200,7 +205,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 			DeterminationDIsAEmettreProcessor processor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-					parametres, tiersService, transactionManager, validationService);
+					parametres, tiersService, transactionManager, validationService, periodeImpositionService);
 
 			// Lance et interrompt l'envoi en masse après 2 contribuables (message de démarrage + message d'envoi de la DI d'eric)
 			InterruptingStatusManager status = new InterruptingStatusManager(2);

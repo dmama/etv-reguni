@@ -25,6 +25,7 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.Declaratio
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -53,6 +54,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final ParametreAppService parametres;
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ValidationService validationService;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
@@ -60,9 +62,9 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private ListeDIsNonEmises rapport;
 
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
-			ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
-			DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-			ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService) {
+	                                          ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
+	                                          DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
+	                                          ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService, PeriodeImpositionService periodeImpositionService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.modeleDocumentDAO = modeleDocumentDAO;
@@ -74,6 +76,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, StatusManager s) throws DeclarationException {
@@ -81,7 +84,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres, serviceCivilCacheWarmer);
-		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService);
+		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
+				periodeImpositionService);
 
 		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement);
 

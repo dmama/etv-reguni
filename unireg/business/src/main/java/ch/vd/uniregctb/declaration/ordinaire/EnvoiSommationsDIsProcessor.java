@@ -30,9 +30,11 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -56,6 +58,8 @@ public class EnvoiSommationsDIsProcessor  {
 	private final DeclarationImpotService diService;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
+	private final AssujettissementService assujettissementService;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	public EnvoiSommationsDIsProcessor(
 			HibernateTemplate hibernateTemplate,
@@ -63,14 +67,16 @@ public class EnvoiSommationsDIsProcessor  {
 			DelaisService delaisService,
 			DeclarationImpotService diService,
 			TiersService tiersService,
-			PlatformTransactionManager transactionManager
-	) {
+			PlatformTransactionManager transactionManager,
+			AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.declarationImpotOrdinaireDAO = declarationImpotOrdinaireDAO;
 		this.delaisService = delaisService;
 		this.diService = diService;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
+		this.assujettissementService = assujettissementService;
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	protected boolean isSourcierPur(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
@@ -177,7 +183,7 @@ public class EnvoiSommationsDIsProcessor  {
 			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
 			if (finDelai.isBefore(dateTraitement)) {
 				try {
-					final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
+					final List<Assujettissement> assujettissements = assujettissementService.determine((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
 					if (assujettissements == null || assujettissements.isEmpty()) {
 						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
 						                                 di.getId(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
@@ -288,7 +294,7 @@ public class EnvoiSommationsDIsProcessor  {
 		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
 		boolean optionnel = true;
 		for (Assujettissement a : assujettissements) {
-			final PeriodeImposition periodeImposition = PeriodeImposition.determinePeriodeImposition(fors, a);
+			final PeriodeImposition periodeImposition = periodeImpositionService.determinePeriodeImposition(fors, a);
 			//Ajout du test afin de detecter les periodes d'imposition null
 			//exemple: contribuable avec 2 types d'assujettissements sur la même période, sourcier et ensuite à l'ordinaire
 			//la méthode doit prendre en compte les assujettissements autre que le type sourcier

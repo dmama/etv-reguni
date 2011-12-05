@@ -15,10 +15,12 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
@@ -35,16 +37,21 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public abstract class ExtractionDonneesRptPeriodeImpositionResults extends ExtractionDonneesRptResults {
 
 	private static final String NON_ASSUJETTI_ROLE_ORDINAIRE = "Non-assujetti au rôle ordinaire";
+	private final AssujettissementService assujettissementService;
+	private final PeriodeImpositionService periodeImpositionService;
 
-	public ExtractionDonneesRptPeriodeImpositionResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
+	public ExtractionDonneesRptPeriodeImpositionResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
+	                                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService) {
 		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+		this.assujettissementService = assujettissementService;
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	@Override
 	protected List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
 
 		final Contribuable ctb = decomposition.contribuable;
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, decomposition.annee);
+		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, decomposition.annee);
 		if (assujettissements == null || assujettissements.isEmpty()) {
 			throw new ContribuableIgnoreException(NON_ASSUJETTI);
 		}
@@ -53,7 +60,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 		final Map<PeriodeImposition, List<Assujettissement>> mappingNonRegroupe = new HashMap<PeriodeImposition, List<Assujettissement>>(assujettissements.size());
 		final List<PeriodeImposition> periodesBrutes = new ArrayList<PeriodeImposition>();
 		for (Assujettissement a : assujettissements) {
-			final PeriodeImposition periode = PeriodeImposition.determinePeriodeImposition(decomposition, a);
+			final PeriodeImposition periode = periodeImpositionService.determinePeriodeImposition(decomposition, a);
 			if (periode != null) {
 				periodesBrutes.add(periode);
 				mappingNonRegroupe.put(periode, Arrays.asList(a));

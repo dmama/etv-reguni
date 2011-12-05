@@ -12,6 +12,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -56,4 +58,8 @@ public class Context {
 	public boolean useJdbc;
 
 	public ServicePersonneMoraleService servicePM;
+
+	public AssujettissementService assujettissementService;
+
+	public PeriodeImpositionService periodeImpositionService;
 }

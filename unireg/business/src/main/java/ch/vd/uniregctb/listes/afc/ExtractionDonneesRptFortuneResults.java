@@ -5,7 +5,9 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -22,8 +24,9 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 	private static final String ASSUJETTI_SANS_FOR_VD_31_12 = "Assujetti sans for vaudois au 31 décembre";
 	private static final String NON_ASSUJETTI_31_12 = "Non-assujetti au rôle ordinaire au 31 décembre";
 
-	public ExtractionDonneesRptFortuneResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
-		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+	public ExtractionDonneesRptFortuneResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
+	                                          AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService) {
+		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService);
 		this.finAnnee = RegDate.get(periodeFiscale, 12, 31);
 	}
 

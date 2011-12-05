@@ -17,6 +17,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -25,25 +26,24 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 	private final Logger LOGGER = Logger.getLogger(AcomptesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
-
 	private final TiersService tiersService;
-
 	private final PlatformTransactionManager transactionManager;
-
 	private final TiersDAO tiersDAO;
-
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private final AssujettissementService assujettissementService;
 
 	public AcomptesProcessor(HibernateTemplate hibernateTemplate,
 	                         TiersService tiersService,
 	                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                         PlatformTransactionManager transactionManager,
-	                         TiersDAO tiersDAO) {
+	                         TiersDAO tiersDAO,
+	                         AssujettissementService assujettissementService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -58,13 +58,13 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 
 			@Override
 			public AcomptesResults createResults(RegDate dateTraitement) {
-				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService);
+				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService, assujettissementService);
 			}
 
 			@Override
 			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilCacheWarmer, tiersService,
-						status, compteur, transactionManager, tiersDAO, hibernateTemplate);
+						status, compteur, transactionManager, tiersDAO, hibernateTemplate, assujettissementService);
 			}
 
 			@Override

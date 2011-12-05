@@ -32,6 +32,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -46,19 +47,13 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 
 	private final TiersService tiersService;
-
 	private final HibernateTemplate hibernateTemplate;
-
 	private final PeriodeFiscaleDAO periodeDAO;
-
 	private final ModeleDocumentDAO modeleDAO;
-
 	private final DeclarationImpotService diService;
-
 	private final PlatformTransactionManager transactionManager;
-
-
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	private final int tailleLot;
 
@@ -90,7 +85,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	public EnvoiAnnexeImmeubleEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                           PeriodeFiscaleDAO periodeDAO, DeclarationImpotService diService, int tailleLot,
 	                                           PlatformTransactionManager transactionManager,
-	                                           ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	                                           ServiceCivilCacheWarmer serviceCivilCacheWarmer, PeriodeImpositionService periodeImpositionService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -99,6 +94,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		this.diService = diService;
 		this.transactionManager = transactionManager;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.periodeImpositionService = periodeImpositionService;
 		Assert.isTrue(tailleLot > 0);
 	}
 
@@ -250,7 +246,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	protected PeriodeImposition getPeriodeImpositionEnFinDePeriodeFiscale(Contribuable ctb, int periode) {
 		List<PeriodeImposition> list = null;
 		try {
-			list = PeriodeImposition.determine(ctb, periode);
+			list = periodeImpositionService.determine(ctb, periode);
 		}
 		catch (AssujettissementException e) {
 			rapport.addErrorException(ctb, e);

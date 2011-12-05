@@ -6,20 +6,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class AcomptesServiceImpl implements AcomptesService {
 
 	private TiersService tiersService;
-
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-
 	private HibernateTemplate hibernateTemplate;
-
 	private PlatformTransactionManager transactionManager;
-
 	private TiersDAO tiersDAO;
+	private AssujettissementService assujettissementService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
@@ -46,9 +44,14 @@ public class AcomptesServiceImpl implements AcomptesService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
 	@Override
 	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO);
+		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
 		return processor.run(dateTraitement, nbThreads, annee, statusManager);
 	}
 }

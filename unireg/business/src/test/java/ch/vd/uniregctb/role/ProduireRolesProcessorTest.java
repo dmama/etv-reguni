@@ -22,6 +22,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -74,9 +75,11 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final ServiceCivilService serviceCivilService = getBean(ServiceCivilService.class, "serviceCivilService");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService);
+		processor = new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService,
+				assujettissementService);
 	}
 
 	@Test

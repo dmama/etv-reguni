@@ -27,6 +27,16 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings({"JavaDoc"})
 public class PeriodeImpositionTest extends MetierTest {
 
+	private PeriodeImpositionServiceImpl service;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		AssujettissementService as = getBean(AssujettissementService.class, "assujettissementService");
+		service = new PeriodeImpositionServiceImpl();
+		service.setAssujettissementService(as);
+	}
+
 	/**
 	 * [UNIREG-1327] Vérifie que la période d'imposition d'un HS qui vend son immeuble ne s'étend pas au delà de la date de vente.
 	 * [UNIREG-1742] Vérifie que la dernière déclaration qui découle de la vente de l'immeuble n'est pas optionnelle.
@@ -41,7 +51,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -50,7 +60,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse jusqu'à la date de la vente de l'immeuble
@@ -59,13 +69,13 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertEmpty(list);
 		}
 
 		// 2000-2008
 		{
-			List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(8, list.size());
 			assertPeriodeImposition(dateAchat, date(2000, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0)); // [UNIREG-1742] la DI est optionnelle dès la première année
@@ -93,12 +103,12 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			assertEmpty(PeriodeImposition.determine(ctb, 2007));
+			assertEmpty(service.determine(ctb, 2007));
 		}
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertPeriodeImposition(immeuble1.getDateDebut(), immeuble1.getDateFin(), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0)); // pas optionnelle car vente de l'immeuble
@@ -107,7 +117,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009
 		{
-			assertEmpty(PeriodeImposition.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -120,7 +130,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -129,7 +139,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse avant l'arrivée et ordinaire ensuite, mais les deux assujettissements se confondent en un au niveau de la période
@@ -139,7 +149,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
@@ -148,7 +158,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			final List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(9, list.size());
 			assertPeriodeImposition(date(2000, 1, 1), date(2000, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0)); // [UNIREG-1742] la DI est optionnelle dès la première année
@@ -177,7 +187,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -186,7 +196,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse avant l'arrivée et ordinaire ensuite, mais les deux assujettissements se confondent en un au niveau de la période
@@ -196,7 +206,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
@@ -205,7 +215,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			final List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(9, list.size());
 			assertPeriodeImposition(date(2000, 1, 1), date(2000, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0)); // [UNIREG-1742] la DI est optionnelle dès la première année
@@ -235,13 +245,13 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertEmpty(list);
 		}
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse non-assujetti avant l'arrivée, ordinaire ensuite puis de nouveau hors-Suisse mais assujetti suite au départ ->
@@ -252,7 +262,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -261,7 +271,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			final List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertPeriodeImposition(dateArrivee, date(2007, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -284,13 +294,13 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertEmpty(list);
 		}
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// assujetti comme ordinaire pendant son passage en suisse
@@ -302,7 +312,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -311,7 +321,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2000-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			final List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertPeriodeImposition(dateArrivee, dateDepart, CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -329,7 +339,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006 (vaudois ordinaire)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -337,7 +347,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007 (départ hors-Suisse dans l'année)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
@@ -346,7 +356,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (hors-Suisse)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
@@ -355,7 +365,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2006_2008);
+			final List<PeriodeImposition> list = service.determine(paul, RANGE_2006_2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -372,7 +382,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006 (hors-canton)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2006);
+			final List<PeriodeImposition> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -380,7 +390,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007 (hors-canton -> hors-Suisse)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
@@ -389,7 +399,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (hors-Suisse)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
@@ -398,7 +408,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, RANGE_2006_2008);
+			final List<PeriodeImposition> list = service.determine(ctb, RANGE_2006_2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -415,7 +425,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006 (hors-canton)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2006);
+			final List<PeriodeImposition> list = service.determine(ctb, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -423,7 +433,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007 (hors-canton -> hors-Suisse)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
@@ -432,7 +442,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (hors-Suisse)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
@@ -441,7 +451,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006-2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, RANGE_2006_2008);
+			final List<PeriodeImposition> list = service.determine(ctb, RANGE_2006_2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -463,7 +473,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -473,7 +483,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		{
 			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
 			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertPeriodeImposition(date(2007, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
 		}
@@ -493,7 +503,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		final Contribuable ctb = createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(dateVente);
 		assertNotNull(ctb);
 
-		final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+		final List<PeriodeImposition> list = service.determine(ctb, 2009);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertPeriodeImposition(date(2009, 1, 1), dateVente, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0));
@@ -515,7 +525,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// Passage à l'ordinaire
 		addForPrincipal(ctb, dateChangement, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		
-		final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, dateChangement.year());
+		final List<PeriodeImposition> list = service.determine(ctb, dateChangement.year());
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertPeriodeImposition(dateChangement, date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -535,7 +545,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -543,7 +553,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -551,7 +561,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009 (décès)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
@@ -572,7 +582,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -580,7 +590,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -590,7 +600,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		{
 			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
 			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
@@ -610,7 +620,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2006
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2006);
+			final List<PeriodeImposition> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
@@ -619,7 +629,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007 (décès)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2007);
+			final List<PeriodeImposition> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse jusqu'à la date du décès
@@ -628,13 +638,13 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2008);
+			final List<PeriodeImposition> list = service.determine(paul, 2008);
 			assertEmpty(list);
 		}
 
 		// 2000-2008
 		{
-			List<PeriodeImposition> list = PeriodeImposition.determine(paul, RANGE_2000_2008);
+			List<PeriodeImposition> list = service.determine(paul, RANGE_2000_2008);
 			assertNotNull(list);
 			assertEquals(8, list.size());
 			assertPeriodeImposition(dateAchat, date(2000, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
@@ -662,7 +672,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -670,7 +680,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -680,7 +690,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		{
 			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
 			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
@@ -701,7 +711,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -709,7 +719,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -717,7 +727,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009 (décès)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
@@ -731,9 +741,9 @@ public class PeriodeImpositionTest extends MetierTest {
 		final Contribuable ctb = createDepartHorsCantonSourcierPur(date(2008, 9, 25));
 
 		// sourcier pur -> pas de déclaration d'impôt ordinaire
-		assertEmpty(PeriodeImposition.determine(ctb, 2007));
-		assertEmpty(PeriodeImposition.determine(ctb, 2008));
-		assertEmpty(PeriodeImposition.determine(ctb, 2009));
+		assertEmpty(service.determine(ctb, 2007));
+		assertEmpty(service.determine(ctb, 2008));
+		assertEmpty(service.determine(ctb, 2009));
 	}
 
 	@Test
@@ -744,7 +754,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -752,7 +762,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (départ en cours d'année)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
@@ -760,7 +770,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
@@ -777,7 +787,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2007
 		{
 			// sourcier mixte
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -791,7 +801,7 @@ public class PeriodeImpositionTest extends MetierTest {
 			// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 			// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
 			// note à l’administration fiscale cantonale de leur domicile.
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), dateDepart, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, true, true, false, false, list.get(0));
@@ -800,7 +810,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2009
 		{
 			// sourcier pur
-			assertEmpty(PeriodeImposition.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -811,9 +821,9 @@ public class PeriodeImpositionTest extends MetierTest {
 		final Contribuable ctb = createArriveeHorsCantonSourcierPur(date(2008, 9, 25));
 
 		// sourcier pur -> pas de déclaration d'impôt ordinaire
-		assertEmpty(PeriodeImposition.determine(ctb, 2007));
-		assertEmpty(PeriodeImposition.determine(ctb, 2008));
-		assertEmpty(PeriodeImposition.determine(ctb, 2009));
+		assertEmpty(service.determine(ctb, 2007));
+		assertEmpty(service.determine(ctb, 2008));
+		assertEmpty(service.determine(ctb, 2009));
 	}
 
 	@Test
@@ -824,7 +834,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
@@ -832,7 +842,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (arrivée en cours d'année)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -840,7 +850,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -857,7 +867,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2007
 		{
 			// sourcier pur
-			assertEmpty(PeriodeImposition.determine(ctb, 2007));
+			assertEmpty(service.determine(ctb, 2007));
 		}
 
 		// 2008 (départ en cours d'année)
@@ -871,7 +881,7 @@ public class PeriodeImpositionTest extends MetierTest {
 			// --> par analogie, déclaration optionnelle à l'arrivée
 			// [UNIREG-2328] l'analogie est fausse, en cas d'arrivée de hors-canton, l'administration fiscale responsable est justement l'administration
 			// vaudoise : la déclaration n'est donc ni optionnelle ni remplacée par une note.
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(dateArrivee, date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -880,7 +890,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2009
 		{
 			// sourcier mixte
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -896,7 +906,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
@@ -906,7 +916,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		{
 			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
 			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, true, false, false, list.get(0));
@@ -915,7 +925,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(PeriodeImposition.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -928,7 +938,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -938,7 +948,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		{
 			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
 			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, true, false, false, list.get(0));
@@ -947,7 +957,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		// 2009
 		{
 			// plus assujetti
-			assertEmpty(PeriodeImposition.determine(ctb, 2009));
+			assertEmpty(service.determine(ctb, 2009));
 		}
 	}
 
@@ -960,7 +970,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2007
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2007);
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -968,7 +978,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2008 (nomination comme diplomate en cours d'année)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertPeriodeImposition(date(2008, 1, 1), dateNomination.getOneDayBefore(), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -977,7 +987,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2009
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
@@ -992,7 +1002,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 1999
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 1999);
+			final List<PeriodeImposition> list = service.determine(paul, 1999);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(1999, 1, 1), date(1999, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -1000,7 +1010,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2000 (nomination comme diplomate suisse basé à l'étanger)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2000);
+			final List<PeriodeImposition> list = service.determine(paul, 2000);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertPeriodeImposition(date(2000, 1, 1), date(2000, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
@@ -1008,7 +1018,7 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// 2001 (achat d'un immeuble au 13 juin)
 		{
-			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2001);
+			final List<PeriodeImposition> list = service.determine(paul, 2001);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse.
@@ -1026,7 +1036,7 @@ public class PeriodeImpositionTest extends MetierTest {
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
 		final Contribuable ctb = createIndigentAvecDIs(2008, TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
-		final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
+		final List<PeriodeImposition> list = service.determine(ctb, 2009);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
@@ -1049,30 +1059,30 @@ public class PeriodeImpositionTest extends MetierTest {
 		addForPrincipal(pp, date(2005, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 		// aucune déclaration et nouvellement assujetti => 2005 = vaudtax
-		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2005));
+		assertEquals(FormatDIOrdinaire.VAUDTAX, service.determineFormatDIOrdinaire(pp, 2005));
 
 		// aucune déclaration et assujetti depuis 1 année => 2006 = complète
-		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2006));
 
 		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2006 = complète
 		final DeclarationImpotOrdinaire diComplete = addDeclarationImpot(pp, periode2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete2005);
-		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2006));
 
 		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2007 = complète
-		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2007));
+		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2007));
 
 		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2008 = complète
-		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2008));
+		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2008));
 
 		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2006 = vaudtax
 		diComplete.setAnnule(true);
 		addDeclarationImpot(pp, periode2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudTax2005);
-		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+		assertEquals(FormatDIOrdinaire.VAUDTAX, service.determineFormatDIOrdinaire(pp, 2006));
 
 		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2007 = vaudtax
-		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2007));
+		assertEquals(FormatDIOrdinaire.VAUDTAX, service.determineFormatDIOrdinaire(pp, 2007));
 
 		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2008 = complète
-		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2008));
+		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2008));
 	}
 }

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -30,6 +31,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 	private TiersDAO tiersDAO;
 	private MouvementDossierDAO mouvementDossierDAO;
+	private AssujettissementService assujettissementService;
 
 	private static final long noIndMarieParlotte = 1235125L;
 	private static final RegDate dateNaissance = RegDate.get(1970, 3, 12);
@@ -51,6 +53,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		mouvementDossierDAO = getBean(MouvementDossierDAO.class, "mouvementDossierDAO");
+		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -72,7 +75,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	private DeterminerMouvementsDossiersEnMasseProcessor createProcessor() {
-		return new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager);
+		return new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService);
 	}
 
 	@Test

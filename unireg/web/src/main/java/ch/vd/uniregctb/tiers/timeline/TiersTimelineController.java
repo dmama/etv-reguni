@@ -21,7 +21,9 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -51,6 +53,8 @@ public class TiersTimelineController {
 	private TiersDAO dao;
 	private AdresseService adresseService;
 	private TiersService tiersService;
+	private AssujettissementService assujettissementService;
+	private PeriodeImpositionService periodeImpositionService;
 
 	@RequestMapping(value = "/tiers/timeline.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -110,7 +114,7 @@ public class TiersTimelineController {
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
 				try {
-					final List<Assujettissement> list = Assujettissement.determine(contribuable);
+					final List<Assujettissement> list = assujettissementService.determine(contribuable);
 					if (list != null) {
 						assujettissements.addAll(list);
 					}
@@ -128,7 +132,7 @@ public class TiersTimelineController {
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
 				try {
-					final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, null);
+					final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, null);
 					if (list != null) {
 						periodesImposition.addAll(list);
 					}
@@ -206,5 +210,13 @@ public class TiersTimelineController {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
 	}
 }

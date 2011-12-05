@@ -16,6 +16,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -31,6 +32,13 @@ import ch.vd.uniregctb.validation.ValidationService;
  * @param <T>
  */
 public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImpl<T> {
+
+	private PeriodeImpositionService periodeImpositionService;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
 
 	@Override
 	public ValidationResults validate(T tiers) {
@@ -129,7 +137,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
 				final Contribuable ctb = (Contribuable) tiers;
 				try {
-					final List<PeriodeImposition> periodes = PeriodeImposition.determine(ctb, null);
+					final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb, null);
 					for (Declaration d : decls) {
 						if (d.isAnnule()) {
 							continue;

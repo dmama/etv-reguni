@@ -31,6 +31,8 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
@@ -68,6 +70,8 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">

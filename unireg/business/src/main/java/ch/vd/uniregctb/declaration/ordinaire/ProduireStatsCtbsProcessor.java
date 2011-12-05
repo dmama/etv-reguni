@@ -29,6 +29,7 @@ import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -54,18 +55,18 @@ public class ProduireStatsCtbsProcessor {
 	final Logger LOGGER = Logger.getLogger(ProduireStatsCtbsProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
-
 	private final ServiceInfrastructureService infraService;
-
 	private final TiersService tiersService;
-
 	private final PlatformTransactionManager transactionManager;
+	private final AssujettissementService assujettissementService;
 
-	public ProduireStatsCtbsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersService tiersService, PlatformTransactionManager transactionManager) {
+	public ProduireStatsCtbsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersService tiersService, PlatformTransactionManager transactionManager,
+	                                  AssujettissementService assujettissementService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
+		this.assujettissementService = assujettissementService;
 	}
 
 	public StatistiquesCtbs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
@@ -127,7 +128,7 @@ public class ProduireStatsCtbsProcessor {
 		try {
 			ctb = hibernateTemplate.get(Contribuable.class, id);
 
-			final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, rapport.annee);
+			final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rapport.annee);
 			if (assujettissements == null || assujettissements.isEmpty()) {
 				// le contribuable n'est pas assujetti -> c'est possible car la requête SQL ne peut pas effectuer ce filtrage en amont
 				return;

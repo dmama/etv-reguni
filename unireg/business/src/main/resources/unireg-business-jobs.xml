@@ -24,6 +24,7 @@
 		<constructor-arg value="Dump les assujettissements dans un fichier sur le disque du serveur"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
     <bean id="optimizeIndexJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.OptimizeIndexJob">
@@ -305,6 +306,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
@@ -316,6 +318,7 @@
         <property name="adresseService" ref="adresseService"/>
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="validationService" ref="validationService"/>
+		<property name="periodeImpositionService" ref="periodeImpositionService"/>
     </bean>
 
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.ListeTachesEnInstanceParOIDJob">

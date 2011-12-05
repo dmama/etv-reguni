@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -40,11 +41,13 @@ public class TiersAdresseValidatorTest extends WebTest {
 		super.onSetUp();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		validator = new TiersAdresseValidator();
 		validator.setAdresseService(adresseService);
 		validator.setServiceInfra(serviceInfra);
 		validator.setTiersService(tiersService);
+		validator.setAssujettissementService(assujettissementService);
 		if (validator instanceof InitializingBean) {
 			((InitializingBean) validator).afterPropertiesSet();
 		}

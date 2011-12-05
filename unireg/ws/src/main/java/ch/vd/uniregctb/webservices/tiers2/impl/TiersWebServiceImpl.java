@@ -43,6 +43,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -187,6 +189,16 @@ public class TiersWebServiceImpl implements TiersWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePM(ServicePersonneMoraleService service) {
 		context.servicePM = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService service) {
+		context.assujettissementService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService service) {
+		context.periodeImpositionService = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -37,6 +38,7 @@ public class ListeAssujettisJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private TiersDAO tiersDAO;
 	private RapportService rapportService;
+	private AssujettissementService assujettissementService;
 
 	public ListeAssujettisJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -86,7 +88,7 @@ public class ListeAssujettisJob extends JobDefinition {
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
 
-		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO);
+		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
 		final ListeAssujettisResults results = proc.run(dateTraitement, nbThreads, pf, avecSrcPurs, seultAssujettisFinAnnee, statusManager);
 
 		// Produit le rapport dans une transaction read-write
@@ -131,6 +133,11 @@ public class ListeAssujettisJob extends JobDefinition {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -21,12 +22,20 @@ public class AcomptesResultsTest extends BusinessTest {
 	private static final RegDate dateOuvertureForPrincipal = RegDate.get(1976,11,2);
 	private static final RegDate dateOuvertureForSecondaire = RegDate.get(1998,5,12);
 
+	private AssujettissementService assujettissementService;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculerInfoAssujettissementHC() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);
@@ -42,7 +51,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	public void testCalculerInfoAssujettissementHS() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);

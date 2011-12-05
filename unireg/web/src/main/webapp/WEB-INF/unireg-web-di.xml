@@ -40,6 +40,7 @@
 		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 	<bean id="diEditDelaiController" class="ch.vd.uniregctb.di.DeclarationImpotEditDelaiController" parent="abstractDeclarationImpotController">

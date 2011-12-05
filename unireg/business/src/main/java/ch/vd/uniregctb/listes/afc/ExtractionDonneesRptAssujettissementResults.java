@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -32,8 +33,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class ExtractionDonneesRptAssujettissementResults extends ExtractionDonneesRptResults {
 
-	public ExtractionDonneesRptAssujettissementResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
+	private AssujettissementService assujettissementService;
+
+	public ExtractionDonneesRptAssujettissementResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
+	                                                   AssujettissementService assujettissementService) {
 		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -48,7 +53,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	protected List<InfoPeriodeImposition> buildInfoPeriodes(DecompositionForsAnneeComplete decomposition) throws ServiceInfrastructureException, CoupleInvalideException, AssujettissementException, ContribuableIgnoreException {
 
 		final Contribuable ctb = decomposition.contribuable;
-		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, decomposition.annee);
+		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, decomposition.annee);
 		if (assujettissements == null || assujettissements.isEmpty()) {
 			throw new ContribuableIgnoreException(NON_ASSUJETTI);
 		}

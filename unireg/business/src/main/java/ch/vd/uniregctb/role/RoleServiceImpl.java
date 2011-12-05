@@ -7,6 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -14,20 +15,14 @@ import ch.vd.uniregctb.validation.ValidationService;
 public class RoleServiceImpl implements RoleService {
 
 	private HibernateTemplate hibernateTemplate;
-
 	private ServiceInfrastructureService infraService;
-
 	private TiersDAO tiersDAO;
-
 	private PlatformTransactionManager transactionManager;
-
 	private TiersService tiersService;
-
 	private AdresseService adresseService;
-
 	private ServiceCivilService serviceCivilService;
-
 	private ValidationService validationService;
+	private AssujettissementService assujettissementService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -61,8 +56,12 @@ public class RoleServiceImpl implements RoleService {
 		this.validationService = validationService;
 	}
 
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
 	private ProduireRolesProcessor createProcessor() {
-		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService);
+		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService, validationService, assujettissementService);
 	}
 
 	/**

@@ -41,6 +41,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -67,6 +68,7 @@ public class DeterminationDIsAEmettreProcessor {
 	private final TiersService tiersService;
 	private final PlatformTransactionManager transactionManager;
 	private final ValidationService validationService;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	private final ThreadLocal<DeterminationDIsResults> rapport = new ThreadLocal<DeterminationDIsResults>();
 
@@ -74,7 +76,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 	public DeterminationDIsAEmettreProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, TacheDAO tacheDAO,
 	                                         ParametreAppService parametres, TiersService tiersService, PlatformTransactionManager transactionManager,
-	                                         ValidationService validationService) {
+	                                         ValidationService validationService, PeriodeImpositionService periodeImpositionService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.tacheDAO = tacheDAO;
@@ -82,6 +84,7 @@ public class DeterminationDIsAEmettreProcessor {
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 		this.validationService = validationService;
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	public DeterminationDIsResults run(final int anneePeriode, final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) throws DeclarationException {
@@ -402,7 +405,7 @@ public class DeterminationDIsAEmettreProcessor {
 		// Détermination des périodes d'imposition du contribuable dans l'année
 		final List<PeriodeImposition> periodes;
 		try {
-			periodes = PeriodeImposition.determine(contribuable, annee);
+			periodes = periodeImpositionService.determine(contribuable, annee);
 		}
 		catch (AssujettissementException e) {
 			if (rapport.get() != null) {

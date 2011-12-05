@@ -17,6 +17,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -50,6 +51,7 @@ public class ValidationJob extends JobDefinition {
 	private AdresseService adresseService;
 	private ParametreAppService paramService;
 	private ValidationService validationService;
+	private PeriodeImpositionService periodeImpositionService;
 
 	public ValidationJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -107,6 +109,10 @@ public class ValidationJob extends JobDefinition {
 		this.validationService = validationService;
 	}
 
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -158,7 +164,7 @@ public class ValidationJob extends JobDefinition {
 		// Création des threads de processing
 		final List<ValidationJobThread> threads = new ArrayList<ValidationJobThread>(nbThreads);
 		for (int i = 0; i < nbThreads; i++) {
-			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, paramService, validationService);
+			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, paramService, validationService, periodeImpositionService);
 			threads.add(t);
 			t.setName("ValidThread-" + i);
 			t.start();

@@ -26,6 +26,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >

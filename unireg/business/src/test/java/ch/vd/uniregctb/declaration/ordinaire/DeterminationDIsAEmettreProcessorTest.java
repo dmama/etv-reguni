@@ -30,6 +30,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -66,6 +67,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	private HibernateTemplate hibernateTemplate;
 	private DeterminationDIsAEmettreProcessor service;
 	private TacheDAO tacheDAO;
+	private PeriodeImpositionService periodeImpositionService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -76,9 +78,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final ParametreAppService parametres = getBean(ParametreAppService.class, "parametreAppService");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService);
+		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
@@ -709,7 +712,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-			final List<PeriodeImposition> periodes = PeriodeImposition.determine(eric, 2007);
+			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition periodeImposition = periodes.get(0);
 
@@ -724,7 +727,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable john = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-			final List<PeriodeImposition> periodes = PeriodeImposition.determine(john, 2007);
+			final List<PeriodeImposition> periodes = periodeImpositionService.determine(john, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition periodeImposition = periodes.get(0);
 
@@ -759,7 +762,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
-		final List<PeriodeImposition> periodes = PeriodeImposition.determine(eric, 2009);
+		final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2009);
 		assertEquals(1, periodes.size());
 		final PeriodeImposition periodeImposition = periodes.get(0);
 
@@ -794,7 +797,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Nouvelle tâches avec assujettissement sur toute l'année 2007
 		{
-			final List<PeriodeImposition> periodes = PeriodeImposition.determine(eric, 2007);
+			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition tout2007 = periodes.get(0);
 			assertNull(service.traiterPeriodeImposition(eric, periode, tout2007)); // null parce que la tâche d'envoi existe déjà
@@ -805,7 +808,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			ffp.setDateFin(date(2007, 8, 10));
 			ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
 
-			final List<PeriodeImposition> periodes = PeriodeImposition.determine(eric, 2007);
+			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
 			assertEquals(1, periodes.size());
 
 			final PeriodeImposition partie2007 = periodes.get(0);

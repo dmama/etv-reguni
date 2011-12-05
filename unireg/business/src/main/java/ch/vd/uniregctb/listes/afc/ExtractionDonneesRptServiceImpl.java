@@ -7,6 +7,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -16,16 +18,13 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptService {
 
 	private HibernateTemplate hibernateTemplate;
-
 	private PlatformTransactionManager transactionManager;
-
 	private TiersService tiersService;
-
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-
 	private TiersDAO tiersDAO;
-
 	private ServiceInfrastructureService infraService;
+	private AssujettissementService assujettissementService;
+	private PeriodeImpositionService periodeImpositionService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -51,6 +50,14 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 		this.infraService = infraService;
 	}
 
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
+
 	/**
 	 * Extrait la liste des données de référence RPT de la période fiscale donnée
 	 * @param dateTraitement date d'exécution de l'extraction
@@ -61,7 +68,8 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 	 */
 	@Override
 	public ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager) {
-		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService);
+		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
+				assujettissementService, periodeImpositionService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
 	}
 }

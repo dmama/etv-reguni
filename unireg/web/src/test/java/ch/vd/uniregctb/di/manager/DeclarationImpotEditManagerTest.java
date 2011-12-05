@@ -29,6 +29,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -78,6 +79,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setPeriodeFiscaleDAO(getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"));
 		manager.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
 		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
+		manager.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
 	}
 
 	@Test

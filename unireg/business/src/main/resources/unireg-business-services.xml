@@ -63,6 +63,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 	
 	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">
@@ -74,6 +76,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="validationService" ref="validationService" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 	
 	<bean id="listesTiersService" class="ch.vd.uniregctb.listes.ListesTiersServiceImpl">
@@ -92,6 +95,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 	<bean id="extractionDonneesRptService" class="ch.vd.uniregctb.listes.afc.ExtractionDonneesRptServiceImpl">
@@ -101,6 +105,8 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="periodeImpositionService" ref="periodeImpositionService"/>
 	</bean>
 
 	<!-- Section Evenement Externe -->
@@ -255,6 +261,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO"/>
 		<property name="editiqueService" ref="editiqueCompositionService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 
 	<bean id="impressionBordereauMouvementDossierHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperImpl">

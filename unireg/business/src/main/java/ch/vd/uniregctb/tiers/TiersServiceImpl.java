@@ -78,6 +78,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
@@ -125,9 +126,9 @@ public class TiersServiceImpl implements TiersService {
 	private ServicePersonneMoraleService servicePM;
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
-
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
+	private AssujettissementService assujettissementService;
 
 	/**
 	 * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -188,6 +189,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	public void setAdresseService(AdresseService adresseService) {
@@ -3704,7 +3709,7 @@ public class TiersServiceImpl implements TiersService {
 		// seuls les contribuables peuvent avoir un assujettissement
 		else if (tiers instanceof Contribuable) {
 			try {
-				final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable) tiers, date.year());
+				final List<Assujettissement> assujettissements = assujettissementService.determine((Contribuable) tiers, date.year());
 				if (assujettissements != null && !assujettissements.isEmpty()) {
 					final Assujettissement valide = DateRangeHelper.rangeAt(assujettissements, date);
 					if (valide != null) {

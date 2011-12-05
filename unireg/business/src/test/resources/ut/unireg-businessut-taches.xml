@@ -12,6 +12,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
 </beans>

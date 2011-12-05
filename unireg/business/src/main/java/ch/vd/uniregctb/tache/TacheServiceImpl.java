@@ -43,7 +43,9 @@ import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
@@ -90,6 +92,8 @@ public class TacheServiceImpl implements TacheService {
 	private ServiceInfrastructureService serviceInfra;
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
+	private AssujettissementService assujettissementService;
+	private PeriodeImpositionService periodeImpositionService;
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -343,7 +347,7 @@ public class TacheServiceImpl implements TacheService {
 		switch (motifOuverture) {
 		case ARRIVEE_HC:
 			try {
-				final List<Assujettissement> assujettissements = Assujettissement.determine(contribuable, forFiscal.getDateDebut().year());
+				final List<Assujettissement> assujettissements = assujettissementService.determine(contribuable, forFiscal.getDateDebut().year());
 				if (assujettissements != null) {
 					final int size = assujettissements.size();
 					if (size > 1) {
@@ -945,7 +949,7 @@ public class TacheServiceImpl implements TacheService {
 
 		final List<PeriodeImposition> periodes = new ArrayList<PeriodeImposition>();
 		for (int annee = anneeDebut; annee <= anneeCourante; ++annee) {
-			final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, annee);
+			final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, annee);
 			if (list != null) {
 				periodes.addAll(list);
 			}
@@ -1129,8 +1133,18 @@ public class TacheServiceImpl implements TacheService {
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
+
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
 }
