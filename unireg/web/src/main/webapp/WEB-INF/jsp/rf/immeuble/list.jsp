@@ -19,7 +19,9 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.liste.immeubles" /></span></legend>
 			<display:table name="${immeubles}" id="immeuble" class="display" pagesize="10">
-				<display:column titleKey="label.commune" property="nomCommune"/>
+				<display:column titleKey="label.commune">
+					<c:out value="${immeuble.noCommune}"/> <c:out value="${immeuble.nomCommune}"/>
+				</display:column>
 				<display:column titleKey="label.numero.immeuble" property="numero"/>
 				<display:column titleKey="label.type.immeuble">
 					<fmt:message key="option.rf.type.immeuble.${immeuble.typeImmeuble}" />

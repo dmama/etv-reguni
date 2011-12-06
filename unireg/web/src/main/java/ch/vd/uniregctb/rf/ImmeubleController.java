@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.rf;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -66,6 +68,14 @@ public class ImmeubleController {
 		for (Immeuble immeuble : list) {
 			views.add(new ImmeubleView(immeuble));
 		}
+
+		// // [SIFISC-3309] on trie par nom de commune croissant
+		Collections.sort(views, new Comparator<ImmeubleView>() {
+			@Override
+			public int compare(ImmeubleView o1, ImmeubleView o2) {
+				return o1.getNomCommune().compareTo(o2.getNomCommune());
+			}
+		});
 
 		mav.addAttribute("immeubles", views);
 

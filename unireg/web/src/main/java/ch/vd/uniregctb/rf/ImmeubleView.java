@@ -12,6 +12,7 @@ public class ImmeubleView {
 	private final String dateDebut;
 	private final String dateFin;
 	private final String numero;
+	private final Integer noCommune;
 	private final String nomCommune;
 	private final String nature;
 	private final int estimationFiscale;
@@ -29,7 +30,8 @@ public class ImmeubleView {
 		this.dateDebut = RegDateHelper.dateToDisplayString(immeuble.getDateDebut());
 		this.dateFin = RegDateHelper.dateToDisplayString(immeuble.getDateFin());
 		this.numero = removeNumeroCommune(immeuble.getNumero()); // [SIFISC-3157]
-		this.nomCommune = buildNomCommune(immeuble.getNumero(), immeuble.getNomCommune()); // [SIFISC-3157]
+		this.noCommune = extractNumeroCommune(immeuble.getNumero()); // [SIFISC-3309]
+		this.nomCommune = immeuble.getNomCommune(); // [SIFISC-3157]
 		this.nature = immeuble.getNature();
 		this.estimationFiscale = immeuble.getEstimationFiscale();
 		this.referenceEstimationFiscale = immeuble.getReferenceEstimationFiscale();
@@ -42,23 +44,16 @@ public class ImmeubleView {
 		this.lienRF = immeuble.getLienRegistreFoncier();
 	}
 
-	private static String buildNomCommune(String numeroImmeuble, String nomCommune) {
-		final String numeroRFCommune = extractNumeroCommune(numeroImmeuble);
-		if (numeroRFCommune == null) {
-			return nomCommune;
-		}
-		return String.format("%s %s", numeroRFCommune, nomCommune);
-	}
-
 	/**
 	 * @param numeroImmeuble un numéro d'immeuble (e.g. "130-12-1-1").
 	 * @return le numéro RF de commune du numéro d'immeuble spécifié (e.g. 130).
 	 */
-	private static String extractNumeroCommune(String numeroImmeuble) {
+	private static Integer extractNumeroCommune(String numeroImmeuble) {
 		if (numeroImmeuble == null) {
 			return null;
 		}
-		return numeroImmeuble.split("-")[0];
+		final String numeroAsString = numeroImmeuble.split("-")[0];
+		return Integer.valueOf(numeroAsString);
 	}
 
 	/**
@@ -90,6 +85,10 @@ public class ImmeubleView {
 
 	public String getNumero() {
 		return numero;
+	}
+
+	public Integer getNoCommune() {
+		return noCommune;
 	}
 
 	public String getNomCommune() {
