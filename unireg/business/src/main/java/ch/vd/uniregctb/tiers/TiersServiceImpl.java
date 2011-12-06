@@ -743,8 +743,9 @@ public class TiersServiceImpl implements TiersService {
 	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException {
 
 		if (pp.isHabitantVD()) {
-			long numeroIndividu = pp.getNumeroIndividu();
-			final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date.year());
+			final long numeroIndividu = pp.getNumeroIndividu();
+			final int year = date != null ? date.year() : 2400;
+			final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, year);
 			if (nationalites != null) {
 				for (Nationalite nationalite : nationalites) {
 					if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&

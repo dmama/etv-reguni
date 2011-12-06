@@ -336,7 +336,7 @@ public class ForFiscalViewValidator implements Validator {
 				// [UNIREG-1235] La règle est en fait la suivante:
 				// - un contribuable de nationalité suisse ne peut être qu'à l'ordinaire ou indigent
 				// - un contribuable étranger avec un permis C peut être à l'ordinaire, indigent, ou à la dépense
-				// - pour tous les autres, tous les modes sont admins (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
+				// - pour tous les autres, tous les modes sont admis (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
 				final Set<ModeImposition> autorises = new HashSet<ModeImposition>();
 
 				// nationalité suisse ou étrangère ?
