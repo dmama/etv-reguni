@@ -96,6 +96,6 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	@Override
 	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
 			EditiqueException {
-		return 0;
+		return nombreAnnexesImmeuble;
 	}
 }

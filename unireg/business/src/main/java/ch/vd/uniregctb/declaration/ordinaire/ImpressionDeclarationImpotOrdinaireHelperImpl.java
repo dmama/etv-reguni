@@ -693,33 +693,36 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final Long collId = informationsDocument.getCollId();
 		final CollectiviteAdministrative collectiviteAdministrative = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 
-		// [UNIREG-1655] Il faut recalculer la commune du for de gestion
-		final String nomCommuneGestion;
-		final Tiers tiers = informationsDocument.getTiers();
-		try {
-			final RegDate dateDeclaration = informationsDocument.getDateReference();
-			final ForGestion forGestion = tiersService.getForGestionActif(tiers, dateDeclaration);
-			final int noOfsCommune;
-			if (forGestion != null) {
-				noOfsCommune = forGestion.getNoOfsCommune();
-			}
-			else {
-				// au cas où on voudrait imprimer, je ne sais pas, moi, une DI annulée pour quelqu'un qui n'a
-				// plus de for de gestion, on prend le défaut sur la déclaration quand-même (c'est mieux qu'un crash, non ?)
-				noOfsCommune = informationsDocument.getNoOfsCommune();
-			}
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, dateDeclaration);
-			nomCommuneGestion = commune.getNomMinuscule();
-		}
-		catch (ServiceInfrastructureException e) {
-			throw new EditiqueException(e);
-		}
-
 		final int anneeFiscale = informationsDocument.getAnnee();
 		infoDI.setANNEEFISCALE(Integer.toString(anneeFiscale));
-		// SIFISC-1389 POur les DI avant 2011 le nom de la commune doit encore être affiché
+
+		final Tiers tiers = informationsDocument.getTiers();
+
+		// SIFISC-1389 Pour les DI avant 2011 le nom de la commune doit encore être affiché
 		if (anneeFiscale < DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-			infoDI.setDESCOM(nomCommuneGestion);
+
+			// [UNIREG-1655] Il faut recalculer la commune du for de gestion
+			try {
+				final RegDate dateDeclaration = informationsDocument.getDateReference();
+				final ForGestion forGestion = tiersService.getDernierForGestionConnu(tiers, dateDeclaration);
+				final int noOfsCommune;
+				if (forGestion != null) {
+					noOfsCommune = forGestion.getNoOfsCommune();
+				}
+				else {
+					// au cas où on voudrait imprimer, je ne sais pas, moi, une DI annulée pour quelqu'un qui n'a
+					// plus de for de gestion, on prend le défaut sur la déclaration quand-même (c'est mieux qu'un crash, non ?)
+					noOfsCommune = informationsDocument.getNoOfsCommune();
+				}
+				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, dateDeclaration);
+				if (commune != null) {
+					// best effort...
+					infoDI.setDESCOM(commune.getNomMinuscule());
+				}
+			}
+			catch (ServiceInfrastructureException e) {
+				throw new EditiqueException(e);
+			}
 		}
 		infoDI.setDELAIRETOUR(delaiRetour);
 		infoDI.setNOCANT(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
