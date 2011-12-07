@@ -695,7 +695,7 @@
 
 		<!-- Version des Host-Interfaces -->
 		<host-interfaces.version-short>1.9</host-interfaces.version-short>
-		<host-interfaces.version-long>1.9.46</host-interfaces.version-long>
+		<host-interfaces.version-long>1.9.47</host-interfaces.version-long>
 		<host-interfaces.factory>weblogic.jndi.WLInitialContextFactory</host-interfaces.factory>
 		<host-interfaces.ejb-proxy-class>ch.vd.uniregctb.ejb.GentilRemoteStatelessSessionProxyFactoryBean</host-interfaces.ejb-proxy-class>
 
