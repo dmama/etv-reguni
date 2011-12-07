@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Statistiques d'un appel au web-service.
  */
@@ -118,9 +116,14 @@ class Call {
 		if (method.startsWith("GetBatch")) {
 			// en cas de méthode batch, on calcul le temps moyen de réponse par tiers demandé
 			final Matcher m = TIERS_NUMBERS.matcher(line);
-			Assert.isTrue(m.matches());
-			final String tiersNumer = m.group(1);
-			tiersCount = StringUtils.countMatches(tiersNumer, ",") + 1;
+			if (m.matches()) {
+				final String tiersNumer = m.group(1);
+				tiersCount = StringUtils.countMatches(tiersNumer, ",") + 1;
+			}
+			else {
+				// ça arrive...
+				tiersCount = 0;
+			}
 		}
 		else {
 			tiersCount = 1;

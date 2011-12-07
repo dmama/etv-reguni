@@ -36,7 +36,13 @@ class TimelineAnalyze extends Analyze {
 	@Override
 	public void addCall(Call call) {
 
-		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
+		final int tiersCount = call.getTiersCount();
+		if (tiersCount == 0) {
+			// quelqu'un a appelé getBatch en ne spécifiant aucun tiers, on ignore
+			return;
+		}
+
+		final long milliseconds = call.getMilliseconds() / tiersCount;
 		if (excludeCache && milliseconds == 0) {
 			// on ignore les appels qui prennent 0 millisecondes : il s'agit de valeurs non-représentatives retournées pas le cache.
 			return;

@@ -27,7 +27,13 @@ class DistributionAnalyze extends Analyze {
 	public void addCall(Call call) {
 
 		final String method = call.getMethod();
-		final long milliseconds = call.getMilliseconds() / call.getTiersCount();
+		int tiersCount = call.getTiersCount();
+		if (tiersCount == 0) {
+			// quelqu'un a appelé getBatch en ne spécifiant aucun tiers, on ignore
+			return;
+		}
+		
+		final long milliseconds = call.getMilliseconds() / tiersCount;
 
 		List<DistributionData> list = results.get(call.getMethod());
 		if (list == null) {
