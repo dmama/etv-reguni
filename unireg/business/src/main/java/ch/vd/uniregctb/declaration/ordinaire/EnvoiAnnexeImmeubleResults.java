@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 
-public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> extends JobResults<Long, R> {
+public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> extends JobResults<ContribuableAvecImmeuble, R> {
 
 	public static enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION);
@@ -108,26 +110,32 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 		ctbsTraites.add(noCtb);
 	}
 
+	private static String getExceptionMessage(Exception e) {
+		final String msg = e.getMessage();
+		if (StringUtils.isBlank(msg)) {
+			return e.getClass().getName();
+		}
+		else {
+			return msg;
+		}
+	}
 
 	@Override
-	public void addErrorException(Long idCtb, Exception e) {
-		ctbsEnErrors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
+	public void addErrorException(ContribuableAvecImmeuble ctb, Exception e) {
+		ctbsEnErrors.add(new Erreur(ctb.getNumeroContribuable(), null, ErreurType.EXCEPTION, getExceptionMessage(e)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, getExceptionMessage(e)));
 	}
-
 
 	public void addInfoCtbTraites(Contribuable ctb, int nbAnnexes) {
 		infoCtbTraites.add(new InfoCtbImmeuble(ctb.getNumero(), ctb.getOfficeImpotId(), nbAnnexes));
 	}
 
-
 	public void addIgnoreCtbNonAssujetti(Contribuable ctb, int periode) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_NON_ASSUJETTI, "Non assujetti pour la fin de période fiscale " + periode));
 	}
-
 
 	@Override
 	public void addAll(R rapport) {
