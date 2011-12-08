@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- version 3.1-SNAPSHOT -->
+<wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+	<wsdl:types>
+		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+				   xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+				   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+				   xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
+				   xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="unireg-exception-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="party/unireg-party-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="party/unireg-party-person-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="party/unireg-party-debtor-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="party/unireg-party-corporation-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" schemaLocation="party/unireg-party-taxdeclaration-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="party/unireg-party-taxresidence-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="party/unireg-party-relation-1.xsd" />
+			<xs:include schemaLocation="messages/getpartytype.xsd" />
+			<xs:include schemaLocation="messages/getparty.xsd" />
+			<xs:include schemaLocation="messages/getbatchparty.xsd" />
+			<xs:include schemaLocation="messages/searchparty.xsd" />
+			<xs:include schemaLocation="messages/getmodifiedtaxpayers.xsd" />
+			<xs:include schemaLocation="messages/searchcorporationevents.xsd" />
+			<xs:include schemaLocation="messages/acknowledgetaxdeclarations.xsd" />
+			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
+			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
+			<xs:element name="searchPartyRequest" nillable="true" type="ws:searchPartyRequestType" />
+			<xs:element name="searchPartyResponse" nillable="true" type="ws:searchPartyResponseType" />
+			<xs:element name="searchCorporationEventsRequest" nillable="true" type="ws:searchCorporationEventsRequestType" />
+			<xs:element name="searchCorporationEventsResponse" nillable="true" type="ws:searchCorporationEventsResponseType" />
+			<xs:element name="getPartyTypeRequest" nillable="true" type="ws:getPartyTypeRequestType" />
+			<xs:element name="getPartyTypeResponse" nillable="true" type="party:partyTypeType" />
+			<xs:element name="getPartyRequest" nillable="true" type="ws:getPartyRequestType" />
+			<xs:element name="getPartyResponse" nillable="true" type="party:partyType" />
+			<xs:element name="getBatchPartyRequest" nillable="true" type="ws:getBatchPartyRequestType" />
+			<xs:element name="getBatchPartyResponse" nillable="true" type="ws:batchPartyType" />
+			<xs:element name="getDebtorInfoRequest" nillable="true" type="ws:getDebtorInfoRequestType" />
+			<xs:element name="getDebtorInfoResponse" nillable="true" type="debtor:debtorInfoType" />
+			<xs:element name="getModifiedTaxpayersRequest" nillable="true" type="ws:getModifiedTaxpayersRequestType" />
+			<xs:element name="getModifiedTaxpayersResponse" nillable="true" type="ws:partyNumberListType" />
+			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="ws:setAutomaticReimbursementBlockingRequestType" />
+			<xs:element name="acknowledgeTaxDeclarationsRequest" nillable="true" type="ws:acknowledgeTaxDeclarationsRequestType" />
+			<xs:element name="acknowledgeTaxDeclarationsResponse" nillable="true" type="ws:acknowledgeTaxDeclarationsResponseType" />
+			<xs:element name="webServiceException" type="exception:serviceExceptionInfoType" />
+		</xs:schema>
+	</wsdl:types>
+
+	<!-- IN/OUT Message declarations -->
+	<wsdl:message name="searchPartyRequestMessage">
+		<wsdl:part name="searchPartyRequest" element="searchPartyRequest" />
+	</wsdl:message>
+	<wsdl:message name="searchPartyResponseMessage">
+		<wsdl:part name="searchPartyResponse" element="searchPartyResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="searchCorporationEventsRequestMessage">
+		<wsdl:part name="searchCorporationEventsRequest" element="searchCorporationEventsRequest" />
+	</wsdl:message>
+	<wsdl:message name="searchCorporationEventsResponseMessage">
+		<wsdl:part name="searchCorporationEventsResponse" element="searchCorporationEventsResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getPartyTypeRequestMessage">
+		<wsdl:part name="getPartyTypeRequest" element="getPartyTypeRequest" />
+	</wsdl:message>
+	<wsdl:message name="getPartyTypeResponseMessage">
+		<wsdl:part name="getPartyTypeResponse" element="getPartyTypeResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getPartyRequestMessage">
+		<wsdl:part name="getPartyRequest" element="getPartyRequest" />
+	</wsdl:message>
+	<wsdl:message name="getPartyResponseMessage">
+		<wsdl:part name="getPartyResponse" element="getPartyResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getBatchPartyRequestMessage">
+		<wsdl:part name="getBatchPartyRequest" element="getBatchPartyRequest" />
+	</wsdl:message>
+	<wsdl:message name="getBatchPartyResponseMessage">
+		<wsdl:part name="getBatchPartyResponse" element="getBatchPartyResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getDebtorInfoRequestMessage">
+		<wsdl:part name="getDebtorInfoRequest" element="getDebtorInfoRequest" />
+	</wsdl:message>
+	<wsdl:message name="getDebtorInfoResponseMessage">
+		<wsdl:part name="getDebtorInfoResponse" element="getDebtorInfoResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getModifiedTaxpayersRequestMessage">
+		<wsdl:part name="getModifiedTaxpayersRequest" element="getModifiedTaxpayersRequest" />
+	</wsdl:message>
+	<wsdl:message name="getModifiedTaxpayersResponseMessage">
+		<wsdl:part name="getModifiedTaxpayersResponse" element="getModifiedTaxpayersResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="setAutomaticReimbursementBlockingRequestMessage">
+		<wsdl:part name="setAutomaticReimbursementBlockingRequest" element="setAutomaticReimbursementBlockingRequest" />
+	</wsdl:message>
+	<wsdl:message name="setAutomaticReimbursementBlockingResponseMessage">
+	</wsdl:message>
+
+	<wsdl:message name="acknowledgeTaxDeclarationsRequestMessage">
+		<wsdl:part name="acknowledgeTaxDeclarationsRequest" element="acknowledgeTaxDeclarationsRequest" />
+	</wsdl:message>
+	<wsdl:message name="acknowledgeTaxDeclarationsResponseMessage">
+		<wsdl:part name="acknowledgeTaxDeclarationsResponse" element="acknowledgeTaxDeclarationsResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="pingRequestMessage" />
+	<wsdl:message name="pingResponseMessage" />
+
+	<wsdl:message name="webServiceException">
+		<wsdl:part name="webServiceException" element="webServiceException" />
+	</wsdl:message>
+
+	<!-- PORT declarations -->
+	<wsdl:portType name="PartyWebService">
+		<wsdl:operation name="getParty">
+			<wsdl:input message="getPartyRequestMessage" />
+			<wsdl:output message="getPartyResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="getPartyType">
+			<wsdl:input message="getPartyTypeRequestMessage" />
+			<wsdl:output message="getPartyTypeResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="searchParty">
+			<wsdl:input message="searchPartyRequestMessage" />
+			<wsdl:output message="searchPartyResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="getModifiedTaxpayers">
+			<wsdl:input message="getModifiedTaxpayersRequestMessage" />
+			<wsdl:output message="getModifiedTaxpayersResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="getBatchParty">
+			<wsdl:input message="getBatchPartyRequestMessage" />
+			<wsdl:output message="getBatchPartyResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="searchCorporationEvents">
+			<wsdl:input message="searchCorporationEventsRequestMessage" />
+			<wsdl:output message="searchCorporationEventsResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="setAutomaticReimbursementBlocking">
+			<wsdl:input message="setAutomaticReimbursementBlockingRequestMessage" />
+			<wsdl:output message="setAutomaticReimbursementBlockingResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="acknowledgeTaxDeclarations">
+			<wsdl:input message="acknowledgeTaxDeclarationsRequestMessage" />
+			<wsdl:output message="acknowledgeTaxDeclarationsResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="getDebtorInfo">
+			<wsdl:input message="getDebtorInfoRequestMessage" />
+			<wsdl:output message="getDebtorInfoResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="ping">
+			<wsdl:documentation>Cette méthode permet à un client de s'assurer que la connexion avec le service est bien établie et que celui-ci répond bien.</wsdl:documentation>
+			<wsdl:input message="pingRequestMessage" />
+			<wsdl:output message="pingResponseMessage" />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<!-- BINDING declarations -->
+	<wsdl:binding name="PartyServiceSoapBinding" type="ws:PartyWebService">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getParty">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getPartyType">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchParty">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getModifiedTaxpayers">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getBatchParty">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="searchCorporationEvents">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="setAutomaticReimbursementBlocking">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="acknowledgeTaxDeclarations">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getDebtorInfo">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ping">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<!-- SERVICE declarations -->
+	<wsdl:service name="PartyWebServiceFactory">
+		<wsdl:port binding="ws:PartyServiceSoapBinding" name="Service">
+			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/party3" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

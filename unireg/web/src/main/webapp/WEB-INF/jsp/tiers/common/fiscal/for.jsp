@@ -1,0 +1,94 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/include/common.jsp"%>
+<c:set var="page" value="${param.page}" />
+<c:if test="${page == 'visu' }">
+	<c:set var="url" value="visu.do" />
+</c:if>
+<c:if test="${page == 'edit' }">
+	<c:set var="url" value="edit.do" />
+</c:if>
+<c:if test="${not empty command.forsFiscaux}">
+<display:table
+		name="command.forsFiscaux" id="forFiscal" pagesize="10" 
+		requestURI="${url}"
+		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+
+	<display:column sortable ="true" titleKey="label.genre.impot">
+			<fmt:message key="option.genre.impot.${forFiscal.genreImpot}"  />
+	</display:column>
+	<display:column sortable ="true" titleKey="label.rattachement" >
+		<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+				<fmt:message key="option.rattachement.${forFiscal.motifRattachement}" />
+		</c:if>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.mode.imposition">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
+				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
+		</c:if>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.for.abrege">
+			<c:choose>
+				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+				</c:when>
+				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+					(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
+				</c:when>
+				<c:when test="${forFiscal.typeAutoriteFiscale == 'PAYS_HS' }">
+					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFS"></unireg:infra>
+				</c:when>
+			</c:choose>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.date.ouv" sortProperty="dateOuverture">
+			<fmt:formatDate value="${forFiscal.dateOuverture}" pattern="dd.MM.yyyy"/>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.motif.ouv">
+			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+				<c:if test="${forFiscal.motifOuverture != null}">
+					<fmt:message key="option.motif.ouverture.${forFiscal.motifOuverture}" />
+				</c:if>
+			</c:if>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.date.fer" sortProperty="dateFermeture">
+			<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.motif.fer">
+			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+				<c:if test="${forFiscal.motifFermeture != null}">
+					<fmt:message key="option.motif.fermeture.${forFiscal.motifFermeture}" />
+				</c:if>
+			</c:if>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.for.gestion">
+		<c:if test="${!forFiscal.annule}">
+			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+				<input type="checkbox" <c:if test="${forFiscal.forGestion}">checked</c:if> disabled="disabled">
+			</c:if>
+		</c:if>
+	</display:column>
+	<display:column style="action">
+		<c:if test="${page == 'visu' }">
+			<unireg:consulterLog entityNature="ForFiscal" entityId="${forFiscal.id}"/>
+		</c:if>
+		<c:if test="${page == 'edit' }">
+			<c:if test="${!forFiscal.annule}">
+				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (command.allowedOnglet.FOR_PRINC)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (command.allowedOnglet.FOR_SEC)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (command.allowedOnglet.FOR_AUTRE)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (command.allowedOnglet.FOR_AUTRE))}">
+					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+						<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
+					</c:if>
+					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalPrincipal' || forFiscal.dernierForPrincipalOuDebiteur}">
+						<unireg:raccourciAnnuler onClick="javascript:annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
+					</c:if>
+				</c:if>
+			</c:if>
+		</c:if>
+	</display:column>
+	<display:setProperty name="paging.banner.all_items_found" value=""/>
+	<display:setProperty name="paging.banner.one_item_found" value=""/>
+	
+</display:table>
+</c:if>

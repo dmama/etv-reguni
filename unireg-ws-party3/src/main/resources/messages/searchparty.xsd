@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+		xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="../party/unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="../party/unireg-party-debtor-1.xsd" />
+
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="searchPartyRequestType">
+		<xs:annotation>
+			<xs:documentation>Requête de recherche de tiers en fonction de divers critères.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ws:requestType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="number" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Un ou plusieurs numéro de contribuable séparés par des '+'
+								Si ce champ est renseigné, tous les autres champs sont ignorés.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="contactName" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Nom courrier des tiers à rechercher (= prénoms et noms des personnes physiques ou raisons sociales des personnes morales).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="townOrCountry" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Critère sur la localité (ou le pays pour les tiers hors-Suisse) de l'adresse courrier du tiers</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="dateOfBirth" type="common:dateType">
+						<xs:annotation>
+							<xs:documentation>Critère de recherche sur la date de naissance du tiers. Les ménages communs composés de personnes physiques qui correspondent au critère sont aussi
+								retournés.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="socialInsuranceNumber" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Critère sur le numéro AVS (11 ou 13).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="taxResidenceFSOId" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Critère sur le numéro Ofs des for fiscaux du tiers. Tous les types de fors fiscaux (principaux, secondaires, débiteurs, autres, ...) sont pris en compte
+								par défaut. Voir le critère 'forPrincipalActif' pour changer ce comportement.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="activeMainTaxResidence" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Si vrai, restreint le critère 'noOfsFor' sur les fors principaux actifs.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="searchMode" type="ws:searchModeType">
+						<xs:annotation>
+							<xs:documentation>Le type de recherche sur le nomCourrier.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="partyTypes" type="party:partyTypeType">
+						<xs:annotation>
+							<xs:documentation>Si renseigné, restreint la recherche sur un type de tiers. Si plusieurs types sont spécifiés, l'union des résultats des recherches type par type est
+								retourné (SIFISC-112).
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="debtorCategory" type="debtor:debtorCategoryType">
+						<xs:annotation>
+							<xs:documentation>La catégorie de débiteur (uniquement valable sur les débiteurs).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="activeParty" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>Si renseigné, restreint la recherche sur les tiers actifs (= un for fiscal principal ouvert) ou inactifs (= pas de for fiscal principal ouvert).
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="searchModeType">
+		<xs:annotation>
+			<xs:documentation>Comportement de la recherche sur le nom courrier du tiers.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IS_EXACTLY">
+				<xs:annotation>
+					<xs:documentation>Ne retourne que les tiers dont le nom courrier est exactement la valeur spécifiée. Traitement plutôt rapide.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONTAINS">
+				<xs:annotation>
+					<xs:documentation>Retourne les tiers dont le nom courrier contient la valeur spécifiée (par exemple: 'jardin' dans 'Jean Dujardin'). Traitement moyennement rapide.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PHONETIC">
+				<xs:annotation>
+					<xs:documentation>Retourne les tiers dont le nom courrier est assez proche de la valeur spécifiée (par exemple: 'xardin' dans 'Jean Dujardin'). Traitement le moins rapide.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType final="#all" name="searchPartyResponseType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="items" nillable="true" type="party:partyInfoType" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

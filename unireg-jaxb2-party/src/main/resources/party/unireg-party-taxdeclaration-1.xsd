@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.1 - 23 novembre 2011 - ajouté le code de segmentation sur les DIs -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="unireg-party-debtor-1.xsd" />
+
+	<xs:complexType name="taxDeclarationType">
+		<xs:sequence>
+			<xs:element name="id" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>L'id technique (= clé primaire)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de début de validité de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>La date de fin de validité de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle la déclaration a été annulée, ou
+						<b>null</b>
+						si elle n'est pas annulée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxPeriod" type="taxdeclaration:taxPeriodType">
+				<xs:annotation>
+					<xs:documentation>La période fiscale à laquelle la déclaration est rattachée.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" name="statuses" type="taxdeclaration:taxDeclarationStatusType">
+				<xs:annotation>
+					<xs:documentation>Les états de la déclaration.
+						Attention ! Cette collection n'est renseignée que si la part TAX_DECLARATIONS_STATUSES est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="withholdingTaxDeclarationType">
+		<xs:annotation>
+			<xs:documentation>Contient les informations relative à une liste récapitulative (= LR) émise sur un débiteur.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxdeclaration:taxDeclarationType">
+				<xs:sequence>
+					<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
+						<xs:annotation>
+							<xs:documentation>La périodicité du débiteur au moment de l'émission de la LR.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="communicationMode" type="debtor:communicationModeType">
+						<xs:annotation>
+							<xs:documentation>Le mode de communication du débiteur au moment de l'émission de la LR.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ordinaryTaxDeclarationType">
+		<xs:annotation>
+			<xs:documentation>Contient les informations relative à une déclaration d'impôt ordinaire (= DI) émise sur un contribuable.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxdeclaration:taxDeclarationType">
+				<xs:sequence>
+					<xs:element name="sequenceNumber" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Le numéro de séquence de la déclaration pour la période fiscale.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="documentType" type="taxdeclaration:documentTypeType">
+						<xs:annotation>
+							<xs:documentation>Le type de document.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="managingMunicipalityFSOId" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>numéro OFS de la commune du for de gestion à la date de fin de la DI</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="segmentationCode" type="xs:int" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Le code de segmentation TAO (n'est pas forcément renseigné sur les anciennes déclarations).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="taxPeriodType">
+		<xs:annotation>
+			<xs:documentation>Une période fiscale couvre la période du 1er janvier au 31 décembre (compris) de l'année considérée.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="year" type="xs:int" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="taxDeclarationStatusType">
+		<xs:annotation>
+			<xs:documentation>L'état d'une déclaration avec sa date d'obtention.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>Date d'obtention de l'état décrit ici (pour le cas de la sommation, ce n'est pas la date de traitement métier de la sommation qui est indiquée ici, i.e. la vraie
+						date d'obtention, mais la date indiquée sur le courrier envoyé au contribuable).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle l'état a été annulé, ou null s'il n'est pas annulé.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="taxdeclaration:taxDeclarationStatusTypeType">
+				<xs:annotation>
+					<xs:documentation>L'état de la déclaration.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="taxDeclarationStatusTypeType">
+		<xs:annotation>
+			<xs:documentation>Statut possible d'une déclaration d'impôt.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SENT">
+				<xs:annotation>
+					<xs:documentation>Déclaration émise.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUMMONS_SENT">
+				<xs:annotation>
+					<xs:documentation>Déclaration sommée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXPIRED">
+				<xs:annotation>
+					<xs:documentation>Déclaration échue.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RETURNED">
+				<xs:annotation>
+					<xs:documentation>Déclaration retournée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="documentTypeType">
+		<xs:annotation>
+			<xs:documentation>Les différents types de déclarations d'impôt ordinaires.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FULL_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration complète.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VAUDTAX_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration VaudTax.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXPENDITURE_BASED_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration à la dépense.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration hors-canton immeuble.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

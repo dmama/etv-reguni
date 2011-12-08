@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- POM for Business IT -->
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>uniregctb-business-it</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>ch.vd.uniregctb</groupId>
+        <artifactId>uniregctb</artifactId>
+		<!-- BEGIN_LVERSION -->
+		<version>4.13-SNAPSHOT</version>
+		<!-- END_LVERSION -->
+		<relativePath>../base/pom.xml</relativePath>
+    </parent>
+
+    <name>Unireg - Business IT</name>
+    <description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business Integration Tests</description>
+
+    <dependencies>
+        <dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+            <artifactId>uniregctb-business</artifactId>
+			<version>${pom.parent.version}</version>
+        </dependency>
+	    <dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-core</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+	    </dependency>
+	    <dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-business</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+	    </dependency>
+		<dependency>
+			<groupId>ch.vd.host-interfaces</groupId>
+			<artifactId>host-interfaces-client</artifactId>
+			<version>${host-interfaces.version-long}</version>
+		</dependency>
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>ejb</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>weblogic</groupId>
+			<artifactId>wlfullclient-jdk6</artifactId>
+			<version>10.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+
+	<build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.zip</exclude>
+				</excludes>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.zip</include>
+				</includes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

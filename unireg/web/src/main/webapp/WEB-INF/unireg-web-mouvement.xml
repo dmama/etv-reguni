@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean 	id="abstractMouvementController"
+			parent="abstractSimpleFormEditiqueAwareController"
+			abstract="true"
+			class="ch.vd.uniregctb.mouvement.AbstractMouvementController">
+		<property name="mouvementMapHelper" ref="mouvementMapHelper" />
+	</bean>
+
+	<bean id="mouvementMapHelper" class="ch.vd.uniregctb.mouvement.MouvementMapHelper" >
+	</bean>
+
+	<bean id="mouvementEditController" class="ch.vd.uniregctb.mouvement.MouvementEditController" parent="abstractMouvementController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementDetailView" />
+		<property name="commandName" value="command" />
+		<property name="mouvementEditManager" ref="mouvementEditManager" />
+		<property name="tacheListManager" ref="tacheListManager" />
+		<property name="formView" value="mouvement/edit" />
+		<property name="successView" value="redirect:/mouvement/edit.do" />
+		<property name="validator" ref="mouvementEditValidator" />
+	</bean>
+	
+	<bean id="mouvementEditValidator" class="ch.vd.uniregctb.mouvement.validator.MouvementEditValidator" >
+	</bean>
+	
+	<bean id="mouvementEditContribuableController" class="ch.vd.uniregctb.mouvement.MouvementEditContribuableController" parent="abstractMouvementController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementListView" />
+		<property name="commandName" value="command" />
+		<property name="mouvementEditManager" ref="mouvementEditManager" />
+		<property name="formView" value="mouvement/edit-contribuable" />
+		<property name="successView" value="redirect:/mouvement/edit-contribuable.do" />
+	</bean>
+	
+	<bean id="mouvementEditManager" class="ch.vd.uniregctb.mouvement.manager.MouvementEditManagerImpl" parent="abstractMouvementManager"/>
+
+	<bean id="mouvementMasseManager" class="ch.vd.uniregctb.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
+		<property name="mouvementService" ref="mouvementService"/>
+		<property name="bordereauDAO" ref="bordereauMouvementDossierDAO"/>
+		<property name="extractionService" ref="extractionService" />
+	</bean>
+
+	<bean id="bordereauMouvementDossierController" class="ch.vd.uniregctb.mouvement.BordereauController">
+		<property name="mouvementManager" ref="mouvementMasseManager"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+	</bean>
+
+	<bean id="mouvementMasseController" class="ch.vd.uniregctb.mouvement.MouvementMasseController">
+		<property name="mouvementManager" ref="mouvementMasseManager"/>
+		<property name="mouvementMapHelper" ref="mouvementMapHelper"/>
+	</bean>
+
+</beans>
