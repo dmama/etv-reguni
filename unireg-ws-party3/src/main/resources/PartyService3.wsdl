@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.1-SNAPSHOT -->
+<!-- version 3.2-SNAPSHOT -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
@@ -14,6 +14,7 @@
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="party/unireg-party-person-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="party/unireg-party-debtor-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="party/unireg-party-corporation-1.xsd" />
+			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/1" schemaLocation="party/unireg-party-administrativeauthority-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" schemaLocation="party/unireg-party-taxdeclaration-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="party/unireg-party-taxresidence-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="party/unireg-party-relation-1.xsd" />
@@ -26,6 +27,7 @@
 			<xs:include schemaLocation="messages/acknowledgetaxdeclarations.xsd" />
 			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
 			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
+			<xs:include schemaLocation="messages/gettaxoffices.xsd" />
 			<xs:element name="searchPartyRequest" nillable="true" type="ws:searchPartyRequestType" />
 			<xs:element name="searchPartyResponse" nillable="true" type="ws:searchPartyResponseType" />
 			<xs:element name="searchCorporationEventsRequest" nillable="true" type="ws:searchCorporationEventsRequestType" />
@@ -38,6 +40,8 @@
 			<xs:element name="getBatchPartyResponse" nillable="true" type="ws:batchPartyType" />
 			<xs:element name="getDebtorInfoRequest" nillable="true" type="ws:getDebtorInfoRequestType" />
 			<xs:element name="getDebtorInfoResponse" nillable="true" type="debtor:debtorInfoType" />
+			<xs:element name="getTaxOfficesRequest" nillable="true" type="ws:getTaxOfficesRequestType" />
+			<xs:element name="getTaxOfficesResponse" nillable="true" type="ws:getTaxOfficesResponseType" />
 			<xs:element name="getModifiedTaxpayersRequest" nillable="true" type="ws:getModifiedTaxpayersRequestType" />
 			<xs:element name="getModifiedTaxpayersResponse" nillable="true" type="ws:partyNumberListType" />
 			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="ws:setAutomaticReimbursementBlockingRequestType" />
@@ -88,6 +92,13 @@
 	</wsdl:message>
 	<wsdl:message name="getDebtorInfoResponseMessage">
 		<wsdl:part name="getDebtorInfoResponse" element="getDebtorInfoResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="getTaxOfficesRequestMessage">
+		<wsdl:part name="getTaxOfficesRequest" element="getTaxOfficesRequest" />
+	</wsdl:message>
+	<wsdl:message name="getTaxOfficesResponseMessage">
+		<wsdl:part name="getTaxOfficesResponse" element="getTaxOfficesResponse" />
 	</wsdl:message>
 
 	<wsdl:message name="getModifiedTaxpayersRequestMessage">
@@ -162,6 +173,13 @@
 		<wsdl:operation name="getDebtorInfo">
 			<wsdl:input message="getDebtorInfoRequestMessage" />
 			<wsdl:output message="getDebtorInfoResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="getTaxOffices">
+			<wsdl:documentation>Cette méthode permet de déterminer les offices d'impôt de district et de région pour une commune donnée.
+				Retourne les numéros de tiers des collectivités administratives qui représentent les offices d'impôt; ou null si la commune est inconnue ou hors-canton.</wsdl:documentation>
+			<wsdl:input message="getTaxOfficesRequestMessage" />
+			<wsdl:output message="getTaxOfficesResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="ping">
@@ -263,6 +281,17 @@
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="getDebtorInfo">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getTaxOffices">
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>

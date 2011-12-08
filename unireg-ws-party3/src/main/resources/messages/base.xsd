@@ -34,7 +34,7 @@
 			</xs:enumeration>
 			<xs:enumeration value="VIRTUAL_TAX_RESIDENCES">
 				<xs:annotation>
-					<xs:documentation>Les fors fiscaux virtuels du tiers</xs:documentation>
+					<xs:documentation>Les fors fiscaux virtuels du tiers (les fors fiscaux non-virtuels sont aussi retournés).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="MANAGING_TAX_RESIDENCES">
