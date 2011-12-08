@@ -53,4 +53,26 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 			Assert.assertEquals("Connection refused", e.getMessage());
 		}
 	}
+
+	@Test
+	public void testExtractionFilename() throws Exception {
+		Assert.assertNull(HttpDocumentFetcher.extractFilename(null));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename(""));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment"));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"\""));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"\"; toto=12"));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"   \"; toto=12"));
+
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("inline;filename=myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("inline;filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment;filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename=myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt;toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt ;toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\";toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\" ;toto"));
+	}
 }
