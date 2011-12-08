@@ -90,6 +90,12 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="party/unireg-party-administrativeauthority-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.adminauth.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="party/unireg-party-address-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.address.v1" />
@@ -98,7 +104,6 @@
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
-
 
 	<jxb:bindings schemaLocation="party/unireg-party-relation-1.xsd">
 		<jxb:schemaBindings>
