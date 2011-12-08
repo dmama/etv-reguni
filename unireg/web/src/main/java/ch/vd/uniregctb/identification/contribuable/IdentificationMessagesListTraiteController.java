@@ -54,7 +54,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		LOGGER.debug("Start of IdentificationMessagesListTraiteController:formBackingObject");
 
 		// on doit avoir les droits de visualisation pour ça...
-		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO)) {
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
 
