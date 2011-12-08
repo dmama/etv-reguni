@@ -228,14 +228,20 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
-			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.NCS);
-		}
-		else {
+		if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
+				|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+			//Les autres rôles ont le droit de voir tout les types de message
 			return identificationMapHelper.initMapTypeMessage(false);
 		}
+		else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
 
+			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
+			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.NCS);
 
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override

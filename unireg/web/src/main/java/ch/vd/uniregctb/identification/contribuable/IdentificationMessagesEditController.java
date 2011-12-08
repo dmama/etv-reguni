@@ -141,7 +141,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MAN_EXPERT);
 				}
-				else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
+				else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MANUELLEMENT);
 				}

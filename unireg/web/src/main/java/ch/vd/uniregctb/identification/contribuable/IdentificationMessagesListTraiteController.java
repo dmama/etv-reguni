@@ -113,10 +113,20 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			// Récupération de la pagination
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
-			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.MELDEWESEN);
+			List<IdentificationMessagesResultView> listIdentifications = null;
+			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
+					|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false));
+			}
+			else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.NCS);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.NCS));
+			}
 
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.MELDEWESEN));
+
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
@@ -181,8 +191,20 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage(true, TypeDemande.MELDEWESEN);
+		if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
+				|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+			//Les autres rôles ont le droit de voir tout les types de message
+			return identificationMapHelper.initMapTypeMessage(true);
+		}
+		else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
 
+			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
+			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.NCS);
+
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
