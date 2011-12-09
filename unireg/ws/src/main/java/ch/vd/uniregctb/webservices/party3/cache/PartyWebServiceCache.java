@@ -22,6 +22,8 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
@@ -303,6 +305,30 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 			}
 			else {
 				resultat = (PartyType) element.getObjectValue();
+			}
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+
+		return resultat;
+	}
+
+	@Override
+	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
+
+		final GetTaxOfficesResponse resultat;
+
+		try {
+			final GetTaxOfficesKey key = new GetTaxOfficesKey(params.getMunicipalityFSOId(), params.getDate());
+			final Element element = cache.get(key);
+			if (element == null) {
+				resultat = target.getTaxOffices(params);
+				cache.put(new Element(key, resultat));
+			}
+			else {
+				resultat = (GetTaxOfficesResponse) element.getObjectValue();
 			}
 		}
 		catch (RuntimeException e) {

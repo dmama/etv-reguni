@@ -805,6 +805,22 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	@Override
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict) {
+		Object[] criteria = {
+				Long.valueOf(numeroDistrict)
+		};
+		String query = "from CollectiviteAdministrative col where col.identifiantDistrictFiscal = ?";
+
+		final List<?> list = find(query, criteria, null);
+
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par district
+		return (CollectiviteAdministrative) list.get(0);
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
 		Object[] criteria = {
 				Long.valueOf(numeroRegion)

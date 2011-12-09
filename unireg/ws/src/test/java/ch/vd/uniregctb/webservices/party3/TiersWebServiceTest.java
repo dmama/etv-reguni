@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
@@ -22,6 +23,8 @@ import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
@@ -33,6 +36,7 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
+import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
@@ -53,10 +57,12 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -968,5 +974,100 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
 			assertEquals(Integer.valueOf(2), d0.getSegmentationCode());
 		}
+	}
+
+	@Test
+	public void testGetTaxOffices() throws Exception {
+
+		class Ids {
+			long lausanne;
+			long orbe;
+			long yverdon;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				CollectiviteAdministrative lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				CollectiviteAdministrative orbe = addCollAdm(MockOfficeImpot.OID_ORBE);
+				CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				ids.lausanne = lausanne.getNumero();
+				ids.orbe = orbe.getNumero();
+				ids.yverdon = yverdon.getNumero();
+			}
+		});
+
+		// Lausanne
+		final GetTaxOfficesRequest params = new GetTaxOfficesRequest();
+		params.setLogin(login);
+		params.setMunicipalityFSOId(MockCommune.Lausanne.getNoOFS());
+
+		final GetTaxOfficesResponse lausanne = service.getTaxOffices(params);
+		assertNotNull(lausanne);
+		assertEquals(ids.lausanne, lausanne.getDistrictTaxOfficePartyNumber());
+		assertEquals(ids.lausanne, lausanne.getRegionTaxOfficePartyNumber());
+
+		// Orbe
+		params.setMunicipalityFSOId(MockCommune.Orbe.getNoOFS());
+
+		final GetTaxOfficesResponse orbe = service.getTaxOffices(params);
+		assertNotNull(orbe);
+		assertEquals(ids.orbe, orbe.getDistrictTaxOfficePartyNumber());
+		assertEquals(ids.yverdon, orbe.getRegionTaxOfficePartyNumber());
+
+		// Genève
+		params.setMunicipalityFSOId(MockCommune.Geneve.getNoOFS());
+		assertNull(service.getTaxOffices(params)); // pas un commune vaudoise
+	}
+
+	@Test
+	public void testGetPartyAdministrativeAuthority() throws Exception {
+
+		class Ids {
+			long lausanne;
+			long orbe;
+			long yverdon;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				CollectiviteAdministrative lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				CollectiviteAdministrative orbe = addCollAdm(MockOfficeImpot.OID_ORBE);
+				CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				ids.lausanne = lausanne.getNumero();
+				ids.orbe = orbe.getNumero();
+				ids.yverdon = yverdon.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+
+		// Lausanne
+		params.setPartyNumber((int) ids.lausanne);
+		final AdministrativeAuthority lausanne = (AdministrativeAuthority) service.getParty(params);
+		assertNotNull(lausanne);
+		assertEquals("OID LAUSANNE", lausanne.getName());
+		assertEquals(Integer.valueOf(4), lausanne.getDistrictTaxOfficeId());
+		assertEquals(Integer.valueOf(1), lausanne.getRegionTaxOfficeId());
+
+		// Orbe
+		params.setPartyNumber((int) ids.orbe);
+		final AdministrativeAuthority orbe = (AdministrativeAuthority) service.getParty(params);
+		assertNotNull(orbe);
+		assertEquals("OID ORBE", orbe.getName());
+		assertEquals(Integer.valueOf(10), orbe.getDistrictTaxOfficeId());
+		assertNull(orbe.getRegionTaxOfficeId());
+
+		// Yverdon
+		params.setPartyNumber((int) ids.yverdon);
+		final AdministrativeAuthority yverdon = (AdministrativeAuthority) service.getParty(params);
+		assertNotNull(yverdon);
+		assertEquals("OID YVERDON", yverdon.getName());
+		assertEquals(Integer.valueOf(15), yverdon.getDistrictTaxOfficeId());
+		assertEquals(Integer.valueOf(4), yverdon.getRegionTaxOfficeId());
 	}
 }

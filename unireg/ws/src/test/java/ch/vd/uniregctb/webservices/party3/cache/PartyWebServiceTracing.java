@@ -11,6 +11,8 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -31,6 +33,7 @@ public class PartyWebServiceTracing implements PartyWebService {
 	public List<SearchPartyRequest> searchTiersCalls = new ArrayList<SearchPartyRequest>();
 	public List<GetPartyTypeRequest> getTiersTypeCalls = new ArrayList<GetPartyTypeRequest>();
 	public List<GetPartyRequest> getTiersCalls = new ArrayList<GetPartyRequest>();
+	public List<GetTaxOfficesRequest> getTaxOfficesCalls = new ArrayList<GetTaxOfficesRequest>();
 	public List<GetBatchPartyRequest> getBatchTiersCalls = new ArrayList<GetBatchPartyRequest>();
 	public List<SetAutomaticReimbursementBlockingRequest> setTiersBlocRembAutoCalls = new ArrayList<SetAutomaticReimbursementBlockingRequest>();
 	public List<SearchCorporationEventsRequest> searchEvenementsPMCalls = new ArrayList<SearchCorporationEventsRequest>();
@@ -81,6 +84,12 @@ public class PartyWebServiceTracing implements PartyWebService {
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
 		getTiersCalls.add(params);
 		return target.getParty(params);
+	}
+
+	@Override
+	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
+		getTaxOfficesCalls.add(params);
+		return target.getTaxOffices(params);
 	}
 
 	@Override

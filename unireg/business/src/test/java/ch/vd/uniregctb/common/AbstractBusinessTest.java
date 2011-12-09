@@ -30,6 +30,7 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -370,7 +371,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected RapportPrestationImposable addRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RegDate debut, @Nullable RegDate fin, boolean annule) {
 		RapportPrestationImposable rpi = new RapportPrestationImposable(debut, fin, sourcier, dpi);
 		rpi.setAnnule(annule);
-		rpi = (RapportPrestationImposable) hibernateTemplate.merge(rpi);
+		rpi = hibernateTemplate.merge(rpi);
 
 		dpi.addRapportObjet(rpi);
 		sourcier.addRapportSujet(rpi);
@@ -417,11 +418,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return addCollAdm(ServiceInfrastructureService.noCEDI);
 	}
 
-	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid) {
-		return addCollAdm(oid, null, null);
+	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative ca) {
+		return addCollAdm(ca, null, null);
 	}
 
-	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid, Integer identifiantDistrict, Integer identifiantRegion) {
+	protected CollectiviteAdministrative addCollAdm(MockOfficeImpot oid) {
+		return addCollAdm(oid, oid.getIdentifiantDistrict(), oid.getIdentifiantRegion());
+	}
+
+	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid, @Nullable Integer identifiantDistrict, @Nullable Integer identifiantRegion) {
 		CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(oid.getNoColAdm());
 		if (identifiantDistrict != null) {
@@ -430,7 +435,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		if (identifiantRegion != null) {
 			ca.setIdentifiantRegionFiscale(identifiantRegion);
 		}
-		ca = (CollectiviteAdministrative) hibernateTemplate.merge(ca);
+		ca = hibernateTemplate.merge(ca);
 		hibernateTemplate.flush();
 		return ca;
 	}

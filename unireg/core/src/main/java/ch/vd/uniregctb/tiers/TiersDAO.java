@@ -179,11 +179,18 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 
 	/**
-	 * Renvoie la collectivité administrative rattachée au numero de Région donné.
+	 * Renvoie la collectivité administrative rattachée au numero de district donné.
 	 *
-	 * @parm le numero du district
-	 * @return le tiers représentant la collectivité administrative correspondant
-	 * @param numeroRegion
+	 * @param numeroDistrict le numéro du district
+	 * @return le tiers représentant la collectivité administrative correspondante
+	 */
+	CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict);
+
+	/**
+	 * Renvoie la collectivité administrative rattachée au numero de région donné.
+	 *
+	 * @param numeroRegion le numéro du région
+	 * @return le tiers représentant la collectivité administrative correspondante
 	 */
 	CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion);
 

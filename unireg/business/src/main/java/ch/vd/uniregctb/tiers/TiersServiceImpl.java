@@ -4372,4 +4372,27 @@ public class TiersServiceImpl implements TiersService {
 
 	}
 
+	@Override
+	public NumerosOfficesImpot getOfficesImpot(int noOfs, @Nullable RegDate date) {
+
+		final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, date);
+		if (commune == null || !commune.isVaudoise()) {
+			return null;
+		}
+
+		final District district = commune.getDistrict();
+		if (district == null) {
+			return null;
+		}
+
+		final Region region = district.getRegion();
+		final Integer codeDistrict = district.getCode();
+		final Integer codeRegion = region == null ? null : region.getCode();
+
+		final CollectiviteAdministrative oid = codeDistrict == null ? null : tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
+		final CollectiviteAdministrative oir = codeRegion == null ? null : tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
+
+		return new NumerosOfficesImpot(oid == null ? 0 : oid.getNumero(), oir == null ? 0 : oir.getNumero());
+	}
+
 }

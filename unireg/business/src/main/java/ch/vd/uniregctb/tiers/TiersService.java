@@ -1142,5 +1142,14 @@ public interface TiersService {
 	 * @param forFiscal
 	 */
 	public void traiterReOuvertureForDebiteur(ForFiscal forFiscal);
+
+	/**
+	 * Détermine et retourne les numéros de tiers des offices d'impôt de district et de région pour une commune donnée.
+	 *
+	 * @param noOfs le numéro Ofs d'une commune
+	 * @param date  la date de valeur voulue
+	 * @return les numéros de tiers des offices d'impôt de district et de région; ou <b>null</b> si la commune n'est pas vaudoise ou est inconnue.
+	 */
+	NumerosOfficesImpot getOfficesImpot(int noOfs, @Nullable RegDate date);
 }
 

@@ -34,6 +34,8 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
@@ -73,8 +75,10 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.NumerosOfficesImpot;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
@@ -254,6 +258,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 				data = PartyBuilder.newDebtor(debiteur, parts, context);
 			}
+			else if (tiers instanceof CollectiviteAdministrative) {
+				final CollectiviteAdministrative coladm = (CollectiviteAdministrative) tiers;
+				data = PartyBuilder.newAdministrativeAuthority(coladm, parts, context);
+			}
 			else {
 				data = null;
 			}
@@ -303,6 +311,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 						else if (tiers instanceof DebiteurPrestationImposable) {
 							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 							t = PartyBuilder.newDebtor(debiteur, parts, context);
+						}
+						else if (tiers instanceof CollectiviteAdministrative) {
+							final CollectiviteAdministrative coladm = (CollectiviteAdministrative) tiers;
+							t = PartyBuilder.newAdministrativeAuthority(coladm, parts, context);
 						}
 						else {
 							t = null;
@@ -503,6 +515,23 @@ public class PartyWebServiceImpl implements PartyWebService {
 			}
 
 			return type;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw ExceptionHelper.newTechnicalException(e);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
+		try {
+			final NumerosOfficesImpot offices = context.tiersService.getOfficesImpot(params.getMunicipalityFSOId(), DataHelper.webToCore(params.getDate()));
+			if (offices == null) {
+				return null;
+			}
+
+			return new GetTaxOfficesResponse((int) offices.getOid(), (int) offices.getOir(), null);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);

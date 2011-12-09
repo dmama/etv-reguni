@@ -15,6 +15,8 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -100,6 +102,11 @@ public class PartyWebServiceCrashing implements PartyWebService {
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
 		check(params.getPartyNumber());
 		return target.getParty(params);
+	}
+
+	@Override
+	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
+		return target.getTaxOffices(params);
 	}
 
 	@Override

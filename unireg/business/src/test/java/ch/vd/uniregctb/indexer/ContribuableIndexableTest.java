@@ -1003,6 +1003,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict) {
+			throw new NotImplementedException();
+		}
+
+		@Override
 		public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
 			throw new NotImplementedException();
 		}

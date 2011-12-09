@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
 import javax.annotation.Resource;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
@@ -24,6 +25,8 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -210,6 +213,30 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			}
 
 			return batch;
+		}
+		catch (WebServiceException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception lors du traitement du message " + params, e);
+			throw ExceptionHelper.newTechnicalException(e.getMessage());
+		}
+		finally {
+			logout();
+			final long end = System.nanoTime();
+			logReadAccess(params, end - start);
+		}
+	}
+
+	@Override
+	public GetTaxOfficesResponse getTaxOffices(@WebParam(partName = "getTaxOfficesRequest", name = "getTaxOfficesRequest",
+			targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3") GetTaxOfficesRequest params) throws WebServiceException {
+		final long start = System.nanoTime();
+		try {
+			login(params.getLogin());
+			checkGeneralReadAccess(params.getLogin());
+			return service.getTaxOffices(params);
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());

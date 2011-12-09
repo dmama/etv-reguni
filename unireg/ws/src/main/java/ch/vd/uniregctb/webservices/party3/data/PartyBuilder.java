@@ -8,13 +8,16 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.Debtor;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.webservices.party3.data.strategy.AdminAuthStrategy;
 import ch.vd.uniregctb.webservices.party3.data.strategy.CommonHouseholdStrategy;
 import ch.vd.uniregctb.webservices.party3.data.strategy.CorporationStrategy;
 import ch.vd.uniregctb.webservices.party3.data.strategy.DebtorStrategy;
@@ -29,6 +32,7 @@ public class PartyBuilder {
 	private static final CommonHouseholdStrategy commonHouseholdStrategy = new CommonHouseholdStrategy();
 	private static final NaturalPersonStrategy naturalPersonStrategy = new NaturalPersonStrategy();
 	private static final CorporationStrategy corporationStrategy = new CorporationStrategy();
+	private static final AdminAuthStrategy adminAuthStrategy = new AdminAuthStrategy();
 	private static Map<Class, PartyStrategy<?>> strategies = new HashMap<Class, PartyStrategy<?>>();
 
 	static {
@@ -36,6 +40,7 @@ public class PartyBuilder {
 		strategies.put(CommonHousehold.class, commonHouseholdStrategy);
 		strategies.put(NaturalPerson.class, naturalPersonStrategy);
 		strategies.put(Corporation.class, corporationStrategy);
+		strategies.put(AdministrativeAuthority.class, adminAuthStrategy);
 	}
 
 	public static NaturalPerson newNaturalPerson(ch.vd.uniregctb.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
@@ -52,6 +57,10 @@ public class PartyBuilder {
 
 	public static Corporation newCorporation(Entreprise entreprise, Set<PartyPart> parts, Context context) throws WebServiceException {
 		return corporationStrategy.newFrom(entreprise, parts, context);
+	}
+
+	public static AdministrativeAuthority newAdministrativeAuthority(CollectiviteAdministrative coladm, Set<PartyPart> parts, Context context) throws WebServiceException {
+		return adminAuthStrategy.newFrom(coladm, parts, context);
 	}
 
 	@SuppressWarnings({"unchecked"})
