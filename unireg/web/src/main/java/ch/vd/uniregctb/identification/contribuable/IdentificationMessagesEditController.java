@@ -145,6 +145,9 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MANUELLEMENT);
 				}
+				else {
+					throw new AccessDeniedException("Vous ne possédez pas le droit d'identifier un contribuable manuellement");
+				}
 
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
 
