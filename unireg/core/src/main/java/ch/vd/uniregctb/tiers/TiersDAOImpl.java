@@ -101,45 +101,66 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	@Override
-	public Set<Long> getRelatedIds(long id, int maxDepth) {
+	public Set<Long> getRelatedIds(final long id, int maxDepth) {
+
 		final Set<Long> ids = new HashSet<Long>();
-		fillRelatedIds(id, ids, 0, maxDepth);
+		ids.add(id);
+
+		// on démarre avec l'id passé
+		final Set<Long> input = new HashSet<Long>();
+		input.add(id);
+
+		for (int i = 0; i < maxDepth; i++) {
+
+			final Set<Long> output = getFirstLevelOfRelatedIds(input);
+			ids.addAll(output);
+
+			if (input.containsAll(output)) {
+				// tous les liens ont été résolus -> plus rien à faire
+				break;
+			}
+
+			// on étends la recherche aux nouveaux ids trouvés
+			input.clear();
+			input.addAll(output);
+		}
+
 		return ids;
 	}
 
-	private void fillRelatedIds(long id, Set<Long> ids, int callDepth, int maxDepth) {
+	@SuppressWarnings({"unchecked"})
+	private Set<Long> getFirstLevelOfRelatedIds(final Set<Long> input) {
 
-		if (!ids.add(id)) {
-			// l'id existe déjà, pas besoin d'aller plus loin
-			return;
+		if (input == null || input.isEmpty()) {
+			return Collections.emptySet();
 		}
 
-		if (callDepth > maxDepth) {
-			// on ne va pas plus loin que deux niveaux de rapports : il ne devrait pas y avoir de situation où c'est nécessaire
-			return;
-		}
-
-		final Tiers tiers = get(id);
-		if (tiers != null) {
-			final Set<RapportEntreTiers> rapportsObjet = tiers.getRapportsObjet();
-			if (rapportsObjet != null) {
-				for (RapportEntreTiers r : rapportsObjet) {
-					if (r instanceof RapportPrestationImposable) {
-						continue;
-					}
-					fillRelatedIds(r.getSujetId(), ids, callDepth + 1, maxDepth);
+		final List<Object[]> list = getHibernateTemplate().executeFind(new HibernateCallback<List>() {
+			@Override
+			public List doInHibernate(Session session) throws HibernateException, SQLException {
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+					final Query query =
+							session.createQuery("select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))");
+					query.setParameterList("ids", input);
+					return query.list();
+				}
+				finally {
+					session.setFlushMode(mode);
 				}
 			}
-			final Set<RapportEntreTiers> rapportsSujet = tiers.getRapportsSujet();
-			if (rapportsSujet != null) {
-				for (RapportEntreTiers r : rapportsSujet) {
-					if (r instanceof RapportPrestationImposable) {
-						continue;
-					}
-					fillRelatedIds(r.getObjetId(), ids, callDepth + 1, maxDepth);
-				}
-			}
+		});
+
+		final Set<Long> output = new HashSet<Long>();
+		for (Object[] objects : list) {
+			final Long objetId = (Long) objects[0];
+			final Long sujetId = (Long) objects[1];
+			output.add(objetId);
+			output.add(sujetId);
 		}
+
+		return output;
 	}
 
 	private interface TiersIdGetter<T extends HibernateEntity> {

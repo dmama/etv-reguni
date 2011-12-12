@@ -36,10 +36,12 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	/**
 	 * Détermine et retourne tous les numéros de tiers liés au tiers spécifié.
+	 * <p/>
+	 * <b>Note:</b> l'id spécifié est toujours inclus dans le résultat retourné, l'existence du tiers spécifié n'est donc pas vérifiée.
 	 *
 	 * @param id       un numéro de tiers
 	 * @param maxDepth la profondeur maximale de parcour du graphe des tiers liés
-	 * @return l'ensemble des tiers liés
+	 * @return l'id spécifié + les ids des tiers liés
 	 */
 	Set<Long> getRelatedIds(long id, int maxDepth);
 

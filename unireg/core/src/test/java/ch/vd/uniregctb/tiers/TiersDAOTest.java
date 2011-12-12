@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.hibernate.collection.PersistentSet;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.ExpectedException;
@@ -36,18 +36,19 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author
@@ -1531,6 +1532,90 @@ public class TiersDAOTest extends CoreDAOTest {
 		listId = tiersDAO.getListeCtbModifies(debut,fin4);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(4, listId.size());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetRelatedIdsTiersInconnu() throws Exception {
+		Set<Long> ids = tiersDAO.getRelatedIds(12345678, 2);
+		assertNotNull(ids);
+		assertEquals(1, ids.size());
+		assertEquals(Long.valueOf(12345678), ids.iterator().next());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetRelatedIdsTiersNonLies() throws Exception {
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
+				addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
+				final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
+				return gudrun.getNumero();
+			}
+		});
+
+		final Set<Long> ids = tiersDAO.getRelatedIds(id, 2);
+		assertNotNull(ids);
+		assertEquals(1, ids.size());
+		assertEquals(id, ids.iterator().next());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetRelatedIdsDeuxTiersLies() throws Exception {
+
+		class Ids {
+			long jean;
+			long gudrun;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
+				final PersonnePhysique jean = addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
+				final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jean, gudrun, date(1960, 4, 12), null);
+				ids.jean = jean.getNumero();
+				ids.gudrun = gudrun.getNumero();
+				ids.menage = ensemble.getMenage().getNumero();
+				return null;
+			}
+		});
+
+		// 1 niveau de profondeur
+		{
+			final Set<Long> related = tiersDAO.getRelatedIds(ids.jean, 1);
+			assertNotNull(related);
+			assertEquals(2, related.size());
+			assertTrue(related.contains(ids.jean));
+			assertTrue(related.contains(ids.menage));
+		}
+
+		// 2 niveaux de profondeur
+		{
+			final Set<Long> related = tiersDAO.getRelatedIds(ids.jean, 2);
+			assertNotNull(related);
+			assertEquals(3, related.size());
+			assertTrue(related.contains(ids.jean));
+			assertTrue(related.contains(ids.gudrun));
+			assertTrue(related.contains(ids.menage));
+		}
+
+		// 3 niveaux de profondeur
+		{
+			final Set<Long> related = tiersDAO.getRelatedIds(ids.jean, 3);
+			assertNotNull(related);
+			assertEquals(3, related.size());
+			assertTrue(related.contains(ids.jean));
+			assertTrue(related.contains(ids.gudrun));
+			assertTrue(related.contains(ids.menage));
+		}
 	}
 
 	private void assertTiersEquals(Tiers expected, Tiers actual) {
