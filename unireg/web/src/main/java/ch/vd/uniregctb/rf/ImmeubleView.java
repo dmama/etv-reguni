@@ -52,8 +52,13 @@ public class ImmeubleView {
 		if (numeroImmeuble == null) {
 			return null;
 		}
-		final String numeroAsString = numeroImmeuble.split("-")[0];
-		return Integer.valueOf(numeroAsString);
+		final String numeroAsString = numeroImmeuble.split("[-/]")[0]; // on tolère l'ancien (/) et le nouveau séparateur (-) pour blinder un peu tout ça
+		try {
+			return Integer.valueOf(numeroAsString);
+		}
+		catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 
 	/**
@@ -65,6 +70,9 @@ public class ImmeubleView {
 			return null;
 		}
 		int i = numeroImmeuble.indexOf('-');
+		if (i < 0) {
+			i = numeroImmeuble.indexOf('/');
+		}
 		if (i < 0) {
 			return numeroImmeuble;
 		}
