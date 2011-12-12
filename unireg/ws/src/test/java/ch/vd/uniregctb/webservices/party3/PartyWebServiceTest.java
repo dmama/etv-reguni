@@ -80,7 +80,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
-public class TiersWebServiceTest extends WebserviceTest {
+public class PartyWebServiceTest extends WebserviceTest {
 
 	private PartyWebService service;
 	private UserLogin login;

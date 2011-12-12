@@ -46,7 +46,7 @@ import static org.junit.Assert.fail;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @SuppressWarnings({"JavaDoc"})
-public class TiersWebServicePMTest extends WebserviceTest {
+public class PartyWebServicePMTest extends WebserviceTest {
 
 	private PartyWebService service;
 	private UserLogin login;
