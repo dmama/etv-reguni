@@ -918,6 +918,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public Set<Long> getRelatedIds(long id, int maxDepth) {
+			throw new NotImplementedException();
+		}
+
+		@Override
 		public Set<Long> getIdsTiersLies(Collection<Long> ids, boolean includeContactsImpotSource) {
 			throw new NotImplementedException();
 		}

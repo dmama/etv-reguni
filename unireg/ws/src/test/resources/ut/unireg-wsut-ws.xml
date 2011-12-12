@@ -8,6 +8,17 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
+	<bean id="wsEventDataListenerAdapter" class="ch.vd.uniregctb.webservices.common.WebServiceEventListenerAdapter">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="listeners">
+			<util:list>
+				<ref bean="tiersService2CacheManager"/>
+				<ref bean="partyService3CacheManager"/>
+			</util:list>
+		</property>
+	</bean>
+
 	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->
 
 	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
@@ -43,9 +54,7 @@
 	</bean>
 
 	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
-		<property name="dataEventService" ref="dataEventService" />
 		<property name="cache" ref="tiersService2Cache" />
-		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 	<!-- Beans du web-service Tiers v3 mais sans le end-point jaxws -->
@@ -82,9 +91,7 @@
 	</bean>
 
 	<bean id="partyService3CacheManager" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCacheManager">
-		<property name="dataEventService" ref="dataEventService" />
 		<property name="cache" ref="partyService3Cache" />
-		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 </beans>

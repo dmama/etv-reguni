@@ -35,6 +35,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Map<Class, List<Tiers>> getFirstGroupedByClass(int count);
 
 	/**
+	 * Détermine et retourne tous les numéros de tiers liés au tiers spécifié.
+	 *
+	 * @param id       un numéro de tiers
+	 * @param maxDepth la profondeur maximale de parcour du graphe des tiers liés
+	 * @return l'ensemble des tiers liés
+	 */
+	Set<Long> getRelatedIds(long id, int maxDepth);
+
+	/**
 	 * Liste des collections associées à un tiers.
 	 */
 	public enum Parts {

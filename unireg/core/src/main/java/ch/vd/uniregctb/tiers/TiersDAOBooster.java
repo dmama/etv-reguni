@@ -130,6 +130,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public Set<Long> getRelatedIds(long id, int maxDepth) {
+		return target.getRelatedIds(id, maxDepth);
+	}
+
+	@Override
 	public Set<Long> getIdsTiersLies(Collection<Long> ids, boolean includeContactsImpotSource) {
 		return target.getIdsTiersLies(ids, includeContactsImpotSource);
 	}
