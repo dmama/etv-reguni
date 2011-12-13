@@ -14,7 +14,7 @@ import ch.vd.uniregctb.rapport.manager.RapportListManager;
 import ch.vd.uniregctb.rapport.view.RapportListView;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 
-public class RapportListController extends  AbstractTiersListController {
+public class RapportListController extends AbstractTiersListController {
 
 	protected final Logger LOGGER = Logger.getLogger(RapportListController.class);
 
@@ -40,18 +40,18 @@ public class RapportListController extends  AbstractTiersListController {
 		String numeroTiersParam = request.getParameter(NUMERO_TIERS_PARAMETER_NAME);
 		Long numeroTiers = Long.parseLong(numeroTiersParam);
 
-		RapportListView	rapportListView = (RapportListView) session.getAttribute(TIERS_LIE_CRITERIA_NAME);
-		if(	(rapportListView == null) ||
-			((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
-		 	//gestion des droits par rapportListeManager
+		RapportListView rapportListView = (RapportListView) session.getAttribute(TIERS_LIE_CRITERIA_NAME);
+		if ((rapportListView == null) ||
+				((action != null) && action.equals(EFFACER_PARAMETER_VALUE))) {
+			//gestion des droits par rapportListeManager
 			rapportListView = rapportListManager.get(numeroTiers);
-		 }
+		}
 		return rapportListView;
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
+	 *      java.util.Map)
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -67,8 +67,8 @@ public class RapportListController extends  AbstractTiersListController {
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
@@ -81,9 +81,10 @@ public class RapportListController extends  AbstractTiersListController {
 		session.setAttribute(TIERS_LIE_CRITERIA_NAME, bean);
 
 		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			mav.setView(new RedirectView("list.do?numero=" + bean.getTiers().getNumero()));
-		} else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list.do?numero=" + bean.getTiers().getNumero() + "&action=effacer"));
+			mav.setView(new RedirectView("search.do?numero=" + bean.getTiers().getNumero()));
+		}
+		else if (request.getParameter(BOUTON_EFFACER) != null) {
+			mav.setView(new RedirectView("search.do?numero=" + bean.getTiers().getNumero() + "&action=effacer"));
 		}
 		return mav;
 	}

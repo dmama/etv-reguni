@@ -39,6 +39,6 @@ function selectSensRapport(name) {
 */ 
 function retourRapport(numero) {
 	if(confirm('Voulez-vous quitter cette page sans sauver ?')) {
-		document.location.href='list.do?numero=' + numero ;
+		document.location.href='search.do?numero=' + numero ;
 	}
 }
