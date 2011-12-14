@@ -171,10 +171,19 @@
 				});
 			}
 
+			function trim_id(id) {
+				if (id) {
+					return id.replace(/[^0-9]*/g, ''); // [SIFISC-3459] remove non-numeric chars
+				}
+				else {
+					return id;
+				}
+			}
+
 			function refresh_all() {
-				var pp1Id = $('#pp1Id').val();
-				var pp2Id = $('#pp2Id').val();
-				var mcId = $('#mcId').val();
+				var pp1Id = trim_id($('#pp1Id').val());
+				var pp2Id = trim_id($('#pp2Id').val());
+				var mcId = trim_id($('#mcId').val());
 
 				// on fait un appel Ajax pour demander les informations sur le futur ménage, et on adapte les valeurs saisies si nécessaire
 				$.get('info.do?pp1Id=' + pp1Id + '&pp2Id=' + pp2Id + '&mcId=' + mcId, function(data) {
@@ -257,7 +266,7 @@
 				}
 				return false;
 			}
-			
+
 			var dateDebutPicker;
 			var confirmMessage;
 
@@ -278,25 +287,19 @@
 					});
 				}
 				else {
-				// si une remarque est déjà saisie, on laisse le champ affiché et on cache le bouton
+					// si une remarque est déjà saisie, on laisse le champ affiché et on cache le bouton
 					$('#remarqueDiv').hide();
 				}
 
 				$('#pp1Id').change(function() {
-					var id = $(this).val();
-					id = id.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 					refresh_all();
 				});
 
 				$('#pp2Id').change(function() {
-					var id = $(this).val();
-					id = id.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 					refresh_all();
 				});
 
 				$('#mcId').change(function() {
-					var id = $(this).val();
-					id = id.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 					refresh_all();
 				});
 
