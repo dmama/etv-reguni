@@ -25,6 +25,8 @@ import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.SearchPartyRequest;
+import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -33,6 +35,7 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
+import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
@@ -42,6 +45,8 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
+import ch.vd.unireg.xml.party.v1.PartyInfo;
+import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -57,9 +62,12 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -969,4 +977,37 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertEquals(Integer.valueOf(2), d0.getSegmentationCode());
 		}
 	}
+
+	/**
+	 * [SIFISC-3399] Vérifie que le critère 'debtorCategory' est bien géré.
+	 */
+	@Test
+	public void testSearchPartyByDebtorCategory() throws Exception {
+
+		setWantIndexation(true);
+
+		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.UNIQUE, date(2000, 1, 1));
+				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2000, 1, 1));
+				return debiteur.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		final SearchPartyRequest params = new SearchPartyRequest();
+		params.setLogin(login);
+		params.setDebtorCategory(DebtorCategory.ADMINISTRATORS);
+
+		final SearchPartyResponse list = service.searchParty(params);
+		assertNotNull(list);
+		assertEquals(1, list.getItems().size());
+
+		PartyInfo info = list.getItems().get(0);
+		assertEquals(id.intValue(), info.getNumber());
+		assertEquals(PartyType.DEBTOR, info.getType());
+	}
+
 }

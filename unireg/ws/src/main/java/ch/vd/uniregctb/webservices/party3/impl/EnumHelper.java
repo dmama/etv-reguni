@@ -25,11 +25,13 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
+import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
@@ -718,6 +720,46 @@ public abstract class EnumHelper {
 			return MutationType.END_OF_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + type + ']');
+		}
+	}
+
+	public static CategorieImpotSource webToCore(DebtorCategory category) {
+		if (category == null) {
+			return null;
+		}
+		switch (category) {
+		case ADMINISTRATORS:
+			return CategorieImpotSource.ADMINISTRATEURS;
+		case LAW_ON_UNDECLARED_WORK:
+			return CategorieImpotSource.LOI_TRAVAIL_AU_NOIR;
+		case MORTGAGE_CREDITORS:
+			return CategorieImpotSource.CREANCIERS_HYPOTHECAIRES;
+		case PENSION_FUND:
+			return CategorieImpotSource.PRESTATIONS_PREVOYANCE;
+		case REGULAR:
+			return CategorieImpotSource.REGULIERS;
+		case SPEAKERS_ARTISTS_SPORTSMEN:
+			return CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS;
+		default:
+			throw new IllegalArgumentException("Catégorie de débiteur inconnue = [" + category + "]");
+		}
+	}
+
+	public static TiersCriteria.TypeTiers webToCore(PartyType type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case DEBTOR:
+			return TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE;
+		case HOUSEHOLD:
+			return TiersCriteria.TypeTiers.MENAGE_COMMUN;
+		case CORPORATION:
+			return TiersCriteria.TypeTiers.ENTREPRISE;
+		case NATURAL_PERSON:
+			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
+		default:
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 		}
 	}
 }
