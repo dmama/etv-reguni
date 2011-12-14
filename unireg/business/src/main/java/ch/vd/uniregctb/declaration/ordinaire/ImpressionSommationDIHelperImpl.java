@@ -55,8 +55,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 	private static final Logger LOGGER = Logger.getLogger(ImpressionSommationDIHelperImpl.class);
 
-	private static final char [] DIGITS = new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
 	private EditiqueHelper editiqueHelper;
 	private AdresseService adresseService;
 	private TiersService tiersService;
@@ -139,41 +137,36 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 	private String getLocaliteExpedition(DeclarationImpotOrdinaire di) throws EditiqueException {
 
-		Integer oid =  tiersService.getOfficeImpotId(di.getTiers());
+		final Integer oid =  tiersService.getOfficeImpotId(di.getTiers());
 		String sLocalite = "Lausanne";
 		if (oid == null) {
-			LOGGER.warn( String.format(
-					"oid null pour le tiers %s, Localité d'expedition par defaut : %s",
-					di.getTiers().getNumero(),
-					sLocalite));
-		} else  {
+			LOGGER.warn(String.format("oid null pour le tiers %s, Localité d'expedition par defaut : %s", di.getTiers().getNumero(), sLocalite));
+		}
+		else  {
 			CollectiviteAdministrative collectiviteAdministrative = null;
 			try {
 				collectiviteAdministrative = serviceInfrastructureService.getCollectivite(oid);
 			} catch (ServiceInfrastructureException e) {
-				collectiviteAdministrative = null;
 				LOGGER.warn("Impossible de retrouver la collectivité administrative " + oid, e);
 			}
 
 			if (collectiviteAdministrative != null) {
 				Adresse adresse = collectiviteAdministrative.getAdresse();
 				if (adresse != null) {
-					int onrp = adresse.getNumeroOrdrePostal();
-					Localite localite;
+					final int onrp = adresse.getNumeroOrdrePostal();
+					Localite localite = null;
 					try {
 						localite = serviceInfrastructureService.getLocaliteByONRP(onrp);
 					} catch (ServiceInfrastructureException e) {
-						localite = null;
 						LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
 					}
-					if (localite != null && localite.getCommuneLocalite() != null ) {
-						sLocalite = localite.getCommuneLocalite().getNomMinuscule();
-					} else {
+					if (localite != null) {
+						sLocalite = localite.getNomCompletMinuscule();
+					}
+					else {
 						// Impossible de retrouver la localité, on se débrouille
 						sLocalite = adresse.getLocalite();
-						for (char c : DIGITS) {
-							sLocalite = StringUtils.remove(sLocalite, c);
-						}
+						sLocalite = sLocalite.replaceAll("[0-9]+", "");
 						sLocalite = sLocalite.trim();
 					}
 				}
