@@ -91,7 +91,9 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="IS_EXACTLY">
 				<xs:annotation>
-					<xs:documentation>Ne retourne que les tiers dont le nom courrier est exactement la valeur spécifiée. Traitement plutôt rapide.</xs:documentation>
+					<xs:documentation>Ne retourne que les tiers dont les mots du nom courrier correspondent exactement aux mots spécifiés (par exemple: 'Dujardin' dans 'Jean Dujardin').
+						A noter que l'ordre des mots et la présence éventuelle de mots supplémentaires n'ont aucune importance. Traitement plutôt rapide.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CONTAINS">
