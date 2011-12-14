@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- version 3.2-SNAPSHOT -->
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+	<wsdl:documentation>version 3.2-SNAPSHOT</wsdl:documentation>
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 				   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -131,46 +131,59 @@
 	<!-- PORT declarations -->
 	<wsdl:portType name="PartyWebService">
 		<wsdl:operation name="getParty">
+			<wsdl:documentation>Retourne un tiers pour un numéro donné. Un tiers est soit un contribuable (+ sous-classes), soit un débiteur de prestations imposable.
+				Les collections sont renseignées à la demande (voir le paramètre parts), et lorsqu'elles sont renseignées, elles contiennent l'historique complet des valeurs.
+			</wsdl:documentation>
 			<wsdl:input message="getPartyRequestMessage" />
 			<wsdl:output message="getPartyResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getPartyType">
+			<wsdl:documentation>Retourne le type d'un tiers.</wsdl:documentation>
 			<wsdl:input message="getPartyTypeRequestMessage" />
 			<wsdl:output message="getPartyTypeResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="searchParty">
+			<wsdl:documentation>Recherche un ou plusieurs tiers en fonction de paramètres de recherche.</wsdl:documentation>
 			<wsdl:input message="searchPartyRequestMessage" />
 			<wsdl:output message="searchPartyResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getModifiedTaxpayers">
+			<wsdl:documentation>Retourne les numéros des tiers modifiés entre un intervalle de temps passé en paramètre.</wsdl:documentation>
 			<wsdl:input message="getModifiedTaxpayersRequestMessage" />
 			<wsdl:output message="getModifiedTaxpayersResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getBatchParty">
+			<wsdl:documentation>Retourne plusieurs tiers pour un lot de numéros donnés.
+				Cette méthode a le même comportement que la méthode getParty, mais retourne plusieurs tiers d'un seul coup.
+			</wsdl:documentation>
 			<wsdl:input message="getBatchPartyRequestMessage" />
 			<wsdl:output message="getBatchPartyResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="searchCorporationEvents">
+			<wsdl:documentation>Recherche un ou plusieurs événements PM en fonction de certains critères.</wsdl:documentation>
 			<wsdl:input message="searchCorporationEventsRequestMessage" />
 			<wsdl:output message="searchCorporationEventsResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="setAutomaticReimbursementBlocking">
+			<wsdl:documentation>Change le code de blocage du remboursement automatique sur le tiers spécifié.</wsdl:documentation>
 			<wsdl:input message="setAutomaticReimbursementBlockingRequestMessage" />
 			<wsdl:output message="setAutomaticReimbursementBlockingResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="acknowledgeTaxDeclarations">
+			<wsdl:documentation>Quittance les déclarations d'impôt ordinaires aux dates spécifiées.</wsdl:documentation>
 			<wsdl:input message="acknowledgeTaxDeclarationsRequestMessage" />
 			<wsdl:output message="acknowledgeTaxDeclarationsResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getDebtorInfo">
+			<wsdl:documentation>Retourne des informations métier supplémentaires (notamment sur les déclarations impôt source (LRs)) d'un débiteur de prestations imposables.</wsdl:documentation>
 			<wsdl:input message="getDebtorInfoRequestMessage" />
 			<wsdl:output message="getDebtorInfoResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
