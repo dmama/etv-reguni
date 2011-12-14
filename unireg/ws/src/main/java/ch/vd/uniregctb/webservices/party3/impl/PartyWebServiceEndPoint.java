@@ -27,6 +27,7 @@ import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -370,7 +371,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	}
 
 	@Override
-	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		final long start = System.nanoTime();
 		try {
 			login(params.getLogin());

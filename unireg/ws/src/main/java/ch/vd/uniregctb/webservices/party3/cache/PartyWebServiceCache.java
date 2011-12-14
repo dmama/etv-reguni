@@ -24,6 +24,7 @@ import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
@@ -393,7 +394,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	}
 
 	@Override
-	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		//données mouvantes inutile de cacher
 		return target.getModifiedTaxpayers(params);
 	}

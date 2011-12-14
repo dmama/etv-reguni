@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
@@ -98,10 +99,10 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		params.setSearchBeginDate(calDebut);
 		params.setSearchEndDate(calFin);
 
-		Integer[] arraytTiersId = service.getModifiedTaxpayers(params);
+		PartyNumberList list = service.getModifiedTaxpayers(params);
 
-		assertNotNull(arraytTiersId);
-		assertEquals(9, arraytTiersId.length);
+		assertNotNull(list);
+		assertEquals(9, list.getItem().size());
 	}
 
 
