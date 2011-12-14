@@ -11,6 +11,7 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -48,7 +49,7 @@ public class PartyWebServiceTracing implements PartyWebService {
 	}
 
 	@Override
-	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		getListeCtbModifiesCalls.add(params);
 		return target.getModifiedTaxpayers(params);
 	}

@@ -34,6 +34,7 @@ import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
@@ -643,7 +644,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public Integer[] getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 
 		try {
 			final Date searchBeginDate = XmlUtils.xmlcal2date(params.getSearchBeginDate());
@@ -653,11 +654,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 						BusinessExceptionCode.INVALID_REQUEST);
 			}
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(searchBeginDate, searchEndDate);
-			final List<Integer> list = new ArrayList<Integer>(listCtb.size());
+			final PartyNumberList list = new PartyNumberList();
 			for (Long l : listCtb) {
-				list.add(l.intValue());
+				list.getItem().add(l.intValue());
 			}
-			return list.toArray(new Integer[list.size()]);
+			return list;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
