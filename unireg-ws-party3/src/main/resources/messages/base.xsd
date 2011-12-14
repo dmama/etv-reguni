@@ -137,11 +137,13 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="partyNumberListType">
+	<xs:complexType name="partyNumberListType">
 		<xs:annotation>
 			<xs:documentation>Une liste de numéros de tiers.</xs:documentation>
 		</xs:annotation>
-		<xs:list itemType="common:partyNumberType" />
-	</xs:simpleType>
+		<xs:sequence>
+			<xs:element name="item" nillable="true" type="common:partyNumberType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 	
 </xs:schema>
