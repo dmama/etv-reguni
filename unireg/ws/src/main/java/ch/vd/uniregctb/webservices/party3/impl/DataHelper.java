@@ -46,7 +46,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
@@ -162,9 +161,7 @@ public class DataHelper {
 			if (criteria.getPartyTypes() != null) {
 				coreCriteria.setTypesTiers(webToCore(criteria.getPartyTypes()));
 			}
-			if (criteria.getDebtorCategory() != null) {
-				coreCriteria.setCategorieDebiteurIs(CategorieImpotSource.valueOf(criteria.getDebtorCategory().name()));
-			}
+			coreCriteria.setCategorieDebiteurIs(EnumHelper.webToCore(criteria.getDebtorCategory()));
 
 			coreCriteria.setTiersActif(criteria.isActiveParty());
 
@@ -201,22 +198,7 @@ public class DataHelper {
 	public static Set<TiersCriteria.TypeTiers> webToCore(List<PartyType> typeTiers) {
 		Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
 		for (PartyType t : typeTiers) {
-			switch (t) {
-			case DEBTOR:
-				set.add(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
-				break;
-			case HOUSEHOLD:
-				set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
-				break;
-			case CORPORATION:
-				set.add(TiersCriteria.TypeTiers.ENTREPRISE);
-				break;
-			case NATURAL_PERSON:
-				set.add(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
-				break;
-			default:
-				throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + ']');
-			}
+			set.add(EnumHelper.webToCore(t));
 		}
 		return set;
 	}
