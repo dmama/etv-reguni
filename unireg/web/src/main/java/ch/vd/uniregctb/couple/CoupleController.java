@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.WebTransactionException;
 import ch.vd.uniregctb.common.WebTransactionTemplate;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -107,8 +109,13 @@ public class CoupleController {
 					ControllerUtils.checkAccesDossierEnEcriture(pp2Id);
 					ControllerUtils.checkAccesDossierEnEcriture(mcId);
 
-					final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
-					return menage.getId();
+					try {
+						final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
+						return menage.getId();
+					}
+					catch (MetierServiceException e) {
+						throw new ActionException(e.getMessage(), e);
+					}
 				}
 			});
 		}
