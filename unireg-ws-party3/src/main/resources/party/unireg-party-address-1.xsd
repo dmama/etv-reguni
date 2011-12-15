@@ -66,16 +66,33 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:choice>
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-				<xs:element name="organisation" type="address:organisationMailAddressInfoType" />
-				<xs:element name="person" type="address:personMailAddressInfoType" />
-				<xs:element name="couple" type="address:coupleMailAddressInfoType" />
+				<xs:element name="organisation" type="address:organisationMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est une organisation.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="person" type="address:personMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est une personne physique.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="couple" type="address:coupleMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est un ménage-commun.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 			</xs:choice>
 			<xs:element name="addressInformation" type="address:addressInformationType" minOccurs="0">
 				<xs:annotation>
