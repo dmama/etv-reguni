@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0.1 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.0 - 28 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/common/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:simpleType name="yearType">
 		<xs:annotation>
@@ -35,20 +36,52 @@
 
 	<xs:complexType name="dateType">
 		<xs:annotation>
-			<xs:documentation>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier est grégorien.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="year" type="common:yearType" />
-			<xs:element name="month" type="common:monthType" />
-			<xs:element name="day" type="common:dayType" />
+			<xs:element name="year" type="common:yearType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'année sur 4 digits (e.g. 1887, 2001, 2200, ...). Dans le cas d'une date partielle, l'année est 0.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="month" type="common:monthType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le mois (1..12). Dans le cas d'une date partielle, le mois est 0.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="day" type="common:dayType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le jour (1..31).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="partialDateType">
 		<xs:annotation>
-			<xs:documentation>Date partielle (jour et/ou mois inconnu) spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le calendrier
-				est grégorien.
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Date partielle (jour et/ou mois inconnu) spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite est celle du canton de Vaud, et le
+						calendrier est grégorien.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="year" type="common:yearType" />
@@ -69,22 +102,34 @@
 
 	<xs:complexType name="userLoginType">
 		<xs:annotation>
-			<xs:documentation>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Les informations qui permettent de vérifier les droits d'accès aux ressources fiscales d'Unireg.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="userId" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le système.
-						Pour les batchs, il faut utiliser un utilisateur technique.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le
+								système. Pour les batchs, il faut utiliser un utilisateur technique.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="oid" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>L'id de l'office d'impôt sélectionné par l'utilisateur. Dans la majorité des cas cette information peut être déduite à partir de l'id de l'utilisateur. Cependant
-						certains utilisateurs possèdent plus d'un rattachement à un office d'impôt. Ces utilisateurs doivent sélectionner un office d'impôt bien précis au moment du login, et ce choix
-						doit être propagé à tous les systèmes.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'id de l'office d'impôt sélectionné par l'utilisateur. Dans la majorité des cas cette information peut être déduite à partir de l'id de l'utilisateur.
+								Cependant certains utilisateurs possèdent plus d'un rattachement à un office d'impôt. Ces utilisateurs doivent sélectionner un office d'impôt bien précis au moment du
+								login, et ce choix doit être propagé à tous les systèmes.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
