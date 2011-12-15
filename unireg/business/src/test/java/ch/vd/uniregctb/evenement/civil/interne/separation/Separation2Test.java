@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -273,9 +275,9 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 			separation.handle(warnings);
 			Assert.fail("Le traitement de l'événement aurait dû lancer une exception");
 		}
-		catch (RuntimeException e) {
+		catch (EvenementCivilException e) {
 			final String message = e.getMessage();
-			assertEquals("On ne peut fermer le rapport d'appartenance ménage avant sa date de début", message);
+			assertEquals(String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(DATE_SEPARATION)), message);
 		}
 	}
 

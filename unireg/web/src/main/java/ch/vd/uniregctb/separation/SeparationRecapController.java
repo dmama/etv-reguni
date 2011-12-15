@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.separation.manager.SeparationRecapManager;
 import ch.vd.uniregctb.separation.view.SeparationRecapView;
 
@@ -81,9 +83,13 @@ public class SeparationRecapController extends AbstractSimpleFormController {
 		 * la session et effacés une fois la page de visualisation rendue au client.
 		 */
 		request.getSession().setAttribute("warnings", separationRecapView.getWarnings());
-		
-		separationRecapManager.save(separationRecapView);
+
+		try {
+			separationRecapManager.save(separationRecapView);
+		}
+		catch (MetierServiceException e) {
+			throw new ActionException(e.getMessage(), e);
+		}
 		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + separationRecapView.getCouple().getNumero(), true));
 	}
-
 }

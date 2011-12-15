@@ -51,6 +51,7 @@ import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportEntreTiersException;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
@@ -1418,8 +1419,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
-			MetierServiceException {
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
 		if (menage == null) {
 			throw new MetierServiceException("Le ménage est null");
 		}
@@ -1437,9 +1437,14 @@ public class MetierServiceImpl implements MetierService {
 			tiersService.closeAllForsFiscaux(menage, date.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 
 			// Fermeture des RapportEntreTiers du menage
-			tiersService.closeAppartenanceMenage(principal, menage, date.getOneDayBefore());
-			if (conjoint != null) { // null si marié seul
-				tiersService.closeAppartenanceMenage(conjoint, menage, date.getOneDayBefore());
+			try {
+				tiersService.closeAppartenanceMenage(principal, menage, date.getOneDayBefore());
+				if (conjoint != null) { // null si marié seul
+					tiersService.closeAppartenanceMenage(conjoint, menage, date.getOneDayBefore());
+				}
+			}
+			catch (RapportEntreTiersException e) {
+				throw new MetierServiceException(e.getMessage(), e);
 			}
 
 			// S'il existe un for sur le ménage (non indigents)
@@ -2249,7 +2254,12 @@ public class MetierServiceImpl implements MetierService {
 				defunt.setBlocageRemboursementAutomatique(true);
 			}
 			if (veuf != null) {
-				tiersService.closeAppartenanceMenage(veuf, menage, date);
+				try {
+					tiersService.closeAppartenanceMenage(veuf, menage, date);
+				}
+				catch (RapportEntreTiersException e) {
+					throw new MetierServiceException(e.getMessage(), e);
+				}
 			}
 
 			// ouverture du for sur le survivant (= le veuf)

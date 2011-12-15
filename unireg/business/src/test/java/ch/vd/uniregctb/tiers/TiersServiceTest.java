@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -5521,4 +5522,50 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
+	@Test
+	public void testCloseAppartenanceMenageAvantOuverture() throws Exception {
+
+		final long noIndividuLui = 48154846L;
+		final long noIndividuElle = 451248463163L;
+		final RegDate dateMariage = date(2010, 6, 12);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, date(1980, 10, 25), "Petitpoint", "Justin", true);
+				final MockIndividu elle = addIndividu(noIndividuElle, date(1990, 12, 7), "Couchetoila", "Marie", false);
+				marieIndividus(lui, elle, dateMariage);
+			}
+		});
+
+		// création du ménage commun
+		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				return mc.getNumero();
+			}
+		});
+
+		// tentative de séparation à la veille du mariage
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
+				try {
+					tiersService.closeAppartenanceMenage(couple.getPrincipal(), couple.getMenage(), dateMariage.getOneDayBefore());
+					Assert.fail("La fermeture du rapport d'appartenance ménage aurait dû être refusée");
+				}
+				catch (RapportEntreTiersException e) {
+					Assert.assertEquals(String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(dateMariage)),
+					                    e.getMessage());
+				}
+				return null;
+			}
+		});
+	}
 }

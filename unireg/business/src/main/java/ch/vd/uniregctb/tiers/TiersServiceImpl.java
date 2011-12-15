@@ -1258,13 +1258,14 @@ public class TiersServiceImpl implements TiersService {
 	 * @param dateFermeture la date de fermeture du rapport
 	 */
 	@Override
-	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) {
+	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) throws RapportEntreTiersException {
 		for (RapportEntreTiers rapportObjet : menage.getRapportsObjet()) {
 			if (rapportObjet.getDateFin() == null && rapportObjet.getSujetId().equals(pp.getId()) && !rapportObjet.isAnnule()) {
 
-				if (!RegDateHelper.isAfterOrEqual(dateFermeture, rapportObjet.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					final String msg = "On ne peut fermer le rapport d'appartenance ménage avant sa date de début";
-					throw new RuntimeException(msg);
+				final RegDate dateDebutRapport = rapportObjet.getDateDebut();
+				if (!RegDateHelper.isAfterOrEqual(dateFermeture, dateDebutRapport, NullDateBehavior.EARLIEST)) {
+					final String msg = String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(dateDebutRapport));
+					throw new RapportEntreTiersException(msg);
 				}
 
 				rapportObjet.setDateFin(dateFermeture);

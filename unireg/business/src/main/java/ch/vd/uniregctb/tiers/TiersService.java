@@ -378,8 +378,9 @@ public interface TiersService {
 	 * @param pp la pp
 	 * @param menage le menage
 	 * @param dateFermeture la date de fermeture du rapport
+	 * @throws RapportEntreTiersException si la date de fermeture demandée n'est pas cohérente avec le rapport existant
 	 */
-	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture);
+	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) throws RapportEntreTiersException;
 
 	/**
 	 * Clôt tous les rapports du tiers.
