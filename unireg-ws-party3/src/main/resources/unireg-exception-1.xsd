@@ -1,64 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.0beta - 28 juillet 2011 - hand-edited by Manuel Siggen -->
+<!-- v1.0.1 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.0 - 28 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/exception/1" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:complexType name="serviceExceptionInfoType" abstract="true">
 		<xs:annotation>
-			<xs:documentation>Exception levée par le service Unireg lorsqu'une erreur quelconque est levée.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Exception levée par le service Unireg lorsqu'une erreur quelconque est levée.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="message" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Un message succinct explicitant autant que possible la cause de l'exception.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Un message succinct explicitant autant que possible la cause de l'exception.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="businessExceptionInfoType">
 		<xs:annotation>
-			<xs:documentation>Exception levée par le service lorsqu'une erreur métier est levée. Une erreur métier peut être le résultat de paramètres d'entrée incorrects, de données incohérentes
-				dans la base, de problèmes de connectivités avec d'autres registres, etc...
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Exception levée par le service lorsqu'une erreur métier est levée. Une erreur métier peut être le résultat de paramètres d'entrée incorrects, de données incohérentes
+						dans la base, de problèmes de connectivités avec d'autres registres, etc...
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="exception:serviceExceptionInfoType">
 				<xs:sequence>
 					<xs:element name="code" type="xs:string">
 						<xs:annotation>
-							<xs:documentation>La cause de l'exception business sous forme d'un code facilement identifiable (voir SIFISC-152). Les codes connus sont définis dans le type
-								'businessExceptionCodeType' (le type String est malgré tout utilisé pour permettre d'ajouter de nouveaux codes tout en gardant la compatibilité ascendante).
-							</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La cause de l'exception business sous forme d'un code facilement identifiable (voir SIFISC-152). Les codes connus sont définis dans le type
+										'businessExceptionCodeType' (le type String est malgré tout utilisé pour permettre d'ajouter de nouveaux codes tout en gardant la compatibilité ascendante).
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="accessDeniedExceptionInfoType">
 		<xs:annotation>
-			<xs:documentation>Exception levée par le service lorsque l'accès à une ressource n'est pas autorisé.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Exception levée par le service lorsque l'accès à une ressource n'est pas autorisé.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="exception:serviceExceptionInfoType">
-				<xs:sequence />
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="technicalExceptionInfoType">
 		<xs:annotation>
-			<xs:documentation>Exception levée par le service lorsqu'une erreur interne au service est levée. Dans ce cas, il s'agit généralement d'un bug du service.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Exception levée par le service lorsqu'une erreur interne au service est levée. Dans ce cas, il s'agit généralement d'un bug du service.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="exception:serviceExceptionInfoType">
-				<xs:sequence />
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:simpleType name="serviceExceptionTypeType">
 		<xs:annotation>
-			<xs:documentation>Les différentes catégories d'exception existantes.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes catégories d'exception existantes.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="BUSINESS" />
@@ -69,9 +103,14 @@
 
 	<xs:simpleType name="businessExceptionCodeType">
 		<xs:annotation>
-			<xs:documentation>Les différents codes permettant de catégoriser les exceptions métier. Il s'agit de la liste connue au moment de la publication du fichier. Pour permettre en compatibilité
-				ascendante, ces codes sont transmis sous forme de strings. Les applications clientes doivent donc s'attendre à recevoir de nouveaux codes qui ne seront pas dans le liste ci-dessous !
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différents codes permettant de catégoriser les exceptions métier. Il s'agit de la liste connue au moment de la publication du fichier. Pour permettre en
+						compatibilité ascendante, ces codes sont transmis sous forme de strings. Les applications clientes doivent donc s'attendre à recevoir de nouveaux codes qui ne seront pas dans
+						le liste ci-dessous !
+					</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="INFRASTRUCTURE">
