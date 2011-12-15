@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>1.2</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -74,7 +74,7 @@
 						<!-- pour la résolution des XSDs par le classpath resolver -->
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>unireg-jaxb2-ech</artifactId>
-						<version>1.2</version>
+						<version>1.2.1</version>
 					</dependency>
 					<dependency>
 						<artifactId>jaxb2-catalog-resolver</artifactId>
