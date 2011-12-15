@@ -29,7 +29,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	@SuppressWarnings("unchecked")
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille, boolean doNotAutoFlush) {
 
-		Object[] criteria = { noTiersTuteur,noTiersPupille };
+		Object[] criteria = {noTiersTuteur, noTiersPupille};
 		String query = "from RapportEntreTiers ret where ret.objetId = ? and ret.sujetId = ?";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 
@@ -81,9 +81,9 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly){
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly) {
 
-		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objetId = " + numeroDebiteur ;
+		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objetId = " + numeroDebiteur;
 		if (activesOnly) {
 			query += " and rapport.dateFin is null and rapport.annulationDate is null";
 		}
@@ -91,13 +91,20 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type, final ParamPagination pagination) {
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type, final Class clazz,
+	                                                   final ParamPagination pagination) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportEntreTiers>>() {
 			@Override
 			public List<RapportEntreTiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))" +
-						" and r.class != RapportPrestationImposable and r.class != ContactImpotSource";
+				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
+
+				if (DebiteurPrestationImposable.class.equals(clazz)) {
+					query += " and r.class != RapportPrestationImposable ";
+				}
+				else if (Contribuable.class.equals(clazz)) {
+					query += " and r.class != ContactImpotSource ";
+				}
 				if (appartenanceMenageOnly) {
 					query += " and r.class = AppartenanceMenage";
 				}
@@ -156,9 +163,16 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type) {
-		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))" +
-				" and r.class != RapportPrestationImposable and r.class != ContactImpotSource";
+	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, Class clazz) {
+		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
+
+		if (DebiteurPrestationImposable.class.equals(clazz)) {
+			query += " and r.class != RapportPrestationImposable ";
+		}
+		else if (Contribuable.class.equals(clazz)) {
+			query += " and r.class != ContactImpotSource ";
+		}
+
 		if (appartenanceMenageOnly) {
 			query += " and r.class = AppartenanceMenage";
 		}

@@ -189,7 +189,7 @@ public class RapportController {
 
 	private int getRapportsTotalCount(Tiers tiers, TypeRapportEntreTiers type, boolean showHisto) {
 		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
-		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), !visuAll, showHisto, type);
+		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), !visuAll, showHisto, type, tiers.getClass());
 	}
 
 	private List<RapportView> getRapportViews(Tiers tiers, boolean showHisto, TypeRapportEntreTiers type, WebParamPagination pagination) {
@@ -199,7 +199,7 @@ public class RapportController {
 
 		final List<RapportView> views = new ArrayList<RapportView>();
 
-		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, type, pagination);
+		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, type, tiers.getClass(), pagination);
 		prechargeIndividus(rapports);
 
 		for (RapportEntreTiers r : rapports) {
@@ -241,7 +241,7 @@ public class RapportController {
 		for (RapportFiliation filiation : filiations) {
 			list.add(new RapportView(filiation, nomInd, tiersService));
 		}
-		
+
 		return list;
 	}
 }
