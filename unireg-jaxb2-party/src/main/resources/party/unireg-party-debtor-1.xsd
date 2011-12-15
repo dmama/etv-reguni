@@ -1,100 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1">
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
 
 	<xs:complexType name="debtorType">
 		<xs:annotation>
-			<xs:documentation>Classe concrète qui contient toutes les informations d'un débiteur de prestations imposables. Les collections sont renseignées en fonction des parts demandées lors de
-				l'appel
-				au service.
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>
+						Classe concrète qui contient toutes les informations d'un débiteur de prestations imposables. Les collections sont renseignées en fonction des parts demandées lors de
+						l'appel au service.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="party:partyType">
 				<xs:sequence>
 					<xs:element name="name" type="xs:string">
 						<xs:annotation>
-							<xs:documentation>La raison sociale du débiteur.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La raison sociale du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="category" type="debtor:debtorCategoryType">
 						<xs:annotation>
-							<xs:documentation>La catégorie actuelle du débiteur.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La catégorie actuelle du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="communicationMode" type="debtor:communicationModeType">
 						<xs:annotation>
-							<xs:documentation>Le mode de communication actuel du débiteur.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le mode de communication actuel du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="softwareId" type="xs:long">
 						<xs:annotation>
-							<xs:documentation>L'id du logiciel utilisé par le débiteur pour remplir et retourner ses LRs.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'id du logiciel utilisé par le débiteur pour remplir et retourner ses LRs.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="associatedTaxpayerNumber" type="common:partyNumberType">
 						<xs:annotation>
-							<xs:documentation>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="debtor:debtorPeriodicityType">
 						<xs:annotation>
-							<xs:documentation>L'historique des périodicités du débiteur.
-								Attention ! Cette collection n'est renseignée qui si la part DEBTOR_PERIODICITIES est demandée.
-							</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des périodicités du débiteur.
+										Attention ! Cette collection n'est renseignée qui si la part DEBTOR_PERIODICITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="withoutReminder" type="xs:boolean">
 						<xs:annotation>
-							<xs:documentation>Vrai si on n'envoie pas de rappel au débiteur.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si on n'envoie pas de rappel au débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="withoutWithholdingTaxDeclaration" type="xs:boolean">
 						<xs:annotation>
-							<xs:documentation>Vrai si le débiteur ne reçoit pas de LR.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si le débiteur ne reçoit pas de LR.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="debtorInfoType">
 		<xs:annotation>
-			<xs:documentation>Informations métier supplémentaires sur d'un débiteur de prestations imposables (voir cas JIRA UNIREG-2110).</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations métier supplémentaires sur d'un débiteur de prestations imposables (voir cas JIRA UNIREG-2110).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro de tiers du débiteur.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers du débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="taxPeriod" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>La période fiscale considérée (valide du 1er janvier au 31 décembre).</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La période fiscale considérée (valide du 1er janvier au 31 décembre).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="theoreticalNumberOfWithholdingTaxDeclarations" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Le nombre de déclarations impôt source (LRs) qui peuvent théoriquement être émises dans la période fiscale considérée.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nombre de déclarations impôt source (LRs) qui peuvent théoriquement être émises dans la période fiscale considérée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="numberOfWithholdingTaxDeclarationsIssued" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Le nombre de déclarations impôts source (LRs) réellement émises (et non-annulées) dans la période fiscale considérée.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nombre de déclarations impôts source (LRs) réellement émises (et non-annulées) dans la période fiscale considérée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="debtorCategoryType">
 		<xs:annotation>
-			<xs:documentation>Les différentes catégories de débiteur possibles.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes catégories de débiteur possibles.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADMINISTRATORS">
@@ -131,40 +192,68 @@
 	</xs:simpleType>
 	<xs:complexType name="debtorPeriodicityType">
 		<xs:annotation>
-			<xs:documentation>Mode et fréquence d'envoi des LRs d'un débiteur pendant une période donnée.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Mode et fréquence d'envoi des LRs d'un débiteur pendant une période donnée.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>Date de début.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de début.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>Date de fin.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de fin.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>Date d'annulation.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date d'annulation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="specificPeriod" type="debtor:withholdingTaxDeclarationPeriodType">
 				<xs:annotation>
-					<xs:documentation>Uniquement valide pour la périodicité ONCE : la période à laquelle est envoyée la LR unique.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Uniquement valide pour la périodicité ONCE : la période à laquelle est envoyée la LR unique.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
 				<xs:annotation>
-					<xs:documentation>La périodicité temporelle d'envoi des LRs au débiteur.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La périodicité temporelle d'envoi des LRs au débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="withholdingTaxDeclarationPeriodicityType">
 		<xs:annotation>
-			<xs:documentation>Les différentes périodicités possibles pour l'envoi des LRs d'un débiteur.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes périodicités possibles pour l'envoi des LRs d'un débiteur.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="MONTHLY">
@@ -196,7 +285,11 @@
 	</xs:simpleType>
 	<xs:simpleType name="withholdingTaxDeclarationPeriodType">
 		<xs:annotation>
-			<xs:documentation>Les différentes périodes possibles pour l'envoi d'une LR unique d'un débiteur.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes périodes possibles pour l'envoi d'une LR unique d'un débiteur.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="M01">
@@ -298,7 +391,11 @@
 	</xs:simpleType>
 	<xs:simpleType name="communicationModeType">
 		<xs:annotation>
-			<xs:documentation>Mode de communication d'un débiteur avec l'administration cantonale vaudoise.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Mode de communication d'un débiteur avec l'administration cantonale vaudoise.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="WEB_SITE">

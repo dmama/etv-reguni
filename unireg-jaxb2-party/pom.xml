@@ -16,12 +16,12 @@
 		<dependency>
 			<artifactId>unireg-jaxb2-common</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<artifactId>unireg-jaxb2-ech</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>1.2</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -69,13 +69,13 @@
 						<!-- pour la résolution des XSDs par le classpath resolver -->
 						<artifactId>unireg-jaxb2-common</artifactId>
 						<groupId>ch.vd.uniregctb</groupId>
-						<version>1.0</version>
+						<version>1.0.1</version>
 					</dependency>
 					<dependency>
 						<!-- pour la résolution des XSDs par le classpath resolver -->
 						<artifactId>unireg-jaxb2-ech</artifactId>
 						<groupId>ch.vd.uniregctb</groupId>
-						<version>1.2</version>
+						<version>1.2.1</version>
 					</dependency>
 					<dependency>
 						<artifactId>jaxb2-catalog-resolver</artifactId>

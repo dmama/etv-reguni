@@ -1,81 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.1 - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
 <!-- v1.0beta4 - 13 octobre 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
-		   xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1">
+		   xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
 	<xs:complexType name="immovablePropertyType">
 		<xs:annotation>
-			<xs:documentation>Contient les informations d'un immeuble appartenant à un contribuable. ATTENTION ! Ces éléments sont basés sur une spécification non-validée : il est probable que la
-				définition ci-dessous varie encore dans le futur et ceci sans garantie de comptabilité ascendante. L'utilisation de cette structure en l'état est à vos risques et périls.
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations d'un immeuble appartenant à un contribuable. ATTENTION ! Ces éléments sont basés sur une spécification non-validée : il est probable que la
+						définition ci-dessous varie encore dans le futur et ceci sans garantie de comptabilité ascendante. L'utilisation de cette structure en l'état est à vos risques et périls.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de début de validité de l'immeuble. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de l'immeuble. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de fin de validité de l'immeuble. Si l'immeuble est toujours actif, cette date n'est pas renseignée.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de l'immeuble. Si l'immeuble est toujours actif, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="number" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Le numéro de l'immeuble, tel que défini par le registre foncier.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de l'immeuble, tel que défini par le registre foncier.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="municipalityName" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Le nom en toutes lettres de la commune de l'immeuble, tel que défini par le registre foncier. Exemples: "Lausanne", "Romainmôtier-Envy", ...
-						Note: le registre foncier n'utilise pas les numéros Ofs pour identifier les communes, il n'est donc pas possible d'exposer ces numéros pour l'instant.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nom en toutes lettres de la commune de l'immeuble, tel que défini par le registre foncier. Exemples: "Lausanne", "Romainmôtier-Envy", ...
+								Note: le registre foncier n'utilise pas les numéros Ofs pour identifier les communes, il n'est donc pas possible d'exposer ces numéros pour l'instant.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="nature" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="estimatedTaxValue" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>L'estimation fiscale de l'immeuble. Elle n'est pas renseignée sur les immeubles qui ont été vendus.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'estimation fiscale de l'immeuble. Elle n'est pas renseignée sur les immeubles qui ont été vendus.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="estimatedTaxValueReference" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
-						renseignée.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
+								renseignée.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ownershipType" type="immo:ownershipTypeType">
 				<xs:annotation>
-					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le genre de propriété (individuel, co-propriété, collective, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="share" type="immo:propertyShareType">
 				<xs:annotation>
-					<xs:documentation>La part de propriété.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La part de propriété.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="type" type="immo:immovablePropertyTypeType">
 				<xs:annotation>
-					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le genre de propriété (individuel, co-propriété, collective, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="lastMutationDate" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de la dernière mutation.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de la dernière mutation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="lastMutationType" type="immo:mutationTypeType">
 				<xs:annotation>
-					<xs:documentation>Type de la dernière mutation.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Type de la dernière mutation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
@@ -84,7 +137,11 @@
 
 	<xs:simpleType name="immovablePropertyTypeType">
 		<xs:annotation>
-			<xs:documentation>Le type d'immeuble.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le type d'immeuble.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="IMMOVABLE_PROPERTY">
@@ -112,7 +169,11 @@
 
 	<xs:simpleType name="ownershipTypeType">
 		<xs:annotation>
-			<xs:documentation>Le genre de propriété.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le genre de propriété.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SOLE_OWNERSHIP">
@@ -139,17 +200,29 @@
 
 	<xs:complexType name="propertyShareType">
 		<xs:annotation>
-			<xs:documentation>Représente la part de propriété sous forme fractionnaire (comprise entre 0 exclu et 1 inclus).</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente la part de propriété sous forme fractionnaire (comprise entre 0 exclu et 1 inclus).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="numerator" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Le numérateur de la fraction.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numérateur de la fraction.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="denominator" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Le dénominateur de la fraction.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le dénominateur de la fraction.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -157,7 +230,11 @@
 
 	<xs:simpleType name="mutationTypeType">
 		<xs:annotation>
-			<xs:documentation>Les types de mutations connus.</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les types de mutations connus.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="PURCHASE">
