@@ -138,6 +138,57 @@
 				</dependencies>
 			</plugin>
 			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+
+				<dependencies>
+					<dependency>
+						<groupId>gr.spinellis</groupId>
+						<artifactId>UmlGraph</artifactId>
+						<version>4.4</version>
+					</dependency>
+				</dependencies>
+
+				<executions>
+					<!-- Task ANT qui génère la javadoc des classes exposées par le web-service -->
+					<execution>
+						<id>ws.javadoc</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>site</phase>
+						<configuration>
+							<tasks>
+								<property name="compile_classpath" refid="maven.compile.classpath"/>
+								<property name="runtime_classpath" refid="maven.runtime.classpath"/>
+								<property name="plugin_classpath" refid="maven.plugin.classpath"/>
+								<echo message="==> compile_classpath: ${compile_classpath}"/>
+
+								<javadoc access="public"
+									additionalparam="-encoding 'utf-8' -charset 'utf-8'"
+									author="true"
+									classpath="${compile_classpath}"
+									destdir="target/ws.javadoc"
+									doctitle="Unireg - Documentation du web service Party v3"
+									nodeprecated="false"
+									nodeprecatedlist="false"
+									noindex="false"
+									nonavbar="false"
+									notree="false"
+									source="1.6"
+									splitindex="true"
+									use="true"
+									version="true" >
+								    <fileset dir="target/generated-cxf/src/main/java/ch/vd/unireg" defaultexcludes="yes">
+							    		<include name="**/*.java"/>
+							    		<exclude name="**/ObjectFactory.java"/>
+								    </fileset>
+								</javadoc>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
