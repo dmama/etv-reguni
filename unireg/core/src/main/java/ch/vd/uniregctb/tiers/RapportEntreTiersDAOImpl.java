@@ -91,18 +91,18 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type, final Class clazz,
-	                                                   final ParamPagination pagination) {
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type,
+	                                                   final ParamPagination pagination, final boolean excludeRapportPrestationImposable, final boolean excludeContactImpotSource) {
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportEntreTiers>>() {
 			@Override
 			public List<RapportEntreTiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
 
-				if (DebiteurPrestationImposable.class.equals(clazz)) {
+				if (excludeRapportPrestationImposable) {
 					query += " and r.class != RapportPrestationImposable ";
 				}
-				else if (Contribuable.class.equals(clazz)) {
+				else if (excludeContactImpotSource) {
 					query += " and r.class != ContactImpotSource ";
 				}
 				if (appartenanceMenageOnly) {
@@ -163,13 +163,14 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, Class clazz) {
+	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, final boolean excludePrestationImposable,
+	                                final boolean excludeContactImpotSource) {
 		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
 
-		if (DebiteurPrestationImposable.class.equals(clazz)) {
+		if (excludePrestationImposable) {
 			query += " and r.class != RapportPrestationImposable ";
 		}
-		else if (Contribuable.class.equals(clazz)) {
+		else if (excludeContactImpotSource) {
 			query += " and r.class != ContactImpotSource ";
 		}
 

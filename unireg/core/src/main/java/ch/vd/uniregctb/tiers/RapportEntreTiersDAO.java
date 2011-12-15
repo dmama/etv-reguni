@@ -45,24 +45,29 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	/**
 	 * Recherche les rapports qui pointent vers le tiers spécifié. Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont affichés en fonction du type de tiers.
 	 *
-	 * @param tiersId                l'id du tiers
-	 * @param appartenanceMenageOnly si vrai, seuls les rapports d'appartenance ménage sont retournés
+	 * @param tiersId                   l'id du tiers
+	 * @param appartenanceMenageOnly    si vrai, seuls les rapports d'appartenance ménage sont retournés
 	 * @param showHisto
 	 * @param type
-	 * @param clazz
-	 * @param pagination             les paramètres de pagination  @return la liste des rapports trouvés
+	 * @param pagination                les paramètres de pagination  @return la liste des rapports trouvés
+	 * @param excludeRapportPrestationImposable
+	 *
+	 * @param excludeContactImpotSource
 	 */
-	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, Class clazz, ParamPagination pagination);
+	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, ParamPagination pagination,
+	                                            boolean excludeRapportPrestationImposable, boolean excludeContactImpotSource);
 
 	/**
 	 * Compte le nombre de rappors qui pointent vers le tiers spécifié.  Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont comptés en fonction du type de tiers.
 	 *
-	 * @param tiersId                l'id du sujet
-	 * @param appartenanceMenageOnly si vrai, seuls les rapports d'appartenance ménage sont comptés
+	 * @param tiersId                    l'id du sujet
+	 * @param appartenanceMenageOnly     si vrai, seuls les rapports d'appartenance ménage sont comptés
 	 * @param showHisto
 	 * @param type
-	 * @param clazz
+	 * @param excludePrestationImposable
+	 * @param excludeContactImpotSource
 	 * @return le nombre de rapports qui pointe vers le sujet spécifié.
 	 */
-	int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, Class clazz);
+	int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, final boolean excludePrestationImposable,
+	                         final boolean excludeContactImpotSource);
 }

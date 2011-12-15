@@ -128,7 +128,7 @@ public class RapportController {
 		mav.addAttribute("showHisto", showHisto);
 		mav.addAttribute("rapportType", typeRapport == null ? null : typeRapport.name());
 		mav.addAttribute("rapports", getRapportViews(tiers, showHisto, typeRapport, pagination));
-		mav.addAttribute("rapportsTotalCount", getRapportsTotalCount(tiers, typeRapport, showHisto));
+		mav.addAttribute("rapportsTotalCount", getRapportsTotalCount(tiers, typeRapport, showHisto, Contribuable.class.equals(tiers.getClass())));
 		mav.addAttribute("filiations", getFiliationViews(tiers));
 		mav.addAttribute("debiteurs", getDebiteurViews(tiers));
 		mav.addAttribute("typesRapportTiers", tiersMapHelper.getMapTypeRapportEntreTiers());
@@ -187,9 +187,11 @@ public class RapportController {
 		return views;
 	}
 
-	private int getRapportsTotalCount(Tiers tiers, TypeRapportEntreTiers type, boolean showHisto) {
+	private int getRapportsTotalCount(Tiers tiers, TypeRapportEntreTiers type, boolean showHisto, final boolean excludeContactImpotSource) {
 		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
-		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), !visuAll, showHisto, type, tiers.getClass());
+		final boolean excludePrestationImposable = DebiteurPrestationImposable.class.equals(tiers.getClass());
+		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), !visuAll, showHisto, type, excludePrestationImposable,
+				excludeContactImpotSource);
 	}
 
 	private List<RapportView> getRapportViews(Tiers tiers, boolean showHisto, TypeRapportEntreTiers type, WebParamPagination pagination) {
@@ -199,7 +201,10 @@ public class RapportController {
 
 		final List<RapportView> views = new ArrayList<RapportView>();
 
-		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, type, tiers.getClass(), pagination);
+		final boolean excludeContactImpotSource = Contribuable.class.equals(tiers.getClass());
+		final boolean excludeRapportPrestationImposable = DebiteurPrestationImposable.class.equals(tiers.getClass());
+		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, type, pagination,
+				excludeRapportPrestationImposable, excludeContactImpotSource);
 		prechargeIndividus(rapports);
 
 		for (RapportEntreTiers r : rapports) {
