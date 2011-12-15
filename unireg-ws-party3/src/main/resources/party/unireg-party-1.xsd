@@ -206,7 +206,11 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent).
-								Attention ! Cette collection n'est renseignée que si au moins une des parts RELATIONS_BETWEEN_PARTIES, CHILDREN ou PARENTS est demandée.
+								Attention ! Cette collection n'est renseignée que si au moins une des parts suivantes est demandée:
+								 - RELATIONS_BETWEEN_PARTIES : renseigne tous les rapports entre tiers conventionnels (= tous sauf les enfants et les parents)
+								 - CHILDREN  : renseigne tous les enfants de la personne courante
+								 - PARENTS : renseigne tous les parents de la personne courante.
+								Les trois parts peuvent être demandées simultanément, ou séparément.
 							</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
