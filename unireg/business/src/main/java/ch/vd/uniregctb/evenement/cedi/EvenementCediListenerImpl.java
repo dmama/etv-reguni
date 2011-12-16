@@ -13,7 +13,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.taxation.dossierElectronique.x1.DeclarationImpotType;
 import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueDocument;
-import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
@@ -114,7 +113,7 @@ public class EvenementCediListenerImpl extends TransactionalEsbMessageListener i
 
 		// Crée l'événement correspondant
 		if (evt instanceof DossierElectroniqueDocument) {
-			final DossierElectroniqueType dossier = ((DossierElectroniqueDocument) evt).getDossierElectronique();
+			final DossierElectroniqueDocument.DossierElectronique dossier = ((DossierElectroniqueDocument) evt).getDossierElectronique();
 			final DeclarationImpotType di = dossier.getDeclarationImpot();
 			final DeclarationImpotType.Identification.CoordonneesContribuable coordonnes = di.getIdentification() == null ? null : di.getIdentification().getCoordonneesContribuable(); // [UNIREG-2603]
 
