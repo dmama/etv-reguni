@@ -99,11 +99,14 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 
 				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
 
-				if (excludeRapportPrestationImposable) {
+				if (excludeRapportPrestationImposable && !excludeContactImpotSource) {
 					query += " and r.class != RapportPrestationImposable ";
 				}
-				else if (excludeContactImpotSource) {
+				else if (excludeContactImpotSource && !excludeRapportPrestationImposable) {
 					query += " and r.class != ContactImpotSource ";
+				}
+				else if (excludeContactImpotSource && excludeRapportPrestationImposable) {
+					query += " and r.class != ContactImpotSource  and r.class != RapportPrestationImposable ";
 				}
 				if (appartenanceMenageOnly) {
 					query += " and r.class = AppartenanceMenage";
@@ -167,11 +170,14 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	                                final boolean excludeContactImpotSource) {
 		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
 
-		if (excludePrestationImposable) {
+		if (excludePrestationImposable && !excludeContactImpotSource) {
 			query += " and r.class != RapportPrestationImposable ";
 		}
-		else if (excludeContactImpotSource) {
+		else if (excludeContactImpotSource && !excludePrestationImposable) {
 			query += " and r.class != ContactImpotSource ";
+		}
+		else if (excludeContactImpotSource && excludePrestationImposable) {
+			query += " and r.class != RapportPrestationImposable and r.class != ContactImpotSource ";
 		}
 
 		if (appartenanceMenageOnly) {
