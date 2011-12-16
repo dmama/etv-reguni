@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -13,14 +12,14 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
+public class NoOfsTranslatorImpl implements NoOfsTranslator {
 
 	private static final Logger LOGGER = Logger.getLogger(NoOfsTranslatorImpl.class);
 
 	/**
 	 * Mapping nos Ofs -> nos techniques pour les communes suisses dont les deux numéros sont différents.
 	 */
-	private final Map<Integer, Integer> communes = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> communes = null;
 
 	private boolean exposeNosTechniques;
 
@@ -42,7 +41,7 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 	@Override
 	public int translateCommune(int noOfs) {
 		if (exposeNosTechniques) {
-			final Integer noTechnique = communes.get(noOfs);
+			final Integer noTechnique = getCommunes().get(noOfs);
 			if (noTechnique != null) {
 				// on a trouvé un numéro technique différent du numéro Ofs, on le retourne
 				return noTechnique;
@@ -57,19 +56,31 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator, InitializingBean {
 		}
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (exposeNosTechniques) {
+	private Map<Integer, Integer> getCommunes() {
+		if (communes == null) {
+			communes = buildCommunes();
+		}
+		return communes;
+	}
+
+	private synchronized Map<Integer, Integer> buildCommunes() {
+		if (communes == null) {
+
+			LOGGER.info("Chargement des correspondances entre numéros OFS et numéros techniques des communes");
+
 			final List<Commune> listeCommunes = infraService.getCommunes();
+			final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 			for (Commune commune : listeCommunes) {
 				//noinspection deprecation
 				final int numeroTechnique = commune.getNumeroTechnique();
 				if (commune.getNoOFSEtendu() != numeroTechnique) {
-					communes.put(commune.getNoOFSEtendu(), numeroTechnique);
+					map.put(commune.getNoOFSEtendu(), numeroTechnique);
 				}
 			}
 
-			LOGGER.info(String.format("Récupéré %d commune(s) dont les numéros OFS et technique sont différents", communes.size()));
+			LOGGER.info(String.format("Récupéré %d commune(s) dont les numéros OFS et technique sont différents", map.size()));
+			communes = map;
 		}
+		return communes;
 	}
 }
