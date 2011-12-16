@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
-	<!--   Version 2011-2 : modification par rapport à la version 2011-1
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zciedt (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<!--
+Version 2011-2 : modification par rapport à la version 2011-1
 
 +++Modifications techniques
 
@@ -52,29 +54,32 @@ EnfantType
 PersonneAChargeType
 - reprise de la structure des personnes à chages qui était dans Identification/PersonnesACharge
 - ajout NAVS
+
+16.12.2011 (zciedt) v1.1 : SIFISC-3461 Balise Immeuble devient facultative
  -->
-	<xs:element name="DossierElectronique" type="DossierElectroniqueType"/>
-	<xs:complexType name="DossierElectroniqueType">
-		<xs:sequence>
-			<xs:element name="Operation" type="OperationAcquisitionType"/>
-			<xs:element name="AccuseReception" type="AccuseReceptionType" minOccurs="0"/>
-			<xs:element name="DeclarationImpot" type="DeclarationImpotType" minOccurs="0"/>
-			<xs:element name="EtatDesTitres" type="EtatDesTitresType" minOccurs="0"/>
-			<xs:element name="AnnexeUSA" type="AnnexeUSAType" minOccurs="0"/>
-			<xs:element name="ImputationForfaitaireImpot" type="ImputationForfaitaireImpotType" minOccurs="0"/>
-			<xs:element name="EtatDesDettes" type="EtatDesDettesType" minOccurs="0"/>
-			<xs:element name="Annexe03" type="Annexe03Type" minOccurs="0"/>
-			<xs:element name="AnnexeImmeubles" type="AnnexeImmeubleType" minOccurs="0"/>
-			<xs:element name="FraisAcquisitionRevenu" type="FraisAcquisitionRevenuType" minOccurs="0"/>
-			<xs:element name="Annexe05" type="Annexe05Type" minOccurs="0"/>
-			<xs:element name="PieceJustificative" type="PieceJustificativeType" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-		<xs:attribute name="periode" type="xs:string" use="required"/>
-		<xs:attribute name="noContribuable" type="xs:string" use="required"/>
-		<xs:attribute name="noSequenceDI" type="xs:string" use="required"/>
-		<xs:attribute name="versionSchema" type="xs:string" use="required"/>
-		<xs:attribute name="retourPiece" type="xs:boolean" use="optional"/>
-	</xs:complexType>
+	<xs:element name="DossierElectronique">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Operation" type="OperationAcquisitionType"/>
+				<xs:element name="AccuseReception" type="AccuseReceptionType" minOccurs="0"/>
+				<xs:element name="DeclarationImpot" type="DeclarationImpotType" minOccurs="0"/>
+				<xs:element name="EtatDesTitres" type="EtatDesTitresType" minOccurs="0"/>
+				<xs:element name="AnnexeUSA" type="AnnexeUSAType" minOccurs="0"/>
+				<xs:element name="ImputationForfaitaireImpot" type="ImputationForfaitaireImpotType" minOccurs="0"/>
+				<xs:element name="EtatDesDettes" type="EtatDesDettesType" minOccurs="0"/>
+				<xs:element name="Annexe03" type="Annexe03Type" minOccurs="0"/>
+				<xs:element name="AnnexeImmeubles" type="AnnexeImmeubleType" minOccurs="0"/>
+				<xs:element name="FraisAcquisitionRevenu" type="FraisAcquisitionRevenuType" minOccurs="0"/>
+				<xs:element name="Annexe05" type="Annexe05Type" minOccurs="0"/>
+				<xs:element name="PieceJustificative" type="PieceJustificativeType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="periode" type="xs:string" use="required"/>
+			<xs:attribute name="noContribuable" type="xs:string" use="required"/>
+			<xs:attribute name="noSequenceDI" type="xs:string" use="required"/>
+			<xs:attribute name="versionSchema" type="xs:string" use="required"/>
+			<xs:attribute name="retourPiece" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="OperationAcquisitionType">
 		<xs:sequence>
 			<xs:element name="DateReception" type="xs:string"/>
@@ -94,7 +99,9 @@ PersonneAChargeType
 			</xs:element>
 			<xs:element name="OrigineAcquisition">
 				<xs:annotation>
-					<xs:documentation>Permet de savoir si la DI arrive en format papier ('P', que ce soit la DI officielle ACI ou la DI imprimée par un logiciel), ou si elle arrive en format Données structurées ('D', pour les DI renvoyées par Internet).</xs:documentation>
+					<xs:documentation>DI-PAPIER : DI sur formulaire ACI, rempli à la main et scannés au CEDI
+DI-ELECTRONIQUE : DI imprimée par VaudTax ou un autre logiciel, et scannée au CEDI
+DI-ONLINE : DI envoyée par Internet en format XML sur la plate-forme ad'hoc</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -2261,12 +2268,12 @@ PersonneAChargeType
 	</xs:complexType>
 	<xs:complexType name="AnnexeImmeubleType">
 		<xs:annotation>
-			<xs:documentation>Schéma XSD d'annexe 03</xs:documentation>
+			<xs:documentation>Schéma XSD d'annexe 07</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DocIdentificationType">
 				<xs:sequence>
-					<xs:element name="Immeuble" maxOccurs="unbounded">
+					<xs:element name="Immeuble" minOccurs="0" maxOccurs="unbounded">
 						<xs:complexType>
 							<xs:sequence>
 								<xs:element name="RenseignementGeneraux" minOccurs="0">
@@ -3718,7 +3725,7 @@ PersonneAChargeType
 									</xs:element>
 									<xs:element name="PasMenageCommun" type="xs:boolean" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>id349</xs:documentation>
+											<xs:documentation>id359</xs:documentation>
 										</xs:annotation>
 									</xs:element>
 									<xs:element name="Prenom" type="xs:string" minOccurs="0">
@@ -3801,7 +3808,7 @@ PersonneAChargeType
 			</xs:element>
 			<xs:element name="TypeRevenuActivite" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>ID4149</xs:documentation>
+					<xs:documentation>ID759</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
@@ -3849,7 +3856,7 @@ PersonneAChargeType
 			</xs:element>
 			<xs:element name="AutresCotisations" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>ID4151</xs:documentation>
+					<xs:documentation>ID764</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="TransportGratuit" type="xs:boolean" minOccurs="0">
