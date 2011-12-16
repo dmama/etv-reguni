@@ -13,6 +13,7 @@ public class MimeTypeHelperTest extends WithoutSpringTest {
 		Assert.assertEquals(".chvd", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_CHVD));
 		Assert.assertEquals(".csv", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_CSV));
 		Assert.assertEquals(".txt", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_PLAINTEXT));
+		Assert.assertEquals(".html", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_HTML));
 		Assert.assertEquals(".pdf", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_PDF));
 		Assert.assertEquals(".xml", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_APPXML));
 		Assert.assertEquals(".xml", MimeTypeHelper.getFileExtensionForType(MimeTypeHelper.MIME_XML));

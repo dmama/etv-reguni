@@ -16,6 +16,7 @@ public abstract class MimeTypeHelper {
 	public static final String MIME_CHVD = "application/x-chvd";
 	public static final String MIME_CSV = "text/csv";
 	public static final String MIME_PLAINTEXT = "text/plain";
+	public static final String MIME_HTML = "text/html";
 	public static final String MIME_PDF = "application/pdf";
 	public static final String MIME_APPXML = "application/xml";
 	public static final String MIME_XML = "text/xml";
@@ -34,6 +35,7 @@ public abstract class MimeTypeHelper {
 		fileSuffixes.put(MIME_CHVD, ".chvd");
 		fileSuffixes.put(MIME_CSV, ".csv");
 		fileSuffixes.put(MIME_PLAINTEXT, ".txt");
+		fileSuffixes.put(MIME_HTML, ".html");
 		fileSuffixes.put(MIME_PDF, ".pdf");
 		fileSuffixes.put(MIME_XML, ".xml");
 		fileSuffixes.put(MIME_APPXML, ".xml");

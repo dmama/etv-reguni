@@ -221,7 +221,6 @@
 				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
-				<entry key="/identification/gestion-messages/voirMessage.do" value-ref="voirMessageIdentificationController" />
 
 				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
 			</map>
