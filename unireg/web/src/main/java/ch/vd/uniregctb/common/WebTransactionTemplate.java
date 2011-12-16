@@ -7,8 +7,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindingResult;
 
+import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.uniregctb.metier.MetierServiceException;
 
 /**
  * Template de transaction spécialisé pour les contrôleurs Spring MVC v3, qui intercepte les exceptions communes (validation, action, ...) et renseigne les messages d'erreurs dans les résultats de
@@ -50,6 +52,16 @@ public class WebTransactionTemplate<T> {
 			logger.debug("ObjectNotFound exception catched -> redisplaying form : " + e.getMessage());
 			results.reject("global.error.msg", e.getMessage());
 			throw new WebTransactionException(e);
+		}
+		catch (TxCallbackException e) {
+			final Throwable cause = e.getCause();
+			if (cause instanceof MetierServiceException) {
+				results.reject("global.error.msg", cause.getMessage());
+				throw new WebTransactionException(cause);
+			}
+			else {
+				throw e;
+			}
 		}
 	}
 
