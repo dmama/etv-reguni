@@ -37,7 +37,6 @@ import ch.vd.uniregctb.tiers.TiersService;
  * Processor qui rapproche les contribuables des propriétaires fonciers
  *
  * @author baba
- *
  */
 public class RapprocherCtbProcessor {
 
@@ -52,7 +51,8 @@ public class RapprocherCtbProcessor {
 	private final TiersService tiersService;
 	private final ServiceCivilService serviceCivil;
 
-	public RapprocherCtbProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil) {
+	public RapprocherCtbProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AdresseService adresseService, TiersService tiersService,
+	                              ServiceCivilService serviceCivil) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
@@ -67,9 +67,10 @@ public class RapprocherCtbProcessor {
 		status.setMessage("Début du Rapprochement ...");
 
 		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement);
-		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template = new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
-		                                                                                                                                                             nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
-		                                                                                                                                                             status, hibernateTemplate);
+		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template =
+				new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
+						nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
+						status, hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchCallback<ProprietaireFoncier, RapprocherCtbResults>() {
 
@@ -271,8 +272,10 @@ public class RapprocherCtbProcessor {
 				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint, resultatConjoint, true);
 			}
 			else {
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal, ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, true);
-				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint, ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, false);
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal,
+						ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, true);
+				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint,
+						ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT, false);
 			}
 		}
 	}
@@ -286,7 +289,11 @@ public class RapprocherCtbProcessor {
 		if (nom.equalsIgnoreCase(proprio.getNom())) {
 			nomIdentique = true;
 		}
-		if (prenom.equalsIgnoreCase(proprio.getPrenom())) {
+		//SIFISC-3296 Si le contribuable n'a pas de prénom dans unireg ou d ans le fichier RF on renvoie un code 20. permet d'éviter un NPE
+		if (prenom == null || proprio.getPrenom() == null) {
+			return ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_NON_EXACT;
+		}
+		else if (prenom.equalsIgnoreCase(proprio.getPrenom())) {
 			prenomIdentique = true;
 		}
 
@@ -313,7 +320,8 @@ public class RapprocherCtbProcessor {
 		}
 	}
 
-	private void setValuesProprietaireRapproche(ProprietaireRapproche proprietaireRapproche, Long numeroCtb, String nom, String prenom, RegDate dateNaissance, ProprietaireRapproche.CodeRetour resultat, boolean isPrincipal) {
+	private void setValuesProprietaireRapproche(ProprietaireRapproche proprietaireRapproche, Long numeroCtb, String nom, String prenom, RegDate dateNaissance,
+	                                            ProprietaireRapproche.CodeRetour resultat, boolean isPrincipal) {
 		if (isPrincipal) {
 			proprietaireRapproche.setNumeroContribuable1(numeroCtb);
 			proprietaireRapproche.setNom1(nom);
