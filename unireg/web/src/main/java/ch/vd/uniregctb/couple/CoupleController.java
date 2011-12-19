@@ -90,7 +90,7 @@ public class CoupleController {
 
 		final Long menageId;
 		try {
-			final WebTransactionTemplate<Long> template = new WebTransactionTemplate<Long>(transactionManager, result);
+			final WebTransactionTemplate template = new WebTransactionTemplate(transactionManager, result);
 			menageId = template.execute(new TxCallback<Long>() {
 				@Override
 				public Long execute(TransactionStatus status) throws Exception {
