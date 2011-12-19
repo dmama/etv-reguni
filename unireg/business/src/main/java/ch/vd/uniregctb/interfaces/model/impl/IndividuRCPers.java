@@ -30,6 +30,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -38,6 +39,11 @@ import ch.vd.uniregctb.type.Sexe;
 public class IndividuRCPers implements Individu, Serializable {
 
 	private static final long serialVersionUID = -2609344381248103504L;
+
+	private static final String EST_FILLE = "101";
+	private static final String EST_FILS = "102";
+	private static final String EST_MERE = "3";
+	private static final String EST_PERE = "4";
 
 	private long noTechnique;
 	private String nouveauNoAVS;
@@ -49,10 +55,10 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Tutelle tutelle;
 	private Collection<AdoptionReconnaissance> adoptions;
 	private Collection<Adresse> adresses;
-	private Collection<Individu> enfants;
+	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilListImpl etatsCivils;
 	private List<HistoriqueIndividu> historique;
-	private List<Individu> parents;
+	private List<RelationVersIndividu> parents;
 	private List<Permis> permis;
 	private List<Nationalite> nationalites;
 
@@ -159,31 +165,33 @@ public class IndividuRCPers implements Individu, Serializable {
 		return adresses;
 	}
 
-	private static Collection<Individu> initEnfants(List<Relationship> relationship) {
+	private static Collection<RelationVersIndividu> initEnfants(List<Relationship> relationship) {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		final List<Individu> list = new ArrayList<Individu>();
+		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		for (Relationship r : relationship) {
-			if ("101".equals(r.getTypeOfRelationship()) || "102".equals(r.getTypeOfRelationship())) {
+			if (EST_FILLE.equals(r.getTypeOfRelationship()) || EST_FILS.equals(r.getTypeOfRelationship())) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				// TODO (rcpers) convertir la liste d'enfants en liste de numéros d'enfants
-				//list.add(enfant);
+				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
+				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
 		return list;
 	}
 
-	private static List<Individu> initParents(List<Relationship> relationship) {
+	private static List<RelationVersIndividu> initParents(List<Relationship> relationship) {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		final List<Individu> list = new ArrayList<Individu>();
+		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		for (Relationship r : relationship) {
-			if ("3".equals(r.getTypeOfRelationship()) || "4".equals(r.getTypeOfRelationship())) {
+			if (EST_MERE.equals(r.getTypeOfRelationship()) || EST_PERE.equals(r.getTypeOfRelationship())) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				// TODO (rcpers) convertir la liste de parents en liste de numéros de parents
-				//list.add(parent);
+				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
+				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
 		return list;
@@ -229,12 +237,12 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public List<Individu> getParents() {
+	public List<RelationVersIndividu> getParents() {
 		return parents;
 	}
 
 	@Override
-	public Collection<Individu> getEnfants() {
+	public Collection<RelationVersIndividu> getEnfants() {
 		return enfants;
 	}
 

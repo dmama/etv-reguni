@@ -72,6 +72,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.Region;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -1649,11 +1650,15 @@ public class TiersServiceImpl implements TiersService {
 
 		PersonnePhysique pere = null;
 
-		final List<Individu> individusParents = individu.getParents();
-		if (individusParents != null) {
-			for (Individu individuParent : individusParents) {
-				if (individuParent.isSexeMasculin()) {
-					pere = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
+		final List<RelationVersIndividu> relParents = individu.getParents();
+		if (relParents != null) {
+			for (RelationVersIndividu relation : relParents) {
+				final Individu parent = serviceCivilService.getIndividu(relation.getNumeroAutreIndividu(), dateValidite);
+				if (parent == null) {
+					throw new IndividuNotFoundException(relation.getNumeroAutreIndividu());
+				}
+				if (parent.isSexeMasculin()) {
+					pere = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique(), true);
 					break;
 				}
 			}
@@ -1678,11 +1683,15 @@ public class TiersServiceImpl implements TiersService {
 
 		PersonnePhysique mere = null;
 
-		final List<Individu> individusParents = individu.getParents();
-		if (individusParents != null) {
-			for (Individu individuParent : individusParents) {
-				if (!individuParent.isSexeMasculin()) {
-					mere = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
+		final List<RelationVersIndividu> relParents = individu.getParents();
+		if (relParents != null) {
+			for (RelationVersIndividu relation : relParents) {
+				final Individu parent = serviceCivilService.getIndividu(relation.getNumeroAutreIndividu(), dateValidite);
+				if (parent == null) {
+					throw new IndividuNotFoundException(relation.getNumeroAutreIndividu());
+				}
+				if (!parent.isSexeMasculin()) {
+					mere = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique(), true);
 					break;
 				}
 			}
@@ -1707,9 +1716,13 @@ public class TiersServiceImpl implements TiersService {
 
 		final List<PersonnePhysique> parents = new ArrayList<PersonnePhysique>(2);
 
-		final List<Individu> individusParents = individu.getParents();
-		if (individusParents != null) {
-			for (Individu individuParent : individusParents) {
+		final List<RelationVersIndividu> relParents = individu.getParents();
+		if (relParents != null) {
+			for (RelationVersIndividu relation : relParents) {
+				final Individu individuParent = serviceCivilService.getIndividu(relation.getNumeroAutreIndividu(), dateValidite);
+				if (individuParent == null) {
+					throw new IndividuNotFoundException(relation.getNumeroAutreIndividu());
+				}
 				final PersonnePhysique parent = tiersDAO.getPPByNumeroIndividu(individuParent.getNoTechnique(), true);
 				if (parent != null) {
 					parents.add(parent);
@@ -1735,8 +1748,8 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final List<PersonnePhysique> enfants = new ArrayList<PersonnePhysique>();
-		for (Individu ind : individu.getEnfants()) {
-			final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(ind.getNoTechnique(), true);
+		for (RelationVersIndividu rel : individu.getEnfants()) {
+			final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(rel.getNumeroAutreIndividu(), true);
 			if (enfant != null) {
 				enfants.add(enfant);
 			}
@@ -1911,8 +1924,8 @@ public class TiersServiceImpl implements TiersService {
 		final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), year, enumValues);
 
 		// enfants biologiques
-		final Collection<Individu> enfants = ind.getEnfants();
-		for (Individu enfant : enfants) {
+		final Collection<RelationVersIndividu> enfants = ind.getEnfants();
+		for (RelationVersIndividu enfant : enfants) {
 			RapportFiliation r = createRapportPourEnfant(personnePhysique, ind, enfant);
 			if (r != null) {
 				filiations.add(r);
@@ -1931,9 +1944,9 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// parents
-		final List<Individu> parents = ind.getParents();
+		final List<RelationVersIndividu> parents = ind.getParents();
 		if (parents != null) {
-			for (Individu parent : parents) {
+			for (RelationVersIndividu parent : parents) {
 				RapportFiliation r = createRapportPourParents(personnePhysique, ind, parent, year);
 				if (r != null) {
 					filiations.add(r);
@@ -1946,11 +1959,18 @@ public class TiersServiceImpl implements TiersService {
 
 
 	@Nullable
-	private RapportFiliation createRapportPourEnfant(PersonnePhysique personnePhysique, Individu individu, Individu enfant) {
+	private RapportFiliation createRapportPourEnfant(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationEnfant) {
 
-		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
+		final long noIndEnfant = relationEnfant.getNumeroAutreIndividu();
+
+		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(noIndEnfant);
 		if (ppEnfant == null) {
 			return null;
+		}
+
+		final Individu enfant = serviceCivilService.getIndividu(noIndEnfant, null);
+		if (enfant == null) {
+			throw new IndividuNotFoundException(noIndEnfant);
 		}
 
 		return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
@@ -1980,17 +2000,23 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
-	private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, Individu parent, int year) {
+	private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationParent, int year) {
 
-		final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique());
+		final long noIndParent = relationParent.getNumeroAutreIndividu();
+
+		final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(noIndParent);
 		if (ppParent == null) {
 			return null;
 		}
 
+		final Individu parent = serviceCivilService.getIndividu(noIndParent, year, AttributeIndividu.ADOPTIONS);
+		if (parent == null) {
+			throw new IndividuNotFoundException(noIndParent);
+		}
+
 		final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, parent, ppParent, RapportFiliation.Type.PARENT);
 
-		final Individu parentAvecAdoptions = serviceCivilService.getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
-		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parentAvecAdoptions.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
+		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
 		if (ar != null) {
 			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
 			if (dateDebut != null) {

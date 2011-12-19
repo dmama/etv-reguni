@@ -21,8 +21,10 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
+import ch.vd.uniregctb.interfaces.model.impl.RelationVersIndividuImpl;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
@@ -31,8 +33,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private HistoriqueIndividu dernierHistoriqueIndividu;
-	private List<Individu> parents;
-	private Collection<Individu> enfants;
+	private List<RelationVersIndividu> parents;
+	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilList etatsCivils;
 	private Collection<HistoriqueIndividu> historiqueIndividu;
 	private List<Nationalite> nationalites;
@@ -113,21 +115,47 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public List<Individu> getParents() {
+	public List<RelationVersIndividu> getParents() {
 		return parents;
 	}
 
-	public void setParents(List<Individu> parents) {
+	public void setParents(List<RelationVersIndividu> parents) {
 		this.parents = parents;
 	}
 
+	public void setParentsFromIndividus(List<Individu> individus) {
+		if (individus == null) {
+			this.parents = null;
+		}
+		else {
+			final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+			for (Individu parent : individus) {
+				list.add(new RelationVersIndividuImpl(parent.getNoTechnique(), parent.getDateNaissance(), parent.getDateDeces()));
+			}
+			this.parents = list;
+		}
+	}
+
 	@Override
-	public Collection<Individu> getEnfants() {
+	public Collection<RelationVersIndividu> getEnfants() {
 		return enfants;
 	}
 
-	public void setEnfants(Collection<Individu> enfants) {
+	public void setEnfants(Collection<RelationVersIndividu> enfants) {
 		this.enfants = enfants;
+	}
+
+	public void setEnfantsFromIndividus(List<Individu> individus) {
+		if (individus == null) {
+			this.enfants = null;
+		}
+		else {
+			final Collection<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+			for (Individu enfant : individus) {
+				list.add(new RelationVersIndividuImpl(enfant.getNoTechnique(), enfant.getDateNaissance(), enfant.getDateDeces()));
+			}
+			this.enfants = list;
+		}
 	}
 
 	@Override
@@ -325,10 +353,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 					|| (element.getDateReconnaissance() != null && element.getDateReconnaissance().year() <= annee);
 		}
 	};
-	private static final Limitator<Individu> ENFANT_LIMITATOR = new Limitator<Individu>() {
+	private static final Limitator<RelationVersIndividu> ENFANT_LIMITATOR = new Limitator<RelationVersIndividu>() {
 		@Override
-		public boolean keep(Individu element, int annee) {
-			return element.getDateNaissance() == null || element.getDateNaissance().year() <= annee;
+		public boolean keep(RelationVersIndividu element, int annee) {
+			return element.getDateDebut() == null || element.getDateDebut().year() <= annee;
 		}
 	};
 	private static final Limitator<HistoriqueIndividu> HISTORIQUE_LIMITATOR = new Limitator<HistoriqueIndividu>() {

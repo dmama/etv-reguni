@@ -154,7 +154,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
 				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(2010, 2, 8), "Cognac", "Yvan", true);
-				fils.setParents(Arrays.<Individu>asList(pere, mere));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
 			}
 		});
 

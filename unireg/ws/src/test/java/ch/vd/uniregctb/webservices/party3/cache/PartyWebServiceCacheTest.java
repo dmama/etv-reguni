@@ -108,9 +108,9 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(123456, date(1965, 4, 13), "Eric", "Bolomey", true);
 				final Individu papa = addIndividu(111111, date(1925, 11, 29), "Papa", "Bolomey", true);
-				ind.setParents(Arrays.asList(papa));
+				ind.setParentsFromIndividus(Arrays.asList(papa));
 				final Individu junior = addIndividu(222222, date(2002, 3, 7), "Junior", "Bolomey", true);
-				ind.setEnfants(Arrays.asList(junior));
+				ind.setEnfantsFromIndividus(Arrays.asList(junior));
 			}
 		});
 

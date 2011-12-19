@@ -47,12 +47,9 @@ public interface Individu extends EntiteCivile {
     HistoriqueIndividu getDernierHistoriqueIndividu();
 
     /**
-     * Retourne la liste des enfants de l'individu. Cette liste contient des objets de type
-     * <code>ch.vd.registre.civil.model.Individu</code>.
-     *
      * @return la liste des enfants de l'individu.
      */
-    Collection<Individu> getEnfants();
+    Collection<RelationVersIndividu> getEnfants();
 
     /**
      * Retourne la liste des états civils de l'individu.
@@ -140,7 +137,7 @@ public interface Individu extends EntiteCivile {
 	/**
 	 * @return les parents de l'individu courant.
 	 */
-	List<Individu> getParents();
+	List<RelationVersIndividu> getParents();
 
     /**
      * Retourne la tutelle à laquelle l'individu étendu est soumis.

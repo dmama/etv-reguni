@@ -24,6 +24,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
@@ -40,8 +41,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final RegDate naissance;
 	private final HistoriqueIndividu dernierHistorique;
 	private final Collection<HistoriqueIndividu> historique;
-	private List<Individu> parents;
-	private Collection<Individu> enfants;
+	private List<RelationVersIndividu> parents;
+	private Collection<RelationVersIndividu> enfants;
 	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
 	private Collection<Origine> origines;
@@ -163,34 +164,34 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public List<Individu> getParents() {
+	public List<RelationVersIndividu> getParents() {
 		return parents;
 	}
 
-	private static List<Individu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere) {
+	private static List<RelationVersIndividu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere) {
 		final Individu m = IndividuImpl.get(mere);
 		final Individu p = IndividuImpl.get(pere);
-		final List<Individu> parents = new ArrayList<Individu>(2);
+		final List<RelationVersIndividu> parents = new ArrayList<RelationVersIndividu>(2);
 		if (p != null) {
-			parents.add(p);
+			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), p.getDateNaissance(), p.getDateDeces()));
 		}
 		if (m != null) {
-			parents.add(m);
+			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), m.getDateNaissance(), m.getDateDeces()));
 		}
 		return parents;
 	}
 
 	@Override
-	public Collection<Individu> getEnfants() {
+	public Collection<RelationVersIndividu> getEnfants() {
 		return enfants;
 	}
 
-	private static List<Individu> initEnfants(Collection<?> targetEnfants) {
-		final List<Individu> list = new ArrayList<Individu>();
+	private static List<RelationVersIndividu> initEnfants(Collection<?> targetEnfants) {
+		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		if (targetEnfants != null) {
 			for (Object o : targetEnfants) {
-				ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
-				list.add(IndividuImpl.get(i));
+				final ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
+				list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
 			}
 		}
 		return list;

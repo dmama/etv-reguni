@@ -29,6 +29,7 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
@@ -155,7 +156,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		individu.setAdresses(sdresses);
 
 		// Enfants
-		final List<Individu> enfants = new ArrayList<Individu>();
+		final List<RelationVersIndividu> enfants = new ArrayList<RelationVersIndividu>();
 		individu.setEnfants(enfants);
 
 		// Adoptions et reconnaissances

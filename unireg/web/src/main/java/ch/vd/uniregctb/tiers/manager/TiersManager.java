@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -49,12 +47,9 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -86,7 +81,6 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -192,154 +186,6 @@ public class TiersManager implements MessageSourceAware {
 			entrepriseView = getHostPersonneMoraleService().get(noEntreprise);
 		}
 		return entrepriseView;
-	}
-
-	private RapportView createRapportViewPourFilliation(Individu reference, Individu autre, SensRapportEntreTiers sens) {
-		final RapportView rapportView = new RapportView();
-		rapportView.setSensRapportEntreTiers(sens);
-		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-
-		try {
-			final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(autre.getNoTechnique());
-			if (habitant != null) {
-				rapportView.setNumero(habitant.getNumero());
-			}
-		}
-		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-			LOGGER.warn(String.format("Détermination impossible du tiers associé à l'individu %d : %s", autre.getNoTechnique(), e.getMessage()));
-			rapportView.setMessageNumeroAbsent(String.format("Doublon détecté pour individu %d", autre.getNoTechnique()));
-		}
-
-		final String nomBrut = tiersService.getNomPrenom(autre);
-		final String nom;
-		if (autre.getDateDeces() != null) {
-			if (autre.isSexeMasculin()) {
-				nom = String.format("%s, défunt", nomBrut);
-			}
-			else {
-				nom = String.format("%s, défunte", nomBrut);
-			}
-		}
-		else {
-			nom = nomBrut;
-		}
-		rapportView.setNomCourrier1(nom);
-
-		// le rapport est terminé au décès de l'un des membres
-		if (reference.getDateDeces() != null || autre.getDateDeces() != null) {
-			final RegDate dateFinRapport = RegDateHelper.minimum(reference.getDateDeces(), autre.getDateDeces(), NullDateBehavior.LATEST);
-			rapportView.setDateFin(dateFinRapport);
-		}
-
-		// le rapport démarre à la naissance du dernier membre
-		final RegDate dateDebutRapport = RegDateHelper.maximum(reference.getDateNaissance(), autre.getDateNaissance(), NullDateBehavior.EARLIEST);
-		rapportView.setDateDebut(dateDebutRapport);
-
-		return rapportView;
-	}
-
-	private AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
-		AdoptionReconnaissance a = null;
-		if (adoptions != null && !adoptions.isEmpty()) {
-			for (AdoptionReconnaissance candidat : adoptions) {
-				if (candidat.getAdopteReconnu().getNoTechnique() == noIndEnfant) {
-					a = candidat;
-					break;
-				}
-			}
-		}
-		return a;
-	}
-
-	/**
-	 * Recupère les rapports de filiation de type PARENT ou ENFANT
-	 *
-	 * @param numeroTiers
-	 * @param sens
-	 * @return
-	 */
-	protected List<RapportView> getRapportsFiliation(PersonnePhysique habitant) {
-		final List<RapportView> rapportsView = new ArrayList<RapportView>();
-		Assert.notNull(habitant.getNumeroIndividu(), "La personne physique n'a pas de numéro d'individu connu");
-
-		final int year = RegDate.get().year();
-
-		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
-		final Individu ind = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), year, enumValues);
-
-		final String nomInd = tiersService.getNomPrenom(ind);
-
-		// enfants biologiques
-		final Collection<Individu> listFiliations = ind.getEnfants();
-		for (Individu enfant : listFiliations) {
-			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
-
-			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-			final String nomEnfant = tiersService.getNomPrenom(enfant);
-			final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
-			rapportView.setToolTipMessage(toolTipMessage);
-
-			rapportsView.add(rapportView);
-		}
-
-		// enfants adoptés / reconnus
-		final Collection<AdoptionReconnaissance> adoptions = ind.getAdoptionsReconnaissances();
-		if (adoptions != null) {
-			for (AdoptionReconnaissance ar : adoptions) {
-				final Individu enfant = ar.getAdopteReconnu();
-				final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
-				final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-				if (dateDebut != null) {
-					rapportView.setDateDebut(dateDebut);
-				}
-				if (ar.getDateDesaveu() != null) {
-					rapportView.setDateFin(ar.getDateDesaveu());
-				}
-
-				final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-				final String nomEnfant = tiersService.getNomPrenom(enfant);
-				final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
-				rapportView.setToolTipMessage(toolTipMessage);
-
-				rapportsView.add(rapportView);
-			}
-		}
-
-		// parents
-		final List<Individu> parents = ind.getParents();
-		if (parents != null) {
-			for (Individu parent : parents) {
-				rapportsView.add(createRapportViewPourFilliation(ind, nomInd, parent, year));
-			}
-		}
-
-		return rapportsView;
-	}
-
-	private RapportView createRapportViewPourFilliation(Individu individu, String nomIndividu, Individu parent, int year) {
-
-		final RapportView rapportView = createRapportViewPourFilliation(individu, parent, SensRapportEntreTiers.SUJET);
-
-		final Individu parentAvecAdoptions = serviceCivilService.getIndividu(parent.getNoTechnique(), year, AttributeIndividu.ADOPTIONS);
-		final AdoptionReconnaissance ar = getAdoptionPourEnfant(parentAvecAdoptions.getAdoptionsReconnaissances(), individu.getNoTechnique());
-		if (ar != null) {
-			final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-			if (dateDebut != null) {
-				rapportView.setDateDebut(dateDebut);
-			}
-			if (ar.getDateDesaveu() != null && (rapportView.getRegDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getRegDateFin()))) {
-				rapportView.setDateFin(ar.getDateDesaveu());
-			}
-		}
-
-		final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
-		final String nomParent = tiersService.getNomPrenom(parent);
-		final String verbe = fermeOuAnnule ? "était" : "est";
-		final String type = parent.isSexeMasculin() ? "le père" : "la mère";
-		final String toolTipMessage = String.format("%s %s %s de %s", nomParent, verbe, type, nomIndividu);
-		rapportView.setToolTipMessage(toolTipMessage);
-
-		return rapportView;
 	}
 
 	/**

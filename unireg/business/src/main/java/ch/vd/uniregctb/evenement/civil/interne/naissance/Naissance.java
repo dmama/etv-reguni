@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,16 +25,8 @@ public class Naissance extends EvenementCivilInterne {
 
 	private static final Logger LOGGER = Logger.getLogger(Naissance.class);
 
-	private final List<Individu> parents = new ArrayList<Individu>();
-
 	protected Naissance(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
-
-		/* Récupération des parents du nouveau né */
-		final Individu bebe = getIndividu();
-		if (bebe != null && bebe.getParents() != null) {
-			parents.addAll(bebe.getParents());
-		}
 	}
 
 	/**
@@ -44,9 +35,6 @@ public class Naissance extends EvenementCivilInterne {
 	@SuppressWarnings({"JavaDoc"})
 	protected Naissance(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, List<Individu> parents, EvenementCivilContext context) {
 		super(individu, conjoint, TypeEvenementCivil.NAISSANCE, date, numeroOfsCommuneAnnonce, context);
-		if (parents != null) {
-			this.parents.addAll(parents);
-		}
 	}
 
 	/* (non-Javadoc)

@@ -79,8 +79,8 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 					final MockIndividu pere = addIndividu(jacquesNoInd, date(1948, 1, 26), "Jacquouille", "Jacques", true);
 					final MockIndividu mere = addIndividu(martineNoInd, date(1948, 9, 4), "Jacquouille", "Martine", false);
 
-					enfant.setParents(Arrays.<Individu>asList(pere, mere));
-					enfant2.setParents(Arrays.<Individu>asList(pere, mere));
+					enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+					enfant2.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
 				}
 			});
 

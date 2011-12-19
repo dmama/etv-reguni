@@ -777,9 +777,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParents(Arrays.<Individu>asList(pere));
-				fille.setParents(Arrays.<Individu>asList(pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 			}
 		});
 
@@ -905,9 +905,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParents(Arrays.<Individu>asList(pere));
-				fille.setParents(Arrays.<Individu>asList(pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 			}
 		});
 

@@ -4381,7 +4381,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParents(Arrays.<Individu>asList(mere));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
 			}
 		});
 
@@ -4462,7 +4462,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Raoul", true);
 				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParents(Arrays.<Individu>asList(pere));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
 			}
 		});
 
@@ -4538,7 +4538,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParents(Arrays.<Individu>asList(mere));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
 			}
 		});
 
@@ -4623,7 +4623,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParents(Arrays.<Individu>asList(mere));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
 			}
 		});
 
@@ -4709,10 +4709,10 @@ public class TiersServiceTest extends BusinessTest {
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 			}
 		});
 
@@ -4772,10 +4772,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
 				fille.setDateDeces(date(2011, 2, 2));
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -4838,10 +4838,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere));
-				fille.setParents(Arrays.<Individu>asList(mere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -4906,10 +4906,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -4972,10 +4972,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
@@ -5038,10 +5038,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5104,10 +5104,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5169,7 +5169,7 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
@@ -5225,10 +5225,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5288,10 +5288,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDesGranges, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5350,10 +5350,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
 				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5421,11 +5421,11 @@ public class TiersServiceTest extends BusinessTest {
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille2, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParents(Arrays.<Individu>asList(mere, pere));
-				fille.setParents(Arrays.<Individu>asList(mere, pere));
-				fille2.setParents(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfants(Arrays.<Individu>asList(fils, fille, fille2));
-				mere.setEnfants(Arrays.<Individu>asList(fils, fille, fille2));
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				fille2.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille, fille2));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille, fille2));
 			}
 		});
 

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -52,10 +53,10 @@ public class CorrectionFiliation extends ChangementBase {
 		Audit.info(getNumeroEvenement(), String.format("Correction de filiation de l'individu : %d", getNoIndividu()));
 
 		// [SIFISC-855] Il faut invalider les caches des individus civils parents de cet individu
-		final List<Individu> parents = getIndividu().getParents();
+		final List<RelationVersIndividu> parents = getIndividu().getParents();
 		if (parents != null) {
-			for (Individu parent : parents) {
-				context.getDataEventService().onIndividuChange(parent.getNoTechnique());
+			for (RelationVersIndividu parent : parents) {
+				context.getDataEventService().onIndividuChange(parent.getNumeroAutreIndividu());
 			}
 		}
 
