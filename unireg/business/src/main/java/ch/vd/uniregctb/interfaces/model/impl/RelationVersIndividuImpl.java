@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 
-public class RelationVersIndividuImpl implements RelationVersIndividu {
+public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
+
+	private static final long serialVersionUID = 2230658029296372613L;
 
 	private long numeroAutreIndividu;
 	private RegDate dateDebut;
