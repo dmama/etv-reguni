@@ -61,8 +61,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 		final MailAddress address = contact.getContact();
 		final AddressInformation addressInfo = address.getAddressInformation();
 
-		this.dateDebut = XmlUtils.xmlcal2regdate(contact.getDate());
-		this.dateFin = null; // TODO (rcpers)
+		this.dateDebut = XmlUtils.xmlcal2regdate(contact.getContactValidFrom());
+		this.dateFin = XmlUtils.xmlcal2regdate(contact.getContactValidTill());
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();

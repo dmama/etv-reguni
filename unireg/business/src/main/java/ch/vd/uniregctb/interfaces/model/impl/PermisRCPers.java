@@ -20,7 +20,7 @@ public class PermisRCPers implements Permis, Serializable {
 	public PermisRCPers(ResidencePermit permit) {
 		this.dateDebut = null; // TODO (rcpers) demander à RCPers de fournir cette information
 		this.dateFin = XmlUtils.xmlcal2regdate(permit.getResidencePermitTill());
-		this.dateAnnulation = null; // TODO (rcpers)
+		this.dateAnnulation = null; // les permis annulés ne sont pas exposés par RCPers
 		this.typePermis = TypePermis.get(permit.getResidencePermit());
 	}
 

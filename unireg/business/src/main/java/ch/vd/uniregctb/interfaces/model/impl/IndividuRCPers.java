@@ -66,7 +66,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	public IndividuRCPers(Person person, ServiceInfrastructureService infraService) {
 		final PersonInformation personInformation = person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson();
-		this.noTechnique = Long.parseLong(person.getIdentity().getPersonIdentification().getLocalPersonId().getPersonId());
+		this.noTechnique = getNoIndividu(person.getIdentity().getPersonIdentification().getLocalPersonId());
 		this.nouveauNoAVS = String.valueOf(person.getUpiPerson().getVn());
 		this.numeroRCE = initNumeroRCE(person.getIdentity().getPersonIdentification().getOtherPersonId());
 		this.isMasculin = initIsMasculin(personInformation);
@@ -75,13 +75,17 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.origines = initOrigins(person);
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
-		this.adresses = initAdresses(person.getContactHistory(), person.getResidencesHistory(), infraService);
-		this.enfants = initEnfants(person.getRelationship());
+		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
+		this.enfants = initEnfants(person.getRelationshipHistory());
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
 		this.historique = initHistorique(person);
-		this.parents = initParents(person.getRelationship());
+		this.parents = initParents(person.getRelationshipHistory());
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
+	}
+
+	private static long getNoIndividu(NamedPersonId personId) {
+		return Long.parseLong(personId.getPersonId());
 	}
 
 	private static String initNumeroRCE(List<NamedPersonId> otherPersonIds) {
@@ -162,8 +166,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		final List<Individu> list = new ArrayList<Individu>();
 		for (Relationship r : relationship) {
 			if ("101".equals(r.getTypeOfRelationship()) || "102".equals(r.getTypeOfRelationship())) {
-				final Long numeroInd = (Long) r.getPersonLink();
-				// TODO (rcpers) s'assurer que le lien vers la personne est bien le numéro d'individu
+				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
+				// TODO (rcpers) convertir la liste d'enfants en liste de numéros d'enfants
 				//list.add(enfant);
 			}
 		}
@@ -177,8 +181,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		final List<Individu> list = new ArrayList<Individu>();
 		for (Relationship r : relationship) {
 			if ("3".equals(r.getTypeOfRelationship()) || "4".equals(r.getTypeOfRelationship())) {
-				final Long numeroInd = (Long) r.getPersonLink();
-				// TODO (rcpers) s'assurer que le lien vers la personne est bien le numéro d'individu
+				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
+				// TODO (rcpers) convertir la liste de parents en liste de numéros de parents
 				//list.add(parent);
 			}
 		}
