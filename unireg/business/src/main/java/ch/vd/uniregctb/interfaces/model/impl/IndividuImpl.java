@@ -29,7 +29,7 @@ import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
 public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializable {
 
-	private static final long serialVersionUID = -963453831766356538L;
+	private static final long serialVersionUID = 4330314969356346007L;
 
 	private final long noTechnique;
 	private final String prenom;
