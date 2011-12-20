@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="schedulerName" value="schedulerQuartz" />
+	</bean>
+
+	<bean id="jobScheduler" class="ch.vd.moscow.job.JobSchedulerImpl">
+		<property name="scheduler" ref="scheduler" />
+		<property name="manager" ref="jobManager" />
+	</bean>
+
+	<bean id="jobManager" class="ch.vd.moscow.job.JobManagerImpl" />
+
+	<bean id="importLogsProcessor" class="ch.vd.moscow.job.processor.ImportLogsProcessor">
+		<property name="databaseService" ref="databaseService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+</beans>

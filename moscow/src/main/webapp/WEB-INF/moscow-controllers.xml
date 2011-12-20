@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<util:list>
+				<!-- Support for returning images in MVC controllers -->
+				<bean id="byteArrayMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+			</util:list>
+		</property>
+	</bean>
+
+
+	<bean id="indexController" class="ch.vd.moscow.controller.index.IndexController">
+	</bean>
+
+	<bean id="errorController" class="ch.vd.moscow.controller.ErrorController">
+	</bean>
+
+	<bean id="directoryController" class="ch.vd.moscow.controller.directory.DirectoryController">
+		<property name="dao" ref="dao" />
+	</bean>
+
+	<bean id="graphController" class="ch.vd.moscow.controller.graph.GraphController">
+		<property name="dao" ref="dao" />
+	</bean>
+
+	<bean id="environmentController" class="ch.vd.moscow.controller.environment.EnvironmentController">
+		<property name="dao" ref="dao" />
+	</bean>
+
+	<bean id="jobController" class="ch.vd.moscow.controller.job.JobController">
+		<property name="dao" ref="dao" />
+		<property name="scheduler" ref="jobScheduler" />
+		<property name="manager" ref="jobManager" />
+	</bean>
+
+</beans>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<util:list id="hibernateAnnotatedClasses">
+		<value>ch.vd.moscow.data.Call</value>
+		<value>ch.vd.moscow.data.CompletionStatus</value>
+		<value>ch.vd.moscow.data.Environment</value>
+		<value>ch.vd.moscow.data.LogDirectory</value>
+		<value>ch.vd.moscow.data.LogFile</value>
+		<value>ch.vd.moscow.data.ImportLogsJob</value>
+	</util:list>
+
+	<util:map id="hibernateProperties">
+		<entry key="hibernate.connection.autocommit" value="false" />
+		<entry key="hibernate.connection.isolation" value="2" /><!-- 2 = java.sql.Connection.TRANSACTION_READ_COMMITTED -->
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.show_sql" value="false" />
+		<entry key="hibernate.jdbc.batch_size" value="20" />
+		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
+		<entry key="hibernate.dialect" value="${hibernate.dialect}" />
+		<entry key="hibernate.query.substitutions" value="${hibernate.query.substitutions}" />
+		<entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.mode}" />
+	</util:map>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="annotatedClasses" ref="hibernateAnnotatedClasses" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties" ref="hibernateProperties" />
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="cacheQueries" value="true" />
+		<property name="allowCreate" value="false" />
+		<property name="checkWriteOperations" value="false" /> <!-- parce qu'autrement il n'est pas possible de simuler des opérations de write dans une transaction read-only -->
+	</bean>
+
+	<bean id="hibernateDaoSupport" class="org.springframework.orm.hibernate3.support.HibernateDaoSupport" abstract="true">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+</beans>
