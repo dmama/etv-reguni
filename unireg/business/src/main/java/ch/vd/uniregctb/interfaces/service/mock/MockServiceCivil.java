@@ -35,7 +35,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
@@ -123,28 +122,12 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 * @return un {@link MockIndividu}
 	 */
 	protected MockIndividu addIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
-		return addIndividu(numero, dateNaissance, nom, prenom, isMasculin, dateNaissance);
-	}
-
-	/**
-	 * Ajoute un invidu à la map des individus (avec un historique qui ne commence pas forcément à la date de naissance)
-	 * @param numero numéro d'individu à utiliser
-	 * @param dateNaissance date de naissance du nouvel individu
-	 * @param nom nom (de famille) du nouvel individu
-	 * @param prenom prénom du nouvel individu
-	 * @param isMasculin <code>true</code> pour un homme, <code>false</code> pour une femme
-	 * @param dateConnaissance date à partir de laquelle est construit l'historique connu de l'individu (voir {@link ch.vd.uniregctb.interfaces.model.Individu#getHistoriqueIndividu()})
-	 * @return un {@link MockIndividu}
-	 */
-	protected MockIndividu addIndividu(long numero, RegDate dateNaissance, String nom, String prenom, boolean isMasculin, RegDate dateConnaissance) {
 		final MockIndividu individu = new MockIndividu();
 		individu.setNoTechnique(numero);
 		individu.setDateNaissance(dateNaissance);
 		individu.setSexeMasculin(isMasculin);
-
-		// Histo
-		final MockHistoriqueIndividu histo = new MockHistoriqueIndividu(dateConnaissance, nom, prenom);
-		individu.addHistoriqueIndividu(histo);
+		individu.setPrenom(prenom);
+		individu.setNom(nom);
 
 		// Etats civils
 		final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
@@ -179,12 +162,9 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	protected Individu addFieldsIndividu(MockIndividu individu, String nouveauNoAVS, String ancienNoAVS, String nomNaissance) {
-
 		individu.setNouveauNoAVS(nouveauNoAVS);
-		final MockHistoriqueIndividu histo = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		histo.setNoAVS(ancienNoAVS);
-		histo.setNomNaissance(nomNaissance);
-
+		individu.setNoAVS11(ancienNoAVS);
+		individu.setNomNaissance(nomNaissance);
 		return individu;
 	}
 

@@ -409,7 +409,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	private String getNumeroAvs(Individu ind) {
 		final String noAVS;
 		if (StringUtils.isBlank(ind.getNouveauNoAVS())) {
-			noAVS = FormatNumeroHelper.formatAncienNumAVS(ind.getDernierHistoriqueIndividu().getNoAVS());
+			noAVS = FormatNumeroHelper.formatAncienNumAVS(ind.getNoAVS11());
 		}
 		else {
 			noAVS = FormatNumeroHelper.formatNumAVS(ind.getNouveauNoAVS());

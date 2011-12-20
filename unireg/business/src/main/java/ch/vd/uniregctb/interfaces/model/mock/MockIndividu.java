@@ -16,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -28,17 +27,20 @@ import ch.vd.uniregctb.interfaces.model.impl.RelationVersIndividuImpl;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
+	private String prenom;
+	private String autresPrenoms;
+	private String nom;
+	private String nomNaissance;
 	private Collection<AdoptionReconnaissance> adoptionsReconnaissances;
 	private MockIndividu conjoint;
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
-	private HistoriqueIndividu dernierHistoriqueIndividu;
 	private List<RelationVersIndividu> parents;
 	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilList etatsCivils;
-	private Collection<HistoriqueIndividu> historiqueIndividu;
 	private List<Nationalite> nationalites;
 	private long noTechnique;
+	private String noAVS11;
 	private String nouveauNoAVS;
 	private String numeroRCE;
 	private Collection<Origine> origines;
@@ -51,18 +53,57 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts, int annee) {
 		super(right, parts);
+		this.prenom = right.prenom;
+		this.autresPrenoms = right.autresPrenoms;
+		this.nom = right.nom;
+		this.nomNaissance = right.nomNaissance;
 		this.dateDeces = right.dateDeces;
 		this.dateNaissance = right.dateNaissance;
-		this.dernierHistoriqueIndividu = right.dernierHistoriqueIndividu;
 		this.etatsCivils = right.etatsCivils;
-		this.historiqueIndividu = right.historiqueIndividu;
 		this.noTechnique = right.noTechnique;
+		this.noAVS11 = right.noAVS11;
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
 		this.sexeMasculin = right.sexeMasculin;
 
 		copyPartsFrom(right, parts);
 		limitPartsToBeforeYear(annee, parts);
+	}
+
+	@Override
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	@Override
+	public String getAutresPrenoms() {
+		return autresPrenoms;
+	}
+
+	public void setAutresPrenoms(String autresPrenoms) {
+		this.autresPrenoms = autresPrenoms;
+	}
+
+	@Override
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	@Override
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
+	public void setNomNaissance(String nomNaissance) {
+		this.nomNaissance = nomNaissance;
 	}
 
 	@Override
@@ -103,15 +144,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	@Override
 	public boolean isMineur(RegDate date) {
 		return dateNaissance != null && dateNaissance.addYears(18).compareTo(date) > 0;
-	}
-
-	@Override
-	public HistoriqueIndividu getDernierHistoriqueIndividu() {
-		return dernierHistoriqueIndividu;
-	}
-
-	public void setDernierHistoriqueIndividu(HistoriqueIndividu dernierHistoriqueIndividu) {
-		this.dernierHistoriqueIndividu = dernierHistoriqueIndividu;
 	}
 
 	@Override
@@ -184,41 +216,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
-		return historiqueIndividu;
-	}
-
-	@Override
-	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
-		if (historiqueIndividu == null || historiqueIndividu.isEmpty()) {
-			return null;
-		}
-		HistoriqueIndividu candidat = null;
-		for (HistoriqueIndividu histo : historiqueIndividu) {
-			final RegDate dateDebut = histo.getDateDebutValidite();
-			if (dateDebut == null || date == null || dateDebut.isBeforeOrEqual(date)) {
-				candidat = histo;
-			}
-		}
-		return candidat;
-	}
-
-	public void setHistoriqueIndividu(Collection<HistoriqueIndividu> historiqueIndividu) {
-		this.historiqueIndividu = historiqueIndividu;
-	}
-
-	/**
-	 * Ajoute un historique à la liste, et défini cet historique comme le dernier.
-	 */
-	public void addHistoriqueIndividu(HistoriqueIndividu h) {
-		if (historiqueIndividu == null) {
-			historiqueIndividu = new ArrayList<HistoriqueIndividu>();
-		}
-		historiqueIndividu.add(h);
-		dernierHistoriqueIndividu = h;
-	}
-
-	@Override
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -234,6 +231,15 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public void setNoTechnique(long noTechnique) {
 		this.noTechnique = noTechnique;
+	}
+
+	@Override
+	public String getNoAVS11() {
+		return noAVS11;
+	}
+
+	public void setNoAVS11(String noAVS11) {
+		this.noAVS11 = noAVS11;
 	}
 
 	@Override
@@ -357,12 +363,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		@Override
 		public boolean keep(RelationVersIndividu element, int annee) {
 			return element.getDateDebut() == null || element.getDateDebut().year() <= annee;
-		}
-	};
-	private static final Limitator<HistoriqueIndividu> HISTORIQUE_LIMITATOR = new Limitator<HistoriqueIndividu>() {
-		@Override
-		public boolean keep(HistoriqueIndividu element, int annee) {
-			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
 		}
 	};
 	private static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
@@ -586,8 +586,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			etatsCivilsTemp.freeze();
 			etatsCivils = etatsCivilsTemp;
 		}
-		historiqueIndividu = buildLimitedCollectionBeforeYear(historiqueIndividu, annee, HISTORIQUE_LIMITATOR);
-		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.isEmpty() ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];
 
 		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = buildLimitedCollectionBeforeYear(nationalites, annee, NATIONALITE_LIMITATOR);

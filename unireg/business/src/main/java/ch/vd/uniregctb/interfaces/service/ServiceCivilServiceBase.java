@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -219,12 +218,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 			return null;
 		}
 
-		final HistoriqueIndividu individuHisto = individu.getDernierHistoriqueIndividu();
-		if (individuHisto == null) {
-			return NomPrenom.VIDE;
-		}
-
-		return new NomPrenom(individuHisto.getNom(), individuHisto.getPrenom());
+		return new NomPrenom(individu.getNom(), individu.getPrenom());
 	}
 
 	/**

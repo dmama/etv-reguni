@@ -6,16 +6,13 @@ import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -104,29 +101,25 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			doModificationIndividu(jeanNoInd, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
-					individu.addHistoriqueIndividu(h);
+					individu.setNom("Jacquard");
 				}
 			});
 			doModificationIndividu(veroNoInd, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Véronique");
-					individu.addHistoriqueIndividu(h);
+					individu.setNom("Jacquard");
 				}
 			});
 			doModificationIndividu(jacquesNoInd, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jacques");
-					individu.addHistoriqueIndividu(h);
+					individu.setNom("Jacquard");
 				}
 			});
 			doModificationIndividu(martineNoInd, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Martine");
-					individu.addHistoriqueIndividu(h);
+					individu.setNom("Jacquard");
 				}
 			});
 
@@ -159,7 +152,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
 		final Individu individu = cache.getIndividu(noIndividu, 2400);
 		assertNotNull(individu);
-		assertEquals(prenom, individu.getDernierHistoriqueIndividu().getPrenom());
-		assertEquals(nom, individu.getDernierHistoriqueIndividu().getNom());
+		assertEquals(prenom, individu.getPrenom());
+		assertEquals(nom, individu.getNom());
 	}
 }

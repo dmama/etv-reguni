@@ -83,12 +83,12 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 		IndividuView indCible = null;
 		indCible = new IndividuView();
 		indCible.setNumeroIndividu(indSource.getNoTechnique());
-		indCible.setNom(indSource.getDernierHistoriqueIndividu().getNom());
-		indCible.setPrenom(indSource.getDernierHistoriqueIndividu().getPrenom());
-		indCible.setNomNaissance(indSource.getDernierHistoriqueIndividu().getNomNaissance());
-		indCible.setAutresPrenoms(indSource.getDernierHistoriqueIndividu().getAutresPrenoms());
+		indCible.setNom(indSource.getNom());
+		indCible.setPrenom(indSource.getPrenom());
+		indCible.setNomNaissance(indSource.getNomNaissance());
+		indCible.setAutresPrenoms(indSource.getAutresPrenoms());
 		indCible.setDateNaissance(RegDate.asJavaDate(indSource.getDateNaissance()));
-		indCible.setAncienNumeroAVS(indSource.getDernierHistoriqueIndividu().getNoAVS());
+		indCible.setAncienNumeroAVS(indSource.getNoAVS11());
 		indCible.setNumeroAssureSocial(indSource.getNouveauNoAVS());
 		indCible.setNumeroRCE( indSource.getNumeroRCE() );
 		traiteSexe(indSource, indCible);
@@ -219,8 +219,8 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 			if (indSource == null) {
 				throw new IndividuNotFoundException(numeroIndividu);
 			}
-			final String nom = indSource.getDernierHistoriqueIndividu().getNom();
-			final String prenom = indSource.getDernierHistoriqueIndividu().getPrenom();
+			final String nom = indSource.getNom();
+			final String prenom = indSource.getPrenom();
 			final boolean blankNom = StringUtils.isBlank(nom);
 			final boolean blankPrenom = StringUtils.isBlank(prenom);
 			if (!blankNom && !blankPrenom) {

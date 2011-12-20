@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -150,9 +151,8 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 				throw new BusinessException(message);
 			}
 
-			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
-			this.nom = data.getNom();
-			this.prenom = data.getPrenom();
+			this.nom = StringUtils.trimToNull(individu.getNom());
+			this.prenom = StringUtils.trimToNull(individu.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			if (personne.getDateDeces() != null) {
@@ -163,8 +163,8 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			}
 
 			this.nouveauNumeroAssureSocial = individu.getNouveauNoAVS();
-			this.ancienNumeroAssureSocial = data.getNoAVS();
-			this.dateArrivee = DataHelper.coreToWeb(data.getDateDebutValidite());
+			this.ancienNumeroAssureSocial = individu.getNoAVS11();
+			this.dateArrivee = DataHelper.coreToWeb(personne.getDateDebutActivite());
 
 			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(null);
 			if (permis == null) {

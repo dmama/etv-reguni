@@ -15,7 +15,6 @@ import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.webservices.party3.impl.Context;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
@@ -63,8 +62,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.UNKNOWN_INDIVIDUAL);
 			}
 
-			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
-			to.setIdentification(newPersonIdentification(individu, data));
+			to.setIdentification(newPersonIdentification(individu));
 			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
@@ -100,14 +98,14 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		return identification;
 	}
 
-	private static PersonIdentification newPersonIdentification(Individu individu, HistoriqueIndividu data) {
+	private static PersonIdentification newPersonIdentification(Individu individu) {
 		final PersonIdentification identification = new PersonIdentification();
-		identification.setOfficialName(data.getNom());
-		identification.setFirstName(data.getPrenom());
+		identification.setOfficialName(individu.getNom());
+		identification.setFirstName(individu.getPrenom());
 		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
 		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
-		if (StringUtils.isNotBlank(data.getNoAVS())) {
-			identification.getOtherPersonId().add(new NamedPersonId("CH.AHV", data.getNoAVS())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
+		if (StringUtils.isNotBlank(individu.getNoAVS11())) {
+			identification.getOtherPersonId().add(new NamedPersonId("CH.AHV", individu.getNoAVS11())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
 		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(individu.getDateNaissance()));
 		return identification;

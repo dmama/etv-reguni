@@ -35,9 +35,7 @@ import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
@@ -112,16 +110,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addAdresse(marcelMeignier, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 
 				final MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
-				{
-					MockHistoriqueIndividu histo = (MockHistoriqueIndividu) philippeMaillard.getDernierHistoriqueIndividu();
-					histo.setNoAVS("123.45.678");
-				}
+				philippeMaillard.setNoAVS11("123.45.678");
 
 				final MockIndividu gladysMaillard = addIndividu(noIndGladysMaillard, RegDate.get(1967, 12, 3), "Maillard-Gallet", "Gladys", false);
-				{
-					MockHistoriqueIndividu histo = (MockHistoriqueIndividu) gladysMaillard.getDernierHistoriqueIndividu();
-					histo.setNoAVS("987.65.432");
-				}
+				gladysMaillard.setNoAVS11("987.65.432");
 
 				addIndividu(123L, RegDate.get(1970, 1, 1), "Dupont", "Philippe", true);
 				addIndividu(4567L, RegDate.get(1970, 1, 1), "Dupond", "Arnold", true);
@@ -213,7 +205,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	@Test
 	public void testTiersACIIndexable() throws Exception {
 		Individu individu = serviceCivil.getIndividu(7643L, 2007);
-		HistoriqueIndividu histoInd = individu.getDernierHistoriqueIndividu();
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(12348L);
@@ -231,14 +222,13 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
-		assertEquals(String.format("%s %s", histoInd.getPrenom(), histoInd.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
 	@Test
 	public void testHabitantIndexable() throws Exception {
 		Individu individu = serviceCivil.getIndividu(7643L, 2007);
-		HistoriqueIndividu histoInd = individu.getDernierHistoriqueIndividu();
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(12348L);
@@ -265,7 +255,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
-		assertEquals(String.format("%s %s", histoInd.getPrenom(), histoInd.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
@@ -277,7 +267,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumeroIndividu(7643L);
 		tiersDAO.addTiers(hab);
 		Individu ind = serviceCivil.getIndividu(hab.getNumeroIndividu(), null);
-		HistoriqueIndividu histo = ind.getDernierHistoriqueIndividu();
 
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setNumero(23348L);
@@ -303,12 +292,12 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertNotContains(hab.getNumeroIndividu().toString(), values.getNumeros());
 		assertContains("Débiteur IS", values.getRoleLigne1());
 		assertContains("Réguliers", values.getRoleLigne2());
-		assertContains(histo.getNom(), values.getNomRaison());
-		assertContains(histo.getNom(), values.getAutresNom());
-		assertContains(histo.getPrenom(), values.getAutresNom());
+		assertContains(ind.getNom(), values.getNomRaison());
+		assertContains(ind.getNom(), values.getAutresNom());
+		assertContains(ind.getPrenom(), values.getAutresNom());
 
 		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
-		assertEquals(String.format("%s %s", histo.getPrenom(), histo.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", ind.getPrenom(), ind.getNom()), values.getNom1());
 		assertNull(values.getNom2());
 	}
 

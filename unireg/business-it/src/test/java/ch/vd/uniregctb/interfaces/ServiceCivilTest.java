@@ -34,13 +34,13 @@ public class ServiceCivilTest extends BusinessItTest {
 		Individu elie = service.getIndividu(333527L, 2007);
 		assertNotNull(elie);
 		// En 2005, il n'etait pas né.. devrait etre null!
-		assertEquals("Elie", elie.getDernierHistoriqueIndividu().getPrenom());
+		assertEquals("Elie", elie.getPrenom());
 		elie = service.getIndividu(333527L, 2005);
 		// assertNull(elie);
 
 		Individu jean = service.getIndividu(333528, 2007);
 		assertNotNull(jean);
-		assertEquals("Jean-Eric", jean.getDernierHistoriqueIndividu().getPrenom());
+		assertEquals("Jean-Eric", jean.getPrenom());
 		jean = service.getIndividu(333528, 2001);
 		assertNotNull(jean);
 		jean = service.getIndividu(333528, 2006, AttributeIndividu.CONJOINT);
@@ -48,7 +48,7 @@ public class ServiceCivilTest extends BusinessItTest {
 		Individu sara = service.getConjoint(jean.getNoTechnique(),RegDate.get(2007,1,1));
 		assertNotNull(sara);
 
-		assertEquals("Sara", sara.getDernierHistoriqueIndividu().getPrenom());
+		assertEquals("Sara", sara.getPrenom());
 	}
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -76,13 +76,13 @@ public class ServiceCivilTest extends BusinessItTest {
 		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2007,6,24));
 	   //Marié
 	    assertNotNull(conjoint);
-		assertEquals("Amélie",conjoint.getDernierHistoriqueIndividu().getPrenom());
+		assertEquals("Amélie",conjoint.getPrenom());
 		assertEquals(845875,conjoint.getNoTechnique());
 
 		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,6,28));
 	   //Séparé
 		assertNotNull(conjoint);
-		assertEquals("Amélie",conjoint.getDernierHistoriqueIndividu().getPrenom());
+		assertEquals("Amélie",conjoint.getPrenom());
 		assertEquals(845875,conjoint.getNoTechnique());
 
 

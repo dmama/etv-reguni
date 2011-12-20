@@ -5,7 +5,6 @@ import org.springframework.util.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -37,18 +36,16 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		super.fillBaseData(data);
 
 		final PersonnePhysique pp =(PersonnePhysique) tiers;
-		final HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
-
-		data.addAutresNom(histo.getPrenom());
-		data.addAutresNom(histo.getNom());
-		data.addAutresNom(histo.getNomNaissance());
+		data.addAutresNom(individu.getPrenom());
+		data.addAutresNom(individu.getNom());
+		data.addAutresNom(individu.getNomNaissance());
 		data.setDateNaissance(IndexerFormatHelper.objectToString(individu.getDateNaissance()));
-		data.setNomRaison(histo.getNom());
+		data.setNomRaison(individu.getNom());
 		data.addNumeroAssureSocial(individu.getNouveauNoAVS());
-		data.addNumeroAssureSocial(histo.getNoAVS());
+		data.addNumeroAssureSocial(individu.getNoAVS11());
 		data.setNoSymic(individu.getNumeroRCE());
-		data.addNom1(histo.getPrenom());
-		data.addNom1(histo.getNom());
+		data.addNom1(individu.getPrenom());
+		data.addNom1(individu.getNom());
 
 		if (pp.getDateDeces() != null) { //surcharge de la date de décès
 			data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));

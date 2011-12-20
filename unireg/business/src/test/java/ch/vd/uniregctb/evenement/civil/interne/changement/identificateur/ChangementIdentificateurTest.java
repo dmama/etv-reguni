@@ -14,7 +14,7 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
@@ -33,10 +33,8 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 	 */
 	private static final String DB_UNIT_DATA_FILE = "ChangementIdentificateurTest.xml";
 
-	/**
-	 * L'index global.
-	 */
 	private GlobalTiersSearcher searcher;
+	private DefaultMockServiceCivil mockServiceCivil;
 
 	public ChangementIdentificateurTest() {
 		setWantIndexation(true);
@@ -45,7 +43,8 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		mockServiceCivil = new DefaultMockServiceCivil();
+		serviceCivil.setUp(mockServiceCivil);
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
 	}
@@ -68,10 +67,8 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
 
 		// changement du NAVS13 dans le registre civil
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		historiqueIndividu.setNoAVS("7561261400563");
-
+		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU);
+		individu.setNoAVS11("7561261400563");
 
 		// déclenchement de l'événement
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
@@ -92,10 +89,9 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		LOGGER.debug("numero : " + l.get(0).getNumero());
 		LOGGER.debug ("nom : " + l.get(0).getNom1());
 		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		MockHistoriqueIndividu histoIndi = (MockHistoriqueIndividu) indi.getDernierHistoriqueIndividu();
 
 		// on verifie que le changement a bien été effectué
-		String navs13  = histoIndi.getNoAVS();
+		String navs13  = indi.getNoAVS11();
 		Assert.isTrue( "7561261400563".equals(navs13), "le nouveau NAVS13 n'a pas été indexé");
 	}
 

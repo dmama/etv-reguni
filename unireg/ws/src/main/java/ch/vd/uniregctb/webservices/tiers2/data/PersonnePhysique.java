@@ -202,13 +202,8 @@ public class PersonnePhysique extends Contribuable {
 				throw new BusinessException(message);
 			}
 
-			ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getHistoriqueIndividuAt(date);
-			if (data == null) {
-				// on se rabat sur le premier
-				data = individu.getHistoriqueIndividu().iterator().next();
-			}
-			this.nom = StringUtils.trimToNull(data.getNom());
-			this.prenom = StringUtils.trimToNull(data.getPrenom());
+			this.nom = StringUtils.trimToNull(individu.getNom());
+			this.prenom = StringUtils.trimToNull(individu.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			if (personne.getDateDeces() != null) {
@@ -219,8 +214,8 @@ public class PersonnePhysique extends Contribuable {
 			}
 
 			this.nouveauNumeroAssureSocial = individu.getNouveauNoAVS();
-			this.ancienNumeroAssureSocial = data.getNoAVS();
-			this.dateArrivee = DataHelper.coreToWeb(data.getDateDebutValidite());
+			this.ancienNumeroAssureSocial = individu.getNoAVS11();
+			this.dateArrivee = DataHelper.coreToWeb(personne.getDateDebutActivite());
 
 			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(date);
 			if (permis == null) {

@@ -23,10 +23,8 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
@@ -58,25 +56,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorTest.class);
 
-	/**
-	 * Une instance du moteur de règles.
-	 */
 	private EvenementCivilProcessor evenementCivilProcessor;
-
-	/**
-	 * La DAO pour les evenements
-	 */
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
-
-	/**
-	 * Le DAO.
-	 */
 	private TiersDAO tiersDAO;
-
-	/**
-	 * L'index global.
-	 */
 	private GlobalTiersSearcher searcher;
+	private DefaultMockServiceCivil mockServiceCivil;
 
 	/**
 	 * Crée la connexion à la base de données
@@ -85,7 +69,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		mockServiceCivil = new DefaultMockServiceCivil();
+		serviceCivil.setUp(mockServiceCivil);
 
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
@@ -439,9 +424,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		criteria.setNumero(67919191L);
 
 		// changement du sexe dans le registre civil
-		Individu individu = serviceCivil.getIndividu(34567L, RegDate.get().year());
-		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		historiqueIndividu.setSexe(Sexe.MASCULIN);
+		final MockIndividu individu = mockServiceCivil.getIndividu(34567L);
+		individu.setSexeMasculin(true);
 
 		saveEvenement(9106L, TypeEvenementCivil.CHGT_SEXE, RegDate.get(2007, 10, 25), 34567L, null, MockCommune.Cossonay
 				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
@@ -462,12 +446,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				// Nouvelle recherche
 				List<TiersIndexedData> lTiers = searcher.search(criteria);
 				Assert.isTrue(lTiers.size() == 1, "L'indexation n'a pas fonctionné");
-				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get().year());
-				MockHistoriqueIndividu histoIndi = (MockHistoriqueIndividu) indi.getDernierHistoriqueIndividu();
 
 				// on verifie que le changement a bien été effectué
-				Sexe sexeIndi = histoIndi.getSexe();
-				Assert.isTrue(sexeIndi == Sexe.MASCULIN, "le nouveau sexe n'a pas été indexé");
+				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get().year());
+				Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
 
 				// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
 				// assertNotNull(tiers);
@@ -857,8 +839,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Hitchcock", "Alfred");        // sans le "o"
-					individu.addHistoriqueIndividu(h);
+					individu.setPrenom("Alfred");        // sans le "o"
 				}
 			});
 
@@ -964,8 +945,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					final HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Hitchcock", "Alfred");        // sans le "o"
-					individu.addHistoriqueIndividu(h);
+					individu.setPrenom("Alfred");        // sans le "o"
 				}
 			});
 

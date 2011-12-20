@@ -14,10 +14,9 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.Sexe;
 
 public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
@@ -34,10 +33,8 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	 */
 	private static final String DB_UNIT_DATA_FILE = "ChangementSexeTest.xml";
 
-	/**
-	 * L'index global.
-	 */
 	private GlobalTiersSearcher searcher;
+	private DefaultMockServiceCivil mockServiceCivil;
 
 	public ChangementSexeTest() {
 		setWantIndexation(true);
@@ -46,7 +43,8 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		mockServiceCivil = new DefaultMockServiceCivil();
+		serviceCivil.setUp(mockServiceCivil);
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
 	}
@@ -54,7 +52,6 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
-
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
@@ -69,9 +66,8 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
 
 		// changement du sexe dans le registre civil
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		historiqueIndividu.setSexe(Sexe.MASCULIN);
+		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU);
+		individu.setSexeMasculin(true);
 
 
 		// déclenchement de l'événement
@@ -91,12 +87,10 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
 		LOGGER.debug("numero : " + l.get(0).getNumero());
 		LOGGER.debug ("nom : " + l.get(0).getNom1());
-		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		MockHistoriqueIndividu histoIndi = (MockHistoriqueIndividu) indi.getDernierHistoriqueIndividu();
 
 		// on verifie que le changement a bien été effectué
-		Sexe sexeIndi = histoIndi.getSexe();
-		Assert.isTrue(sexeIndi == Sexe.MASCULIN, "le nouveau sexe n'a pas été indexé");
+		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
+		Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
 	}
 
 }

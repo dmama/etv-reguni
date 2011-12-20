@@ -12,6 +12,7 @@ import ch.ech.ech0044.v2.NamedPersonId;
 import ch.ech.ech0084.v1.PersonInformation;
 
 import ch.vd.evd0001.v3.HistoryContact;
+import ch.vd.evd0001.v3.Identity;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
@@ -25,7 +26,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -46,6 +46,11 @@ public class IndividuRCPers implements Individu, Serializable {
 	private static final String EST_PERE = "4";
 
 	private long noTechnique;
+	private String prenom;
+	private String autresPrenoms;
+	private String nom;
+	private String nomNaissance;
+	private String noAVS11;
 	private String nouveauNoAVS;
 	private String numeroRCE;
 	private boolean isMasculin;
@@ -57,7 +62,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Collection<Adresse> adresses;
 	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilListImpl etatsCivils;
-	private List<HistoriqueIndividu> historique;
 	private List<RelationVersIndividu> parents;
 	private List<Permis> permis;
 	private List<Nationalite> nationalites;
@@ -72,9 +76,15 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	public IndividuRCPers(Person person, ServiceInfrastructureService infraService) {
 		final PersonInformation personInformation = person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson();
-		this.noTechnique = getNoIndividu(person.getIdentity().getPersonIdentification().getLocalPersonId());
+		final Identity identity = person.getIdentity();
+		this.noTechnique = getNoIndividu(identity.getPersonIdentification().getLocalPersonId());
+		this.prenom = identity.getCallName();
+		this.autresPrenoms = identity.getPersonIdentification().getFirstNames();
+		this.nom = identity.getPersonIdentification().getOfficialName();
+		this.nomNaissance = identity.getOriginalName();
+		this.noAVS11 = EchHelper.avs13FromEch(person.getUpiPerson().getVn());
 		this.nouveauNoAVS = String.valueOf(person.getUpiPerson().getVn());
-		this.numeroRCE = initNumeroRCE(person.getIdentity().getPersonIdentification().getOtherPersonId());
+		this.numeroRCE = initNumeroRCE(identity.getPersonIdentification().getOtherPersonId());
 		this.isMasculin = initIsMasculin(personInformation);
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
 		this.naissance = EchHelper.partialDateFromEch44(personInformation.getDateOfBirth());
@@ -84,7 +94,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
 		this.enfants = initEnfants(person.getRelationshipHistory());
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
-		this.historique = initHistorique(person);
 		this.parents = initParents(person.getRelationshipHistory());
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
@@ -127,15 +136,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<Permis> list = new ArrayList<Permis>();
 		list.add(PermisRCPers.get(person.getResidencePermit()));
-		return list;
-	}
-
-	private static List<HistoriqueIndividu> initHistorique(Person person) {
-		if (person == null) { // TODO (msi) demander que RCPers expose l'historique des individus
-			return null;
-		}
-		final List<HistoriqueIndividu> list = new ArrayList<HistoriqueIndividu>();
-		list.add(HistoriqueIndividuRCPers.get(person));
 		return list;
 	}
 
@@ -212,6 +212,31 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
+	public String getPrenom() {
+		return prenom;
+	}
+
+	@Override
+	public String getAutresPrenoms() {
+		return autresPrenoms;
+	}
+
+	@Override
+	public String getNom() {
+		return nom;
+	}
+
+	@Override
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
+	@Override
+	public String getNoAVS11() {
+		return noAVS11;
+	}
+
+	@Override
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
 		return adoptions;
 	}
@@ -229,11 +254,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public boolean isMineur(RegDate date) {
 		return naissance != null && naissance.addYears(18).compareTo(date) > 0;
-	}
-
-	@Override
-	public HistoriqueIndividu getDernierHistoriqueIndividu() {
-		return historique == null || historique.isEmpty() ? null : historique.get(historique.size() - 1);
 	}
 
 	@Override
@@ -262,23 +282,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public EtatCivil getEtatCivil(RegDate date) {
 		return etatsCivils.getEtatCivilAt(date);
-	}
-
-	@Override
-	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
-		return historique;
-	}
-
-	@Override
-	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
-		HistoriqueIndividu candidat = null;
-		for (HistoriqueIndividu histo : historique) {
-			final RegDate dateDebut = histo.getDateDebutValidite();
-			if (dateDebut == null || date == null || dateDebut.isBeforeOrEqual(date)) {
-				candidat = histo;
-			}
-		}
-		return candidat;
 	}
 
 	@Override

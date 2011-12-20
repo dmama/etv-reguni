@@ -10,6 +10,26 @@ import ch.vd.registre.base.date.RegDate;
 
 public interface Individu extends EntiteCivile {
 
+	/**
+	 * @return le prénom de l'individu
+	 */
+	String getPrenom();
+
+	/**
+	 * @return les autres prénom de l'individu.
+	 */
+	String getAutresPrenoms();
+
+	/**
+	 * @return le nom de famille de l'individu
+	 */
+	String getNom();
+
+	/**
+	 * @return le nom de naissance de l'individu.
+	 */
+	String getNomNaissance();
+
     /**
      * Retourne la liste des adoptions et reconnaissances de l'individu.
      *
@@ -39,14 +59,7 @@ public interface Individu extends EntiteCivile {
 	 */
 	boolean isMineur(RegDate date);
 
-    /**
-     * Retourne le dernier historique de l'individu.
-     *
-     * @return le dernier historique de l'individu.
-     */
-    HistoriqueIndividu getDernierHistoriqueIndividu();
-
-    /**
+	/**
      * @return la liste des enfants de l'individu.
      */
     Collection<RelationVersIndividu> getEnfants();
@@ -73,26 +86,17 @@ public interface Individu extends EntiteCivile {
 	 */
 	EtatCivil getEtatCivil(RegDate date);
 
-    /**
-     * Retourne la liste l'historique de l'individu.
-     *
-     * @return la liste l'historique de l'individu.
-     */
-    Collection<HistoriqueIndividu> getHistoriqueIndividu();
-
 	/**
-	 * Retourne l'historique de l'individu à une date donnée
-	 *
-	 * @return l'historique de l'individu valide à la date spécifiée.
-	 */
-	HistoriqueIndividu getHistoriqueIndividuAt(RegDate date);
-
-    /**
      * Retourne le numéro technique de l'individu.
      *
      * @return le numéro technique de l'individu.
      */
     long getNoTechnique();
+
+	/**
+	 * @return l'ancien numéro AVS sur 11 position.
+	 */
+	String getNoAVS11();
 
     /**
      * Retourne le numéro AVS formule 2008 de l'individu.

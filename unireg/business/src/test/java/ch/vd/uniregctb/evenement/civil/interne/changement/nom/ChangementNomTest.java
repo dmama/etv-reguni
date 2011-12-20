@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -16,8 +15,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -27,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings({"JavaDoc"})
 public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
@@ -47,6 +46,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	 */
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
+	private DefaultMockServiceCivil mockServiceCivil;
 
 	public ChangementNomTest() {
 		setWantIndexation(true);
@@ -57,13 +57,13 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		super.onSetUp();
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		mockServiceCivil = new DefaultMockServiceCivil();
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(mockServiceCivil);
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de changement de nom.");
@@ -87,9 +87,8 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// changement du nom dans le registre civil
-		final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		historiqueIndividu.setNom("Dupuid");
+		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU);
+		individu.setNom("Dupuid");
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -139,10 +138,9 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	 * autre
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleTiersDirty() throws Exception {
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(mockServiceCivil);
 		loadDatabase(DB_UNIT_DATA_FILE); // l'indexeur va passer en 'non-dirty' le tiers n°6792, pas moyen de désactiver ça...
 
 		LOGGER.debug("Test de traitement d'un événement de changement de nom.");
@@ -188,9 +186,8 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// changement du nom dans le registre civil
-		final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_DIRTY, 2008);
-		MockHistoriqueIndividu historiqueIndividu = (MockHistoriqueIndividu) individu.getDernierHistoriqueIndividu();
-		historiqueIndividu.setNom("Woux"); // Julie Woux
+		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU_DIRTY);
+		individu.setNom("Woux"); // Julie Woux
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override

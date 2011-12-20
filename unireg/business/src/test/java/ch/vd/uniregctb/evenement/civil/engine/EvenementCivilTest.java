@@ -19,10 +19,8 @@ import ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilListenerTest;
 import ch.vd.uniregctb.evenement.civil.externe.jms.MockEsbMessage;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
@@ -131,11 +129,8 @@ public class EvenementCivilTest extends BusinessTest {
 			cache.setTarget(new MockServiceCivil() {
 				@Override
 				protected void init() {
-					MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-					HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
-					jean.addHistoriqueIndividu(h);
-					addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-							date(1975, 3, 2), null);
+					MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquard", "Jean", true);
+					addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1975, 3, 2), null);
 				}
 			});
 
@@ -251,7 +246,7 @@ public class EvenementCivilTest extends BusinessTest {
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
 		final Individu individu = cache.getIndividu(noIndividu, 2400);
 		assertNotNull(individu);
-		assertEquals(prenom, individu.getDernierHistoriqueIndividu().getPrenom());
-		assertEquals(nom, individu.getDernierHistoriqueIndividu().getNom());
+		assertEquals(prenom, individu.getPrenom());
+		assertEquals(nom, individu.getNom());
 	}
 }

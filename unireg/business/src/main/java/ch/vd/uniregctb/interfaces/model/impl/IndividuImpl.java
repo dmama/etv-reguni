@@ -19,7 +19,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.EtatCivilListHost;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -33,14 +32,17 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private static final long serialVersionUID = -963453831766356538L;
 
 	private final long noTechnique;
+	private final String prenom;
+	private final String autresPrenoms;
+	private final String nom;
+	private final String nomNaissance;
+	private final String noAVS11;
 	private final String nouveauNoAVS;
 	private final String numeroRCE;
 	private final boolean isMasculin;
 	private Collection<AdoptionReconnaissance> adoptions;
 	private final RegDate deces;
 	private final RegDate naissance;
-	private final HistoriqueIndividu dernierHistorique;
-	private final Collection<HistoriqueIndividu> historique;
 	private List<RelationVersIndividu> parents;
 	private Collection<RelationVersIndividu> enfants;
 	private final EtatCivilListHost etatsCivils;
@@ -58,6 +60,21 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 	protected IndividuImpl(ch.vd.registre.civil.model.Individu target) {
 		super(target);
+		final ch.vd.registre.civil.model.HistoriqueIndividu dhi = target.getDernierHistoriqueIndividu();
+		if (dhi == null) {
+			this.prenom = null;
+			this.autresPrenoms = null;
+			this.nom = null;
+			this.nomNaissance = null;
+			this.noAVS11 = null;
+		}
+		else {
+			this.prenom = dhi.getPrenom();
+			this.autresPrenoms = dhi.getAutresPrenoms();
+			this.nom = dhi.getNom();
+			this.nomNaissance = dhi.getNomNaissance();
+			this.noAVS11 = dhi.getNoAVS();
+		}
 		this.noTechnique = target.getNoTechnique();
 		this.nouveauNoAVS = initNouveauNoAVS(target.getNouveauNoAVS());
 		this.numeroRCE = target.getNumeroRCE();
@@ -65,8 +82,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances());
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
-		this.dernierHistorique = HistoriqueIndividuImpl.get(target.getDernierHistoriqueIndividu());
-		this.historique = initHistorique(target.getHistoriqueIndividu());
 		this.parents = initParents(target.getPere(), target.getMere());
 		this.enfants = initEnfants(target.getEnfants());
 		this.etatsCivils = initEtatsCivils(target);
@@ -78,14 +93,17 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 	protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
 		super(individuWrapper, parts);
+		this.prenom = individuWrapper.getPrenom();
+		this.autresPrenoms = individuWrapper.getAutresPrenoms();
+		this.nom = individuWrapper.getNom();
+		this.nomNaissance = individuWrapper.getNomNaissance();
 		this.noTechnique = individuWrapper.noTechnique;
+		this.noAVS11 = individuWrapper.getNoAVS11();
 		this.nouveauNoAVS = individuWrapper.nouveauNoAVS;
 		this.numeroRCE = individuWrapper.numeroRCE;
 		this.isMasculin = individuWrapper.isMasculin;
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
-		this.dernierHistorique = individuWrapper.dernierHistorique;
-		this.historique = individuWrapper.historique;
 		this.etatsCivils = individuWrapper.etatsCivils;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
@@ -111,6 +129,25 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		}
 	}
 
+	@Override
+	public String getPrenom() {
+		return prenom;
+	}
+
+	@Override
+	public String getAutresPrenoms() {
+		return autresPrenoms;
+	}
+
+	@Override
+	public String getNom() {
+		return nom;
+	}
+
+	@Override
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
 
 	@Override
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
@@ -156,11 +193,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public boolean isMineur(RegDate date) {
 		return naissance != null && naissance.addYears(18).compareTo(date) > 0;
-	}
-
-	@Override
-	public HistoriqueIndividu getDernierHistoriqueIndividu() {
-		return dernierHistorique;
 	}
 
 	@Override
@@ -232,34 +264,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
-		return historique;
-	}
-
-	@Override
-	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
-		HistoriqueIndividu candidat = null;
-		for (HistoriqueIndividu histo : historique) {
-			final RegDate dateDebut = histo.getDateDebutValidite();
-			if (dateDebut == null || date == null || dateDebut.isBeforeOrEqual(date)) {
-				candidat = histo;
-			}
-		}
-		return candidat;
-	}
-
-	private List<HistoriqueIndividu> initHistorique(Collection<?> targetHistorique) {
-		final List<HistoriqueIndividu> list = new ArrayList<HistoriqueIndividu>();
-		if (targetHistorique != null) {
-			for (Object o : targetHistorique) {
-				ch.vd.registre.civil.model.HistoriqueIndividu h = (ch.vd.registre.civil.model.HistoriqueIndividu) o;
-				list.add(HistoriqueIndividuImpl.get(h));
-			}
-		}
-		return list;
-	}
-
-	@Override
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -278,6 +282,11 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public long getNoTechnique() {
 		return noTechnique;
+	}
+
+	@Override
+	public String getNoAVS11() {
+		return noAVS11;
 	}
 
 	@Override

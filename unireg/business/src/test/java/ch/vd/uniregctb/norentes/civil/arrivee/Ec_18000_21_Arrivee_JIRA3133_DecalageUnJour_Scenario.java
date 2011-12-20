@@ -63,7 +63,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
 			@Override
 			protected void init() {
-				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true, dateArrivee);
+				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true);
 				individu.setDateNaissance(dateNaissance);
 				addAdresse(individu, TypeAdresseCivil.COURRIER, "Rue du Lac", "76", 1003, MockLocalite.Lausanne, null, dateArrivee, null);
 				addNationalite(individu, MockPays.France, dateArrivee, null);

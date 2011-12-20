@@ -70,7 +70,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
 			@Override
 			protected void init() {
-				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true, dateArrivee);
+				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true);
 				individu.setDateNaissance(dateNaissance);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArrivee, null);
 				addNationalite(individu, MockPays.France, dateArrivee, null);

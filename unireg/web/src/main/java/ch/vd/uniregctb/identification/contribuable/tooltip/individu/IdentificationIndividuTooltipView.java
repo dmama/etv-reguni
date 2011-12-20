@@ -3,7 +3,6 @@ package ch.vd.uniregctb.identification.contribuable.tooltip.individu;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -29,18 +28,16 @@ public class IdentificationIndividuTooltipView {
 
 	public void init(Individu individu) {
 		if (individu != null) {
-			final HistoriqueIndividu historique = individu.getDernierHistoriqueIndividu();
-
 			this.numeroIndividu = individu.getNoTechnique();
-			this.prenom = historique.getPrenom();
-			this.nom = historique.getNom();
-			this.nomNaissance = historique.getNomNaissance();
-			this.autresPrenoms = historique.getAutresPrenoms();
+			this.prenom = individu.getPrenom();
+			this.nom = individu.getNom();
+			this.nomNaissance = individu.getNomNaissance();
+			this.autresPrenoms = individu.getAutresPrenoms();
 			this.dateNaissance = individu.getDateNaissance();
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			this.etatCivil = individu.getEtatCivilCourant().getTypeEtatCivil().asCore();
 			this.numeroAssureSocial = individu.getNouveauNoAVS();
-			this.ancienNumeroAVS = historique.getNoAVS();
+			this.ancienNumeroAVS = individu.getNoAVS11();
 			this.numeroRCE = individu.getNumeroRCE();
 
 			final List<Nationalite> nationalites = individu.getNationalites();

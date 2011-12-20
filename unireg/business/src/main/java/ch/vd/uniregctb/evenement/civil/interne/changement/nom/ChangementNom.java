@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -64,9 +63,8 @@ public class ChangementNom extends ChangementBase {
 			final Individu individu = context.getTiersService().getIndividu(pp);
 
 			// nom / prénom
-			final HistoriqueIndividu historiqueIndividu = individu.getDernierHistoriqueIndividu();
-			final String nom = historiqueIndividu.getNom();
-			final String prenom = historiqueIndividu.getPrenom();
+			final String nom = individu.getNom();
+			final String prenom = individu.getPrenom();
 			pp.setNom(nom != null ? nom.trim() : "");
 			pp.setPrenom(prenom != null ? prenom.trim() : "");
 		}

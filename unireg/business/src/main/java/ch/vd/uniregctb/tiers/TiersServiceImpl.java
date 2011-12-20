@@ -65,7 +65,6 @@ import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.District;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -297,11 +296,9 @@ public class TiersServiceImpl implements TiersService {
 
 		Assert.isTrue(habitant.isHabitantVD(), "changeHabitantenNH : la PP fourni n'est pas habitant");
 		final Individu ind = getIndividu(habitant);
-		final HistoriqueIndividu indHisto = ind.getDernierHistoriqueIndividu();
-		Assert.notNull(indHisto);
 		habitant.setNumeroAssureSocial(ind.getNouveauNoAVS());
-		habitant.setNom(indHisto.getNom());
-		habitant.setPrenom(indHisto.getPrenom());
+		habitant.setNom(ind.getNom());
+		habitant.setPrenom(ind.getPrenom());
 		habitant.setDateNaissance(ind.getDateNaissance());
 		habitant.setDateDeces(ind.getDateDeces());
 		if (ind.isSexeMasculin()) {
@@ -359,7 +356,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// indentification navs11 et numRCE
-		setIdentifiantsPersonne(habitant, indHisto.getNoAVS(), ind.getNumeroRCE());
+		setIdentifiantsPersonne(habitant, ind.getNoAVS11(), ind.getNumeroRCE());
 
 		habitant.setHabitant(false);
 		return habitant;
@@ -3197,7 +3194,7 @@ public class TiersServiceImpl implements TiersService {
 			if (individu == null) {
 				throw new IndividuNotFoundException(pp);
 			}
-			return individu.getDernierHistoriqueIndividu().getNoAVS();
+			return individu.getNoAVS11();
 		}
 		else {
 			final Set<IdentificationPersonne> identifications = pp.getIdentificationsPersonnes();
