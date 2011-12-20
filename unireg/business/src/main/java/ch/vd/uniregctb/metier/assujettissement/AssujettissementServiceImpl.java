@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1326,6 +1328,30 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		Type type;
 		final TypeAutoriteFiscale typeAut;
 
+		/**
+		 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
+		 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
+		 */
+		@SuppressWarnings({"deprecation"})
+		private static final Set<MotifFor> DEBUT_ASSUJETTISSEMENT = new HashSet<MotifFor>(Arrays.asList(MotifFor.INDETERMINE,
+		                                                                                                MotifFor.VENTE_IMMOBILIER,
+		                                                                                                MotifFor.ANNULATION,
+		                                                                                                MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
+		                                                                                                MotifFor.FIN_EXPLOITATION));
+
+		/**
+		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
+		 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
+		 */
+		@SuppressWarnings({"deprecation"})
+		private static final Set<MotifFor> FIN_ASSUJETTISSEMENT = new HashSet<MotifFor>(Arrays.asList(MotifFor.INDETERMINE,
+		                                                                                              MotifFor.ACHAT_IMMOBILIER,
+		                                                                                              MotifFor.REACTIVATION,
+		                                                                                              MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
+		                                                                                              MotifFor.DEBUT_EXPLOITATION));
+
 		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
 			this.debut = debut;
 			this.fin = fin;
@@ -1412,8 +1438,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 
 			// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
-			this.motifDebut = merge(this.debut, this.motifDebut, eco.debut, eco.motifDebut);
-			this.motifFin = merge(this.fin, this.motifFin, eco.fin, eco.motifFin);
+			this.motifDebut = merge(this.debut, this.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
+			this.motifFin = merge(this.fin, this.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
 
 			// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
 			this.type = getAType(this.typeAut);
@@ -1428,11 +1454,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @param motifDomicile le motif de début/fin de l'assujettissement pour raison de domicile
 		 * @param dateEco       la date de début/fin de l'assujettissement pour raison économique
 		 * @param motifEco      le motif de début/fin de l'assujettissement pour raison économique
+		 * @param motifsDomicileNonPrioritaires la liste des motifs de fors "Domicile" pour lesquels le motif "Econonique" prend la priorité
 		 * @return le motid de début/fin d'assujettissement résultant.
 		 */
-		private static MotifFor merge(RegDate dateDomicile, MotifFor motifDomicile, RegDate dateEco, MotifFor motifEco) {
-			//noinspection deprecation
-			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifDomicile == MotifFor.INDETERMINE)) {
+		private static MotifFor merge(RegDate dateDomicile, MotifFor motifDomicile, RegDate dateEco, MotifFor motifEco, Set<MotifFor> motifsDomicileNonPrioritaires) {
+			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifsDomicileNonPrioritaires.contains(motifDomicile))) {
 				return motifEco;
 			}
 			else {

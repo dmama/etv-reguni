@@ -3,7 +3,9 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -16,16 +18,18 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings({"JavaDoc"})
-public class PeriodeImpositionTest extends MetierTest {
+public class PeriodeImpositionServiceTest extends MetierTest {
 
 	private PeriodeImpositionServiceImpl service;
 
@@ -1084,5 +1088,42 @@ public class PeriodeImpositionTest extends MetierTest {
 
 		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2008 = complète
 		assertEquals(FormatDIOrdinaire.COMPLETE, service.determineFormatDIOrdinaire(pp, 2008));
+	}
+
+	/**
+	 * Cas SIFISC-3541
+	 */
+	@Test
+	public void testHcVenteDernierImmeubleEtAchatAnneeSuivante() throws Exception {
+
+		// mise en place des fors
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", date(1967, 3, 25), Sexe.FEMININ);
+				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, MockCommune.Geneve);
+				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des périodes d'imposition
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImposition> pis = service.determine(pp, 2009);
+				assertNotNull(pis);
+				assertEquals(1, pis.size());
+
+				final PeriodeImposition pi = pis.get(0);
+				assertNotNull(pi);
+				assertEquals(date(2009, 1, 1), pi.getDateDebut());
+				assertEquals(date(2009, 12, 31), pi.getDateFin());
+				assertTrue(pi.isRemplaceeParNote());
+				return null;
+			}
+		});
 	}
 }
