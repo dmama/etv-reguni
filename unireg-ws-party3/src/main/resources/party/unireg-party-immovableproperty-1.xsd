@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.1 - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
+<!-- v1.1 - 19 décembre 2011 - rendu les champs 'lastMutationDate' et 'lastMutationType' nullables -->
+<!-- v1.1-SNAPSHOT - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
 <!-- v1.0beta4 - 13 octobre 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
@@ -14,12 +15,12 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
+			<xs:element name="dateFrom" type="common:dateType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La date de début de validité de l'immeuble. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+			<xs:element name="dateTo" type="common:dateType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La date de fin de validité de l'immeuble. Si l'immeuble est toujours actif, cette date n'est pas renseignée.</xs:documentation>
 				</xs:annotation>
@@ -41,12 +42,12 @@
 					<xs:documentation>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="estimatedTaxValue" type="xs:int">
+			<xs:element name="estimatedTaxValue" type="xs:int" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>L'estimation fiscale de l'immeuble. Elle n'est pas renseignée sur les immeubles qui ont été vendus.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="estimatedTaxValueReference" type="xs:string">
+			<xs:element name="estimatedTaxValueReference" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
 						renseignée.
@@ -63,19 +64,19 @@
 					<xs:documentation>La part de propriété.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="type" type="immo:immovablePropertyTypeType">
-				<xs:annotation>
-					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="lastMutationDate" type="common:dateType">
+			<xs:element name="lastMutationDate" type="common:dateType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>La date de la dernière mutation.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="lastMutationType" type="immo:mutationTypeType">
+			<xs:element name="lastMutationType" type="immo:mutationTypeType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Type de la dernière mutation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="immo:immovablePropertyTypeType">
+				<xs:annotation>
+					<xs:documentation>Le genre de propriété (individuel, co-propriété, collective, ...).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
