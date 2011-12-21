@@ -102,7 +102,7 @@ public class Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario extend
 		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
 		assertNotNull(erreur, "Erreur devrait être non nulle");
 
-		final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'indidivu %d (ctb %s)",
+		final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'individu %d (ctb %s)",
 													RegDateHelper.dateToDisplayString(RegDate.get()), noIndConceicao, FormatNumeroHelper.numeroCTBToDisplay(noHabConceicao));
 		assertEquals(msg, erreur.getMessage(), "Mauvaise erreur");
 	}
