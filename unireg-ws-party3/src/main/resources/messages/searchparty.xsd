@@ -25,7 +25,7 @@
 					<xs:element minOccurs="0" name="contactName" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Nom des tiers à rechercher. Attention ! Le 'nom' est à prendre au sens large du terme : il inclut les prénoms et noms des personnes physiques (y compris
-								les éventuels noms de naissances) et les raisons sociales des personnes morales et débiteurs (y compris les éventuels compléments et personnes de contact), ...
+								les éventuels noms de naissance) et les raisons sociales des personnes morales et débiteurs (y compris les éventuels compléments et personnes de contact), ...
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
