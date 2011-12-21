@@ -7,7 +7,7 @@
 
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2-party</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 
 	<name>Unireg - Party Beans JAXB2</name>
 	<description>Beans JAXB2 qui décrivent les données d'un tiers (party en anglais)</description>
