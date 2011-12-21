@@ -106,7 +106,7 @@ public class ModificationAdresseNotification extends ChangementBase {
 				final Individu individu = getIndividu();
 				if (!individu.isMineur(dateTraitement)) {
 
-					final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'indidivu %d (ctb %s)",
+					final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'individu %d (ctb %s)",
 													RegDateHelper.dateToDisplayString(dateTraitement), noIndividu, FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
 					throw new EvenementCivilException(msg);
 				}
