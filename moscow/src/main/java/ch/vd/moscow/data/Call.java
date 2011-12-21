@@ -1,6 +1,14 @@
 package ch.vd.moscow.data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,7 +88,7 @@ public class Call {
 	}
 
 	@Index(name = "ids_calls_method")
-	@Column(name = "method", length = 30)
+	@Column(name = "method", length = 50)
 	public String getMethod() {
 		return method;
 	}

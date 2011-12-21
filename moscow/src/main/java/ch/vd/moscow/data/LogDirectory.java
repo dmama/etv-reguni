@@ -60,7 +60,7 @@ public class LogDirectory {
 		this.directoryPath = directoryPath;
 	}
 
-	@Column(name = "pattern", length = 30)
+	@Column(name = "pattern", length = 100)
 	public String getPattern() {
 		return pattern;
 	}
