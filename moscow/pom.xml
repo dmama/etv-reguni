@@ -269,12 +269,14 @@
 		</testResources>
 	</build>
 
-	<profile>
-		<id>not</id><!-- NOTests -->
-		<properties>
-			<skipTests>true</skipTests>
-		</properties>
-	</profile>
+	<profiles>
+		<profile>
+			<id>not</id><!-- NOTests -->
+			<properties>
+				<skipTests>true</skipTests>
+			</properties>
+		</profile>
+	</profiles>
 
 	<!--
 		 <distributionManagement>
