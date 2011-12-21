@@ -1,8 +1,10 @@
 package ch.vd.moscow.controller.graph;
 
-import ch.vd.moscow.data.Environment;
-import ch.vd.moscow.database.CallStats;
-import ch.vd.moscow.database.DAO;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -24,13 +26,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.awt.*;
-import java.util.Collection;
-import java.util.Date;
+import ch.vd.moscow.data.Environment;
+import ch.vd.moscow.database.CallStats;
+import ch.vd.moscow.database.DAO;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -50,13 +53,16 @@ public class GraphController {
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/custom.do", method = RequestMethod.GET)
-	public String custom() {
+	public String custom(Model model) {
+		final List<Environment> environments = dao.getEnvironments();
+		model.addAttribute("environments", environments);
 		return "graph/custom";
 	}
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/load.do", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> load(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "from", required = false) Date from,
+	public ResponseEntity<byte[]> load(@RequestParam(value = "env") long envId,
+	                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "from", required = false) Date from,
 	                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "to", required = false) Date to,
 	                                   @RequestParam(value = "criteria", required = false) BreakdownCriterion[] criteria,
 	                                   @RequestParam(value = "resolution", required = false) TimeResolution resolution,
@@ -77,7 +83,11 @@ public class GraphController {
 //		long start = System.nanoTime();
 
 
-		final Environment environment = dao.getEnvironment("dev");
+		final Environment environment = dao.getEnvironment(envId);
+		if (environment == null) {
+			throw new RuntimeException("Environment id #" + envId + " is unknown.");
+		}
+
 		final Collection<CallStats> calls = dao.getLoadStatsFor(environment, from, to, criteria, resolution);
 		for (CallStats call : calls) {
 			bds.addCall(call);

@@ -14,6 +14,14 @@
 
 		<fieldset class="ui-widget-content">
 
+			<label for="environment">Environnement :</label>
+			<select id="environment">
+				<c:forEach items="${environments}" var="env">
+					<option value="<c:out value="${env.id}"/>"><c:out value="${env.name}"/></option>
+				</c:forEach>
+			</select>
+			<br/>
+
 			<label for="graphType">Type de graphique :</label>
 			<select id="graphType">
 				<option value="load">charge</option>
@@ -71,12 +79,19 @@
 				
 				$('#show').click(function() {
 					$('#message').text('Veuillez patienter...');
+					var env_id = $('#environment').val();
 					var from = formatDate($('#dateDebut').datepicker('getDate'));
 					var to = formatDate($('#dateFin').datepicker('getDate'));
 					var res = $('#resolution').val();
 					var width = $('#width').val().replace(/[^0-9]*/g, '');
 					var height = $('#height').val().replace(/[^0-9]*/g, '');
-					$('#graph').attr('src', 'load.do?criteria=' + $('#criterion').val() + '&from=' + from  + '&to=' + to + '&resolution=' + res + '&width=' + width + '&height=' + height);
+					$('#graph').attr('src', 'load.do?env=' + env_id +
+						'&criteria=' + $('#criterion').val() +
+						'&from=' + from  +
+						'&to=' + to +
+						'&resolution=' + res +
+						'&width=' + width +
+						'&height=' + height);
 					return false;
 				});
 			});
