@@ -14,7 +14,7 @@
 	</bean>
 
 	<!-- Exception Resolver -->
-	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<bean id="exceptionResolver" class="ch.vd.moscow.controller.ExceptionResolver">
 		<property name="exceptionMappings">
 			<map>
 				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->

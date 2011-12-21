@@ -21,6 +21,10 @@
 		<level value="DEBUG" />
 	</logger>
 
+	<logger name="ch.vd.moscow.controller.ExceptionResolver">
+		<level value="INFO" />
+	</logger>
+
 	<logger name="org.apache">
 		<level value="WARN" />
 	</logger>
