@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
-		xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
-		xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1">
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="../party/unireg-party-1.xsd" />
@@ -18,14 +18,15 @@
 				<xs:sequence>
 					<xs:element minOccurs="0" name="number" type="xs:string">
 						<xs:annotation>
-							<xs:documentation>Un ou plusieurs numéro de contribuable séparés par des '+'
-								Si ce champ est renseigné, tous les autres champs sont ignorés.
+							<xs:documentation>Un ou plusieurs numéro de contribuable séparés par des '+'. Si ce champ est renseigné, tous les autres champs sont ignorés.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="contactName" type="xs:string">
 						<xs:annotation>
-							<xs:documentation>Nom courrier des tiers à rechercher (= prénoms et noms des personnes physiques ou raisons sociales des personnes morales).</xs:documentation>
+							<xs:documentation>Nom des tiers à rechercher. Attention ! Le 'nom' est à prendre au sens large du terme : il inclut les prénoms et noms des personnes physiques (y compris
+								les éventuels noms de naissances) et les raisons sociales des personnes morales et débiteurs (y compris les éventuels compléments et personnes de contact), ...
+							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element minOccurs="0" name="townOrCountry" type="xs:string">
@@ -86,25 +87,25 @@
 	</xs:complexType>
 	<xs:simpleType name="searchModeType">
 		<xs:annotation>
-			<xs:documentation>Comportement de la recherche sur le nom courrier du tiers.</xs:documentation>
+			<xs:documentation>Comportement de la recherche sur le nom du tiers (voir la documentation du champ 'searchPartyRequestType#contactName' pour la signification du 'nom').</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="IS_EXACTLY">
 				<xs:annotation>
-					<xs:documentation>Ne retourne que les tiers dont les mots du nom courrier correspondent exactement aux mots spécifiés (par exemple: 'Dujardin' dans 'Jean Dujardin').
+					<xs:documentation>Ne retourne que les tiers dont les mots du nom correspondent exactement aux mots spécifiés (par exemple: 'Dujardin' dans 'Jean Dujardin').
 						A noter que l'ordre des mots et la présence éventuelle de mots supplémentaires n'ont aucune importance. Traitement plutôt rapide.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CONTAINS">
 				<xs:annotation>
-					<xs:documentation>Retourne les tiers dont le nom courrier contient la valeur spécifiée (par exemple: 'jardin' dans 'Jean Dujardin'). Traitement moyennement rapide.
+					<xs:documentation>Retourne les tiers dont le nom contient la valeur spécifiée (par exemple: 'jardin' dans 'Jean Dujardin'). Traitement moyennement rapide.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="PHONETIC">
 				<xs:annotation>
-					<xs:documentation>Retourne les tiers dont le nom courrier est assez proche de la valeur spécifiée (par exemple: 'xardin' dans 'Jean Dujardin'). Traitement le moins rapide.
+					<xs:documentation>Retourne les tiers dont le nom est assez proche de la valeur spécifiée (par exemple: 'xardin' dans 'Jean Dujardin'). Traitement le moins rapide.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
