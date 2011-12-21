@@ -1,12 +1,9 @@
 package ch.vd.moscow.controller.job;
 
-import ch.vd.moscow.controller.directory.DirectoryView;
-import ch.vd.moscow.data.ImportLogsJob;
-import ch.vd.moscow.data.JobDefinition;
-import ch.vd.moscow.data.LogDirectory;
-import ch.vd.moscow.database.DAO;
-import ch.vd.moscow.job.JobManager;
-import ch.vd.moscow.job.JobScheduler;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.quartz.SchedulerException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+import ch.vd.moscow.controller.directory.DirectoryView;
+import ch.vd.moscow.data.ImportLogsJob;
+import ch.vd.moscow.data.JobDefinition;
+import ch.vd.moscow.data.LogDirectory;
+import ch.vd.moscow.database.DAO;
+import ch.vd.moscow.job.JobManager;
+import ch.vd.moscow.job.JobScheduler;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -64,12 +65,12 @@ public class JobController {
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	public String add(@ModelAttribute("job") final JobView view) throws SchedulerException, ParseException {
 
-		final ImportLogsJob job = new ImportLogsJob();
+		ImportLogsJob job = new ImportLogsJob();
 		job.setName(view.getName());
 		job.setDirectory(dao.getLogDirectory(view.getDirId()));
 		job.setCronExpression(view.getCronExpression());
 
-		dao.addJob(job);
+		job = (ImportLogsJob) dao.addJob(job);
 		dao.flush();
 
 		scheduler.registerJob(job);
