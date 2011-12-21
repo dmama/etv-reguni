@@ -13,6 +13,16 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
+	<!-- Exception Resolver -->
+	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<map>
+				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
+				<entry key="java.lang.Exception" value="error" />
+			</map>
+		</property>
+	</bean>
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<mvc:annotation-driven />
 

@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ErrorController {
 
 	@RequestMapping(value = "/404.do")
-	public String list() throws Exception {
+	public String _404() throws Exception {
 	    return "404";
+	}
+
+	@RequestMapping(value = "/error.do")
+	public String error() throws Exception {
+	    return "error";
 	}
 }
