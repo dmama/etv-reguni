@@ -16,9 +16,16 @@ package ch.vd.uniregctb.type;
 public enum EtatEvenementCivil {
 
 	/**
-	 * Vient d'arriver : n'a pas encore été traité
+	 * Vient d'arriver : n'a pas encore été traité ni même analysé
 	 */
 	A_TRAITER(false),
+
+	/**
+	 * Evénement dont le traitement n'a pas été tenté en raison de la présence d'autres événements
+	 * antérieurs eux-mêmes en attente ou en erreur
+	 * @since 5.x
+	 */
+	EN_ATTENTE(false),
 
 	/**
 	 * Evénement complétement traité sans erreur

@@ -330,7 +330,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<EtatEvenementCivil, String> getMapEtatsEvenementCivil() {
 		if (mapEtatsEvenementCivil == null) {
-			mapEtatsEvenementCivil = initMapEnum(ApplicationConfig.masterKeyEtatEvenementCivil, EtatEvenementCivil.class);
+			// TODO jde Une fois l'état "en attente" officiellement intégré, il faudra le prendre en compte ici...
+			mapEtatsEvenementCivil = initMapEnum(ApplicationConfig.masterKeyEtatEvenementCivil, EtatEvenementCivil.class, EtatEvenementCivil.EN_ATTENTE);
 		}
 		return mapEtatsEvenementCivil;
 	}
