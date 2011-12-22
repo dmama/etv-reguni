@@ -73,22 +73,48 @@ table td, table th {
 }
 
 
-/*
-thead {
-  background-color: #ddd;
+
+/**
+ * Flash
+ */
+
+div.flash {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0.5em;
+	border-radius:			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
+	padding: 0.5em;
+	background-color: GreenYellow;
 }
 
-th {
-	border-left: 1px solid white;
-  	border-top: 1px dotted #666;
+div.flash-warning {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0.5em;
+	border-radius: 			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
+	padding: 0.5em;
+	background-color: Orange;
 }
 
-tr {
-  	border-bottom: 1px dotted #666;
+div.flash-error {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0.5em;
+	border-radius:			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
+	padding: 0.5em;
+	font-weight:bold;
+	color: white;
+	background-color: Red;
 }
-
-td {
-	border-left: 1px solid white;
-}
-
-*/
