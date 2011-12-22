@@ -15,14 +15,14 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCivilQueueTest extends BusinessTest {
+public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
-	private EvenementCivilQueueImpl queue;
+	private EvenementCivilNotificationQueueImpl queue;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		queue = new EvenementCivilQueueImpl();
+		queue = new EvenementCivilNotificationQueueImpl();
 		queue.setEvtCivilDao(getBean(EvenementCivilExterneDAO.class, "evenementCivilExterneDAO"));
 		queue.setHibernateTemplate(hibernateTemplate);
 		queue.setTransactionManager(transactionManager);
@@ -75,32 +75,32 @@ public class EvenementCivilQueueTest extends BusinessTest {
 		Assert.assertEquals(2, queue.getInflightCount());
 
 		// première récupération : individu sans événement -> collection vide
-		final List<EvenementCivilQueue.EvtCivilInfo> infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
+		final List<EvenementCivilNotificationQueue.EvtCivilInfo> infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
 		Assert.assertNotNull(infoSans);
 		Assert.assertEquals(0, infoSans.size());
 		Assert.assertEquals(1, queue.getInflightCount());
 
 		// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
-		final List<EvenementCivilQueue.EvtCivilInfo> infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
+		final List<EvenementCivilNotificationQueue.EvtCivilInfo> infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
 		Assert.assertNotNull(infoAvec);
 		Assert.assertEquals(3, infoAvec.size());
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
-			final EvenementCivilQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(0);
+			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(0);
 			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
 			Assert.assertEquals(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, evtCivilInfo.type);
 		}
 		{
-			final EvenementCivilQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(1);
+			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(1);
 			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
 			Assert.assertEquals(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, evtCivilInfo.type);
 		}
 		{
-			final EvenementCivilQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(2);
+			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(2);
 			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);

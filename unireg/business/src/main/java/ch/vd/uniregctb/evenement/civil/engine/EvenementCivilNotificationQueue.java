@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * à traiter (afin de gérer le traitement par file liée à un individu, le <i>token</i> de la
  * notification est le numéro d'individu)
  */
-public interface EvenementCivilQueue {
+public interface EvenementCivilNotificationQueue {
 
 	/**
 	 * Informations de base sur un événement civil

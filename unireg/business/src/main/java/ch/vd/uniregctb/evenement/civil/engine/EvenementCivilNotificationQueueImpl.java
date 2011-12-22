@@ -64,7 +64,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
  * cas où l'identifiant de l'individu est enlevé de la queue entre le moment où l'événenement correspondant est effectivement committé en base
  * et le moment où la méthode {@link #add(Long) add} vérifie sa présence... mais cela devrait se produire moins souvent.
  */
-public class EvenementCivilQueueImpl implements EvenementCivilQueue {
+public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue {
 
 	private final BlockingQueue<Long> queue = new LinkedBlockingQueue<Long>();
 	private final ReentrantLock lock = new ReentrantLock();
