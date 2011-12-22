@@ -98,6 +98,12 @@
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="eVD-0006-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.evd0006.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0009/1/eVD-0009-1-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.evd0009.v1" />
