@@ -23,6 +23,7 @@
 					  <li><code>0 15 10 * * ?</code> => Fire at 10:15am every day</li>
 					  <li><code>0 0/5 14 * * ?</code> => Fire every 5 minutes starting at 2pm and ending at 2:55pm, every day</li>
 					  <li><code>0 0-5 14 * * ?</code> => Fire every minute starting at 2pm and ending at 2:05pm, every day</li>
+					  <li><code>0 0 8-18 ? * MON-FRI *</code> => Fire every hour starting at 8am and ending at 6pm, monday to friday</li>
 					</ul>
 				</span>
 			</fieldset><br/>
