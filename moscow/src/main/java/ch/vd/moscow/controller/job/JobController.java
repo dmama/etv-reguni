@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.moscow.controller.Flash;
 import ch.vd.moscow.controller.directory.DirectoryView;
 import ch.vd.moscow.data.ImportLogsJob;
 import ch.vd.moscow.data.JobDefinition;
@@ -74,6 +75,7 @@ public class JobController {
 		dao.flush();
 
 		scheduler.registerJob(job);
+		Flash.message("Job has been successfully added");
 
 		return "redirect:/job/list.do";
 	}
@@ -108,7 +110,13 @@ public class JobController {
 		}
 
 		dao.flush();
-		scheduler.updateJob(job);
+		if (!scheduler.updateJob(job)) {
+			Flash.warning("Job has been added (instead of updated) because it was not registered");
+			scheduler.registerJob(job);
+		}
+		else {
+			Flash.message("Job has been successfully updated");
+		}
 
 		return "redirect:/job/list.do";
 	}
@@ -116,12 +124,15 @@ public class JobController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/del.do", method = RequestMethod.POST)
 	public String del(@RequestParam(value = "id", required = true) Long id) throws Exception {
+
 		final JobDefinition job = dao.getJob(id);
 		if (job == null) {
 			throw new RuntimeException("Le job n'existe pas !");
 		}
 		dao.delJob(job);
 		scheduler.unregisterJob(job);
+
+		Flash.message("Job has been successfully deleted");
 	    return "redirect:/job/list.do";
 	}
 

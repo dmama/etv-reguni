@@ -1,17 +1,35 @@
 package ch.vd.moscow.job;
 
-import ch.vd.moscow.data.JobDefinition;
-import org.quartz.*;
-
 import java.text.ParseException;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import ch.vd.moscow.data.JobDefinition;
+import ch.vd.moscow.database.DAO;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class JobSchedulerImpl implements JobScheduler {
+public class JobSchedulerImpl implements JobScheduler, InitializingBean {
+
+	private static final Logger LOGGER = Logger.getLogger(JobSchedulerImpl.class);
 
 	private Scheduler scheduler;
 	private JobManager manager;
+	private DAO dao;
+	private PlatformTransactionManager transactionManager;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setScheduler(Scheduler scheduler) {
@@ -21,6 +39,16 @@ public class JobSchedulerImpl implements JobScheduler {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setManager(JobManager manager) {
 		this.manager = manager;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDao(DAO dao) {
+		this.dao = dao;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@Override
@@ -34,9 +62,12 @@ public class JobSchedulerImpl implements JobScheduler {
 	}
 
 	@Override
-	public void updateJob(JobDefinition job) throws SchedulerException, ParseException {
-		scheduler.deleteJob(jobName(job), Scheduler.DEFAULT_GROUP);
+	public boolean updateJob(JobDefinition job) throws SchedulerException, ParseException {
+		if (!scheduler.deleteJob(jobName(job), Scheduler.DEFAULT_GROUP)) {
+			return false;
+		}
 		registerJob(job);
+		return true;
 	}
 
 	@Override
@@ -78,5 +109,28 @@ public class JobSchedulerImpl implements JobScheduler {
 
 	private static String cronTriggerName(JobDefinition job) {
 		return "CronTrigger-" + job.getId();
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// register existing jobs at startup
+				final List<JobDefinition> jobs = dao.getJobs();
+				for (JobDefinition job : jobs) {
+					try {
+						LOGGER.debug("Registering job [" + job.getName() + "] with cron [" + job.getCronExpression() + "]");
+						registerJob(job);
+					}
+					catch (Exception e) {
+						LOGGER.error("Unable to register job [" + job.getName() + "] with cron [" + job.getCronExpression() + "]", e);
+					}
+				}
+			}
+		});
 	}
 }

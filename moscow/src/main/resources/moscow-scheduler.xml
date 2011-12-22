@@ -9,6 +9,8 @@
 	<bean id="jobScheduler" class="ch.vd.moscow.job.JobSchedulerImpl">
 		<property name="scheduler" ref="scheduler" />
 		<property name="manager" ref="jobManager" />
+		<property name="dao" ref="dao" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="jobManager" class="ch.vd.moscow.job.JobManagerImpl" />
