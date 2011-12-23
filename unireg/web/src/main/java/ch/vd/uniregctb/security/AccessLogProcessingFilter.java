@@ -6,6 +6,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.filter.GenericFilterBean;
@@ -24,12 +25,21 @@ public class AccessLogProcessingFilter extends GenericFilterBean {
 	private static final Logger DELETE = Logger.getLogger("web-access.delete");
 	private static final Logger OTHER = Logger.getLogger("web-access.other");
 
+	/**
+	 * Nombre de requêtes en cours en parallèle
+	 */
+	private AtomicInteger count = new AtomicInteger(0);
+
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 
 		final long start = System.nanoTime();
+
+		// c'est une nouvelle requête qui arrive
+		count.incrementAndGet();
+
 		try {
 			filterChain.doFilter(servletRequest, servletResponse);
 		}
@@ -38,7 +48,8 @@ public class AccessLogProcessingFilter extends GenericFilterBean {
 			final String requestURL = getUrl(servletRequest);
 			final String method = getMethod(servletRequest);
 			final Logger logger = getLogger(method);
-			logger.info(String.format("[%s] (%d ms) %s", visa, duration, requestURL));
+			final int load = count.getAndDecrement();
+			logger.info(String.format("[%s] [load=%d] (%d ms) %s", visa, load, duration, requestURL));
 		}
 	}
 
