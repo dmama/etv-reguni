@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -113,6 +114,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.setEsbTemplate(esbTemplate);
 		handler.setEsbMessageFactory(esbMessageFactory);
 		handler.setHibernateTemplate(hibernateTemplate);
+		handler.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		initEndpointManager(INPUT_QUEUE, handler);
 	}

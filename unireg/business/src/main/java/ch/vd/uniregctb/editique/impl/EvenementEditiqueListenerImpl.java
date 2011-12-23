@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueHelper;
@@ -21,7 +21,7 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
 /**
  * Listener des retours d'impression éditique
  */
-public class EvenementEditiqueListenerImpl extends EsbMessageListener implements MonitorableMessageListener {
+public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueListenerImpl.class);
 

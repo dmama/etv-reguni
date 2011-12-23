@@ -12,6 +12,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -66,6 +67,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		listener = new EvenementExterneListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHibernateTemplate(hibernateTemplate);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evtQuittanceListe-v1.xsd")});

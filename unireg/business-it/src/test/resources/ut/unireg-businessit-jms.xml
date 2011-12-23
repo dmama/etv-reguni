@@ -10,8 +10,9 @@
 		<property name="domain" value="fiscalite"/>
 	</bean>
 
-	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageListener">
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">

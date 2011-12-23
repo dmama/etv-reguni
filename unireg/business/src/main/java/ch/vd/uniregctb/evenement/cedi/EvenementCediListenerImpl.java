@@ -16,12 +16,12 @@ import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueDocume
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
+import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementCediListenerImpl extends TransactionalEsbMessageListener implements MonitorableMessageListener {
+public class EvenementCediListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCediListenerImpl.class);
 

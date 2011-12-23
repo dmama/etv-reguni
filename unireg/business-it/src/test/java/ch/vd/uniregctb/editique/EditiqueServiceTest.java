@@ -83,6 +83,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		storageService.afterPropertiesSet();
 
 		final EvenementEditiqueListenerImpl listener = new EvenementEditiqueListenerImpl();
+		listener.setTransactionManager(transactionManager);
 		listener.setStorageService(storageService);
 		listener.setEsbTemplate(esbTemplate);
 		if (listener instanceof InitializingBean) {

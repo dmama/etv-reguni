@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -61,6 +62,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 		listener = new EvenementDeclarationListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHibernateTemplate(hibernateTemplate);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("unireg-common-1.xsd"),

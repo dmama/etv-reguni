@@ -62,8 +62,9 @@
 		<property name="endpoint" value="${extprop.esb.raft.store}" />
 	</bean>
 
-	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageListener">
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">

@@ -15,7 +15,7 @@ import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument.EvtRegCivil;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
+import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -28,7 +28,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 /**
  * Listener des évéments civils envoyés par le registre civil (REG-PP ou RCPers) et reçus à travers l'ESB.
  */
-public class EvenementCivilListener extends TransactionalEsbMessageListener implements ErrorMonitorableMessageListener {
+public class EvenementCivilListener extends EsbMessageEndpointListener implements ErrorMonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
@@ -203,7 +203,10 @@ public class EvenementCivilListener extends TransactionalEsbMessageListener impl
 		return ok;
 	}
 
+	@Override
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		// TODO jde : dès qu'un accès au transaction manager de la classe de base sera disponible, se débarrasser du membre à ce niveau
+		super.setTransactionManager(transactionManager);
 		this.transactionManager = transactionManager;
 	}
 

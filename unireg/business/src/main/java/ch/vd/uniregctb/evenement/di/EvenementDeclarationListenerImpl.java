@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.TransactionalEsbMessageListener;
+import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
@@ -30,7 +30,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementDeclarationListenerImpl extends TransactionalEsbMessageListener implements MonitorableMessageListener {
+public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationListenerImpl.class);
 

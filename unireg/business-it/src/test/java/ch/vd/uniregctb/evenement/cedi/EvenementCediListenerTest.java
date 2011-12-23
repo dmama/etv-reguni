@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -62,6 +63,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		listener = new EvenementCediListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHibernateTemplate(hibernateTemplate);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/cedi/DossierElectronique-1-0.xsd")});

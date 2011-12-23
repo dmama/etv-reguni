@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -56,6 +57,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 		listener = new EvenementEditiqueListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		if (listener instanceof InitializingBean) {
 			((InitializingBean) listener).afterPropertiesSet();
 		}

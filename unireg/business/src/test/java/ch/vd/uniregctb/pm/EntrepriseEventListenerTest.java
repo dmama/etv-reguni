@@ -22,6 +22,7 @@ public class EntrepriseEventListenerTest extends BusinessTest {
 		listener.setHibernateTemplate(hibernateTemplate);
 		listener.setIndexer(globalTiersIndexer);
 		listener.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		listener.setTransactionManager(transactionManager);
 	}
 
 	@Test
