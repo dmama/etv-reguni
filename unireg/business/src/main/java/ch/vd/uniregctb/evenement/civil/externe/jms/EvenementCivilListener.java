@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -35,7 +34,6 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 	private static final String DEFAULT_BUSINESS_USER = "JMSEvtCivil-SansVisa";
 
 	private EvenementCivilExterneDAO evenementCivilExterneDAO;
-	private PlatformTransactionManager transactionManager;
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
 	private final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
@@ -173,7 +171,7 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 		final Long id = evenement.getId();
 		Audit.info(id, "Arrivée du message JMS avec l'id " + id);
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
 		final boolean ok = template.execute(new TransactionCallback<Boolean>() {
@@ -201,13 +199,6 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 		});
 
 		return ok;
-	}
-
-	@Override
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		// TODO jde : dès qu'un accès au transaction manager de la classe de base sera disponible, se débarrasser du membre à ce niveau
-		super.setTransactionManager(transactionManager);
-		this.transactionManager = transactionManager;
 	}
 
 	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
