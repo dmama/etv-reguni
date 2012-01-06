@@ -1,12 +1,14 @@
 package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -16,6 +18,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	private String username;
 	private String password;
 	private String peoplePath;
+	private String eventPath;
 
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
@@ -23,6 +26,10 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	public void setPeoplePath(String peoplePath) {
 		this.peoplePath = peoplePath;
+	}
+
+	public void setEventPath(String eventPath) {
+		this.eventPath = eventPath;
 	}
 
 	public void setUsername(String username) {
@@ -75,5 +82,23 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		else {
 			return new StringBuilder().append('&').append(s).toString();
 		}
+	}
+
+	@Override
+	public Person getPersonForEvent(long eventId) {
+		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		wc.path(eventPath);
+		wc.path(String.valueOf(eventId));
+
+		final ListOfPersons found = wc.get(ListOfPersons.class);
+		Person p = null;
+		if (found.getListOfResults() != null) {
+			final List<Person> pList = found.getListOfResults().getPerson();
+			if (pList != null && pList.size() > 0) {
+				p = pList.get(0);
+			}
+		}
+
+		return p;
 	}
 }
