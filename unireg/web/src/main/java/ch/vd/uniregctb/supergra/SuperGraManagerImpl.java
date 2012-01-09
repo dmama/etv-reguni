@@ -33,8 +33,10 @@ import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
+import ch.vd.uniregctb.hibernate.meta.MetaException;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
 import ch.vd.uniregctb.json.InfraCategory;
@@ -356,28 +358,33 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			final List<Property> props = meta.getProperties();
 			for (int i = 0, propsSize = props.size(); i < propsSize; i++) {
 				final Property p = props.get(i);
-				final AttributeBuilder customBuilder = getCustomAttributeBuilder(new AttributeKey(entity.getClass(), p.getName()));
-				final String propName = p.getName();
-				final Object value = (propName == null ? p.getDiscriminatorValue() : ObjectGetterHelper.getValue(entity, propName));
-
 				final AttributeView attributeView;
-				if (customBuilder != null) {
-					// si un custom builder est spécifié, on l'utilise
-					attributeView = customBuilder.build(p, value, context);
-				}
-				else if (p.isDiscriminator()) {
-					// le discriminator ne possède pas de getter/setter, et ne peux donc pas être édité.
+				if (p.isDiscriminator()) {
 					attributeView = new AttributeView(DISCRIMINATOR_ATTNAME, p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);
 				}
-				else if (p.isCollection()) {
-					// on cas de collection, on affiche un lien vers la page d'affichage de la collection
-					final Collection<?> coll = (Collection<?>) value;
-					attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false);
-				}
 				else {
-					// cas général, on affiche l'éditeur pour l'attribut
-					final boolean readonly = p.isPrimaryKey() || p.isParentForeignKey() || readonlyProps.contains(propName);
-					attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
+					final AttributeBuilder customBuilder = getCustomAttributeBuilder(new AttributeKey(entity.getClass(), p.getName()));
+					final String propName = p.getName();
+					final Object value = ReflexionUtils.getPathValue(entity, propName);
+
+					if (customBuilder != null) {
+						// si un custom builder est spécifié, on l'utilise
+						attributeView = customBuilder.build(p, value, context);
+					}
+					else if (p.isDiscriminator()) {
+						// le discriminator ne possède pas de getter/setter, et ne peux donc pas être édité.
+						attributeView = new AttributeView(DISCRIMINATOR_ATTNAME, p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);
+					}
+					else if (p.isCollection()) {
+						// on cas de collection, on affiche un lien vers la page d'affichage de la collection
+						final Collection<?> coll = (Collection<?>) value;
+						attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false);
+					}
+					else {
+						// cas général, on affiche l'éditeur pour l'attribut
+						final boolean readonly = p.isPrimaryKey() || p.isParentForeignKey() || readonlyProps.contains(propName);
+						attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
+					}
 				}
 
 				// on renseigne l'id (au sens HTML) s'il n'est pas déjà renseigné
@@ -510,7 +517,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (MetaException e) {
 			throw new RuntimeException(e);
 		}
 

@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.EntityType;
 import ch.vd.uniregctb.supergra.SuperGraContext;
@@ -78,29 +79,21 @@ public class AttributeUpdate extends Delta {
 	@Override
 	public void apply(HibernateEntity entity, SuperGraContext context) {
 		try {
-			PropertyDescriptor descr = new PropertyDescriptor(name, entity.getClass());
-			Method setter = descr.getWriteMethod();
-
-			if (newValue instanceof EntityKey) {
-				if (Number.class.isAssignableFrom(descr.getPropertyType())) {
-					// [UNIREG-3160] cas spécial du lien vers une entité gérée à la main (pour les rapport-entre-tiers, par exemple) : on doit travailler directement avec les ids.
-					if (entity instanceof RapportEntreTiers) {
-						// cas spécial des rapport-entre-tiers
-						applyRapportUpdate((RapportEntreTiers) entity, context, setter);
-					}
-					else {
-						final Long id = ((EntityKey) newValue).getId();
-						setter.invoke(entity, id);
-					}
-				}
-				else {
-					// dans le cas d'une entity key, il faut aller chercher l'entité hibernate elle-même et l'assigner.
-					HibernateEntity newEntity = context.getEntity((EntityKey) newValue);
-					setter.invoke(entity, newEntity);
-				}
+			if (entity instanceof RapportEntreTiers && (name.equals("sujetId") || name.equals("objetId") || name.equals("autoriteTutelaireId"))) {
+				// [UNIREG-3160] cas spécial du lien vers une entité gérée à la main (pour les rapport-entre-tiers, par exemple) : on doit travailler directement avec les ids.
+				PropertyDescriptor descr = new PropertyDescriptor(name, entity.getClass());
+				Method setter = descr.getWriteMethod();
+				applyRapportUpdate((RapportEntreTiers) entity, context, setter);
 			}
 			else {
-				setter.invoke(entity, newValue);
+				if (newValue instanceof EntityKey) {
+					// dans le cas d'une entity key, il faut aller chercher l'entité hibernate elle-même et l'assigner.
+					HibernateEntity newEntity = context.getEntity((EntityKey) newValue);
+					ReflexionUtils.setPathValue(entity, name, newEntity, ReflexionUtils.SetPathBehavior.CREATE_ON_THE_FLY);
+				}
+				else {
+					ReflexionUtils.setPathValue(entity, name, newValue, ReflexionUtils.SetPathBehavior.CREATE_ON_THE_FLY);
+				}
 			}
 		}
 		catch (Exception e) {

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.rf;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
@@ -22,6 +23,7 @@ public class Proprietaire {
 	/**
 	 * @return l'identifiant unique du propriétaire dans le registre foncier
 	 */
+	@Column
 	public String getId() {
 		return id;
 	}
@@ -33,6 +35,7 @@ public class Proprietaire {
 	/**
 	 * @return le numéro d'individu RF dans le registre foncier (à ne pas confondre avec le numéro d'individu du registre civil !)
 	 */
+	@Column
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}

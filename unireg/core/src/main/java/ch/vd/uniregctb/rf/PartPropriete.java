@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.rf;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +22,7 @@ public class PartPropriete {
 		this.denominateur = denominateur;
 	}
 
+	@Column
 	public int getNumerateur() {
 		return numerateur;
 	}
@@ -29,6 +31,7 @@ public class PartPropriete {
 		this.numerateur = numerateur;
 	}
 
+	@Column
 	public int getDenominateur() {
 		return denominateur;
 	}

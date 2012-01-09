@@ -6,6 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 public abstract class ReflexionUtils {
 
@@ -160,5 +163,90 @@ public abstract class ReflexionUtils {
 		s.append(']');
 
 		return s.toString();
+	}
+
+	/**
+	 * Retourne la valeur de l'attribut spécifiée par son chemin (en notation pointée).
+	 *
+	 * @param object un objet
+	 * @param path   le chemin vers l'attribut dont on veut récupérer la valeur
+	 * @return la valeur de l'attribut pointé.
+	 * @throws java.beans.IntrospectionException    en cas de problème
+	 * @throws IllegalAccessException    en cas de problème
+	 * @throws java.lang.reflect.InvocationTargetException en cas de problème
+	 */
+	public static Object getPathValue(Object object, String path) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+		if (path.contains(".")) {
+			Object o = object;
+			final String[] sub = path.split("\\.");
+			for (String p : sub) {
+				o = ObjectGetterHelper.getValue(o, p);
+				if (o == null) {
+					break;
+				}
+			}
+			return o;
+		}
+		else {
+			return ObjectGetterHelper.getValue(object, path);
+		}
+	}
+
+	public enum SetPathBehavior {
+		CREATE_ON_THE_FLY,
+		PATH_MUST_EXISTS,
+		FAILS_SILENTLY
+	}
+
+	public static void setPathValue(Object object, String path, Object value, SetPathBehavior behavior) throws IntrospectionException, IllegalAccessException, InvocationTargetException,
+			InstantiationException {
+
+		if (path.contains(".")) {
+			// première phase, on va jusqu'au dernier objet
+			Object o = object;
+			final String[] pathes = path.split("\\.");
+			for (int i = 0, subPathes = pathes.length; i < subPathes - 1; i++) {
+				final String p = pathes[i];
+
+				// Get the value
+				Object sub = ObjectGetterHelper.getValue(o, p);
+				if (sub == null) {
+					// traitement particulier si les objets n'existent pas tout-au-long du chemin
+					switch (behavior) {
+					case FAILS_SILENTLY:
+						return;
+					case PATH_MUST_EXISTS:
+						throw new IllegalArgumentException("One or more objects are null along path [" + path + "]");
+					case CREATE_ON_THE_FLY:
+						final PropertyDescriptor descr = new PropertyDescriptor(p, o.getClass());
+						final Method setter = descr.getWriteMethod();
+						if (setter == null) {
+							throw new NullPointerException("Setter for field [" + p + "] doesn't exists.");
+						}
+						final Method getter = descr.getReadMethod();
+						sub = getter.getReturnType().newInstance();
+						setter.invoke(o, sub);
+						break;
+					default:
+						throw new IllegalArgumentException("Behavior [" + behavior + "] is unknown.");
+					}
+				}
+
+				o = sub;
+			}
+
+			// seconde phase, on met-à-jour la valeur de l'attribut
+			final String last = pathes[pathes.length - 1];
+			setValue(o, last, value);
+		}
+		else {
+			setValue(object, path, value);
+		}
+	}
+
+	private static void setValue(Object object, String name, Object value) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+		PropertyDescriptor descr = new PropertyDescriptor(name, object.getClass());
+		Method setter = descr.getWriteMethod();
+		setter.invoke(object, value);
 	}
 }
