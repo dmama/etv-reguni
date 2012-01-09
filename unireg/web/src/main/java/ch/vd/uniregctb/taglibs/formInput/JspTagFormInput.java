@@ -2,6 +2,7 @@ package ch.vd.uniregctb.taglibs.formInput;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import java.beans.PropertyEditor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
@@ -10,8 +11,10 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.tags.form.AbstractHtmlInputElementTag;
 import org.springframework.web.servlet.tags.form.TagWriter;
+import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.json.InfraCategory;
@@ -25,8 +28,6 @@ import ch.vd.uniregctb.supergra.EntityType;
 public class JspTagFormInput extends AbstractHtmlInputElementTag {
 
 	private static final long serialVersionUID = -6771881242633345495L;
-
-	// private final Logger LOGGER = Logger.getLogger(JspTagInfra.class);
 
 	/**
 	 * Le type de la valeur saisie
@@ -71,12 +72,55 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 
 		// On va chercher la valeur à afficher (note : en cas d'erreur de validation, il s'agit de l'erreur erronée saisie par l'utilisateur)
 		final Object value = getBoundValue();
-		final String displayString = getDisplayString(value, getPropertyEditor());
+		final String displayString = getDisplayString(value, getPropertyEditor(), readonly);
 
 		// On générate le Html qui va bien
 		editor.generate(tagWriter, displayString);
 
 		return SKIP_BODY;
+	}
+
+	/**
+	 * (copié-collé depuis org.springframework.web.servlet.tags.form.ValueFormatter)
+	 * <p/>
+	 * Build the display value of the supplied <code>Object</code>, HTML escaped as required. This version is <strong>not</strong> {@link PropertyEditor}-aware.
+	 *
+	 * @param value      the value to format
+	 * @param htmlEscape <b>true</b> if output string needs to be escaped; <b>false</b> otherwise.
+	 * @return the display string of the specified value.
+	 * @see #getDisplayString(Object, java.beans.PropertyEditor, boolean)
+	 */
+	public static String getDisplayString(Object value, boolean htmlEscape) {
+		String displayValue = ObjectUtils.getDisplayString(value);
+		return (htmlEscape ? HtmlUtils.htmlEscape(displayValue) : displayValue);
+	}
+
+	/**
+	 * (copié-collé depuis org.springframework.web.servlet.tags.form.ValueFormatter)
+	 * <p/>
+	 * Build the display value of the supplied <code>Object</code>, HTML escaped as required. If the supplied value is not a {@link String} and the supplied {@link PropertyEditor} is not null then the
+	 * {@link PropertyEditor} is used to obtain the display value.
+	 *
+	 * @param value          the value to format
+	 * @param propertyEditor the property editor to use
+	 * @param htmlEscape     <b>true</b> if output string needs to be escaped; <b>false</b> otherwise.
+	 * @return the display string of the specified value.
+	 * @see #getDisplayString(Object, boolean)
+	 */
+	public static String getDisplayString(Object value, PropertyEditor propertyEditor, boolean htmlEscape) {
+		if (propertyEditor != null && !(value instanceof String)) {
+			try {
+				propertyEditor.setValue(value);
+				String text = propertyEditor.getAsText();
+				if (text != null) {
+					return getDisplayString(text, htmlEscape);
+				}
+			}
+			catch (Throwable ex) {
+				// The PropertyEditor might not support this value... pass through.
+			}
+		}
+		return getDisplayString(value, htmlEscape);
 	}
 
 	/**
