@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
@@ -21,9 +21,10 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
 
-	private RcPersClientImpl client;
+	private RcPersClient client;
 
-	public void setClient(RcPersClientImpl client) {
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setClient(RcPersClient client) {
 		this.client = client;
 	}
 
