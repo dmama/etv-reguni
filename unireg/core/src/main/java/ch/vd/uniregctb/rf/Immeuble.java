@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -24,6 +26,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * Les informations d'un immeuble (= une parcelle + tout ce qu'il y a dessus) telles que disponibles au registre foncier (SIFISC-2337).
@@ -31,7 +34,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 @SuppressWarnings({"UnusedDeclaration"})
 @Entity
 @Table(name = "IMMEUBLE")
-public class Immeuble extends HibernateEntity implements DateRange {
+public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity {
 
 	private Long id;
 	private String idRF;
@@ -279,5 +282,10 @@ public class Immeuble extends HibernateEntity implements DateRange {
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return contribuable == null ? null : Arrays.asList(contribuable);
 	}
 }

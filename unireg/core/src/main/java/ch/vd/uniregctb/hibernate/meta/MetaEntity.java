@@ -33,6 +33,7 @@ import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 import ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType;
+import ch.vd.uniregctb.hibernate.URLUserType;
 
 /**
  * Classe qui expose de manière pratique les méta-informations (colonnes, nom de table, discriminant, ...) d'une entité Hibernate.
@@ -257,6 +258,9 @@ public class MetaEntity {
 				}
 				else if (userType instanceof TypeAdresseCivilLegacyUserType) {
 					propertyType = new TypeAdresseCivilLegacyPropertyType((TypeAdresseCivilLegacyUserType) userType);
+				}
+				else if (userType instanceof URLUserType) {
+					propertyType = new URLPropertyType((URLUserType) userType);
 				}
 				else {
 					throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + ']');

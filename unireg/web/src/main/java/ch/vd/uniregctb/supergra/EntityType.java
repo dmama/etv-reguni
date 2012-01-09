@@ -3,6 +3,7 @@ package ch.vd.uniregctb.supergra;
 /**
  * Les types d'entité pouvant être édités en mode SuperGra.
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public enum EntityType {
 	Tiers(ch.vd.uniregctb.tiers.Tiers.class, "tiers"),
 	ForFiscal(ch.vd.uniregctb.tiers.ForFiscal.class, "for fiscal"),
@@ -15,7 +16,8 @@ public enum EntityType {
 	Periodicite(ch.vd.uniregctb.declaration.Periodicite.class, "périodicité"),
 	SituationFamille(ch.vd.uniregctb.tiers.SituationFamille.class, "situation de famille"),
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document"),
-	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale");
+	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale"),
+	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;

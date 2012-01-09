@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class JspTagOut extends BodyTagSupport {
 		editors.put(Boolean.class, new BooleanEditor());
 		editors.put(Date.class, new DateEditor());
 		editors.put(RegDate.class, new DateEditor());
+		editors.put(URL.class, new URLEditor());
 	}
 
 	@Override
@@ -179,6 +181,13 @@ public class JspTagOut extends BodyTagSupport {
 		public String generate(String id, Class clazz, Object value, HttpServletRequest request) {
 			Assert.isTrue(clazz.isEnum());
 			return value == null ? "" : value.toString();
+		}
+	}
+
+	private static class URLEditor implements Editor {
+		@Override
+		public String generate(String id, Class clazz, Object value, HttpServletRequest request) {
+			return "<a href=\"" + value + "\">" + value + "</a>";
 		}
 	}
 }

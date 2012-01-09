@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyEditor;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.beans.propertyeditors.URLEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -100,6 +102,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(true));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+		binder.registerCustomEditor(URL.class, new URLEditor());
 
 		final PropertyEditor partialDateEditor = new RegDateEditor(true, true);
 
