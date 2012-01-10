@@ -771,8 +771,8 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isSuisseOuPermisCOuRefugie(PersonnePhysique pp, RegDate dateEvenement) throws TiersException {
-		return !isEtrangerSansPermisC(pp, dateEvenement) || isHabitantRefugie(pp, dateEvenement);
+	public boolean isSuisseOuPermisC(PersonnePhysique pp, RegDate dateEvenement) throws TiersException {
+		return !isEtrangerSansPermisC(pp, dateEvenement);
 	}
 
 	/**
@@ -858,51 +858,6 @@ public class TiersServiceImpl implements TiersService {
 				throw new TiersException("Impossible de déterminer la nationalité du contribuable " + nonHabitant.getNumero());
 			}
 		}
-	}
-
-	/**
-	 * Détermine si un habitant est réfugié.
-	 *
-	 * @param habitant l'habitant
-	 * @param date     la date à laquelle on désire se placer
-	 * @return true si l'habitant est réfugié
-	 */
-	@Override
-	public boolean isHabitantRefugie(PersonnePhysique habitant, RegDate date) {
-		if (date == null) date = RegDate.get();
-		/* Récupération de l'individu avec ses permis, ses nationalités et son origine */
-		Assert.notNull(habitant.getNumeroIndividu());
-		Individu individu;
-		try {
-			individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(), AttributeIndividu.PERMIS);
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Erreur dans la récupération de l'individu avec ses permis (" + habitant.getNumeroIndividu() + ')',
-					e);
-		}
-
-		// on regarde les permis en cours
-		boolean isRefugie = false;
-		final Collection<Permis> permiss = individu.getPermis();
-
-		// on extrait les permis non-annulés, le dernier permis étant le permis actuel,
-		final List<Permis> permisNonAnnules = new ArrayList<Permis>(permiss.size());
-		for (Permis permis : permiss) {
-			if (permis.getDateAnnulation() == null && RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST)) {
-				permisNonAnnules.add(permis);
-			}
-		}
-
-		final int nbPermis = permisNonAnnules.size();
-		if (nbPermis > 0) {
-			// maintenant, on vérifie la succession des permis
-			isRefugie = nbPermis > 2 &&
-					TypePermis.ANNUEL == permisNonAnnules.get(nbPermis - 1).getTypePermis() &&								// B
-					TypePermis.REQUERANT_ASILE_AVANT_DECISION == permisNonAnnules.get(nbPermis - 2).getTypePermis() &&		// N
-					TypePermis.REQUERANT_ASILE_REFUSE == permisNonAnnules.get(nbPermis - 3).getTypePermis();				// F
-		}
-
-		return isRefugie;
 	}
 
 	/**

@@ -236,13 +236,13 @@ public interface TiersService {
 	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException;
 
 	/**
-	 * Détermine si une personne physique est suisse, possède un permis C ou est réfugiée.
+	 * Détermine si une personne physique est suisse ou possède un permis C
 	 * @param pp une personne physique
 	 * @param dateEvenement la date à laquelle on désire connaître cette information
-	 * @return <b>true</b> si la personne physique possède la nationalité suisse, ou si elle possède un permis C ou si elle est réfugiée; <b>false</b> autrement.
+	 * @return <b>true</b> si la personne physique possède la nationalité suisse ou si elle possède un permis C; <b>false</b> autrement.
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
-	boolean isSuisseOuPermisCOuRefugie(PersonnePhysique pp, RegDate dateEvenement) throws TiersException;
+	boolean isSuisseOuPermisC(PersonnePhysique pp, RegDate dateEvenement) throws TiersException;
 
 	/**
 	 * Détermine si un individu est suisse.
@@ -286,15 +286,6 @@ public interface TiersService {
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
 	public boolean isEtrangerSansPermisC(PersonnePhysique pp, @Nullable RegDate date) throws TiersException;
-
-	/**
-	 * Détermine si une personne physique est réfugié.
-	 * @param habitant la personne physique
-	 * @param date la date à laquelle on souhaite se placer
-	 * @return true si la personne physique est réfugié à la date donnée
-	 * @throws TiersException si le permis ne peut être déterminée
-	 */
-	public boolean isHabitantRefugie(PersonnePhysique habitant, RegDate date) throws TiersException;
 
 	/**
 	 * Détermination de l'individidu secondaire <ul> <li>2 personnes de meme sexe : le deuxieme dans l'ordre alphabétique est le secondaire</li> <li>2 personnes de sexe different : la femme est le

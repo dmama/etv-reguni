@@ -79,8 +79,8 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 			sansFor.setValue(false);
 		}
 		else {
-			// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordianire
-			if (!getTiersService().isEtrangerSansPermisC(pp, date) || (pp.isHabitantVD() && getTiersService().isHabitantRefugie(pp, date))) {
+			if (getTiersService().isSuisseOuPermisC(pp, date)) {
+				// suisse ou titulaire d'un permis C => ordinaire
 				modeImposition = ModeImposition.ORDINAIRE;
 			}
 			else {

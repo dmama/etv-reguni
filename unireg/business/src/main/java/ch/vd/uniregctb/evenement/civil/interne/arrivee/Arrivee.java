@@ -477,8 +477,8 @@ public class Arrivee extends Mouvement {
 				// détermination du mode d'imposition
 				final ModeImposition modeImposition;
 				if (forFiscal == null) {
-					if (getService().isSuisseOuPermisCOuRefugie(habitant, dateEvenement)) {
-						// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordinaire
+					if (getService().isSuisseOuPermisC(habitant, dateEvenement)) {
+						// s'il est suisse ou titulaire d'un permis C => ordinaire
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
@@ -491,7 +491,7 @@ public class Arrivee extends Mouvement {
 				}
 				else {
 					if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						if (getService().isSuisseOuPermisCOuRefugie(habitant, dateEvenement)) {
+						if (getService().isSuisseOuPermisC(habitant, dateEvenement)) {
 							modeImposition = ModeImposition.ORDINAIRE;
 						}
 						else {
@@ -1015,7 +1015,7 @@ public class Arrivee extends Mouvement {
 			// détermination du mode d'imposition
 			final ModeImposition modeImposition;
 			if (ffpMenage == null) {
-				if (getService().isSuisseOuPermisCOuRefugie(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisCOuRefugie(conjoint, dateEvenement)))) {
+				if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
 					modeImposition = ModeImposition.ORDINAIRE;
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
@@ -1028,7 +1028,7 @@ public class Arrivee extends Mouvement {
 			}
 			else {
 				if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-					if (getService().isSuisseOuPermisCOuRefugie(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisCOuRefugie(conjoint, dateEvenement)))) {
+					if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else {

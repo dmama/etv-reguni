@@ -1188,7 +1188,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
-			assertEquals(ModeImposition.ORDINAIRE, ff.getModeImposition());
+			// [SIFISC-3680] Les réfugiés politiques reconnus sont dorénavant imposés à la source par défaut (et passé manuellement à l'ordinaire par l'ACI si besoin est).
+			assertEquals(ModeImposition.SOURCE, ff.getModeImposition());
 		}
 	}
 
