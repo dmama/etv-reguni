@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -38,6 +37,7 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 
 	private Long id;
 	private String idRF;
+	private RegDate dateValidRF;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private RegDate dateValidation;
@@ -81,6 +81,19 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	}
 
 	/**
+	 * @return la date de validation des données dans le registre foncier
+	 */
+	@Column(name = "DATE_VALID_RF")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateValidRF() {
+		return dateValidRF;
+	}
+
+	public void setDateValidRF(RegDate date) {
+		this.dateValidRF = date;
+	}
+
+	/**
 	 * @return la date de début de validité de l'inscription au registre foncier.
 	 */
 	@Override
@@ -111,7 +124,7 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	/**
 	 * @return la date de la dernière mutation dans le RF
 	 */
-	@Column(name = "DATE_DERNIERE_MUTATION", nullable = false)
+	@Column(name = "DATE_DERNIERE_MUTATION")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDerniereMutation() {
 		return dateDerniereMutation;
@@ -124,7 +137,7 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	/**
 	 * @return le type de mutation lors du dernier changement.
 	 */
-	@Column(name = "DERNIERE_MUTATION", nullable = false, length = LengthConstants.DERNIERE_MUTATION)
+	@Column(name = "DERNIERE_MUTATION", length = LengthConstants.DERNIERE_MUTATION)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeMutationUserType")
 	public TypeMutation getDerniereMutation() {
 		return derniereMutation;
@@ -161,7 +174,7 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	/**
 	 * @return la nature de l'immeuble.
 	 */
-	@Column(name = "NATURE_IMMEUBLE", nullable = false, length = LengthConstants.NATURE_IMMEUBLE)
+	@Column(name = "NATURE_IMMEUBLE", nullable = true, length = LengthConstants.NATURE_IMMEUBLE)
 	public String getNature() {
 		return nature;
 	}
@@ -286,6 +299,7 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return contribuable == null ? null : Arrays.asList(contribuable);
+		// msi (11.01.2012) l'insertion d'un immeuble ne doit pas provoquer la validation du contribuable : return contribuable == null ? null : Arrays.asList(contribuable);
+		return null;
 	}
 }

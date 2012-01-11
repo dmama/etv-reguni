@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -33,8 +32,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		final ModificationLogInterceptor modificationLogInterceptor = getBean(ModificationLogInterceptor.class, "modificationLogInterceptor");
-		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, modificationLogInterceptor);
+		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

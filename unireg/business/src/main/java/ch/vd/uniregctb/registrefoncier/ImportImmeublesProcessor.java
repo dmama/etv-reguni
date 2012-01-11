@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +30,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -65,18 +64,18 @@ public class ImportImmeublesProcessor {
 	private static final String HEADER_GENRE_PERSONNE = "GENRE_PERSONNE";
 	private static final String HEADER_ID_IMMEUBLE = "ID_IMMEUBLE";
 	private static final String HEADER_NO_IMMEUBLE = "NO_IMMEUBLE";
-	private static final String HEADER_NOM_COMMUNE= "NOM_COMMUNE";
+	private static final String HEADER_NOM_COMMUNE= "LI_COMMUNE_VD";
 	private static final String HEADER_NATURE = "NATURE";
 	private static final String HEADER_ESTIMATION_FISCALE = "ESTIMATION_FISCALE";
 	private static final String HEADER_REF_ESTIMATION_FISCALE = "REFERENCE_EF";
 	private static final String HEADER_GENRE_PROPRIETE = "GENRE_PROPRIETE";
 	private static final String HEADER_TYPE_IMMEUBLE = "TYPE_IMMEUBLE";
 	private static final String HEADER_PART_PROPRIETE = "PART_PROPRIETE";
-	private static final String HEADER_DATE_MODIF = "DATE_VALIDATION_RF";
+	private static final String HEADER_DATE_VALID_RF = "DATE_VALIDATION_RF";
 	private static final String HEADER_DATE_DEBUT = "DATE_DEPOT_PJ";
 	private static final String HEADER_DATE_FIN = "DATE_FIN";
-	private static final String HEADER_DATE_DERNIERE_MUT = "DATE_DERNIERE_MUT";
-	private static final String HEADER_DERNIERE_MUTATION = "DERNIERE_MUTATION";
+	private static final String HEADER_DATE_DERNIERE_MUT = "DATE_DERNIERE_MUTATION";
+	private static final String HEADER_DERNIERE_MUTATION = "TYPE_DERNIERE_MUTATION";
 	private static final String HEADER_URL = "URL";
 
 	private enum GenrePersonne {
@@ -90,16 +89,13 @@ public class ImportImmeublesProcessor {
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
-	private final ModificationLogInterceptor modificationLogInterceptor;
 
-	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService,
-	                                ModificationLogInterceptor modificationLogInterceptor) {
+	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.immeubleDAO = immeubleDAO;
 		this.tiersDAO = tiersDAO;
 		this.tiersService = tiersService;
-		this.modificationLogInterceptor = modificationLogInterceptor;
 	}
 
 	/**
@@ -146,14 +142,7 @@ public class ImportImmeublesProcessor {
 		}
 
 		// Import de toutes les lignes du flux CSV
-		modificationLogInterceptor.setCompleteOnly(true); // de manière à pouvoir garder les dates de création/modification originales
-		try {
-			processAllLines(status, rapportFinal, csvIterator);
-		}
-		finally {
-			modificationLogInterceptor.setCompleteOnly(false);
-		}
-
+		processAllLines(status, rapportFinal, csvIterator);
 
 		// Logging
 		if (status.interrupted()) {
@@ -288,18 +277,18 @@ public class ImportImmeublesProcessor {
 			rapport.addError(numero, ErreurType.BAD_ID_IMMEUBLE, "Id de l'immeuble RF = " + data.get(HEADER_ID_IMMEUBLE));
 		}
 
-		final RegDate dateModif;
+		final RegDate dateValidRF;
 		try {
-			dateModif = parseRegDate(data.get(HEADER_DATE_MODIF));
+			dateValidRF = parseTimestamp(data.get(HEADER_DATE_VALID_RF));
 		}
 		catch (ParseException e) {
-			rapport.addError(numero, ErreurType.BAD_DATE_MODIF, "Date = " + data.get(HEADER_DATE_MODIF));
+			rapport.addError(numero, ErreurType.BAD_DATE_MODIF, "Date = " + data.get(HEADER_DATE_VALID_RF));
 			return null;
 		}
 
 		final RegDate dateDebut;
 		try {
-			dateDebut = parseRegDate(data.get(HEADER_DATE_DEBUT));
+			dateDebut = parseTimestamp(data.get(HEADER_DATE_DEBUT));
 		}
 		catch (ParseException e) {
 			rapport.addError(numero, ErreurType.BAD_DATE_DEBUT, "Date = " + data.get(HEADER_DATE_DEBUT));
@@ -308,7 +297,7 @@ public class ImportImmeublesProcessor {
 
 		final RegDate dateFin;
 		try {
-			dateFin = parseRegDate(data.get(HEADER_DATE_FIN));
+			dateFin = parseTimestamp(data.get(HEADER_DATE_FIN));
 		}
 		catch (ParseException e) {
 			rapport.addError(numero, ErreurType.BAD_DATE_FIN, "Date = " + data.get(HEADER_DATE_FIN));
@@ -317,7 +306,7 @@ public class ImportImmeublesProcessor {
 
 		final RegDate dateDerniereMutation;
 		try {
-			dateDerniereMutation = parseRegDate(data.get(HEADER_DATE_DERNIERE_MUT));
+			dateDerniereMutation = parseTimestamp(data.get(HEADER_DATE_DERNIERE_MUT));
 		}
 		catch (ParseException e) {
 			rapport.addError(numero, ErreurType.BAD_DATE_DERNIERE_MUTATION, "Date = " + data.get(HEADER_DATE_DERNIERE_MUT));
@@ -347,12 +336,9 @@ public class ImportImmeublesProcessor {
 			rapport.addError(numero, ErreurType.BAD_NOM_COMMUNE, "");
 			return null;
 		}
-		
+
 		final String nature = StringUtils.trimToNull(data.get(HEADER_NATURE));
-		if (nature == null) {
-			rapport.addError(numero, ErreurType.BAD_NATURE, "");
-			return null;
-		}
+		// pas de test sur la nature : elle n'est pas forcément renseignée
 
 		final int estimationFiscale;
 		try {
@@ -450,6 +436,7 @@ public class ImportImmeublesProcessor {
 		immeuble.setId(ctbId);
 		immeuble.setIdRF(idImmeuble);
 		immeuble.setProprietaire(new Proprietaire(idProprietaire, idIndividuRF));
+		immeuble.setDateValidRF(dateValidRF);
 		immeuble.setDateDebut(dateDebut);
 		immeuble.setDateFin(dateFin);
 		immeuble.setNumero(numero);
@@ -464,16 +451,6 @@ public class ImportImmeublesProcessor {
 		immeuble.setContribuable(proprietaire);
 		immeuble.setDateDerniereMutation(dateDerniereMutation);
 		immeuble.setDerniereMutation(derniereMutation);
-
-		immeuble.setLogCreationUser("Registre foncier (import)");
-		immeuble.setLogModifUser("Registre foncier (import)");
-		if (dateModif != null) {
-			immeuble.setLogCreationDate(dateModif.asJavaDate());
-			immeuble.setLogModifDate(new Timestamp(dateModif.asJavaDate().getTime()));
-		}
-		if (dateDerniereMutation != null) {
-			immeuble.setLogModifDate(new Timestamp(dateDerniereMutation.asJavaDate().getTime()));
-		}
 
 		return immeuble;
 	}
@@ -534,22 +511,80 @@ public class ImportImmeublesProcessor {
 	}
 
 	private static TypeImmeuble parseTypeImmeuble(String s) {
-		for (TypeImmeuble type : TypeImmeuble.values()) {
-			if (type.name().equalsIgnoreCase(s)) { // TODO (msi) vérifier ça par rapport aux données du fichier d'import, éventuellement supprimer la boucle
-				return type;
-			}
+		if ("PPE".equalsIgnoreCase(s)) {
+			return TypeImmeuble.PPE;
 		}
-		return null;
+		else if ("DDP".equalsIgnoreCase(s)) {
+			return TypeImmeuble.DROIT_DISTINCT_ET_PERMANENT;
+		}
+		else if ("COP".equalsIgnoreCase(s)) {
+			return TypeImmeuble.PART_DE_COPROPRIETE;
+		}
+		else if ("B-F".equalsIgnoreCase(s)) {
+			return TypeImmeuble.BIEN_FOND;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'immeuble inconnu = [" + s + "]");
+		}
 	}
 
 
 	private static TypeMutation parseTypeMutation(String s) {
-		for (TypeMutation type : TypeMutation.values()) {
-			if (type.name().equalsIgnoreCase(s)) { // TODO (msi) vérifier ça par rapport aux données du fichier d'import, éventuellement supprimer la boucle
-				return type;
-			}
+		if (StringUtils.isBlank(s)) {
+			return null;
 		}
-		return null;
+		if ("Achat".equalsIgnoreCase(s)) {
+			return TypeMutation.ACHAT;
+		}
+		else if ("Augmentation".equalsIgnoreCase(s)) {
+			return TypeMutation.AUGMENTATION;
+		}
+		else if ("Cession".equalsIgnoreCase(s)) {
+			return TypeMutation.CESSION;
+		}
+		else if ("Constitution de PPE".equalsIgnoreCase(s)) {
+			return TypeMutation.CONSTITUTION_PPE;
+		}
+		else if ("Constitution de parts de propriété".equalsIgnoreCase(s)) {
+			return TypeMutation.CONSTITUTION_PARTS_PROPRIETE;
+		}
+		else if ("Délivrance de legs".equalsIgnoreCase(s)) {
+			return TypeMutation.DELIVRANCE_LEGS;
+		}
+		else if ("Division de bien-fonds".equalsIgnoreCase(s)) {
+			return TypeMutation.DIVISION_BIEN_FONDS;
+		}
+		else if ("Donation".equalsIgnoreCase(s)) {
+			return TypeMutation.DONATION;
+		}
+		else if ("Echange".equalsIgnoreCase(s)) {
+			return TypeMutation.ECHANGE;
+		}
+		else if ("Groupement de bien-fonds".equalsIgnoreCase(s)) {
+			return TypeMutation.GROUPEMENT_BIEN_FONDS;
+		}
+		else if ("Jugement".equalsIgnoreCase(s)) {
+			return TypeMutation.JUGEMENT;
+		}
+		else if ("Partage".equalsIgnoreCase(s)) {
+			return TypeMutation.PARTAGE;
+		}
+		else if ("Réalisation forcée".equalsIgnoreCase(s)) {
+			return TypeMutation.REALISATION_FORCEE;
+		}
+		else if ("Remaniement parcellaire".equalsIgnoreCase(s)) {
+			return TypeMutation.REMANIEMENT_PARCELLAIRE;
+		}
+		else if ("Succession".equalsIgnoreCase(s)) {
+			return TypeMutation.SUCCESSION;
+		}
+		else if ("Transfert".equalsIgnoreCase(s)) {
+			return TypeMutation.TRANSFERT;
+		}
+		else if ("Fin de propriété".equalsIgnoreCase(s)) {
+			return TypeMutation.FIN_DE_PROPRIETE;
+		}
+		throw new IllegalArgumentException("Type de mutation inconnu = [" + s + "]");
 	}
 
 	private static GenrePropriete parseGenrePropriete(String s) {
@@ -566,12 +601,14 @@ public class ImportImmeublesProcessor {
 		}
 	}
 
-	private static RegDate parseRegDate(String str) throws ParseException {
+	private static final SimpleDateFormat TIMESTAMP = new SimpleDateFormat("dd.MM.yy HH:mm:ss.SSSSSSSSS");
+
+	private static RegDate parseTimestamp(String str) throws ParseException {
 		if (StringUtils.isBlank(str)) {
 			return null;
 		}
 		else {
-			return RegDateHelper.displayStringToRegDate(str, false);
+			return RegDate.get(TIMESTAMP.parse(str));
 		}
 	}
 }

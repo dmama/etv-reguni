@@ -9,7 +9,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -24,7 +23,6 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	private ImmeubleDAO immeubleDAO;
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
-	private ModificationLogInterceptor modificationLogInterceptor;
 
 	@Override
 	public RapprocherCtbResults rapprocherCtbRegistreFoncier(List<ProprietaireFoncier> listeProprietaireFoncier, StatusManager s, RegDate dateTraitement, int nbThreads) {
@@ -34,7 +32,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Override
 	public ImportImmeublesResults importImmeubles(InputStream csvStream, String encoding, StatusManager status) {
-		final ImportImmeublesProcessor processor = new ImportImmeublesProcessor(hibernateTemplate, immeubleDAO, transactionManager, tiersDAO, tiersService, modificationLogInterceptor);
+		final ImportImmeublesProcessor processor = new ImportImmeublesProcessor(hibernateTemplate, immeubleDAO, transactionManager, tiersDAO, tiersService);
 		return processor.run(csvStream, encoding, status);
 	}
 
@@ -65,10 +63,5 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setModificationLogInterceptor(ModificationLogInterceptor modificationLogInterceptor) {
-		this.modificationLogInterceptor = modificationLogInterceptor;
 	}
 }

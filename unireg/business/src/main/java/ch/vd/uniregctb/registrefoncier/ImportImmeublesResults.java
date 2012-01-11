@@ -187,7 +187,11 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	@Override
 	public void addErrorException(String line, Exception e) {
 		final String noImmeuble = extractNoImmeubleSafe(line);
-		erreurs.add(new Erreur(noImmeuble, ErreurType.EXCEPTION, e.getMessage()));
+		String message = e.getMessage();
+		if (message != null) {
+			message = "\"" + message + "\"";
+		}
+		erreurs.add(new Erreur(noImmeuble, ErreurType.EXCEPTION, message));
 	}
 
 	private String extractNoImmeubleSafe(String line) {
