@@ -22,21 +22,24 @@ public class TutelleImpl implements Tutelle, Serializable {
 	private final Long numeroCollectiviteAutoriteTutelaire;
 	private final TypeTutelle typeTutelle;
 
-	public static TutelleImpl get(ch.vd.registre.civil.model.Tutelle target) {
+	public static TutelleImpl get(ch.vd.registre.civil.model.Tutelle target, RegDate upTo) {
 		if (target == null) {
 			return null;
 		}
-		return new TutelleImpl(target);
+		if (upTo != null && target.getDateDebut() != null && target.getDateDebut().after(upTo.asJavaDate())) {
+			return null;
+		}
+		return new TutelleImpl(target, upTo);
 	}
 
-	private TutelleImpl(ch.vd.registre.civil.model.Tutelle target) {
+	private TutelleImpl(ch.vd.registre.civil.model.Tutelle target, RegDate upTo) {
 		this.dateDebut = RegDate.get(target.getDateDebut());
 		this.dateFin = RegDate.get(target.getDateFin());
 		this.libelleMotif = target.getLibelleMotif();
 		this.noSequence = target.getNoSequence();
 		this.nomAutoriteTutelaire = target.getNomAutoriteTutelaire();
 		this.numeroCollectiviteAutoriteTutelaire = target.getNumeroCollectiviteAutoriteTutellaire();
-		this.tuteur = IndividuImpl.get(target.getTuteur());
+		this.tuteur = IndividuImpl.get(target.getTuteur(), upTo);
 		this.tuteurGeneral = TuteurGeneralImpl.get(target.getTuteurGeneral());
 		this.typeTutelle = TypeTutelle.get(target.getTypeTutelle());
 	}

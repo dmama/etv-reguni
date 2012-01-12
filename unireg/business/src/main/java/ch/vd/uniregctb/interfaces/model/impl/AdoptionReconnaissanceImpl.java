@@ -16,15 +16,15 @@ public class AdoptionReconnaissanceImpl implements AdoptionReconnaissance, Seria
 	private final RegDate dateDesaveu;
 	private final RegDate dateReconnaissance;
 
-	public static AdoptionReconnaissanceImpl get(ch.vd.registre.civil.model.AdoptionReconnaissance target) {
+	public static AdoptionReconnaissanceImpl get(ch.vd.registre.civil.model.AdoptionReconnaissance target, RegDate upTo) {
 		if (target == null) {
 			return null;
 		}
-		return new AdoptionReconnaissanceImpl(target);
+		return new AdoptionReconnaissanceImpl(target, upTo);
 	}
 
-	private AdoptionReconnaissanceImpl(ch.vd.registre.civil.model.AdoptionReconnaissance target) {
-		this.adopte = IndividuImpl.get(target.getAdopteReconnu());
+	private AdoptionReconnaissanceImpl(ch.vd.registre.civil.model.AdoptionReconnaissance target, RegDate upTo) {
+		this.adopte = IndividuImpl.get(target.getAdopteReconnu(), upTo);
 		this.dateAccueil = RegDate.get(target.getDateAccueilAdoption());
 		this.dateAdoption = RegDate.get(target.getDateAdoption());
 		this.dateDesaveu = RegDate.get(target.getDateDesaveu());

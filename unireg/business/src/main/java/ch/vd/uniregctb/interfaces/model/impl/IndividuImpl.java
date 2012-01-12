@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,15 +52,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private List<Permis> permis;
 	private Tutelle tutelle;
 
-	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target) {
+	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, RegDate upTo) {
 		if (target == null) {
 			return null;
 		}
-		return new IndividuImpl(target);
+		return new IndividuImpl(target, upTo);
 	}
 
-	protected IndividuImpl(ch.vd.registre.civil.model.Individu target) {
-		super(target);
+	protected IndividuImpl(ch.vd.registre.civil.model.Individu target, RegDate upTo) {
+		super(target, upTo);
 		final ch.vd.registre.civil.model.HistoriqueIndividu dhi = target.getDernierHistoriqueIndividu();
 		if (dhi == null) {
 			this.prenom = null;
@@ -79,16 +80,16 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.nouveauNoAVS = initNouveauNoAVS(target.getNouveauNoAVS());
 		this.numeroRCE = target.getNumeroRCE();
 		this.isMasculin = target.isSexeMasculin();
-		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances());
+		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances(), upTo);
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
-		this.parents = initParents(target.getPere(), target.getMere());
-		this.enfants = initEnfants(target.getEnfants());
-		this.etatsCivils = initEtatsCivils(target);
-		this.nationalites = initNationalites(target.getNationalites());
+		this.parents = initParents(target.getPere(), target.getMere(), upTo);
+		this.enfants = initEnfants(target.getEnfants(), upTo);
+		this.etatsCivils = initEtatsCivils(target, upTo);
+		this.nationalites = initNationalites(target.getNationalites(), upTo);
 		this.origines = initOrigines(target.getOrigines());
-		this.permis = initPermis(target.getPermis());
-		this.tutelle = TutelleImpl.get(target.getTutelle());
+		this.permis = initPermis(target.getPermis(), upTo);
+		this.tutelle = TutelleImpl.get(target.getTutelle(), upTo);
 	}
 
 	protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
@@ -154,12 +155,20 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return adoptions;
 	}
 
-	private static List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions) {
+	private static boolean isValidUpTo(Date dateDebut, Date upTo) {
+		return upTo == null || dateDebut == null || !dateDebut.after(upTo);
+	}
+
+	private static List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions, RegDate upTo) {
 		final List<AdoptionReconnaissance> list = new ArrayList<AdoptionReconnaissance>();
 		if (targetAdoptions != null) {
+			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
 			for (Object o : targetAdoptions) {
-				ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
-				list.add(AdoptionReconnaissanceImpl.get(a));
+				final ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
+				final Date dateDebut = (a.getDateAdoption() == null ? a.getDateReconnaissance() : a.getDateAdoption());
+				if (isValidUpTo(dateDebut, upToJava)) {
+					list.add(AdoptionReconnaissanceImpl.get(a, upTo));
+				}
 			}
 		}
 		return list;
@@ -200,9 +209,9 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return parents;
 	}
 
-	private static List<RelationVersIndividu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere) {
-		final Individu m = IndividuImpl.get(mere);
-		final Individu p = IndividuImpl.get(pere);
+	private static List<RelationVersIndividu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere, RegDate upTo) {
+		final Individu m = IndividuImpl.get(mere, upTo);
+		final Individu p = IndividuImpl.get(pere, upTo);
 		final List<RelationVersIndividu> parents = new ArrayList<RelationVersIndividu>(2);
 		if (p != null) {
 			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), p.getDateNaissance(), p.getDateDeces()));
@@ -218,12 +227,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return enfants;
 	}
 
-	private static List<RelationVersIndividu> initEnfants(Collection<?> targetEnfants) {
+	private static List<RelationVersIndividu> initEnfants(Collection<?> targetEnfants, RegDate upTo) {
 		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		if (targetEnfants != null) {
+			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
 			for (Object o : targetEnfants) {
 				final ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
-				list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
+				if (isValidUpTo(i.getDateNaissance(), upToJava)) {
+					list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
+				}
 			}
 		}
 		return list;
@@ -234,17 +246,20 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return etatsCivils;
 	}
 
-	private static EtatCivilListHost initEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
+	private static EtatCivilListHost initEtatsCivils(ch.vd.registre.civil.model.Individu individu, RegDate upTo) {
 		final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
 		final Collection<?> targetEtatsCivils = individu.getEtatsCivils();
 		if (targetEtatsCivils != null) {
+			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
 			for (Object o : targetEtatsCivils) {
 				ch.vd.registre.civil.model.EtatCivil e = (ch.vd.registre.civil.model.EtatCivil) o;
 				if (e.getDateDebutValidite() == null && e.getNoSequence() == 0 && e.getTypeEtatCivil() == null) {
 					// host-interface retourne un état-civil vide si l'individu n'en a pas du tout dans la base...
 					continue;
 				}
-				etatsCivils.add(EtatCivilImpl.get(e));
+				if (isValidUpTo(e.getDateDebutValidite(), upToJava)) {
+					etatsCivils.add(EtatCivilImpl.get(e));
+				}
 			}
 		}
 		return new EtatCivilListHost(individu.getNoTechnique(), etatsCivils);
@@ -268,12 +283,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return nationalites;
 	}
 
-	private static List<Nationalite> initNationalites(Collection<?> targetNationalites) {
+	private static List<Nationalite> initNationalites(Collection<?> targetNationalites, RegDate upTo) {
 		final List<Nationalite> list = new ArrayList<Nationalite>();
 		if (targetNationalites != null) {
+			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
 			for (Object o : targetNationalites) {
 				ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
-				list.add(NationaliteImpl.get(n));
+				if (isValidUpTo(n.getDateDebutValidite(), upToJava)) {
+					list.add(NationaliteImpl.get(n));
+				}
 			}
 		}
 		return list;
@@ -318,12 +336,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return permis;
 	}
 
-	private List<Permis> initPermis(Collection<?> targetPermis) {
+	private List<Permis> initPermis(Collection<?> targetPermis, RegDate upTo) {
 		final List<Permis> permis = new ArrayList<Permis>();
 		if (targetPermis != null) {
+			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
 			for (Object o : targetPermis) {
 				ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
-				permis.add(PermisImpl.get(p));
+				if (isValidUpTo(p.getDateDebutValidite(), upToJava)) {
+					permis.add(PermisImpl.get(p));
+				}
 			}
 		}
 

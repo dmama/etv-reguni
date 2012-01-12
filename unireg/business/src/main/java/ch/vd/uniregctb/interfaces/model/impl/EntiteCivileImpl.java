@@ -11,6 +11,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.model.CommuneSimple;
 import ch.vd.infrastructure.model.Pays;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EntiteCivile;
@@ -155,17 +156,17 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 		this.adresses = adresses;
 	}
 
-	public EntiteCivileImpl(ch.vd.registre.civil.model.EntiteCivile target) {
+	public EntiteCivileImpl(ch.vd.registre.civil.model.EntiteCivile target, RegDate upTo) {
 		this.adresses = new ArrayList<Adresse>();
 		if (target.getAdresses() != null) {
-			final Date now = DateHelper.getCurrentDate();
+			final Date upToJava = upTo == null ? DateHelper.getCurrentDate() : upTo.asJavaDate();
 			for (Object o : target.getAdresses()) {
 				ch.vd.common.model.Adresse a = (ch.vd.common.model.Adresse) o;
 
 				// [SIFISC-35] les adresses civiles qui débutent dans le futur doivent être ignorées, et les adresses
 				// qui se terminent dans le futur doivent être considérées comme n'ayant pas de fin
-				if (a.getDateDebutValidite() == null || a.getDateDebutValidite().compareTo(now) <= 0) {
-					if (a.getDateFinValidite() != null && a.getDateFinValidite().compareTo(now) > 0) {
+				if (a.getDateDebutValidite() == null || a.getDateDebutValidite().compareTo(upToJava) <= 0) {
+					if (a.getDateFinValidite() != null && a.getDateFinValidite().compareTo(upToJava) > 0) {
 						a = new AdresseWrapperSansDateFin(a);
 					}
 					this.adresses.add(AdresseImpl.get(a));

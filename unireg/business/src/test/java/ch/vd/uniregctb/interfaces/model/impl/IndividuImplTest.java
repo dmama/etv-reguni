@@ -41,7 +41,7 @@ public class IndividuImplTest extends WithoutSpringTest {
 		individu.setNoTechnique(536824);
 		individu.setEtatsCivils(etats);
 
-		final IndividuImpl wrapper = new IndividuImpl(individu);
+		final IndividuImpl wrapper = new IndividuImpl(individu, null);
 
 		// vérifie que l'état civil est bien trouvé
 
@@ -64,7 +64,7 @@ public class IndividuImplTest extends WithoutSpringTest {
 		adresse.setDateDebutValidite(DateHelper.getFirstDayOfNextMonth(DateHelper.getCurrentDate()));
 		individu.setAdresses(Arrays.asList(adresse));
 
-		final IndividuImpl wrapper = new IndividuImpl(individu);
+		final IndividuImpl wrapper = new IndividuImpl(individu, null);
 		assertEquals(0, wrapper.getAdresses().size());
 	}
 
@@ -82,7 +82,7 @@ public class IndividuImplTest extends WithoutSpringTest {
 		adresse.setDateFinValidite(DateHelper.getFirstDayOfNextMonth(DateHelper.getCurrentDate()));
 		individu.setAdresses(Arrays.asList(adresse));
 
-		final IndividuImpl wrapper = new IndividuImpl(individu);
+		final IndividuImpl wrapper = new IndividuImpl(individu, null);
 		assertEquals(1, wrapper.getAdresses().size());
 
 		final Adresse adresseWrapper = wrapper.getAdresses().iterator().next();
