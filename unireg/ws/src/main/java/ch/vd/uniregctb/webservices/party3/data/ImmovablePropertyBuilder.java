@@ -14,6 +14,7 @@ public class ImmovablePropertyBuilder {
 		immo.setNumber(immeuble.getNumero());
 		immo.setDateFrom(DataHelper.coreToWeb(immeuble.getDateDebut()));
 		immo.setDateTo(DataHelper.coreToWeb(immeuble.getDateFin()));
+		immo.setEntryDate(DataHelper.coreToWeb(immeuble.getDateValidRF()));
 		immo.setMunicipalityName(immeuble.getNomCommune());
 		immo.setEstimatedTaxValue(immeuble.getEstimationFiscale());
 		immo.setEstimatedTaxValueReference(immeuble.getReferenceEstimationFiscale());

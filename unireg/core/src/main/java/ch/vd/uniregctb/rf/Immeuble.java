@@ -40,7 +40,6 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	private RegDate dateValidRF;
 	private RegDate dateDebut;
 	private RegDate dateFin;
-	private RegDate dateValidation;
 	private RegDate dateDerniereMutation;
 	private TypeMutation derniereMutation;
 	private String numero;
