@@ -1,0 +1,248 @@
+.help {
+	border: 1px dashed black;
+	background-color: #c5dbef;
+	color: black;
+	
+}
+
+.mandatory label {
+	font-weight: bold;
+	color: red;
+	clear: none;
+	display: inline;
+}
+
+.field-separator label {
+	font-weight: bold;
+	vertical-align: bottom;
+	clear: none;
+	display: inline;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	/* Add the following line for use with DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" documents */
+	/* We should use
+	 * DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+	 * but as the Apache server configuration is not W3C compliant, we have to use an load fashioned
+     * See Didier Luthi for more details about Apache Server configuration */
+	font: normal 11px Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+}
+
+html {
+	
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font: normal 11px Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+	color: #000000;
+	text-align: left;
+	background-color: #FFFFFF;
+}
+
+a:link,a:visited {
+	color: #336CA6;
+	text-decoration: none;
+}
+
+a:hover,a:active {
+	color: #A66C33;
+	text-decoration: underline;
+}
+
+h1 {
+	font-weight: bold;
+	font-size: 16pt;
+}
+
+h2 {
+	color: #FF5400;
+	font-size: 14pt;
+}
+
+h3 {
+	color: #FF5400;
+	font-size: 12pt;
+}
+
+p {
+	text-align: justify;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+table {
+	width: 100%;
+	border-spacing: 0px;
+}
+
+tr {
+	height: 16px;
+}
+
+th {
+	background-color: #E3F2E9;
+	font-weight: bold;
+	text-align: left;
+}
+
+th.number {
+	text-align: right;
+}
+
+th.date {
+	text-align: right;
+}
+
+th.code {
+	text-align: center;
+}
+
+td {
+	vertical-align: top;
+}
+
+td.align-left {
+	text-align: left;
+}
+
+td.number {
+	text-align: right;
+}
+
+td.date {
+	text-align: right;
+}
+
+td.code {
+	text-align: center;
+}
+
+.navigation-back {
+	text-align: left;
+	float: left;
+	display: inline;
+}
+
+.navigation-forward {
+	text-align: right;
+	float: right;
+	display: inline;
+}
+
+.navigation-action {
+	text-align: center;
+}
+
+fieldset {
+	margin-top: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	border: 1px solid #cdcdcd;
+}
+
+fieldset legend {
+	border: 1px solid #cdcdcd;
+	width: auto;
+	margin-left: 10px;
+	padding: 2px 20px 2px 20px;
+	font-weight: bold;
+}
+
+select {
+	min-width: 146px;
+}
+
+.select-with-errors {
+	background-color: #f26b6b;
+}
+
+.input-with-errors {
+	background-color: #f26b6b;
+}
+
+input.numero-ofs,input.numero-npa,input.numero-rue {
+	width: 30px;
+	display: inline;
+}
+
+input.numero-complement-npa,input.canton {
+	width: 20px;
+	display: inline;
+}
+
+.erreur {
+	color: red;
+	clear: left;
+}
+
+/*******************************************************************
+ * End of Global layout                                            *
+ ******************************************************************/
+#container {
+}
+
+#canton {
+	display:none;
+}
+
+#canton label {
+	display: none;
+}
+
+#departement {
+	display:none;
+}
+
+#departement label {
+	display:none;
+}
+
+#application {
+	display:none;
+}
+
+#application label {
+	display:none;
+}
+
+#sommaire {
+	display:none;
+}
+
+#sommaire ul {
+	display:none;
+}
+
+#sommaire li {
+	display:none;
+}
+
+#outils {
+	display:none;
+}
+
+#outils h3 {
+	display:none;
+}
+
+#outils ul {
+	display:none;
+}
+
+#outils li {
+	display:none;
+}
+
+#erreur {
+	font-weight: bold;
+	color: #FF0000;
+	display: inline;
+}
+/*******************************************************************
+ * End of Global layout                                            *
+ ******************************************************************/

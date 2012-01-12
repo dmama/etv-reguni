@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- POM for Unireg-XmlBeans -->
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>ch.vd.uniregctb</groupId>
+	<artifactId>unireg-ws-party3</artifactId>
+	<packaging>jar</packaging>
+	<version>3.2-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier PartyService3.wsdl + dans la config du plugin javadoc ! -->
+
+	<name>Unireg - WS Party v3</name>
+	<description>Unireg - classes Java pour le web-service Party v3 de Unireg</description>
+	
+	<dependencies>
+		<dependency>
+			<artifactId>unireg-jaxb2-party</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>1.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-common-utilities</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<artifactId>spring-beans</artifactId>
+			<groupId>org.springframework</groupId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+					<excludes>
+						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-common, car ils ont déjà été compilés dans ce dernier -->
+						<exclude>ch/ech/ech0010/v4/**</exclude>
+						<exclude>ch/ech/ech0044/v2/**</exclude>
+						<exclude>ch/vd/unireg/xml/common/v1/**</exclude>
+						<exclude>ch/vd/unireg/xml/exception/v1/**</exclude>
+						<exclude>ch/vd/unireg/xml/party/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<version>${cxf.version}</version>
+				<executions>
+					<execution>
+						<id>generate-sources-service</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceRoot>
+								${basedir}/target/generated-cxf/src/main/java
+							</sourceRoot>
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>
+										${basedir}/src/main/resources/PartyService3.wsdl
+									</wsdl>
+									<extraargs> 
+										<extraarg>-wsdlLocation</extraarg>
+										<extraarg>${basedir}/src/main/resources/PartyService3.wsdl</extraarg>
+										<extraarg>-p</extraarg>
+										<extraarg>ch.vd.unireg.webservices.party3</extraarg>
+										<extraarg>-xjc-b,${basedir}/src/main/resources/bindings.xml</extraarg>
+										<extraarg>-xjc-Xpretty-classname</extraarg>
+										<extraarg>-xjc-Xunireg-ws</extraarg>
+										<extraarg>-xjc-Xts</extraarg>
+										<extraarg>-xjc-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</extraarg>
+										<extraarg>-xjc-Xvalue-constructor</extraarg>
+										<extraarg>-xjc-Xinheritance</extraarg>
+									</extraargs>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.cxf.xjcplugins</groupId>
+						<artifactId>cxf-xjc-ts</artifactId>
+						<version>2.3.2</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+						<artifactId>jaxb2-value-constructor</artifactId>
+						<version>3.0</version>
+					</dependency>
+					<dependency>
+						<groupId>ch.vd.uniregctb</groupId>
+						<artifactId>jaxb2-pretty-classname</artifactId>
+						<version>1.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>ch.vd.uniregctb</groupId>
+						<artifactId>jaxb2-unireg-ws-plugin</artifactId>
+						<version>1.1.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+					   <artifactId>jaxb2-basics</artifactId>
+					   <version>0.5.3</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+
+				<dependencies>
+					<dependency>
+						<groupId>gr.spinellis</groupId>
+						<artifactId>UmlGraph</artifactId>
+						<version>4.4</version>
+					</dependency>
+				</dependencies>
+
+				<executions>
+					<!-- Task ANT qui génère la javadoc des classes exposées par le web-service -->
+					<execution>
+						<id>ws.javadoc</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>site</phase>
+						<configuration>
+							<tasks>
+								<property name="compile_classpath" refid="maven.compile.classpath"/>
+								<property name="runtime_classpath" refid="maven.runtime.classpath"/>
+								<property name="plugin_classpath" refid="maven.plugin.classpath"/>
+								<echo message="==> compile_classpath: ${compile_classpath}"/>
+
+								<javadoc access="public"
+									additionalparam="-encoding 'utf-8' -charset 'utf-8'"
+									author="true"
+									classpath="${compile_classpath}"
+									destdir="target/ws.javadoc"
+									doctitle="Unireg - Documentation du web service Party v3 (3.2-SNAPSHOT)"
+									nodeprecated="false"
+									nodeprecatedlist="false"
+									noindex="false"
+									nonavbar="false"
+									notree="false"
+									source="1.6"
+									splitindex="true"
+									use="true"
+									version="true" >
+								    <fileset dir="target/generated-cxf/src/main/java/ch/vd/unireg" defaultexcludes="yes">
+							    		<include name="**/*.java"/>
+							    		<exclude name="**/ObjectFactory.java"/>
+								    </fileset>
+								</javadoc>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>install</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>nexus.releases</id>
+			<name>Nexus releases</name>
+			<url>${nexus.url.releases}</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus.snapshots</id>
+			<name>Nexus snaphots</name>
+			<url>${nexus.url.snapshots}</url>
+			<!-- évite d'ajouter un timestamp à chaque déploiement : nécessaire pour avoir les sources synchrones avec un jar snapshot -->
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<properties>
+		<!-- Application settings -->
+		<copyright.year>2011</copyright.year>
+		<amp.genericCore>true</amp.genericCore>
+		<amp.fullSource>false</amp.fullSource>
+		<spring.version>3.0.6.RELEASE</spring.version>
+		<cxf.version>2.4.2-fuse-00-08</cxf.version>
+		<log4j.version>1.2.14</log4j.version>
+		<junit.version>4.4</junit.version>
+	</properties>
+	
+</project>
+

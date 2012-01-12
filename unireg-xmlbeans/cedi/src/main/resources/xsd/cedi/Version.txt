@@ -1,0 +1,33 @@
+Version 1.2 : fichiers modifiés :
+- CS_AR_Harmonise2007.xsd
+- Annexe02.xsd
+
+Version 1.3 : pour le détail, voir fichiers individuels
+- DeclarationImpot.xsd
+- CS_AR_Harmonise2007.xsd
+
+Version 1.4 : pour le détail, voir fichiers individuels
+- CS_AR_Harmonise2007.xsd
+
+
+Version 1.5 : Ajout pièces justificatives
+Pour le détail, voir fichiers individuels :
+- PieceJustificative.xsd
+- SDI.xsd
+
+Version 1.6 : modification Annexe01 et DeclarationImpot
+pour le détail, voir fichier
+- Annexe01.xsd
+- DeclarationImpot.xsd
+
+version 1.7 : élément ExcluTaxationAutomatique rendu obligatoire
+
+Version 1.8 : modification Annexe01.xsd
+- correction d'une cardinailté
+
+Version 2009-2010
+Modification fichier DeclarationImpot pour commenter le fait que les NoAVS ne viennent plus de la DI à partir de la DI 2009. Ces éléments ne sont toutefois pas supprimés.
+
+Version 2011-2012
+Modification fichier DeclarationImpot.xsd : ajout élément DeductionsSpeciales/FraisGarde/Effectif
+Modification fichier Annexe05.xsd : ajout groupe DeductionsSpeciales

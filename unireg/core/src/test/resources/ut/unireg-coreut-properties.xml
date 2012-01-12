@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Ce fichier est uniquement inclus dans le cadre des unit-tests. Il ne doit pas être inclus dans le cadre d'un application serveur -->
+
+	<!--
+		Ce bean permet de résoudre les propriétés de type testprop.xxx lors du
+		lancement des tests unitaires. Il est absolument nécessaire au fonctionnement des test !
+	-->
+	<bean id="propertyConfigurerUT" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="location" value="file:../base/unireg-ut.properties" />
+	</bean>
+
+</beans>

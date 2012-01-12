@@ -1,0 +1,6 @@
+testprop.jdbc.username=ut-moscow
+testprop.jdbc.password=welc0me
+testprop.jdbc.server=localhost
+testprop.jdbc.port=5432
+testprop.jdbc.instance=${testprop.jdbc.username}
+testprop.jdbc.url=jdbc:postgresql://${testprop.jdbc.server}/${testprop.jdbc.instance}

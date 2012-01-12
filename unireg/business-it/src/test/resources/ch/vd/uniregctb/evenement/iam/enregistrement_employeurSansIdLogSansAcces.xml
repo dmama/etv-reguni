@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DemandeUtilisateur xmlns="http://www.vd.ch/fiscalite/empaci/DemandeUtilisateur-v2">
+  <InfoIAM>
+    <RoleApplicatif>fiscalite - empaci - employeur</RoleApplicatif>
+    <Nom>Schibli</Nom>
+    <Prenom>Ariane</Prenom>
+    <Telephone>0218431735</Telephone>
+    <Fax>0218431231</Fax>
+    <Email>secretariat@juraparc.ch</Email>
+    <AccountId>xvdaesi2</AccountId>
+    <Chvdiamuniquekey>AB8B4DD34A59A8B</Chvdiamuniquekey>
+  </InfoIAM>
+  <InfoMetier>
+    <DateDemande>2011-02-15</DateDemande>
+    <Fonction>secrétaire</Fonction>
+    <NomRespHierarchique>Blanc</NomRespHierarchique>
+    <PrenomRespHierarchique>Olivier</PrenomRespHierarchique>
+    <FonctionRespHierarchique>Directeur</FonctionRespHierarchique>
+    <TelephoneRespHierarchique>0218431735</TelephoneRespHierarchique>
+    <Employeurs>
+      <Employeur>
+        <DesignationSaisie>Juraparc SA</DesignationSaisie>
+        <Statut>A</Statut>
+        <Email>juraparc@juraparc.ch</Email>
+        <Designation>BLANC OLIVIER</Designation>
+        <AdresseLigne1>null null</AdresseLigne1>
+        <NumeroPostal>1337</NumeroPostal>
+        <Localite>Vallorbe</Localite>
+        <NoEmployeur>1038580</NoEmployeur>
+      </Employeur>
+    </Employeurs>
+  </InfoMetier>
+</DemandeUtilisateur>

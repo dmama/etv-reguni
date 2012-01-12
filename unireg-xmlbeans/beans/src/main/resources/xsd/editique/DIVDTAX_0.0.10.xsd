@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 03.12.08 : JVO - Spécifications DI Vautax-->
+<!--Version  0.0.2  - 28.12.08 : JVO - spécification avec M. Perroset-->
+<!--Version  0.0.3  - 25.01.10 : JVO - New structure XSD-->
+<!--Version 0.0.4  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DIRetourCivilEnfant_0.0.4.xsd"/>
+	<xs:element name="DIVDTAX">
+		<!-- Description du schema pour l'impression d'une DI VaudTax -->
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="DIRetourCivilEnfant">
+					<xs:sequence>
+						<xs:element name="Annexes">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Annexe_250" type="typEntierPositif">
+										<xs:annotation>
+											<xs:documentation>250 = VaudTax avec le nombre de doc 1àN</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

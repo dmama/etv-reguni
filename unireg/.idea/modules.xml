@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/base/uniregctb.iml" filepath="$PROJECT_DIR$/base/uniregctb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business/uniregctb-business.iml" filepath="$PROJECT_DIR$/business/uniregctb-business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-it/uniregctb-business-it.iml" filepath="$PROJECT_DIR$/business-it/uniregctb-business-it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/uniregctb-core.iml" filepath="$PROJECT_DIR$/core/uniregctb-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/uniregctb-tools.iml" filepath="$PROJECT_DIR$/tools/uniregctb-tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ubr/uniregctb-ubr.iml" filepath="$PROJECT_DIR$/ubr/uniregctb-ubr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/uniregctb-web.iml" filepath="$PROJECT_DIR$/web/uniregctb-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-it/uniregctb-web-it.iml" filepath="$PROJECT_DIR$/web-it/uniregctb-web-it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ws/uniregctb-ws.iml" filepath="$PROJECT_DIR$/ws/uniregctb-ws.iml" />
+    </modules>
+  </component>
+</project>
+
