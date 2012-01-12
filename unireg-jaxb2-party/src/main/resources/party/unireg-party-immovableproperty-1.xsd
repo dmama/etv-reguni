@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 12 janvier 2012 - ajouté la date de validation RF + rendu optionnelle la nature de l'immeuble -->
 <!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.1 - 19 décembre 2011 - rendu les champs 'lastMutationDate' et 'lastMutationType' nullables -->
 <!-- v1.1 - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
@@ -38,6 +39,15 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="entryDate" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de validation (= de saisie) des données dans le registre foncier.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="number" type="xs:string">
 				<xs:annotation>
 					<xs:appinfo>
@@ -58,11 +68,11 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="nature" type="xs:string">
+			<xs:element name="nature" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>La nature de l'immeuble (Revêtement dur, Place-jardin, ...).</jxb:javadoc>
+							<jxb:javadoc>La nature de l'immeuble (Revêtement dur, Place-jardin, ...). Elle n'est pas forcément renseignée sur les immeubles type PPE.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
