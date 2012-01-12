@@ -562,7 +562,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null) {
 			// on fait la copie avec les parts demandées seulements
@@ -573,7 +573,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 			else {
 				parts = new HashSet<AttributeIndividu>(Arrays.asList(parties));
 			}
-			return new MockIndividu(individu, parts, annee);
+			return new MockIndividu(individu, parts, date);
 		}
 		else {
 			return null;
@@ -581,10 +581,10 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
-			final Individu individu = getIndividu(noIndividu, annee, parties);
+			final Individu individu = getIndividu(noIndividu, date, parties);
 			if (individu != null) {
 				individus.add(individu);
 			}

@@ -8,7 +8,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -54,12 +53,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Collection<Adresse> getAdresses(long noTechniqueIndividu, int anneeValidite) {
-		assertTargetNotNull();
-		return target.getAdresses(noTechniqueIndividu, anneeValidite);
-	}
-
-	@Override
 	public Individu getIndividu(long noTechniqueIndividu, int anneeValidite, AttributeIndividu... attributs) {
 		assertTargetNotNull();
 		return target.getIndividu(noTechniqueIndividu, anneeValidite, attributs);
@@ -80,14 +73,14 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	@Override
 	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
-		return target.getConjoint(noIndividuPrincipal,date);
+		return target.getConjoint(noIndividuPrincipal, date);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
-		return target.getNumeroIndividuConjoint(noIndividuPrincipal,date);  
+		return target.getNumeroIndividuConjoint(noIndividuPrincipal, date);
 	}
 
 	@Override

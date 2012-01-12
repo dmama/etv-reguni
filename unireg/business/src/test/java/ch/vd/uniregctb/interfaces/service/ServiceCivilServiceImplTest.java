@@ -378,7 +378,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			fail();
 		}
 		catch (DonneesCivilesException e) {
-			assertEquals(String.format("Plus d'une adresse 'principale' détectée sur l'individu n°%d et pour l'année %d.", noIndividu, 2002), e.getMessage());
+			assertEquals(String.format("Plus d'une adresse 'principale' détectée sur l'individu n°%d et pour la date 2002.07.01.", noIndividu), e.getMessage());
 		}
 	}
 

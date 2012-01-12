@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.service.ServiceCivil;
 import ch.vd.registre.common.service.RegistreException;
 import ch.vd.uniregctb.common.JvmVersionHelper;
@@ -20,7 +20,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 
 public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
+//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
 
 	private ServiceCivil serviceCivil;
 
@@ -38,41 +38,37 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ')');
-		}
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		try {
-			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)));
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("End of getIndividu(" + noIndividu + ", " + annee + ')');
-			}
+			final int annee = date == null ? 2400 : date.year();
+			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties))); // TODO (msi) limiter la validité des collections à la date spécifiée
 			if (ind != null) {
 				assertCoherence(noIndividu, ind.getNoTechnique());
 			}
 			return ind;
 		}
 		catch (RemoteException e) {
-			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividu + " pour l'année " + annee, e);
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividu + " à la date " + date, e);
 		}
 		catch (RegistreException e) {
-			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividu + " pour l'année " + annee, e);
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividu + " à la date " + date, e);
 		}
 	}
 
-	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	@Override
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		try {
 			// l'appel à l'EJB a besoin d'une collection sérialisable
 			if (!(nosIndividus instanceof Serializable)) {
 				nosIndividus = new ArrayList<Long>(nosIndividus);
 			}
+			final int annee = date == null ? 2400 : date.year();
 			final Collection<ch.vd.registre.civil.model.Individu> individus = serviceCivil.getIndividus(nosIndividus, annee, AttributeIndividu.toEAI(parties));
 
 			final List<Individu> list = new ArrayList<Individu>(individus.size());
 			for (ch.vd.registre.civil.model.Individu ind : individus) {
-				final Individu individu = IndividuImpl.get(ind);
+				final Individu individu = IndividuImpl.get(ind); // TODO (msi) limiter la validité des collections à la date spécifiée
 				if (individu != null) {
 					list.add(individu);
 				}
@@ -81,10 +77,10 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 			return list;
 		}
 		catch (RemoteException e) {
-			throw new ServiceCivilException("Impossible de récupérer les individus n° " + ArrayUtils.toString(nosIndividus.toArray()) + " pour l'année " + annee, e);
+			throw new ServiceCivilException("Impossible de récupérer les individus n° " + ArrayUtils.toString(nosIndividus.toArray()) + " à la date " + date, e);
 		}
 		catch (RegistreException e) {
-			throw new ServiceCivilException("Impossible de récupérer les individus n° " + ArrayUtils.toString(nosIndividus.toArray()) + " pour l'année " + annee, e);
+			throw new ServiceCivilException("Impossible de récupérer les individus n° " + ArrayUtils.toString(nosIndividus.toArray()) + " à la date " + date, e);
 		}
 	}
 

@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -62,27 +61,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s, strict=%s", noIndividu, ServiceTracing.toString(date), strict);
-				}
-			});
-		}
-	}
-
-	@Override
-	public Collection<Adresse> getAdresses(final long noIndividu, final int annee) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getAdresses(noIndividu, annee);
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getAdresses", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
 				}
 			});
 		}

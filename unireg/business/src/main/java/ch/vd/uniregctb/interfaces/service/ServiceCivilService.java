@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -70,21 +69,6 @@ public interface ServiceCivilService {
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
 	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
-
-	/**
-	 * Retourne la liste des adresses, valides <b>jusqu'à</b> l'année en paramètre, pour un individu identifié par le numéro en paramètre.
-	 * <p/>
-	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
-	 * <p/>
-	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
-	 *
-	 * CHECK_RCPERS (msi) : utilisé en interne dans le service civil lui-même pour les méthodes getAdresses et getAdressesHisto
-	 *
-	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
-	 * @return la liste des adresses, valides jusqu'à l'année, de l'individu.
-	 */
-	Collection<Adresse> getAdresses(long noIndividu, int annee);
 
 	/**
 	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.

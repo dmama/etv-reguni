@@ -36,22 +36,23 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
-		final int year = (date == null ? 2400 : date.year());
-		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, year);
-
 		AdressesCivilesActives resultat = new AdressesCivilesActives();
 
 		try {
-			if (adressesCiviles != null) {
-				for (Adresse adresse : adressesCiviles) {
-					if (adresse != null && adresse.isValidAt(date)) {
-						resultat.set(adresse, strict);
+			final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.ADRESSES);
+			if (individu != null) {
+				final Collection<Adresse> adressesCiviles = individu.getAdresses();
+				if (adressesCiviles != null) {
+					for (Adresse adresse : adressesCiviles) {
+						if (adresse != null && adresse.isValidAt(date)) {
+							resultat.set(adresse, strict);
+						}
 					}
 				}
 			}
 		}
 		catch (DonneesCivilesException e) {
-			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour l'année " + year + '.');
+			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour la date " + date + '.');
 		}
 
 		return resultat;
@@ -60,19 +61,20 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
-		final int all = 2400;
-		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, all);
-
 		AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
 
-		if (adressesCiviles != null) {
-			for (Adresse adresse : adressesCiviles) {
-				if (adresse != null) {
-					resultat.add(adresse);
+		final Individu individu = getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
+		if (individu != null) {
+			final Collection<Adresse> adressesCiviles = individu.getAdresses();
+			if (adressesCiviles != null) {
+				for (Adresse adresse : adressesCiviles) {
+					if (adresse != null) {
+						resultat.add(adresse);
+					}
 				}
 			}
+			resultat.finish(strict);
 		}
-		resultat.finish(strict);
 
 		return resultat;
 	}
@@ -122,29 +124,25 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Collection<Adresse> getAdresses(long noIndividu, int annee) {
-		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ADRESSES);
-		if (individu == null) {
+	public final Individu getIndividu(long noIndividu, int annee) {
+		return getIndividu(noIndividu, annee, (AttributeIndividu[]) null); // -> va charger implicitement l'état-civil et l'historique
+	}
+
+	@Override
+	public final Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+		return getIndividu(noIndividu, annee2date(annee), parties);
+	}
+
+	@Override
+	public final List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+		return getIndividus(nosIndividus, annee2date(annee), parties);
+	}
+
+	private static RegDate annee2date(int annee) {
+		if (annee <= 0 || annee >= 2400) {
 			return null;
 		}
-		return individu.getAdresses();
-	}
-
-	@Override
-	public final Individu getIndividu(long noIndividu, int annee) {
-		return getIndividu(noIndividu, annee, (AttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
-	}
-
-	@Override
-	public final Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
-		final int annee = (date == null ? 2400 : date.year());
-		return getIndividu(noIndividu, annee, parties);
-	}
-
-	@Override
-	public final List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
-		final int annee = (date == null ? 2400 : date.year());
-		return getIndividus(nosIndividus, annee, parties);
+		return RegDate.get(annee, 12, 31);
 	}
 
 	@Override
@@ -188,8 +186,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 */
 	@Override
 	public final Permis getPermisActif(long noIndividu, RegDate date) {
-		final int year = (date == null ? 2400 : date.year());
-		final Individu individu = getIndividu(noIndividu, year, AttributeIndividu.PERMIS);
+		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.PERMIS);
 		return (individu == null ? null : individu.getPermisActif(date));
 	}
 

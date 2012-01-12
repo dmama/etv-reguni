@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -110,14 +111,14 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 	private static class GetIndividuKey implements ObjectKey {
 
-		private static final long serialVersionUID = -8068187058991985334L;
+		private static final long serialVersionUID = 5901645903892412457L;
 
 		private final long noIndividu;
-		private final int annee;
+		private final RegDate date;
 
-		private GetIndividuKey(long noIndividu, int annee) {
+		private GetIndividuKey(long noIndividu, RegDate date) {
 			this.noIndividu = noIndividu;
-			this.annee = annee;
+			this.date = date;
 		}
 
 		@Override
@@ -127,7 +128,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 		@Override
 		public String getComplement() {
-			return String.valueOf(annee);
+			return date == null ? "" : String.valueOf(date.index());
 		}
 	}
 
@@ -135,16 +136,16 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
-		final GetIndividuKey key = new GetIndividuKey(noIndividu, annee);
+		final GetIndividuKey key = new GetIndividuKey(noIndividu, date);
 		IndividuCacheValueWithParts value = cache.get(key);
 		if (value == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			individu = target.getIndividu(noIndividu, annee, parties);
+			individu = target.getIndividu(noIndividu, date, parties);
 			value = new IndividuCacheValueWithParts(partiesSet, individu);
 			cache.put(key, value);
 		}
@@ -153,7 +154,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 			Set<AttributeIndividu> delta = value.getMissingParts(partiesSet);
 			if (delta != null) {
 				// on complète la liste des parts à la volée
-				Individu deltaTiers = target.getIndividu(noIndividu, annee, setToArray(delta));
+				Individu deltaTiers = target.getIndividu(noIndividu, date, setToArray(delta));
 				value.addParts(delta, deltaTiers);
 				// on met-à-jour le cache
 				cache.put(key, value);
@@ -168,7 +169,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -177,7 +178,7 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 		// Récupère les individus dans le cache
 		for (Long no : nosIndividus) {
-			final GetIndividuKey key = new GetIndividuKey(no, annee);
+			final GetIndividuKey key = new GetIndividuKey(no, date);
 			final IndividuCacheValueWithParts value = cache.get(key);
 			if (value == null) {
 				// l'élément n'est pas dans le cache -> on doit le demander au service civil
@@ -198,12 +199,12 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 
 		// Effectue l'appel au service pour les individus non-cachés
 		if (!uncached.isEmpty()) {
-			final List<Individu> list = target.getIndividus(uncached, annee, parties);
+			final List<Individu> list = target.getIndividus(uncached, date, parties);
 			for (Individu ind : list) {
 				final long no = ind.getNoTechnique();
 				map.put(no, ind);
 				// Met-à-jour le cache
-				final GetIndividuKey key = new GetIndividuKey(no, annee);
+				final GetIndividuKey key = new GetIndividuKey(no, date);
 				final IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(partiesSet, ind);
 				cache.put(key, value);
 			}

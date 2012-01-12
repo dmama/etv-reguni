@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -126,14 +127,14 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 	private static class GetIndividuKey implements Serializable {
 
-		private static final long serialVersionUID = 4747282643L;
+		private static final long serialVersionUID = -1748046591127116308L;
 
 		private final long noIndividu;
-		private final int annee;
+		private final RegDate date;
 
-		private GetIndividuKey(long noIndividu, int annee) {
+		private GetIndividuKey(long noIndividu, RegDate date) {
 			this.noIndividu = noIndividu;
-			this.annee = annee;
+			this.date = date;
 		}
 
 		@Override
@@ -143,13 +144,17 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 			final GetIndividuKey that = (GetIndividuKey) o;
 
-			return annee == that.annee && noIndividu == that.noIndividu;
+			if (noIndividu != that.noIndividu) return false;
+			//noinspection RedundantIfStatement
+			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+
+			return true;
 		}
 
 		@Override
 		public int hashCode() {
 			int result = (int) (noIndividu ^ (noIndividu >>> 32));
-			result = 31 * result + annee;
+			result = 31 * result + (date != null ? date.hashCode() : 0);
 			return result;
 		}
 	}
@@ -158,16 +163,16 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
-		final GetIndividuKey key = new GetIndividuKey(noIndividu, annee);
+		final GetIndividuKey key = new GetIndividuKey(noIndividu, date);
 		final Element element = cache.get(key);
 		if (element == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			individu = target.getIndividu(noIndividu, annee, parties);
+			individu = target.getIndividu(noIndividu, date, parties);
 			IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(partiesSet, individu);
 			cache.put(new Element(key, value));
 		}
@@ -177,7 +182,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 			Set<AttributeIndividu> delta = value.getMissingParts(partiesSet);
 			if (delta != null) {
 				// on complète la liste des parts à la volée
-				Individu deltaTiers = target.getIndividu(noIndividu, annee, setToArray(delta));
+				Individu deltaTiers = target.getIndividu(noIndividu, date, setToArray(delta));
 				value.addParts(delta, deltaTiers);
 			}
 			individu = value.getValueForParts(partiesSet);
@@ -190,7 +195,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -199,7 +204,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 		// Récupère les individus dans le cache
 		for (Long no : nosIndividus) {
-			final GetIndividuKey key = new GetIndividuKey(no, annee);
+			final GetIndividuKey key = new GetIndividuKey(no, date);
 			final Element element = cache.get(key);
 			if (element == null) {
 				// l'élément n'est pas dans le cache -> on doit le demander au service civil
@@ -221,12 +226,12 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 
 		// Effectue l'appel au service pour les individus non-cachés
 		if (!uncached.isEmpty()) {
-			final List<Individu> list = target.getIndividus(uncached, annee, parties);
+			final List<Individu> list = target.getIndividus(uncached, date, parties);
 			for (Individu ind : list) {
 				final long no = ind.getNoTechnique();
 				map.put(no, ind);
 				// Met-à-jour le cache
-				final GetIndividuKey key = new GetIndividuKey(no, annee);
+				final GetIndividuKey key = new GetIndividuKey(no, date);
 				final IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(partiesSet, ind);
 				cache.put(new Element(key, value));
 			}

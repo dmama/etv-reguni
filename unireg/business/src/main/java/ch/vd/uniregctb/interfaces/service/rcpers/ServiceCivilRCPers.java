@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
@@ -19,7 +17,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 
 public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
+//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
 
 	private RcPersClient client;
 
@@ -29,9 +27,9 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPersons(Arrays.asList(noIndividu), RegDate.get(annee, 12, 31), true);
+		final ListOfPersons list = client.getPersons(Arrays.asList(noIndividu), date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}
@@ -50,9 +48,9 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPersons(nosIndividus, RegDate.get(annee, 12, 31), true);
+		final ListOfPersons list = client.getPersons(nosIndividus, date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}
