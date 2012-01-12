@@ -193,7 +193,8 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieTacheNouveauDossier(criterion, 1);
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		verifieTacheNouveauDossier(criterion, 0);
 
 		assertTachesEnvoi(criterion, false);
 	}
@@ -244,7 +245,9 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieTacheNouveauDossier(criterion, 1);
+
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		verifieTacheNouveauDossier(criterion, 0);
 
 		assertTachesEnvoi(criterion, true);
 
@@ -341,7 +344,9 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieTacheNouveauDossier(criterion, 1);
+
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		verifieTacheNouveauDossier(criterion, 0);
 
 		assertTachesEnvoi(criterion, true);
 	}
@@ -399,7 +404,9 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieTacheNouveauDossier(criterion, 1);
+
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		verifieTacheNouveauDossier(criterion, 0);
 	}
 
 	/**
@@ -634,7 +641,9 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieTacheNouveauDossier(criterion, 2);
+
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		verifieTacheNouveauDossier(criterion, 0);
 	}
 
 	@Test
@@ -1106,7 +1115,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOuvertureForPrincipalImpositionOrdinaire() throws Exception {
 		ouvreForPrincipal(ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, RegDate.get(2006, 6, 12));
-		assertEquals(1, getNouveauDossierCount());
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		assertEquals(0, getNouveauDossierCount());
 		assertEquals(RegDate.get().year() - 2006, getTacheCount());
 	}
 
@@ -1514,10 +1524,11 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
-			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
-			assertNotNull(nouveaux);
-			assertEquals(1, nouveaux.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
+//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+//			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
+//			assertNotNull(nouveaux);
+//			assertEquals(1, nouveaux.size());
+//			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -1546,10 +1557,13 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
-			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
-			assertNotNull(nouveaux);
-			assertEquals(1, nouveaux.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
+
+			//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+
+//			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
+//			assertNotNull(nouveaux);
+//			assertEquals(1, nouveaux.size());
+//			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -1678,10 +1692,11 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
-			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
-			assertNotNull(nouveaux);
-			assertEquals(1, nouveaux.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
+			//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+//			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
+//			assertNotNull(nouveaux);
+//			assertEquals(1, nouveaux.size());
+//			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -1710,10 +1725,12 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
-			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
-			assertNotNull(nouveaux);
-			assertEquals(1, nouveaux.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
+
+			//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+//			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheNouveauDossier);
+//			assertNotNull(nouveaux);
+//			assertEquals(1, nouveaux.size());
+//			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -1854,10 +1871,11 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
-			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.madameId, TypeTache.TacheNouveauDossier);
-			assertNotNull(nouveaux);
-			assertEquals(1, nouveaux.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
+			//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+//			final List<TacheNouveauDossier> nouveaux = tacheDAO.listTaches(ids.madameId, TypeTache.TacheNouveauDossier);
+//			assertNotNull(nouveaux);
+//			assertEquals(1, nouveaux.size());
+//			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, nouveaux.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -2413,7 +2431,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionQuitteSourceVersMixte() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.MIXTE_137_2);
-		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
@@ -2421,7 +2440,8 @@ public class TacheServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testChangementModeImpositionQuitteSourceVersDepense() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.DEPENSE);
-		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
+		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
+		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
