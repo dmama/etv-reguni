@@ -362,6 +362,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 			catch (AssujettissementException e) {
 				// on ignore joyeusement cette erreur, au pire il manquera une tâche de contrôle de dossier
+				LOGGER.warn("Impossible de creer la tâche de contrôle de dossier: " + e.getMessage());
 			}
 
 		case MAJORITE:
@@ -369,19 +370,17 @@ public class TacheServiceImpl implements TacheService {
 		case ARRIVEE_HS:
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
-			generateTacheNouveauDossier(contribuable);
+			// [SIFISC-3357] On ne génére plus de tache nouveau dossier pour les ctb VD
 			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case CHGT_MODE_IMPOSITION:
-			if (!ancienModeImposition.isAuRole() && modeImposition.isAuRole()) {
-				generateTacheNouveauDossier(contribuable);
-			}
-			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
+			// [SIFISC-3357] On ne génére plus de tache nouveau dossier pour les ctb VD
+ 			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
 
 		case VEUVAGE_DECES:
-			generateTacheNouveauDossier(contribuable);
+			// [SIFISC-3357] On ne génére plus de tache nouveau dossier pour les ctb VD
 			// [UNIREG-1112] il faut générer les tâches d'envoi de DIs sur le tiers survivant
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
 			// [UNIREG-1198] assignation de la tache au service succession mis en place
