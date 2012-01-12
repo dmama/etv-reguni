@@ -82,21 +82,9 @@
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.date.deces" />&nbsp;:</td>
 		<td width="50%">
-			<script type="text/javascript">
-				function dateDeces_OnChange( element) {
-					if ( element)
-						$("#dateDecesFormate").val(element.value);
-				}
-			</script>
-			<form:hidden path="sdateDeces" id="dateDecesFormate" />
-			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-				<jsp:param name="path" value="tiers.dateDeces" />
-				<jsp:param name="id" value="dateDeces"  />
-				<jsp:param name="onChange" value="dateDeces_OnChange"/>
-			</jsp:include>
+			<form:input path="tiers.dateDeces" id="tiers.dateDeces" readonly="true"/>
 		</td>
 	</tr>
-
 	<tr
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
