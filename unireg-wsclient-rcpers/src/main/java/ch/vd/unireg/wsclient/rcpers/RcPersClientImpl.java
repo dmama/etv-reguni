@@ -14,6 +14,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
+//	private static final Logger LOGGER = Logger.getLogger(RcPersClientImpl.class);
+
 	private String baseUrl;
 	private String username;
 	private String password;
@@ -51,24 +53,24 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		wc.path(peoplePath);
 
 		// les ids
+		final StringBuilder param = new StringBuilder();
 		int i = 0;
 		for (Long id : ids) {
 			if (i++ > 0) {
-				wc.path(",");
+				param.append(",");
 			}
-			wc.path(String.valueOf(id));
+			param.append(String.valueOf(id));
 		}
-
-		final MutableBoolean firstParam = new MutableBoolean(true);
+		wc.path(param.toString());
 
 		// l'historique
 		if (withHistory) {
-			wc.path(addParam(firstParam, "history"));
+			wc.query("history", "true");
 		}
 
 		// la date
 		if (date != null) {
-			wc.path(addParam(firstParam, String.format("date=%s", RegDateHelper.dateToDisplayString(date))));
+			wc.query("date", RegDateHelper.dateToDisplayString(date));
 		}
 
 		return wc.get(ListOfPersons.class);
