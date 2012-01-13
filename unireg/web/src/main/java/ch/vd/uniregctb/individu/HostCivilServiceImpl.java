@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.individu;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
@@ -118,30 +117,17 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	/**
 	 * Traitement du permis de travail
 	 *
-	 * @param numeroIndividu
-	 * @param indSource
-	 * @param indCible
+	 * @param numeroIndividu un numéro d'individu
+	 * @param view           la vue à compléter
 	 */
-	private void traitePermis(Long numeroIndividu, IndividuView indCible) {
-		List<PermisView> lPermisView = new ArrayList<PermisView>();
-		Collection<Permis> colPermis = getServiceCivilService().getPermis(numeroIndividu, DateHelper.getCurrentYear());
-		for (Permis permis : colPermis) {
-			PermisView permisView = new PermisView();
-			if (permis.getTypePermis() != null) {
-				permisView.setTypePermis(permis.getTypePermis().name());
-			}
-			permisView.setDateDebutValidite(permis.getDateDebutValidite());
-			permisView.setDateFinValidite(permis.getDateFinValidite());
-			if (permis.getDateAnnulation() != null) {
-				permisView.setAnnule(true);
-			}
-			else {
-				permisView.setAnnule(false);
-			}
-			lPermisView.add(permisView);
+	private void traitePermis(Long numeroIndividu, IndividuView view) {
+		final Permis permis = getServiceCivilService().getPermis(numeroIndividu, null);
+		if (permis != null) {
+			view.setPermisView(Arrays.asList(new PermisView(permis)));
 		}
-		Collections.sort(lPermisView, new PermisViewComparator());
-		indCible.setPermisView(lPermisView);
+		else {
+			view.setPermisView(Collections.<PermisView>emptyList());
+		}
 	}
 
 	/**

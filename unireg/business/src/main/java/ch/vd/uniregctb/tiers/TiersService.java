@@ -219,12 +219,13 @@ public interface TiersService {
 
 	/**
 	 * Recupere l'individu correspondant à une personne physique avec l'état valide pour une année donnée.
+	 *
 	 * @param personne la personne physique en question.
 	 * @param annee l'année de validité des données retournées.
 	 * @param attributes les attributs renseignés sur l'individu.
 	 * @return un individu, ou <i>null</i> si la personne physique est un non-habitant.
 	 */
-	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu[] attributes);
+	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu... attributes);
 
 	/**
 	 * Détermine si une personne physique est suisse.

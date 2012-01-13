@@ -146,10 +146,6 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
 		individu.setAdoptionsReconnaissances(adoptions);
 
-		// Permis
-		final List<Permis> permis = new ArrayList<Permis>();
-		individu.setPermis(permis);
-
 		add(individu);
 		return individu;
 	}
@@ -386,7 +382,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
-	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
+	protected Permis setPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
 		final MockPermis permis = new MockPermis();
 		permis.setTypePermis(type);
 		permis.setDateDebutValidite(debut);
@@ -394,10 +390,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		if (permisAnnule) {
 			permis.setDateAnnulation(RegDate.get());
 		}
-		if (individu.getPermis() == null) {
-			individu.setPermis(new ArrayList<Permis>());
-		}
-		individu.getPermis().add(permis);
+		individu.setPermis(permis);
 		return permis;
 	}
 

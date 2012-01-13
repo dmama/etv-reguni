@@ -198,19 +198,13 @@ public interface ServiceCivilService {
 	Collection<Origine> getOrigines(long noIndividu, int annee);
 
 	/**
-	 * Retourne la liste des permis, valides <b>jusqu'à</b> l'année en paramètre, de l'individu identifié par le numéro en paramètre.
-	 * <p/>
-	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
-	 * <p/>
-	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
+	 * Retourne le permis valable à la date spécifiée pour un individu.
 	 *
-	 * CHECK_RCPERS (msi) : permis courant pour le processing, historique pour l'affichage
-	 *
-	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
-	 * @return la liste des permis de l'individu, valides jusqu'à l'année spécifiée.
+	 * @param noIndividu le numéro de l'individu concerné
+	 * @param date       la date à laquelle on va connaître le permis
+	 * @return le permis valable à la date demandée; ou <b>null</b> si l'individu est citoyen suisse.
 	 */
-	Collection<Permis> getPermis(long noIndividu, int annee);
+	Permis getPermis(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Retourne la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis, l'individu attendu étant identifié par le numéro en paramètre.
@@ -235,14 +229,6 @@ public interface ServiceCivilService {
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
-
-	/**
-	 * CHECK_RCPERS (msi) : utilisé uniquement pour le testing
-	 *
-	 * @return le permis actif d'un individu à une date donnée.
-	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
-	 */
-	public Permis getPermisActif(long noIndividu, RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.

@@ -166,7 +166,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
 			this.dateArrivee = DataHelper.coreToWeb(personne.getDateDebutActivite());
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(null);
+			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis();
 			if (permis == null) {
 				this.categorie = ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique.Categorie.SUISSE;
 			}

@@ -62,7 +62,7 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
-				addPermis(indConceicao, TypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, false);
+				setPermis(indConceicao, TypePermis.PROVISOIRE, RegDate.get(2008, 5, 21), null, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						RegDate.get(2008, 4, 1), RegDate.get(2008, 6, 30));

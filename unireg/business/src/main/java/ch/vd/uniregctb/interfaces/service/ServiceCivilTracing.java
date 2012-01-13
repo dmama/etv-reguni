@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -302,11 +303,11 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Collection<Permis> getPermis(final long noIndividu, final int annee) {
+	public Permis getPermis(final long noIndividu, @Nullable final RegDate date) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getPermis(noIndividu, annee);
+			return target.getPermis(noIndividu, date);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -314,27 +315,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		}
 		finally {
 			tracing.end(time, t, "getPermis", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
-				}
-			});
-		}
-	}
-
-	@Override
-	public Permis getPermisActif(final long noIndividu, final RegDate date) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getPermisActif(noIndividu, date);
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getPermisActif", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));

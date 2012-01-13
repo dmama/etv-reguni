@@ -65,7 +65,7 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 				marieIndividu(indJulie, dateMariage);
 				addOrigine(indJulie, MockPays.Espagne.getNomMinuscule());
 				addNationalite(indJulie, MockPays.Espagne, RegDate.get(1961, 3, 12), null);
-				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				setPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}
 		});
 	}
@@ -114,7 +114,7 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 
 		{
 			// annulation du permis
-			searchPermis(noIndJulie, TypePermis.ETABLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
+			searchPermis(noIndJulie, TypePermis.ETABLISSEMENT, dateAnnulationPermis).setDateAnnulation(dateAnnulationPermis);
 		}
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndJulie, dateObtentionPermis, communeMariage.getNoOFS());

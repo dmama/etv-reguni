@@ -73,7 +73,7 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 			@Override
 			protected void init() {
 				MockIndividu jean = addIndividu(noIndJean, date(1941, 6, 6), "Nzikou", "Jean", true);
-				addPermis(jean, TypePermis.ETABLISSEMENT, date(2001, 7, 11), null, false);
+				setPermis(jean, TypePermis.ETABLISSEMENT, date(2001, 7, 11), null, false);
 				addAdresse(jean, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
 				addEtatCivil(jean, date(2004, 1, 15), TypeEtatCivil.CELIBATAIRE);
@@ -82,8 +82,8 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				jean.setDateDeces(DATE_DECES);
 
 				MockIndividu georgette = addIndividu(noIndGeorgette, date(1951, 11, 3), "Matala Bambi", "Georgette", false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2009, 6, 13), null, false);
+				setPermis(georgette, TypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), false);
+				setPermis(georgette, TypePermis.ANNUEL, date(2009, 6, 13), null, false);
 				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null);
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), null);

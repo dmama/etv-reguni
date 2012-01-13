@@ -32,7 +32,6 @@ import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
-import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -63,7 +62,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilListImpl etatsCivils;
 	private List<RelationVersIndividu> parents;
-	private List<Permis> permis;
+	private Permis permis;
 	private List<Nationalite> nationalites;
 
 	public static Individu get(Person target, ServiceInfrastructureService infraService) {
@@ -130,13 +129,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static List<Permis> initPermis(Person person) {
-		if (person == null) { // TODO (rcpers) demander que RCPers expose l'historique des permis
-			return null;
-		}
-		final List<Permis> list = new ArrayList<Permis>();
-		list.add(PermisRCPers.get(person.getResidencePermit()));
-		return list;
+	private static Permis initPermis(Person person) {
+		return PermisRCPers.get(person.getResidencePermit());
 	}
 
 	private static EtatCivilListImpl initEtatsCivils(List<MaritalData> maritalStatus) {
@@ -310,7 +304,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public List<Permis> getPermis() {
+	public Permis getPermis() {
 		return permis;
 	}
 
@@ -332,11 +326,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		throw new NotImplementedException();
-	}
-
-	@Override
-	public Permis getPermisActif(RegDate date) {
-		return IndividuHelper.getPermisActif(this, date);
 	}
 
 	@Override

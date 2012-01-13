@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -102,9 +104,8 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Collection<Permis> getPermis(long noIndividu, int annee) {
-
-		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.PERMIS);
+	public Permis getPermis(long noIndividu, @Nullable RegDate date) {
+		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.PERMIS);
 		if (individu == null) {
 			return null;
 		}
@@ -177,17 +178,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 			return null;
 		}
 		return etat.getNumeroConjoint();
-	}
-
-	/**
-	 * @param noIndividu le numéro d'individu
-	 * @param date       la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
-	 * @return le permis actif d'un individu à une date donnée.
-	 */
-	@Override
-	public final Permis getPermisActif(long noIndividu, RegDate date) {
-		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.PERMIS);
-		return (individu == null ? null : individu.getPermisActif(date));
 	}
 
 	@Override

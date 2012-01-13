@@ -334,21 +334,10 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		//permis
-		final Collection<Permis> colPermis = serviceCivilService.getPermis(habitant.getNumeroIndividu(), DateHelper.getCurrentYear());
-		Permis dernierPermis = null;
-		for (Permis permis : colPermis) {
-			if (permis.getDateAnnulation() == null && permis.getDateFinValidite() == null) {
-				if (dernierPermis == null) {
-					dernierPermis = permis;
-				}
-				else if (permis.getDateDebutValidite() != null && RegDateHelper.isAfterOrEqual(permis.getDateDebutValidite(), dernierPermis.getDateDebutValidite(), NullDateBehavior.EARLIEST)) {
-					dernierPermis = permis;
-				}
-			}
-		}
+		final Permis dernierPermis = serviceCivilService.getPermis(habitant.getNumeroIndividu(), RegDate.get());
 		if (dernierPermis != null) {
 			habitant.setCategorieEtranger(CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()));
-			habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebutValidite());
+			habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebut());
 		}
 		else {
 			habitant.setCategorieEtranger(null);
@@ -573,7 +562,7 @@ public class TiersServiceImpl implements TiersService {
 		return getSexe(pp, new IndividuProvider() {
 			@Override
 			public Individu getIndividu(PersonnePhysique pp) {
-				return TiersServiceImpl.this.getIndividu(pp, annee, null);
+				return TiersServiceImpl.this.getIndividu(pp, annee);
 			}
 		});
 	}
@@ -636,6 +625,7 @@ public class TiersServiceImpl implements TiersService {
 				AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 
 		/* A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ? */
+		// TODO (msi) utiliser la méthode isSuisse() !
 		boolean nationaliteSuisse = false;
 		boolean nationalitesEtrangeres = false;
 		if (individu.getNationalites() != null) {
@@ -676,26 +666,15 @@ public class TiersServiceImpl implements TiersService {
 	 * @throws TiersException si la nationalite ne peut être déterminée
 	 */
 	private boolean isSansPermisC(Individu individu, boolean permisMustExist, RegDate date) throws TiersException {
-		boolean auMoinsUnpermisEnCours = false;
 
-		final Collection<?> permiss = individu.getPermis();
-		for (Object obj : permiss) {
-			final Permis permis = (Permis) obj;
-			if (permis.getDateAnnulation() == null) {
-				if (RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
-						(permis.getDateFinValidite() == null || permis.getDateFinValidite().isAfter(date))) {
-					auMoinsUnpermisEnCours = true;
-					if (permis.getTypePermis() == TypePermis.ETABLISSEMENT)
-						return false;
-				}
-			}
-		}
-
-		if (permisMustExist && !auMoinsUnpermisEnCours) {
+		final Permis permis = serviceCivilService.getPermis(individu.getNoTechnique(), date);
+		if (permis == null && permisMustExist) {
 			throw new TiersException("Impossible de déterminer la nationalité de l'individu " + individu.getNoTechnique());
 		}
 
-		return true;
+		// [UNIREG-1860] les permis annulés ne doivent pas être comptabilisés
+		final boolean permisC = (permis != null && permis.getTypePermis() == TypePermis.ETABLISSEMENT && permis.getDateAnnulation() == null);
+		return !permisC;
 	}
 
 	/**
@@ -712,26 +691,13 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	@Override
 	public boolean isAvecPermisC(Individu individu, RegDate date) {
-		final Collection<?> permiss = individu.getPermis();
-		if (permiss == null) {
+		final Permis permis = serviceCivilService.getPermis(individu.getNoTechnique(), date);
+		if (permis == null) {
 			return false;
 		}
-		for (Object obj : permiss) {
-			final Permis permis = (Permis) obj;
-			// [UNIREG-1860] les permis annulés ne doivent pas être comptabilisés
-			if (permis.getDateAnnulation() != null) {
-				continue;
-			}
-			/*
-			 * [UNIREG-725]
-			 * la date de fin de permis n'était pas reconnue si même jour,
-			 * donc permis.getDateFin().isAfter(date) devient permis.getDateFin().isAfterOrEqual(date)
-			 */
-			if (permis.getTypePermis() == TypePermis.ETABLISSEMENT && RegDateHelper.isBetween(date, permis.getDateDebutValidite(), permis.getDateFinValidite(), NullDateBehavior.LATEST)) {
-				return true;
-			}
-		}
-		return false;
+
+		// [UNIREG-1860] les permis annulés ne doivent pas être comptabilisés
+		return permis.getTypePermis() == TypePermis.ETABLISSEMENT && permis.getDateAnnulation() == null;
 	}
 
 	/**
@@ -1362,7 +1328,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return
 	 */
 	@Override
-	public Individu getIndividu(PersonnePhysique personne, int annee, @Nullable AttributeIndividu[] attributes) {
+	public Individu getIndividu(PersonnePhysique personne, int annee, @Nullable AttributeIndividu... attributes) {
 
 		if (personne.isHabitantVD()) {
 			Individu individu = null;

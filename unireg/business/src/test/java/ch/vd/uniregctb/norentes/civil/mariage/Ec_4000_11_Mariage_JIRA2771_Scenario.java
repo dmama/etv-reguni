@@ -90,13 +90,13 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 
 				addOrigine(indAlfredo, MockPays.Albanie.getNomMinuscule());
 				addNationalite(indAlfredo, MockPays.Albanie, dateNaissanceAlfredo, null);
-				addPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, false);
+				setPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indAlfredo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
 				addAdresse(indAlfredo, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
 
 				addOrigine(indArmando, MockPays.Danemark.getNomMinuscule());
 				addNationalite(indArmando, MockPays.Danemark, dateNaissanceArmando, null);
-				addPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, false);
+				setPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indArmando, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
 				addAdresse(indArmando, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagementArmando, null);
 			}

@@ -48,16 +48,14 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 				addOrigine(roberto, MockPays.Espagne.getNomMinuscule());
 				addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
 				addNationalite(roberto, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
-				addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), false);
-				addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_NATIONALITE, DATE_FIN_PERMIS, false);
+				setPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_NATIONALITE, DATE_FIN_PERMIS, false);
 
 				RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 				MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 				addDefaultAdressesTo(rosa);
 				addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
 				addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
-				addPermis(rosa, TypePermis.COURTE_DUREE, RegDate.get(2003, 10, 25), null, false);
-				addPermis(rosa, TypePermis.ETABLISSEMENT, DATE_OBTENTION_NATIONALITE, DATE_FIN_PERMIS, false);
+				setPermis(rosa, TypePermis.ETABLISSEMENT, DATE_OBTENTION_NATIONALITE, DATE_FIN_PERMIS, false);
 			}
 
 		});

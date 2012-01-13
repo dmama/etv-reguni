@@ -1,23 +1,26 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypePermis;
 
-public interface Permis {
+public interface Permis extends DateRange {
 
     /**
      * Retourne la date de début de validité du permis.
      *
      * @return la date de début de validité du permis.
      */
-    RegDate getDateDebutValidite();
+    @Override
+    RegDate getDateDebut();
 
     /**
      * Retourne la date de fin de validité du permis.
      *
      * @return la date de fin de validité du permis.
      */
-    RegDate getDateFinValidite();
+    @Override
+    RegDate getDateFin();
 
     /**
      * Retourne la date d'annulation du permis.

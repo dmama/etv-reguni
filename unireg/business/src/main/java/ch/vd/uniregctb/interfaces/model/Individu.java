@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.RegDate;
 
 public interface Individu extends EntiteCivile {
@@ -113,9 +111,9 @@ public interface Individu extends EntiteCivile {
     String getNumeroRCE();
 
     /**
-     * @return la liste des permis de l'individu, triée par ordre croissant d'obtention.
+     * @return le permis actif à la date demandée lors de l'appel à getIndividu(); ou <b>null</b> si l'individu ne possède pas de permis (= qu'il est suisse).
      */
-    List<Permis> getPermis();
+    Permis getPermis();
 
     /**
      * Retourne la liste des nationalités de l'individu.
@@ -165,14 +163,4 @@ public interface Individu extends EntiteCivile {
 	 * @return un nouvel individu.
 	 */
 	Individu clone(Set<AttributeIndividu> parts);
-
-	/**
-	 * Détermine le permis actif d'individu à une date donnée.
-	 * <p/>
-	 * <b>Note:</b> l'individu doit avoir sa collection de permis renseignée pour que cette méthode puisse retourner un résultat correct.
-	 *
-	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
-	 * @return le permis actif d'un individu à une date donnée.
-	 */
-	Permis getPermisActif(@Nullable RegDate date);
 }

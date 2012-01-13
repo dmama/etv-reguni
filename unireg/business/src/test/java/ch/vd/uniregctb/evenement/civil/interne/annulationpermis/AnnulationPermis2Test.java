@@ -80,7 +80,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
 				addOrigine(julie, MockPays.France.getNomMinuscule());
 				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null);
-				addPermis(julie, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
+				setPermis(julie, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
 
 				// Nouveau individu pour les tests
 				MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, RegDate.get(1956, 2, 25), "Girard", "André", true);
@@ -88,7 +88,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 				marieIndividu(andre, RegDate.get(1982, 12, 4));
 				addOrigine(andre, MockPays.France.getNomMinuscule());
 				addNationalite(andre, MockPays.France, andre.getDateNaissance(), null);
-				addPermis(andre, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
+				setPermis(andre, TypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, false);
 
 				// Nouveau couple pour les tests
 				MockIndividu roger = addIndividu(NO_INDIVIDU_MARIE, RegDate.get(1943, 7, 3), "Dupont", "Roger", true);
@@ -104,7 +104,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 
 				addOrigine(roger, MockPays.France.getNomMinuscule());
 				addNationalite(roger, MockPays.France, roger.getDateNaissance(), null);
-				addPermis(roger, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
+				setPermis(roger, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
 			}
 		});
 		loadDatabase(DB_UNIT_DATA_FILE);

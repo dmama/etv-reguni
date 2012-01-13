@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,9 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -26,7 +24,6 @@ import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
-import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
 public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializable {
 
@@ -49,7 +46,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
 	private Collection<Origine> origines;
-	private List<Permis> permis;
+	private Permis permis;
 	private Tutelle tutelle;
 
 	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, RegDate upTo) {
@@ -106,6 +103,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
 		this.etatsCivils = individuWrapper.etatsCivils;
+		this.permis = individuWrapper.permis;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
@@ -121,9 +119,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individuWrapper.parents;
-		}
-		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
-			permis = individuWrapper.permis;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individuWrapper.tutelle;
@@ -332,26 +327,30 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public List<Permis> getPermis() {
+	public Permis getPermis() {
 		return permis;
 	}
 
-	private List<Permis> initPermis(Collection<?> targetPermis, RegDate upTo) {
-		final List<Permis> permis = new ArrayList<Permis>();
-		if (targetPermis != null) {
-			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
-			for (Object o : targetPermis) {
-				ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
-				if (isValidUpTo(p.getDateDebutValidite(), upToJava)) {
-					permis.add(PermisImpl.get(p));
+	@SuppressWarnings({"unchecked"})
+	private Permis initPermis(Collection<?> coll, RegDate date) {
+
+		if (coll != null) {
+			final List<ch.vd.registre.civil.model.Permis> list = new ArrayList<ch.vd.registre.civil.model.Permis>((Collection<? extends ch.vd.registre.civil.model.Permis>) coll);
+
+			// itération sur la liste des permis, dans l'ordre inverse de l'obtention
+			// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)
+			for (int i = list.size() - 1; i >= 0; --i) {
+				final ch.vd.registre.civil.model.Permis permis = list.get(i);
+				if (permis.getDateAnnulation() != null) {
+					continue;
+				}
+				if (DateHelper.isBetween(date == null ? null : date.asJavaDate(), permis.getDateDebutValidite(), permis.getDateFinValidite())) {
+					return PermisImpl.get(permis);
 				}
 			}
 		}
 
-		// on trie immédiatement la liste par ordre croissant d'obtention des permis
-		Collections.sort(permis, new PermisComparator());
-
-		return permis;
+		return null;
 	}
 
 	@Override
@@ -385,9 +384,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individu.getParents();
 		}
-		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
-			permis = individu.getPermis();
-		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
@@ -396,24 +392,5 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuImpl(this, parts);
-	}
-
-	@Override
-	public Permis getPermisActif(RegDate date) {
-		return IndividuHelper.getPermisActif(this, date);
-	}
-
-	private static class PermisComparator implements Comparator<Permis> {
-		@Override
-		public int compare(Permis o1, Permis o2) {
-			final PermisImpl p1 = (PermisImpl) o1;
-			final PermisImpl p2 = (PermisImpl) o2;
-			if (RegDateHelper.equals(p1.getDateDebutValidite(), p2.getDateDebutValidite())) {
-				return p1.getNoSequence() - p2.getNoSequence();
-			}
-			else {
-				return RegDateHelper.isBeforeOrEqual(p1.getDateDebutValidite(), p2.getDateDebutValidite(), NullDateBehavior.EARLIEST) ? -1 : 1;
-			}
-		}
 	}
 }

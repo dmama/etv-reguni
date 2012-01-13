@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.interfaces.model.Permis;
 
 public class PermisView implements DateRange {
 
@@ -11,6 +12,13 @@ public class PermisView implements DateRange {
 	private RegDate dateFinValidite;
 	private String typePermis;
 	private boolean annule;
+
+	public PermisView(Permis permis) {
+		this.typePermis = permis.getTypePermis() == null ? null : permis.getTypePermis().name();
+		this.dateDebutValidite = permis.getDateDebut();
+		this.dateFinValidite = permis.getDateFin();
+		this.annule = permis.getDateAnnulation() != null;
+	}
 
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;

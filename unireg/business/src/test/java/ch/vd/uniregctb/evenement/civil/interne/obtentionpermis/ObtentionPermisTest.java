@@ -314,8 +314,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
-				addPermis(julie, TypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				setPermis(julie, TypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
+				setPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
@@ -378,8 +378,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
-				addPermis(julie, TypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(julie, TypePermis.ANNUEL, dateObtentionPermis, null, false);
+				setPermis(julie, TypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
+				setPermis(julie, TypePermis.ANNUEL, dateObtentionPermis, null, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
@@ -448,8 +448,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
-				addPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				setPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
+				setPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}
 		});
 
@@ -526,8 +526,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
-				addPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				setPermis(julie, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
+				setPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}
 		});
 

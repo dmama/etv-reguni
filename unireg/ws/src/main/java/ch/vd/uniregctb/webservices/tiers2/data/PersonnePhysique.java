@@ -195,7 +195,7 @@ public class PersonnePhysique extends Contribuable {
 			this.categorie = EnumHelper.coreToWeb(personne.getCategorieEtranger());
 		}
 		else {
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), date, AttributeIndividu.PERMIS);
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne.getNumeroIndividu(), personne.getNumero());
 				LOGGER.error(message);
@@ -217,7 +217,7 @@ public class PersonnePhysique extends Contribuable {
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
 			this.dateArrivee = DataHelper.coreToWeb(personne.getDateDebutActivite());
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(date);
+			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis();
 			if (permis == null) {
 				this.categorie = Categorie.SUISSE;
 			}

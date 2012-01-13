@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.norentes.civil.annulationpermis;
 
-import java.util.Collection;
-
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -14,14 +12,11 @@ public abstract class AnnulationPermisNorentesScenario extends EvenementCivilSce
 		super();
 	}
 
-	protected MockPermis searchPermis(long numeroIndividu, TypePermis typePermis, int annee) {
-		final Collection<Permis> listePermis = serviceCivilService.getIndividu(numeroIndividu, annee, AttributeIndividu.PERMIS).getPermis();
-		for (Permis permis : listePermis) {
-			if (permis.getTypePermis() == typePermis) {
-				return (MockPermis) permis;
-			}
+	protected MockPermis searchPermis(long numeroIndividu, TypePermis typePermis, RegDate date) {
+		final Permis permis = serviceCivilService.getPermis(numeroIndividu, date);
+		if (permis == null || permis.getTypePermis() != typePermis) {
+			return null;
 		}
-		return null;
+		return (MockPermis) permis;
 	}
-
 }

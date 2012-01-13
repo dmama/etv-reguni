@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.service.mock;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
@@ -102,9 +104,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Collection<Permis> getPermis(long noTechniqueIndividu, int anneeValidite) {
+	public Permis getPermis(long noIndividu, @Nullable RegDate date) {
 		assertTargetNotNull();
-		return target.getPermis(noTechniqueIndividu, anneeValidite);
+		return target.getPermis(noIndividu, date);
 	}
 
 	@Override
@@ -140,12 +142,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 		assertTargetNotNull();
 		return target.getEtatCivilActif(noIndividu, date);
-	}
-
-	@Override
-	public Permis getPermisActif(long noIndividu, RegDate date) {
-		assertTargetNotNull();
-		return target.getPermisActif(noIndividu, date);
 	}
 
 	@Override

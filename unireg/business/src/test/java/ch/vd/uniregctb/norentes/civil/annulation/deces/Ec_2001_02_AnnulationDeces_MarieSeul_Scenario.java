@@ -62,7 +62,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 				marieIndividu(indAndre, dateMariage);
 				addOrigine(indAndre, MockPays.France.getNomMinuscule());
 				addNationalite(indAndre, MockPays.France, indAndre.getDateNaissance(), null);
-				addPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, false);
+				setPermis(indAndre, TypePermis.FRONTALIER, RegDate.get(2008, 9, 8), null, false);
 			}
 		});
 	}

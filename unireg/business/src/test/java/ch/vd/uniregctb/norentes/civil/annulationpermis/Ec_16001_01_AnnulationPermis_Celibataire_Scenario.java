@@ -60,7 +60,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 				indJulie = addIndividu(noIndJulie, dateNaissance, "Goux", "Julie", false);
 				addOrigine(indJulie, MockPays.France.getNomMinuscule());
 				addNationalite(indJulie, MockPays.France, RegDate.get(1961, 3, 12), null);
-				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				setPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 			}
 		});
 	}
@@ -90,7 +90,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 
 		{
 			// annulation du permis
-			searchPermis(noIndJulie, TypePermis.ETABLISSEMENT, dateAnnulationPermis.year()).setDateAnnulation(dateAnnulationPermis);
+			searchPermis(noIndJulie, TypePermis.ETABLISSEMENT, dateAnnulationPermis).setDateAnnulation(dateAnnulationPermis);
 		}
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndJulie, dateObtentionPermis, commune.getNoOFS());

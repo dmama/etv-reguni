@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -12,7 +14,12 @@ public class MockPermis implements Permis {
 	private TypePermis typePermis;
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
 		return dateDebutValidite;
 	}
 
@@ -21,7 +28,7 @@ public class MockPermis implements Permis {
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
+	public RegDate getDateFin() {
 		return dateFinValidite;
 	}
 

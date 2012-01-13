@@ -66,7 +66,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermisActif(null);
+			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis();
 			if (permis == null) {
 				to.setCategory(NaturalPersonCategory.SWISS);
 			}

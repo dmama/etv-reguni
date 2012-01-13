@@ -3,7 +3,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.evd0001.v3.ResidencePermit;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.type.TypePermis;
@@ -32,12 +34,17 @@ public class PermisRCPers implements Permis, Serializable {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
+	public RegDate getDateFin() {
 		return dateFin;
 	}
 

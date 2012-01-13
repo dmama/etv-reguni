@@ -65,15 +65,15 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		addOrigine(bea, MockCommune.Lausanne);
 		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
-		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
+		setPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
 		addOrigine(helene, MockPays.France.getNomMinuscule());
 		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null);
-		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
+		setPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
 
 		addOrigine(sophie, MockPays.Suisse.getNomMinuscule());
 		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null);
-		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
+		setPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 
 		addOrigine(pierre, MockPays.Suisse.getNomMinuscule());
 		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);

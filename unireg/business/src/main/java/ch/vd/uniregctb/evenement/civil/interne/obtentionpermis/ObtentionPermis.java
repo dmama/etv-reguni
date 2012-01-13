@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -49,21 +48,11 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 		try {
 			// on récupère le permis (= à la date d'événement)
 			final int anneeCourante = evenement.getDateEvenement().year();
-			final Collection<Permis> listePermis = context.getServiceCivil().getPermis(super.getNoIndividu(), anneeCourante);
-			if (listePermis == null) {
+			final Permis permis = context.getServiceCivil().getPermis(super.getNoIndividu(), evenement.getDateEvenement());
+			if (permis == null) {
 				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
-			for (Permis permis : listePermis) {
-				if (evenement.getDateEvenement().equals(permis.getDateDebutValidite())) {
-					this.typePermis = permis.getTypePermis();
-					break;
-				}
-			}
-
-			// si le permis n'a pas été trouvé, on lance une exception
-			if ( this.typePermis == null ) {
-				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
-			}
+			this.typePermis = permis.getTypePermis();
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

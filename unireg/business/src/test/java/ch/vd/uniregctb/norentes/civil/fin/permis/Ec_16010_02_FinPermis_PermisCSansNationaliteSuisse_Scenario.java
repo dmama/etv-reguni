@@ -64,12 +64,12 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 			addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
 
-			addPermis(rosa, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), false);
-			addPermis(rosa, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, false);
+			setPermis(rosa, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), false);
+			setPermis(rosa, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, false);
 		}
 
 		public void setupForTest() {
-			((MockPermis) getPermisActif(noIndRosa, dateFinPermisC)).setDateFinValidite(dateFinPermisC);
+			((MockPermis) getPermis(noIndRosa, dateFinPermisC)).setDateFinValidite(dateFinPermisC);
 		}
 	}
 
