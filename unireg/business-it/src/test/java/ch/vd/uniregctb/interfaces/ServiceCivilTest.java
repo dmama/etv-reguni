@@ -1,24 +1,8 @@
 package ch.vd.uniregctb.interfaces;
 
-import java.util.Collection;
-
-import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
-
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
-public class ServiceCivilTest extends BusinessItTest {
-
-	private ServiceCivilService service;
+public class ServiceCivilTest extends AbstractServiceCivilTest {
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -27,92 +11,4 @@ public class ServiceCivilTest extends BusinessItTest {
 		service = getBean(ServiceCivilService.class, "serviceCivilService");
 	}
 
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetIndividu() throws Exception {
-
-		Individu elie = service.getIndividu(333527L, 2007);
-		assertNotNull(elie);
-		// En 2005, il n'etait pas né.. devrait etre null!
-		assertEquals("Elie", elie.getPrenom());
-		elie = service.getIndividu(333527L, 2005);
-		// assertNull(elie);
-
-		Individu jean = service.getIndividu(333528, 2007);
-		assertNotNull(jean);
-		assertEquals("Jean-Eric", jean.getPrenom());
-		jean = service.getIndividu(333528, 2001);
-		assertNotNull(jean);
-		jean = service.getIndividu(333528, 2006, AttributeIndividu.CONJOINT);
-		assertNotNull(jean);
-		Individu sara = service.getConjoint(jean.getNoTechnique(),RegDate.get(2007,1,1));
-		assertNotNull(sara);
-
-		assertEquals("Sara", sara.getPrenom());
-	}
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetNumeroIndividuConjoint(){
-		Individu jeanMarc = service.getIndividu(132720L, 2006);
-		assertNotNull(jeanMarc);
-		Long numeroAmelie = service.getNumeroIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2006,1,1));
-		assertEquals(null,numeroAmelie);
-
-		numeroAmelie = service.getNumeroIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,5,27));
-		assertNotNull(numeroAmelie);
-
-		numeroAmelie = service.getNumeroIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,6,25));
-		assertEquals(845875,numeroAmelie.longValue());
-	}
-   @Test
-   @Transactional(rollbackFor = Throwable.class)
-	public void testGetIndividuConjoint(){
-		Individu jeanMarc = service.getIndividu(132720L, 2006);
-		assertNotNull(jeanMarc);
-		Individu conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2006,1,1));
-	   //Celibataire
-		assertEquals(null,conjoint);
-
-		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2007,6,24));
-	   //Marié
-	    assertNotNull(conjoint);
-		assertEquals("Amélie",conjoint.getPrenom());
-		assertEquals(845875,conjoint.getNoTechnique());
-
-		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,6,28));
-	   //Séparé
-		assertNotNull(conjoint);
-		assertEquals("Amélie",conjoint.getPrenom());
-		assertEquals(845875,conjoint.getNoTechnique());
-
-
-		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2009,7,28));
-	   //Divorcé
-		assertEquals(null,conjoint);
-	   conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2010,3,28));
-
-	   //Remarié
-		assertNotNull(conjoint);
-		assertEquals(387602,conjoint.getNoTechnique());
-
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetAdressesAvecEgidEtEwid() {
-
-		final Individu ind0 = service.getIndividu(1015956, 2010, AttributeIndividu.ADRESSES);
-		assertNotNull(ind0);
-
-		final Collection<Adresse> adresses = ind0.getAdresses();
-		assertNotNull(adresses);
-		assertEquals(2, adresses.size());
-
-		for (Adresse adresse : adresses) {
-			if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
-				assertEquals(Integer.valueOf(3037134), adresse.getEgid());
-				assertEquals(Integer.valueOf(3), adresse.getEwid());
-			}
-		}
-	}
 }

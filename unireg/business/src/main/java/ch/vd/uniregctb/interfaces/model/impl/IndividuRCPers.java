@@ -9,13 +9,14 @@ import java.util.Set;
 import ch.ech.ech0011.v5.MaritalData;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
-import ch.ech.ech0084.v1.PersonInformation;
 
 import ch.vd.evd0001.v3.HistoryContact;
 import ch.vd.evd0001.v3.Identity;
 import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.PersonIdentification;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
+import ch.vd.evd0001.v3.UpiPerson;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -74,19 +75,23 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	public IndividuRCPers(Person person, ServiceInfrastructureService infraService) {
-		final PersonInformation personInformation = person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson();
 		final Identity identity = person.getIdentity();
-		this.noTechnique = getNoIndividu(identity.getPersonIdentification().getLocalPersonId());
+		final PersonIdentification identification = identity.getPersonIdentification();
+		final UpiPerson upiPerson = person.getUpiPerson();
+
+		this.noTechnique = getNoIndividu(identification.getLocalPersonId());
 		this.prenom = identity.getCallName();
-		this.autresPrenoms = identity.getPersonIdentification().getFirstNames();
-		this.nom = identity.getPersonIdentification().getOfficialName();
+		this.autresPrenoms = identification.getFirstNames();
+		this.nom = identification.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
-		this.noAVS11 = EchHelper.avs13FromEch(person.getUpiPerson().getVn());
-		this.nouveauNoAVS = String.valueOf(person.getUpiPerson().getVn());
-		this.numeroRCE = initNumeroRCE(identity.getPersonIdentification().getOtherPersonId());
-		this.isMasculin = initIsMasculin(personInformation);
+		if (upiPerson != null) {
+			this.noAVS11 = EchHelper.avs13FromEch(upiPerson.getVn());
+			this.nouveauNoAVS = String.valueOf(upiPerson.getVn());
+		}
+		this.numeroRCE = initNumeroRCE(identification.getOtherPersonId());
+		this.isMasculin = initIsMasculin(identification);
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
-		this.naissance = EchHelper.partialDateFromEch44(personInformation.getDateOfBirth());
+		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
 		this.origines = initOrigins(person);
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
@@ -115,7 +120,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return numeroRCE;
 	}
 
-	private static boolean initIsMasculin(PersonInformation person) {
+	private static boolean initIsMasculin(PersonIdentification person) {
 		final Sexe sexe = EchHelper.sexeFromEch44(person.getSex());
 		return (sexe != Sexe.FEMININ);
 	}

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
-import ch.ech.ech0084.v1.PersonInformation;
+import ch.ech.ech0011.v5.Nationality;
 
 import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
@@ -18,14 +18,13 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	private final RegDate dateFin;
 	private final Pays pays;
 
-	public NationaliteRCPers(Person person, ServiceInfrastructureService infraService) {
-		PersonInformation.Nationality nat = person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getNationality();
+	public NationaliteRCPers(Nationality nat, ServiceInfrastructureService infraService) {
 		this.dateDebut = null; // TODO (rcpers)
 		this.dateFin = null; // TODO (rcpers)
 		this.pays = initPays(nat, infraService);
 	}
 
-	private static Pays initPays(PersonInformation.Nationality nationality, ServiceInfrastructureService infraService) {
+	private static Pays initPays(Nationality nationality, ServiceInfrastructureService infraService) {
 		final Pays p;
 		final String status = nationality.getNationalityStatus();
 		if ("0".equals(status)) {
@@ -38,7 +37,7 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 		}
 		else if ("2".equals(status)) {
 			// ok
-			Integer noOfsPays = nationality.getCountryId();
+			Integer noOfsPays = nationality.getCountry().getCountryId();
 			p = infraService.getPays(noOfsPays);
 		}
 		else {
@@ -48,10 +47,10 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	}
 
 	public static Nationalite get(Person person, ServiceInfrastructureService infraService) {
-		if (person == null) {
+		if (person == null || person.getNationality() == null) {
 			return null;
 		}
-		return new NationaliteRCPers(person, infraService);
+		return new NationaliteRCPers(person.getNationality(), infraService);
 	}
 
 	@Override

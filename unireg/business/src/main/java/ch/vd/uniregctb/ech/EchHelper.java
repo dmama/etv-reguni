@@ -90,7 +90,7 @@ public abstract class EchHelper {
 			}
 		}
 		else {
-			XMLGregorianCalendar cal = from.getYearMonth();
+			XMLGregorianCalendar cal = from.getYearMonthDay();
 			date = RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
 		}
 
@@ -113,7 +113,7 @@ public abstract class EchHelper {
 			}
 		}
 		else {
-			XMLGregorianCalendar cal = from.getYearMonth();
+			XMLGregorianCalendar cal = from.getYearMonthDay();
 			date = RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
 		}
 

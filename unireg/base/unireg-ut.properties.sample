@@ -37,6 +37,11 @@ testprop.host-interfaces.url=t3://ssv0213v:51330
 testprop.host-interfaces.username=
 testprop.host-interfaces.password=
 
+testprop.rcpers.url=http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3
+testprop.rcpers.username=sirec01
+testprop.rcpers.password=welc0me
+testprop.rcpers.peoplePath=persons/ct.vd.rcpers
+
 # CJVZ/CIIV1 (Validation)
 #testprop.host-interfaces.url=t3://ssv0214v:31330
 #testprop.host-interfaces.username=
