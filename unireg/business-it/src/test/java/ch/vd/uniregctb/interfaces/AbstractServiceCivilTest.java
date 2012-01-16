@@ -36,7 +36,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjoint() throws Exception {
 
-		Individu jean = service.getIndividu(333528, 2006, AttributeIndividu.CONJOINT);
+		Individu jean = service.getIndividu(333528, 2006);
 		assertNotNull(jean);
 
 		Individu sara = service.getConjoint(jean.getNoTechnique(), date(2007, 1, 1));

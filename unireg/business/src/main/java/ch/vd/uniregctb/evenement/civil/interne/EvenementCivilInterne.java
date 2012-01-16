@@ -91,9 +91,6 @@ public abstract class EvenementCivilInterne {
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
 		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
-		if (evenement.getNumeroIndividuConjoint() != null || (options.isRefreshCache() && forceRefreshCacheConjoint())) {
-			requiredParts.add(AttributeIndividu.CONJOINT);
-		}
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 

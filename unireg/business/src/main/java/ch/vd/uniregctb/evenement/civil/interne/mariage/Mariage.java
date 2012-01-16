@@ -14,7 +14,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -53,7 +52,7 @@ public class Mariage extends EvenementCivilInterne {
 		 * getIndividu().getConjoint() peut être null si mariage le 01.01
 		 */
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement);
 		this.nouveauConjoint = getConjointValide(individuPrincipal, context.getServiceCivil());
 		//this.nouveauConjoint = individuPrincipal.getConjoint();
 	}
