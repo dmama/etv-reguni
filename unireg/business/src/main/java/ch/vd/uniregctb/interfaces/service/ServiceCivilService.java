@@ -79,14 +79,8 @@ public interface ServiceCivilService {
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param annee      l'année de validité.
+	 * @param parties    les collections devant être renseignées sur l'individu retourné.
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
-	 * @deprecated remplacé par {@link #getIndividu(long, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.interfaces.model.AttributeIndividu...)}
-	 */
-	Individu getIndividu(long noIndividu, int annee);
-
-	/**
-	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
-	 *
 	 * @deprecated remplacé par {@link #getIndividu(long, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.interfaces.model.AttributeIndividu...)}
 	 */
 	Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties);
@@ -156,6 +150,7 @@ public interface ServiceCivilService {
 	 * @param annee        l'année de validité.
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
+	 * @deprecated remplacé par {@link #getIndividus(java.util.Collection, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.interfaces.model.AttributeIndividu...)}.
 	 */
 	List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties);
 

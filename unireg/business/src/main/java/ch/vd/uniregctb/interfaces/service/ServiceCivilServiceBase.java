@@ -128,11 +128,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Individu getIndividu(long noIndividu, int annee) {
-		return getIndividu(noIndividu, annee, (AttributeIndividu[]) null); // -> va charger implicitement l'état-civil et l'historique
-	}
-
-	@Override
 	public final Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		return getIndividu(noIndividu, annee2date(annee), parties);
 	}

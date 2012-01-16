@@ -115,27 +115,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, final int annee) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getIndividu(noIndividu, annee);
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getIndividu", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
-				}
-			});
-		}
-	}
-
-	@Override
 	public Individu getIndividu(final long noIndividu, final int annee, final AttributeIndividu... parties) {
 		Throwable t = null;
 		final long time = tracing.start();
