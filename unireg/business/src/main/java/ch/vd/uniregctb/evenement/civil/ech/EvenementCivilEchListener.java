@@ -175,7 +175,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			}
 		}
 		catch (JAXBException e) {
-			throw new EvenementCivilException(e);
+			final Throwable src = e.getLinkedException();
+			throw new EvenementCivilException(src != null ? src : e);
 		}
 		catch (SAXException e) {
 			throw new EvenementCivilException(e);
