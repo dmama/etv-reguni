@@ -394,9 +394,6 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individu.getAdoptionsReconnaissances();
 		}
-		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
-			//conjoint = individu.getConjoint();
-		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
 		}

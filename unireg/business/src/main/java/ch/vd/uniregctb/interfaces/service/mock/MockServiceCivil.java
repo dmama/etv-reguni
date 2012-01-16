@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CasePostale;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -334,13 +335,11 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilIndividu.add(etatCivilIndividu);
-		individu.setConjoint(conjoint);
 		individu.getConjoints().add(new RelationVersIndividuImpl(conjoint.getNoTechnique(), dateMariage, null));
 
 		final List<EtatCivil> etatsCivilConjoint = conjoint.getEtatsCivils();
 		final EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilConjoint.add(etatCivilConjoint);
-		conjoint.setConjoint(individu);
 		conjoint.getConjoints().add(new RelationVersIndividuImpl(individu.getNoTechnique(), dateMariage, null));
 
 		/* les maries peuvent s'embrasser */
@@ -366,7 +365,6 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
-		individu.setConjoint(null);
 		final List<RelationVersIndividu> conjoints = individu.getConjoints();
 		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
 		if (relation != null) {
@@ -385,11 +383,57 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
-		individu.setConjoint(null);
 		final List<RelationVersIndividu> conjoints = individu.getConjoints();
 		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateDivorce);
 		if (relation != null) {
 			((RelationVersIndividuImpl)relation).setDateFin(dateDivorce);
+		}
+	}
+
+	public static void annuleMariage(MockIndividu individu) {
+
+		final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
+		individu.getEtatsCivils().remove(etatCivilIndividu);
+
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		if (conjoints != null && !conjoints.isEmpty()) {
+			final RelationVersIndividu last = conjoints.get(conjoints.size() - 1);
+			throw new ProgrammingException(
+					"L'individu n°" + individu.getNoTechnique() + " est en ménage avec le conjoint n°" + last.getNumeroAutreIndividu() + ", veuillez utiliser la méthode avec deux arguments !");
+		}
+	}
+
+	public static void annuleMariage(MockIndividu individu, MockIndividu conjoint) {
+
+		final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
+		individu.getEtatsCivils().remove(etatCivilIndividu);
+		annuleDernierConjoint(individu, conjoint.getNoTechnique());
+
+
+		final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilConjoint = conjoint.getEtatCivilCourant();
+		conjoint.getEtatsCivils().remove(etatCivilConjoint);
+		annuleDernierConjoint(conjoint, individu.getNoTechnique());
+	}
+
+	private static void annuleDernierConjoint(MockIndividu individu, long noIndConjoint) {
+
+		final List<RelationVersIndividu> relations = individu.getConjoints();
+		if (relations == null || relations.isEmpty()) {
+			return;
+		}
+
+		final RelationVersIndividu dernier = relations.get(relations.size() - 1);
+		if (noIndConjoint != dernier.getNumeroAutreIndividu()) {
+			throw new ProgrammingException(
+					"L'individu n°" + individu.getNoTechnique() + " est en ménage avec une autre conjoint (n°" + dernier.getNumeroAutreIndividu() + ") que le conjoint spécifié (n°" +
+							noIndConjoint + " !");
+		}
+
+		relations.remove(relations.size() - 1);
+
+		if (!relations.isEmpty()) {
+			final RelationVersIndividuImpl nouveauDernier = (RelationVersIndividuImpl) relations.get(relations.size()-1);
+			nouveauDernier.setDateFin(null);
 		}
 	}
 

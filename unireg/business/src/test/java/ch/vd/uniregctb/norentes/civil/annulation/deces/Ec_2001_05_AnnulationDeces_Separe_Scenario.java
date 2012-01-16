@@ -90,10 +90,6 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				addEtatCivil(georgette, date(1951, 11, 3), TypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(georgette, DATE_MARIAGE, TypeEtatCivil.MARIE);
 				addEtatCivil(georgette, DATE_SEPARATION, TypeEtatCivil.SEPARE);
-
-				// note: dans l'état séparé, les individus sont toujours liés (conjoint-conjoint)
-				jean.setConjoint(georgette);
-				georgette.setConjoint(jean);
 			}
 
 		});

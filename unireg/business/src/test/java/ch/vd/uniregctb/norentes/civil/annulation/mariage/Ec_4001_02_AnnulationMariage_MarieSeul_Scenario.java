@@ -2,8 +2,8 @@ package ch.vd.uniregctb.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -41,29 +41,11 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		return NAME;
 	}
 
-	private static final class LocalMockServiceCivil extends DefaultMockServiceCivil {
-
-		public void annuleMariage(final MockIndividu individu) {
-			final MockIndividu conjoint = individu.getConjoint();
-
-			final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
-			individu.getEtatsCivils().remove(etatCivilIndividu);
-			individu.setConjoint(null);
-
-			if (conjoint != null) {
-				final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilConjoint = conjoint.getEtatCivilCourant();
-				conjoint.getEtatsCivils().remove(etatCivilConjoint);
-				conjoint.setConjoint(null);
-			}
-		}
-
-	}
-
-	private LocalMockServiceCivil localMockServiceCivil;
+	private DefaultMockServiceCivil localMockServiceCivil;
 
 	@Override
 	protected void initServiceCivil() {
-		localMockServiceCivil = new LocalMockServiceCivil();
+		localMockServiceCivil = new DefaultMockServiceCivil();
 		serviceCivilService.setUp(localMockServiceCivil);
 	}
 
@@ -118,7 +100,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 	@Etape(id=2, descr="Envoi de l'événement Annulation de Mariage")
 	public void step2() throws Exception {
 		// annulation dans le civil
-		localMockServiceCivil.annuleMariage(localMockServiceCivil.getIndividu(noIndPierre));
+		MockServiceCivil.annuleMariage(localMockServiceCivil.getIndividu(noIndPierre));
 		// envoi de l'événement
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndPierre, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();

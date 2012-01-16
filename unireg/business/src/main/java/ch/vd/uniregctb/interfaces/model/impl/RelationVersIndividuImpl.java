@@ -2,6 +2,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -36,7 +38,7 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 		return dateFin;
 	}
 
-	public void setDateFin(RegDate dateFin) {
+	public void setDateFin(@Nullable RegDate dateFin) {
 		this.dateFin = dateFin;
 	}
 

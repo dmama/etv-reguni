@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -32,7 +30,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private String nom;
 	private String nomNaissance;
 	private Collection<AdoptionReconnaissance> adoptionsReconnaissances;
-	private MockIndividu conjoint;
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private List<RelationVersIndividu> parents;
@@ -118,14 +115,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public void setAdoptionsReconnaissances(Collection<AdoptionReconnaissance> adoptionsReconnaissances) {
 		this.adoptionsReconnaissances = adoptionsReconnaissances;
-	}
-
-	public MockIndividu getConjoint() {
-		return conjoint;
-	}
-
-	public void setConjoint(@Nullable MockIndividu conjoint) {
-		this.conjoint = conjoint;
 	}
 
 	@Override
@@ -316,9 +305,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptionsReconnaissances = individu.getAdoptionsReconnaissances();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
-			conjoint = ((MockIndividu) individu).getConjoint();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();

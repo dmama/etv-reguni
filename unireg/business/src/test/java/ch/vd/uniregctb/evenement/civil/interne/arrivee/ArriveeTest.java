@@ -255,7 +255,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		erreurs.clear();
 		warnings.clear();
 		MockIndividu individu = new MockIndividu();
-		individu.setConjoint(inconnu);
 		individu.setDateNaissance(RegDate.get(1953, 11, 2));
 		arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null, context);
 		arrivee.validate(erreurs, warnings);

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -205,12 +206,13 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private AnnulationMariage createAnnulationMariage(long noIndividu, long noConjoint, RegDate dateMariage) {
-		annuleMariage(noConjoint);
+		annuleMariage(noIndividu, noConjoint);
 		return createAnnulationMariage(noIndividu, dateMariage);
 	}
 
 	/**
 	 * Annule le mariage sur l'individu donné par son numéro dans le registre civil (i.e. supprime l'état civil marié et le lien vers le conjoint)
+	 *
 	 * @param noIndividu numéro d'individu de la personne dont le mariage doit être annulé
 	 * @return l'individu tel que retourné par le registre civil suite à cette annulation
 	 */
@@ -218,9 +220,24 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = individu.getEtatCivilCourant();
-				individu.getEtatsCivils().remove(etatCivil);
-				individu.setConjoint(null);
+				MockServiceCivil.annuleMariage(individu);
+			}
+		});
+		return serviceCivil.getIndividu(noIndividu, 2008);
+	}
+
+	/**
+	 * Annule le mariage sur l'individu donné par son numéro dans le registre civil (i.e. supprime l'état civil marié et le lien vers le conjoint)
+	 *
+	 * @param noIndividu numéro d'individu de la personne dont le mariage doit être annulé
+	 * @param noConjoint num-rod d'individu du conjoint
+	 * @return l'individu tel que retourné par le registre civil suite à cette annulation
+	 */
+	private Individu annuleMariage(long noIndividu, long noConjoint) {
+		doModificationIndividus(noIndividu, noConjoint, new IndividusModification() {
+			@Override
+			public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
+				MockServiceCivil.annuleMariage(individu, conjoint);
 			}
 		});
 		return serviceCivil.getIndividu(noIndividu, 2008);
