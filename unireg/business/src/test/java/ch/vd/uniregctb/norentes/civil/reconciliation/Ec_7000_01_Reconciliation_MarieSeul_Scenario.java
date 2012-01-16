@@ -62,7 +62,7 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 				indPierre = addIndividu(noIndPierre, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				marieIndividu(indPierre, dateMariage);
-				separeIndividu(indPierre, null, dateSeparation);
+				separeIndividu(indPierre, dateSeparation);
 				marieIndividu(indPierre, dateReconciliation);
 
 				addOrigine(indPierre, MockPays.Suisse.getNomMinuscule());

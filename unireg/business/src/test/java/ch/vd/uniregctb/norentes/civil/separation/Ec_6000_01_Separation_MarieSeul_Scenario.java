@@ -68,7 +68,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 				indJulie = addIndividu(noIndJulie, dateNaissance, "Goux", "Julie", false);
 
 				marieIndividu(indJulie, dateMariage);
-				separeIndividu(indJulie, null, dateSeparation);
+				separeIndividu(indJulie, dateSeparation);
 				divorceIndividu(indJulie, dateDivorce);
 
 				addOrigine(indJulie, MockCommune.Lausanne);

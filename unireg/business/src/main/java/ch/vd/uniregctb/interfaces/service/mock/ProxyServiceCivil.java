@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -83,6 +84,12 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
 		return target.getNumeroIndividuConjoint(noIndividuPrincipal, date);
+	}
+
+	@Override
+	public Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal) {
+		assertTargetNotNull();
+		return target.getNumerosIndividusConjoint(noIndividuPrincipal);
 	}
 
 	@Override

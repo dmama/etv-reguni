@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -34,6 +36,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private List<RelationVersIndividu> parents;
+	private List<RelationVersIndividu> conjoints;
 	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilList etatsCivils;
 	private List<Nationalite> nationalites;
@@ -58,6 +61,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.dateDeces = right.dateDeces;
 		this.dateNaissance = right.dateNaissance;
 		this.etatsCivils = right.etatsCivils;
+		this.conjoints = right.conjoints;
 		this.noTechnique = right.noTechnique;
 		this.noAVS11 = right.noAVS11;
 		this.nouveauNoAVS = right.nouveauNoAVS;
@@ -120,7 +124,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return conjoint;
 	}
 
-	public void setConjoint(MockIndividu conjoint) {
+	public void setConjoint(@Nullable MockIndividu conjoint) {
 		this.conjoint = conjoint;
 	}
 
@@ -189,6 +193,15 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			}
 			this.enfants = list;
 		}
+	}
+
+	@Override
+	public List<RelationVersIndividu> getConjoints() {
+		return conjoints;
+	}
+
+	public void setConjoints(List<RelationVersIndividu> conjoints) {
+		this.conjoints = conjoints;
 	}
 
 	@Override

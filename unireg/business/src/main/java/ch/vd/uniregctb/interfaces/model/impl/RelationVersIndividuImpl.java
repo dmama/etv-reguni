@@ -36,6 +36,10 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 		return dateFin;
 	}
 
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);

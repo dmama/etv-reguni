@@ -60,8 +60,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 		return typeEtatCivil;
 	}
 
-	@Override
-	public Long getNumeroConjoint() {
+	Long getNumeroConjoint() {
 		return numeroConjoint;
 	}
 

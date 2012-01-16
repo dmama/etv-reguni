@@ -10,7 +10,6 @@ public class MockEtatCivil implements EtatCivil {
 
 	private RegDate dateDebut;
 	private RegDate dateFin;
-	private Long numeroConjoint;
 	private TypeEtatCivil typeEtatCivil;
 
 	@Override
@@ -38,14 +37,6 @@ public class MockEtatCivil implements EtatCivil {
 
 	public void setTypeEtatCivil(TypeEtatCivil typeEtatCivil) {
 		this.typeEtatCivil = typeEtatCivil;
-	}
-	@Override
-	public Long getNumeroConjoint() {
-		return numeroConjoint;
-	}
-
-	public void setNumeroConjoint(Long numeroConjoint) {
-		this.numeroConjoint = numeroConjoint;
 	}
 
 	@Override

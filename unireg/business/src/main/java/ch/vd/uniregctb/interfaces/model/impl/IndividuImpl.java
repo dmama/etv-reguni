@@ -42,6 +42,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final RegDate deces;
 	private final RegDate naissance;
 	private List<RelationVersIndividu> parents;
+	private List<RelationVersIndividu> conjoints;
 	private Collection<RelationVersIndividu> enfants;
 	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
@@ -83,6 +84,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.parents = initParents(target.getPere(), target.getMere(), upTo);
 		this.enfants = initEnfants(target.getEnfants(), upTo);
 		this.etatsCivils = initEtatsCivils(target, upTo);
+		this.conjoints = initConjoint(this.etatsCivils, upTo);
 		this.nationalites = initNationalites(target.getNationalites(), upTo);
 		this.origines = initOrigines(target.getOrigines());
 		this.permis = initPermis(target.getPermis(), upTo);
@@ -103,6 +105,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
 		this.etatsCivils = individuWrapper.etatsCivils;
+		this.conjoints = individuWrapper.conjoints;
 		this.permis = individuWrapper.permis;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
@@ -152,6 +155,10 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 	private static boolean isValidUpTo(Date dateDebut, Date upTo) {
 		return upTo == null || dateDebut == null || !dateDebut.after(upTo);
+	}
+
+	private static boolean isValidUpTo(RegDate dateDebut, RegDate upTo) {
+		return upTo == null || dateDebut == null || dateDebut.isBeforeOrEqual(upTo);
 	}
 
 	private static List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions, RegDate upTo) {
@@ -271,6 +278,24 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public EtatCivil getEtatCivil(RegDate date) {
 		return etatsCivils.getEtatCivilAt(date);
+	}
+
+	@Override
+	public List<RelationVersIndividu> getConjoints() {
+		return conjoints;
+	}
+
+	private static List<RelationVersIndividu> initConjoint(EtatCivilListHost etatsCivils, RegDate upTo) {
+		List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		if (etatsCivils != null) {
+			for (EtatCivil etatCivil : etatsCivils) {
+				Long numeroConjoint = ((EtatCivilImpl) etatCivil).getNumeroConjoint();
+				if (numeroConjoint != null && isValidUpTo(etatCivil.getDateDebut(), upTo)) {
+					list.add(new RelationVersIndividuImpl(numeroConjoint, etatCivil.getDateDebut(), etatCivil.getDateFin()));
+				}
+			}
+		}
+		return list;
 	}
 
 	@Override

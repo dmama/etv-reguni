@@ -23,9 +23,4 @@ public interface EtatCivil extends DateRange {
      * @return le type de l'état civil.
      */
     TypeEtatCivil getTypeEtatCivil();
-
-	/**
-	 * @return le numéro d'individu du conjoint.
-	 */
-	Long getNumeroConjoint();
 }

@@ -91,8 +91,18 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		void modifyIndividu(MockIndividu individu);
 	}
 
+	protected static interface IndividusModification {
+		void modifyIndividus(MockIndividu individu, MockIndividu other);
+	}
+
 	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
 		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
 		modifier.modifyIndividu(ind);
+	}
+
+	protected void doModificationIndividus(long noIndividu, long noOther, IndividusModification modifier) {
+		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
+		final MockIndividu other = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noOther);
+		modifier.modifyIndividus(ind, other);
 	}
 }

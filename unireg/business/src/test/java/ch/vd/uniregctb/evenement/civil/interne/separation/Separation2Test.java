@@ -72,7 +72,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 				super.init();
 				
 				MockIndividu pierre = getIndividu(INDIVIDU_MARIE_SEUL);
-				separeIndividu(pierre, null, DATE_SEPARATION);
+				separeIndividu(pierre, DATE_SEPARATION);
 				
 				MockIndividu momo = getIndividu(INDIVIDU_MARIE);
 				MockIndividu bea = getIndividu(INDIVIDU_MARIE_CONJOINT);

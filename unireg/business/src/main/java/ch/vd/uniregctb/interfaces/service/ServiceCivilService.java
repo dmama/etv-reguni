@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -138,6 +139,14 @@ public interface ServiceCivilService {
 	 * @return  le numéro de l'individu conjoint valide à la date spécifiée.
 	 */
 	Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date);
+
+	/**
+	 * Retourne l'ensemble des numéros d'individu des conjoints passés et présent d'un individu donné.
+	 *
+	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche les conjoints.
+	 * @return l'ensemble de numéros d'individus, qui peut être vide si l'individu n'a jamais été marié.
+	 */
+	Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal);
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.

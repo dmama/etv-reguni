@@ -17,7 +17,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -107,14 +106,7 @@ public abstract class EvenementCivilInterne {
 			if (forceRefreshCacheConjoint()) {
 
 				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
-				final Set<Long> conjoints = new HashSet<Long>();
-				final Individu individu = getIndividu();
-				for (EtatCivil etatCivil : individu.getEtatsCivils()) {
-					final Long numeroConjoint = etatCivil.getNumeroConjoint();
-					if (numeroConjoint != null) {
-						conjoints.add(numeroConjoint);
-					}
-				}
+				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
 
 				// nettoyage du cache pour tous ces individus
 				for (Long noInd : conjoints) {

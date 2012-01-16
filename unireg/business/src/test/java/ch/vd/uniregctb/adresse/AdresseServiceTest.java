@@ -5744,7 +5744,7 @@ public class AdresseServiceTest extends BusinessTest {
 				virginie.setDateDeces(dateDeces);
 
 				marieIndividus(paul, virginie, dateMariage);
-				separeIndividu(paul, virginie, dateSeparation);
+				separeIndividus(paul, virginie, dateSeparation);
 				addEtatCivil(paul, dateDeces, TypeEtatCivil.DIVORCE);
 				addEtatCivil(virginie, dateDeces, TypeEtatCivil.DIVORCE);
 

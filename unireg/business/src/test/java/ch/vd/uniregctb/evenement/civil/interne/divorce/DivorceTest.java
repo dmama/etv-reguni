@@ -74,8 +74,8 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 				super.init();
 				
 				MockIndividu pierre = getIndividu(INDIVIDU_MARIE_SEUL);
-				separeIndividu(pierre, null, DATE_SEPARATION);
-				separeIndividu(pierre, null, DATE_DIVORCE);
+				separeIndividu(pierre, DATE_SEPARATION);
+				separeIndividu(pierre, DATE_DIVORCE);
 				
 				MockIndividu momo = getIndividu(INDIVIDU_MARIE);
 				MockIndividu bea = getIndividu(INDIVIDU_MARIE_CONJOINT);

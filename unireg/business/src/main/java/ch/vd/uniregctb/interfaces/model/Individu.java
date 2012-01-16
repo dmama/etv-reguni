@@ -141,6 +141,11 @@ public interface Individu extends EntiteCivile {
 	 */
 	List<RelationVersIndividu> getParents();
 
+	/**
+	 * @return l'historique des conjoints de l'individu.
+	 */
+	List<RelationVersIndividu> getConjoints();
+
     /**
      * Retourne la tutelle à laquelle l'individu étendu est soumis.
      *

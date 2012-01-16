@@ -88,7 +88,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null);
 				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
 
-				separeIndividu(indSebastien, null, dateSeparation);
+				separeIndividu(indSebastien, dateSeparation);
 			}
 
 		});

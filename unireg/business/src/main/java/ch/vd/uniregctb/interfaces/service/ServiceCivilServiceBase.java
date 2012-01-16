@@ -2,7 +2,9 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 
 public abstract class ServiceCivilServiceBase implements ServiceCivilService {
@@ -173,11 +176,35 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	@Override
 	public final Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
-		final EtatCivil etat = getEtatCivilActif(noIndividuPrincipal, date);
-		if (etat == null) {
+		final Individu individu = getIndividu(noIndividuPrincipal, date);
+		if (individu == null) {
 			return null;
 		}
-		return etat.getNumeroConjoint();
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		if (conjoints != null) {
+			for (RelationVersIndividu conjoint : conjoints) {
+				if (conjoint.isValidAt(date)) {
+					return conjoint.getNumeroAutreIndividu();
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public final Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal) {
+		final Individu individu = getIndividu(noIndividuPrincipal, null);
+		if (individu == null) {
+			return null;
+		}
+		final Set<Long> numeros = new HashSet<Long>();
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		if (conjoints != null) {
+			for (RelationVersIndividu conjoint : conjoints) {
+				numeros.add(conjoint.getNumeroAutreIndividu());
+			}
+		}
+		return numeros;
 	}
 
 	@Override

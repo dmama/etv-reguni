@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
@@ -213,6 +214,27 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 				@Override
 				public String toString() {
 					return String.format("noIndividuPrincipal=%d, date=%s", noIndividuPrincipal, ServiceTracing.toString(date));
+				}
+			});
+		}
+	}
+
+	@Override
+	public Set<Long> getNumerosIndividusConjoint(final Long noIndividuPrincipal) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getNumerosIndividusConjoint(noIndividuPrincipal);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getNumerosIndividusConjoint", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividuPrincipal=%d", noIndividuPrincipal);
 				}
 			});
 		}

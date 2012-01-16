@@ -50,7 +50,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 		}
 
 
-		final Individu individuConjoint = context.getServiceCivil().getConjoint(individu.getNoTechnique(), getDate());
+		final Individu individuConjoint = context.getServiceCivil().getConjoint(individu.getNoTechnique(), date);
 		if (individuConjoint == null) {
 			errors.add(new EvenementCivilExterneErreur(String.format("L'individu n'a pas de conjoint en date du %s dans le civil", RegDateHelper.dateToDisplayString(getDate()))));
 			return;

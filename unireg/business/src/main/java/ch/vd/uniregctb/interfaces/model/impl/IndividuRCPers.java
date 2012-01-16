@@ -40,10 +40,12 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	private static final long serialVersionUID = -2609344381248103504L;
 
-	private static final String EST_FILLE = "101";
-	private static final String EST_FILS = "102";
+	private static final String EST_CONJOINT = "1";
+	private static final String EST_PARTENAIRE_ENREGISTRE = "2";
 	private static final String EST_MERE = "3";
 	private static final String EST_PERE = "4";
+	private static final String EST_FILLE = "101";
+	private static final String EST_FILS = "102";
 
 	private long noTechnique;
 	private String prenom;
@@ -63,6 +65,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilListImpl etatsCivils;
 	private List<RelationVersIndividu> parents;
+	private List<RelationVersIndividu> conjoints;
 	private Permis permis;
 	private List<Nationalite> nationalites;
 
@@ -100,6 +103,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.enfants = initEnfants(person.getRelationshipHistory());
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
 		this.parents = initParents(person.getRelationshipHistory());
+		this.conjoints = initConjoints(person.getRelationshipHistory());
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
 	}
@@ -206,6 +210,22 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
+	private static List<RelationVersIndividu> initConjoints(List<Relationship> relationship) {
+		if (relationship == null || relationship.isEmpty()) {
+			return null;
+		}
+		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		for (Relationship r : relationship) {
+			if (EST_CONJOINT.equals(r.getTypeOfRelationship()) || EST_PARTENAIRE_ENREGISTRE.equals(r.getTypeOfRelationship())) {
+				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
+				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
+				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
+			}
+		}
+		return list;
+	}
+
 	private static Collection<Origine> initOrigins(Person person) {
 		final List<PlaceOfOrigin> origins = person.getIdentity().getOrigin();
 		if (origins == null || origins.isEmpty()) {
@@ -268,6 +288,11 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public List<RelationVersIndividu> getParents() {
 		return parents;
+	}
+
+	@Override
+	public List<RelationVersIndividu> getConjoints() {
+		return conjoints;
 	}
 
 	@Override

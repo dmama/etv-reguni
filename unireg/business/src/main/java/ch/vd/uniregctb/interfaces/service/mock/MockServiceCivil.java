@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CasePostale;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.interfaces.model.impl.RelationVersIndividuImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -131,7 +133,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 		// Etats civils
 		final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
-		etatsCivils.add(creeEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE, null));
+		etatsCivils.add(creeEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE));
 		individu.setEtatsCivils(etatsCivils);
 
 		// Adresses
@@ -146,13 +148,15 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
 		individu.setAdoptionsReconnaissances(adoptions);
 
+		individu.setConjoints(new ArrayList<RelationVersIndividu>());
+
 		add(individu);
 		return individu;
 	}
 
 	protected EtatCivil addEtatCivil(MockIndividu individu, RegDate dateDebut, TypeEtatCivil type) {
 		final Collection<EtatCivil> etats = individu.getEtatsCivils();
-		final EtatCivil etat = creeEtatCivil(dateDebut, type, null);
+		final EtatCivil etat = creeEtatCivil(dateDebut, type);
 		etats.add(etat);
 		return etat;
 	}
@@ -323,49 +327,51 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 * Unit les deux individus par le mariage. Si les individus sont du même sexe, l'état-civil est PACS; et dans le cas normal,
 	 * l'état-civil est MARIE.
 	 */
-	protected void marieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateMariage) {
+	public static void marieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateMariage) {
 
 		final TypeEtatCivil etatCivil = (individu.isSexeMasculin() == conjoint.isSexeMasculin() ? TypeEtatCivil.PACS : TypeEtatCivil.MARIE);
 
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil, conjoint.getNoTechnique());
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilIndividu.add(etatCivilIndividu);
 		individu.setConjoint(conjoint);
+		individu.getConjoints().add(new RelationVersIndividuImpl(conjoint.getNoTechnique(), dateMariage, null));
 
 		final List<EtatCivil> etatsCivilConjoint = conjoint.getEtatsCivils();
-		final MockEtatCivil dernierEtatCivilConjoint = (MockEtatCivil) etatsCivilConjoint.get(etatsCivilConjoint.size() - 1);
-		final EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil, individu.getNoTechnique());
+		final EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilConjoint.add(etatCivilConjoint);
 		conjoint.setConjoint(individu);
+		conjoint.getConjoints().add(new RelationVersIndividuImpl(individu.getNoTechnique(), dateMariage, null));
+
 		/* les maries peuvent s'embrasser */
 	}
 
 	/**
 	 * Marie un individu, mais seul.
 	 */
-	protected void marieIndividu(MockIndividu individu, RegDate dateMariage) {
+	public static void marieIndividu(MockIndividu individu, RegDate dateMariage) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, TypeEtatCivil.MARIE, null);
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, TypeEtatCivil.MARIE);
+		etatsCivilIndividu.add(etatCivilIndividu);
+	}
+
+	public static void separeIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
+		separeIndividu(individu, dateSeparation);
+		separeIndividu(conjoint, dateSeparation);
+	}
+
+	public static void separeIndividu(MockIndividu individu, RegDate dateSeparation) {
+		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
-	}
-
-	protected void separeIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
-		separeIndividu(individu, conjoint, dateSeparation);
-		separeIndividu(conjoint, individu, dateSeparation);
-	}
-
-	protected void separeIndividu(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		Long numeroConjoint = null;
-		if(conjoint!=null){
-			numeroConjoint = conjoint.getNoTechnique();
+		individu.setConjoint(null);
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
+		if (relation != null) {
+			((RelationVersIndividuImpl)relation).setDateFin(dateSeparation);
 		}
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE, numeroConjoint);
-		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
 	protected void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
@@ -374,12 +380,17 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 	}
 
-	
 	protected void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE, null);
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE);
 		etatsCivilIndividu.add(etatCivilIndividu);
+
+		individu.setConjoint(null);
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateDivorce);
+		if (relation != null) {
+			((RelationVersIndividuImpl)relation).setDateFin(dateDivorce);
+		}
 	}
 
 	protected Permis setPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
@@ -481,14 +492,12 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 *            la date de debut de validité de l'état civil
 	 * @param typeEtatCivil
 	 *            le type
-	 * @param numeroConjoint le numero de conjoint en cas de mariage ou pacs
- *
+	 *
 	 */
-	private EtatCivil creeEtatCivil(RegDate date, TypeEtatCivil typeEtatCivil, Long numeroConjoint) {
+	private static EtatCivil creeEtatCivil(RegDate date, TypeEtatCivil typeEtatCivil) {
 		final MockEtatCivil etatCivil = new MockEtatCivil();
 		etatCivil.setDateDebut(date);
 		etatCivil.setTypeEtatCivil(typeEtatCivil);
-		etatCivil.setNumeroConjoint(numeroConjoint);
 		return etatCivil;
 	}
 

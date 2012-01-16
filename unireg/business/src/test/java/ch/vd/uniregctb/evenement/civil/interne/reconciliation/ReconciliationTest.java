@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -217,19 +215,21 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Simulation de séparation
 		 */
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividuConjoint, DATE_SEPARATION));
-				individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividuConjoint, DATE_RECONCILIATION));
-			}
-		});
-		if (noIndividuConjoint != null) {
-			doModificationIndividu(noIndividuConjoint, new IndividuModification() {
+		if (noIndividuConjoint == null) {
+			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividu, DATE_SEPARATION));
-					individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividu, DATE_RECONCILIATION));
+					MockServiceCivil.separeIndividu(individu, DATE_SEPARATION);
+					MockServiceCivil.marieIndividu(individu, DATE_RECONCILIATION);
+				}
+			});
+		}
+		else {
+			doModificationIndividus(noIndividu, noIndividuConjoint, new IndividusModification() {
+				@Override
+				public void modifyIndividus(MockIndividu individu, MockIndividu conjoint) {
+					MockServiceCivil.separeIndividus(individu, conjoint, DATE_SEPARATION);
+					MockServiceCivil.marieIndividus(individu, conjoint, DATE_RECONCILIATION);
 				}
 			});
 		}
@@ -238,25 +238,5 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final Individu conjoint = (noIndividuConjoint == null ? null : serviceCivil.getIndividu(noIndividuConjoint, date.year()));
 
 		return new Reconciliation(individu, conjoint, date, 5586, context);
-	}
-
-	private EtatCivil createEtatCivilSeparation(Individu individu, Long noIndConjoint, RegDate dateSeparation) {
-		final MockEtatCivil separation = new MockEtatCivil();
-		separation.setDateDebut(dateSeparation);
-		separation.setTypeEtatCivil(TypeEtatCivil.SEPARE);
-		if (noIndConjoint != null) {
-		    separation.setNumeroConjoint(noIndConjoint);
-		}
-		return separation;
-	}
-
-	private EtatCivil createEtatCivilReconciliation(Individu individu, Long noIndConjoint, RegDate dateReconciliation) {
-		final MockEtatCivil marie = new MockEtatCivil();
-		marie.setDateDebut(dateReconciliation);
-		marie.setTypeEtatCivil(TypeEtatCivil.MARIE);
-		if (noIndConjoint != null) {
-		    marie.setNumeroConjoint(noIndConjoint);
-		}
-		return marie;
 	}
 }

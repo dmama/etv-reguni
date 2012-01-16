@@ -19,13 +19,11 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final TypeEtatCivil typeEtatCivil;
-	private final Long numeroConjoint;
 
 	public EtatCivilRCPers(MaritalData maritalStatus) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		this.dateFin = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfSeparation());
 		this.typeEtatCivil = initiTypeEtatCivil(maritalStatus);
-		this.numeroConjoint = null; // TODO (rpcers)
 	}
 
 	private static TypeEtatCivil initiTypeEtatCivil(MaritalData maritalStatus) {
@@ -59,11 +57,6 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	@Override
 	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
-	}
-
-	@Override
-	public Long getNumeroConjoint() {
-		return numeroConjoint;
 	}
 
 	@Override
