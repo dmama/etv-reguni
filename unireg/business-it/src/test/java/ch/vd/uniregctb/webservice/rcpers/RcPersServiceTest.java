@@ -2,12 +2,12 @@ package ch.vd.uniregctb.webservice.rcpers;
 
 import java.util.Arrays;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,7 +38,6 @@ public class RcPersServiceTest {
 		assertEquals("Jean-Eric", person.getIdentity().getCallName());
 	}
 
-	@Ignore("Il faudrait trouver un numéro d'événement qui existe...")
 	@Test
 	public void testGetPersonForEvent() throws Exception {
 		final RcPersClientImpl client = new RcPersClientImpl();
@@ -48,7 +47,8 @@ public class RcPersServiceTest {
 		client.setPassword("welc0me");
 		client.afterPropertiesSet();
 
-		final Person p = client.getPersonForEvent(1L);
+		final Person p = client.getPersonForEvent(29393500L);
 		assertNotNull(p);
+		assertEquals(2000022L, IndividuRCPers.getNoIndividu(p));
 	}
 }
