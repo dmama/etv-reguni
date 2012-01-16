@@ -27,6 +27,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queue.setEvtCivilDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
 		queue.setHibernateTemplate(hibernateTemplate);
 		queue.setTransactionManager(transactionManager);
+		queue.afterPropertiesSet();
 	}
 
 	private EvenementCivilEch addEvenementCivil(Long id, long noIndividu, RegDate date, TypeEvenementCivilEch type, ActionEvenementCivilEch action, EtatEvenementCivil etat) {

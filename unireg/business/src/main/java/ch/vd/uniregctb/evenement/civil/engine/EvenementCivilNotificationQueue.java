@@ -26,16 +26,18 @@ public interface EvenementCivilNotificationQueue {
 	 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link #type}) de l'événement, de la plus petite à la plus grande</li>
 	 * </ol>
 	 */
-	public static final class EvtCivilInfo implements Comparable<EvtCivilInfo> {
+	public static final class EvtCivilInfo {
 		public final long idEvenement;
+		public final long noIndividu;
 		public final EtatEvenementCivil etat;
 		public final TypeEvenementCivilEch type;
 		public final ActionEvenementCivilEch action;
 		public final Long idEvenementReference;
 		public final RegDate date;
 
-		public EvtCivilInfo(long idEvenement, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementReference, RegDate date) {
+		public EvtCivilInfo(long idEvenement, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementReference, RegDate date) {
 			this.idEvenement = idEvenement;
+			this.noIndividu = noIndividu;
 			this.etat = etat;
 			this.type = type;
 			this.action = action;
@@ -48,25 +50,6 @@ public interface EvenementCivilNotificationQueue {
 			if (this.type == null) {
 				throw new NullPointerException("Le type de l'événement ne doit pas être nul");
 			}
-		}
-
-		@Override
-		public int compareTo(EvtCivilInfo o) {
-			int comp = this.date.compareTo(o.date);
-			if (comp == 0) {
-				final Integer myPrio = this.type.getPriorite();
-				final Integer otherPrio = o.type.getPriorite();
-				if (myPrio == null) {
-					comp = (otherPrio == null ? 0 : 1);
-				}
-				else if (otherPrio == null) {
-					comp = -1;
-				}
-				else {
-					comp = myPrio - otherPrio;
-				}
-			}
-			return comp;
 		}
 	}
 

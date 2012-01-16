@@ -2,15 +2,19 @@ package ch.vd.uniregctb.evenement.civil.engine;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,6 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements civils reçus de RCPers
@@ -61,7 +66,9 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
  * cas où l'identifiant de l'individu est enlevé de la queue entre le moment où l'événenement correspondant est effectivement committé en base
  * et le moment où la méthode {@link #add(Long) add} vérifie sa présence... mais cela devrait se produire moins souvent.
  */
-public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue {
+public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue, InitializingBean {
+
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilNotificationQueueImpl.class);
 
 	private final BlockingQueue<Long> queue = new LinkedBlockingQueue<Long>();
 	private final ReentrantLock lock = new ReentrantLock();
@@ -69,6 +76,42 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private EvenementCivilEchDAO evtCivilDAO;
+
+	/**
+	 * Comparateur qui trie les types d'événements civil par priorité (les types sans priorité sont placés à la fin)
+	 */
+	private static final Comparator<TypeEvenementCivilEch> PRIORITY_COMPARATOR = new Comparator<TypeEvenementCivilEch>() {
+		@Override
+		public int compare(TypeEvenementCivilEch o1, TypeEvenementCivilEch o2) {
+			final Integer myPrio = o1.getPriorite();
+			final Integer otherPrio = o2.getPriorite();
+			final int comp;
+			if (myPrio == null) {
+				comp = (otherPrio == null ? 0 : 1);
+			}
+			else if (otherPrio == null) {
+				comp = -1;
+			}
+			else {
+				comp = myPrio - otherPrio;
+			}
+			return comp;
+		}
+	};
+
+	/**
+	 * Comparateur qui trie les événements civils par date, puis par priorité
+	 */
+	private static final Comparator<EvtCivilInfo> EVT_CIVIL_COMPARATOR = new Comparator<EvtCivilInfo>() {
+		@Override
+		public int compare(EvtCivilInfo o1, EvtCivilInfo o2) {
+			int comp = o1.date.compareTo(o2.date);
+			if (comp == 0) {
+				comp = PRIORITY_COMPARATOR.compare(o1.type, o2.type);
+			}
+			return comp;
+		}
+	};
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -83,6 +126,26 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilDAO(EvenementCivilEchDAO evtCivilDAO) {
 		this.evtCivilDAO = evtCivilDAO;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (LOGGER.isInfoEnabled()) {
+			final List<TypeEvenementCivilEch> all = new ArrayList<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.values()));
+			Collections.sort(all, PRIORITY_COMPARATOR);
+			final StringBuilder b = new StringBuilder("A date égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
+			boolean first = true;
+			for (TypeEvenementCivilEch type : all) {
+				if (type.getPriorite() != null) {
+					if (!first) {
+						b.append(", ");
+					}
+					b.append(type).append(" (").append(type.getCodeECH()).append(')');
+					first = false;
+				}
+			}
+			LOGGER.info(b.toString());
+		}
 	}
 
 	@Override
@@ -131,8 +194,7 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		});
 
 		if (infos != null && infos.size() > 1) {
-			// l'ordre de tri naturel de la classe EvtCivilInfo a été conçu pour nous!
-			Collections.sort(infos);
+			Collections.sort(infos, EVT_CIVIL_COMPARATOR);
 		}
 		return infos;
 	}
@@ -147,7 +209,7 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		if (evts != null && evts.size() > 0) {
 			final List<EvtCivilInfo> liste = new ArrayList<EvtCivilInfo>(evts.size());
 			for (EvenementCivilEch evt : evts) {
-				final EvtCivilInfo info = new EvtCivilInfo(evt.getId(), evt.getEtat(), evt.getType(), evt.getAction(),
+				final EvtCivilInfo info = new EvtCivilInfo(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(),
 				                                           evt.getRefMessageId(), evt.getDateEvenement());
 				liste.add(info);
 			}
