@@ -1,13 +1,5 @@
 package ch.vd.moscow.database;
 
-import ch.vd.moscow.data.Call;
-import ch.vd.moscow.data.CompletionStatus;
-import ch.vd.moscow.data.Environment;
-import ch.vd.moscow.data.LogFile;
-import ch.vd.moscow.job.JobStatus;
-import ch.vd.moscow.job.LoggingJobStatus;
-import ch.vd.registre.base.date.RegDate;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +8,14 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+
+import ch.vd.moscow.data.Call;
+import ch.vd.moscow.data.CompletionStatus;
+import ch.vd.moscow.data.Environment;
+import ch.vd.moscow.data.LogFile;
+import ch.vd.moscow.job.JobStatus;
+import ch.vd.moscow.job.LoggingJobStatus;
+import ch.vd.registre.base.date.RegDate;
 
 /**
  * @author msi
@@ -87,11 +87,13 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 		LOGGER.debug("Importing calls from file [" + filename + "]");
 
-		int lineCount = 0;
 		final CompletionStatus completionStatus = dao.getCompletionStatus(environment);
 		final Date upToStatus = (completionStatus == null ? null : completionStatus.getUpTo());
+
 		Boolean isTodayLog = null;
 		Date newUpTo = upToStatus;
+		int lineCount = 0;
+		int lineImported = 0;
 
 		String line = reader.readLine();
 		while (line != null) {
@@ -104,6 +106,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final Date t;
 			try {
 				t = processLine(environment, line, upToStatus);
+				if (t != null) {
+					++lineImported;
+				}
 			}
 			catch (ParseException e) {
 				LOGGER.error("Parsing line #" + lineCount + " of file [" + filename + "]");
@@ -125,7 +130,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			line = reader.readLine();
 		}
 
-		LOGGER.debug(lineCount + " calls imported");
+		LOGGER.debug(lineCount + " lines read, " + lineImported + " calls imported");
 
 		status.setMessage("saving completion status...");
 		dao.setCompletionStatus(environment, newUpTo);
