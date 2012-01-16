@@ -70,7 +70,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 
 		// Un seul état civil = [1.3.1960..fin-des-temps]
 		final MockEtatCivil ec1 = new MockEtatCivil();
-		ec1.setDateDebutValidite(RegDate.get(1960, 3, 1));
+		ec1.setDateDebut(RegDate.get(1960, 3, 1));
 
 		service.setUp(new MockServiceCivil() {
 			@Override
@@ -108,9 +108,9 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		final MockEtatCivil ec2 = new MockEtatCivil();
 		final MockEtatCivil ec3 = new MockEtatCivil();
-		ec1.setDateDebutValidite(RegDate.get(1930, 3, 1));
-		ec2.setDateDebutValidite(RegDate.get(1985, 4, 21));
-		ec3.setDateDebutValidite(RegDate.get(1973, 1, 8));
+		ec1.setDateDebut(RegDate.get(1930, 3, 1));
+		ec2.setDateDebut(RegDate.get(1985, 4, 21));
+		ec3.setDateDebut(RegDate.get(1973, 1, 8));
 
 		service.setUp(new MockServiceCivil() {
 			@Override
@@ -155,7 +155,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		 * Un seul état civil avec adresse de début nulle = [null..fin-des-temps] (ceci est un cas réel existant sur le host)
 		 */
 		final MockEtatCivil ec1 = new MockEtatCivil();
-		ec1.setDateDebutValidite(null);
+		ec1.setDateDebut(null);
 
 		service.setUp(new MockServiceCivil() {
 			@Override

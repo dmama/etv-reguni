@@ -28,13 +28,15 @@ public class EtatCivilListHost implements Serializable, EtatCivilList {
 	final private long numeroIndividu; // pour le logging
 	final private List<EtatCivil> list;
 
-	public EtatCivilListHost(long numeroIndividu, Collection<EtatCivil> listHost) {
+	public EtatCivilListHost(long numeroIndividu, Collection<EtatCivilImpl> listHost) {
 		this.numeroIndividu = numeroIndividu;
 		this.list = new ArrayList<EtatCivil>(listHost);
 		sort();
 	}
 
 	private void sort() {
+
+		// trie les états-civils par ordre croissant
 		Collections.sort(this.list, new Comparator<EtatCivil>() {
 			@Override
 			public int compare(EtatCivil o1, EtatCivil o2) {
@@ -43,6 +45,15 @@ public class EtatCivilListHost implements Serializable, EtatCivilList {
 				return e1.getNoSequence() - e2.getNoSequence();
 			}
 		});
+
+		// détermine la date de fin des états-civils
+		EtatCivilImpl precedent = null;
+		for (EtatCivil etatCivil : list) {
+			if (precedent != null && etatCivil.getDateDebut() != null) {
+				precedent.setDateFin(etatCivil.getDateDebut().getOneDayBefore());
+			}
+			precedent = (EtatCivilImpl) etatCivil;
+		}
 	}
 
 	@Override
@@ -184,7 +195,7 @@ public class EtatCivilListHost implements Serializable, EtatCivilList {
 
 		for (EtatCivil e : list) {
 
-			final RegDate debutValidite = e.getDateDebutValidite();
+			final RegDate debutValidite = e.getDateDebut();
 
 			// Attention: les état-civils sont triés dans la collection par ordre de séquence, et ils n'ont pas de date de fin de validité
 			// (= implicite à la date d'ouverture du suivant)
@@ -195,7 +206,7 @@ public class EtatCivilListHost implements Serializable, EtatCivilList {
 				}
 				else {
 					// on a trouvé un état-civil qui ne respecte pas l'ordre chronologique des numéros de séquence
-					if (debutValidite != null && etat.getDateDebutValidite() != null && debutValidite.isBefore(etat.getDateDebutValidite())) {
+					if (debutValidite != null && etat.getDateDebut() != null && debutValidite.isBefore(etat.getDateDebut())) {
 						throw new RuntimeException("L'état-civil n°" + ((EtatCivilImpl)e).getNoSequence() + " de l'individu n°" + numeroIndividu
 								+ " ne respecte pas l'ordre chronologique des séquences.");
 					}

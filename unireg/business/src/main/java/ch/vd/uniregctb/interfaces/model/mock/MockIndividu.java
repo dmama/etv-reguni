@@ -561,7 +561,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 				final Iterator<EtatCivil> iterator = etatsCivilsTemp.iterator();
 				while (iterator.hasNext()) {
 					final EtatCivil etatCivil = iterator.next();
-					if (etatCivil.getDateDebutValidite() != null && etatCivil.getDateDebutValidite().isAfter(date)) {
+					if (etatCivil.getDateDebut() != null && etatCivil.getDateDebut().isAfter(date)) {
 						iterator.remove();
 					}
 				}

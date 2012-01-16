@@ -142,7 +142,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 			final EtatCivil etatCivil = indSource.getEtatCivilCourant();
 			if (etatCivil != null) {
 				indCible.setEtatCivil(EtatCivilHelper.getString(etatCivil.getTypeEtatCivil()));
-				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(etatCivil.getDateDebutValidite()));
+				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(etatCivil.getDateDebut()));
 			}
 
 			/* Cas particulier du décès qui ne correspond pas à un état civil dans le host */

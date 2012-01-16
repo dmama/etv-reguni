@@ -88,7 +88,7 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 		final String etatCivilLocal = situation.getEtatCivil().name();
 		final RegDate debutEtatCivilLocal = situation.getDateDebut();
 		final String etatCivilHost = etatCivil.getTypeEtatCivil().asCore().name();
-		final RegDate debutEtatCivilHost = etatCivil.getDateDebutValidite();
+		final RegDate debutEtatCivilHost = etatCivil.getDateDebut();
 		listeSituationsDifferentes.add(new SituationsDifferentes(id, contribuableId, etatCivilLocal, debutEtatCivilLocal, etatCivilHost, debutEtatCivilHost));
 
 	}

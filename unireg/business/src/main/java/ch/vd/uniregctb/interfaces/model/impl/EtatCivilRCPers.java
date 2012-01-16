@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import ch.ech.ech0011.v5.MaritalData;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -15,11 +17,13 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private static final long serialVersionUID = -3154801553713624662L;
 	
 	private final RegDate dateDebut;
+	private final RegDate dateFin;
 	private final TypeEtatCivil typeEtatCivil;
 	private final Long numeroConjoint;
 
 	public EtatCivilRCPers(MaritalData maritalStatus) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
+		this.dateFin = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfSeparation());
 		this.typeEtatCivil = initiTypeEtatCivil(maritalStatus);
 		this.numeroConjoint = null; // TODO (rpcers)
 	}
@@ -43,8 +47,13 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public RegDate getDateDebut() {
 		return dateDebut;
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return dateFin;
 	}
 
 	@Override
@@ -55,5 +64,10 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	@Override
 	public Long getNumeroConjoint() {
 		return numeroConjoint;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

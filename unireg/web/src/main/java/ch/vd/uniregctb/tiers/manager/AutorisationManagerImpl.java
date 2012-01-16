@@ -249,7 +249,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 						if (pp.isHabitantVD()) {
 							Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
 							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-								if (etatCivil.getDateDebutValidite() == null) {
+								if (etatCivil.getDateDebut() == null) {
 									civilOK = false;
 								}
 							}

@@ -486,7 +486,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 */
 	private EtatCivil creeEtatCivil(RegDate date, TypeEtatCivil typeEtatCivil, Long numeroConjoint) {
 		final MockEtatCivil etatCivil = new MockEtatCivil();
-		etatCivil.setDateDebutValidite(date);
+		etatCivil.setDateDebut(date);
 		etatCivil.setTypeEtatCivil(typeEtatCivil);
 		etatCivil.setNumeroConjoint(numeroConjoint);
 		return etatCivil;

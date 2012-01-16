@@ -32,8 +32,8 @@ public class EtatCivilListImpl implements EtatCivilList {
 		Collections.sort(this.list, new Comparator<EtatCivil>() {
 			@Override
 			public int compare(EtatCivil o1, EtatCivil o2) {
-				final RegDate debut1 = o1.getDateDebutValidite();
-				final RegDate debut2 = o2.getDateDebutValidite();
+				final RegDate debut1 = o1.getDateDebut();
+				final RegDate debut2 = o2.getDateDebut();
 
 				if (debut1 == null && debut2 == null) {
 					return 0;
@@ -190,7 +190,7 @@ public class EtatCivilListImpl implements EtatCivilList {
 		for (EtatCivil e : list) {
 			// les état-civils n'ont pas de date de fin de validité
 			// (= implicite à la date d'ouverture du suivant)
-			if (RegDateHelper.isBetween(date, e.getDateDebutValidite(), null, NullDateBehavior.LATEST)) {
+			if (RegDateHelper.isBetween(date, e.getDateDebut(), null, NullDateBehavior.LATEST)) {
 					etat = e;
 			}
 		}

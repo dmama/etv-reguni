@@ -47,7 +47,7 @@ public class IndividuImplTest extends WithoutSpringTest {
 
 		final EtatCivil etatCivil = wrapper.getEtatCivil(RegDate.get(2007,3,9));
 		assertNotNull(etatCivil);
-		assertNull(etatCivil.getDateDebutValidite());
+		assertNull(etatCivil.getDateDebut());
 		assertEquals(TypeEtatCivil.DIVORCE, etatCivil.getTypeEtatCivil());
 	}
 

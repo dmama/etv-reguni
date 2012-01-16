@@ -133,7 +133,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			public void modifyIndividu(MockIndividu individu) {
 				final EtatCivilList etatsCivils = individu.getEtatsCivils();
 				final MockEtatCivil etatCivil = new MockEtatCivil();
-				etatCivil.setDateDebutValidite(dateVeuvage);
+				etatCivil.setDateDebut(dateVeuvage);
 				etatCivil.setTypeEtatCivil(TypeEtatCivil.VEUF);
 				etatsCivils.add(etatCivil);
 			}

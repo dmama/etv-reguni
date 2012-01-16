@@ -242,7 +242,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static EtatCivilListHost initEtatsCivils(ch.vd.registre.civil.model.Individu individu, RegDate upTo) {
-		final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+		final ArrayList<EtatCivilImpl> etatsCivils = new ArrayList<EtatCivilImpl>();
 		final Collection<?> targetEtatsCivils = individu.getEtatsCivils();
 		if (targetEtatsCivils != null) {
 			final Date upToJava = upTo == null ? null : upTo.asJavaDate();

@@ -221,24 +221,24 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		for (EtatCivil etatCourant : coll) {
 
 			RegDate dateDebutEtatCourant;
-			if (etatCourant.getDateDebutValidite() == null) {
+			if (etatCourant.getDateDebut() == null) {
 				dateDebutEtatCourant = findDateDebutEtatCivil(etatCourant, pp, individu);
 			}
 			else {
-				dateDebutEtatCourant = etatCourant.getDateDebutValidite();
+				dateDebutEtatCourant = etatCourant.getDateDebut();
 			}
 
 			if (etatPrecedent != null) {
-				if (etatPrecedent.getDateDebutValidite() == null) {
-					if (etatCourant.getDateDebutValidite() == null
-							|| (dateDebutEtatPrecedent != null && dateDebutEtatPrecedent.isAfterOrEqual(etatCourant.getDateDebutValidite()))) {
+				if (etatPrecedent.getDateDebut() == null) {
+					if (etatCourant.getDateDebut() == null
+							|| (dateDebutEtatPrecedent != null && dateDebutEtatPrecedent.isAfterOrEqual(etatCourant.getDateDebut()))) {
 						dateDebutEtatPrecedent = null;
 					}
 					if (!nullAllowed && dateDebutEtatPrecedent == null) {
 						throw new InterfaceDataException(buildExceptionMessage(pp, etatPrecedent));
 					}
 				}
-				if (etatCourant.getDateDebutValidite() == null) {
+				if (etatCourant.getDateDebut() == null) {
 					if (dateDebutEtatCourant != null && dateDebutEtatPrecedent != null && dateDebutEtatPrecedent.isAfterOrEqual(dateDebutEtatCourant)) {
 						// la date de début de l'état-civil est nulle, on a pu déterminer une date de début à partir d'autres sources
 						// mais on se rend compte que cette date est invalide => on laisse tomber la date nouvelle déterminée
@@ -261,7 +261,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		}
 
 		if (etatPrecedent != null) {
-			if (etatPrecedent.getDateDebutValidite() == null) {
+			if (etatPrecedent.getDateDebut() == null) {
 				if (!nullAllowed && dateDebutEtatPrecedent == null) {
 					throw new InterfaceDataException(buildExceptionMessage(pp, etatPrecedent));
 				}

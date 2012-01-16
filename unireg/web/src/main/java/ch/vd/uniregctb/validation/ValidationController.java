@@ -72,7 +72,7 @@ public class ValidationController {
 				final int year = RegDate.get().year();
 				final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), year);
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-					if (etatCivil.getDateDebutValidite() == null) {
+					if (etatCivil.getDateDebut() == null) {
 						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
 								etatCivil.getTypeEtatCivil().asCore());
 						validationResults.addWarning(message);

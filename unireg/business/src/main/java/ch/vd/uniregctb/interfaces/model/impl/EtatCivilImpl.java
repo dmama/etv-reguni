@@ -2,7 +2,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
@@ -11,6 +13,7 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 	private static final long serialVersionUID = 3282374011657120967L;
 	
 	private final RegDate dateDebut;
+	private RegDate dateFin;
 	private final int noSequence;
 	private final TypeEtatCivil typeEtatCivil;
 	private final Long numeroConjoint;
@@ -30,8 +33,22 @@ public class EtatCivilImpl implements EtatCivil, Serializable {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public RegDate getDateDebut() {
 		return dateDebut;
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public int getNoSequence() {

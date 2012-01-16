@@ -20,12 +20,12 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.uniregctb.interfaces.model.EtatCivil etatCourant,
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatSuivant, boolean nullAllowed) {
 		this.etatCivil = etatCourant.getTypeEtatCivil().asCore();
-		this.dateDebut = etatCourant.getDateDebutValidite();
+		this.dateDebut = etatCourant.getDateDebut();
 		if (etatSuivant == null) {
 			this.dateFin =null;
 		}
 		else {
-			final RegDate dateDebutSuivant = etatSuivant.getDateDebutValidite();
+			final RegDate dateDebutSuivant = etatSuivant.getDateDebut();
 			if (dateDebutSuivant == null) {
 				if (nullAllowed)
 					this.dateFin = null;

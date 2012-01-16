@@ -242,7 +242,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 
 	private EtatCivil createEtatCivilSeparation(Individu individu, Long noIndConjoint, RegDate dateSeparation) {
 		final MockEtatCivil separation = new MockEtatCivil();
-		separation.setDateDebutValidite(dateSeparation);
+		separation.setDateDebut(dateSeparation);
 		separation.setTypeEtatCivil(TypeEtatCivil.SEPARE);
 		if (noIndConjoint != null) {
 		    separation.setNumeroConjoint(noIndConjoint);
@@ -252,7 +252,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 
 	private EtatCivil createEtatCivilReconciliation(Individu individu, Long noIndConjoint, RegDate dateReconciliation) {
 		final MockEtatCivil marie = new MockEtatCivil();
-		marie.setDateDebutValidite(dateReconciliation);
+		marie.setDateDebut(dateReconciliation);
 		marie.setTypeEtatCivil(TypeEtatCivil.MARIE);
 		if (noIndConjoint != null) {
 		    marie.setNumeroConjoint(noIndConjoint);

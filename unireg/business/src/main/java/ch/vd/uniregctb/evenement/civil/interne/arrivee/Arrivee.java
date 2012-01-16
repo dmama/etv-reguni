@@ -700,12 +700,12 @@ public class Arrivee extends Mouvement {
 			while (iterator.hasPrevious()) {
 				final EtatCivil etatCivil = iterator.previous();
 				if (TypeEtatCivil.MARIE == etatCivil.getTypeEtatCivil() || TypeEtatCivil.PACS == etatCivil.getTypeEtatCivil()) {
-					if (etatCivil.getDateDebutValidite() == null) {
+					if (etatCivil.getDateDebut() == null) {
 						// si si, ça arrive...
 						break;
 					}
-					else if (etatCivil.getDateDebutValidite().isBeforeOrEqual(limiteSuperieureEtDefaut)) {
-						candidate = etatCivil.getDateDebutValidite();
+					else if (etatCivil.getDateDebut().isBeforeOrEqual(limiteSuperieureEtDefaut)) {
+						candidate = etatCivil.getDateDebut();
 						break;
 					}
 				}
