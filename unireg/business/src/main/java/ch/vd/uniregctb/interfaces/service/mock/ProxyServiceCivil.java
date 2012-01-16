@@ -152,6 +152,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 
 	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
+		assertTargetNotNull();
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 

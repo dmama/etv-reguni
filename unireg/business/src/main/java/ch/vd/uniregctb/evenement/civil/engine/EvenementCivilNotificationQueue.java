@@ -3,9 +3,12 @@ package ch.vd.uniregctb.evenement.civil.engine;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Interface du bean de gestion de la queue de notification de l'arrivée d'événements civils
@@ -15,19 +18,55 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public interface EvenementCivilNotificationQueue {
 
 	/**
-	 * Informations de base sur un événement civil
+	 * Informations de base sur un événement civil.
+	 * <p/>
+	 * L'ordre de tri naturel des éléments de cette classe est calculé ainsi :
+	 * <ol>
+	 *     <li>la date de l'événement (élément {@link #date}), du plus ancien au plus récent</li>
+	 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link #type}) de l'événement, de la plus petite à la plus grande</li>
+	 * </ol>
 	 */
-	public static final class EvtCivilInfo {
+	public static final class EvtCivilInfo implements Comparable<EvtCivilInfo> {
 		public final long idEvenement;
 		public final EtatEvenementCivil etat;
-		public final TypeEvenementCivil type;
+		public final TypeEvenementCivilEch type;
+		public final ActionEvenementCivilEch action;
+		public final Long idEvenementReference;
 		public final RegDate date;
 
-		public EvtCivilInfo(long idEvenement, EtatEvenementCivil etat, TypeEvenementCivil type, RegDate date) {
+		public EvtCivilInfo(long idEvenement, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementReference, RegDate date) {
 			this.idEvenement = idEvenement;
 			this.etat = etat;
 			this.type = type;
+			this.action = action;
+			this.idEvenementReference = idEvenementReference;
 			this.date = date;
+
+			if (this.date == null) {
+				throw new IllegalArgumentException("La date de l'événement ne doit pas être nulle");
+			}
+			if (this.type == null) {
+				throw new NullPointerException("Le type de l'événement ne doit pas être nul");
+			}
+		}
+
+		@Override
+		public int compareTo(EvtCivilInfo o) {
+			int comp = this.date.compareTo(o.date);
+			if (comp == 0) {
+				final Integer myPrio = this.type.getPriorite();
+				final Integer otherPrio = o.type.getPriorite();
+				if (myPrio == null) {
+					comp = (otherPrio == null ? 0 : 1);
+				}
+				else if (otherPrio == null) {
+					comp = -1;
+				}
+				else {
+					comp = myPrio - otherPrio;
+				}
+			}
+			return comp;
 		}
 	}
 

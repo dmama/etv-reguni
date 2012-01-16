@@ -21,4 +21,19 @@
 	    <property name="password" value="${extprop.webservice.fidor.password}" />
 	</bean>
 
+	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
+		<property name="username" value="${extprop.webservice.rcpers.username}" />
+		<property name="password" value="${extprop.webservice.rcpers.password}" />
+		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
+		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
+	</bean>
+
+	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
+		<property name="target" ref="rcPersClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="rcPersClient" name="rcPersClientTracing"/>
+
 </beans>

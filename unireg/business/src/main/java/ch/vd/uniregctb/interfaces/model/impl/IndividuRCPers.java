@@ -75,11 +75,12 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	public IndividuRCPers(Person person, ServiceInfrastructureService infraService) {
+		this.noTechnique = getNoIndividu(person);
+
 		final Identity identity = person.getIdentity();
 		final PersonIdentification identification = identity.getPersonIdentification();
 		final UpiPerson upiPerson = person.getUpiPerson();
 
-		this.noTechnique = getNoIndividu(identification.getLocalPersonId());
 		this.prenom = identity.getCallName();
 		this.autresPrenoms = identification.getFirstNames();
 		this.nom = identification.getOfficialName();
@@ -105,6 +106,15 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	private static long getNoIndividu(NamedPersonId personId) {
 		return Long.parseLong(personId.getPersonId());
+	}
+
+	/**
+	 * Méthode helper publique pour cacher au monde extérieur la complexité de la récupération du numéro d'individu
+	 * @param person individu renvoyé par RCPers
+	 * @return le numéro d'individu tel que connu par chez nous
+	 */
+	public static long getNoIndividu(Person person) {
+		return getNoIndividu(person.getIdentity().getPersonIdentification().getLocalPersonId());
 	}
 
 	private static String initNumeroRCE(List<NamedPersonId> otherPersonIds) {

@@ -10,10 +10,11 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
@@ -23,17 +24,18 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		queue = new EvenementCivilNotificationQueueImpl();
-		queue.setEvtCivilDao(getBean(EvenementCivilExterneDAO.class, "evenementCivilExterneDAO"));
+		queue.setEvtCivilDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
 		queue.setHibernateTemplate(hibernateTemplate);
 		queue.setTransactionManager(transactionManager);
 	}
 
-	private EvenementCivilExterne addEvenementCivilExterne(Long id, long noIndividu, RegDate date, TypeEvenementCivil type, EtatEvenementCivil etat) {
-		final EvenementCivilExterne evt = new EvenementCivilExterne();
+	private EvenementCivilEch addEvenementCivil(Long id, long noIndividu, RegDate date, TypeEvenementCivilEch type, ActionEvenementCivilEch action, EtatEvenementCivil etat) {
+		final EvenementCivilEch evt = new EvenementCivilEch();
 		evt.setId(id);
 		evt.setDateEvenement(date);
-		evt.setNumeroIndividuPrincipal(noIndividu);
+		evt.setNumeroIndividu(noIndividu);
 		evt.setType(type);
+		evt.setAction(action);
 		evt.setEtat(etat);
 		return hibernateTemplate.merge(evt);
 	}
@@ -55,12 +57,14 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivilExterne(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.EN_ERREUR);
-				addEvenementCivilExterne(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.A_TRAITER);
-				addEvenementCivilExterne(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.EN_ATTENTE);
-				addEvenementCivilExterne(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.TRAITE);
-				addEvenementCivilExterne(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.A_VERIFIER);
-				addEvenementCivilExterne(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, EtatEvenementCivil.FORCE);
+				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR);
+				addEvenementCivil(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				addEvenementCivil(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+				addEvenementCivil(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE);
+				addEvenementCivil(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_VERIFIER);
+				addEvenementCivil(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.FORCE);
+				addEvenementCivil(8L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+				addEvenementCivil(7L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
 				return null;
 			}
 		});
@@ -83,28 +87,47 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
 		final List<EvenementCivilNotificationQueue.EvtCivilInfo> infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
 		Assert.assertNotNull(infoAvec);
-		Assert.assertEquals(3, infoAvec.size());
+		Assert.assertEquals(5, infoAvec.size());
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
 			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(0);
 			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, evtCivilInfo.type);
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
 			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(1);
 			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, evtCivilInfo.type);
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
 			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(2);
 			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, evtCivilInfo.type);
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+		}
+		{
+			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(3);
+			Assert.assertEquals(7L, evtCivilInfo.idEvenement);
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
+			Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.type);
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+		}
+		{
+			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.get(4);
+			Assert.assertEquals(8L, evtCivilInfo.idEvenement);
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
+			Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.type);
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 
 		// troisième tentative de récupération : rien

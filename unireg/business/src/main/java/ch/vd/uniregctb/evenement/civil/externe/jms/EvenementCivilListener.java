@@ -25,7 +25,7 @@ import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * Listener des évéments civils envoyés par le registre civil (REG-PP ou RCPers) et reçus à travers l'ESB.
+ * Listener des évéments civils envoyés par le registre civil (REG-PP) et reçus à travers l'ESB.
  */
 public class EvenementCivilListener extends EsbMessageEndpointListener implements ErrorMonitorableMessageListener {
 

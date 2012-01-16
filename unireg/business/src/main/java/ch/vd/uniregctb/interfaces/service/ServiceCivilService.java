@@ -228,7 +228,7 @@ public interface ServiceCivilService {
 	 * @param date       la date de référence, ou null pour obtenir l'état-civil actif
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
-	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
+	EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.
@@ -238,7 +238,7 @@ public interface ServiceCivilService {
 	 * @param individu un individu
 	 * @return le prénom + le nom du l'individu
 	 */
-	public String getNomPrenom(Individu individu);
+	String getNomPrenom(Individu individu);
 
 	/**
 	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
@@ -248,7 +248,7 @@ public interface ServiceCivilService {
 	 * @param individu un individu
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom.VIDE} si l'individu est inconnu)
 	 */
-	public NomPrenom getDecompositionNomPrenom(Individu individu);
+	NomPrenom getDecompositionNomPrenom(Individu individu);
 
 	/**
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().

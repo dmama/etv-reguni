@@ -2,9 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,9 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements civils reçus de RCPers
@@ -71,7 +68,7 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
-	private EvenementCivilExterneDAO evtCivilDao;
+	private EvenementCivilEchDAO evtCivilDAO;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -84,8 +81,8 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvtCivilDao(EvenementCivilExterneDAO evtCivilDao) {
-		this.evtCivilDao = evtCivilDao;
+	public void setEvtCivilDAO(EvenementCivilEchDAO evtCivilDAO) {
+		this.evtCivilDAO = evtCivilDAO;
 	}
 
 	@Override
@@ -117,21 +114,6 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		return null;
 	}
 
-	/**
-	 * Comparateur officiel pour l'ordonnancement des événements civils retournés par cette queue
-	 */
-	private static final Comparator<EvtCivilInfo> INFO_COMPARATOR = new Comparator<EvtCivilInfo>() {
-		@Override
-		public int compare(EvtCivilInfo o1, EvtCivilInfo o2) {
-			int comparison = NullDateBehavior.LATEST.compare(o1.date, o2.date);
-			if (comparison == 0) {
-				// TODO jde vérifier l'ordre de tri "naturel" des événements civils à traiter selon leur type
-				comparison = o1.type.ordinal() - o2.type.ordinal();
-			}
-			return comparison;
-		}
-	};
-
 	private List<EvtCivilInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -149,7 +131,8 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		});
 
 		if (infos != null && infos.size() > 1) {
-			Collections.sort(infos, INFO_COMPARATOR);
+			// l'ordre de tri naturel de la classe EvtCivilInfo a été conçu pour nous!
+			Collections.sort(infos);
 		}
 		return infos;
 	}
@@ -160,11 +143,12 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	 * @return une liste des informations autour des événements à traiter
 	 */
 	private List<EvtCivilInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
-		final List<EvenementCivilExterne> evts = evtCivilDao.getEvenementsCivilsNonTraites(Arrays.asList(noIndividu));
+		final List<EvenementCivilEch> evts = evtCivilDAO.getEvenementsCivilsNonTraites(noIndividu);
 		if (evts != null && evts.size() > 0) {
 			final List<EvtCivilInfo> liste = new ArrayList<EvtCivilInfo>(evts.size());
-			for (EvenementCivilExterne evt : evts) {
-				final EvtCivilInfo info = new EvtCivilInfo(evt.getId(), evt.getEtat(), evt.getType(), evt.getDateEvenement());
+			for (EvenementCivilEch evt : evts) {
+				final EvtCivilInfo info = new EvtCivilInfo(evt.getId(), evt.getEtat(), evt.getType(), evt.getAction(),
+				                                           evt.getRefMessageId(), evt.getDateEvenement());
 				liste.add(info);
 			}
 			return liste;
