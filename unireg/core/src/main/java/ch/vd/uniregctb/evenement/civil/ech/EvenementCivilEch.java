@@ -1,12 +1,19 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
+import java.util.Set;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -32,8 +39,7 @@ public class EvenementCivilEch extends HibernateEntity {
 	private Long numeroIndividu;
 	private Long numeroContribuablePersonnePhysique;
 	private String commentaireTraitement;
-
-	// TODO jde il manque encore les erreurs
+	private Set<EvenementCivilEchErreur> erreurs;
 
 	public EvenementCivilEch() {
 	}
@@ -155,5 +161,17 @@ public class EvenementCivilEch extends HibernateEntity {
 
 	public void setCommentaireTraitement(String commentaireTraitement) {
 		this.commentaireTraitement = commentaireTraitement;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false)
+	@ForeignKey(name = "FK_EV_ERR_EV_ECH_ID")
+	@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	public Set<EvenementCivilEchErreur> getErreurs() {
+		return erreurs;
+	}
+
+	public void setErreurs(Set<EvenementCivilEchErreur> erreurs) {
+		this.erreurs = erreurs;
 	}
 }

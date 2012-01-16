@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -21,7 +20,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 /**
  * Classe de processing des événements civils reçus de RCPers (événements e-CH)
  */
-public class EvenementCivilEchProcessor implements InitializingBean, DisposableBean {
+public class EvenementCivilEchProcessor implements SmartLifecycle {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchProcessor.class);
 
@@ -54,7 +53,7 @@ public class EvenementCivilEchProcessor implements InitializingBean, DisposableB
 		private boolean stopping = false;
 
 		public Processor() {
-			super("EvtCivilEchProcessor");
+			super("EvtCivilEch");
 		}
 
 		@Override
@@ -109,20 +108,6 @@ public class EvenementCivilEchProcessor implements InitializingBean, DisposableB
 		public void requestStop() {
 			stopping = true;
 			LOGGER.info(String.format("Demande d'arrêt du thread %s", getName()));
-		}
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		processor = new Processor();
-		processor.start();
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		if (processor != null) {
-			processor.requestStop();
-			processor.join();
 		}
 	}
 
@@ -188,5 +173,49 @@ public class EvenementCivilEchProcessor implements InitializingBean, DisposableB
 		event.setEtat(EtatEvenementCivil.EN_ERREUR);
 		event.setCommentaireTraitement("A implémenter...");
 		return false;
+	}
+
+	@Override
+	public boolean isAutoStartup() {
+		return true;
+	}
+
+	@Override
+	public void stop(Runnable callback) {
+		stop();
+		callback.run();
+	}
+
+	@Override
+	public void start() {
+		if (processor == null) {
+			processor = new Processor();
+			processor.start();
+		}
+	}
+
+	@Override
+	public void stop() {
+		if (processor != null) {
+			processor.requestStop();
+			try {
+				processor.join();
+			}
+			catch (InterruptedException e) {
+				// au moins, on aura essayé...
+				LOGGER.warn("Attente de terminaison du thread de traitement des événements civils e-CH interrompue", e);
+			}
+			processor = null;
+		}
+	}
+
+	@Override
+	public boolean isRunning() {
+		return processor != null && processor.isAlive();
+	}
+
+	@Override
+	public int getPhase() {
+		return Integer.MAX_VALUE;   // as late as possible during starting process
 	}
 }
