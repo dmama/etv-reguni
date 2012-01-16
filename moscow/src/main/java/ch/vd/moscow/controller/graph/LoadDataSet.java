@@ -20,8 +20,6 @@ import ch.vd.moscow.database.CallStats;
  */
 public class LoadDataSet {
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-
 	private List<BreakdownCriterion> criteria = new ArrayList<BreakdownCriterion>();
 	private final TimeResolution resolution;
 
@@ -159,6 +157,8 @@ public class LoadDataSet {
 			criterionLabels.add(new Label(entry.getKey(), entry.getValue().intValue()));
 		}
 		Collections.sort(criterionLabels);
+
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 		// loop over each bucket of the timeline
 		final Calendar cal = GregorianCalendar.getInstance();

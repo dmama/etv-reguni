@@ -21,7 +21,12 @@ import org.hibernate.annotations.Index;
 @Table(name = "calls")
 public class Call {
 
-	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+		@Override
+		protected SimpleDateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		}
+	};
 
 	private Long id;
 	private Environment environment;
@@ -199,6 +204,11 @@ public class Call {
 	}
 
 	public static Date parseTimestamp(String timestampAsString) throws ParseException {
-		return TIMESTAMP_FORMAT.parse(timestampAsString);
+		try {
+			return TIMESTAMP_FORMAT.get().parse(timestampAsString);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Error when parsing timestamp = [" + timestampAsString + "]", e);
+		}
 	}
 }
