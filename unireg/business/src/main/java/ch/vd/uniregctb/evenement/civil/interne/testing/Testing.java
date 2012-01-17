@@ -10,6 +10,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class Testing extends EvenementCivilInterne {
 
@@ -34,7 +35,7 @@ public class Testing extends EvenementCivilInterne {
 			erreurs.add(new EvenementCivilExterneErreur("Again"));
 		}
 		if (getNumeroEvenement().equals(125L)) {
-			warnings.add(new EvenementCivilExterneErreur("Check completeness warn"));
+			warnings.add(new EvenementCivilExterneErreur("Check completeness warn", TypeEvenementErreur.WARNING));
 		}
 	}
 

@@ -28,6 +28,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Implémentation des événement civils en provenance du host.
@@ -473,7 +474,7 @@ public abstract class EvenementCivilInterne {
 		}
 		if (resultat.hasWarnings()) {
 			for (String warning : resultat.getWarnings()) {
-				warnings.add(new EvenementCivilExterneErreur(warning));
+				warnings.add(new EvenementCivilExterneErreur(warning, TypeEvenementErreur.WARNING));
 			}
 		}
 	}
