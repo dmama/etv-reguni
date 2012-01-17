@@ -104,6 +104,8 @@ create index IDX_EV_CIV_ECH_NO_IND on EVENEMENT_CIVIL_ECH (NO_INDIVIDU);
 
 create index IDX_EV_CIV_ECH_PP on EVENEMENT_CIVIL_ECH (PP_ID);
 
+alter table EVENEMENT_CIVIL_ECH add constraint FK_EV_CIV_ECH_PP_ID foreign key (PP_ID) references TIERS;
+
 alter table EVENEMENT_CIVIL_ERREUR add constraint FK_EV_ERR_EV_RGR_ID foreign key (EVT_CIVIL_ID) references EVENEMENT_CIVIL;
 
 create index IDX_EV_ECH_ERR_EV_ID on EVENEMENT_CIVIL_ECH_ERREUR (EVT_CIVIL_ID);
