@@ -31,11 +31,6 @@ public class RemiseBlancDateFinNationalite extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		switch (getType()) {
 		case ANNUL_DATE_FIN_NATIONALITE_SUISSE:

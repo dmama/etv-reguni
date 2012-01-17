@@ -87,9 +87,6 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		annulation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de veuvage", erreurs);
-
 		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de veuvage", erreurs);
 
@@ -145,9 +142,6 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de veuvage", erreurs);
 
 		annulation.validate(erreurs, warnings);
 		assertEquals("Une erreur aurait dû se produire lors du validate de l'annulation.", 1, erreurs.size());

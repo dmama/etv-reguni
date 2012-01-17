@@ -44,10 +44,6 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
 		PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());

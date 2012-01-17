@@ -410,7 +410,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		Arrivee arriveeRetroActiveDeNullePart =
 				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 
-		arriveeRetroActiveDeNullePart.checkCompleteness(erreurs, warnings);
 		arriveeRetroActiveDeNullePart.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -2372,7 +2371,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 		assertEmpty(erreurs);
@@ -2437,7 +2435,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 
 		try {
@@ -2496,7 +2493,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 		assertEmpty(erreurs);
@@ -2627,7 +2623,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				// Traite l'événement d'arrivée
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-				arrivee.checkCompleteness(erreurs, warnings);
 				arrivee.validate(erreurs, warnings);
 				arrivee.handle(warnings);
 				assertEmpty(erreurs);
@@ -2691,7 +2686,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 
 		try {
@@ -2748,7 +2742,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 		assertEmpty(erreurs);
@@ -2807,7 +2800,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 		assertEmpty(erreurs);
@@ -2866,7 +2858,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 		assertEmpty(erreurs);
@@ -2939,7 +2930,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 
 		try {

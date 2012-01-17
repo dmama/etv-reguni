@@ -30,10 +30,6 @@ public class ChangementIdentificateur extends ChangementBase {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-	}
-
-	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		final long noIndividu = getNoIndividu();

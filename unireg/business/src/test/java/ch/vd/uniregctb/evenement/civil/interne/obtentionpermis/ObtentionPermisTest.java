@@ -91,7 +91,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		obtentionPermis.checkCompleteness(erreurs, warnings);
 		obtentionPermis.validate(erreurs, warnings);
 		obtentionPermis.handle(warnings);
 
@@ -129,7 +128,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		obtentionPermis.checkCompleteness(erreurs, warnings);
 		obtentionPermis.validate(erreurs, warnings);
 		obtentionPermis.handle(warnings);
 
@@ -167,7 +165,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		obtentionPermis.checkCompleteness(erreurs, warnings);
 		obtentionPermis.validate(erreurs, warnings);
 		obtentionPermis.handle(warnings);
 
@@ -230,7 +227,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		obtentionPermis.checkCompleteness(erreurs, warnings);
 		obtentionPermis.validate(erreurs, warnings);
 		obtentionPermis.handle(warnings);
 
@@ -339,10 +335,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				obtentionPermis.checkCompleteness(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
-
 				obtentionPermis.validate(erreurs, warnings);
 				assertTrue(erreurs.isEmpty());
 				assertTrue(warnings.isEmpty());
@@ -402,10 +394,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				obtentionPermis.checkCompleteness(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.validate(erreurs, warnings);
 				assertTrue(erreurs.isEmpty());
@@ -475,10 +463,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				obtentionPermis.checkCompleteness(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.validate(erreurs, warnings);
 				assertTrue(erreurs.isEmpty());
@@ -551,10 +535,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				obtentionPermis.checkCompleteness(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
 
 				obtentionPermis.validate(erreurs, warnings);
 				assertTrue(erreurs.isEmpty());

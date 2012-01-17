@@ -186,7 +186,6 @@ public class Arrivee extends Mouvement {
 		return isPresent;
 	}
 
-	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 
 		final ServiceInfrastructureService serviceInfra = context.getTiersService().getServiceInfra();
@@ -264,6 +263,11 @@ public class Arrivee extends Mouvement {
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+
+		checkCompleteness(erreurs, warnings);
+		if (!erreurs.isEmpty()) {
+			return;
+		}
 
 		/*
 		 * Validation des adresses

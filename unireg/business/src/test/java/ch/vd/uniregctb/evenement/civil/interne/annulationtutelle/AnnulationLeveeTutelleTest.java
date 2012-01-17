@@ -83,9 +83,6 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		annulationLeveeTutelle.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de levée de tutelle.", erreurs);
-
 		annulationLeveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);
 
@@ -125,9 +122,6 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationLeveeTutelle.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de levée de tutelle.", erreurs);
 
 		annulationLeveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);

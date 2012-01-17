@@ -100,7 +100,6 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				chgtNom.checkCompleteness(erreurs, warnings); // ne fait rien
 				chgtNom.validate(erreurs, warnings);// ne fait rien
 				chgtNom.handle(warnings);
 
@@ -199,7 +198,6 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				chgtNom.checkCompleteness(erreurs, warnings); // ne fait rien
 				chgtNom.validate(erreurs, warnings);// ne fait rien
 				chgtNom.handle(warnings);
 

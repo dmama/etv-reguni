@@ -24,6 +24,7 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
@@ -50,13 +51,12 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.validation.ValidationService;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -75,13 +75,11 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	private static final RegDate DATE_FUTURE = RegDate.get(2020, 11, 19);
 	private static final RegDate DATE_ANCIENNE_ADRESSE = RegDate.get(1970, 11, 19);
 	private static final RegDate DATE_ANTERIEURE_ANCIENNE_ADRESSE = RegDate.get(1940, 11, 19);
-	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		serviceCivil.setUp(new DefaultMockServiceCivil());
-		validationService = getBean(ValidationService.class, "validationService");
 	}
 
 	@Test
@@ -238,14 +236,30 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final long NUMERO_INDIVIDU_CONJOINT = 43321L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu inconnu = addIndividu(NUMERO_INDIVIDU_INCONNU, date(1953, 11, 2), "Johan", "Rackham", true);
+				addAdresse(inconnu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, DATE_VALIDE, null);
+				final MockIndividu conjoint = addIndividu(NUMERO_INDIVIDU_CONJOINT, date(1957, 1, 12), "Adèle", "Lerouge", false);
+				addAdresse(conjoint, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, DATE_VALIDE, null);
+			}
+		});
+
+		final Individu inconnu = serviceCivil.getIndividu(NUMERO_INDIVIDU_INCONNU, null, AttributeIndividu.ADRESSES);
+		assertNotNull(inconnu);
+		final Individu conjoint = serviceCivil.getIndividu(NUMERO_INDIVIDU_CONJOINT, null);
+		assertNotNull(conjoint);
+
+		final MockCommune commune = MockCommune.Lausanne;
+		final Adresse nouvelleAdressePrincipale = inconnu.getAdresses().iterator().next();
+
 		/*
 		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
-		MockIndividu inconnu = new MockIndividu();
-		inconnu.setDateNaissance(RegDate.get(1953, 11, 2));
-		inconnu.setNoTechnique(NUMERO_INDIVIDU_INCONNU);
-		final MockCommune commune = MockCommune.Lausanne;
-		Arrivee arrivee = new Arrivee(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null, context);
+		Arrivee arrivee = new Arrivee(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -254,9 +268,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		 */
 		erreurs.clear();
 		warnings.clear();
-		MockIndividu individu = new MockIndividu();
-		individu.setDateNaissance(RegDate.get(1953, 11, 2));
-		arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, (Adresse)null, context);
+		arrivee = new Arrivee(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -273,7 +285,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 
@@ -516,7 +527,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-			arrivee.checkCompleteness(erreurs, warnings);
 			arrivee.validate(erreurs, warnings);
 			arrivee.handle(warnings);
 
@@ -581,7 +591,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-			arrivee.checkCompleteness(erreurs, warnings);
 			arrivee.validate(erreurs, warnings);
 			arrivee.handle(warnings);
 
@@ -642,7 +651,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		try {
 			arrivee.handle(warnings);
@@ -696,7 +704,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.checkCompleteness(erreurs, warnings);
 		arrivee.validate(erreurs, warnings);
 		arrivee.handle(warnings);
 
@@ -757,7 +764,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-			arrivee.checkCompleteness(erreurs, warnings);
 			arrivee.validate(erreurs, warnings);
 			arrivee.handle(warnings);
 

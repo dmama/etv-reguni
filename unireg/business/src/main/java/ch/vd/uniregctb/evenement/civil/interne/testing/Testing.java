@@ -19,7 +19,7 @@ public class Testing extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		if (getNumeroEvenement().equals(121L)) {
 			// On ne fait rien
 		}
@@ -37,10 +37,6 @@ public class Testing extends EvenementCivilInterne {
 		if (getNumeroEvenement().equals(125L)) {
 			warnings.add(new EvenementCivilExterneErreur("Check completeness warn", TypeEvenementErreur.WARNING));
 		}
-	}
-
-	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 	}
 
 	@Override

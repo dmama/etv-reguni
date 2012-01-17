@@ -39,11 +39,6 @@ public class CorrectionFiliation extends ChangementBase {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire
 	}

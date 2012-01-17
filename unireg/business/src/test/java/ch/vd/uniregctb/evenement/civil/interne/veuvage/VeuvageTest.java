@@ -117,8 +117,6 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 	
-		veuvage.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.handle(warnings);
@@ -173,8 +171,6 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 	
-		veuvage.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.handle(warnings);
@@ -229,8 +225,6 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		veuvage.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
 		assertTrue("Le validate doit échouer car l'individu est marié", !erreurs.isEmpty());
 		
@@ -248,8 +242,6 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		veuvage.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
 		veuvage.validate(erreurs, warnings);
 		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", !erreurs.isEmpty());
 	}

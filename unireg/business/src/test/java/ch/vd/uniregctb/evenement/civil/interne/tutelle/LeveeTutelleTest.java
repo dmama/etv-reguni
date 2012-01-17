@@ -77,9 +77,6 @@ public class LeveeTutelleTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		leveeTutelle.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la levée de tutelle.", erreurs);
-
 		leveeTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la levée de tutelle.", erreurs);
 

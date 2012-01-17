@@ -16,19 +16,6 @@ public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest 
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testCompleteness() {
-		final EvenementCivilInterne evt = new EvenementCivilIgnore(TypeEvenementCivil.ETAT_COMPLET, context);
-
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		evt.checkCompleteness(erreurs, warnings);
-
-		assertEmpty(erreurs);
-		assertEmpty(warnings);
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws EvenementCivilException {
 		final EvenementCivilInterne evt = new EvenementCivilIgnore(TypeEvenementCivil.ETAT_COMPLET, context);
 

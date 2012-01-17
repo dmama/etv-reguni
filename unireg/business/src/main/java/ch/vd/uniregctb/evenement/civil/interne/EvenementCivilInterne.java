@@ -158,8 +158,6 @@ public abstract class EvenementCivilInterne {
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 	}
 
-	public abstract void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings);
-
 	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		validateCommon(erreurs);
 		if (erreurs.isEmpty()) {

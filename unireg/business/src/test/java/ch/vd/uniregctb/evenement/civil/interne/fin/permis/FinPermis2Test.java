@@ -74,9 +74,6 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		finPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-
 		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis C devrait être ignorée", erreurs.isEmpty());
 
@@ -95,9 +92,6 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		finPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-
 		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis C devrait passer en traitement manuel", erreurs.size() == 1);
 
@@ -115,9 +109,6 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		finPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		finPermis.validate(erreurs, warnings);
 		assertTrue("La fin de permis non C devrait être ignorée", erreurs.isEmpty());

@@ -62,7 +62,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividu(noIndividu, date, parties);
 	}

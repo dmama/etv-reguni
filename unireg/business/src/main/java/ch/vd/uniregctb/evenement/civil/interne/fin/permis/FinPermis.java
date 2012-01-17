@@ -62,10 +62,6 @@ public class FinPermis extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		/* Seulement le permis C est traité */
 		if (getTypePermis() == TypePermis.ETABLISSEMENT) {

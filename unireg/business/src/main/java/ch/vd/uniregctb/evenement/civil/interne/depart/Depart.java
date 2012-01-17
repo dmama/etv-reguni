@@ -122,7 +122,6 @@ public class Depart extends Mouvement {
 	 */
 	private boolean isAncienTypeDepart = false;
 
-	@Override
 	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 		Audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
 
@@ -358,6 +357,11 @@ public class Depart extends Mouvement {
 
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+
+		checkCompleteness(erreurs, warnings);
+		if (!erreurs.isEmpty()) {
+			return;
+		}
 
 		// [SIFISC-1918] Pour un départ, si la date est à la date du jour, on doit partir en erreur (l'événement sera re-traité plus tard)
 		// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)

@@ -86,9 +86,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				annulation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
-
 				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
 
@@ -169,9 +166,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				annulation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
 				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
@@ -281,9 +275,6 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				annulation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de décès", erreurs);
 
 				annulation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);

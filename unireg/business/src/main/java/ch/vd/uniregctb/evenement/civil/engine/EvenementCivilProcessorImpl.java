@@ -360,13 +360,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
 		final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
 
-		// 2.1 - lancement de la validation
-		event.checkCompleteness(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
-			Audit.error(event.getNumeroEvenement(), "l'événement est incomplet");
-			return;
-		}
-
 		// 2.2 - lancement de la validation
 		event.validate(erreurs, warnings);
 		if (!erreurs.isEmpty()) {

@@ -32,11 +32,6 @@ public class EvenementCivilIgnore extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// pas de validation
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// pas de validation
 	}

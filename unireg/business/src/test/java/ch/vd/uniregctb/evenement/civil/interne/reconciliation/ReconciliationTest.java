@@ -78,9 +78,6 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
-
 				reconciliation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
@@ -135,9 +132,6 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
-
 				reconciliation.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
 
@@ -198,8 +192,6 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de la réconciliation.", erreurs);
 				reconciliation.validate(erreurs, warnings);
 				return null;
 			}

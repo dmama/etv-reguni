@@ -39,11 +39,6 @@ public class ChangementNom extends ChangementBase {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/* Rien de spécial pour le changement de nom */
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		/* pas de validation spécifique pour le changement de nom */
 		/* l'existance de l'individu est vérifié dans validateCommon */

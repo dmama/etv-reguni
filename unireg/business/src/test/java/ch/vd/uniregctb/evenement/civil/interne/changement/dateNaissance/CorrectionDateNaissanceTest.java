@@ -113,8 +113,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				correctionDateNaissane.checkCompleteness(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du checkCompleteness de correction de date de naissance.", erreurs);
 				correctionDateNaissane.validate(erreurs, warnings);
 				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
 				correctionDateNaissane.handle(warnings);
@@ -177,8 +175,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-					correctionDateNaissane.checkCompleteness(erreurs, warnings);
-					assertEmpty("Une erreur est survenue lors du checkCompleteness de correction de date de naissance.", erreurs);
 					correctionDateNaissane.validate(erreurs, warnings);
 					assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
 					correctionDateNaissane.handle(warnings);
@@ -269,8 +265,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				correctionDateNaissane.checkCompleteness(erreurs, warnings);
-				assertEmpty(erreurs);
 				correctionDateNaissane.validate(erreurs, warnings);
 				assertEmpty(erreurs);
 				correctionDateNaissane.handle(warnings);
@@ -338,8 +332,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-					correctionDateNaissane.checkCompleteness(erreurs, warnings);
-					assertEmpty(erreurs);
 					correctionDateNaissane.validate(erreurs, warnings);
 					assertEmpty(erreurs);
 					correctionDateNaissane.handle(warnings);

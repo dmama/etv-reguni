@@ -61,17 +61,12 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	/**
 	 * @param evt événement à envoyer dans le handler
 	 * @return la liste des warnings reçus
-	 * @throws ErrorFoundException si des erreurs ont été levées dans les méthode checkCompleteness ou validate du handler
+	 * @throws ErrorFoundException si des erreurs ont été levées dans la méthode validate du handler
 	 */
 	private List<EvenementCivilExterneErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		evt.checkCompleteness(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
-			throw new ErrorFoundException(ErrorLocation.CHECK_COMPLETENESS, erreurs, warnings);
-		}
 
 		evt.validate(erreurs, warnings);
 		if (!erreurs.isEmpty()) {

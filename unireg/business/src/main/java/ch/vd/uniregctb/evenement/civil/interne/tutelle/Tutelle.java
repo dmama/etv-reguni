@@ -109,11 +109,6 @@ public class Tutelle extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/* rien à faire ici, un seul événement unitaire pour le pupille */
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		/*

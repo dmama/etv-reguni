@@ -65,7 +65,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.checkCompleteness(erreurs, warnings);
 		naissance.validate(erreurs, warnings);
 		naissance.handle(warnings);
 
@@ -96,7 +95,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.checkCompleteness(erreurs, warnings);
 		naissance.validate(erreurs, warnings);
 		naissance.handle(warnings);
 
@@ -126,7 +124,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.checkCompleteness(erreurs, warnings);
 		naissance.validate(erreurs, warnings);
 		naissance.handle(warnings);
 
@@ -186,10 +183,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				naissance.checkCompleteness(erreurs, warnings);
-				assertEmpty(erreurs);
-				assertEmpty(warnings);
 
 				naissance.validate(erreurs, warnings);
 				assertEmpty(erreurs);

@@ -263,7 +263,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		deces.checkCompleteness(erreurs, warnings);
 		deces.validate(erreurs, warnings);
 		deces.handle(warnings);
 
@@ -310,7 +309,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				deces.checkCompleteness(erreurs, warnings);
 				deces.validate(erreurs, warnings);
 				deces.handle(warnings);
 
@@ -407,7 +405,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				deces.checkCompleteness(erreurs, warnings);
 				deces.validate(erreurs, warnings);
 				deces.handle(warnings);
 
@@ -539,7 +536,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				deces.checkCompleteness(erreurs, warnings);
 				deces.validate(erreurs, warnings);
 				deces.handle(warnings);
 

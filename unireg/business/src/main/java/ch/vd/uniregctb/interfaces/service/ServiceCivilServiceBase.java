@@ -165,6 +165,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	public final EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 
 		final Individu individu = getIndividu(noIndividu, date);
+		if (individu == null) {
+			return null;
+		}
 
 		return individu.getEtatCivil(date);
 	}

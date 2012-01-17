@@ -77,9 +77,6 @@ public class AnnulationTutelleTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		annulationTutelle.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de tutelle.", erreurs);
-
 		annulationTutelle.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de tutelle.", erreurs);
 

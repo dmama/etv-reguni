@@ -52,10 +52,6 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		}
 
 		@Override
-		public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		}
-
-		@Override
 		public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 			return null;
 		}

@@ -95,9 +95,6 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		annulationNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
-
 		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
 
@@ -125,10 +122,6 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
-				erreurs);
 
 		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
@@ -160,10 +153,6 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
-				erreurs);
 
 		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
@@ -217,10 +206,6 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
-				erreurs);
 
 		annulationNationalite.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",

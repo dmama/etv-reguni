@@ -206,10 +206,6 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-	}
-
-	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		long numeroIndividu = getNoIndividu();

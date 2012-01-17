@@ -112,11 +112,6 @@ public class Mariage extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// Rien a vérifier, un seul événement est envoyé pour l'un des 2 individus
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		/* L’événement est mis en erreur dans les cas suivants */
 		final Individu individu = getIndividu();

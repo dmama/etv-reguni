@@ -76,7 +76,6 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		chgtSexe.checkCompleteness(erreurs, warnings); // ne fait rien
 		chgtSexe.validate(erreurs, warnings);// Valider la conformite sexe et numavs
 		chgtSexe.handle(warnings);
 

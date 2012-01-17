@@ -234,7 +234,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'un bâtiment).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		final Adresse adresse = newAdresse(type, batiment, casePostale, debutValidite, finValidite);
 		add(individu, adresse);

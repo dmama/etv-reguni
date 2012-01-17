@@ -138,7 +138,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -163,7 +162,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -187,7 +185,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -226,7 +223,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -269,7 +265,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -302,7 +297,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 
@@ -400,7 +394,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.checkCompleteness(erreurs, warnings);
 		demenagement.validate(erreurs, warnings);
 		demenagement.handle(warnings);
 

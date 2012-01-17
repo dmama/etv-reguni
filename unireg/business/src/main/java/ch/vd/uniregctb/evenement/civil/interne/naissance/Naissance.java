@@ -53,11 +53,6 @@ public class Naissance extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/* Rien de spécial pour la naissance */
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		if ( FiscalDateHelper.isMajeurAt(getIndividu(), RegDate.get()) ) {
 			erreurs.add(new EvenementCivilExterneErreur("L'individu ne devrait pas être majeur à la naissance"));

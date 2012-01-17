@@ -59,9 +59,6 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		annulation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de réconciliation", erreurs);
-		
 		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", erreurs);
 
@@ -124,9 +121,6 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de réconciliation", erreurs);
 		
 		annulation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", erreurs);
@@ -200,9 +194,6 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation de réconciliation", erreurs);
 		
 		boolean errorFound = false;
 		String errorMessage = null;

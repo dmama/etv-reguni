@@ -112,7 +112,6 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
 				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 
-				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
 				mariage.handle(lists.warnings);
 				return null;
@@ -166,7 +165,6 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				Individu seul = serviceCivil.getIndividu(UNI_SEUL, 2007);
 				Mariage mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
 
-				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
 				mariage.handle(lists.warnings);
 				return null;
@@ -250,7 +248,6 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, 2007);
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
 
-				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
 				mariage.handle(lists.warnings);
 				return null;
@@ -354,7 +351,6 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, 2007);
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
 
-				mariage.checkCompleteness(lists.erreurs, lists.warnings);
 				mariage.validate(lists.erreurs, lists.warnings);
 				mariage.handle(lists.warnings);
 				return null;

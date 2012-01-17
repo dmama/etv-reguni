@@ -122,9 +122,6 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		annulationPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
-
 		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
 	}
@@ -139,9 +136,6 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.", erreurs);
 
 		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
@@ -172,10 +166,6 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
-				erreurs);
 
 		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
@@ -229,10 +219,6 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de l'annulation.",
-				erreurs);
 
 		annulationPermis.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",

@@ -104,9 +104,6 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		divorce.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
-
 		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car personne non marié", erreurs.isEmpty(), false);
 		
@@ -122,9 +119,6 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		divorce.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
 		divorce.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
@@ -173,9 +167,6 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		divorce.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
 		divorce.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
@@ -242,9 +233,6 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		divorce.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
-		
 		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);
 		
@@ -261,9 +249,6 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		divorce.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness du divorce.", erreurs);
 		
 		divorce.validate(erreurs, warnings);
 		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);

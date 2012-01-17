@@ -77,7 +77,6 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		chgtIdentificateur.checkCompleteness(erreurs, warnings); // ne fait rien
 		chgtIdentificateur.validate(erreurs, warnings);// Valider la conformite sexe et numavs
 		chgtIdentificateur.handle(warnings);
 

@@ -62,9 +62,6 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		remiseBlancFinNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-
 		remiseBlancFinNationalite.validate(erreurs, warnings);
 		assertTrue("La mise à blanc de la date de fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
 	}
@@ -80,9 +77,6 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		remiseBlancFinNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		remiseBlancFinNationalite.validate(erreurs, warnings);
 		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());

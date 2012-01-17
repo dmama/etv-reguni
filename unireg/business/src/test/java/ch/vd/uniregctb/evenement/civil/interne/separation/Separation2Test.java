@@ -98,9 +98,6 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		separation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-		
 		separation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
 		
@@ -149,9 +146,6 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		separation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
 		separation.validate(erreurs, warnings);
 		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
@@ -220,9 +214,6 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		separation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-		
 		separation.validate(erreurs, warnings);
 		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
 		
@@ -264,9 +255,6 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		separation.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 
 		separation.validate(erreurs, warnings);
 		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());

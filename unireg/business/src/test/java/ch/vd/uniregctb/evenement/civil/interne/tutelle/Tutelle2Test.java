@@ -97,7 +97,6 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				tutelle.checkCompleteness(erreurs, warnings);
 				tutelle.validate(erreurs, warnings);
 				tutelle.handle(warnings);
 				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
@@ -168,7 +167,6 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				tutelle.checkCompleteness(erreurs, warnings);
 				tutelle.validate(erreurs, warnings);
 				tutelle.handle(warnings);
 

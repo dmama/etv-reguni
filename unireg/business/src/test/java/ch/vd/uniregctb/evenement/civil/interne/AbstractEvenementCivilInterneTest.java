@@ -65,12 +65,9 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				evtCivil.checkCompleteness(erreurs, warnings);
+				evtCivil.validate(erreurs, warnings);
 				if (erreurs.isEmpty()) {
-					evtCivil.validate(erreurs, warnings);
-					if (erreurs.isEmpty()) {
-						evtCivil.handle(warnings);
-					}
+					evtCivil.handle(warnings);
 				}
 				return null;
 			}

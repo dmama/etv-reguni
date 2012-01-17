@@ -91,11 +91,6 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// Obsolète dans cet handler, l'obtention de permis est un événement ne concernant qu'un seul individu.
-	}
-
-	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		// quelque soit le permis, si l'individu correspond à un non-habitant (= ancien habitant)

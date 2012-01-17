@@ -66,8 +66,6 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	private static final RegDate DATE_EVENEMENT_DEBUT_MOIS = RegDate.get(2008, 7, 10);
 	private static final RegDate DATE_EVENEMENT_FIN_ANNEE = RegDate.get(2008, 12, 27);
 
-	private static final RegDate DATE_ANTERIEURE_ADRESSE_ACTUELLE = RegDate.get(1940, 11, 19);
-
 	private EvenementFiscalService evenementFiscalService;
 
 	//JIRA 1996
@@ -99,7 +97,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final MockIndividu marianne = addIndividu(1234, RegDate.get(1961, 3, 12), "Durant", "Marianne", false);
+				final MockIndividu marianne = addIndividu(NUMERO_INDIVIDU_SEUL, RegDate.get(1961, 3, 12), "Durant", "Marianne", false);
 				final MockIndividu jhonny = addIndividu(1235, RegDate.get(1961, 3, 12), "Duretique", "Jhonny", true);
 				final MockIndividu Lucien = addIndividu(1236, RegDate.get(1961, 3, 12), "muller", "Lucien", true);
 				final MockIndividu Eva = addIndividu(1237, RegDate.get(1961, 3, 12), "muller", "Eva", false);
@@ -546,7 +544,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle...");
 
 		// mise-en-place des données à DATE_EVENEMENT
-		final Individu individu = serviceCivil.getIndividu((long) 1234, 0);
+		final Individu individu = serviceCivil.getIndividu((long) 1234, null);
 		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT, false));
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		adressePrincipale.setDateFinValidite(DATE_EVENEMENT);
@@ -557,9 +555,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse, DATE_EVENEMENT.getOneDayAfter());
 
-		// création d'un événement à DATE_ANTERIEURE_ADRESSE_ACTUELLE
+		// création d'un événement au 19 novembre 1970
 		final Depart depart =
-				new Depart(individu, null, DATE_ANTERIEURE_ADRESSE_ACTUELLE, noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null, true,
+				new Depart(individu, null, date(1970, 11, 19), noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null, true,
 						context);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -1565,12 +1563,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-		depart.checkCompleteness(erreurs, warnings);
+		depart.validate(erreurs, warnings);
 		if (erreurs.isEmpty()) {
-			depart.validate(erreurs, warnings);
-			if (erreurs.isEmpty()) {
-				depart.handle(warnings);
-			}
+			depart.handle(warnings);
 		}
 	}
 

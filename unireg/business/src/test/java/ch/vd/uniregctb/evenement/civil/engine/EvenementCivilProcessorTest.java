@@ -3,10 +3,13 @@ package ch.vd.uniregctb.evenement.civil.engine;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -29,6 +32,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -200,7 +204,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testEvenementsExceptionDansCheckCompleteness() throws Exception {
+	public void testEvenementsExceptionDansValidate() throws Exception {
 
 		// L'evenement 123L throw une exception lors de la validation
 		saveEvenement(123L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402, EtatEvenementCivil.A_TRAITER);
@@ -223,9 +227,27 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testEvenementsErreursDansCheckCompleteness() throws Exception {
+	public void testEvenementsErreursDansValidate() throws Exception {
 
-		saveEvenement(124L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402, EtatEvenementCivil.A_TRAITER);
+		final long NO_INDIVIDU = 78912L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(NO_INDIVIDU, date(1944,12,12), "Rufus", "Bonpoil", true);
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique rufus = addHabitant(NO_INDIVIDU);
+				assertNotNull(rufus);
+				return null;
+			}
+		});
+
+		saveEvenement(124L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), NO_INDIVIDU, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -238,7 +260,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				assertEquals(1, list.size());
 				EvenementCivilExterne e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				assertErreurs(2, e);
+				assertErreurs(e, "Check completeness erreur", "Again");
 
 				return null;
 			}
@@ -246,7 +268,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testEvenementsWarnDansCheckCompleteness() throws Exception {
+	public void testEvenementsWarnDansValidate() throws Exception {
 
 		final long noInd2 = 89123L;
 		final long noInd1 = 78912L;
@@ -520,7 +542,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	// ********************************************************************
 
-	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
+	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, @Nullable final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -555,6 +577,21 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			LOGGER.debug(msg);
 		}
 		assertEquals(expected, e.getErreurs().size());
+	}
+
+	private void assertErreurs(EvenementCivilExterne e, String... errors) {
+
+		assertEquals(errors.length, e.getErreurs().size());
+
+		final Set<String> expected = new HashSet<String>();
+		for (EvenementCivilExterneErreur ee : e.getErreurs()) {
+			expected.add(ee.getMessage());
+		}
+
+		for (int i = 0, errorsLength = errors.length; i < errorsLength; i++) {
+			final String error = errors[i];
+			assertTrue("L'erreur [" + error + "] n'existe pas", expected.contains(error));
+		}
 	}
 
 	private void assertWarnings(int expected, EvenementCivilExterne e) {

@@ -448,7 +448,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(modeImposition, forPrincipal.getModeImposition());
 	}
 
-	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture,
+	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture,
 			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
 		assertNotNull(forPrincipal);
 		assertEquals(debut, forPrincipal.getDateDebut());
@@ -793,7 +793,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un non-habitant minimal.
 	 */
-	protected PersonnePhysique addNonHabitant(@Nullable String prenom, String nom, @Nullable RegDate dateNaissance, Sexe sexe) {
+	protected PersonnePhysique addNonHabitant(@Nullable String prenom, String nom, @Nullable RegDate dateNaissance, @Nullable Sexe sexe) {
 		return addNonHabitant(null, prenom, nom, dateNaissance, sexe);
 	}
 

@@ -69,11 +69,6 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// rien à faire
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 		// rien à faire
 	}

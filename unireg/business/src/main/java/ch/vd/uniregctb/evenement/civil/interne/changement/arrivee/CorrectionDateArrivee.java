@@ -37,10 +37,6 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CORREC_DATE_ARRIVEE, date, numeroOfsCommuneAnnonce, context);
 	}
 
-	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-	}
-
 	private ForFiscalPrincipal getForFiscalPrincipalDeterminant(PersonnePhysique pp) {
 		final EnsembleTiersCouple ensemble = context.getTiersService().getEnsembleTiersCouple(pp, null);
 		final Contribuable ctbDeterminant;

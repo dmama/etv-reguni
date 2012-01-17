@@ -76,11 +76,6 @@ public class ObtentionNationalite extends ObtentionPermisCOuNationaliteSuisse {
 	}
 
 	@Override
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		// Obsolète dans cet handler, l'obtention de nationalité est un événement ne concernant qu'un seul individu.
-	}
-
-	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		if (TypeEvenementCivil.NATIONALITE_SUISSE == getType()) {

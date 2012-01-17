@@ -46,9 +46,6 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 		
-		finNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
-		
 		finNationalite.validate(erreurs, warnings);
 		assertTrue("La fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
 	}
@@ -64,9 +61,6 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		finNationalite.checkCompleteness(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
 		
 		finNationalite.validate(erreurs, warnings);
 		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());
