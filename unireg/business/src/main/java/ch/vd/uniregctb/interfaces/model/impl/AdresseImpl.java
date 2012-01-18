@@ -68,9 +68,16 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
 		this.communeAdresse = CommuneImpl.get(target.getCommuneAdresse());
 
-		// [SIFISC-3460] la valeur minimale admise pour les EGID et les EWID est 1 (on teste aussi les valeurs maximales, tant qu'on y est)
-		this.egid = string2int(target.getEgid(), 1, 999999999);
-		this.ewid = string2int(target.getEwid(), 1, 999);
+		if (this.typeAdresse == TypeAdresseCivil.COURRIER || this.typeAdresse == TypeAdresseCivil.TUTEUR) {
+			// les adresses courrier (et tuteur) ne doivent pas posséder d'egid/ewid (= ça n'a pas de sens).
+			this.egid = null;
+			this.ewid = null;
+		}
+		else {
+			// [SIFISC-3460] la valeur minimale admise pour les EGID et les EWID est 1 (on teste aussi les valeurs maximales, tant qu'on y est)
+			this.egid = string2int(target.getEgid(), 1, 999999999);
+			this.ewid = string2int(target.getEwid(), 1, 999);
+		}
 	}
 
 	private static Integer string2int(String string, int minValue, int maxValue) {

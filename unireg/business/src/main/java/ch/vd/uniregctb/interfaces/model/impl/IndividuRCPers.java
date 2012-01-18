@@ -26,7 +26,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
-import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
+import ch.vd.uniregctb.interfaces.model.EtatCivilListRCPers;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -63,7 +63,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Collection<AdoptionReconnaissance> adoptions;
 	private Collection<Adresse> adresses;
 	private Collection<RelationVersIndividu> enfants;
-	private EtatCivilListImpl etatsCivils;
+	private EtatCivilList etatsCivils;
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
 	private Permis permis;
@@ -89,8 +89,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.nom = identification.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
 		if (upiPerson != null) {
-			this.noAVS11 = EchHelper.avs13FromEch(upiPerson.getVn());
-			this.nouveauNoAVS = String.valueOf(upiPerson.getVn());
+			this.noAVS11 = initNumeroAVS11(identification.getOtherPersonId());
+			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 		}
 		this.numeroRCE = initNumeroRCE(identification.getOtherPersonId());
 		this.isMasculin = initIsMasculin(identification);
@@ -121,6 +121,20 @@ public class IndividuRCPers implements Individu, Serializable {
 		return getNoIndividu(person.getIdentity().getPersonIdentification().getLocalPersonId());
 	}
 
+	private static String initNumeroAVS11(List<NamedPersonId> otherPersonIds) {
+		if (otherPersonIds == null) {
+			return null;
+		}
+		String numeroAVS11 = null;
+		for (NamedPersonId id : otherPersonIds) {
+			if ("CH.AHV".equals(id.getPersonIdCategory())) {
+				numeroAVS11 = id.getPersonId();
+				break;
+			}
+		}
+		return numeroAVS11;
+	}
+
 	private static String initNumeroRCE(List<NamedPersonId> otherPersonIds) {
 		if (otherPersonIds == null) {
 			return null;
@@ -129,6 +143,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		for (NamedPersonId id : otherPersonIds) {
 			if ("CH.ZAR".equals(id.getPersonIdCategory())) {
 				numeroRCE = id.getPersonId();
+				break;
 			}
 		}
 		return numeroRCE;
@@ -152,7 +167,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return PermisRCPers.get(person.getResidencePermit());
 	}
 
-	private static EtatCivilListImpl initEtatsCivils(List<MaritalData> maritalStatus) {
+	private static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
 		if (maritalStatus == null) {
 			return null;
 		}
@@ -160,7 +175,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		for (MaritalData data : maritalStatus) {
 			list.add(EtatCivilRCPers.get(data));
 		}
-		return new EtatCivilListImpl(list);
+		return new EtatCivilListRCPers(list);
 	}
 
 	private static Collection<Adresse> initAdresses(List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureService infraService) {

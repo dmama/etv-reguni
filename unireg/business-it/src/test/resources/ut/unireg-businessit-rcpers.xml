@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="clientRcPers" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
-		<property name="baseUrl" value="${testprop.rcpers.url}" />
-		<property name="username" value="${testprop.rcpers.username}" />
-		<property name="password" value="${testprop.rcpers.password}" />
-		<property name="peoplePath" value="${testprop.rcpers.peoplePath}" />
+		<property name="baseUrl" value="${testprop.webservice.rcpers.url}" />
+		<property name="username" value="${testprop.webservice.rcpers.username}" />
+		<property name="password" value="${testprop.webservice.rcpers.password}" />
+		<property name="peoplePath" value="${testprop.webservice.rcpers.peoplePath}" />
 	</bean>
 
 	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.rcpers.ServiceCivilRCPers" parent="serviceCivilServiceBase">

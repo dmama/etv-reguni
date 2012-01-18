@@ -26,8 +26,11 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
@@ -277,6 +280,33 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		Assert.assertEquals(taf, forFiscal.getTypeAutoriteFiscale());
 		Assert.assertEquals(commune.getNoOFSEtendu(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
 		Assert.assertEquals(rattachement, forFiscal.getMotifRattachement());
+	}
+
+	protected static void assertEtatCivil(RegDate debut, @Nullable RegDate fin, TypeEtatCivil type, EtatCivil etatCivil) {
+		assertNotNull(etatCivil);
+		assertEquals(debut, etatCivil.getDateDebut());
+		assertEquals(fin, etatCivil.getDateFin());
+		assertEquals(type, etatCivil.getTypeEtatCivil());
+	}
+
+	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, Adresse adresse) {
+		assertNotNull(adresse);
+		assertEquals(debut, adresse.getDateDebut());
+		assertEquals(fin, adresse.getDateFin());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(npa, adresse.getNumeroPostal());
+		assertEquals(localite, adresse.getLocalite());
+	}
+
+	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Integer egid, @Nullable Integer ewid, Adresse adresse) {
+		assertNotNull(adresse);
+		assertEquals(debut, adresse.getDateDebut());
+		assertEquals(fin, adresse.getDateFin());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(npa, adresse.getNumeroPostal());
+		assertEquals(localite, adresse.getLocalite());
+		assertEquals(egid, adresse.getEgid());
+		assertEquals(ewid, adresse.getEwid());
 	}
 
 	/**

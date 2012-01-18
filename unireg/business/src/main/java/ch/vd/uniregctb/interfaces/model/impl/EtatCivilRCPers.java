@@ -17,12 +17,12 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private static final long serialVersionUID = -3154801553713624662L;
 	
 	private final RegDate dateDebut;
-	private final RegDate dateFin;
+	private RegDate dateFin;
 	private final TypeEtatCivil typeEtatCivil;
 
 	public EtatCivilRCPers(MaritalData maritalStatus) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
-		this.dateFin = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfSeparation());
+		this.dateFin = null;
 		this.typeEtatCivil = initiTypeEtatCivil(maritalStatus);
 	}
 
@@ -52,6 +52,10 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
 	@Override
