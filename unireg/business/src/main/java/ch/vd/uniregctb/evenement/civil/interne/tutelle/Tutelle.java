@@ -65,14 +65,9 @@ public class Tutelle extends EvenementCivilInterne {
 		super(evenement, context, options);
 
 		/*
-		 * Récupération de l'année de l'événement
-		 */
-		final int anneeEvenement = evenement.getDateEvenement().year();
-
-		/*
 		 * Récupération de la tutelle.
 		 */
-		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = context.getServiceCivil().getTutelle(getNoIndividu(), anneeEvenement);
+		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = context.getServiceCivil().getTutelle(getNoIndividu(), evenement.getDateEvenement());
 
 		/*
 		 * Initialisation du type de tutelle.

@@ -99,9 +99,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Tutelle getTutelle(long noTechniqueIndividu, int anneeValidite) {
+	public Tutelle getTutelle(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getTutelle(noTechniqueIndividu, anneeValidite);
+		return target.getTutelle(noTechniqueIndividu, date);
 	}
 
 	@Override

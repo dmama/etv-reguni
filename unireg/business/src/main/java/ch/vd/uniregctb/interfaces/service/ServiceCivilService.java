@@ -176,10 +176,10 @@ public interface ServiceCivilService {
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
+	 * @param date       la date de validité de la tutelle.
 	 * @return la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis.
 	 */
-	Tutelle getTutelle(long noIndividu, int annee);
+	Tutelle getTutelle(long noIndividu, RegDate date);
 
 	/**
 	 * @param noIndividu

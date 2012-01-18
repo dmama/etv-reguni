@@ -117,21 +117,14 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Tutelle getTutelle(long noIndividu, int annee) {
+	public final Tutelle getTutelle(long noIndividu, RegDate date) {
 
-		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.TUTELLE);
+		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.TUTELLE);
 		if (individu == null) {
 			return null;
 		}
 
 		return individu.getTutelle();
-	}
-
-	private static RegDate annee2date(int annee) {
-		if (annee <= 0 || annee >= 2400) {
-			return null;
-		}
-		return RegDate.get(annee, 12, 31);
 	}
 
 	@Override
