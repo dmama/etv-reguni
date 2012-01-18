@@ -87,7 +87,7 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
 		LOGGER.debug("numero : " + l.get(0).getNumero());
 		LOGGER.debug ("nom : " + l.get(0).getNom1());
-		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
+		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
 
 		// on verifie que le changement a bien été effectué
 		String navs13  = indi.getNoAVS11();

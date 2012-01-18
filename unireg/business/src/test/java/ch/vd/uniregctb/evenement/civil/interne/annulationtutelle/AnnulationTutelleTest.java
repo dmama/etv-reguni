@@ -71,7 +71,7 @@ public class AnnulationTutelleTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de tutelle avec un tuteur.");
 
-		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
+		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		AnnulationTutelle annulationTutelle = createAnnulationTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

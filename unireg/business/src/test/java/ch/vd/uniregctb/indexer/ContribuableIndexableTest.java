@@ -204,7 +204,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 	@Test
 	public void testTiersACIIndexable() throws Exception {
-		Individu individu = serviceCivil.getIndividu(7643L, 2007);
+		Individu individu = serviceCivil.getIndividu(7643L, RegDate.get(2007, 12, 31));
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(12348L);
@@ -228,7 +228,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 	@Test
 	public void testHabitantIndexable() throws Exception {
-		Individu individu = serviceCivil.getIndividu(7643L, 2007);
+		Individu individu = serviceCivil.getIndividu(7643L, RegDate.get(2007, 12, 31));
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(12348L);
@@ -721,7 +721,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	@Test
 	public void testContribuableAvecAdressesCivile() throws Exception {
 
-		Individu individu = serviceCivil.getIndividu(1234L, 2007);
+		Individu individu = serviceCivil.getIndividu(1234L, RegDate.get(2007, 12, 31));
 		//HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
 
 		PersonnePhysique hab = new PersonnePhysique(true);

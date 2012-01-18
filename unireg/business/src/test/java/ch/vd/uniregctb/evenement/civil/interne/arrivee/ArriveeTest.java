@@ -157,13 +157,13 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 		// 1er test : individu seul
-		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Arrivee arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
 		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
 		// 2ème test : individu marié seul
-		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
+		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
 		arrivee = createValidArrivee(individuMarieSeul, DATE_VALIDE);
 		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
@@ -182,7 +182,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 		// 1er test : événement avec une date dans le futur
-		Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), DATE_FUTURE);
+		Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), DATE_FUTURE);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
 
@@ -203,7 +203,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
-		arrivee = new Arrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
+		arrivee = new Arrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
 				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs,
@@ -212,14 +212,14 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// 3ème test : arrivée hors canton
 		erreurs.clear();
 		warnings.clear();
-		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), MockCommune.Neuchatel, DATE_VALIDE);
+		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.Neuchatel, DATE_VALIDE);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs, "L'arrivée est hors canton, une erreur aurait du être déclenchée");
 
 		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
 		erreurs.clear();
 		warnings.clear();
-		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
+		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(warnings.size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
 	}
@@ -280,7 +280,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Arrivee arrivee = createValidArrivee(individu, DATE_VALIDE);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

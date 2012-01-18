@@ -53,7 +53,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		final RegDate dateSeparation = date(2000, 9, 12);
 		final long noIndividu = 12345;
 		
-		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -87,7 +87,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		final long noIndividuMarie = 54321; // momo
 		final long noIndividuConjoint = 23456; // béa
 		
-		Individu individu = serviceCivil.getIndividu(noIndividuMarie, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividuMarie, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -124,7 +124,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		final RegDate dateFictive = RegDate.get(2008, 1, 1);
 		final long noIndividu = 6789;
 		
-		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateFictive);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

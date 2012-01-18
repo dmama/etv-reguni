@@ -40,15 +40,10 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		super(evenement, context, options);
 
 		/*
-		 * Calcul de l'année où a eu lieu l'événement
-		 */
-		int anneeEvenement = getDate().year();
-
-		/*
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 */
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement);
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
 		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
 		
 	}

@@ -109,7 +109,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
+				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, date(2009, 12, 31));
 				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -162,7 +162,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu seul = serviceCivil.getIndividu(UNI_SEUL, 2007);
+				Individu seul = serviceCivil.getIndividu(UNI_SEUL, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
 
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -244,8 +244,8 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu individu = serviceCivil.getIndividu(UNI_HETERO, 2007);
-				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, 2007);
+				Individu individu = serviceCivil.getIndividu(UNI_HETERO, date(2007, 12, 31));
+				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
 
 				mariage.validate(lists.erreurs, lists.warnings);
@@ -347,8 +347,8 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu individu = serviceCivil.getIndividu(UNI_HOMO, 2007);
-				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, 2007);
+				Individu individu = serviceCivil.getIndividu(UNI_HOMO, date(2007, 12, 31));
+				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
 
 				mariage.validate(lists.erreurs, lists.warnings);

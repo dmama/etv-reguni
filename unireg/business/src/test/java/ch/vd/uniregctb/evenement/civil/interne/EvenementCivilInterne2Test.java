@@ -179,7 +179,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	public void testValidateCommon() throws EvenementCivilException {
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2400);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, null);
 
 		//test OK
 		final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1),356, context);

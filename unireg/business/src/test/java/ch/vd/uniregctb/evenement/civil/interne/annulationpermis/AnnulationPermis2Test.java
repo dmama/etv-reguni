@@ -116,7 +116,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationPermisHandlerCelibataire() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis C de célibataire.");
-		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
+		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermis(celibataire, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -131,7 +131,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationPermisHandlerCelibataireMaisPermisNonC() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis non C de célibataire.");
-		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
+		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(celibataire, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -161,7 +161,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	public void testAnnulationPermisHandlerMarieSeul() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié seul.");
-		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
+		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(marieSeul, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -214,7 +214,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 	public void testPermisHandlerMarieADeux() throws EvenementCivilException {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de permis de marié à deux.");
-		Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
+		Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermis(marie, DATE_OBTENTION_PERMIS);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

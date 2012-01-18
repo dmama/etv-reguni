@@ -115,27 +115,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, final int annee, final AttributeIndividu... parties) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getIndividu(noIndividu, annee, parties);
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getIndividu", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noIndividu=%d, annee=%d, parties=%s", noIndividu, annee, ServiceTracing.toString(parties));
-				}
-			});
-		}
-	}
-
-	@Override
 	public Individu getIndividu(final long noIndividu, final RegDate date, final AttributeIndividu... parties) {
 		Throwable t = null;
 		final long time = tracing.start();
@@ -235,27 +214,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 				@Override
 				public String toString() {
 					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));
-				}
-			});
-		}
-	}
-
-	@Override
-	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final int annee, final AttributeIndividu... parties) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getIndividus(nosIndividus, annee, parties);
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getIndividus", new Object() {
-				@Override
-				public String toString() {
-					return String.format("nosIndividus=%s, annee=%d, parties=%s", ServiceTracing.toString(nosIndividus), annee, ServiceTracing.toString(parties));
 				}
 			});
 		}

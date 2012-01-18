@@ -80,7 +80,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
+				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008,12,31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -161,7 +161,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -269,8 +269,8 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008);
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, 2008);
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2008, 12, 31));
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

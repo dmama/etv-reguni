@@ -132,7 +132,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Traitement d'un événement de correction de filiation
 			 */
-			final Individu jean = serviceCivil.getIndividu(jeanNoInd, 2400, AttributeIndividu.PARENTS);
+			final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
 			final CorrectionFiliation correction = new CorrectionFiliation(jean, jeanId, null, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFSEtendu(), context);
 			assertSansErreurNiWarning(correction);
 
@@ -150,7 +150,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
-		final Individu individu = cache.getIndividu(noIndividu, 2400);
+		final Individu individu = cache.getIndividu(noIndividu, null);
 		assertNotNull(individu);
 		assertEquals(prenom, individu.getPrenom());
 		assertEquals(nom, individu.getNom());

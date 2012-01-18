@@ -35,10 +35,7 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  */
 public abstract class EvenementCivilInterne {
 
-	public static long NO_OFS_FRACTION = 0;
 	public static final long NO_OFS_FRACTION_SENTIER = 8000;
-	public static long NO_OFS_L_ABBAYE = 5871;
-	public static long NO_OFS_LE_CHENIT = 5872;
 
 	// L'individu principal.
 	private final Long noIndividu;
@@ -55,18 +52,15 @@ public abstract class EvenementCivilInterne {
 	private final Long numeroEvenement;
 	private final Integer numeroOfsCommuneAnnonce;
 
-	// Info pour initialiser les individus de manière lazy
-	private int anneeReference;
 	private AttributeIndividu[] parts;
 	protected final EvenementCivilContext context;
 
 	/**
 	 * Construit un événement civil interne sur la base d'un événement civil externe.
 	 *
-	 *
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
-	 * @param options
+	 * @param options les options de traitement de l'événement
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
 	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -81,11 +75,6 @@ public abstract class EvenementCivilInterne {
 		this.principalPPId = evenement.getHabitantPrincipalId();
 		this.noIndividuConjoint = evenement.getNumeroIndividuConjoint();
 		this.conjointPPId = evenement.getHabitantConjointId();
-
-		/*
-		 * Récupération de l'année de l'événement (on s'intéresse à tout ce qui s'est passé avant)
-		 */
-		anneeReference = date.year();
 
 		/*
 		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
@@ -170,8 +159,10 @@ public abstract class EvenementCivilInterne {
 	/**
 	 * Validation commune l'objet target passé en paramètre.
 	 *
-	 * @param erreurs les éventuelles erreurs trouvées (out)
+	 * @param erreurs  les éventuelles erreurs trouvées (out)
 	 * @param warnings les éventuels warnings trouvés (out)
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 *          en cas d'erreur dans le traitement de l'événement civil.
 	 */
 	protected abstract void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
 
@@ -251,7 +242,7 @@ public abstract class EvenementCivilInterne {
 
 	public final Individu getConjoint() {
 		if (conjoint == null && noIndividuConjoint != null) { // lazy init
-			conjoint = context.getServiceCivil().getIndividu(noIndividuConjoint, anneeReference);
+			conjoint = context.getServiceCivil().getIndividu(noIndividuConjoint, date);
 		}
 		return conjoint;
 	}
@@ -270,7 +261,7 @@ public abstract class EvenementCivilInterne {
 
 	public Individu getIndividu() {
 		if (individuPrincipal == null && noIndividu != null) { // lazy init
-			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeReference, parts);
+			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, parts);
 		}
 		return individuPrincipal;
 	}
@@ -361,21 +352,21 @@ public abstract class EvenementCivilInterne {
 	/**
 	 * Ouvre un nouveau for fiscal principal.
 	 *
-	 * @param contribuable
-	 *            le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture
-	 *            la date à laquelle le nouveau for est ouvert
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param changeHabitantFlag
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param rattachement             le motif de rattachement du nouveau for
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
-			TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
-			MotifFor motifOuverture, ModeImposition modeImposition, boolean changeHabitantFlag) {
+	                                                    TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
+	                                                    MotifFor motifOuverture, ModeImposition modeImposition, boolean changeHabitantFlag) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale,
-				typeAutoriteFiscale, modeImposition, motifOuverture, changeHabitantFlag);
+		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, changeHabitantFlag);
 	}
 
 	/**
@@ -388,7 +379,7 @@ public abstract class EvenementCivilInterne {
 	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
 	 * @param typeAutorite             le type d'autorité fiscale
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
-	 * @param changeHabitantFlag
+	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermetureOuverture,
@@ -412,14 +403,12 @@ public abstract class EvenementCivilInterne {
 
 	/**
 	 * Ferme le for fiscal principal d'un contribuable.
-	 * <p>
-	 * Note: cette méthode est définie à ce niveau par soucis de symétrie avec les méthodes openForFiscalPrincipal et
-	 * updateForFiscalPrincipal.
+	 * <p/>
+	 * Note: cette méthode est définie à ce niveau par soucis de symétrie avec les méthodes openForFiscalPrincipal et updateForFiscalPrincipal.
 	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateFermeture
-	 *            la date de fermeture du for
+	 * @param contribuable   le contribuable concerné
+	 * @param dateFermeture  la date de fermeture du for
+	 * @param motifFermeture le motif de fermeture du for
 	 */
 	protected void closeForFiscalPrincipal(Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
 		context.getTiersService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
@@ -427,35 +416,28 @@ public abstract class EvenementCivilInterne {
 
 	/**
 	 * Ouvre un nouveau for fiscal principal.
-	 * <p>
-	 * Cette méthode est une version spécialisée pour les événements fiscaux qui assume que:
-	 * <ul>
-	 * <li>le type d'autorité fiscale est toujours une commune vaudoise</li>
-	 * <li>le motif de rattachement est toujours domicile/séjour</li>
-	 * <li>le mode d'imposition est toujours ordinaire</li>
-	 * </ul>
+	 * <p/>
+	 * Cette méthode est une version spécialisée pour les événements fiscaux qui assume que: <ul> <li>le type d'autorité fiscale est toujours une commune vaudoise</li> <li>le motif de rattachement est
+	 * toujours domicile/séjour</li> <li>le mode d'imposition est toujours ordinaire</li> </ul>
 	 *
-	 * @param contribuable
-	 *            le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture
-	 *            la date à laquelle le nouveau for est ouvert
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param changeHabitantFlag
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipalDomicileVaudoisOrdinaire(Contribuable contribuable, final RegDate dateOuverture,
-			int numeroOfsAutoriteFiscale, MotifFor motifOuverture, boolean changeHabitantFlag) {
-		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale,
-				MotifRattachement.DOMICILE, motifOuverture, ModeImposition.ORDINAIRE, changeHabitantFlag);
+	                                                                            int numeroOfsAutoriteFiscale, MotifFor motifOuverture, boolean changeHabitantFlag) {
+		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, motifOuverture,
+				ModeImposition.ORDINAIRE, changeHabitantFlag);
 	}
 
 	/**
-	 * Vérifie la non-existence d'un Tiers.
+	 * Vérifie la non-existence d'un habitant.
 	 *
-	 * @param noIndividu
-	 * @throws EvenementCivilException
-	 *             si un ou plusieurs tiers sont trouvés
+	 * @param noIndividu le numéro de l'individu pointé par l'habitant dont on veut vérifier l'existence.
+	 * @throws EvenementCivilException si un ou plusieurs tiers sont trouvés
 	 */
 	protected void verifieNonExistenceTiers(Long noIndividu) throws EvenementCivilException {
 		if (context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu) != null) {

@@ -86,7 +86,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		setupServiceCivilAndLoadDb();
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de célibataire.");
-		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -124,7 +124,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		setupServiceCivilAndLoadDb();
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité non suisse de célibataire.");
-		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -169,7 +169,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, 2007);
+				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
 				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
 				obtentionNationalite.validate(erreurs, warnings);
@@ -232,7 +232,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		setupServiceCivilAndLoadDb();
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié à deux.");
-		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, 2007);
+		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -335,7 +335,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -393,7 +393,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, AttributeIndividu.NATIONALITE);
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31), AttributeIndividu.NATIONALITE);
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

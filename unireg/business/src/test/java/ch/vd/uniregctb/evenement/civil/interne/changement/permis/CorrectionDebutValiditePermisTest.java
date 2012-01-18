@@ -24,7 +24,7 @@ import ch.vd.uniregctb.type.TypePermis;
 public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInterneTest {
 
 	private CorrectionDebutValiditePermis createEvt(long noIndividu, int ofsCommune, RegDate date, Long principalId) {
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400, AttributeIndividu.PERMIS);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.PERMIS);
 		return new CorrectionDebutValiditePermis(individu, principalId, null, null, date, ofsCommune, context);
 	}
 

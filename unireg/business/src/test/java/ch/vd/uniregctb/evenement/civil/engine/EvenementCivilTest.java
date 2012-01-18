@@ -244,7 +244,7 @@ public class EvenementCivilTest extends BusinessTest {
 	}
 
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
-		final Individu individu = cache.getIndividu(noIndividu, 2400);
+		final Individu individu = cache.getIndividu(noIndividu, null);
 		assertNotNull(individu);
 		assertEquals(prenom, individu.getPrenom());
 		assertEquals(nom, individu.getNom());

@@ -133,7 +133,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	public void testIndividuSeulHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu seul.");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -157,7 +157,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	public void testIndividuSeulFinDecembreHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement fin décembre individu seul.");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_LIMITE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -180,7 +180,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuMarieSeulHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul.");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -216,8 +216,8 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndividuMarieHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié .");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
-		final Individu individu2 = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, date(2000, 12, 31));
+		final Individu individu2 = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, individu2, DATE_VALIDE, MockCommune.Fraction.LePont);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -254,7 +254,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudoisSansChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -286,7 +286,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 @Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudoisAvecChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
-		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

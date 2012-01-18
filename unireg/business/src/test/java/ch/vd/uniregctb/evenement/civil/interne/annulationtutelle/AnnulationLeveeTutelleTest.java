@@ -77,7 +77,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec un tuteur.");
 
-		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
+		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -117,7 +117,7 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de levée de tutelle avec des données erronées.");
 
-		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_ERREUR, 2008);
+		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_ERREUR, date(2008, 12, 31));
 		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

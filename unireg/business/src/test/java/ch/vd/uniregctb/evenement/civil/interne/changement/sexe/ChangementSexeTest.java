@@ -88,7 +88,7 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug ("nom : " + l.get(0).getNom1());
 
 		// on verifie que le changement a bien été effectué
-		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
+		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
 		Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
 	}
 

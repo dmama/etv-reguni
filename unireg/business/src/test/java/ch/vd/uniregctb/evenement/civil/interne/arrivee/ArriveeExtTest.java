@@ -99,7 +99,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -182,7 +182,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		/*
@@ -277,9 +277,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final Individu individuHorsCouple = serviceCivil.getIndividu(noIndividuHorsCouple, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
+		final Individu individuHorsCouple = serviceCivil.getIndividu(noIndividuHorsCouple, dateArrivee);
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		/*
@@ -375,7 +375,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -512,7 +512,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -604,7 +604,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Erreur: nouvelle adresse sur la commune composée du Chenit
 		 */
 		{
-			final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee.year());
+			final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee);
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -626,7 +626,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Ok: nouvelle adresse sur la commune du Lieu (qui anciennement était une commune avec fractions mais qui ne l'est plus)
 		 */
 		{
-			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee.year());
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -692,7 +692,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Erreur: nouvelle adresse sur la commune du Chenit
 		 */
 		{
-			final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee.year());
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee);
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -710,7 +710,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Erreur: nouvelle adresse sur la commune du Lieu
 		 */
 		{
-			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee.year());
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -805,7 +805,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -870,7 +870,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -957,7 +957,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -1057,7 +1057,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -1143,7 +1143,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -1229,7 +1229,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -1350,8 +1350,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
@@ -1489,8 +1489,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
@@ -1637,8 +1637,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
@@ -1761,7 +1761,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
@@ -1875,8 +1875,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
@@ -2029,7 +2029,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 		
-		final Individu individu = serviceCivil.getIndividu(numeroIndividu, dateArrivee.year());
+		final Individu individu = serviceCivil.getIndividu(numeroIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 		
@@ -2185,8 +2185,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 		
-		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
-		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
+		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
+		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 		
@@ -2363,7 +2363,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Crée un événement d'arrivée de Bussigny à Lausanne au 24 mars 2010
 		MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		Arrivee arrivee =
 				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
@@ -2425,7 +2425,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2010, 3, 24);
 
 		// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 		MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
@@ -2484,7 +2484,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 1);
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		final Arrivee arrivee =
 				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse,
@@ -2612,7 +2612,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
-				final Individu individu = serviceCivil.getIndividu(noIndividuJulie, 2400);
+				final Individu individu = serviceCivil.getIndividu(noIndividuJulie, null);
 				final MockAdresse nouvelleAdresse = new MockAdresse();
 				nouvelleAdresse.setDateDebutValidite(dateRetour);
 
@@ -2676,7 +2676,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2010, 3, 24);
 
 		// Crée un événement d'arrivée de HS à Lausanne au 24 mars 2010
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 		MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
@@ -2731,7 +2731,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 20);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
@@ -2789,7 +2789,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 21);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
@@ -2848,7 +2848,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 20);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		final Individu individu = serviceCivil.getIndividu(noInd, 2400);
+		final Individu individu = serviceCivil.getIndividu(noInd, null);
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 

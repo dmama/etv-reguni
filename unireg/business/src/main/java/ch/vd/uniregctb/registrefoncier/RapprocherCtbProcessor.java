@@ -185,7 +185,7 @@ public class RapprocherCtbProcessor {
 
 		if (!ppByNoIndividu.isEmpty()) {
 			// remplit le cache des individus...
-			final List<Individu> individus = serviceCivil.getIndividus(ppByNoIndividu.keySet(), 2400, AttributeIndividu.ADRESSES);
+			final List<Individu> individus = serviceCivil.getIndividus(ppByNoIndividu.keySet(), null, AttributeIndividu.ADRESSES);
 
 			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
 			for (Individu individu : individus) {

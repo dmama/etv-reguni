@@ -53,7 +53,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final RegDate dateReconciliation = RegDate.get(2000, 11, 3);
 		final long noIndividu = 12345;
 		
-		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateReconciliation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -115,8 +115,8 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final long noIndividuMarie = 54321; // momo
 		final long noIndividuConjoint = 23456; // béa
 		
-		Individu individu = serviceCivil.getIndividu(noIndividuMarie, 2008);
-		Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividuMarie, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -189,7 +189,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		final RegDate dateFictive = RegDate.get(2008, 1, 1);
 		final long noIndividu = 6789;
 		
-		Individu individu = serviceCivil.getIndividu(noIndividu, 2008);
+		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateFictive);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

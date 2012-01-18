@@ -111,7 +111,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un suisse marié seul.");
 		
-		Individu veufSuisse = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
+		Individu veufSuisse = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufSuisse);
 	
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -165,7 +165,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non suisse marié seul.");
 		
-		Individu veufEtranger = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008);
+		Individu veufEtranger = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufEtranger);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -219,7 +219,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié.");
 		
-		Individu veufMarie = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_MARIE, 2008);
+		Individu veufMarie = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_MARIE, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufMarie);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -236,7 +236,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de veuvage d'un habitant marié seul ayant un for fiscal principal ouvert après la date de veuvage.");
 		
-		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, 2008);
+		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veuf);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

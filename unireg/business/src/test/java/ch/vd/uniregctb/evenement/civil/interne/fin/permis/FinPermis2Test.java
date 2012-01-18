@@ -68,7 +68,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu ayant obtenu la nationalité suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, DATE_FIN_PERMIS .year());
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -86,7 +86,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis C d'un individu n'ayant pas obtenu la nationalité suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_2, DATE_FIN_PERMIS .year());
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_2, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -104,7 +104,7 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de permis autre que C.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_PERMIS_L, DATE_FIN_PERMIS .year());
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_PERMIS_L, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisNonC(individu, DATE_FIN_PERMIS );
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

@@ -100,7 +100,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -137,7 +137,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -173,7 +173,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -216,7 +216,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -265,7 +265,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -313,7 +313,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -367,7 +367,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -423,7 +423,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
@@ -478,7 +478,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -536,7 +536,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -597,7 +597,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -657,7 +657,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement dans le handler
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -707,7 +707,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -748,7 +748,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);
@@ -788,7 +788,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
 		try {
 			sendEvent(evt);

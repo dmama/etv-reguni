@@ -43,16 +43,11 @@ public class Mariage extends EvenementCivilInterne {
 		super(evenement, context, options);
 
 		/*
-		 * Calcul de l'année où a eu lieu l'événement
-		 */
-		int anneeEvenement = getDate().year();
-
-		/*
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 * getIndividu().getConjoint() peut être null si mariage le 01.01
 		 */
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, anneeEvenement);
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
 		this.nouveauConjoint = getConjointValide(individuPrincipal, context.getServiceCivil());
 		//this.nouveauConjoint = individuPrincipal.getConjoint();
 	}

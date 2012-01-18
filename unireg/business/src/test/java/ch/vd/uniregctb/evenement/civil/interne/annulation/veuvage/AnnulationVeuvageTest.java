@@ -81,7 +81,7 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de veuvage d'un marié seul.");
 
-		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
+		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		AnnulationVeuvage annulation = createValidAnnulationVeuvage(veuf);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -137,7 +137,7 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de veuvage d'une personne non veuve.");
 
-		Individu fauxVeuf = serviceCivil.getIndividu(NO_INDIVIDU_NON_VEUF, 2008);
+		Individu fauxVeuf = serviceCivil.getIndividu(NO_INDIVIDU_NON_VEUF, date(2008, 12, 31));
 		AnnulationVeuvage annulation = createValidAnnulationVeuvage(fauxVeuf);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

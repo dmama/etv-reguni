@@ -214,7 +214,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 				MockServiceCivil.annuleMariage(individu);
 			}
 		});
-		return serviceCivil.getIndividu(noIndividu, 2008);
+		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 				MockServiceCivil.annuleMariage(individu, conjoint);
 			}
 		});
-		return serviceCivil.getIndividu(noIndividu, 2008);
+		return serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 	}
 
 }

@@ -558,19 +558,6 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Sexe getSexe(PersonnePhysique pp, final int annee) {
-		return getSexe(pp, new IndividuProvider() {
-			@Override
-			public Individu getIndividu(PersonnePhysique pp) {
-				return TiersServiceImpl.this.getIndividu(pp, annee);
-			}
-		});
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean isMemeSexe(PersonnePhysique pp1, PersonnePhysique pp2) {
 		final Sexe sexeHabitant = getSexe(pp1);
 		final Sexe sexeConjoint = getSexe(pp2);
@@ -621,7 +608,7 @@ public class TiersServiceImpl implements TiersService {
 	private boolean isHabitantEtrangerAvecOuSansPermisC(PersonnePhysique habitant, boolean avecPermisC, RegDate date) throws TiersException {
 
 		/* Récupération de l'individu avec ses permis, ses nationalités et son origine */
-		final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(),
+		final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date,
 				AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 
 		/* A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ? */
@@ -1311,7 +1298,7 @@ public class TiersServiceImpl implements TiersService {
 
 				Long noIndividu = personne.getNumeroIndividu();
 				if (noIndividu != null) {
-					individu = serviceCivilService.getIndividu(noIndividu, 2400);
+					individu = serviceCivilService.getIndividu(noIndividu, null);
 					personne.setIndividuCache(individu);
 				}
 			}
@@ -1320,25 +1307,14 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	/**
-	 * Récupère l'individu correspondant à l'habitant pour une année donnée
-	 *
-	 * @param annee
-	 * @param attributes
-	 * @return
-	 */
 	@Override
-	public Individu getIndividu(PersonnePhysique personne, int annee, @Nullable AttributeIndividu... attributes) {
+	public Individu getIndividu(PersonnePhysique personne, RegDate date, @Nullable AttributeIndividu... attributes) {
 
 		if (personne.isHabitantVD()) {
 			Individu individu = null;
 			Long noIndividu = personne.getNumeroIndividu();
-			if (annee <= 0) {
-				annee = 2400;
-			}
-
 			if (noIndividu != null) {
-				individu = getServiceCivilService().getIndividu(noIndividu, annee, attributes);
+				individu = getServiceCivilService().getIndividu(noIndividu, date, attributes);
 			}
 			return individu;
 		}
@@ -1836,10 +1812,11 @@ public class TiersServiceImpl implements TiersService {
 			return Collections.emptyList();
 		}
 
-		final int year = RegDate.get().year();
+		final RegDate date = RegDate.get();
+		final int year = date.year();
 
 		final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
-		final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), year, enumValues);
+		final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), date, enumValues);
 
 		// enfants biologiques
 		final Collection<RelationVersIndividu> enfants = ind.getEnfants();
@@ -1865,7 +1842,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<RelationVersIndividu> parents = ind.getParents();
 		if (parents != null) {
 			for (RelationVersIndividu parent : parents) {
-				RapportFiliation r = createRapportPourParents(personnePhysique, ind, parent, year);
+				RapportFiliation r = createRapportPourParents(personnePhysique, ind, parent, date);
 				if (r != null) {
 					filiations.add(r);
 				}
@@ -1918,7 +1895,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
-	private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationParent, int year) {
+	private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationParent, RegDate date) {
 
 		final long noIndParent = relationParent.getNumeroAutreIndividu();
 
@@ -1927,7 +1904,7 @@ public class TiersServiceImpl implements TiersService {
 			return null;
 		}
 
-		final Individu parent = serviceCivilService.getIndividu(noIndParent, year, AttributeIndividu.ADOPTIONS);
+		final Individu parent = serviceCivilService.getIndividu(noIndParent, date, AttributeIndividu.ADOPTIONS);
 		if (parent == null) {
 			throw new IndividuNotFoundException(noIndParent);
 		}

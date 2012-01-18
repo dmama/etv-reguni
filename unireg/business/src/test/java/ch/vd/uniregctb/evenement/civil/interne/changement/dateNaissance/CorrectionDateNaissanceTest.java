@@ -107,7 +107,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
 				final CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -169,7 +169,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					// déclenchement de l'événement
-					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, 2008);
+					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, date(2008, 12, 31));
 					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -259,7 +259,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final Individu individu = serviceCivil.getIndividu(noIndJean, 2008);
+				final Individu individu = serviceCivil.getIndividu(noIndJean, date(2008, 12, 31));
 				CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -326,7 +326,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 
-					final Individu individu = serviceCivil.getIndividu(noIndHuguette, 2008);
+					final Individu individu = serviceCivil.getIndividu(noIndHuguette, date(2008, 12, 31));
 					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

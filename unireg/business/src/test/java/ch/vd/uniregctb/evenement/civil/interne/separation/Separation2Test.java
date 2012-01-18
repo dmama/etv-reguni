@@ -92,7 +92,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée seule.");
-		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
+		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marieSeul, null);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -140,8 +140,8 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée avec un suisse ou étranger avec permis C.");
-		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, 2008);
+		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -207,8 +207,8 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne de nationalité inconnue.");
-		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
-		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
+		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -249,8 +249,8 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
-		final Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
+		final Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, date(2008, 12, 31));
+		final Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		final Separation separation = createValidSeparation(marie, conjoint);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

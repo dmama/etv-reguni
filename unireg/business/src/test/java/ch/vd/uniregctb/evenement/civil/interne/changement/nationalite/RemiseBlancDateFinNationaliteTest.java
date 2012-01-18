@@ -56,7 +56,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -72,7 +72,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 
 		LOGGER.debug("Test de traitement d'un événement de mise à blanc de la date de fin de nationalité non suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

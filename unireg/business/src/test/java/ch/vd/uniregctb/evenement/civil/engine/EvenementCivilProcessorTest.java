@@ -470,7 +470,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				Assert.isTrue(lTiers.size() == 1, "L'indexation n'a pas fonctionné");
 
 				// on verifie que le changement a bien été effectué
-				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get().year());
+				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get());
 				Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
 
 				// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);

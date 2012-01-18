@@ -257,7 +257,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, 2008);
+		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, date(2008, 12, 31));
 		final Deces deces = createValidDeces(celibataire, null, DATE_DECES);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -302,8 +302,8 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, 2008);
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
+				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, date(2008, 12, 31));
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
 				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -398,8 +398,8 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008, AttributeIndividu.ADRESSES);
+				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, date(2008, 12, 31));
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31), AttributeIndividu.ADRESSES);
 				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -530,7 +530,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(noIndividu, 2400);
+				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
 				final Deces deces = createValidDeces(ind, null, dateDeces);
 
 				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

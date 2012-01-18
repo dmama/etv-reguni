@@ -220,12 +220,12 @@ public interface TiersService {
 	/**
 	 * Recupere l'individu correspondant à une personne physique avec l'état valide pour une année donnée.
 	 *
-	 * @param personne la personne physique en question.
-	 * @param annee l'année de validité des données retournées.
-	 * @param attributes les attributs renseignés sur l'individu.
-	 * @return un individu, ou <i>null</i> si la personne physique est un non-habitant.
+	 * @param personne   la personne physique en question.
+	 * @param date       la date de valeur de l'individu
+	 * @param attributes les attributs renseignés sur l'individu.  @return un individu, ou <i>null</i> si la personne physique est un non-habitant.
+	 * @return un individu; ou <b>null</b> si la personne physique spécifiée n'habite pas dans le canton.
 	 */
-	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu... attributes);
+	public Individu getIndividu(PersonnePhysique personne, RegDate date, AttributeIndividu... attributes);
 
 	/**
 	 * Détermine si une personne physique est suisse.
@@ -439,13 +439,6 @@ public interface TiersService {
 	 * @return le sexe de la personne spécifiée, ou <b>null</b> si cette information n'est pas disponible.
 	 */
 	public Sexe getSexe(PersonnePhysique pp);
-
-	/**
-	 * @param pp le personne dont on veut connaître le sexe.
-	 * @param annee l'année de validité de l'information retournée.
-	 * @return le sexe de la personne spécifiée, ou <b>null</b> si cette information n'est pas disponible.
-	 */
-	public Sexe getSexe(PersonnePhysique pp, int annee);
 
 	/**
 	 * Détermine si les deux personnes physiques sont de même sexe.

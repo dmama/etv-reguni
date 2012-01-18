@@ -90,8 +90,8 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2007);
-				Individu tuteur = serviceCivil.getIndividu(NO_INDIVIDU_TUTEUR, 2007);
+				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2007, 12, 31));
+				Individu tuteur = serviceCivil.getIndividu(NO_INDIVIDU_TUTEUR, date(2007, 12, 31));
 				Tutelle tutelle = createTutelle(pupille, tuteur, null, MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -162,7 +162,7 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL, 2007);
+				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL, date(2007, 12, 31));
 				Tutelle tutelle = createTutelle(pupille, null, new MockTuteurGeneral(), MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

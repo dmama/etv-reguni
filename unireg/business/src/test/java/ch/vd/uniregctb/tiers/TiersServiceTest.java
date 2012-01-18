@@ -378,14 +378,14 @@ public class TiersServiceTest extends BusinessTest {
 
 		{
 			// Vue de l'habitant pour 1960
-			final Individu ind = tiersService.getIndividu(hab, 1960, AttributeIndividu.ADRESSES);
+			final Individu ind = tiersService.getIndividu(hab, date(1960, 12, 31), AttributeIndividu.ADRESSES);
 			assertNotNull(ind);
 			assertEquals("Av de Beaulieu", ind.getAdresses().iterator().next().getRue());
 		}
 
 		{
 			// Vue de l'habitant pour 2000
-			final Individu ind = tiersService.getIndividu(hab, 2000, AttributeIndividu.ADRESSES);
+			final Individu ind = tiersService.getIndividu(hab, date(2000, 12, 31), AttributeIndividu.ADRESSES);
 			assertNotNull(ind);
 
 			final Collection<Adresse> adresses = ind.getAdresses();

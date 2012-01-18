@@ -24,11 +24,11 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividu() throws Exception {
 
-		Individu jean = service.getIndividu(333528, 2007);
+		Individu jean = service.getIndividu(333528, date(2007, 12, 31));
 		assertNotNull(jean);
 		assertEquals("Jean-Eric", jean.getPrenom());
 
-		jean = service.getIndividu(333528, 2001);
+		jean = service.getIndividu(333528, date(2001, 12, 31));
 		assertNotNull(jean);
 	}
 
@@ -36,7 +36,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetConjoint() throws Exception {
 
-		Individu jean = service.getIndividu(333528, 2006);
+		Individu jean = service.getIndividu(333528, date(2006, 12, 31));
 		assertNotNull(jean);
 
 		Individu sara = service.getConjoint(jean.getNoTechnique(), date(2007, 1, 1));
@@ -48,7 +48,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNumeroIndividuConjoint() {
-		Individu jeanMarc = service.getIndividu(132720L, 2006);
+		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
 		Long numeroAmelie = service.getNumeroIndividuConjoint(jeanMarc.getNoTechnique(), date(2006, 1, 1));
 		assertNull(numeroAmelie);
@@ -63,7 +63,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetIndividuConjoint() {
-		Individu jeanMarc = service.getIndividu(132720L, 2006);
+		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
 		Individu conjoint = service.getConjoint(jeanMarc.getNoTechnique(), date(2006, 1, 1));
 		//Celibataire
@@ -97,7 +97,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesAvecEgidEtEwid() {
 
-		final Individu ind0 = service.getIndividu(1015956, 2010, AttributeIndividu.ADRESSES);
+		final Individu ind0 = service.getIndividu(1015956, date(2010, 12, 31), AttributeIndividu.ADRESSES);
 		assertNotNull(ind0);
 
 		final Collection<Adresse> adresses = ind0.getAdresses();

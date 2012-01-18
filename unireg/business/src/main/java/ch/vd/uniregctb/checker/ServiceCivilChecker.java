@@ -13,7 +13,7 @@ public class ServiceCivilChecker implements ServiceChecker {
 	@Override
 	public Status getStatus() {
 		try {
-			Individu individu = serviceCivilRaw.getIndividu(611836, 2400); // Francis Perroset
+			Individu individu = serviceCivilRaw.getIndividu(611836, null); // Francis Perroset
 			Assert.isEqual(611836L, individu.getNoTechnique());
 			details = null;
 			return Status.OK;

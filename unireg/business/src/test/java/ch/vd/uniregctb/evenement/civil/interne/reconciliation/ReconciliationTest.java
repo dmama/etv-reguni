@@ -226,8 +226,8 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 			});
 		}
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, date.year());
-		final Individu conjoint = (noIndividuConjoint == null ? null : serviceCivil.getIndividu(noIndividuConjoint, date.year()));
+		final Individu individu = serviceCivil.getIndividu(noIndividu, date);
+		final Individu conjoint = (noIndividuConjoint == null ? null : serviceCivil.getIndividu(noIndividuConjoint, date));
 
 		return new Reconciliation(individu, conjoint, date, 5586, context);
 	}

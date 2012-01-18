@@ -603,7 +603,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
                 final Long numeroIndividu = pp.getNumeroIndividu();
                 Assert.notNull(numeroIndividu);
                 // Recuperation de l'individu
-                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, AttributeIndividu.ADRESSES);
+                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.ADRESSES);
 	            if (individu == null) {
 		            throw new IndividuNotFoundException(pp);
 	            }

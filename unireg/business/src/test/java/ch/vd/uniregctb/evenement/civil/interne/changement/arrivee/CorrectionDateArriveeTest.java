@@ -65,7 +65,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	}
 
 	private CorrectionDateArrivee createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		return new CorrectionDateArrivee(individu, principalId, null, null, DATE_EVT, ofsCommune, context);
 	}
 

@@ -446,7 +446,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, Integer overrideNoOfsCommuneAnnonce) throws Exception {
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 0);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
 		// Adresse actuelle
 		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
@@ -498,7 +498,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, MockCommune nouvelleCommune) throws Exception {
 
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 0);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
 		// Adresse actuelle
 		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));

@@ -78,26 +78,6 @@ public interface ServiceCivilService {
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
-	 * @param parties    les collections devant être renseignées sur l'individu retourné.
-	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
-	 * @deprecated remplacé par {@link #getIndividu(long, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.interfaces.model.AttributeIndividu...)}
-	 */
-	Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties);
-
-	/**
-	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.
-	 * <p/>
-	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants :
-	 * <ul>
-	 * <li>La liste des historiques de l'individu.</li>
-	 * <li>La liste des états civils de l'individu.</li>
-	 * <li>La liste des conjoints l'individu.</li>
-	 * </ul>
-	 * <p/>
-	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
-	 *
-	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
@@ -140,19 +120,6 @@ public interface ServiceCivilService {
 	 * @return l'ensemble de numéros d'individus, qui peut être vide si l'individu n'a jamais été marié.
 	 */
 	Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal);
-
-	/**
-	 * Retourne un lot d'individu avec les parties spécifiées.
-	 * <p/>
-	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.
-	 *
-	 * @param nosIndividus les numéros d'individus demandés
-	 * @param annee        l'année de validité.
-	 * @param parties      les parties optionnelles devant être renseignées
-	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
-	 * @deprecated remplacé par {@link #getIndividus(java.util.Collection, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.interfaces.model.AttributeIndividu...)}.
-	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties);
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.

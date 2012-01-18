@@ -40,7 +40,7 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de fin de nationalité suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		FinNationalite finNationalite = createValidFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -56,7 +56,7 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		
 		LOGGER.debug("Test de traitement d'un événement de fin de nationalité non suisse.");
 
-		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, 2008);
+		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		FinNationalite finNationalite = createValidFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

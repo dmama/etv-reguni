@@ -98,7 +98,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	public void testDivorceCelibataire() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne seule.");
-		Individu celibataire = serviceCivil.getIndividu(INDIVIDU_CELIBATAIRE, 2008);
+		Individu celibataire = serviceCivil.getIndividu(INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(celibataire, null);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -114,7 +114,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	public void testDivorcePersonneMarieeSeule() throws EvenementCivilException {
 	
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée seule.");
-		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
+		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marieSeul, null);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -161,8 +161,8 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	public void testDivorcePersonneMarieeAvecSuisseOuPermisC() throws Exception {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne mariée avec un suisse ou étranger avec permis C.");
-		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, 2008);
+		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -226,8 +226,8 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	public void testDivorcePersonneMarieeDeNationaliteInconnue() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne de nationalité inconnue.");
-		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
-		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
+		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marie, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -243,8 +243,8 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 	public void testDivorcePersonneSepare() throws EvenementCivilException {
 		
 		LOGGER.debug("Test de traitement d'un événement de divorce d'une personne déjà séparée.");
-		Individu separe = serviceCivil.getIndividu(INDIVIDU_SEPARE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_SEPARE_CONJOINT, 2008);
+		Individu separe = serviceCivil.getIndividu(INDIVIDU_SEPARE, date(2008, 12, 31));
+		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_SEPARE_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(separe, conjoint);
 		
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

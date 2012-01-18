@@ -87,7 +87,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final Collection<Nationalite> getNationalites(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.NATIONALITE);
+		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.NATIONALITE);
 		if (individu == null) {
 			return null;
 		}
@@ -98,7 +98,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final Collection<Origine> getOrigines(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ORIGINE);
+		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.ORIGINE);
 		if (individu == null) {
 			return null;
 		}
@@ -119,22 +119,12 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final Tutelle getTutelle(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.TUTELLE);
+		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.TUTELLE);
 		if (individu == null) {
 			return null;
 		}
 
 		return individu.getTutelle();
-	}
-
-	@Override
-	public final Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
-		return getIndividu(noIndividu, annee2date(annee), parties);
-	}
-
-	@Override
-	public final List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
-		return getIndividus(nosIndividus, annee2date(annee), parties);
 	}
 
 	private static RegDate annee2date(int annee) {

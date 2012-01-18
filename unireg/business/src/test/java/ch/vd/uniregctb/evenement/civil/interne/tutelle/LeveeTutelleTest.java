@@ -71,7 +71,7 @@ public class LeveeTutelleTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de levée de tutelle avec un tuteur.");
 
-		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2008);
+		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		LeveeTutelle leveeTutelle = createLeveeTutelle(pupille);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();

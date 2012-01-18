@@ -1946,7 +1946,7 @@ public class MetierServiceImpl implements MetierService {
 		// [UNIREG-2653] en cas d'annulation de décès, l'ancien décédé peut
 		// repasser habitant s'il n'est pas décédé dans le civil (et qu'il réside dans le canton, évidemment)
 		if (tiers.isConnuAuCivil() && !tiers.isHabitantVD()) {
-			final Individu individu = serviceCivilService.getIndividu(tiers.getNumeroIndividu(), date.year());
+			final Individu individu = serviceCivilService.getIndividu(tiers.getNumeroIndividu(), date);
 			if (individu.getDateDeces() == null && tiersService.isDomicileVaudois(tiers, null)) {
 				// il n'est pas mort au civil et réside dans le canton -> retour à la case "habitant"
 				tiersService.changeNHenHabitant(tiers, individu.getNoTechnique(), date);

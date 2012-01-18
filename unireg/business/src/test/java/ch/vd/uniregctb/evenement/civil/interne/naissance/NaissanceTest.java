@@ -60,7 +60,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
-		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE, 2007);
+		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -90,7 +90,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
-		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_FIN_ANNEE, 2007);
+		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_FIN_ANNEE, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -119,7 +119,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
 
-		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_MAJEUR, 2007);
+		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_MAJEUR, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -178,7 +178,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Individu fils = serviceCivil.getIndividu(indFils, 2010);
+				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
 				final Naissance naissance = createValidNaissance(fils);
 
 				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
