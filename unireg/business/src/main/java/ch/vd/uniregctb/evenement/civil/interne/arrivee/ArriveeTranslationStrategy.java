@@ -19,7 +19,29 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new Arrivee(event, context, options);
+		// arrivée principale ou secondaire ?
+		if (isArriveePrincipale(event)) {
+			return new ArriveePrincipale(event, context, options);
+		}
+		else {
+			return new ArriveeSecondaire(event, context, options);
+		}
 	}
 
+	private boolean isArriveePrincipale(EvenementCivilExterne event) {
+		switch (event.getType()) {
+			case ARRIVEE_DANS_COMMUNE:
+			case ARRIVEE_PRINCIPALE_HC:
+			case ARRIVEE_PRINCIPALE_HS:
+			case ARRIVEE_PRINCIPALE_VAUDOISE:
+			case DEMENAGEMENT_DANS_COMMUNE:
+				return true;
+
+			case ARRIVEE_SECONDAIRE:
+				return false;
+
+			default:
+				throw new IllegalArgumentException("Type d'arrivée non supporté : " + event.getType());
+		}
+	}
 }

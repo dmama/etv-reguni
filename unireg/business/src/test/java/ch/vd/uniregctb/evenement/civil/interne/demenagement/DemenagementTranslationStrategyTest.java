@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
+import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -76,9 +77,9 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		assertNotNull(interne);
 		assertInstanceOf(Arrivee.class, interne);
 
-		final Arrivee arrivee = (Arrivee) interne;
-		assertEquals(MockCommune.Villette, arrivee.getAncienneCommunePrincipale());
-		assertEquals(MockCommune.Grandvaux, arrivee.getNouvelleCommunePrincipale());
+		final ArriveePrincipale arrivee = (ArriveePrincipale) interne;
+		assertEquals(MockCommune.Villette, arrivee.getAncienneCommune());
+		assertEquals(MockCommune.Grandvaux, arrivee.getNouvelleCommune());
 
 		assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
 	}

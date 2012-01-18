@@ -15,7 +15,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
+import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.Mariage;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -71,7 +71,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		 */
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
 		final EvenementCivilOptions options = new EvenementCivilOptions(false);
-		final EvenementCivilInterne adapter = new Arrivee(evenementArriveeCouple, context, options);
+		final EvenementCivilInterne adapter = new ArriveePrincipale(evenementArriveeCouple, context, options);
 
 		/*
 		 * Test de la méthode init dans ce cas

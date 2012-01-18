@@ -101,6 +101,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 				final MockAdresse adresse = new MockAdresse("Rue du Lac", "76", "1003", "Lausanne");
 				adresse.setDateDebutValidite(dateArrivee);
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
+				adresse.setCommuneAdresse(MockCommune.Lausanne);
 				individu.getAdresses().add(adresse);
 			}
 		});

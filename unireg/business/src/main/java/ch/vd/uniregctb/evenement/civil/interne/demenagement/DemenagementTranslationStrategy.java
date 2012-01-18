@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
+import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -35,11 +35,11 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		}
 		else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
 			// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
-			final String message =
-					"Traité comme une arrivée car les communes " + communes.avant.getNomMinuscule() + " et " + communes.apres.getNomMinuscule() + " ne sont pas encore fusionnées du point-de-vue fiscal.";
+			final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
+			                                     communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
 			Audit.info(event.getId(), message);
 			event.setCommentaireTraitement(message);
-			return new Arrivee(event, context, options);
+			return new ArriveePrincipale(event, context, options);
 		}
 		else {
 			// ok, il s'agit d'un déménagement conventionnel

@@ -138,10 +138,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		};
 
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
-		Arrivee adapter = new Arrivee(evenement, context, options);
+		final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);
 
-		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdressePrincipale().getLocalite());
-		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommunePrincipale().getNomMinuscule());
+		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdresse().getLocalite());
+		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommune().getNomMinuscule());
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// 1er test : individu seul
 		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
-		Arrivee arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
+		ArriveePrincipale arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
 		arrivee.checkCompleteness(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
@@ -203,7 +203,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
-		arrivee = new Arrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
+		arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
 				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.notEmpty(erreurs,
@@ -259,7 +259,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
-		Arrivee arrivee = new Arrivee(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
+		Arrivee arrivee = new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -268,7 +268,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		 */
 		erreurs.clear();
 		warnings.clear();
-		arrivee = new Arrivee(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
+		arrivee = new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -314,7 +314,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
 	}
 
-	private Arrivee createValidArrivee(Individu individu, RegDate dateArrivee) {
+	private ArriveePrincipale createValidArrivee(Individu individu, RegDate dateArrivee) {
 
 		// Anciennes adresses
 		/*MockAdresse ancienneAdresse = new MockAdresse();
@@ -328,18 +328,18 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		return createValidArrivee(individu, commune, dateArrivee);
 	}
 
-	private Arrivee createValidArrivee(Individu individu, MockCommune commune, RegDate dateArrivee) {
+	private ArriveePrincipale createValidArrivee(Individu individu, MockCommune commune, RegDate dateArrivee) {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-		return new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdresse, context);
+		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdresse, context);
 	}
 
 	private Arrivee createValidArrivee(Individu individu, MockCommune communeAnnonce, MockCommune nouvelleCommune) {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_VALIDE);
 
-		return new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFSEtendu(), null, nouvelleCommune, null, nouvelleAdresse, context);
+		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFSEtendu(), null, nouvelleCommune, null, nouvelleAdresse, context);
 	}
 
 	/**
@@ -348,8 +348,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFindNonHabitants() throws Exception {
-
-		final Arrivee arrivee = new Arrivee(null, null, null, null, null, null, null, null, null, context);
 
 		class Ids {
 			Long jeanNomPrenom;
@@ -446,21 +444,21 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
 		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
 		{
-			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.jean, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, true);
 			assertEquals(4, list.size());
 			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti);
 		}
 
 		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
 		{
-			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.jacques, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, true);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
 		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
-			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.roger, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, true);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
@@ -468,7 +466,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
 		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
 		{
-			final List<PersonnePhysique> list = arrivee.findNonHabitants(civil.cedric, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, true);
 			assertEmpty(list);
 		}
 	}
@@ -654,14 +652,17 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		arrivee.validate(erreurs, warnings);
 		try {
 			arrivee.handle(warnings);
-			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for sur Bourg-en-Lavaux");
+			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
 		}
 		catch (ValidationException e) {
 			assertEquals(1, e.getErrors().size());
 
+			// la commune d'annonce est maintenant ignorée (car les événements civils RCPers ne connaissent pas cette notion...)
+			// -> le for est tentativement créé sur la commune de Riex (et non plus sur la commune de Bourg-en-Lavaux)
+
 			final ValidationMessage erreur = e.getErrors().get(0);
 			assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
-					"la période de validité de la commune Bourg-en-Lavaux (5613) à laquelle il est assigné (31.12.2010 - ?)", erreur.getMessage());
+					"la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 30.12.2010)", erreur.getMessage());
 		}
 	}
 

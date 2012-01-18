@@ -68,10 +68,6 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 			if (mouvement instanceof Depart) {
 				warnings.add(new EvenementCivilExterneErreur("La nouvelle adresse principale de l'individu est vide", TypeEvenementErreur.WARNING));
 			}
-			else if (mouvement instanceof Arrivee) {
-				erreurs.add(new EvenementCivilExterneErreur("La nouvelle adresse principale de l'individu est vide"));
-			}
-
 		}
 
 		if (mouvement.getNumeroOfsCommuneAnnonce() == null) {
@@ -102,7 +98,7 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 				/*
 				 * si l'individu est marié ou pacsé, on vérifie que le conjoint est spécifié de manière cohérente
 				 */
-				final Individu conjointDeIndividu =serviceCivil.getConjoint(mouvement.getNoIndividu(),mouvement.getDate());
+				final Individu conjointDeIndividu = serviceCivil.getConjoint(mouvement.getNoIndividu(),mouvement.getDate());
 				final Individu conjointDeMouvement = mouvement.getConjoint();
 
 				if (conjointDeIndividu == null && conjointDeMouvement == null) {

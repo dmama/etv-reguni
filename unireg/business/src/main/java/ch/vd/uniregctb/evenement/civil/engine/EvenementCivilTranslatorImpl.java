@@ -161,8 +161,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context =
-				new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {

@@ -19,7 +19,6 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee.ArriveeType;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -83,20 +82,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
-						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
-						1980, 1, 1), veilleArrivee);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), veilleArrivee);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
-
-
-			
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
@@ -106,9 +98,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Construit un événement d'arrivée minimal et valide
 		 */
-		Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
-						nouvellesAdresses.principale, context);
+		ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
+				                                          nouvellesAdresses.principale, context);
 
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
@@ -122,17 +113,15 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
-		Arrivee sansIndividu =
-				new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
-						nouvellesAdresses.principale, context);
+		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
+															   nouvellesAdresses.principale, context);
 		sansIndividu.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleAdressePrincipal =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
+		ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
 						null, context);
 		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
@@ -140,8 +129,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleCommunePrincipal =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		ArriveePrincipale sansNouvelleCommunePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -188,8 +176,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Construit un événement d'arrivée minimal et valide
 		 */
-		Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
+		ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
@@ -203,14 +190,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
-		Arrivee sansIndividu = new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
+		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 		sansIndividu.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleAdressePrincipal = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null,
+		ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null,
 				null, context);
 		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
@@ -218,7 +205,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleCommunePrincipal = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
+		ArriveePrincipale sansNouvelleCommunePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
 		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -285,9 +272,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Construit un événement d'arrivée minimal et valide
 		 */
-		Arrivee arrivee =
-				new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-						nouvellesAdresses.principale, context);
+		ArriveePrincipale arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+														  nouvellesAdresses.principale, context);
 
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
@@ -301,15 +287,15 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
-		Arrivee sansIndividu = new Arrivee(null, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-				nouvellesAdresses.principale, context);
+		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+															   nouvellesAdresses.principale, context);
 		sansIndividu.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansConjoint = new Arrivee(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+		ArriveePrincipale sansConjoint = new ArriveePrincipale(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 				nouvellesAdresses.principale, context);
 		sansConjoint.checkCompleteness(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
@@ -317,8 +303,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleAdressePrincipal =
-				new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+		ArriveePrincipale sansNouvelleAdressePrincipal =
+				new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 						null, context);
 		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
@@ -326,16 +312,16 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee sansNouvelleCommunePrincipal =
-				new Arrivee(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
+		ArriveePrincipale sansNouvelleCommunePrincipal =
+				new ArriveePrincipale(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
 		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
 		warnings.clear();
 
-		Arrivee avecConjointHorsCouple =
-				new Arrivee(individuPrincipal, individuHorsCouple, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+		ArriveePrincipale avecConjointHorsCouple =
+				new ArriveePrincipale(individuPrincipal, individuHorsCouple, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 						nouvellesAdresses.principale, context);
 		avecConjointHorsCouple.checkCompleteness(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
@@ -395,7 +381,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok : événement d'arrivée à date courante
 		 */
-		Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+		ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 				anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 		arrivee.validate(erreurs, warnings);
@@ -407,8 +393,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok : événement d'arrivée rétro-actif sans information d'ancienne adresse
 		 */
-		Arrivee arriveeRetroActiveDeNullePart =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
+		ArriveePrincipale arriveeRetroActiveDeNullePart =
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 
 		arriveeRetroActiveDeNullePart.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
@@ -422,8 +408,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: évenement d'arrivée rétro-actif situé avant la date de début de validité de l'ancienne adresse
 		 */
-		Arrivee arriveeRetroActive =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1945, 1, 1), MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+		ArriveePrincipale arriveeRetroActive =
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1945, 1, 1), MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 						anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 		arriveeRetroActive.validate(erreurs, warnings);
@@ -431,54 +417,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		assertTrue(warnings.isEmpty());
 		erreurs.clear();
 		warnings.clear();
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetArriveeType() throws Exception {
-
-		// La nouvelle commune principale doit être renseignée
-		{
-			final Arrivee arrivee = new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, null, null, null, null, null, null, context);
-			try {
-				Arrivee.getArriveeType(serviceInfra, arrivee);
-				fail();
-			}
-			catch (Exception ignored) {
-				// Ok
-			}
-		}
-
-		// Arrivée en résidence secondaire
-		{
-			Arrivee arrivee = new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, null, null, MockCommune.Neuchatel, MockCommune.Neuchatel, null, null, null,
-					MockCommune.Bex, null, null, context);
-			assertEquals(ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE, Arrivee.getArriveeType(serviceInfra, arrivee));
-		}
-
-		// Arrivée en résidence principale
-		{
-			Arrivee arrivee = new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, null, null, MockCommune.Neuchatel, MockCommune.RomainmotierEnvy, null, null, null,
-					null, null, null, context);
-			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, Arrivee.getArriveeType(serviceInfra, arrivee));
-
-			// la commune secondaire est ignorée si la commune principale est dans le canton
-			arrivee = new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, null, null, MockCommune.Neuchatel, MockCommune.RomainmotierEnvy, null, null, MockCommune.Neuchatel,
-					MockCommune.RomainmotierEnvy, null, null, context);
-			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, Arrivee.getArriveeType(serviceInfra, arrivee));
-		}
-
-		// Arrivée hors canton
-		{
-			Arrivee arrivee = new Arrivee(null, null, null, null, null, null, null, null, null, context);
-			try {
-				Arrivee.getArriveeType(serviceInfra, arrivee);
-				fail();
-			}
-			catch (Exception ignored) {
-				// Ok
-			}
-		}
 	}
 
 	/**
@@ -522,8 +460,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: nouvelle adresse hors-canton
 		 */
-		Arrivee arriveeHorsCanton =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(), MockCommune.Lausanne, MockCommune.Neuchatel,
+		ArriveePrincipale arriveeHorsCanton =
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(), MockCommune.Lausanne, MockCommune.Neuchatel,
 						anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 		arriveeHorsCanton.validate(erreurs, warnings);
@@ -609,8 +547,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			// erreur: devrait être MockCommune.Fraction.LAbbaye ou ...
-			Arrivee arrivee =
-					new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.Fraction.LeSentier,
+			ArriveePrincipale arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.Fraction.LeSentier,
 							anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			arrivee.validate(erreurs, warnings);
@@ -631,8 +569,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			// erreur: devrait être MockCommune.Fraction.LeLieu
-			Arrivee arrivee =
-					new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.Fraction.LeSentier, MockCommune.LeLieu,
+			ArriveePrincipale arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.Fraction.LeSentier, MockCommune.LeLieu,
 							anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			arrivee.validate(erreurs, warnings);
@@ -696,7 +634,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.LeChenit,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.LeChenit,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			arrivee.validate(erreurs, warnings);
@@ -714,7 +652,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			arrivee.validate(erreurs, warnings);
@@ -736,41 +674,29 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok: arrivée en adresse secondaire
 		 */
-		Adresse ancienne = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut,
-				veille);
-		Adresse nouvelle = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				dateArrivee, null);
+		final Adresse ancienne = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut, veille);
+		final Adresse nouvelle = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
-		Arrivee arrivee =
-				new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, null, null, null, null, MockCommune.Lausanne, ancienne,
-						nouvelle, context);
-
+		final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		Arrivee.validateArriveeAdresseSecondaire(serviceInfra, arrivee, erreurs);
+		arrivee.validateArriveeAdresseSecondaire(erreurs);
 		assertTrue(erreurs.isEmpty());
 		erreurs.clear();
 
 		/*
 		 * Erreur: arrivée avant le début de validité de l'adresse principale
 		 */
-		Arrivee arriveeRetroActive =
-				new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1902, 10, 11), MockCommune.Lausanne.getNoOFS(), null, null, null, null, null, MockCommune.Lausanne,
-						ancienne, nouvelle, context);
-
-		Arrivee.validateArriveeAdresseSecondaire(serviceInfra, arriveeRetroActive, erreurs);
+		final ArriveeSecondaire arriveeRetroActive = new ArriveeSecondaire(null, null, RegDate.get(1902, 10, 11), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
+		arriveeRetroActive.validateArriveeAdresseSecondaire(erreurs);
 		assertFalse(erreurs.isEmpty());
 		erreurs.clear();
 
 		/*
 		 * Erreur: arrivée en adresse secondaire hors canton
 		 */
-		Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
-
-		Arrivee arriveeHorsCanton =
-				new Arrivee(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, null, null, null, null, MockCommune.Neuchatel, ancienne,
-						nouvelleHorsCanton, context);
-
-		Arrivee.validateArriveeAdresseSecondaire(serviceInfra, arriveeHorsCanton, erreurs);
+		final Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
+		final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
+		arriveeHorsCanton.validateArriveeAdresseSecondaire(erreurs);
 		assertFalse(erreurs.isEmpty());
 		erreurs.clear();
 	}
@@ -826,7 +752,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok : événement d'arrivée standard
 		 */
-		Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+		Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 				anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 		arrivee.validate(erreurs, warnings);
@@ -878,7 +804,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * L'événement d'arrivée
 			 */
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -977,7 +903,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * L'événement d'arrivée
 			 */
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -1065,7 +991,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * L'événement d'arrivée
 			 */
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -1151,7 +1077,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * L'événement d'arrivée
 			 */
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -1250,7 +1176,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * L'événement d'arrivée
 			 */
-			Arrivee arrivee = new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -1361,7 +1287,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * L'événement d'arrivée
 				 */
-				Arrivee arrivee = new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
+				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
 						MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -1518,7 +1444,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * L'événement d'arrivée
 				 */
-				Arrivee arrivee = new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
 						MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -1667,7 +1593,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * L'événement d'arrivée
 				 */
-				Arrivee arrivee = new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
 						MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -1793,7 +1719,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 * L'événement d'arrivée
 			 */
 			Arrivee arrivee =
-					new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 							anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 			/*
@@ -1926,7 +1852,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * L'événement d'arrivée
 				 */
-				Arrivee arrivee = new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
 						MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -2073,7 +1999,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * L'événement d'arrivée
 				 */
 				Arrivee arrivee =
-						new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel, MockCommune.Lausanne,
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel, MockCommune.Lausanne,
 								anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -2244,7 +2170,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * L'événement d'arrivée
 				 */
 				Arrivee arrivee =
-						new Arrivee(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
+						new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
 								MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
@@ -2366,7 +2292,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -2430,7 +2356,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -2487,7 +2413,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		final Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse,
 						context);
 
 		// Traite l'événement d'arrivée
@@ -2617,7 +2543,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				nouvelleAdresse.setDateDebutValidite(dateRetour);
 
 				final Arrivee arrivee =
-						new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null,
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null,
 								nouvelleAdresse, context);
 
 				// Traite l'événement d'arrivée
@@ -2681,7 +2607,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -2736,7 +2662,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
@@ -2794,7 +2720,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
@@ -2853,7 +2779,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new Arrivee(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
@@ -2925,7 +2851,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		//
 
-		final Arrivee arrivee = new Arrivee(civil.roger, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, null, null, null, null, (Adresse) null, null, context);
+		final Arrivee arrivee = new ArriveePrincipale(civil.roger, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, null, null, null, null, (Adresse) null, null, context);
 
 		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

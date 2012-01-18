@@ -13,11 +13,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -33,69 +31,41 @@ import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Modélise un événement d'arrivée.
  */
-public class Arrivee extends Mouvement {
+public abstract class Arrivee extends Mouvement {
 
 	protected static Logger LOGGER = Logger.getLogger(Arrivee.class);
-
-	public enum ArriveeType {
-		ARRIVEE_ADRESSE_PRINCIPALE, ARRIVEE_RESIDENCE_SECONDAIRE
-	}
-
-	private Adresse ancienneAdressePrincipale;
-	private Adresse ancienneAdresseSecondaire;
-	private Commune ancienneCommunePrincipale;
-	private Commune ancienneCommuneSecondaire;
-	private Commune nouvelleCommunePrincipale;
-	private Commune nouvelleCommuneSecondaire;
 
 	public Arrivee(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
+	}
 
-		// on récupère les nouvelles adresses (= à la date d'événement)
-		final RegDate dateArrivee = evenement.getDateEvenement();
-		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
-		final AdressesCiviles anciennesAdresses;
+	protected final AdressesCiviles getAdresses(EvenementCivilContext context, RegDate date) throws EvenementCivilException {
 		try {
-			anciennesAdresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), veilleArrivee, false));
+			return new AdressesCiviles(context.getServiceCivil().getAdresses(getNoIndividu(), date, false));
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilException(e);
 		}
+	}
 
-		this.ancienneAdressePrincipale = anciennesAdresses.principale;
-		this.ancienneAdresseSecondaire = anciennesAdresses.secondaire;
-
+	protected final Commune getCommuneByAdresse(EvenementCivilContext context, Adresse adresse, RegDate date) throws EvenementCivilException {
 		try {
-			// on récupère les nouvelles communes
-			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), dateArrivee);
-			this.nouvelleCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdresseSecondaire(), dateArrivee);
-
-			// on récupère les anciennes communes
-			this.ancienneCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(ancienneAdressePrincipale, veilleArrivee);
-			this.ancienneCommuneSecondaire = context.getServiceInfra().getCommuneByAdresse(ancienneAdresseSecondaire, veilleArrivee);
+			return context.getServiceInfra().getCommuneByAdresse(adresse, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
@@ -106,61 +76,8 @@ public class Arrivee extends Mouvement {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Arrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale,
-	                  Commune nouvelleCommunePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, EvenementCivilContext context) {
-		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
-		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
-		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
-		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
-	}
-
-	/**
-	 * Pour le testing uniquement.
-	 */
-	@SuppressWarnings({"JavaDoc"})
-	protected Arrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommunePrincipale,
-	                  Commune nouvelleCommunePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, Commune ancienneCommuneSecondaire, Commune nouvelleCommuneSecondaire,
-	                  Adresse ancienneAdresseSecondaire, Adresse nouvelleAdresseSecondaire, EvenementCivilContext context) {
-		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, nouvelleAdresseSecondaire, null, context);
-		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
-		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
-		this.ancienneAdresseSecondaire = ancienneAdresseSecondaire;
-		this.nouvelleCommuneSecondaire = nouvelleCommuneSecondaire;
-		this.ancienneCommunePrincipale = ancienneCommunePrincipale;
-		this.ancienneCommuneSecondaire = ancienneCommuneSecondaire;
-	}
-
-	public final Adresse getAncienneAdressePrincipale() {
-		return ancienneAdressePrincipale;
-	}
-
-	public final Adresse getAncienneAdresseSecondaire() {
-		return ancienneAdresseSecondaire;
-	}
-
-	public Commune getAncienneCommunePrincipale() {
-		return ancienneCommunePrincipale;
-	}
-
-	public Commune getAncienneCommuneSecondaire() {
-		return ancienneCommuneSecondaire;
-	}
-
-	@Override
-	public final Adresse getNouvelleAdressePrincipale() {
-		return getAdressePrincipale(); // par définition
-	}
-
-	public final Adresse getNouvelleAdresseSecondaire() {
-		return getAdresseSecondaire(); // par définition
-	}
-
-	public final Commune getNouvelleCommunePrincipale() {
-		return nouvelleCommunePrincipale;
-	}
-
-	public final Commune getNouvelleCommuneSecondaire() {
-		return nouvelleCommuneSecondaire;
+	protected Arrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce, null, null, null, context);
 	}
 
 	@Override
@@ -186,237 +103,29 @@ public class Arrivee extends Mouvement {
 		return isPresent;
 	}
 
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-
-		final ServiceInfrastructureService serviceInfra = context.getTiersService().getServiceInfra();
-		ArriveeType type = null;
-		try {
-			type = getArriveeType(serviceInfra, this);
-		}
-		catch (EvenementCivilException e) {
-			erreurs.add(new EvenementCivilExterneErreur(e));
-		}
-		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
-			// Verification de la commune d'arrivée
-			try {
-				final Commune communeArrivee = getCommuneArrivee(serviceInfra, this, type);
-				if (communeArrivee == null) {
-					erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
-				}
-			}
-			catch (ServiceInfrastructureException e) {
-				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (" + e.getMessage() + ')', e));
-			}
-
-			verifierMouvementIndividu(this, false, erreurs, warnings);
-		}
-	}
-
-	private static Commune getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws ServiceInfrastructureException {
-
-		Commune commune = null;
-
-		// [UNIREG-3379] si l'egid est renseigné dans l'adresse d'arrivée, on l'utilise en priorité pour déterminer la commune d'arrivée
-		final Integer egid;
-		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE){
-			final Adresse adresse = arrivee.getNouvelleAdressePrincipale();
-			egid = (adresse == null ? null : adresse.getEgid());
-		}
-		else {
-			final Adresse adresse = arrivee.getNouvelleAdresseSecondaire();
-			egid = (adresse == null ? null : adresse.getEgid());
-		}
-		if (egid != null) {
-			commune = getCommuneArriveeDepuisAdresse(arrivee, type);
-		}
-
-		// [UNIREG-1995] si la commune d'annonce est renseignée dans l'événement, la prendre en compte
-		// (ou si bien-sûr on tombe sur une commune fractionnée) sinon on prend la commune de l'adresse
-		if (commune == null) {
-			if (arrivee.getNumeroOfsCommuneAnnonce() != null && arrivee.getNumeroOfsCommuneAnnonce() > 0) {
-				final Commune c = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce(), arrivee.getDate());
-				if (c != null && !c.isPrincipale()) {
-					commune = c;
-				}
-			}
-		}
-
-		if (commune == null) {
-			commune = getCommuneArriveeDepuisAdresse(arrivee, type);
-		}
-
-		return commune;
-	}
-
-	private static Commune getCommuneArriveeDepuisAdresse(Arrivee arrivee, ArriveeType type) {
-		switch (type) {
-			case ARRIVEE_ADRESSE_PRINCIPALE:
-				return arrivee.getNouvelleCommunePrincipale();
-
-			case ARRIVEE_RESIDENCE_SECONDAIRE:
-				return arrivee.getNouvelleCommuneSecondaire();
-
-			default:
-				throw new RuntimeException("Type d'arrivée inconnu : " + type);
-		}
-	}
-
 	@Override
 	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-
-		checkCompleteness(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
-			return;
-		}
-
-		/*
-		 * Validation des adresses
-		 */
-		try {
-			final ServiceInfrastructureService serviceInfra = context.getServiceInfra();
-			final ArriveeType type = getArriveeType(serviceInfra, this);
-			switch (type) {
-			case ARRIVEE_ADRESSE_PRINCIPALE:
-				validateArriveeAdressePrincipale(this, erreurs, warnings);
-				validateForPrincipal(this, erreurs);
-				break;
-			case ARRIVEE_RESIDENCE_SECONDAIRE:
-				validateArriveeAdresseSecondaire(serviceInfra, this, erreurs);
-				break;
-			default:
-				Assert.fail();
-			}
-		}
-		catch (EvenementCivilException e) {
-			erreurs.add(new EvenementCivilExterneErreur(e));
-		}
-
 		/*
 		 * Le retour du mort-vivant
 		 */
 		if (getIndividu().getDateDeces() != null) {
 			erreurs.add(new EvenementCivilExterneErreur("L'individu est décédé"));
 		}
-
-		/*
-		 * On vérifie que si les individus sont inconnus dans la base fiscale, ils ne possèdent pas d'adresse dans le registre civil avant
-		 * leur date d'arrivée
-		 *
-		 * [UNIREG-1457] Ce contrôle ne doit pas se faire sur les adresses secondaires
-		 */
-		if (isDansLeCanton(getAncienneCommunePrincipale())) {
-			final PersonnePhysique habitant = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
-			if (habitant == null) {
-				final String message = "L'individu est inconnu dans registre fiscal mais possédait déjà une adresse dans le " +
-						"registre civil avant son arrivée (incohérence entre les deux registres)";
-				erreurs.add(new EvenementCivilExterneErreur(message));
-			}
-		}
 	}
 
-	private void validateForPrincipal(Arrivee arrivee, List<EvenementCivilExterneErreur> erreurs) {
-
-		final MotifFor motifFor = getMotifOuverture(arrivee);
-		if ( motifFor == MotifFor.ARRIVEE_HC || motifFor == MotifFor.ARRIVEE_HS ) {
-			// Si le motif d'ouverture du for est arrivee HS ou HC alors , l'eventuel for principal actuel ne doit pas être vaudois
-			final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(arrivee.getNoIndividu());
-			if (pp != null) {
-				final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(arrivee.getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-
-				// seulement pour les PP qui ne sont pas en couple, car dans le cas des couples,
-				// un membre peut déjà être arrivé lorsque le second arrive
-				if (rapportMenage == null) {
-					final ForFiscalPrincipal forFP = pp.getForFiscalPrincipalAt(arrivee.getDate());
-					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						final String msg;
-						msg = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déjà un for principal vaudois", pp.getNumero());
-						erreurs.add(new EvenementCivilExterneErreur(msg));
-					}
-				}
-			}
-		}
-	}
-
-	protected final void validateArriveeAdressePrincipale(Arrivee arrivee, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
-		/*
-		 * La date de début de la nouvelle adresse principale de l’individu est antérieure ou identique à la date de l'ancienne.
-		 */
-		final Adresse ancienneAdresse = arrivee.getAncienneAdressePrincipale();
-		if (ancienneAdresse != null && ancienneAdresse.getDateDebut() != null && arrivee.getDate().isBeforeOrEqual(ancienneAdresse.getDateDebut())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée principale est antérieure à la date de début de l'ancienne adresse"));
-		}
-		if(ancienneAdresse != null && (ancienneAdresse.getDateFin() == null || arrivee.getDate().isBeforeOrEqual(ancienneAdresse.getDateFin())) ){
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée principale est antérieure à la date de fin de l'ancienne adresse"));
-		}
-
-		try {
-			/*
-			 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
-			 */
-			final Commune nouvelleCommune = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
-			Assert.notNull(nouvelleCommune);
-			if (!nouvelleCommune.isVaudoise()) {
-				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est en dehors du canton"));
-			}
-
-			/*
-			 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
-			 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilExterneErreur("La
-			 * nouvelle commune principale ("+nouvelleCommune.getNomMinuscule()+ ","+nouvelleCommune.getNoTechnique()+") ne correspond pas à la
-			 * commune d'annonce ("+arrivee.getNumeroOfsCommuneAnnonce()+")")); }
-			 */
-
-			/*
-			 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement manuel est
-			 * nécessaire.
-			 */
-			if (nouvelleCommune.getNoOFSEtendu() == NO_OFS_FRACTION_SENTIER) {
-				warnings.add(new EvenementCivilExterneErreur("arrivée dans la fraction de commune du Sentier: "
-						+ "veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
-			}
-		}
-		catch (ServiceInfrastructureException e) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est introuvable (" + e.getMessage() + ')', e));
-		}
-	}
-
-	protected static void validateArriveeAdresseSecondaire(ServiceInfrastructureService infraService, Arrivee arrivee, List<EvenementCivilExterneErreur> erreurs) {
-		/*
-		 * La date de début de la nouvelle adresse secondaire de l’individu est antérieure ou identique à la date de l'ancienne.
-		 */
-		final Adresse ancienneAdresse = arrivee.getAncienneAdresseSecondaire();
-		if (ancienneAdresse != null && ancienneAdresse.getDateFin() != null && arrivee.getDate().isBeforeOrEqual(ancienneAdresse.getDateFin())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée secondaire est antérieure à la date de fin de l'ancienne adresse"));
-		}
-
-		try {
-			/*
-			 * La nouvelle adresse secondaire n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
-			 */
-			final Commune nouvelleCommune = getCommuneArrivee(infraService, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
-			if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
-				erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est en dehors du canton"));
-			}
-
-			/*
-			 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
-			 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilExterneErreur("La
-			 * nouvelle commune secondaire ne correspond pas à la commune d'annonce")); }
-			 */
-		}
-		catch (ServiceInfrastructureException e) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est introuvable (" + e.getMessage() + ')', e));
-		}
+	@Override
+	protected Adresse getNouvelleAdressePrincipale() {
+		// TODO jde il faudra supprimer cette méthode...
+		return null;
 	}
 
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-
 		if (isIndividuEnMenage(getIndividu(), getDate())) {
-			return handleIndividuEnMenage(this, warnings);
+			return handleIndividuEnMenage(warnings);
 		}
 		else {
-			return handleIndividuSeul(this, warnings);
+			return handleIndividuSeul(warnings);
 		}
 	}
 
@@ -433,12 +142,12 @@ public class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrivée d'un contribuable seul.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
 		try {
-			final Individu individu = arrivee.getIndividu();
-			final RegDate dateArrivee = arrivee.getDate();
-			final Long numeroEvenement = arrivee.getNumeroEvenement();
+			final Individu individu = getIndividu();
+			final RegDate dateArrivee = getDateArriveeEffective(getDate());
+			final Long numeroEvenement = getNumeroEvenement();
 
 			/*
 			 * Création à la demande de l'habitant
@@ -460,91 +169,42 @@ public class Arrivee extends Mouvement {
 			/*
 			 * Mise-à-jour des fors fiscaux principaux du contribuable
 			 */
-			final ArriveeType type = getArriveeType(context.getServiceInfra(), arrivee);
-
-			// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
-			final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), arrivee.getDate());
-
-			final boolean individuMajeur = FiscalDateHelper.isMajeurAt(individu, dateEvenement);
-			final Commune communeArrivee = getCommuneArrivee(context.getServiceInfra(), arrivee, type);
-
-			/*
-			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire, ou en cas d'arrivée en résidence principale
-			 * d'un individu mineur.
-			 */
-			if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE && individuMajeur) {
-
-				MotifFor motifOuverture = getMotifOuverture(arrivee);
-				final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
-				final ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(null);
-
-				// détermination du mode d'imposition
-				final ModeImposition modeImposition;
-				if (forFiscal == null) {
-					if (getService().isSuisseOuPermisC(habitant, dateEvenement)) {
-						// s'il est suisse ou titulaire d'un permis C => ordinaire
-						modeImposition = ModeImposition.ORDINAIRE;
-					}
-					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						modeImposition = ModeImposition.SOURCE;
-					}
-					else {
-						// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
-						modeImposition = null;
-					}
-				}
-				else {
-					if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						if (getService().isSuisseOuPermisC(habitant, dateEvenement)) {
-							modeImposition = ModeImposition.ORDINAIRE;
-						}
-						else {
-							// Si l'individu est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
-							final List<ForFiscal> fors = habitant.getForsFiscauxValidAt(dateEvenement);
-							boolean hasForSecondaire = false;
-							for (ForFiscal ff : fors) {
-								// si on trouve au moins un for secondaire, alors mixte_1
-								if (ff instanceof ForFiscalSecondaire) {
-									hasForSecondaire = true;
-									break;
-								}
-							}
-							modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
-						}
-					}
-					else {
-						modeImposition = forFiscal.getModeImposition();
-					}
-				}
-
-				// détermination de la date d'ouverture
-				final RegDate dateOuverture = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
-
-				if (modeImposition != null) {
-					if (motifOuverture == null) {
-						motifOuverture = MotifFor.ARRIVEE_HS;
-						warnings.add(new EvenementCivilExterneErreur("ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
-					}
-					if (forFiscal == null) {
-						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + ']');
-						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
-								false);
-					}
-					else {
-						Audit.info(numeroEvenement, "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + ']');
-						updateForFiscalPrincipal(habitant, dateOuverture, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
-					}
-				}
-			}
+			doHandleCreationForIndividuSeul(habitant, warnings);
 
 			return nouvelHabitant.booleanValue() ? new Pair<PersonnePhysique, PersonnePhysique>(habitant, null) : null;
-		}
-		catch (TiersException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * @param date date de référence de l'événement
+	 * @return date à laquelle l'arrivée doit en fait être considérée comme ayant eu lieu (en particulier pour l'ouverture des fors)
+	 */
+	protected RegDate getDateArriveeEffective(RegDate date) {
+		return date;
+	}
+
+	/**
+	 * Création des fors lors de l'arrivée d'un invididu seul
+	 * @param habitant personne physique habitante qui vient d'arriver
+	 * @param warnings liste des warnings à compléter au besoin
+	 * @throws EvenementCivilException en cas de souci
+	 */
+	protected abstract void doHandleCreationForIndividuSeul(PersonnePhysique habitant, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+
+	/**
+	 * Création des fors lors de l'arrivée d'un invididu seul
+	 * @param arrivant personne physique habitante qui vient d'arriver
+	 * @param menageCommun ménage commun de l'arrivant
+	 * @param warnings liste des warnings à compléter au besoin
+	 * @throws EvenementCivilException en cas de souci
+	 */
+	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+
+	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
+		return findNonHabitants(getService(), individu, assujettissementObligatoire);
 	}
 
 	/**
@@ -554,10 +214,10 @@ public class Arrivee extends Mouvement {
 	 * @param assujettissementObligatoire <b>vrai</b> s'il les non-habitants recherchés doivent posséder un for principal actif.
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
+	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire) {
 
 		// les critères de recherche
-		final String nomPrenom = getService().getNomPrenom(individu);
+		final String nomPrenom = tiersService.getNomPrenom(individu);
 		final RegDate dateNaissance = individu.getDateNaissance();
 		final Sexe sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 
@@ -569,9 +229,9 @@ public class Arrivee extends Mouvement {
 
 		final List<PersonnePhysique> nonHabitants = new ArrayList<PersonnePhysique>();
 
-		final List<TiersIndexedData> results = getService().search(criteria);
+		final List<TiersIndexedData> results = tiersService.search(criteria);
 		for (final TiersIndexedData tiersIndexedData : results) {
-			final PersonnePhysique pp = (PersonnePhysique) getService().getTiers(tiersIndexedData.getNumero());
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-770] le non habitant doit être assujetti
 			if (assujettissementObligatoire && pp.getForFiscalPrincipalAt(null) == null) {
 				continue;
@@ -725,15 +385,15 @@ public class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrive d'un contribuable en ménage commun.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(Arrivee arrivee, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
 
-		final Individu individu = arrivee.getIndividu();
+		final Individu individu = getIndividu();
 		Assert.notNull(individu); // prérequis
-		final Individu conjoint = context.getServiceCivil().getConjoint(arrivee.getNoIndividu(), arrivee.getDate());
+		final Individu conjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 
 		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
-		final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), arrivee.getDate());
-		final Long numeroEvenement = arrivee.getNumeroEvenement();
+		final RegDate dateEvenement = getDateArriveeEffective(getDate());
+		final Long numeroEvenement = getNumeroEvenement();
 
 		/*
 		 * Récupération/création des habitants
@@ -754,7 +414,7 @@ public class Arrivee extends Mouvement {
 		 */
 
 		// trouve la date du mariage (qui peut avoir eu lieu bien avant l'arrivée !)
-		final RegDate dateDebutMenage = findDateDebutMenageAvant(individu, arrivee.getDate());
+		final RegDate dateDebutMenage = findDateDebutMenageAvant(individu, getDate());
 		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointArrivant, dateEvenement, dateDebutMenage, numeroEvenement);
 		Assert.notNull(menageCommun);
 
@@ -766,18 +426,10 @@ public class Arrivee extends Mouvement {
 		 * qui doivent être férmées.Si aucune adresse fiscale n'existe, on prend les adresses civiles
 		 * qui sont forcément valides.
 		 */
-		fermeAdresseTiersTemporaire(menageCommun, arrivee.getDate().getOneDayBefore());
+		fermeAdresseTiersTemporaire(menageCommun, getDate().getOneDayBefore());
 
-		/*
-		 * Mise-à-jour des fors fiscaux principaux du contribuable
-		 */
-		final ArriveeType type = getArriveeType(context.getServiceInfra(), arrivee);
-		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
-			/*
-			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire.
-			 */
-			createOrUpdateForFiscalPrincipalOnCouple(arrivee, arrivant, menageCommun, warnings);
-		}
+		// création du for principal si nécessaire
+		doHandleCreationForMenage(arrivant, menageCommun, warnings);
 
 		if (nouvelArrivant.booleanValue() || nouveauConjoint.booleanValue()) {
 			final PersonnePhysique arrivantCree = nouvelArrivant.booleanValue() ? arrivant : null;
@@ -786,295 +438,6 @@ public class Arrivee extends Mouvement {
 		}
 		else {
 			return null;
-		}
-	}
-
-	private RegDate getDateEvenementPourFor(TypeEvenementCivil typeArrivee, RegDate dateArrivee) {
-		final RegDate dateEvenement;
-		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == typeArrivee) {
-			// vérification du dépassement du 20/12
-			dateEvenement = FiscalDateHelper.getDateOuvertureForFiscal(dateArrivee);
-		}
-		else {
-			dateEvenement = dateArrivee;
-		}
-		return dateEvenement;
-	}
-
-	/**
-	 * Retourne la commune de domicile de la personne physique concernée
-	 * @param date date de référence
-	 * @param pp personne physique concernée
-	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
-	 * @throws DonneesCivilesException
-	 * @throws ServiceInfrastructureException
-	 */
-	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, ServiceInfrastructureException {
-		final Commune commune;
-		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
-			final AdressesCiviles adresseDomicile = new AdressesCiviles(context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false));
-			if (adresseDomicile.principale != null) {
-				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale, date);
-			}
-			else {
-				commune = null;
-			}
-		}
-		else {
-			// personne inconnue au civil...
-			commune = null;
-		}
-		return commune;
-	}
-
-	/**
-	 * On regarde les adresses de domicile des membres du couple (à la date d'arrivée) :
-	 * <ul>
-	 * <li>s'il n'y en a qu'une vaudoise -> on prend cette commune</li>
-	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans la même commune, alors on prend cette commune</li>
-	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
-	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
-	 * </ul>
-	 * @param arrivee événement d'arrivée
-	 * @param arrivant personne physique concernée par l'arrivée
-	 * @param ensemble ensemble du ménage et des personnes physiques le composant
-	 * @return une commune selon les règles édictées plus haut
-	 */
-	private Pair<Commune, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) throws EvenementCivilException {
-
-		final RegDate dateArrivee = arrivee.getDate();
-		try {
-			final PersonnePhysique principal = ensemble.getPrincipal();
-			final PersonnePhysique conjoint = ensemble.getConjoint();
-			final MenageCommun menage = ensemble.getMenage();
-
-			RegDate dateDebutFor = dateArrivee;
-
-			final ForFiscalPrincipal ffpArrivee = menage.getForFiscalPrincipalAt(dateArrivee);
-			if (ffpArrivee != null && ffpArrivee.getDateFin() != null) {
-				// un for existe, mais le for est déjà fermé... il ya eu d'autres modifications déjà après la date d'arrivée
-				// -> a régler manuellement
-				throw new EvenementCivilException("Il y a eu d'autres changements déjà pris en compte après l'arrivée");
-			}
-			else if (ffpArrivee != null) {
-
-				// quelles sont les communes de domicile de l'autre membre du menage (par rapport à celui qui arrive) ?
-				final PersonnePhysique autre = ensemble.getConjoint(arrivant);
-				if (autre != null && autre.getNumeroIndividu() != null && autre.getNumeroIndividu() > 0) {
-					final List<HistoriqueCommune> communes = context.getServiceCivil().getCommunesDomicileHisto(dateArrivee, autre.getNumeroIndividu(), false, true);
-
-					// s'il n'y en a pas (personne inconnue, ou HC/HS), ou une seule, il n'y a pas de problème : le conjoint (= l'autre)
-					// n'a pas déménagé (en tout cas en ce qui concerne les fors) depuis l'arrivée
-					if (communes != null && communes.size() > 1) {
-
-						// il y a eu un déménagement (au moins)...
-
-						// résumons-nous :
-						// - il y avait déjà un for sur le ménage à la date d'arrivée, for toujours ouvert
-						// - nous avons déjà connaissance du déménagement du conjoint de l'arrivant APRES cette arrivée-ci
-						// --> les événements ne sont pas arrivés dans le bon ordre...
-
-						// s'il y a plus d'un déménagement marquant (on ne compte pas les déménagements qui n'ont aucun lien avec le canton)
-						// alors cela devient compliqué... --> traitemant manuel
-						if (communes.size() > 2) {
-							final StringBuilder b = new StringBuilder();
-							for (int i = 1 ; i < communes.size() ; ++ i) {
-								final Commune ancienneCommune = communes.get(i - 1).getCommune();
-								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomMinuscule(), ancienneCommune.getNoOFSEtendu()) : "HC/HS";
-								final Commune nouvelleCommune = communes.get(i).getCommune();
-								final String nomNouvelleCommune = nouvelleCommune != null ? String.format("%s (%d)", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()) : "HC/HS";
-								if (i > 1) {
-									b.append(", ");
-								}
-								b.append(nomAncienneCommune).append(" -> ").append(nomNouvelleCommune).append(" au ").append(communes.get(i).getDateDebut());
-							}
-
-							throw new EvenementCivilException(String.format("Le contribuable %d a déjà déménagé plus d'une fois après l'arrivée de son conjoint (%s)", autre.getNumero(), b.toString()));
-						}
-						else {
-							// un seul déménagement...
-							final Commune ancienneCommune = communes.get(0).getCommune();
-							final Commune nouvelleCommune = communes.get(1).getCommune();
-							if (ancienneCommune == null) {
-								// arrivée HC/HS --> réglé plus bas
-							}
-							else if (nouvelleCommune == null) {
-								// départ HC/HS --> réglé plus bas
-							}
-							else {
-								// déménagement vaudois -> c'est seulement à partir du moment
-								// où les deux conjoints on déménagés que le for doit bouger
-								dateDebutFor = communes.get(1).getDateDebut();
-							}
-						}
-					}
-				}
-			}
-
-			final Commune residencePrincipal = getCommuneDomicile(dateDebutFor, principal);
-			final Commune residenceConjoint = getCommuneDomicile(dateDebutFor, conjoint);
-			final boolean principalVaudois = residencePrincipal != null && residencePrincipal.isVaudoise();
-			final boolean conjointVaudois = residenceConjoint != null && residenceConjoint.isVaudoise();
-
-			final Commune commune;
-
-			// aucun vaudois -> erreur !!
-			if (!principalVaudois && !conjointVaudois) {
-				throw new EvenementCivilException(String.format("Aucun membre du ménage %d n'a une adresse de domicile vaudoise", menage.getNumero()));
-			}
-			else if (!conjointVaudois) {
-				commune = residencePrincipal;
-			}
-			else if (!principalVaudois) {
-				commune = residenceConjoint;
-			}
-			else if (residencePrincipal.getNoOFSEtendu() == residenceConjoint.getNoOFSEtendu()) {
-				commune = residencePrincipal;      // même commune pour les deux conjoints -> ils sont tous les deux arrivés
-			}
-			else {
-				// deux adresses vaudoises, mais sur des communes différentes
-				// y a-t-il déjà un for vaudois ouvert sur le couple (cette méthode est appelée avant la fermeture des fors...)
-				if (ffpArrivee != null && ffpArrivee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					// si le for principal vaudois sur le couple correspond à l'une des communes du principal ou du conjoint, on ne touche à rien
-					if (ffpArrivee.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFSEtendu() || ffpArrivee.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFSEtendu()) {
-						commune = null;
-					}
-					else {
-						// sinon, les deux ont déménagé, et le for passe sur la commune de domicile du membre principal
-						commune = residencePrincipal;
-					}
-				}
-				else {
-					// pas de for antérieur à l'arrivée, donc on doit en créer un
-					commune = residencePrincipal;
-				}
-			}
-
-			return commune == null ? null : new Pair<Commune, RegDate>(commune, dateDebutFor);
-		}
-		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
-		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Crée ou met-à-jour le for fiscal principal pour le contribuable principal, son conjoint et le ménage - en fonction de leur état civil
-	 * et fiscal.
-	 * <p/>
-	 * On regarde les adresses de domicile des membres du couple :
-	 * <ul>
-	 * <li>s'il n'y en a qu'une vaudoise -> on prend cette commune</li>
-	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans la même commune, alors on prend cette commune</li>
-	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
-	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
-	 * </ul>
-	 * @param arrivee l'événement d'arrivée
-	 * @param arrivant personne physique concernée par l'arrivée
-	 * @param menageCommun le ménage commun
-	 * @param warnings liste des erreurs à peupler en cas de problème
-	 */
-	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique arrivant,final MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws
-			EvenementCivilException {
-
-		Assert.notNull(arrivee);
-		Assert.notNull(menageCommun);
-
-		final EnsembleTiersCouple ensemble = getService().getEnsembleTiersCouple(menageCommun, arrivee.getDate());
-		final Pair<Commune, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivee, arrivant, ensemble);
-		if (infosFor == null) {
-			// pas de for à créer...
-			return;
-		}
-
-		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
-		final RegDate dateEvenement = getDateEvenementPourFor(arrivee.getType(), infosFor.getSecond());
-		final Commune commune = infosFor.getFirst();
-
-		try {
-
-			final PersonnePhysique principal = ensemble.getPrincipal();
-			final PersonnePhysique conjoint = ensemble.getConjoint();
-			final ForFiscalPrincipal ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
-			final ForFiscalPrincipal ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
-			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
-			final int numeroOfsNouveau = commune.getNoOFSEtendu();
-
-			// pour un couple, le for principal est toujours sur le ménage commun
-			if (ffpHabitantPrincipal != null) {
-				throw new EvenementCivilException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
-						FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
-						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
-			}
-			if (ffpHabitantConjoint != null) {
-				throw new EvenementCivilException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
-						FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
-						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
-			}
-
-			MotifFor motifOuverture = getMotifOuverture(arrivee);
-
-			// détermination du mode d'imposition
-			final ModeImposition modeImposition;
-			if (ffpMenage == null) {
-				if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
-					modeImposition = ModeImposition.ORDINAIRE;
-				}
-				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					modeImposition = ModeImposition.SOURCE;
-				}
-				else {
-					// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
-					modeImposition = null;
-				}
-			}
-			else {
-				if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-					if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
-						modeImposition = ModeImposition.ORDINAIRE;
-					}
-					else {
-						// Si le couple est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
-						final List<ForFiscal> fors = menageCommun.getForsFiscauxValidAt(dateEvenement);
-						boolean hasForSecondaire = false;
-						for (ForFiscal ff : fors) {
-							// si on trouve au moins un for secondaire, alors mixte_1
-							if (ff instanceof ForFiscalSecondaire) {
-								hasForSecondaire = true;
-								break;
-							}
-						}
-						modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
-					}
-				}
-				else {
-					modeImposition = ffpMenage.getModeImposition();
-				}
-			}
-
-			// détermination de la date d'ouverture
-			final RegDate dateOuvertureFor = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
-
-			if (modeImposition != null) {
-				if (motifOuverture == null) {
-					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.add(new EvenementCivilExterneErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
-				}
-				if (ffpMenage == null) {
-					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
-							false);
-				}
-				else {
-					Audit.info(arrivee.getNumeroEvenement(), "Mise-à-jour for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
-				}
-			}
-		}
-		catch (TiersException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}
 
@@ -1371,85 +734,7 @@ public class Arrivee extends Mouvement {
 		return ancienMenage;
 	}
 
-	/**
-	 *
-	 * L'arrivée de type principale prime sur l'arrivée de type secondaire si le cas se présente.
-	 *
-	 * @param arrivee
-	 *            l'objet d'arrivée à traiter
-	 * @return le type d'arrivée déterminé
-	 * @throws EvenementCivilException
-	 *             si aucune des deux communes d'arrivée n'est dans le canton
-	 *
-	 */
-	protected static ArriveeType getArriveeType(ServiceInfrastructureService serviceInfra, Arrivee arrivee) throws EvenementCivilException {
-		final TypeEvenementCivil type = arrivee.getType();
-		if (type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC || type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS
-				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE) {
-			return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
-		}
-		else if (type == TypeEvenementCivil.ARRIVEE_SECONDAIRE) {
-			return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
-		}
-
-		try {
-			final Commune nouvelleCommunePrincipale = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
-			final Commune ancienneCommunePrincipale = arrivee.getAncienneCommunePrincipale();
-
-			if ((ancienneCommunePrincipale == null && nouvelleCommunePrincipale != null)
-					|| (nouvelleCommunePrincipale != null && nouvelleCommunePrincipale.getNoOFSEtendu() != ancienneCommunePrincipale.getNoOFSEtendu())) {
-				return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
-			}
-			final Commune nouvelleCommuneSecondaire = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
-			final Commune ancienneCommuneSecondaire = arrivee.getAncienneCommuneSecondaire();
-			if ((ancienneCommuneSecondaire == null && nouvelleCommuneSecondaire != null)
-					|| (nouvelleCommuneSecondaire != null && nouvelleCommuneSecondaire.getNoOFSEtendu() != ancienneCommuneSecondaire.getNoOFSEtendu())) {
-				return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
-			}
-		}
-		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
-		}
-
-		throw new EvenementCivilException("Aucune des adresses (principale ou secondaire) n'a changé");
-	}
-
-	protected MotifFor getMotifOuverture(Arrivee arrivee) {
-		TypeEvenementCivil type = arrivee.getType();
-		switch (type){
-			case ARRIVEE_PRINCIPALE_HC :
-				return MotifFor.ARRIVEE_HC;
-			case ARRIVEE_PRINCIPALE_HS :
-				return MotifFor.ARRIVEE_HS;
-			case ARRIVEE_PRINCIPALE_VAUDOISE :
-			case DEMENAGEMENT_DANS_COMMUNE: // [UNIREG-3379] dans le cas d'un déménagement entre deux communes non-encore fusionnées fiscalement, le déménagement se traduit par une arrivée.
-				return MotifFor.DEMENAGEMENT_VD;
-			case ARRIVEE_DANS_COMMUNE :
-				MotifFor motifOuverture = MotifFor.DEMENAGEMENT_VD;
-				if(arrivee.getAncienneAdressePrincipale() == null)
-				{
-					motifOuverture = null;
-				}
-				else if(arrivee.getAncienneAdressePrincipale().getNoOfsPays() != null &&
-						!arrivee.getAncienneAdressePrincipale().getNoOfsPays().equals(ServiceInfrastructureService.noOfsSuisse))
-				{
-					motifOuverture = MotifFor.ARRIVEE_HS;
-				}
-				else if(arrivee.getAncienneCommunePrincipale() == null)
-				{
-					motifOuverture = null;
-				}
-				else if(arrivee.getAncienneCommunePrincipale() != null && !arrivee.getAncienneCommunePrincipale().isVaudoise())
-				{
-					motifOuverture = MotifFor.ARRIVEE_HC;
-				}
-				return motifOuverture;
-			default :
-				return null;
-		}
-	}
-
-	protected boolean isDansLeCanton(Commune commune) {
+	protected static boolean isDansLeCanton(Commune commune) {
 		return commune != null && commune.isVaudoise();
 	}
 }
