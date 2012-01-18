@@ -87,9 +87,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Collection<Origine> getOrigines(long noTechniqueIndividu, int anneeValidite) {
+	public Collection<Origine> getOrigines(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getOrigines(noTechniqueIndividu, anneeValidite);
+		return target.getOrigines(noTechniqueIndividu, date);
 	}
 
 	@Override
@@ -106,9 +106,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection getNationalites(long noTechniqueIndividu, int anneeValidite) {
+	public Collection getNationalites(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getNationalites(noTechniqueIndividu, anneeValidite);
+		return target.getNationalites(noTechniqueIndividu, date);
 	}
 
 	@Override

@@ -85,9 +85,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Collection<Nationalite> getNationalites(long noIndividu, int annee) {
+	public final Collection<Nationalite> getNationalites(long noIndividu, RegDate date) {
 
-		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.NATIONALITE);
+		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.NATIONALITE);
 		if (individu == null) {
 			return null;
 		}
@@ -96,9 +96,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Collection<Origine> getOrigines(long noIndividu, int annee) {
+	public final Collection<Origine> getOrigines(long noIndividu, RegDate date) {
 
-		final Individu individu = getIndividu(noIndividu, annee2date(annee), AttributeIndividu.ORIGINE);
+		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.ORIGINE);
 		if (individu == null) {
 			return null;
 		}

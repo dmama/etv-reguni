@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -158,7 +157,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * Origine
 	 */
 	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
-		final Collection<Origine> origines = getServiceCivilService().getOrigines(numeroIndividu, DateHelper.getCurrentYear());
+		final Collection<Origine> origines = getServiceCivilService().getOrigines(numeroIndividu, null);
 		if (origines != null && !origines.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Origine origine : origines) {
@@ -176,7 +175,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
 
-		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, DateHelper.getCurrentYear());
+		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, null);
 		if (nationalites != null && !nationalites.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Nationalite nationalite : nationalites) {

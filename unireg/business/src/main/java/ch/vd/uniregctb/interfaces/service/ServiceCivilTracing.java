@@ -220,11 +220,11 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Collection<Nationalite> getNationalites(final long noIndividu, final int annee) {
+	public Collection<Nationalite> getNationalites(final long noIndividu, final RegDate date) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getNationalites(noIndividu, annee);
+			return target.getNationalites(noIndividu, date);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -234,18 +234,18 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			tracing.end(time, t, "getNationalites", new Object() {
 				@Override
 				public String toString() {
-					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
 				}
 			});
 		}
 	}
 
 	@Override
-	public Collection<Origine> getOrigines(final long noIndividu, final int annee) {
+	public Collection<Origine> getOrigines(final long noIndividu, final RegDate date) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getOrigines(noIndividu, annee);
+			return target.getOrigines(noIndividu, date);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -255,7 +255,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			tracing.end(time, t, "getOrigines", new Object() {
 				@Override
 				public String toString() {
-					return String.format("noIndividu=%d, annee=%d", noIndividu, annee);
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
 				}
 			});
 		}

@@ -134,30 +134,30 @@ public interface ServiceCivilService {
 	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties);
 
 	/**
-	 * Retourne la liste des nationalités, valides <b>jusqu'à</b> l'année en paramètre, de l'individu identifié par le numéro en paramètre.
+	 * Retourne la liste des nationalités, valides <b>jusqu'à</b> la date en paramètre, de l'individu identifié par le numéro en paramètre.
 	 * <p/>
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
 	 * <p/>
 	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
+	 * @param date       la date de validité des nationalités demandées
 	 * @return la liste des nationalités de l'individu, valides jusqu'à l'année spécifiée.
 	 */
-	Collection<Nationalite> getNationalites(long noIndividu, int annee);
+	Collection<Nationalite> getNationalites(long noIndividu, @Nullable RegDate date);
 
 	/**
-	 * Retourne les origines, valides <b>jusqu'à</b> l'année en paramètre, d'un individu identifié par le numéro en paramètre.
+	 * Retourne les origines, valides <b>jusqu'à</b> la date en paramètre, d'un individu identifié par le numéro en paramètre.
 	 * <p/>
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
 	 * <p/>
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param annee      l'année de validité.
+	 * @param date       la date de validité des origines demandées
 	 * @return les origines de l'individu, valides jusqu'à l'année spécifiée.
 	 */
-	Collection<Origine> getOrigines(long noIndividu, int annee);
+	Collection<Origine> getOrigines(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Retourne le permis valable à la date spécifiée pour un individu.

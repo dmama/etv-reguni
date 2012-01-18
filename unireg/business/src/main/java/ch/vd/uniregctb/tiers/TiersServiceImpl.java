@@ -32,7 +32,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -309,7 +308,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// nationalité (on ne garde qu'une nationalité au hasard, sachant que si l'une est Suisse, elle a priorité)
-		final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(habitant.getNumeroIndividu(), DateHelper.getCurrentYear());
+		final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(habitant.getNumeroIndividu(), null);
 		if (nationalites != null) {
 			Pays pays = null;
 			for (Nationalite nationalite : nationalites) {
@@ -695,8 +694,7 @@ public class TiersServiceImpl implements TiersService {
 
 		if (pp.isHabitantVD()) {
 			final long numeroIndividu = pp.getNumeroIndividu();
-			final int year = date != null ? date.year() : 2400;
-			final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, year);
+			final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date);
 			if (nationalites != null) {
 				for (Nationalite nationalite : nationalites) {
 					if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
