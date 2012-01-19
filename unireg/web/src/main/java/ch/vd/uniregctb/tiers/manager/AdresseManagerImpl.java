@@ -354,13 +354,12 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		target.setNumeroCasePostale(source.getNumeroCasePostale());
 		target.setRue(source.getRue());
 		target.setTexteCasePostale(source.getTexteCasePostale());
+		target.setNpaCasePostale(source.getNpaCasePostale());
 	}
 
 	/**
 	 * Alimente AdresseView de core en fonction d'adresse Tiers
 	 *
-	 * @param adresseTiers
-	 * @return
 	 */
 	private AdresseView enrichiAdresseView(AdresseTiers adresse) {
 
@@ -395,7 +394,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 					adresseView.setNumeroOrdrePoste(localite.getNoOrdre().toString());
 					adresseView.setNumCommune(localite.getNoCommune().toString());
 				}
-
+				adresseView.setNpaCasePostale(adresseSuisse.getNpaCasePostale());
 			}
 			else if (adresse instanceof AdresseEtrangere) {
 

@@ -8,6 +8,11 @@ UPDATE ADRESSE_TIERS SET TYPE_PM = TYPE where ADR_TYPE = 'AdressePM';
 ALTER TABLE ADRESSE_TIERS DROP COLUMN TYPE;
 
 --
+-- [SIFISC-143] Ajout de la colonne NPA_CASE_POSTALE
+--
+ALTER TABLE ADRESSE_TIERS ADD (NPA_CASE_POSTALE number(10, 0));
+
+--
 -- [SIFISC-2854] puis [SIFISC-3156] Nouveau format de la table immeuble
 --
 drop table IMMEUBLE cascade constraints;

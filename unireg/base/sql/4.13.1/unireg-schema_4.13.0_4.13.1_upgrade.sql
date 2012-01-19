@@ -14,3 +14,8 @@ alter table IMMEUBLE add constraint FK_IMM_CTB_ID foreign key (CTB_ID) reference
 --
 alter table EVENEMENT_IDENTIFICATION_CTB modify (MESSAGE_ID nvarchar2(255));
 
+--
+-- [SIFISC-143] Ajout de la colonne NPA_CASE_POSTALE
+--
+ALTER TABLE ADRESSE_TIERS ADD (NPA_CASE_POSTALE number(10, 0));
+
