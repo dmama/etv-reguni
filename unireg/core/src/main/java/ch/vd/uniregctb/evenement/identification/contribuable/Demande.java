@@ -85,13 +85,13 @@ public class Demande {
 	 */
 	private TypeDemande typeDemande;
 
-	/** Valeur fourni par le demandeur, correspond au moyen technique par lequel la demande a transité
-	 *
+	/**
+	 * Valeur fourni par le demandeur, correspond au moyen technique par lequel la demande a transité
 	 */
 	private String transmetteur;
 
-	/** Montant en lien avec le type du message(ex: montant du salaire pour un certificat de salaire)
-	 *
+	/**
+	 * Montant en lien avec le type du message(ex: montant du salaire pour un certificat de salaire)
 	 */
 	private Long montant;
 
@@ -105,7 +105,7 @@ public class Demande {
 		this.date = date;
 	}
 
-	@Column(name = "MESSAGE_ID", length = 36, nullable = false)
+	@Column(name = "MESSAGE_ID", length = 255, nullable = false)
 	public String getMessageId() {
 		return messageId;
 	}
