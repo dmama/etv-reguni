@@ -19,11 +19,35 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
 	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+
+	/**
+	 * [SIFISC-143] test la surcharge du npa de la localité par le npa de la case postale pour les adresses suisses
+	 */
+	@Test
+	public void testAdresseSuisseAvecNpaCasePostaleRenseignee() {
+		final AdresseSuisse adresse = new AdresseSuisse();
+		adresse.setDateDebut(RegDate.get(1930, 1, 1));
+		adresse.setDateFin(null);
+		adresse.setUsage(TypeAdresseTiers.COURRIER);
+		adresse.setRue("rue");
+		adresse.setNumeroMaison("13bis");
+		adresse.setNumeroAppartement("numero appartement");
+		adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
+		adresse.setNumeroCasePostale(1234);
+		adresse.setNpaCasePostale(9999); // Surcharge de du npa de la localité par le npa de la case postale
+		adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+		adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+
+		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, null, false, serviceInfra);
+		assertFalse(MockLocalite.Lausanne.getNPA().toString().equals(adapter.getNumeroPostal()));
+		assertEquals("9999", adapter.getNumeroPostal());
+	}
 
 	@Test
 	public void testAdresseSuisse() {
@@ -60,6 +84,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertEquals(SourceType.FISCALE, adapter.getSource().getType());
 		assertEquals("complement", adapter.getComplement());
 	}
+
 
 	@Test
 	public void testAdresseEtrangere() {
