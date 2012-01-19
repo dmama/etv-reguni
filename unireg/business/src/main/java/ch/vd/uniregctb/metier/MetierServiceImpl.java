@@ -154,8 +154,9 @@ public class MetierServiceImpl implements MetierService {
 		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && rapport.getDateFin() == null) {
 				final Long mcId = rapport.getObjetId();
-				results.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
-				                               FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(mcId), RegDateHelper.dateToDisplayString(dateMariage)));
+				results.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s qui débute le %s. La création en date du %s n'est donc pas permise",
+						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(mcId),
+						RegDateHelper.dateToDisplayString(rapport.getDateDebut()), RegDateHelper.dateToDisplayString(dateMariage)));
 			}
 		}
 	}
@@ -167,7 +168,7 @@ public class MetierServiceImpl implements MetierService {
 		final EnsembleTiersCouple ensemblePrincipal = tiersService.getEnsembleTiersCouple(pp, date);
 		if (ensemblePrincipal != null && ensemblePrincipal.getMenage() != null) {
 			resultat.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
-			                                FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()), RegDateHelper.dateToDisplayString(date)));
+					FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()), RegDateHelper.dateToDisplayString(date)));
 		}
 		else {
 			checkRapportsMenage(pp, date, resultat);
@@ -1419,7 +1420,8 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+			MetierServiceException {
 		if (menage == null) {
 			throw new MetierServiceException("Le ménage est null");
 		}
@@ -1452,10 +1454,12 @@ public class MetierServiceImpl implements MetierService {
 				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
+						false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
+							false);
 				}
 			}
 
@@ -1722,7 +1726,7 @@ public class MetierServiceImpl implements MetierService {
 			if (noOfsEtendu != null) {
 				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale);
 				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(),
-				                                           motifOuverture, changeHabitantFlag);
+						motifOuverture, changeHabitantFlag);
 			}
 			else {
 				return null;
