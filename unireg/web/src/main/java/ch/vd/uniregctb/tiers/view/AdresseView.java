@@ -34,6 +34,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	private Integer numeroRue;
 	private String numeroOrdrePoste;
 	private String numCommune;
+	private Integer npaCasePostale;
 
 	// Etranger
 	private String numeroPostal;
@@ -83,7 +84,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	 */
 	private boolean mettreAJourDecedes;
 
-	public String getIndex() {
+		public String getIndex() {
 		return index;
 	}
 
@@ -492,4 +493,13 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	public void setMettreAJourDecedes(boolean mettreAJourDecedes) {
 		this.mettreAJourDecedes = mettreAJourDecedes;
 	}
+
+	public Integer getNpaCasePostale() {
+		return npaCasePostale;
+	}
+
+	public void setNpaCasePostale(Integer npaCasePostale) {
+		this.npaCasePostale = npaCasePostale;
+	}
+
 }

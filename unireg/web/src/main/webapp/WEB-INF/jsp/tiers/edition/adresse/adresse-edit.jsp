@@ -259,10 +259,16 @@
 					</tr>
 					<tr class="odd">
 						<td><fmt:message key="label.adresse.permanente" />&nbsp;:</td>
-						<td colspan="3">
+						<td>
 							<form:checkbox path="permanente" id="adressePermanente" cssErrorClass="input-with-errors" />
 							<form:errors path="permanente" cssClass="error"/>
 						</td>
+						<td id="td_npa_case_postale_label"><fmt:message key="label.npa.case.postale" /> :</td>
+						<td	id="td_npa_case_postale">
+							<form:input path="npaCasePostale" id="npaCasePostale" cssErrorClass="input-with-errors" size ="4" />
+							<form:errors path="npaCasePostale" cssClass="error"/>
+						</td>
+
 					</tr>
 
 					</table>
@@ -399,10 +405,14 @@
 			e.value = "";
 			$('#td_case_postale').hide();
 			$('#td_case_postale_label').hide();
+			$('#td_npa_case_postale').hide();
+			$('#td_npa_case_postale_label').hide();
 		}
 		else {
 			$('#td_case_postale_label').show();
 			$('#td_case_postale').show();
+			$('#td_npa_case_postale').show();
+			$('#td_npa_case_postale_label').show();
 		}
 	}
 
