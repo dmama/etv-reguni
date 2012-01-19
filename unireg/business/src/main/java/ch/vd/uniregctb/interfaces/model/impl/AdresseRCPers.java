@@ -2,9 +2,11 @@ package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
 
+import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
+import ch.ech.ech0011.v5.Destination;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.evd0001.v3.DwellingAddress;
@@ -17,6 +19,7 @@ import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -42,6 +45,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final Commune communeAdresse;
 	private final Integer egid;
 	private final Integer ewid;
+	private final Localisation localisationPrecedente;
+	private final Localisation localisationSuivante;
 
 	public static Adresse get(HistoryContact contact, ServiceInfrastructureService infraService) {
 		if (contact == null) {
@@ -78,6 +83,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.communeAdresse = null;
 		this.egid = null; // les adresses courrier ne possèdent pas d'egid/ewid, par définition
 		this.ewid = null;
+		this.localisationPrecedente = null; // les adresses courrier ne possèdent pas de localisation précédente/suivante, par définition
+		this.localisationSuivante = null;
 	}
 
 	public AdresseRCPers(Residence residence, ServiceInfrastructureService infraService) {
@@ -101,6 +108,26 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.communeAdresse = initCommune(residence.getResidenceMunicipality().getMunicipalityId(), this.dateDebut, infraService);
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
+		this.localisationPrecedente = initLocalisation(residence.getComesFrom());
+		this.localisationSuivante = initLocalisation(residence.getGoesTo());
+	}
+
+	private static Localisation initLocalisation(Destination location) {
+		if (location == null) {
+			return null;
+		}
+		if (location.getForeignCountry() != null) {
+			return Localisation.HORS_SUISSE;
+		}
+		else if (location.getSwissTown() != null) {
+			if (location.getSwissTown().getCantonAbbreviation() == CantonAbbreviation.VD) {
+				return Localisation.CANTON_VD;
+			}
+			else {
+				return Localisation.HORS_CANTON;
+			}
+		}
+		return null;
 	}
 
 	private static Commune initCommune(Integer municipalityId, RegDate date, ServiceInfrastructureService infraService) {
@@ -208,6 +235,16 @@ public class AdresseRCPers implements Adresse, Serializable {
 	@Override
 	public Integer getEwid() {
 		return ewid;
+	}
+
+	@Override
+	public Localisation getLocalisationPrecedente() {
+		return localisationPrecedente;
+	}
+
+	@Override
+	public Localisation getLocalisationSuivante() {
+		return localisationSuivante;
 	}
 
 	@Override

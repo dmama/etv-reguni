@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -179,6 +180,18 @@ public class AdresseImpl implements Adresse, Serializable {
 	@Override
 	public Integer getEwid() {
 		return ewid;
+	}
+
+	@Override
+	public Localisation getLocalisationPrecedente() {
+		// cette information n'est pas disponible dans host-interfaces
+		return null;
+	}
+
+	@Override
+	public Localisation getLocalisationSuivante() {
+		// cette information n'est pas disponible dans host-interfaces
+		return null;
 	}
 
 	/**

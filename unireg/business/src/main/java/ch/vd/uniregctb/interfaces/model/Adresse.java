@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CasePostale;
@@ -117,4 +119,24 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
 	 */
 	@Override
 	Integer getEwid();
+
+	/**
+	 * Retourne la localisation de l'adresse qui précède immédiatement cette adresse. Cette information n'est pas disponible sur toutes les adresses.
+	 * <p/>
+	 * Cette valeur permet de déterminer, par exemple, si l'arrivée dans une commune vaudoise est une arrivée depuis hors Suisse. depuis hors canton ou depuis une autre commune vaudoise.
+	 *
+	 * @return la localisation de l'adresse qui précède immédiatement cette adresse.
+	 */
+	@Nullable
+	Localisation getLocalisationPrecedente();
+
+	/**
+	 * Retourne la localisation de l'adresse qui suit immédiatement cette adresse. Cette information n'est pas disponible sur toutes les adresses.
+	 * <p/>
+	 * Cette valeur permet de déterminer, par exemple, si le départ d'une commune vaudoise est un départ hors Suisse. hors canton ou vers une autre commune vaudoise.
+	 *
+	 * @return la localisation de l'adresse qui suit immédiatement cette adresse.
+	 */
+	@Nullable
+	Localisation getLocalisationSuivante();
 }

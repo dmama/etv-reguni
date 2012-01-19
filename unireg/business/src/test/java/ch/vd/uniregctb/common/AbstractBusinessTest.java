@@ -29,6 +29,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -289,16 +290,24 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		assertEquals(type, etatCivil.getTypeEtatCivil());
 	}
 
-	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, Adresse adresse) {
+	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Localisation locPrecedente,
+	                                          @Nullable Localisation locSuivante, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(debut, adresse.getDateDebut());
 		assertEquals(fin, adresse.getDateFin());
 		assertEquals(rue, adresse.getRue());
 		assertEquals(npa, adresse.getNumeroPostal());
 		assertEquals(localite, adresse.getLocalite());
+		if (adresse.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertEquals(locPrecedente, adresse.getLocalisationPrecedente());
+		}
+		if (adresse.getLocalisationSuivante() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertEquals(locSuivante, adresse.getLocalisationSuivante());
+		}
 	}
 
-	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Integer egid, @Nullable Integer ewid, Adresse adresse) {
+	protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Integer egid, @Nullable Integer ewid,
+	                                          @Nullable Localisation locPrecedente, @Nullable Localisation locSuivante, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(debut, adresse.getDateDebut());
 		assertEquals(fin, adresse.getDateFin());
@@ -307,6 +316,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		assertEquals(localite, adresse.getLocalite());
 		assertEquals(egid, adresse.getEgid());
 		assertEquals(ewid, adresse.getEwid());
+		if (adresse.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertEquals(locPrecedente, adresse.getLocalisationPrecedente());
+		}
+		if (adresse.getLocalisationSuivante() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertEquals(locSuivante, adresse.getLocalisationSuivante());
+		}
 	}
 
 	/**

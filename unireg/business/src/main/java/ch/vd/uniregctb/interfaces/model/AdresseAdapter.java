@@ -110,4 +110,14 @@ public class AdresseAdapter implements Adresse {
 	public Integer getEwid() {
 		return target.getEwid();
 	}
+
+	@Override
+	public Localisation getLocalisationPrecedente() {
+		return target.getLocalisationPrecedente();
+	}
+
+	@Override
+	public Localisation getLocalisationSuivante() {
+		return target.getLocalisationSuivante();
+	}
 }

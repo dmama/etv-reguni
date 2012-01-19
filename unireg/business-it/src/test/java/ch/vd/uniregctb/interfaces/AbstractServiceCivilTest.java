@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -87,8 +88,9 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		Collections.sort(courriers, new DateRangeComparator<Adresse>());
 
 		assertEquals(2, principales.size());
-		assertAdresseCivile(date(2004, 8, 15), date(2011, 1, 31), "Route de Saint-Prex", "1168", "Villars-sous-Yens", principales.get(0)); // on ne teste pas l'egid car l'épuration de données de RCPers retourne une autre valeur (pas forcément plus fausse)
-		assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis", "1315", "La Sarraz", 280057519, 1, principales.get(1));
+		assertAdresseCivile(date(2004, 8, 15), date(2011, 1, 31), "Route de Saint-Prex", "1168", "Villars-sous-Yens", Localisation.CANTON_VD, Localisation.CANTON_VD,
+				principales.get(0)); // on ne teste pas l'egid car l'épuration de données de RCPers retourne une autre valeur (pas forcément plus fausse)
+		assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis", "1315", "La Sarraz", 280057519, 1, Localisation.CANTON_VD, null, principales.get(1));
 
 		assertEquals(2, courriers.size());
 		// TODO (msi) en attente de correction du SIREF-1487 : assertAdresseCivile(null, date(2011, 1, 31), "La Tuilière", "1168", "Villars-sous-Yens", null, null, courriers.get(0));

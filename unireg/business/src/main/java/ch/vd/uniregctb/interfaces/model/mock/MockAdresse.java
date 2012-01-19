@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -30,6 +31,8 @@ public class MockAdresse implements Adresse {
 	public TypeAdresseCivil typeAdresse;
 	public Commune communeAdresse;
 	public Integer egid;
+	public Localisation localisationPrecedente;
+	public Localisation localisationSuivante;
 
 	public MockAdresse() {
 
@@ -222,6 +225,24 @@ public class MockAdresse implements Adresse {
 	@Override
 	public Integer getEwid() {
 		return null;
+	}
+
+	@Override
+	public Localisation getLocalisationPrecedente() {
+		return localisationPrecedente;
+	}
+
+	public void setLocalisationPrecedente(Localisation localisationPrecedente) {
+		this.localisationPrecedente = localisationPrecedente;
+	}
+
+	@Override
+	public Localisation getLocalisationSuivante() {
+		return localisationSuivante;
+	}
+
+	public void setLocalisationSuivante(Localisation localisationSuivante) {
+		this.localisationSuivante = localisationSuivante;
 	}
 
 	/**
