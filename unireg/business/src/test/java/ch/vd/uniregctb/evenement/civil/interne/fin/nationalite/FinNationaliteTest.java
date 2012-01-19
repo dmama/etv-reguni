@@ -67,10 +67,10 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private FinNationalite createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {
-		return new FinNationalite(individu, null, dateFinNationalite, 5652, true, context);
+		return new FinNationaliteSuisse(individu, null, dateFinNationalite, 5652, context);
 	}	
 
 	private FinNationalite createValidFinNationaliteNonSuisse(Individu individu, RegDate dateFinNationalite) {
-		return new FinNationalite(individu, null, dateFinNationalite, 5652, false, context);
+		return new FinNationaliteNonSuisse(individu, null, dateFinNationalite, 5652, context);
 	}
 }

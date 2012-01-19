@@ -17,6 +17,17 @@ public class FinNationaliteTranslationStrategy implements EvenementCivilTranslat
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new FinNationalite(event, context, options);
+		final EvenementCivilInterne interne;
+		switch (event.getType()) {
+			case FIN_NATIONALITE_SUISSE:
+				interne = new FinNationaliteSuisse(event, context, options);
+				break;
+			case FIN_NATIONALITE_NON_SUISSE:
+				interne = new FinNationaliteNonSuisse(event, context, options);
+				break;
+			default:
+				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		}
+		return interne;
 	}
 }

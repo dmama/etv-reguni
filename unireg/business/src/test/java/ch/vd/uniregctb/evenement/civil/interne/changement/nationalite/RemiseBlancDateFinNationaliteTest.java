@@ -83,10 +83,10 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {
-		return new RemiseBlancDateFinNationalite(individu, null, date, 5652, true, context);
+		return new RemiseBlancDateFinNationaliteSuisse(individu, null, date, 5652, context);
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteNonSuisse(Individu individu, RegDate date) {
-		return new RemiseBlancDateFinNationalite(individu, null, date, 5652, false, context);
+		return new RemiseBlancDateFinNationaliteNonSuisse(individu, null, date, 5652, context);
 	}
 }

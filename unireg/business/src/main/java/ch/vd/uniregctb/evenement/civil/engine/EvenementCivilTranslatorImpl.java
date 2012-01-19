@@ -26,6 +26,7 @@ import ch.vd.uniregctb.evenement.civil.interne.annulationpermis.SuppressionNatio
 import ch.vd.uniregctb.evenement.civil.interne.annulationtutelle.AnnulationLeveeTutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulationtutelle.AnnulationTutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.arrivee.CorrectionDateArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.conjoint.CorrectionConjointTranslationStrategy;
@@ -95,7 +96,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		strategies.put(TypeEvenementCivil.CHGT_CORREC_IDENTIFICATION, new ChangementIdentificateurTranslationStrategy());
 		strategies.put(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, new ChangementNomTranslationStrategy());
 		strategies.put(TypeEvenementCivil.CHGT_SEXE, new ChangementSexeTranslationStrategy());
-		strategies.put(TypeEvenementCivil.CORREC_ADRESSE, new ModificationAdresseNotificationTranslationStrategy());
+		strategies.put(TypeEvenementCivil.CORREC_ADRESSE, new CorrectionAdresseTranslationStrategy());
 		strategies.put(TypeEvenementCivil.CORREC_CONJOINT, new CorrectionConjointTranslationStrategy());
 		strategies.put(TypeEvenementCivil.CORREC_DATE_ARRIVEE, new CorrectionDateArriveeTranslationStrategy());
 		strategies.put(TypeEvenementCivil.CORREC_DATE_DEPART, new CorrectionDateDepartTranslationStrategy());

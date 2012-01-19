@@ -16,7 +16,18 @@ public class ObtentionNationaliteTranslationStrategy extends ObtentionPermisCOuN
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new ObtentionNationalite(event, context, options);
+		final EvenementCivilInterne interne;
+		switch (event.getType()) {
+			case NATIONALITE_SUISSE:
+				interne = new ObtentionNationaliteSuisse(event, context, options);
+				break;
+			case NATIONALITE_NON_SUISSE:
+				interne = new ObtentionNationaliteNonSuisse(event, context, options);
+				break;
+			default:
+				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		}
+		return interne;
 	}
 
 }

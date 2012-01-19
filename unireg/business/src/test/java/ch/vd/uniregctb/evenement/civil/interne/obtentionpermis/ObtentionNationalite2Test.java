@@ -299,11 +299,11 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 	}
 
 	private ObtentionNationalite createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-		return new ObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, true, context);
+		return new ObtentionNationaliteSuisse(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, context);
 	}
 
 	private ObtentionNationalite createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
-		return new ObtentionNationalite(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, false, context);
+		return new ObtentionNationaliteNonSuisse(individu, null, dateObtentionNationalite, 5586, numeroOfsCommunePrincipale, context);
 	}
 
 	@Test

@@ -16,7 +16,18 @@ public class SuppressionNationaliteTranslationStrategy extends AnnulationPermisC
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new SuppressionNationalite(event, context, options);
+		final EvenementCivilInterne interne;
+		switch (event.getType()) {
+			case SUP_NATIONALITE_SUISSE:
+				interne = new SuppressionNationaliteSuisse(event, context, options);
+				break;
+			case SUP_NATIONALITE_NON_SUISSE:
+				interne = new SuppressionNationaliteNonSuisse(event, context, options);
+				break;
+		    default:
+			    throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		}
+		return interne;
 	}
 
 }

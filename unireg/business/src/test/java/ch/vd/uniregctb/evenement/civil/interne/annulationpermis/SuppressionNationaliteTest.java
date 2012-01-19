@@ -90,7 +90,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(celibataire, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -149,7 +149,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(marieSeul, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(marieSeul, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -202,7 +202,7 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		LOGGER.debug("Test de traitement d'un événement d'annulation de nationalité de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2007, 12, 31));
-		SuppressionNationalite annulationNationalite = createValidAnnulationNationalite(marieADeux, DATE_OBTENTION_NATIONALITE);
+		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(marieADeux, DATE_OBTENTION_NATIONALITE);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
@@ -261,11 +261,11 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 				forCommun.getMotifFermeture());
 	}
 
-	private SuppressionNationalite createValidAnnulationNationalite(Individu individu, RegDate dateObtentionNationalite) {
-		return new SuppressionNationalite(individu, null, dateObtentionNationalite, 5586, true, context);
+	private SuppressionNationalite createValidAnnulationNationaliteSuisse(Individu individu, RegDate dateObtentionNationalite) {
+		return new SuppressionNationaliteSuisse(individu, null, dateObtentionNationalite, 5586, context);
 	}
 
 	private SuppressionNationalite createValidAnnulationNationatieNonSuisse(Individu individu, RegDate dateObtentionNationalite) {
-		return new SuppressionNationalite(individu, null, dateObtentionNationalite, 5586, false, context);
+		return new SuppressionNationaliteNonSuisse(individu, null, dateObtentionNationalite, 5586, context);
 	}
 }

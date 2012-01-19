@@ -3,9 +3,7 @@ package ch.vd.uniregctb.evenement.civil.interne.fin.nationalite;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
@@ -22,7 +20,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * @author Pavel BLANCO
  *
  */
-public class FinNationalite extends EvenementCivilInterne {
+public abstract class FinNationalite extends EvenementCivilInterne {
 
 	protected FinNationalite(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -34,21 +32,6 @@ public class FinNationalite extends EvenementCivilInterne {
 	@SuppressWarnings({"JavaDoc"})
 	protected FinNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, boolean nationaliteSuisse, EvenementCivilContext context) {
 		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.FIN_NATIONALITE_SUISSE : TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, context);
-	}
-
-	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
-		switch (getType()) {
-		case FIN_NATIONALITE_SUISSE:
-			Audit.info(getNumeroEvenement(), "Nationalité suisse : passage en traitement manuel");
-			erreurs.add(new EvenementCivilExterneErreur("La fin de la nationalité suisse doit être traitée manuellement"));
-			break;
-		case FIN_NATIONALITE_NON_SUISSE:
-			Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée");
-			break;
-		default:
-			Assert.fail();
-		}
 	}
 
 	@Override

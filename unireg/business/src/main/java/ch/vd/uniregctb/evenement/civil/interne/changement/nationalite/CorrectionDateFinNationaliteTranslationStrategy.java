@@ -17,7 +17,18 @@ public class CorrectionDateFinNationaliteTranslationStrategy implements Evenemen
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new CorrectionDateFinNationalite(event, context, options);
+		final EvenementCivilInterne interne;
+		switch (event.getType()) {
+			case CORREC_DATE_FIN_NATIONALITE_SUISSE:
+				interne = new CorrectionDateFinNationaliteSuisse(event, context, options);
+				break;
+			case CORREC_DATE_FIN_NATIONALITE_NON_SUISSE:
+				interne = new CorrectionDateFinNationaliteNonSuisse(event, context, options);
+				break;
+			default:
+				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		}
+		return interne;
 	}
 
 }
