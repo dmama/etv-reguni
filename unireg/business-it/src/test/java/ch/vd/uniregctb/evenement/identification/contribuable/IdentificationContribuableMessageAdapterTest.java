@@ -97,7 +97,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		clearQueue(INPUT_QUEUE);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.1.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.2.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
