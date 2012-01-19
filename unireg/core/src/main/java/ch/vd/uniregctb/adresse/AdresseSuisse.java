@@ -10,6 +10,10 @@ public class AdresseSuisse extends AdresseSupplementaire {
 
 	private static final long serialVersionUID = 2539958821652480740L;
 
+	/**
+	 * Numéro de la rue du répertoire des rues fourni par DCL Data Care (entreprise de la Poste suisse) pour compléter l'offre NPA.
+	 * Pour plus de détail, consulter le fichier "Répertoire des rues. Description de l'offre et structure des données" disponible sur le site http://www.match.ch
+	 */
 	private Integer numeroRue;
 
 	@Column(name = "NUMERO_RUE")
