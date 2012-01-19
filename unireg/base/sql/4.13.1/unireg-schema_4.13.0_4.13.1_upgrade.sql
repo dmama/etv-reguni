@@ -14,3 +14,9 @@ alter table IMMEUBLE add constraint FK_IMM_CTB_ID foreign key (CTB_ID) reference
 --
 ALTER TABLE ADRESSE_TIERS ADD (NPA_CASE_POSTALE number(10, 0));
 
+--
+-- [SIFISC-3845] modification d ela longeur du champ messageID
+--
+alter table EVENEMENT_IDENTIFICATION_CTB modify (MESSAGE_ID nvarchar2(255));
+
+
