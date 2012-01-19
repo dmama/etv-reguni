@@ -48,13 +48,17 @@
 			<input type="text" id="height" value="auto">pixels</input>
 			<br/>
 
-			<label for="criterion">Critère de séparation :</label>
-			<select id="criterion">
-				<option value="CALLER">par utilisateur</option>
-				<option value="METHOD">par méthode</option>
-				<option value="SERVICE">par service</option>
-				<option value="ENVIRONMENT">par environnement</option>
-			</select>
+			<label>Critères de séparation :</label>
+			<div class="breakout">
+				<ol id="criteria">(aucun)</ol>
+				<select id="criterion" style="display:inline-block;">
+					<option value="CALLER">par utilisateur</option>
+					<option value="METHOD">par méthode</option>
+					<option value="SERVICE">par service</option>
+					<option value="ENVIRONMENT">par environnement</option>
+				</select>
+				<input type="button" id="addCriterion" value="Ajouter"/><br/>
+			</div>
 
 		</fieldset><br/>
 
@@ -76,6 +80,17 @@
 				$('#graph').load(function() {
 					$('#message').text('');
 				});
+
+				$('#addCriterion').click(function() {
+					$("ol:contains('aucun')").html('');
+					var text = $('#criterion option:selected').text();
+					var crit = $('#criterion').val();
+					$('<li id="' + crit + '">' + text + ' (<a href="#">supprimer</a>)</li>').appendTo('#criteria');
+					$('#' + crit + ' a').click(function() {
+						$('#' + crit).remove();
+						return false;
+					});
+				});
 				
 				$('#show').click(function() {
 					$('#message').text('Veuillez patienter...');
@@ -85,8 +100,15 @@
 					var res = $('#resolution').val();
 					var width = $('#width').val().replace(/[^0-9]*/g, '');
 					var height = $('#height').val().replace(/[^0-9]*/g, '');
+
+					var criteria = [];
+					$('#criteria li').each(function(index, element) {
+						criteria.push($(element).attr('id'));
+					});
+					var criteria = criteria.join(",");
+
 					$('#graph').attr('src', 'load.do?env=' + env_id +
-						'&criteria=' + $('#criterion').val() +
+						'&criteria=' + criteria +
 						'&from=' + from  +
 						'&to=' + to +
 						'&resolution=' + res +
