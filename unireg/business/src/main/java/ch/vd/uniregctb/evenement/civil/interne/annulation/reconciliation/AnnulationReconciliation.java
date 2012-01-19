@@ -15,7 +15,6 @@ import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour l'annulation de réconciliation.
@@ -34,7 +33,7 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationReconciliation(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ANNUL_RECONCILIATION, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

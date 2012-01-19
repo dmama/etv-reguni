@@ -22,7 +22,7 @@ public class FinNationaliteNonSuisse extends FinNationalite {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected FinNationaliteNonSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, false, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

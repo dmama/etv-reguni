@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Modélise un événement de changement de nom.
@@ -35,7 +34,7 @@ public class ChangementNom extends ChangementBase {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected ChangementNom(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

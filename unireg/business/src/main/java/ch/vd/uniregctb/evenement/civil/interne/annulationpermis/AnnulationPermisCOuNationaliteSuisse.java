@@ -17,7 +17,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivilInterne {
 
@@ -29,9 +28,8 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected AnnulationPermisCOuNationaliteSuisse(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
-	                                               EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+	protected AnnulationPermisCOuNationaliteSuisse(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter de l'événement de veuvage.
@@ -36,7 +35,7 @@ public class Veuvage extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected Veuvage(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.VEUVAGE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	public RegDate getDateVeuvage() {

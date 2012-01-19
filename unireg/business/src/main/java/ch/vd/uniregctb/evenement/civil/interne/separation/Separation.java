@@ -6,7 +6,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour la séparation.
@@ -24,6 +23,6 @@ public class Separation extends SeparationOuDivorce {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected Separation(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.SEPARATION, date, numeroOfsCommuneAnnonce, conjoint, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, conjoint, context);
 	}
 }

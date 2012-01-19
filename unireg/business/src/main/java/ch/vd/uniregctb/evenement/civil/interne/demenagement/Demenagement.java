@@ -29,7 +29,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
@@ -83,7 +82,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	@SuppressWarnings({"JavaDoc"})
 	protected Demenagement(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce,
 	                       Commune communePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
 		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
 		this.nouvelleCommunePrincipale = communePrincipale;
 	}

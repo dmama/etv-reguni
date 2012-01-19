@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
@@ -47,7 +46,6 @@ public abstract class EvenementCivilInterne {
 	private final Long conjointPPId;
 	private Individu conjoint;
 
-	private final TypeEvenementCivil type;
 	private final RegDate date;
 	private final Long numeroEvenement;
 	private final Integer numeroOfsCommuneAnnonce;
@@ -67,7 +65,6 @@ public abstract class EvenementCivilInterne {
 		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */
-		this.type = evenement.getType();
 		this.date = evenement.getDateEvenement();
 		this.numeroEvenement = evenement.getId();
 		this.numeroOfsCommuneAnnonce = evenement.getNumeroOfsCommuneAnnonce();
@@ -107,8 +104,7 @@ public abstract class EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterne(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
-	                                Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+	protected EvenementCivilInterne(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		this.context = context;
 
 		this.individuPrincipal = individu;
@@ -119,7 +115,6 @@ public abstract class EvenementCivilInterne {
 		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
 		this.conjointPPId = conjointPPId;
 
-		this.type = typeEvenementCivil;
 		this.date = dateEvenement;
 		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
@@ -129,8 +124,7 @@ public abstract class EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterne(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
-	                                EvenementCivilContext context) {
+	protected EvenementCivilInterne(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		this.context = context;
 
 		this.individuPrincipal = individu;
@@ -141,7 +135,6 @@ public abstract class EvenementCivilInterne {
 		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
 		this.conjointPPId = (conjoint == null ? null : context.getTiersDAO().getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
 
-		this.type = typeEvenementCivil;
 		this.date = dateEvenement;
 		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
@@ -230,10 +223,6 @@ public abstract class EvenementCivilInterne {
 	 * @param parts ensemble à remplir
 	 */
 	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
-	}
-
-	public final TypeEvenementCivil getType() {
-		return type;
 	}
 
 	public Long getNoIndividuConjoint() {

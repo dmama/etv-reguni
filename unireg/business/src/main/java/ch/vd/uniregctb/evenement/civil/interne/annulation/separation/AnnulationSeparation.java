@@ -6,7 +6,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour l'annulation de séparation.
@@ -25,7 +24,7 @@ public class AnnulationSeparation extends AnnulationSeparationOuDivorce {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationSeparation(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ANNUL_SEPARATION, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	@SuppressWarnings({"JavaDoc"})
 	protected ObtentionPermisCOuNationaliteSuisse(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
 	                                              Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
 	}
 
 	@Override

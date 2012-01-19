@@ -12,7 +12,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour la fin obtention d'une nationalité.
@@ -30,8 +29,8 @@ public abstract class FinNationalite extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected FinNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, boolean nationaliteSuisse, EvenementCivilContext context) {
-		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.FIN_NATIONALITE_SUISSE : TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, context);
+	protected FinNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

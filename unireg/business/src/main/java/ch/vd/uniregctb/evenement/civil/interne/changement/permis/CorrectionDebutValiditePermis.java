@@ -19,7 +19,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
@@ -34,7 +33,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 	@SuppressWarnings({"JavaDoc"})
 	protected CorrectionDebutValiditePermis(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce,
 	                                        EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CORREC_DEBUT_VALIDITE_PERMIS, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

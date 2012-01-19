@@ -27,7 +27,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeTutelle;
 
@@ -96,7 +95,7 @@ public class Tutelle extends EvenementCivilInterne {
 	@SuppressWarnings({"JavaDoc"})
 	protected Tutelle(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, Individu tuteur, TuteurGeneral tuteurGeneral,
 	                  TypeTutelle typeTutelle, CollectiviteAdministrative autoriteTutelaire, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.MESURE_TUTELLE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 		this.tuteur = tuteur;
 		this.tuteurGeneral = tuteurGeneral;
 		this.typeTutelle = typeTutelle;

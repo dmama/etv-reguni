@@ -14,7 +14,6 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ArriveeSecondaire extends Arrivee {
 
@@ -44,7 +43,7 @@ public class ArriveeSecondaire extends Arrivee {
 	@SuppressWarnings({"JavaDoc"})
 	public ArriveeSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Commune ancienneCommune, Commune nouvelleCommune, Adresse ancienneAdresse,
 	                         Adresse nouvelleAdresse, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ARRIVEE_SECONDAIRE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.ancienneCommune = ancienneCommune;
 		this.nouvelleCommune = nouvelleCommune;
 		this.ancienneAdresse = ancienneAdresse;

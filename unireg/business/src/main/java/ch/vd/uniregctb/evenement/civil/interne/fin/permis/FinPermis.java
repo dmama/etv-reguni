@@ -16,7 +16,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -53,7 +52,7 @@ public class FinPermis extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected FinPermis(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, TypePermis typePermis, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.typePermis = typePermis;
 	}
 

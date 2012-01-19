@@ -76,7 +76,6 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		/*
 		 * Test de la méthode init dans ce cas
 		 */
-		Assert.assertEquals(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, adapter.getType());
 		Assert.assertNotNull(adapter.getNoIndividu());
 		Assert.assertEquals(noIndividuPrincipal, adapter.getNoIndividu().longValue());
 		Assert.assertNotNull(adapter.getNoIndividuConjoint());

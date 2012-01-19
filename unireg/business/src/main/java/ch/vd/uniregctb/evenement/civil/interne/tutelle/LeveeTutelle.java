@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class LeveeTutelle extends EvenementCivilInterne {
 
@@ -26,7 +25,7 @@ public class LeveeTutelle extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected LeveeTutelle(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.LEVEE_TUTELLE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

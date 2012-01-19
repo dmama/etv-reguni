@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Modélise un événement de décès.
@@ -43,7 +42,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationDeces(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ANNUL_DECES, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.conjointSurvivant = conjoint;
 	}
 
@@ -52,7 +51,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationDeces(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.ANNUL_DECES, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 		this.conjointSurvivant = conjoint;
 	}
 

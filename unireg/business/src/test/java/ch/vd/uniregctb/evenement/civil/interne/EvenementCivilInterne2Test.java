@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -42,9 +41,8 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	
 	private static class DummyEvenementCivilInterne extends EvenementCivilInterne {
 
-		protected DummyEvenementCivilInterne(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
-		                                     EvenementCivilContext context) {
-			super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		protected DummyEvenementCivilInterne(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+			super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 		}
 
 		@Override
@@ -69,7 +67,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null);
-		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, null, context);
+		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, context);
 
 		doInNewTransaction(new TxCallback<Object>(){
 			@Override
@@ -182,13 +180,13 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, null);
 
 		//test OK
-		final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1),356, context);
+		final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1),356, context);
 		even.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
 
 		//test KO date null
-		final EvenementCivilInterne evenDateNull = new DummyEvenementCivilInterne(individu, null, null, null, 356, context);
+		final EvenementCivilInterne evenDateNull = new DummyEvenementCivilInterne(individu, null, null, 356, context);
 		evenDateNull.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -197,7 +195,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		warnings.clear();
 
 		//test KO date future
-		final EvenementCivilInterne evenDateFuture = new DummyEvenementCivilInterne(individu, null, null, RegDate.get().addYears(2), 356, context);
+		final EvenementCivilInterne evenDateFuture = new DummyEvenementCivilInterne(individu, null, RegDate.get().addYears(2), 356, context);
 		evenDateFuture.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -206,7 +204,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		warnings.clear();
 
 		//test KO numéro OFS null
-		final EvenementCivilInterne evenOFSNull = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), null, context);
+		final EvenementCivilInterne evenOFSNull = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), null, context);
 		evenOFSNull.validate(erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -215,7 +213,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		warnings.clear();
 
 		//test OK numéro OFS commune du sentier
-		final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, null, RegDate.get(1990, 7, 1), 8000, context);
+		final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 8000, context);
 		evenOFSSentier.validate(erreurs, warnings);
 		assertTrue(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());

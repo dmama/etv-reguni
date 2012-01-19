@@ -22,7 +22,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour la séparation.
@@ -52,9 +51,9 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	public SeparationOuDivorce(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
+	public SeparationOuDivorce(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
 	                           Individu ancienConjoint, EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 		this.ancienConjoint = ancienConjoint;
 	}
 

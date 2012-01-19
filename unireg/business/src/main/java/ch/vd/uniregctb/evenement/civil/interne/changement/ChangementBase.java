@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class ChangementBase extends EvenementCivilInterne {
 
@@ -33,9 +32,9 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ChangementBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	protected ChangementBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
 	                         Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

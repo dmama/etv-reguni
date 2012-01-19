@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.civil.interne.mouvement;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -13,11 +15,11 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.depart.Depart;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 
@@ -29,24 +31,28 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Mouvement(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
+	protected Mouvement(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
 	                    Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
 	}
 
-	/**
-	 * Pour le testing uniquement.
-	 */
-	@SuppressWarnings({"JavaDoc"})
-	protected Mouvement(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
-	                    Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
+	protected final AdressesCiviles getAdresses(EvenementCivilContext context, RegDate date) throws EvenementCivilException {
+		try {
+			return new AdressesCiviles(context.getServiceCivil().getAdresses(getNoIndividu(), date, false));
+		}
+		catch (DonneesCivilesException e) {
+			throw new EvenementCivilException(e);
+		}
 	}
 
-	/**
-	 * @return l'adresse principale de l'individu après le départ ou l'arrivée.
-	 */
-	protected abstract Adresse getNouvelleAdressePrincipale();
+	protected final Commune getCommuneByAdresse(EvenementCivilContext context, Adresse adresse, RegDate date) throws EvenementCivilException {
+		try {
+			return context.getServiceInfra().getCommuneByAdresse(adresse, date);
+		}
+		catch (ServiceInfrastructureException e) {
+			throw new EvenementCivilException(e);
+		}
+	}
 
 	/**
 	 * Permet de faire les verifications standards sur les adresses et les
@@ -60,15 +66,6 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 	protected void verifierMouvementIndividu(Mouvement mouvement, boolean regroupementObligatoire, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
 
 		String message = null;
-
-		/*
-		 * Vérifie les adresses
-		 */
-		if (mouvement.getNouvelleAdressePrincipale() == null) {
-			if (mouvement instanceof Depart) {
-				warnings.add(new EvenementCivilExterneErreur("La nouvelle adresse principale de l'individu est vide", TypeEvenementErreur.WARNING));
-			}
-		}
 
 		if (mouvement.getNumeroOfsCommuneAnnonce() == null) {
 			erreurs.add(new EvenementCivilExterneErreur("La commune d'annonce est vide"));

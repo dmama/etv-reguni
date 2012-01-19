@@ -22,7 +22,7 @@ public class RemiseBlancDateFinNationaliteSuisse extends RemiseBlancDateFinNatio
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected RemiseBlancDateFinNationaliteSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, true, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

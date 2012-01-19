@@ -10,7 +10,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilIgnore extends EvenementCivilInterne {
 
@@ -22,8 +21,8 @@ public class EvenementCivilIgnore extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilIgnore(TypeEvenementCivil typeEvenementCivil, EvenementCivilContext context) {
-		super(null, null, typeEvenementCivil, null, null, context);
+	protected EvenementCivilIgnore(EvenementCivilContext context) {
+		super(null, null, null, null, context);
 	}
 
 	@Override

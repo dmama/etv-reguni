@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -54,7 +53,7 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationPermis(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, TypePermis typePermis, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.typePermis = typePermis;
 	}
 

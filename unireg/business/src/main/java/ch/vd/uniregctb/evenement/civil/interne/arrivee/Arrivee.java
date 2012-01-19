@@ -12,9 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -24,7 +22,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
@@ -54,30 +51,12 @@ public abstract class Arrivee extends Mouvement {
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
 	}
 
-	protected final AdressesCiviles getAdresses(EvenementCivilContext context, RegDate date) throws EvenementCivilException {
-		try {
-			return new AdressesCiviles(context.getServiceCivil().getAdresses(getNoIndividu(), date, false));
-		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementCivilException(e);
-		}
-	}
-
-	protected final Commune getCommuneByAdresse(EvenementCivilContext context, Adresse adresse, RegDate date) throws EvenementCivilException {
-		try {
-			return context.getServiceInfra().getCommuneByAdresse(adresse, date);
-		}
-		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilException(e);
-		}
-	}
-
 	/**
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Arrivee(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, type, date, numeroOfsCommuneAnnonce, null, null, null, context);
+	protected Arrivee(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, null, null, null, context);
 	}
 
 	@Override
@@ -111,12 +90,6 @@ public abstract class Arrivee extends Mouvement {
 		if (getIndividu().getDateDeces() != null) {
 			erreurs.add(new EvenementCivilExterneErreur("L'individu est décédé"));
 		}
-	}
-
-	@Override
-	protected Adresse getNouvelleAdressePrincipale() {
-		// TODO jde il faudra supprimer cette méthode...
-		return null;
 	}
 
 	@Override

@@ -15,7 +15,6 @@ import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour l'annulation de séparation.
@@ -33,9 +32,8 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	public AnnulationSeparationOuDivorce(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
-	                                     EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+	public AnnulationSeparationOuDivorce(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

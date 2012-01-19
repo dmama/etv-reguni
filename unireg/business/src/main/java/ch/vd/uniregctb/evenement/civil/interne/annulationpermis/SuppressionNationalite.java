@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour la suppresion de l'obtention d'une nationalité.
@@ -27,8 +26,8 @@ public abstract class SuppressionNationalite extends AnnulationPermisCOuNational
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected SuppressionNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, boolean nationaliteSuisse, EvenementCivilContext context) {
-		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.SUP_NATIONALITE_SUISSE : TypeEvenementCivil.SUP_NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, context);
+	protected SuppressionNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

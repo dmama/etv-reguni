@@ -18,7 +18,7 @@ public class SuppressionNationaliteSuisse extends SuppressionNationalite {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	public SuppressionNationaliteSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, true, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 }

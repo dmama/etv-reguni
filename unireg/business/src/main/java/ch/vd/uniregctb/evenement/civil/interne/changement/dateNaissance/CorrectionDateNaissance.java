@@ -20,7 +20,6 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateNaissance extends ChangementBase {
 
@@ -33,7 +32,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	public CorrectionDateNaissance(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CORREC_DATE_NAISSANCE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	public RegDate getDateNaissance() {

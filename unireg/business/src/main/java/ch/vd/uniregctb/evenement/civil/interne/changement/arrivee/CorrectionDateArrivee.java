@@ -21,7 +21,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateArrivee extends EvenementCivilInterne {
 
@@ -34,7 +33,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected CorrectionDateArrivee(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CORREC_DATE_ARRIVEE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	private ForFiscalPrincipal getForFiscalPrincipalDeterminant(PersonnePhysique pp) {

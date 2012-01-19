@@ -14,7 +14,6 @@ import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementSexe extends ChangementBase {
 
@@ -27,7 +26,7 @@ public class ChangementSexe extends ChangementBase {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected ChangementSexe(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CHGT_SEXE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

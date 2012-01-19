@@ -16,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionFiliation extends ChangementBase {
 
@@ -29,7 +28,7 @@ public class CorrectionFiliation extends ChangementBase {
 	 */
 	public CorrectionFiliation(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
 	                           Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, TypeEvenementCivil.CORREC_FILIATION, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

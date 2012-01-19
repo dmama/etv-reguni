@@ -70,7 +70,7 @@ public class ArriveePrincipale extends Arrivee {
 	@SuppressWarnings({"JavaDoc"})
 	public ArriveePrincipale(Individu individu, Individu conjoint, TypeEvenementCivil type, RegDate dateArrivee, Integer communeAnnonce, Commune ancienneCommune, Commune nouvelleCommune, Adresse ancienneAdresse,
 	                         Adresse nouvelleAdresse, EvenementCivilContext context) {
-		super(individu, conjoint, type, dateArrivee, communeAnnonce, context);
+		super(individu, conjoint, dateArrivee, communeAnnonce, context);
 		this.ancienneAdresse = ancienneAdresse;
 		this.nouvelleAdresse = nouvelleAdresse;
 		this.ancienneCommune = ancienneCommune;

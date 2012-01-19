@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationOuDivorce;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour le divorce.
@@ -29,6 +28,6 @@ public class Divorce extends SeparationOuDivorce {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected Divorce(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.DIVORCE, date, numeroOfsCommuneAnnonce, conjoint, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, conjoint, context);
 	}
 }

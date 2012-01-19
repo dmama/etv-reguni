@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilInterne {
 
@@ -54,9 +53,9 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterneAvecAdresses(Individu individu, Individu conjoint, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	protected EvenementCivilInterneAvecAdresses(Individu individu, Individu conjoint, RegDate dateEvenement,
 	                                            Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, conjoint, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 		this.adressePrincipale = adressePrincipale;
 		this.adresseSecondaire = adresseSecondaire;
 		this.adresseCourrier = adresseCourrier;
@@ -66,9 +65,9 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterneAvecAdresses(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, TypeEvenementCivil typeEvenementCivil, RegDate dateEvenement,
+	protected EvenementCivilInterneAvecAdresses(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
 	                                            Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, typeEvenementCivil, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
 		this.adressePrincipale = adressePrincipale;
 		this.adresseSecondaire = adresseSecondaire;
 		this.adresseCourrier = adresseCourrier;

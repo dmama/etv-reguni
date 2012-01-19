@@ -14,7 +14,6 @@ import ch.vd.uniregctb.evenement.civil.interne.tutelle.Tutelle;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Adapter pour l'annulation de levée de tutelle.
@@ -33,7 +32,7 @@ public class AnnulationLeveeTutelle extends EvenementCivilInterne {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationLeveeTutelle(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, conjoint, TypeEvenementCivil.ANNUL_LEVEE_TUTELLE, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

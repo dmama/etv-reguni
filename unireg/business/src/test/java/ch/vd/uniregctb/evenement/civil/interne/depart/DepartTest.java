@@ -400,7 +400,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
 		LOGGER.debug("Test départ individu seul...");
-		Depart depart = createValidDepart(1234, DATE_EVENEMENT, true, null);
+		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1234, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu seul : OK");
@@ -419,7 +419,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test départ individu marié seul...");
 
-		Depart depart = createValidDepart(1235, DATE_EVENEMENT, true, null);
+		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1235, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié seul : OK");
@@ -438,7 +438,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test départ individu marié ...");
 
-		Depart depart = createValidDepart(1236, DATE_EVENEMENT, true, null);
+		DepartPrincipal depart = (DepartPrincipal) createValidDepart(1236, DATE_EVENEMENT, true, null);
 		depart.checkCompleteness(erreurs, warnings);
 		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
 		LOGGER.debug("Test départ individu marié  : OK");
@@ -492,8 +492,12 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			noOFS = overrideNoOfsCommuneAnnonce;
 		}
 
-		return new Depart(individu, null, dateEvenement, noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, communeSecondaire, adresseSecondaire,
-				principale, context);
+		if (principale) {
+			return new DepartPrincipal(individu, null, dateEvenement, noOFS, adressePrincipale, communeVd, nouvelleAdresse, communeHorsVd, context);
+		}
+		else {
+			return new DepartSecondaire(individu, null, dateEvenement, noOFS, nouvelleAdresse, communeHorsVd, adresseSecondaire, communeSecondaire, context);
+		}
 	}
 
 	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, MockCommune nouvelleCommune) throws Exception {
@@ -517,11 +521,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 
-		// En cas de depart d'une residence secondaire
-
-
-		return new Depart(individu, null, dateEvenement, noOFS, communeVd, nouvelleCommune, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null,
-				true, context);
+		return new DepartPrincipal(individu, null, dateEvenement, noOFS, adressePrincipale, communeVd, nouvelleAdresse, nouvelleCommune, context);
 	}
 
 	public void setUpForFiscal(long noIndividu, int numHabitant, int numOfs, ModeImposition modeImposition) {
@@ -556,9 +556,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse, DATE_EVENEMENT.getOneDayAfter());
 
 		// création d'un événement au 19 novembre 1970
-		final Depart depart =
-				new Depart(individu, null, date(1970, 11, 19), noOFS, communeVd, communeHorsVd, adressePrincipale, nouvelleAdresse, adresseVaud.courrier, null, null, null, true,
-						context);
+		final Depart depart = new DepartPrincipal(individu, null, date(1970, 11, 19), noOFS, adressePrincipale, communeVd, nouvelleAdresse, communeHorsVd, context);
 
 		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
 		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();

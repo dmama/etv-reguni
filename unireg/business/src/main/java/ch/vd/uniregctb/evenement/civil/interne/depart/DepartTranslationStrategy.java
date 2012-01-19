@@ -18,6 +18,17 @@ public class DepartTranslationStrategy implements EvenementCivilTranslationStrat
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		return new Depart(event, context, options);
+		final EvenementCivilInterne interne;
+		switch (event.getType()) {
+			case DEPART_COMMUNE:
+				interne = new DepartPrincipal(event, context, options);
+				break;
+			case DEPART_SECONDAIRE:
+				interne = new DepartSecondaire(event, context, options);
+				break;
+			default:
+				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		}
+		return interne;
 	}
 }
