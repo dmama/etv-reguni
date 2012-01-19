@@ -111,6 +111,7 @@ public class Call {
 		this.latency = latency;
 	}
 
+	@Index(name = "ids_calls_date")
 	@Column(name = "date")
 	public Date getTimestamp() {
 		return timestamp;
