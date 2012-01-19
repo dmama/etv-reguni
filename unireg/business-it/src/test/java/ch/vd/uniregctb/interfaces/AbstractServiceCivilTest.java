@@ -13,7 +13,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -87,11 +87,29 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		Collections.sort(principales, new DateRangeComparator<Adresse>());
 		Collections.sort(courriers, new DateRangeComparator<Adresse>());
 
+		// On vérifie les adresses principales
 		assertEquals(2, principales.size());
-		assertAdresseCivile(date(2004, 8, 15), date(2011, 1, 31), "Route de Saint-Prex", "1168", "Villars-sous-Yens", Localisation.CANTON_VD, Localisation.CANTON_VD,
-				principales.get(0)); // on ne teste pas l'egid car l'épuration de données de RCPers retourne une autre valeur (pas forcément plus fausse)
-		assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis", "1315", "La Sarraz", 280057519, 1, Localisation.CANTON_VD, null, principales.get(1));
 
+		final Adresse principale0 = principales.get(0);
+		assertNotNull(principale0);
+		assertAdresseCivile(date(2004, 8, 15), date(2011, 1, 31), "Route de Saint-Prex", "1168", "Villars-sous-Yens",
+				principale0); // on ne teste pas l'egid car l'épuration de données de RCPers retourne une autre valeur (pas forcément plus fausse)
+		if (principale0.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertLocalisation(LocalisationType.CANTON_VD, 5633, principale0.getLocalisationPrecedente());
+		}
+		if (principale0.getLocalisationSuivante() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertLocalisation(LocalisationType.CANTON_VD, 5498, principale0.getLocalisationSuivante());
+		}
+
+		final Adresse principale1 = principales.get(1);
+		assertNotNull(principale1);
+		assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis", "1315", "La Sarraz", 280057519, 1, principale1);
+		if (principale1.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
+			assertLocalisation(LocalisationType.CANTON_VD, 5652, principale1.getLocalisationPrecedente());
+		}
+		assertNull(principale1.getLocalisationSuivante());
+
+		// On vérifie les adresses courrier
 		assertEquals(2, courriers.size());
 		// TODO (msi) en attente de correction du SIREF-1487 : assertAdresseCivile(null, date(2011, 1, 31), "La Tuilière", "1168", "Villars-sous-Yens", null, null, courriers.get(0));
 		// TODO (msi) en attente du déploiement de la nouvelle version du XSD en intégration : assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis 1", "1315", "La Sarraz", null, null, courriers.get(1));

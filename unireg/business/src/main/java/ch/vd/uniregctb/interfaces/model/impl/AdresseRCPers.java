@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.ech.ech0007.v4.CantonAbbreviation;
+import ch.ech.ech0007.v4.SwissMunicipality;
 import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -113,20 +115,26 @@ public class AdresseRCPers implements Adresse, Serializable {
 	}
 
 	private static Localisation initLocalisation(Destination location) {
+
 		if (location == null) {
 			return null;
 		}
-		if (location.getForeignCountry() != null) {
-			return Localisation.HORS_SUISSE;
+
+		final Destination.ForeignCountry foreignCountry = location.getForeignCountry();
+		if (foreignCountry != null) {
+			return new Localisation(LocalisationType.HORS_SUISSE, foreignCountry.getCountry().getCountryId());
 		}
-		else if (location.getSwissTown() != null) {
-			if (location.getSwissTown().getCantonAbbreviation() == CantonAbbreviation.VD) {
-				return Localisation.CANTON_VD;
+
+		final SwissMunicipality swissTown = location.getSwissTown();
+		if (swissTown != null) {
+			if (swissTown.getCantonAbbreviation() == CantonAbbreviation.VD) {
+				return new Localisation(LocalisationType.CANTON_VD, swissTown.getMunicipalityId());
 			}
 			else {
-				return Localisation.HORS_CANTON;
+				return new Localisation(LocalisationType.HORS_CANTON, swissTown.getMunicipalityId());
 			}
 		}
+
 		return null;
 	}
 

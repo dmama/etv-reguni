@@ -1,19 +1,40 @@
 package ch.vd.uniregctb.interfaces.model;
 
 /**
- * Distingue les trois principales localisations géographiques utilisées dans les données civiles.
+ * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays).
  */
-public enum Localisation {
+public class Localisation {
+
+	private LocalisationType type;
+	private int noOfs;
+
+	public Localisation() {
+	}
+
+	public Localisation(LocalisationType type, int noOfs) {
+		this.type = type;
+		this.noOfs = noOfs;
+	}
+
 	/**
-	 * Le lieu est dans le canton de Vaud.
+	 * @return le type de localisation, c'est-à-dire le lieu civil concerné
 	 */
-	CANTON_VD,
+	public LocalisationType getType() {
+		return type;
+	}
+
+	public void setType(LocalisationType type) {
+		this.type = type;
+	}
+
 	/**
-	 * Le lieu est dans un autre canton que celui de Vaud.
+	 * @return le numéro Ofs du lieu civil concerné (numéro Ofs de commune ou de pays en fonction du type).
 	 */
-	HORS_CANTON,
-	/**
-	 * Le lieu est dans un pays étranger.
-	 */
-	HORS_SUISSE
+	public int getNoOfs() {
+		return noOfs;
+	}
+
+	public void setNoOfs(int noOfs) {
+		this.noOfs = noOfs;
+	}
 }
