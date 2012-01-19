@@ -158,13 +158,25 @@ public class LoadDataSet {
 		}
 		Collections.sort(criterionLabels);
 
-		final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		final SimpleDateFormat shortDateFormat = new SimpleDateFormat("HH:mm");
+		final SimpleDateFormat fullDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 		// loop over each bucket of the timeline
 		final Calendar cal = GregorianCalendar.getInstance();
+
+		Date previousTime = null;
 		for (cal.setTime(minDate); !cal.getTime().after(maxDate); cal.add(Calendar.MINUTE, resolution.getMinutes())) {
 			final Date time = cal.getTime();
-			final String format = dateFormat.format(time);
+
+			// does not repeat the year-month-day part of label when looping within the same day
+			final String format;
+			if (previousTime != null && isSameDay(previousTime, time)) {
+				format = shortDateFormat.format(time);
+			}
+			else {
+				format = fullDateFormat.format(time);
+			}
+			previousTime = time;
 
 			// fill data for each criterion
 			for (Label label : criterionLabels) {
@@ -172,5 +184,22 @@ public class LoadDataSet {
 				dataset.addValue(value == null ? 0 : value.intValue(), label.toString(), format);
 			}
 		}
+	}
+
+	private static final ThreadLocal<GregorianCalendar> indexCal = new ThreadLocal<GregorianCalendar>() {
+		@Override
+		protected GregorianCalendar initialValue() {
+			return (GregorianCalendar) GregorianCalendar.getInstance();
+		}
+	};
+
+	private static boolean isSameDay(Date left, Date right) {
+		return dateIndex(left) == dateIndex(right);
+	}
+
+	private static int dateIndex(Date date) {
+		final GregorianCalendar cal = indexCal.get();
+		cal.setTime(date);
+		return cal.get(Calendar.YEAR) * 10000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH);
 	}
 }
