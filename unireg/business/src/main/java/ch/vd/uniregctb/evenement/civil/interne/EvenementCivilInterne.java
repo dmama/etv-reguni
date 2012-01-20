@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -11,11 +10,12 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Implémentation des événement civils en provenance du host.
@@ -140,37 +139,38 @@ public abstract class EvenementCivilInterne {
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 	}
 
-	public final void validate(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public final void validate(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		validateCommon(erreurs);
-		if (erreurs.isEmpty()) {
+		if (!erreurs.hasErreurs()) {
 			validateSpecific(erreurs, warnings);
 		}
 	}
 
-	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	/**
 	 * Validation commune l'objet target passé en paramètre.
+	 *
 	 *
 	 * @param erreurs  les éventuelles erreurs trouvées (out)
 	 * @param warnings les éventuels warnings trouvés (out)
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
 	 *          en cas d'erreur dans le traitement de l'événement civil.
 	 */
-	protected abstract void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+	protected abstract void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
-	private void validateCommon(List<EvenementCivilExterneErreur> erreurs) {
+	private void validateCommon(EvenementCivilErreurCollector erreurs) {
 
 		/*
 		 * Vérifie que les éléments de base sont renseignés
 		 */
 		if (getDate() == null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'événement n'est pas daté"));
+			erreurs.addErreur("L'événement n'est pas daté");
 			return;
 		}
 
 		if (getNumeroOfsCommuneAnnonce() == null) {
-			erreurs.add(new EvenementCivilExterneErreur("La commune d'annonce n'est pas renseignée"));
+			erreurs.addErreur("La commune d'annonce n'est pas renseignée");
 			return;
 		}
 
@@ -178,7 +178,7 @@ public abstract class EvenementCivilInterne {
 		 * La date de l'événement se situe dans le futur.
 		 */
 		if (getDate().isAfter(RegDate.get())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date de l'événement est dans le futur"));
+			erreurs.addErreur("La date de l'événement est dans le futur");
 		}
 
 		/*
@@ -190,7 +190,7 @@ public abstract class EvenementCivilInterne {
 			 * l’individu.
 			 */
 			if (getPrincipalPPId() == null) {
-				erreurs.add(new EvenementCivilExterneErreur("Aucun tiers contribuable ne correspond au numero d'individu " + getNoIndividu()));
+				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu " + getNoIndividu());
 			}
 
 			/*
@@ -198,14 +198,14 @@ public abstract class EvenementCivilInterne {
 			 * l’individu.
 			 */
 			if (getNoIndividuConjoint() != null && getConjointPPId() == null) {
-				erreurs.add(new EvenementCivilExterneErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + getNoIndividuConjoint()));
+				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + getNoIndividuConjoint());
 			}
 		}
 
 		// en tout cas, l'individu devrait exister dans le registre civil !
 		final Individu individu = getIndividu();
 		if (individu == null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu est introuvable dans le registre civil!"));
+			erreurs.addErreur("L'individu est introuvable dans le registre civil!");
 		}
 	}
 
@@ -281,10 +281,10 @@ public abstract class EvenementCivilInterne {
 	 * @param errors     la collection des erreurs qui sera remplie automatiquement si l'habitant n'existe pas
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu, ou <b>null<b> si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrFillErrors(Long noIndividu, List<EvenementCivilExterneErreur> errors) {
+	protected PersonnePhysique getPersonnePhysiqueOrFillErrors(Long noIndividu, EvenementCivilErreurCollector errors) {
 		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		if (habitant == null) {
-			errors.add(new EvenementCivilExterneErreur("L'habitant avec le numéro d'individu = " + noIndividu + " n'existe pas dans le registre."));
+			errors.addErreur("L'habitant avec le numéro d'individu = " + noIndividu + " n'existe pas dans le registre.");
 		}
 		return habitant;
 	}
@@ -435,15 +435,15 @@ public abstract class EvenementCivilInterne {
 		}
 	}
 
-	public static void addValidationResults(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings, ValidationResults resultat) {
+	public static void addValidationResults(EvenementCivilErreurCollector errors, EvenementCivilWarningCollector warnings, ValidationResults resultat) {
 		if (resultat.hasErrors()) {
 			for (String erreur : resultat.getErrors()) {
-				errors.add(new EvenementCivilExterneErreur(erreur));
+				errors.addErreur(erreur);
 			}
 		}
 		if (resultat.hasWarnings()) {
 			for (String warning : resultat.getWarnings()) {
-				warnings.add(new EvenementCivilExterneErreur(warning, TypeEvenementErreur.WARNING));
+				warnings.addWarning(warning);
 			}
 		}
 	}

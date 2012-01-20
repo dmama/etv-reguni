@@ -1,16 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.mouvement;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.depart.Depart;
@@ -63,12 +62,12 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 	 * @param erreurs
 	 * @param warnings
 	 */
-	protected void verifierMouvementIndividu(Mouvement mouvement, boolean regroupementObligatoire, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	protected void verifierMouvementIndividu(Mouvement mouvement, boolean regroupementObligatoire, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 
 		String message = null;
 
 		if (mouvement.getNumeroOfsCommuneAnnonce() == null) {
-			erreurs.add(new EvenementCivilExterneErreur("La commune d'annonce est vide"));
+			erreurs.addErreur("La commune d'annonce est vide");
 		}
 		/*
 		 * Vérifie les individus
@@ -83,12 +82,12 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 				message="Impossible de récupérer l'individu concerné par l'arrivé";
 			}
 
-			erreurs.add(new EvenementCivilExterneErreur(message));
+			erreurs.addErreur(message);
 		}
 		else {
 			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(mouvement.getNoIndividu(), mouvement.getDate());
 			if (etatCivil == null) {
-				erreurs.add(new EvenementCivilExterneErreur("L'individu principal ne possède pas d'état civil à la date de l'événement"));
+				erreurs.addErreur("L'individu principal ne possède pas d'état civil à la date de l'événement");
 			}
 
 			if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
@@ -113,22 +112,18 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 							message="L'évenement d'arrivée du conjoint n'a pas été reçu";
 
 						}
-						erreurs.add(new EvenementCivilExterneErreur(message));
+						erreurs.addErreur(message);
 					}
 				}
 				else if (conjointDeIndividu == null && conjointDeMouvement != null) {
-					EvenementCivilExterneErreur erreur = new EvenementCivilExterneErreur(
-							"Un conjoint est spécifié dans l'événement alors que l'individu principal n'en possède pas");
-					erreurs.add(erreur);
+					erreurs.addErreur("Un conjoint est spécifié dans l'événement alors que l'individu principal n'en possède pas");
 				}
 				else {
 					/*
 					 * erreur si l'id du conjoint reçu ne correspond pas à celui de l'état civil
 					 */
 					if (conjointDeIndividu.getNoTechnique() != conjointDeMouvement.getNoTechnique()) {
-						EvenementCivilExterneErreur erreur = new EvenementCivilExterneErreur(
-								"le conjoint déclaré dans l'événement et celui dans le registre civil diffèrent");
-						erreurs.add(erreur);
+						erreurs.addErreur("le conjoint déclaré dans l'événement et celui dans le registre civil diffèrent");
 					}
 				}
 			}

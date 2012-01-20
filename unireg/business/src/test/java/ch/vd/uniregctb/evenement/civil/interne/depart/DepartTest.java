@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.depart;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -16,9 +15,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
@@ -46,6 +48,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -377,14 +380,12 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		
 		final Depart depart = createValidDepart(NO_IND_ADRIEN, RegDate.get(2007, 6, 30), false, null);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
 
-		handleDepart(depart, erreurs, warnings);
+		Assert.assertEquals(1, collector.getErreurs().size());
 
-		Assert.assertEquals(1, erreurs.size());
-
-		final EvenementCivilExterneErreur erreur = erreurs.get(0);
+		final EvenementCivilErreur erreur = collector.getErreurs().get(0);
 		Assert.assertNotNull(erreur);
 		Assert.assertEquals("Adresse de résidence avant départ inconnue", erreur.getMessage());
 	}
@@ -396,13 +397,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuSeul() throws Exception {
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
+		final MessageCollector collector = buildMessageCollector();
 		LOGGER.debug("Test départ individu seul...");
 		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1234, DATE_EVENEMENT, true, null);
-		depart.checkCompleteness(erreurs, warnings);
-		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
+		depart.checkCompleteness(collector, collector);
+		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu seul : OK");
 
 	}
@@ -414,14 +413,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuMarieSeul() throws Exception {
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		LOGGER.debug("Test départ individu marié seul...");
 
 		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1235, DATE_EVENEMENT, true, null);
-		depart.checkCompleteness(erreurs, warnings);
-		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
+		depart.checkCompleteness(collector, collector);
+		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu marié seul : OK");
 
 	}
@@ -433,14 +431,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckCompletenessIndividuMarie() throws Exception {
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		LOGGER.debug("Test départ individu marié ...");
 
 		DepartPrincipal depart = (DepartPrincipal) createValidDepart(1236, DATE_EVENEMENT, true, null);
-		depart.checkCompleteness(erreurs, warnings);
-		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", erreurs.isEmpty());
+		depart.checkCompleteness(collector, collector);
+		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu marié  : OK");
 	}
 
@@ -558,11 +555,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// création d'un événement au 19 novembre 1970
 		final Depart depart = new DepartPrincipal(individu, null, date(1970, 11, 19), noOFS, adressePrincipale, communeVd, nouvelleAdresse, communeHorsVd, context);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		depart.validate(erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		depart.validate(collector, collector);
 
-		Assert.assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(erreurs, "La date de départ est différente"));
+		Assert.assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La date de départ est différente"));
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle : OK");
 	}
 
@@ -574,15 +570,12 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	public void testValidateNouvelleCommunePrinHorsCanton() throws Exception {
 
 		LOGGER.debug("Test si la nouvelle commune principale est hors canton...");
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final MessageCollector collector = buildMessageCollector();
 		Depart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, MockCommune.Cossonay);
-		erreurs.clear();
-		warnings.clear();
 
-		depart.validate(erreurs, warnings);
-		Assert.assertTrue("La nouvelle commune est dans le canton de Vaud, une erreur aurait du être déclenchée", findMessage(erreurs, "est toujours dans le canton de Vaud"));
+		depart.validate(collector, collector);
+		Assert.assertTrue("La nouvelle commune est dans le canton de Vaud, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "est toujours dans le canton de Vaud"));
 		LOGGER.debug("Test nouvelle commune hors canton : OK");
 
 	}
@@ -595,14 +588,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	public void testValidateCommuneAnnoncePrincipal() throws Exception {
 
 		LOGGER.debug("Teste si la commune d'annonce principale est correcte...");
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final MessageCollector collector = buildMessageCollector();
 		Depart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true, MockCommune.Lausanne.getNoOFS());
-		erreurs.clear();
-		warnings.clear();
-		depart.validate(erreurs, warnings);
-		Assert.assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(erreurs, "La commune d'annonce"));
+		depart.validate(collector, collector);
+		Assert.assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La commune d'annonce"));
 		LOGGER.debug("Test commune d'annonce principale : OK");
 
 	}
@@ -729,16 +719,14 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param message
 	 * @return
 	 */
-	private boolean findMessage(List<EvenementCivilExterneErreur> erreurs, String message) {
+	private boolean findMessage(List<? extends EvenementCivilErreur> erreurs, String message) {
 		boolean isPresent = false;
-		for (EvenementCivilExterneErreur evenementErreur : erreurs) {
+		for (EvenementCivilErreur evenementErreur : erreurs) {
 			if (evenementErreur.getMessage().contains(message)) {
 				isPresent = true;
 				break;
 			}
-
 		}
-
 		return isPresent;
 	}
 
@@ -1001,10 +989,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// envoi de l'événement de départ
 		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 		try {
-			handleDepart(depart, erreurs, warnings);
+			handleDepart(depart, collector, collector);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
@@ -1059,10 +1046,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// envoi de l'événement de départ
 		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 		try {
-			handleDepart(depart, erreurs, warnings);
+			handleDepart(depart, collector, collector);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
@@ -1120,10 +1106,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// envoi de l'événement de départ
 		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null);
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 		try {
-			handleDepart(depart, erreurs, warnings);
+			handleDepart(depart, collector, collector);
 			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
@@ -1443,12 +1428,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFSEtendu());
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-				handleDepart(depart, erreurs, warnings);
-				assertEquals(1, erreurs.size());
+				final MessageCollector collector = buildMessageCollector();
+				handleDepart(depart, collector, collector);
+				assertEquals(1, collector.getErreurs().size());
 
-				final EvenementCivilExterneErreur erreur = erreurs.get(0);
+				final EvenementCivilErreur erreur = collector.getErreurs().get(0);
 				assertEquals("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
@@ -1495,11 +1479,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFSEtendu());
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-				handleDepart(depart, erreurs, warnings);
-				assertEquals(0, erreurs.size());
-				assertEquals(0, warnings.size());
+				final MessageCollector collector = buildMessageCollector();
+				handleDepart(depart, collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
@@ -1522,12 +1505,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	private ForFiscalPrincipal handleDepart(Depart depart) throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
 
-		handleDepart(depart, erreurs, warnings);
-
-		Assert.assertTrue("Une erreur est survenue lors du traitement du départ", erreurs.isEmpty());
+		assertFalse("Une erreur est survenue lors du traitement du départ", collector.hasErreurs());
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		Assert.assertNotNull(tiers);
@@ -1547,22 +1528,20 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	private void handleDepartSimple(Depart depart) throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
 
-		handleDepart(depart, erreurs, warnings);
-
-		if (!erreurs.isEmpty()) {
-			for (EvenementCivilExterneErreur erreur : erreurs) {
+		if (collector.hasErreurs()) {
+			for (EvenementCivilErreur erreur : collector.getErreurs()) {
 				LOGGER.error("Erreur trouvée : " + erreur.getMessage());
 			}
 			Assert.fail("Une erreur est survenue lors du traitement du départ");
 		}
 	}
 
-	private void handleDepart(Depart depart, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	private void handleDepart(Depart depart, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		depart.validate(erreurs, warnings);
-		if (erreurs.isEmpty()) {
+		if (!erreurs.hasErreurs()) {
 			depart.handle(warnings);
 		}
 	}

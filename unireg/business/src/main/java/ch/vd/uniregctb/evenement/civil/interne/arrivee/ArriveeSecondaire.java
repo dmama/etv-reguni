@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -51,34 +50,34 @@ public class ArriveeSecondaire extends Arrivee {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		super.validateSpecific(erreurs, warnings);
 		validateArriveeAdresseSecondaire(erreurs);
 	}
 
-	protected void validateArriveeAdresseSecondaire(List<EvenementCivilExterneErreur> erreurs) {
+	protected void validateArriveeAdresseSecondaire(EvenementCivilErreurCollector erreurs) {
 		/*
 		 * La date de début de la nouvelle adresse secondaire de l’individu est antérieure ou identique à la date de l'ancienne.
 		 */
 		if (ancienneAdresse != null && ancienneAdresse.getDateFin() != null && getDate().isBeforeOrEqual(ancienneAdresse.getDateFin())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée secondaire est antérieure à la date de fin de l'ancienne adresse"));
+			erreurs.addErreur("La date d'arrivée secondaire est antérieure à la date de fin de l'ancienne adresse");
 		}
 
 		/*
 		 * La nouvelle adresse secondaire n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
 		 */
 		if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune secondaire est en dehors du canton"));
+			erreurs.addErreur("La nouvelle commune secondaire est en dehors du canton");
 		}
 	}
 
 	@Override
-	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, List<EvenementCivilExterneErreur> warnings) {
+	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, EvenementCivilWarningCollector warnings) {
 		// Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire
 	}
 
 	@Override
-	protected void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) {
+	protected void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) {
 		// Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire
 	}
 }

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.reconciliation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -56,13 +53,10 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateReconciliation);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", erreurs);
-
-		annulation.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
+		annulation.handle(collector);
 		
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(noIndividu);
 		assertNotNull("Pierre n'as pas été trouvé", pierre);
@@ -119,13 +113,10 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", erreurs);
-
-		annulation.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
+		annulation.handle(collector);
 
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(noIndividuMarie);
 		assertNotNull("Le tiers n'as pas été trouvé", momo);
@@ -192,13 +183,11 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateFictive);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
+		final MessageCollector collector = buildMessageCollector();
 		boolean errorFound = false;
 		String errorMessage = null;
 		try {
-			annulation.validate(erreurs, warnings);
+			annulation.validate(collector, collector);
 		}
 		catch (Exception ex) {
 			errorFound = true;

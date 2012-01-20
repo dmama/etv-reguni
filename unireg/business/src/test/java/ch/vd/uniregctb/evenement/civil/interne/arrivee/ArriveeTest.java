@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -19,9 +18,9 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -153,20 +152,20 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		// 1er test : individu seul
 		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		ArriveePrincipale arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
-		arrivee.checkCompleteness(erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
+		arrivee.checkCompleteness(collector, collector);
+		Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
 		// 2ème test : individu marié seul
+		collector.clear();
 		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
 		arrivee = createValidArrivee(individuMarieSeul, DATE_VALIDE);
-		arrivee.checkCompleteness(erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
+		arrivee.checkCompleteness(collector, collector);
+		Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
 	}
 
 	@Test
@@ -178,18 +177,16 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		// 1er test : événement avec une date dans le futur
 		Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), DATE_FUTURE);
-		arrivee.validate(erreurs, warnings);
-		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
+		arrivee.validate(collector, collector);
+		Assert.notEmpty(collector.getErreurs(), "Une date future pour l'événement aurait dû renvoyer une erreur");
 
 		// 2ème test : arrivée antérieur à la date de début de validité de
 		// l'ancienne adresse
-		erreurs.clear();
-		warnings.clear();
+		collector.clear();
 
 		// Ancienne adresse
 		MockAdresse ancienneAdresse = new MockAdresse();
@@ -205,23 +202,20 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
 				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
-		arrivee.validate(erreurs, warnings);
-		Assert.notEmpty(erreurs,
-				"L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
+		arrivee.validate(collector, collector);
+		Assert.notEmpty(collector.getErreurs(), "L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
 
 		// 3ème test : arrivée hors canton
-		erreurs.clear();
-		warnings.clear();
+		collector.clear();
 		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.Neuchatel, DATE_VALIDE);
-		arrivee.validate(erreurs, warnings);
-		Assert.notEmpty(erreurs, "L'arrivée est hors canton, une erreur aurait du être déclenchée");
+		arrivee.validate(collector, collector);
+		Assert.notEmpty(collector.getErreurs(), "L'arrivée est hors canton, une erreur aurait du être déclenchée");
 
 		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
-		erreurs.clear();
-		warnings.clear();
+		collector.clear();
 		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
-		arrivee.validate(erreurs, warnings);
-		Assert.isTrue(warnings.size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
+		arrivee.validate(collector, collector);
+		Assert.isTrue(collector.getWarnings().size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
 	}
 
 	/**
@@ -233,8 +227,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		final long NUMERO_INDIVIDU_CONJOINT = 43321L;
 
@@ -260,17 +253,16 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
 		Arrivee arrivee = new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
-		arrivee.validate(erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+		arrivee.validate(collector, collector);
+		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
 		/*
 		 * 2ème test : événement avec le tiers correspondant au conjoint manquant
 		 */
-		erreurs.clear();
-		warnings.clear();
+		collector.clear();
 		arrivee = new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
-		arrivee.validate(erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+		arrivee.validate(collector, collector);
+		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
 	}
 
@@ -282,13 +274,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Arrivee arrivee = createValidArrivee(individu, DATE_VALIDE);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
 
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
+		Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
 
 		PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getNoIndividu());
 		assertTrue(tiers != null);
@@ -522,14 +513,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		try {
 			final Arrivee arrivee = (Arrivee) interne;
 
-			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
 
-			arrivee.validate(erreurs, warnings);
-			arrivee.handle(warnings);
-
-			if (!erreurs.isEmpty()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (collector.hasErreurs()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
 			}
 
 			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
@@ -586,14 +575,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		try {
 			final Arrivee arrivee = (Arrivee) interne;
 
-			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
 
-			arrivee.validate(erreurs, warnings);
-			arrivee.handle(warnings);
-
-			if (!erreurs.isEmpty()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (collector.hasErreurs()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
 			}
 
 			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
@@ -646,12 +633,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final Arrivee arrivee = (Arrivee) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		arrivee.validate(erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
 		try {
-			arrivee.handle(warnings);
+			arrivee.handle(collector);
 			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
 		}
 		catch (ValidationException e) {
@@ -702,14 +687,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final Arrivee arrivee = (Arrivee) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
 
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+		if (collector.hasErreurs()) {
+			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
 		}
 
 		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
@@ -762,14 +745,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			final Arrivee arrivee = (Arrivee) interne;
 
-			final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
 
-			arrivee.validate(erreurs, warnings);
-			arrivee.handle(warnings);
-
-			if (!erreurs.isEmpty()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(erreurs.toArray()));
+			if (collector.hasErreurs()) {
+				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
 			}
 
 			final List<ForFiscal> fors = pp.getForsFiscauxSorted();

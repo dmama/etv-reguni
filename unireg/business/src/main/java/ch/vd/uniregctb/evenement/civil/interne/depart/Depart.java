@@ -10,11 +10,12 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -98,7 +99,7 @@ public abstract class Depart extends Mouvement {
 	protected abstract void doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
 		if (pp == null) {
@@ -194,19 +195,19 @@ public abstract class Depart extends Mouvement {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// [SIFISC-1918] Pour un départ, si la date est à la date du jour, on doit partir en erreur (l'événement sera re-traité plus tard)
 		// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)
 		if (getDate().equals(RegDate.get())) {
-			erreurs.add(new EvenementCivilExterneErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet"));
+			erreurs.addErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet");
 		}
 
 		/*
 		 * Le Depart du mort-vivant
 		 */
 		if (getIndividu().getDateDeces() != null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu est décédé"));
+			erreurs.addErreur("L'individu est décédé");
 		}
 	}
 
@@ -218,17 +219,17 @@ public abstract class Depart extends Mouvement {
 	 * @param depart         un événement de départ
 	 * @param erreurs
 	 */
-	protected void validateCoherenceAdresse(Adresse adresse, Commune commune, List<EvenementCivilExterneErreur> erreurs) {
+	protected void validateCoherenceAdresse(Adresse adresse, Commune commune, EvenementCivilErreurCollector erreurs) {
 
 		if (adresse == null) {
-			erreurs.add(new EvenementCivilExterneErreur("Adresse de résidence avant départ inconnue"));
+			erreurs.addErreur("Adresse de résidence avant départ inconnue");
 		}
 		else if (adresse.getDateFin() == null) {
-			erreurs.add(new EvenementCivilExterneErreur("La date de fin de validité de la résidence est inconnue"));
+			erreurs.addErreur("La date de fin de validité de la résidence est inconnue");
 		}
 		// la date de départ est differente de la date de fin de validité de l'adresse
 		else if (!getDate().equals(adresse.getDateFin())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date de départ est différente de la date de fin de validité de l'adresse dans le canton"));
+			erreurs.addErreur("La date de départ est différente de la date de fin de validité de l'adresse dans le canton");
 		}
 
 		// La commune d'annonce est differente de la commune de résidence avant l'évenement
@@ -237,7 +238,7 @@ public abstract class Depart extends Mouvement {
 		if (commune != null) {
 			if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsCommuneAnnonce()) ||
 					(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsCommuneAnnonce())) {
-				erreurs.add(new EvenementCivilExterneErreur("La commune d'annonce est differente de la dernière commune de résidence"));
+				erreurs.addErreur("La commune d'annonce est differente de la dernière commune de résidence");
 			}
 		}
 	}

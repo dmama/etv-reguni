@@ -1,18 +1,17 @@
 package ch.vd.uniregctb.evenement.civil.interne.reconciliation;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -45,7 +44,7 @@ public class Reconciliation extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		Individu individu = getIndividu();
 
@@ -90,21 +89,21 @@ public class Reconciliation extends EvenementCivilInterne {
 		addValidationResults(erreurs, warnings, results);
 	}
 
-	private void validateEtatCivil(PersonnePhysique habitant, RegDate date, List<EvenementCivilExterneErreur> erreurs) {
+	private void validateEtatCivil(PersonnePhysique habitant, RegDate date, EvenementCivilErreurCollector erreurs) {
 
 		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
 		EtatCivil etatCivil = serviceCivil.getEtatCivilActif(habitant.getNumeroIndividu(), date);
 		if (etatCivil == null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu n°" + habitant.getNumeroIndividu() + " ne possède pas d'état civil à la date de l'événement"));
+			erreurs.addErreur("L'individu n°" + habitant.getNumeroIndividu() + " ne possède pas d'état civil à la date de l'événement");
 		}
 
 		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu n°" + habitant.getNumeroIndividu() + " n'est pas marié dans le civil"));
+			erreurs.addErreur("L'individu n°" + habitant.getNumeroIndividu() + " n'est pas marié dans le civil");
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		try {
 			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());

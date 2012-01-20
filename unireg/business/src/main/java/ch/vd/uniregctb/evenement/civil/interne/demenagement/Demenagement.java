@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
@@ -10,11 +8,12 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -29,7 +28,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Modélise un événement de déménagement.
@@ -104,7 +102,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * La date de début de la nouvelle adresse principale de l’individu est
@@ -112,10 +110,10 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 */
 		Adresse ancienneAdresse = getAncienneAdressePrincipale();
 		if (ancienneAdresse == null || ancienneAdresse.getDateFin() == null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu n°" + getNoIndividu() + " n'a jamais déménagé"));
+			erreurs.addErreur("L'individu n°" + getNoIndividu() + " n'a jamais déménagé");
 		}
 		else if (!getDate().isAfter(ancienneAdresse.getDateFin())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date du déménagement est antérieure à la date de fin de l'ancienne adresse"));
+			erreurs.addErreur("La date du déménagement est antérieure à la date de fin de l'ancienne adresse");
 		}
 
 		/*
@@ -124,7 +122,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 */
 		final Commune nouvelleCommune = getNouvelleCommunePrincipale();
 		if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle adresse est en dehors du canton"));
+			erreurs.addErreur("La nouvelle adresse est en dehors du canton");
 		}
 
 		/*
@@ -132,13 +130,12 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 * manuel est nécessaire.
 		 */
 		if (nouvelleCommune != null && nouvelleCommune.getNoOFSEtendu() == EvenementCivilInterne.NO_OFS_FRACTION_SENTIER) {
-			warnings.add(new EvenementCivilExterneErreur("déménagement dans la fraction de commune du Sentier: " +
-					"veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
+			warnings.addWarning("déménagement dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Dans le cas d'une commune normale, rien a faire. Traitement

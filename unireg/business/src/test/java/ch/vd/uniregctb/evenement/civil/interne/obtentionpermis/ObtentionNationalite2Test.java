@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -89,16 +86,14 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionNationalite.validate(erreurs, warnings);
-		obtentionNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionNationalite.validate(collector, collector);
+		obtentionNationalite.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -127,16 +122,14 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionNationalite.validate(erreurs, warnings);
-		obtentionNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionNationalite.validate(collector, collector);
+		obtentionNationalite.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -162,9 +155,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		setupServiceCivilAndLoadDb();
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié seul.");
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -172,8 +164,8 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
 				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
-				obtentionNationalite.validate(erreurs, warnings);
-				obtentionNationalite.handle(warnings);
+				obtentionNationalite.validate(collector, collector);
+				obtentionNationalite.handle(collector);
 				return null;
 			}
 		});
@@ -181,7 +173,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		assertEmpty("Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.", collector.getErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -235,16 +227,14 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, date(2007, 12, 31));
 		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionNationalite.validate(erreurs, warnings);
-		obtentionNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionNationalite.validate(collector, collector);
+		obtentionNationalite.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.", erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -338,15 +328,13 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionNationalite.validate(collector, collector);
+				Assert.assertFalse(collector.hasErreurs());
+				Assert.assertFalse(collector.hasWarnings());
 
-				obtentionNationalite.validate(erreurs, warnings);
-				Assert.assertTrue(erreurs.isEmpty());
-				Assert.assertTrue(warnings.isEmpty());
-
-				obtentionNationalite.handle(warnings);
-				Assert.assertTrue(warnings.isEmpty());
+				obtentionNationalite.handle(collector);
+				Assert.assertFalse(collector.hasWarnings());
 
 				return null;
 			}
@@ -396,15 +384,13 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31), AttributeIndividu.NATIONALITE);
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionNationalite.validate(collector, collector);
+				Assert.assertFalse(collector.hasErreurs());
+				Assert.assertFalse(collector.hasWarnings());
 
-				obtentionNationalite.validate(erreurs, warnings);
-				Assert.assertTrue(erreurs.isEmpty());
-				Assert.assertTrue(warnings.isEmpty());
-
-				obtentionNationalite.handle(warnings);
-				Assert.assertTrue(warnings.isEmpty());
+				obtentionNationalite.handle(collector);
+				Assert.assertFalse(collector.hasWarnings());
 
 				return null;
 			}

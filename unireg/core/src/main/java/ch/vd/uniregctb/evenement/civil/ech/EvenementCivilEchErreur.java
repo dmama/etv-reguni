@@ -8,18 +8,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ECH_ERREUR")
-public class EvenementCivilEchErreur extends HibernateEntity {
+public class EvenementCivilEchErreur extends HibernateEntity implements EvenementCivilErreur {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchErreur.class);
 
@@ -27,35 +26,6 @@ public class EvenementCivilEchErreur extends HibernateEntity {
 	private String message;
 	private String callstack;
 	private TypeEvenementErreur type;
-
-	public EvenementCivilEchErreur() {
-	}
-
-	public EvenementCivilEchErreur(Exception e) {
-		this(StringUtils.EMPTY, e);
-	}
-
-	public EvenementCivilEchErreur(String m, Exception e) {
-		if (e.getMessage() != null) {
-			this.message = m + e.getMessage();
-		}
-		else {
-			this.message = m + e.getClass().getSimpleName();
-		}
-		setCallstack(ExceptionUtils.extractCallStack(e));
-		this.type = TypeEvenementErreur.ERROR;
-		validateMessage();
-	}
-
-	public EvenementCivilEchErreur(String m) {
-		this(m, TypeEvenementErreur.ERROR);
-	}
-
-	public EvenementCivilEchErreur(String m, TypeEvenementErreur t) {
-		this.message = m;
-		this.type = t;
-		validateMessage();
-	}
 
 	@Transient
 	@Override
@@ -73,6 +43,7 @@ public class EvenementCivilEchErreur extends HibernateEntity {
 		this.id = id;
 	}
 
+	@Override
 	@Column(name = "MESSAGE", length = LengthConstants.EVTCIVILERREUR_MESSAGE)
 	public String getMessage() {
 		return message;
@@ -83,6 +54,7 @@ public class EvenementCivilEchErreur extends HibernateEntity {
 		validateMessage();
 	}
 
+	@Override
 	@Column(name = "CALLSTACK", length = LengthConstants.MAXLEN)
 	public String getCallstack() {
 		return callstack;
@@ -97,6 +69,7 @@ public class EvenementCivilEchErreur extends HibernateEntity {
 		}
 	}
 
+	@Override
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.EVTCIVILERREUR_TYPE)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementErreurUserType")
 	public TypeEvenementErreur getType() {

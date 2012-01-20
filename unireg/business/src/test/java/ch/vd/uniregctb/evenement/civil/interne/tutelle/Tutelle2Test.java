@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.tutelle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -11,8 +9,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
@@ -94,12 +92,10 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 				Individu tuteur = serviceCivil.getIndividu(NO_INDIVIDU_TUTEUR, date(2007, 12, 31));
 				Tutelle tutelle = createTutelle(pupille, tuteur, null, MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 
-				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				tutelle.validate(erreurs, warnings);
-				tutelle.handle(warnings);
-				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
+				final MessageCollector collector = buildMessageCollector();
+				tutelle.validate(collector, collector);
+				tutelle.handle(collector);
+				Assert.assertFalse("Une erreur est survenue lors du traitement de la mise sous tutelle", collector.hasErreurs());
 				return null;
 			}
 		});
@@ -164,13 +160,12 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL, date(2007, 12, 31));
 				Tutelle tutelle = createTutelle(pupille, null, new MockTuteurGeneral(), MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
-				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-				tutelle.validate(erreurs, warnings);
-				tutelle.handle(warnings);
+				final MessageCollector collector = buildMessageCollector();
+				tutelle.validate(collector, collector);
+				tutelle.handle(collector);
 
-				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
+				Assert.assertFalse("Une erreur est survenue lors du traitement de la mise sous tutelle", collector.hasErreurs());
 				return null;
 			}
 		});

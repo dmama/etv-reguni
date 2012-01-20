@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationtutelle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -11,8 +9,8 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -74,13 +72,11 @@ public class AnnulationTutelleTest extends AbstractEvenementCivilInterneTest {
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		AnnulationTutelle annulationTutelle = createAnnulationTutelle(pupille);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		annulationTutelle.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de tutelle.", collector.getErreurs());
 
-		annulationTutelle.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de tutelle.", erreurs);
-
-		annulationTutelle.handle(warnings);
+		annulationTutelle.handle(collector);
 
 		// Récupération du tiers pupille
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);

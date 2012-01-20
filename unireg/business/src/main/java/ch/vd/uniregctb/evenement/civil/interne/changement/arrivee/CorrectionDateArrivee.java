@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.arrivee;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -49,14 +48,14 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// il se peut encore ici qu'aucun tiers ne soit trouvé avec ce numéro d'individu... si c'est le cas, l'erreur a déjà été logguée dans
 		// le validateCommon, donc pas besoin de la logguer une nouvelle fois, si ?
 		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
 		if (pp == null) {
-			if (erreurs.isEmpty()) {
-				erreurs.add(new EvenementCivilExterneErreur(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", getNoIndividu())));
+			if (!erreurs.hasErreurs()) {
+				erreurs.addErreur(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", getNoIndividu()));
 			}
 		}
 		else {
@@ -69,7 +68,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 					Audit.info(getNumeroEvenement(), "Individu mineur au moment de l'arrivée, événement ignoré.");
 				}
 				else {
-					erreurs.add(new EvenementCivilExterneErreur("L'individu n'a pas de for fiscal principal connu."));
+					erreurs.addErreur("L'individu n'a pas de for fiscal principal connu.");
 				}
 			}
 			else {
@@ -77,27 +76,26 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 				// la commune d'annonce doit correspondre à la commune du for
 				final Integer ofsCommuneAnnonce = getNumeroOfsCommuneAnnonce();
 				if (ofsCommuneAnnonce == null) {
-					erreurs.add(new EvenementCivilExterneErreur("L'identifiant de la commune d'annonce est vide."));
+					erreurs.addErreur("L'identifiant de la commune d'annonce est vide.");
 				}
 				else {
 					if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 						final String msg = String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-						erreurs.add(new EvenementCivilExterneErreur(msg));
+						erreurs.addErreur(msg);
 					}
 					else if (!ofsCommuneAnnonce.equals(ffp.getNumeroOfsAutoriteFiscale())) {
 						final String msg = String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-						erreurs.add(new EvenementCivilExterneErreur(msg));
+						erreurs.addErreur(msg);
 					}
 					else {
 						final MotifFor motifOuverture = ffp.getMotifOuverture();
 						if (motifOuverture != MotifFor.ARRIVEE_HS && motifOuverture != MotifFor.ARRIVEE_HC && motifOuverture != MotifFor.DEMENAGEMENT_VD) {
 							final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
 															FormatNumeroHelper.numeroCTBToDisplay(ffp.getTiers().getNumero()), motifOuverture.getDescription(true));
-							erreurs.add(new EvenementCivilExterneErreur(msg));
+							erreurs.addErreur(msg);
 						}
 						else if (getDate().year() != ffp.getDateDebut().year()) {
-							erreurs.add(new EvenementCivilExterneErreur(
-									"La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+							erreurs.addErreur("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement.");
 						}
 					}
 				}
@@ -106,7 +104,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// le dernier for principal doit voir sa date d'ouverture modifiée à la date de l'événement
 

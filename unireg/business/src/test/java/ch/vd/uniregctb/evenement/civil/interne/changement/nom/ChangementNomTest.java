@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.nom;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,8 +10,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -97,13 +96,11 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
 				final ChangementNom chgtNom = new ChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
-				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				chgtNom.validate(collector, collector);// ne fait rien
+				chgtNom.handle(collector);
 
-				chgtNom.validate(erreurs, warnings);// ne fait rien
-				chgtNom.handle(warnings);
-
-				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
+				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
 				return null;
 			}
 		});
@@ -195,13 +192,11 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
 				final ChangementNom chgtNom = new ChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
-				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				chgtNom.validate(collector, collector);// ne fait rien
+				chgtNom.handle(collector);
 
-				chgtNom.validate(erreurs, warnings);// ne fait rien
-				chgtNom.handle(warnings);
-
-				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
+				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
 				return null;
 			}
 		});

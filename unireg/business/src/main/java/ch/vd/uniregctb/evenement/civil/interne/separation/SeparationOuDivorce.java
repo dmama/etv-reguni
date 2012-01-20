@@ -1,18 +1,17 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -67,7 +66,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		Individu individu = getIndividu();
 
@@ -102,20 +101,20 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
 		EtatCivil etatCivilTiersPrincipal =  serviceCivil.getEtatCivilActif(noIndividuPrincipal, date);
 		if (etatCivilTiersPrincipal == null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu " + noIndividuPrincipal + " ne possède pas d'état civil à la date de l'événement"));
+			erreurs.addErreur("L'individu " + noIndividuPrincipal + " ne possède pas d'état civil à la date de l'événement");
 		}
 		else if (!(EtatCivilHelper.estSepare(etatCivilTiersPrincipal) || EtatCivilHelper.estDivorce(etatCivilTiersPrincipal))) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu " + noIndividuPrincipal + " n'est ni séparé ni divorcé dans le civil"));
+			erreurs.addErreur("L'individu " + noIndividuPrincipal + " n'est ni séparé ni divorcé dans le civil");
 		}
 
 		if (conjoint != null) {
 			long noIndividuConjoint = (conjoint).getNumeroIndividu();
 			EtatCivil etatCivilTiersConjoint = serviceCivil.getEtatCivilActif(noIndividuConjoint, date);
 			if (etatCivilTiersConjoint == null) {
-				erreurs.add(new EvenementCivilExterneErreur("L'individu " + noIndividuConjoint + " ne possède pas d'état civil à la date de l'événement"));
+				erreurs.addErreur("L'individu " + noIndividuConjoint + " ne possède pas d'état civil à la date de l'événement");
 			}
 			else if (!(EtatCivilHelper.estSepare(etatCivilTiersConjoint) || EtatCivilHelper.estDivorce(etatCivilTiersConjoint))) {
-				erreurs.add(new EvenementCivilExterneErreur("L'individu " + noIndividuConjoint + " n'est ni séparé ni divorcé dans le civil"));
+				erreurs.addErreur("L'individu " + noIndividuConjoint + " n'est ni séparé ni divorcé dans le civil");
 			}
 		}
 
@@ -129,7 +128,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(habitant, date);
 		if (menageComplet == null) {
-			erreurs.add(new EvenementCivilExterneErreur("Aucun ensemble tiers-couple a été trouvé pour l'habitant n°" + habitant.getNumero()));
+			erreurs.addErreur("Aucun ensemble tiers-couple a été trouvé pour l'habitant n°" + habitant.getNumero());
 			return;
 		}
 		if (!menageComplet.estComposeDe(habitant, conjoint)) {
@@ -137,11 +136,10 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			 * Vérifie que les deux habitants appartiennent au même ménage
 			 */
 			if (conjoint != null) {
-				erreurs.add(new EvenementCivilExterneErreur("Les deux habitant (" + habitant.getNumero() + " et " +
-						conjoint.getNumero() + ") ne font pas partie du même ménage."));
+				erreurs.addErreur(String.format("Les deux habitant (%d et %d) ne font pas partie du même ménage.", habitant.getNumero(), conjoint.getNumero()));
 			}
 			else {
-				erreurs.add(new EvenementCivilExterneErreur("L'habitant (" + habitant.getNumero() + ") ne fait pas partie du ménage."));
+				erreurs.addErreur(String.format("L'habitant (%d) ne fait pas partie du ménage.", habitant.getNumero()));
 			}
 		}
 		else {
@@ -153,7 +151,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 				addValidationResults(erreurs, warnings, validationResults);
 			}
 			catch (NullPointerException npe) {
-				erreurs.add(new EvenementCivilExterneErreur("Le ménage commun de l'habitant n°" + habitant.getNumero() + " n'existe pas"));
+				erreurs.addErreur(String.format("Le ménage commun de l'habitant n°%d n'existe pas", habitant.getNumero()));
 			}
 		}
 	}
@@ -200,7 +198,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		long numeroIndividu = getNoIndividu();
 		RegDate dateEvenement = getDate();
@@ -218,7 +216,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		return null;
 	}
 
-	private void handleSeparation(EvenementCivilInterne evenement, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	private void handleSeparation(EvenementCivilInterne evenement, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Obtention du premier tiers.
 		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.tutelle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -10,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -74,13 +72,10 @@ public class LeveeTutelleTest extends AbstractEvenementCivilInterneTest {
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		LeveeTutelle leveeTutelle = createLeveeTutelle(pupille);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		leveeTutelle.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de la levée de tutelle.", erreurs);
-
-		leveeTutelle.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		leveeTutelle.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de la levée de tutelle.", collector.getErreurs());
+		leveeTutelle.handle(collector);
 
 		/*
 		 * Récupération du tiers pupille

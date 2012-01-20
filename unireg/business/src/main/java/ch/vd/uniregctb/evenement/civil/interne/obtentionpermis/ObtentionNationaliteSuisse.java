@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -27,7 +25,7 @@ public class ObtentionNationaliteSuisse extends ObtentionNationalite {
 	}
 
 	@Override
-	protected boolean doHandle(PersonnePhysique pp, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected boolean doHandle(PersonnePhysique pp, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -10,11 +8,12 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -31,7 +30,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :
@@ -57,7 +55,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector errors, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * L'evenenement est mis en erreur dans les cas suivants
@@ -117,7 +115,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 *
 	 */
 	@Override
-	public Pair<PersonnePhysique,PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
@@ -227,8 +225,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			// ouverture d'un for si la commune est vaudoise
 			if (noOfsEtendu != 0) {
 				if (noOfsEtendu == NO_OFS_FRACTION_SENTIER) {
-					warnings.add(new EvenementCivilExterneErreur("Ouverture d'un for dans la fraction de commune du Sentier: " +
-						"veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
+					warnings.addWarning("Ouverture d'un for dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 				}
 				//TODO chercher dans les adresses si arrivée après obtention permis pour ouvrir le for à la date d'arrivée (pas de for ouvert car bridage IS)
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun

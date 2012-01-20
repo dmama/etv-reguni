@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -13,8 +10,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -27,8 +24,10 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test du handler de séparation:
@@ -95,13 +94,11 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marieSeul, null);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		separation.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de la séparation.", collector.hasErreurs());
 		
-		separation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
-		
-		separation.handle(warnings);
+		separation.handle(collector);
 		
 		PersonnePhysique habitantSepare = tiersDAO.getHabitantByNumeroIndividu(INDIVIDU_MARIE_SEUL);
 		assertNotNull("le tiers correspondant au séparé n'a pas été trouvé", habitantSepare);
@@ -144,13 +141,11 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marie, conjoint);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		separation.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de la séparation.", collector.hasErreurs());
 		
-		separation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de la séparation.", erreurs);
-		
-		separation.handle(warnings);
+		separation.handle(collector);
 		
 		/*
 		 * Test de récupération du tiers qui se sépare
@@ -211,11 +206,9 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		Separation separation = createValidSeparation(marie, conjoint);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		separation.validate(erreurs, warnings);
-		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		separation.validate(collector, collector);
+		assertTrue("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", collector.hasErreurs());
 		
 	}
 
@@ -253,14 +246,12 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		final Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		final Separation separation = createValidSeparation(marie, conjoint);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		separation.validate(erreurs, warnings);
-		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		separation.validate(collector, collector);
+		assertTrue("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", collector.hasErreurs());
 
 		try {
-			separation.handle(warnings);
+			separation.handle(collector);
 			Assert.fail("Le traitement de l'événement aurait dû lancer une exception");
 		}
 		catch (EvenementCivilException e) {

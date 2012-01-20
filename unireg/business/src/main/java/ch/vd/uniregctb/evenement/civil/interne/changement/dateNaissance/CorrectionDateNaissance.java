@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.dateNaissance;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
@@ -9,11 +7,12 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -40,17 +39,35 @@ public class CorrectionDateNaissance extends ChangementBase {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 	}
 
+	private static final EvenementCivilErreurCollector DUMMY_ERROR_COLLECTOR = new EvenementCivilErreurCollector() {
+		@Override
+		public void addErreur(Exception e) {
+		}
+
+		@Override
+		public void addErreur(String msg) {
+		}
+
+		@Override
+		public void addErreur(String msg, Exception e) {
+		}
+
+		@Override
+		public boolean hasErreurs() {
+			return false;
+		}
+	};
+
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		Audit.info(getNumeroEvenement(), String.format("Correction de la date de naissance de l'individu : %d", getNoIndividu()));
 
 		try {
-			final List<EvenementCivilExterneErreur> errors = new ArrayList<EvenementCivilExterneErreur>();
-			final PersonnePhysique pp = getPersonnePhysiqueOrFillErrors(getNoIndividu(), errors);
+			final PersonnePhysique pp = getPersonnePhysiqueOrFillErrors(getNoIndividu(), DUMMY_ERROR_COLLECTOR);
 			if (pp != null) {
 				final RegDate dateNaissance = getDate();
 

@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.reconciliation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -11,8 +9,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -72,16 +71,14 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un individu marié seul.");
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_SEUL, null, DATE_RECONCILIATION);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
+				reconciliation.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
 
-				reconciliation.handle(warnings);
+				reconciliation.handle(collector);
 				return null;
 			}
 		});
@@ -126,16 +123,14 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", erreurs);
+				reconciliation.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
 
-				reconciliation.handle(warnings);
+				reconciliation.handle(collector);
 				return null;
 			}
 		});
@@ -186,20 +181,18 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION_FUTURE);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(erreurs, warnings);
+				reconciliation.validate(collector, collector);
 				return null;
 			}
 		});
 
-		assertEquals("Il devrait y avoir exactement une erreur", 1, erreurs.size());
+		assertEquals("Il devrait y avoir exactement une erreur", 1, collector.getErreurs().size());
 
-		final EvenementCivilExterneErreur erreur = erreurs.iterator().next();
+		final EvenementCivilErreur erreur = collector.getErreurs().iterator().next();
 		assertEquals("L'erreur n'est pas la bonne", "La date de l'événement est dans le futur", erreur.getMessage());
 	}
 

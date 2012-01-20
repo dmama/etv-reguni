@@ -15,11 +15,12 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -83,17 +84,17 @@ public abstract class Arrivee extends Mouvement {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		/*
 		 * Le retour du mort-vivant
 		 */
 		if (getIndividu().getDateDeces() != null) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu est décédé"));
+			erreurs.addErreur("L'individu est décédé");
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (isIndividuEnMenage(getIndividu(), getDate())) {
 			return handleIndividuEnMenage(warnings);
 		}
@@ -115,7 +116,7 @@ public abstract class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrivée d'un contribuable seul.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		try {
 			final Individu individu = getIndividu();
@@ -161,20 +162,22 @@ public abstract class Arrivee extends Mouvement {
 
 	/**
 	 * Création des fors lors de l'arrivée d'un invididu seul
+	 *
 	 * @param habitant personne physique habitante qui vient d'arriver
 	 * @param warnings liste des warnings à compléter au besoin
 	 * @throws EvenementCivilException en cas de souci
 	 */
-	protected abstract void doHandleCreationForIndividuSeul(PersonnePhysique habitant, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+	protected abstract void doHandleCreationForIndividuSeul(PersonnePhysique habitant, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	/**
 	 * Création des fors lors de l'arrivée d'un invididu seul
+	 *
 	 * @param arrivant personne physique habitante qui vient d'arriver
 	 * @param menageCommun ménage commun de l'arrivant
 	 * @param warnings liste des warnings à compléter au besoin
 	 * @throws EvenementCivilException en cas de souci
 	 */
-	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException;
+	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
 		return findNonHabitants(getService(), individu, assujettissementObligatoire);
@@ -358,7 +361,7 @@ public abstract class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrive d'un contribuable en ménage commun.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
 		Assert.notNull(individu); // prérequis

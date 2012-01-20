@@ -23,11 +23,15 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CheckedTransactionCallback;
 import ch.vd.uniregctb.common.CheckedTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreurFactory;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -118,8 +122,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				@Override
 				public Long doInTransaction(TransactionStatus status) throws Exception {
 
-					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+					final EvenementCivilMessageCollector<EvenementCivilExterneErreur> collector = new EvenementCivilMessageCollector<EvenementCivilExterneErreur>(new EvenementCivilExterneErreurFactory());
 
 					// Charge l'événement
 					final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
@@ -134,9 +137,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 					evenementCivilExterne.getErreurs().clear();
 
 					// Traitement de l'événement
-					traiteEvenement(evenementCivilExterne, refreshCache, erreurs, warnings);
+					traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
 
-					return traiteErreurs(evenementCivilExterne, erreurs, warnings);
+					return traiteErreurs(evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
 				}
 			});
 		}
@@ -348,8 +351,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		return evenementCivilTranslator.toInterne(evenementCivilExterne, options);
 	}
 
-	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final List<EvenementCivilExterneErreur> erreurs,
-	                             final List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	private void traiteEvenement(final EvenementCivilExterne evenementCivilExterne, boolean refreshCache, final EvenementCivilErreurCollector erreurs,
+	                             final EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
 		Audit.info(evenementCivilExterne.getId(), message);
@@ -362,7 +365,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 		// 2.2 - lancement de la validation
 		event.validate(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
+		if (erreurs.hasErreurs()) {
 			Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
 			return;
 		}

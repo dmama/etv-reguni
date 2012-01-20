@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,15 +7,14 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -25,7 +23,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 
 @SuppressWarnings({"JavaDoc"})
 public class NaissanceTest extends AbstractEvenementCivilInterneTest {
@@ -62,13 +63,12 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.validate(erreurs, warnings);
-		naissance.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		naissance.validate(collector, collector);
+		naissance.handle(collector);
 
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la naissance");
+		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
 		List<Tiers> tierss = tiersDAO.getAll();
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
@@ -92,13 +92,12 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_FIN_ANNEE, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.validate(erreurs, warnings);
-		naissance.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		naissance.validate(collector, collector);
+		naissance.handle(collector);
 
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la naissance");
+		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
 		List<Tiers> tierss = tiersDAO.getAll();
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
@@ -121,13 +120,12 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE_MAJEUR, date(2007, 12, 31));
 		Naissance naissance = createValidNaissance(bebe);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		naissance.validate(erreurs, warnings);
-		naissance.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		naissance.validate(collector, collector);
+		naissance.handle(collector);
 
-		Assert.isTrue(!erreurs.isEmpty(), "Une erreur aurait du survenir puisque l'individu est majeur");
+		assertTrue("Une erreur aurait du survenir puisque l'individu est majeur", collector.hasErreurs());
 	}
 
 	private Naissance createValidNaissance(Individu individu) {
@@ -181,16 +179,14 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
 				final Naissance naissance = createValidNaissance(fils);
 
-				List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				naissance.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-				naissance.validate(erreurs, warnings);
-				assertEmpty(erreurs);
-				assertEmpty(warnings);
-
-				final Pair<PersonnePhysique, PersonnePhysique> res = naissance.handle(warnings);
-				assertEmpty(erreurs);
-				assertEmpty(warnings);
+				final Pair<PersonnePhysique, PersonnePhysique> res = naissance.handle(collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
 				ids.fils = res.getFirst().getNumero();
 				return null;

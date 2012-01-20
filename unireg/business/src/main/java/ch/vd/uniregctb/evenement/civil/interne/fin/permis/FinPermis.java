@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.permis;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -61,7 +60,7 @@ public class FinPermis extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		/* Seulement le permis C est traité */
 		if (getTypePermis() == TypePermis.ETABLISSEMENT) {
 
@@ -76,7 +75,7 @@ public class FinPermis extends EvenementCivilInterne {
 				isSuisse = context.getTiersService().isSuisse(habitant, getDate().getOneDayAfter());
 			}
 			catch (Exception e) {
-				erreurs.add(new EvenementCivilExterneErreur(e.getMessage()));
+				erreurs.addErreur(e);
 				return;
 			}
 
@@ -85,7 +84,7 @@ public class FinPermis extends EvenementCivilInterne {
 			}
 			else {
 				Audit.info(getNumeroEvenement(), "Permis C : l'habitant n'a pas obtenu la nationalité suisse, passage en traitement manuel");
-				erreurs.add(new EvenementCivilExterneErreur("La fin du permis C doit être traitée manuellement"));
+				erreurs.addErreur("La fin du permis C doit être traitée manuellement");
 			}
 		}
 		else {
@@ -94,7 +93,7 @@ public class FinPermis extends EvenementCivilInterne {
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// rien à faire tout ce passe dans le validateSpecific
 		return null;
 	}

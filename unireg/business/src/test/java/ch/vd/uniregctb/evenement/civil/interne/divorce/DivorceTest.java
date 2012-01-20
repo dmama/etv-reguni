@@ -1,16 +1,13 @@
 package ch.vd.uniregctb.evenement.civil.interne.divorce;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -20,8 +17,10 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test du handler de divorce:
@@ -101,11 +100,9 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		Individu celibataire = serviceCivil.getIndividu(INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(celibataire, null);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		divorce.validate(erreurs, warnings);
-		assertEquals("l'événement aurait du être en erreur car personne non marié", erreurs.isEmpty(), false);
+		final MessageCollector collector = buildMessageCollector();
+		divorce.validate(collector, collector);
+		assertTrue("l'événement aurait du être en erreur car personne non marié", collector.hasErreurs());
 		
 	}
 	
@@ -117,13 +114,11 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marieSeul, null);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		divorce.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate du divorce.", collector.hasErreurs());
 		
-		divorce.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
-		
-		divorce.handle(warnings);
+		divorce.handle(collector);
 		
 		PersonnePhysique habitantDivorce = tiersDAO.getHabitantByNumeroIndividu(INDIVIDU_MARIE_SEUL);
 		assertNotNull("le tiers correspondant au divorcé n'a pas été trouvé", habitantDivorce);
@@ -165,13 +160,11 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marie, conjoint);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		divorce.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate du divorce.", collector.hasErreurs());
 		
-		divorce.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate du divorce.", erreurs);
-		
-		divorce.handle(warnings);
+		divorce.handle(collector);
 		
 		/*
 		 * Test de récupération du tiers qui divorce
@@ -230,11 +223,9 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(marie, conjoint);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		divorce.validate(erreurs, warnings);
-		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);
+		final MessageCollector collector = buildMessageCollector();
+		divorce.validate(collector, collector);
+		assertTrue("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", collector.hasErreurs());
 		
 	}
 	
@@ -247,13 +238,11 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_SEPARE_CONJOINT, date(2008, 12, 31));
 		Divorce divorce = createValidDivorce(separe, conjoint);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		divorce.validate(collector, collector);
+		assertTrue("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", collector.hasErreurs());
 		
-		divorce.validate(erreurs, warnings);
-		assertEquals("l'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", erreurs.isEmpty(), false);
-		
-		divorce.handle(warnings);
+		divorce.handle(collector);
 
 		/*
 		 * Test de récupération du tiers qui divorce

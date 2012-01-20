@@ -1,15 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.interne.ignore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 
 public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest {
 
@@ -18,9 +15,8 @@ public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest 
 	public void testHandle() throws EvenementCivilException {
 		final EvenementCivilInterne evt = new EvenementCivilIgnore(context);
 
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		evt.handle(warnings);
-
-		assertEmpty(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		evt.handle(collector);
+		assertEmpty(collector.getWarnings());
 	}
 }

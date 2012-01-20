@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,8 +16,8 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -104,37 +103,34 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
 		 */
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.checkCompleteness(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
 		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
 															   nouvellesAdresses.principale, context);
-		sansIndividu.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansIndividu.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
 						null, context);
-		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleAdressePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleCommunePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, anciennesAdresses.principale, nouvellesAdresses.principale, context);
-		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleCommunePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	@Test
@@ -181,36 +177,33 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
 		 */
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.checkCompleteness(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
 		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
-		sansIndividu.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansIndividu.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null,
 				null, context);
-		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleAdressePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleCommunePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
-		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleCommunePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	@Test
@@ -278,56 +271,51 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Vérification de l'intégrité de l'événement minimal
 		 */
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.checkCompleteness(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.checkCompleteness(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		/*
 		 * Détection d'erreurs pour les différents cas d'événements invalides.
 		 */
 		ArriveePrincipale sansIndividu = new ArriveePrincipale(null, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 															   nouvellesAdresses.principale, context);
-		sansIndividu.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansIndividu.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansConjoint = new ArriveePrincipale(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 				nouvellesAdresses.principale, context);
-		sansConjoint.checkCompleteness(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansConjoint.checkCompleteness(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleAdressePrincipal =
 				new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 						null, context);
-		sansNouvelleAdressePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleAdressePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale sansNouvelleCommunePrincipal =
 				new ArriveePrincipale(individuPrincipal, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, 0, null, null, null, nouvellesAdresses.principale, context);
-		sansNouvelleCommunePrincipal.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		sansNouvelleCommunePrincipal.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		ArriveePrincipale avecConjointHorsCouple =
 				new ArriveePrincipale(individuPrincipal, individuHorsCouple, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 						nouvellesAdresses.principale, context);
-		avecConjointHorsCouple.checkCompleteness(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		avecConjointHorsCouple.checkCompleteness(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	@Test
@@ -365,8 +353,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		{
 			/*
@@ -384,11 +371,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 				anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-		arrivee.validate(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		arrivee.validate(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 
 		/*
 		 * Ok : événement d'arrivée rétro-actif sans information d'ancienne adresse
@@ -396,14 +382,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		ArriveePrincipale arriveeRetroActiveDeNullePart =
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 
-		arriveeRetroActiveDeNullePart.validate(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		arriveeRetroActiveDeNullePart.handle(warnings);
-		assertTrue(erreurs.isEmpty());
-		assertEquals(1, warnings.size());
-		erreurs.clear();
-		warnings.clear();
+		arriveeRetroActiveDeNullePart.validate(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		arriveeRetroActiveDeNullePart.handle(collector);
+		assertFalse(collector.hasErreurs());
+		assertEquals(1, collector.getWarnings().size());
+		collector.clear();
 
 		/*
 		 * Erreur: évenement d'arrivée rétro-actif situé avant la date de début de validité de l'ancienne adresse
@@ -412,11 +397,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1945, 1, 1), MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 						anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-		arriveeRetroActive.validate(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		arriveeRetroActive.validate(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	/**
@@ -454,8 +438,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		/*
 		 * Erreur: nouvelle adresse hors-canton
@@ -464,11 +447,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(), MockCommune.Lausanne, MockCommune.Neuchatel,
 						anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-		arriveeHorsCanton.validate(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		arriveeHorsCanton.validate(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	/**
@@ -535,8 +517,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			tiersDAO.save(jean);
 		}
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		/*
 		 * Erreur: nouvelle adresse sur la commune composée du Chenit
@@ -551,13 +532,12 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.Fraction.LeSentier,
 							anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-			arrivee.validate(erreurs, warnings);
-			assertTrue(erreurs.isEmpty());
-			assertEquals(1, warnings.size());
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertEquals(1, collector.getWarnings().size());
 			assertEquals("arrivée dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal",
-					warnings.get(0).getMessage());
-			erreurs.clear();
-			warnings.clear();
+			             collector.getWarnings().get(0).getMessage());
+			collector.clear();
 		}
 
 		/*
@@ -573,11 +553,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.Fraction.LeSentier, MockCommune.LeLieu,
 							anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-			arrivee.validate(erreurs, warnings);
-			assertTrue(erreurs.isEmpty());
-			assertTrue(warnings.isEmpty());
-			erreurs.clear();
-			warnings.clear();
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
 		}
 	}
 
@@ -623,8 +602,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		/*
 		 * Erreur: nouvelle adresse sur la commune du Chenit
@@ -637,11 +615,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne, MockCommune.LeChenit,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-			arrivee.validate(erreurs, warnings);
-			assertFalse(erreurs.isEmpty());
-			assertTrue(warnings.isEmpty());
-			erreurs.clear();
-			warnings.clear();
+			arrivee.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
 		}
 
 		/*
@@ -655,11 +632,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
 					anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-			arrivee.validate(erreurs, warnings);
-			assertFalse(erreurs.isEmpty());
-			assertTrue(warnings.isEmpty());
-			erreurs.clear();
-			warnings.clear();
+			arrivee.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
 		}
 	}
 
@@ -678,27 +654,27 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Adresse nouvelle = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
 		final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validateArriveeAdresseSecondaire(erreurs);
-		assertTrue(erreurs.isEmpty());
-		erreurs.clear();
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validateArriveeAdresseSecondaire(collector);
+		assertTrue(collector.getErreurs().isEmpty());
+		collector.clear();
 
 		/*
 		 * Erreur: arrivée avant le début de validité de l'adresse principale
 		 */
 		final ArriveeSecondaire arriveeRetroActive = new ArriveeSecondaire(null, null, RegDate.get(1902, 10, 11), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
-		arriveeRetroActive.validateArriveeAdresseSecondaire(erreurs);
-		assertFalse(erreurs.isEmpty());
-		erreurs.clear();
+		arriveeRetroActive.validateArriveeAdresseSecondaire(collector);
+		assertFalse(collector.getErreurs().isEmpty());
+		collector.clear();
 
 		/*
 		 * Erreur: arrivée en adresse secondaire hors canton
 		 */
 		final Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
 		final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
-		arriveeHorsCanton.validateArriveeAdresseSecondaire(erreurs);
-		assertFalse(erreurs.isEmpty());
-		erreurs.clear();
+		arriveeHorsCanton.validateArriveeAdresseSecondaire(collector);
+		assertFalse(collector.getErreurs().isEmpty());
+		collector.clear();
 	}
 
 	@Test
@@ -735,8 +711,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
 		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		{
 			/*
@@ -755,11 +730,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
 				anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-		arrivee.validate(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		arrivee.validate(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 
 	/**
@@ -815,7 +789,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -909,7 +883,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -1002,7 +976,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -1088,7 +1062,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -1182,7 +1156,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -1299,7 +1273,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				return null;
 			}
 		});
@@ -1450,7 +1424,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				return null;
 			}
 		});
@@ -1599,7 +1573,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				return null;
 			}
 		});
@@ -1725,7 +1699,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Arrivée
 			 */
-			arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+			arrivee.handle(buildMessageCollector());
 		}
 
 		// Nombre d'éléments stockés dans la base
@@ -1858,7 +1832,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				return null;
 			}
 		});
@@ -2010,7 +1984,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				
 				return null;
 			}
@@ -2182,7 +2156,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Arrivée
 				 */
-				arrivee.handle(new ArrayList<EvenementCivilExterneErreur>());
+				arrivee.handle(buildMessageCollector());
 				
 				return null;
 			}
@@ -2295,11 +2269,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
+		assertEmpty(collector.getErreurs());
 
 		// [UNIREG-2145] On vérifique que la for principal ouvert possède le même mode d'imposition (source-mixte) que le précédent
 		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
@@ -2359,12 +2332,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
 
 		try {
-			arrivee.handle(warnings);
+			arrivee.handle(collector);
 			fail();
 		}
 		catch (ValidationException e) {
@@ -2417,11 +2389,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
+		assertEmpty(collector.getErreurs());
 
 		final PersonnePhysique hab = tiersService.getPersonnePhysiqueByNumeroIndividu(noInd);
 		assertNotNull(hab);
@@ -2547,11 +2518,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 								nouvelleAdresse, context);
 
 				// Traite l'événement d'arrivée
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-				arrivee.validate(erreurs, warnings);
-				arrivee.handle(warnings);
-				assertEmpty(erreurs);
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
+				arrivee.handle(collector);
+				assertEmpty(collector.getErreurs());
 
 				return null;
 			}
@@ -2610,12 +2580,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
 
 		try {
-			arrivee.handle(warnings);
+			arrivee.handle(collector);
 			fail();
 		}
 		catch (ValidationException e) {
@@ -2666,11 +2635,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
+		assertEmpty(collector.getErreurs());
 
 		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
 		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
@@ -2724,11 +2692,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
+		assertEmpty(collector.getErreurs());
 
 		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
 		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
@@ -2782,11 +2749,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		arrivee.validate(erreurs, warnings);
-		arrivee.handle(warnings);
-		assertEmpty(erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
+		arrivee.handle(collector);
+		assertEmpty(collector.getErreurs());
 
 		// On vérifique que la for principal sur Bussigny a été ouvert le 1er janvier 2009
 		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
@@ -2853,13 +2819,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final Arrivee arrivee = new ArriveePrincipale(civil.roger, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, null, null, null, null, (Adresse) null, null, context);
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		arrivee.validate(erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		arrivee.validate(collector, collector);
 
 		try {
-			arrivee.handle(warnings);
+			arrivee.handle(collector);
 			Assert.fail("L'événement d'arrivée aurait dû lever une erreur parce que le non-habitant trouvé n'est pas complet");
 		}
 		catch (EvenementCivilException e) {

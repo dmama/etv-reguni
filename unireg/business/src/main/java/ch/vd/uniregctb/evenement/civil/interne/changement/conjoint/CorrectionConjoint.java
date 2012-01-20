@@ -1,16 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.conjoint;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -18,7 +17,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class CorrectionConjoint extends EvenementCivilInterne {
@@ -33,7 +31,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> errors, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector errors, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final RegDate date = getDate();
 
@@ -48,7 +46,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(individu.getNoTechnique(), date);
 		if (individuConjoint == null) {
-			errors.add(new EvenementCivilExterneErreur(String.format("L'individu n'a pas de conjoint en date du %s dans le civil", RegDateHelper.dateToDisplayString(getDate()))));
+			errors.addErreur(String.format("L'individu n'a pas de conjoint en date du %s dans le civil", RegDateHelper.dateToDisplayString(getDate())));
 			return;
 		}
 		final PersonnePhysique conjoint = getPersonnePhysiqueOrFillErrors(individuConjoint.getNoTechnique(), errors);
@@ -62,7 +60,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 		}
 		else if (coupleHabitant != null) {
 			if (coupleHabitant.estComposeDe(habitant, conjoint)) {
-				errors.add(new EvenementCivilExterneErreur("Les deux tiers appartiennent déjà au même ménage commun"));
+				errors.addErreur("Les deux tiers appartiennent déjà au même ménage commun");
 			}
 			else {
 				ValidationResults validationResults = context.getMetierService().validateReconstitution(coupleHabitant.getMenage(), conjoint, date);
@@ -71,7 +69,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 		}
 		else if (coupleConjoint != null) {
 			if (coupleConjoint.estComposeDe(habitant, conjoint)) {
-				errors.add(new EvenementCivilExterneErreur("Les deux tiers appartiennent déjà au même ménage commun"));
+				errors.addErreur("Les deux tiers appartiennent déjà au même ménage commun");
 			}
 			else {
 				ValidationResults validationResults = context.getMetierService().validateReconstitution(coupleConjoint.getMenage(), habitant, date);
@@ -79,13 +77,13 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 			}
 		}
 		else {
-			errors.add(new EvenementCivilExterneErreur("Aucun des tiers n'appartient à un ménage commun"));
+			errors.addErreur("Aucun des tiers n'appartient à un ménage commun");
 		}
 
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
@@ -114,7 +112,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 		return null;
 	}
 
-	private void handleReconstitutionMenage(final ReconstitutionMenage reconstitution, final EtatCivil etatCivilFamille, List<EvenementCivilExterneErreur> warnings) {
+	private void handleReconstitutionMenage(final ReconstitutionMenage reconstitution, final EtatCivil etatCivilFamille, EvenementCivilWarningCollector warnings) {
 
 		context.getMetierService().reconstitueMenage(reconstitution.getMenageCommun(), reconstitution.getTiers(), reconstitution.getDate(), null, etatCivilFamille);
 		addCommonWarnings(warnings);
@@ -122,7 +120,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 	}
 
 	private void handleFusionMenages(final EnsembleTiersCouple coupleHabitant, final EnsembleTiersCouple coupleConjoint, final EtatCivil etatCivilFamille,
-	                                 List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	                                 EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		try {
 			context.getMetierService().fusionneMenages(coupleHabitant.getMenage(), coupleConjoint.getMenage(), null, etatCivilFamille);
@@ -133,9 +131,9 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 		addCommonWarnings(warnings);
 	}
 
-	private void addCommonWarnings(List<EvenementCivilExterneErreur> warnings) {
-		warnings.add(new EvenementCivilExterneErreur("Veuillez vérifier le mode d'imposition du contribuable ménage", TypeEvenementErreur.WARNING));
-		warnings.add(new EvenementCivilExterneErreur("Veuillez vérifier la commune du for principal pour le contribuable ménage", TypeEvenementErreur.WARNING));
+	private void addCommonWarnings(EvenementCivilWarningCollector warnings) {
+		warnings.addWarning("Veuillez vérifier le mode d'imposition du contribuable ménage");
+		warnings.addWarning("Veuillez vérifier la commune du for principal pour le contribuable ménage");
 	}
 
 	private ReconstitutionMenage getReconstitution(PersonnePhysique pp1, PersonnePhysique pp2, EnsembleTiersCouple couple1, EnsembleTiersCouple couple2) {

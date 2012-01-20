@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.separation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -56,13 +53,11 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", collector.getErreurs());
 
-		annulation.handle(warnings);
+		annulation.handle(collector);
 		
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(noIndividu);
 		assertNotNull("Pierre n'as pas été trouvé", pierre);
@@ -90,13 +85,10 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		Individu individu = serviceCivil.getIndividu(noIndividuMarie, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateSeparation);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", erreurs);
-
-		annulation.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de séparation", collector.getErreurs());
+		annulation.handle(collector);
 		
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(noIndividuMarie);
 		assertNotNull("Maurice n'as pas été trouvé", momo);
@@ -127,13 +119,11 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
 		AnnulationSeparation annulation = createAnnulationSeparation(individu, dateFictive);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
+		final MessageCollector collector = buildMessageCollector();
 		boolean errorFound = false;
 		String errorMessage = null;
 		try {
-			annulation.validate(erreurs, warnings);
+			annulation.validate(collector, collector);
 		}
 		catch (Exception ex) {
 			errorFound = true;

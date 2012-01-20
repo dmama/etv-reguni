@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,15 +7,14 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
@@ -103,29 +101,23 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
 	public void testValidate() throws Exception {
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
 
 		// 1er test : déménagement hors canton
 		LOGGER.debug("Test déménagement hors canton...");
-		erreurs.clear();
-		warnings.clear();
 		Demenagement demenagement = createValidDemenagement(new MockIndividu(), null, DATE_VALIDE, MockCommune.Neuchatel);
-		demenagement.validate(erreurs, warnings);
-		Assert.notEmpty(erreurs, "Le déménagement est hors canton, une erreur aurait du être déclenchée");
+		demenagement.validate(collector, collector);
+		assertTrue("Le déménagement est hors canton, une erreur aurait du être déclenchée", collector.hasErreurs());
 		LOGGER.debug("Test déménagement hors canton : OK");
+		collector.clear();
 
 		// 2ème test : déménagement antérieur à la date de début de validité de
 		// l'ancienne adresse
 		LOGGER.debug("Test déménagement antérieur à la date de début de validité de l'ancienne adresse...");
-		erreurs.clear();
-		warnings.clear();
 		demenagement = createValidDemenagement(new MockIndividu(), null, DATE_ANTERIEURE_ANCIENNE_ADRESSE, MockCommune.Fraction.LePont);
-		demenagement.validate(erreurs, warnings);
-		Assert.notEmpty(erreurs,
-				"Le déménagement est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
+		demenagement.validate(collector, collector);
+		assertTrue("Le déménagement est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée", collector.hasErreurs());
 		LOGGER.debug("Test déménagement antérieur à la date de début de validité de l'ancienne adresse : OK");
-
 	}
 
 	@Test
@@ -135,13 +127,12 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
@@ -159,13 +150,12 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement fin décembre individu seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_LIMITE, MockCommune.Fraction.LePont);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertTrue(sophie != null);
@@ -182,13 +172,12 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(pierre);
@@ -220,13 +209,11 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu2 = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, individu2, DATE_VALIDE, MockCommune.Fraction.LePont);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
-
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(momo);
@@ -256,19 +243,18 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final MessageCollector collector = buildMessageCollector();
 		int tachesAvant;
 		{
 			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
@@ -288,19 +274,18 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 		Demenagement demenagement = createValidDemenagement(individu, null, DATE_VALIDE, MockCommune.Fraction.LePont);
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
 
+		final MessageCollector collector = buildMessageCollector();
 		int tachesAvant;
 		{
 			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement de déménagement", collector.getErreurs());
 
 		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
@@ -391,14 +376,12 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		final Demenagement demenagement = (Demenagement) interne;
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		demenagement.validate(collector, collector);
+		demenagement.handle(collector);
 
-		demenagement.validate(erreurs, warnings);
-		demenagement.handle(warnings);
-
-		if (!erreurs.isEmpty()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement du déménagement : \n" + Arrays.toString(erreurs.toArray()));
+		if (collector.hasErreurs()) {
+			fail("Une ou plusieurs erreurs sont survenues lors du traitement du déménagement : \n" + Arrays.toString(collector.getErreurs().toArray()));
 		}
 
 		// Les fors doivent être inchangés

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.mariage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -11,8 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -99,11 +97,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final class Lists {
-			public final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			public final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		}
-		final Lists lists = new Lists();
+		final MessageCollector collector = buildMessageCollector();
 
 		// mariage (devrait fonctionner même si monsieur est connu comme séparé - son divorce n'est pas encore connu du canton...)
 		doInNewTransaction(new TxCallback<Object>() {
@@ -112,20 +106,20 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, date(2009, 12, 31));
 				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
 
-				mariage.validate(lists.erreurs, lists.warnings);
-				mariage.handle(lists.warnings);
+				mariage.validate(collector, collector);
+				mariage.handle(collector);
 				return null;
 			}
 		});
 
-		if (!lists.erreurs.isEmpty()) {
-			for (EvenementCivilExterneErreur e : lists.erreurs) {
+		if (collector.hasErreurs()) {
+			for (EvenementCivilErreur e : collector.getErreurs()) {
 				LOGGER.error("Trouvé erreur : " + e);
 			}
 			Assert.fail("Il y a des erreurs...");
 		}
-		if (!lists.warnings.isEmpty()) {
-			for (EvenementCivilExterneErreur e : lists.warnings) {
+		if (collector.hasWarnings()) {
+			for (EvenementCivilErreur e : collector.getWarnings()) {
 				LOGGER.error("Trouvé warning : " + e);
 			}
 			Assert.fail("Il y a des warnings...");
@@ -152,21 +146,15 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de mariage seul.");
 
-		final class Lists {
-
-			List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		}
-
-		final Lists lists = new Lists();
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu seul = serviceCivil.getIndividu(UNI_SEUL, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(seul, null, DATE_UNION_SEUL);
 
-				mariage.validate(lists.erreurs, lists.warnings);
-				mariage.handle(lists.warnings);
+				mariage.validate(collector, collector);
+				mariage.handle(collector);
 				return null;
 			}
 		});
@@ -174,7 +162,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement du mariage seul", lists.erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement du mariage seul", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -234,13 +222,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'union hétéro.");
 
-		final class Lists {
-
-			List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		}
-
-		final Lists lists = new Lists();
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -248,8 +230,8 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HETERO_CONJOINT, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HETERO);
 
-				mariage.validate(lists.erreurs, lists.warnings);
-				mariage.handle(lists.warnings);
+				mariage.validate(collector, collector);
+				mariage.handle(collector);
 				return null;
 			}
 		});
@@ -257,7 +239,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement de l'union hétéro", lists.erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement de l'union hétéro", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -337,13 +319,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'union homo.");
 
-		final class Lists {
-
-			List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-			List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		}
-
-		final Lists lists = new Lists();
+		final MessageCollector collector = buildMessageCollector();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -351,8 +327,8 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 				Individu conjoint = serviceCivil.getIndividu(UNI_HOMO_CONJOINT, date(2007, 12, 31));
 				Mariage mariage = createValidMariage(individu, conjoint, DATE_UNION_HOMO);
 
-				mariage.validate(lists.erreurs, lists.warnings);
-				mariage.handle(lists.warnings);
+				mariage.validate(collector, collector);
+				mariage.handle(collector);
 				return null;
 			}
 		});
@@ -360,7 +336,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.assertTrue("Une erreur est survenue lors du traitement de l'union homo", lists.erreurs.isEmpty());
+		Assert.assertFalse("Une erreur est survenue lors du traitement de l'union homo", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers

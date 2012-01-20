@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -35,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -88,16 +84,14 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionPermis.validate(erreurs, warnings);
-		obtentionPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionPermis.validate(collector, collector);
+		obtentionPermis.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
+		assertFalse("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -125,16 +119,14 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 		ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(celibataire, DATE_OBTENTION_PERMIS, 4848, TypePermis.COURTE_DUREE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionPermis.validate(erreurs, warnings);
-		obtentionPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionPermis.validate(collector, collector);
+		obtentionPermis.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", erreurs.isEmpty());
+		assertFalse("Une erreur est survenue lors du traitement d'obtention de permis de célibataire.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -162,16 +154,14 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
 		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionPermis.validate(erreurs, warnings);
-		obtentionPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionPermis.validate(collector, collector);
+		obtentionPermis.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		assertEmpty("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", collector.getErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -224,16 +214,14 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, date(2007, 12, 31));
 		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, 5586);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		obtentionPermis.validate(erreurs, warnings);
-		obtentionPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		obtentionPermis.validate(collector, collector);
+		obtentionPermis.handle(collector);
 
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		assertTrue("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", erreurs.isEmpty());
+		assertFalse("Une erreur est survenue lors du traitement d'obtention de permis de marié seul.", collector.hasErreurs());
 
 		/*
 		 * Test de récupération du Tiers
@@ -332,15 +320,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS());
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-				obtentionPermis.validate(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
-
-				obtentionPermis.handle(warnings);
-				assertTrue(warnings.isEmpty());
+				obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
 
 				return null;
 			}
@@ -392,15 +378,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-				obtentionPermis.validate(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
-
-				obtentionPermis.handle(warnings);
-				assertTrue(warnings.isEmpty());
+				obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
 
 				return null;
 			}
@@ -461,15 +445,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-				obtentionPermis.validate(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
-
-				obtentionPermis.handle(warnings);
-				assertTrue(warnings.isEmpty());
+				obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
 				return null;
 			}
 		});
@@ -533,15 +515,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
 				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-				obtentionPermis.validate(erreurs, warnings);
-				assertTrue(erreurs.isEmpty());
-				assertTrue(warnings.isEmpty());
-
-				obtentionPermis.handle(warnings);
-				assertTrue(warnings.isEmpty());
+				obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
 				return null;
 			}
 		});

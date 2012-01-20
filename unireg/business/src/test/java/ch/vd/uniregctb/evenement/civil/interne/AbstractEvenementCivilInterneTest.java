@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -8,10 +7,12 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -61,12 +62,12 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		return evenementFiscalService;
 	}
 
-	protected void launchEvent(final EvenementCivilInterne evtCivil, final List<EvenementCivilExterneErreur> erreurs, final List<EvenementCivilExterneErreur> warnings) throws Exception {
+	protected void launchEvent(final EvenementCivilInterne evtCivil, final EvenementCivilErreurCollector erreurs, final EvenementCivilWarningCollector warnings) throws Exception {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				evtCivil.validate(erreurs, warnings);
-				if (erreurs.isEmpty()) {
+				if (!erreurs.hasErreurs()) {
 					evtCivil.handle(warnings);
 				}
 				return null;
@@ -74,30 +75,34 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		});
 	}
 
+	protected static MessageCollector buildMessageCollector() {
+		return new MessageCollector();
+	}
+
 	protected void assertSansErreurNiWarning(EvenementCivilInterne evt) throws Exception {
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final EvenementCivilErreurCollector erreurs = buildMessageCollector();
+		final EvenementCivilWarningCollector warnings = buildMessageCollector();
 		launchEvent(evt, erreurs, warnings);
-		Assert.assertEquals(0, erreurs.size());
-		Assert.assertEquals(0, warnings.size());
+		Assert.assertFalse(erreurs.hasErreurs());
+		Assert.assertFalse(warnings.hasWarnings());
 	}
 
 	protected void assertErreurs(EvenementCivilInterne evt, List<String> messagesErreurs) throws Exception {
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector erreurs = buildMessageCollector();
+		final MessageCollector warnings = buildMessageCollector();
 		try {
 			launchEvent(evt, erreurs, warnings);
 		}
 		catch (EvenementCivilException e) {
-			erreurs.add(new EvenementCivilExterneErreur(e));
+			erreurs.addErreur(e);
 		}
 
-		Assert.assertEquals(messagesErreurs.size(), erreurs.size());
-		Assert.assertEquals(0, warnings.size());
+		Assert.assertEquals(messagesErreurs.size(), erreurs.getErreurs().size());
+		Assert.assertFalse(warnings.hasWarnings());
 
 		for (int i = 0 ; i < messagesErreurs.size() ; ++ i) {
 			final String expected = messagesErreurs.get(i);
-			final EvenementCivilExterneErreur erreurTrouvee = erreurs.get(i);
+			final EvenementCivilErreur erreurTrouvee = erreurs.getErreurs().get(i);
 			Assert.assertEquals("Index " + i, expected, erreurTrouvee.getMessage());
 		}
 	}

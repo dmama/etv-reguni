@@ -11,11 +11,12 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -34,7 +35,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class ArriveePrincipale extends Arrivee {
@@ -129,24 +129,24 @@ public class ArriveePrincipale extends Arrivee {
 		return nouvelleCommune;
 	}
 
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 
 		if (nouvelleCommune == null) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
+			erreurs.addErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)");
 		}
 
 		if (nouvelleAdresse == null) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle adresse principale de l'individu est vide"));
+			erreurs.addErreur("La nouvelle adresse principale de l'individu est vide");
 		}
 
 		verifierMouvementIndividu(this, false, erreurs, warnings);
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		checkCompleteness(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
+		if (erreurs.hasErreurs()) {
 			return;
 		}
 
@@ -163,12 +163,12 @@ public class ArriveePrincipale extends Arrivee {
 			if (habitant == null) {
 				final String message = "L'individu est inconnu dans registre fiscal mais possédait déjà une adresse dans le " +
 						"registre civil avant son arrivée (incohérence entre les deux registres)";
-				erreurs.add(new EvenementCivilExterneErreur(message));
+				erreurs.addErreur(message);
 			}
 		}
 	}
 
-	private void validateForPrincipal(List<EvenementCivilExterneErreur> erreurs) {
+	private void validateForPrincipal(EvenementCivilErreurCollector erreurs) {
 		final MotifFor motifFor = getMotifOuvertureFor();
 		if (motifFor == MotifFor.ARRIVEE_HC || motifFor == MotifFor.ARRIVEE_HS) {
 			// Si le motif d'ouverture du for est arrivee HS ou HC, alors l'eventuel for principal actuel ne doit pas être vaudois
@@ -181,32 +181,30 @@ public class ArriveePrincipale extends Arrivee {
 				if (rapportMenage == null) {
 					final ForFiscalPrincipal forFP = pp.getForFiscalPrincipalAt(getDate());
 					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						final String msg;
-						msg = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déjà un for principal vaudois", pp.getNumero());
-						erreurs.add(new EvenementCivilExterneErreur(msg));
+						erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déjà un for principal vaudois", pp.getNumero()));
 					}
 				}
 			}
 		}
 	}
 
-	private void validateArriveeAdressePrincipale(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	private void validateArriveeAdressePrincipale(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 
 		/*
 		 * La date de début de la nouvelle adresse principale de l’individu est antérieure ou identique à la date de l'ancienne.
 		 */
 		if (ancienneAdresse != null && ancienneAdresse.getDateDebut() != null && getDate().isBeforeOrEqual(ancienneAdresse.getDateDebut())) {
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée principale est antérieure à la date de début de l'ancienne adresse"));
+			erreurs.addErreur("La date d'arrivée principale est antérieure à la date de début de l'ancienne adresse");
 		}
 		if (ancienneAdresse != null && (ancienneAdresse.getDateFin() == null || getDate().isBeforeOrEqual(ancienneAdresse.getDateFin())) ){
-			erreurs.add(new EvenementCivilExterneErreur("La date d'arrivée principale est antérieure à la date de fin de l'ancienne adresse"));
+			erreurs.addErreur("La date d'arrivée principale est antérieure à la date de fin de l'ancienne adresse");
 		}
 
 		/*
 		 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
 		 */
 		if (!isDansLeCanton(nouvelleCommune)) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune principale est en dehors du canton"));
+			erreurs.addErreur("La nouvelle commune principale est en dehors du canton");
 		}
 
 		/*
@@ -221,8 +219,7 @@ public class ArriveePrincipale extends Arrivee {
 		 * nécessaire.
 		 */
 		if (nouvelleCommune.getNoOFSEtendu() == NO_OFS_FRACTION_SENTIER) {
-			warnings.add(new EvenementCivilExterneErreur("arrivée dans la fraction de commune du Sentier: "
-					+ "veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
+			warnings.addWarning("arrivée dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 		}
 	}
 
@@ -263,7 +260,7 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	@Override
-	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Le for fiscal principal reste inchangé en cas d'arrivée en résidence principale d'un individu mineur.
 
@@ -324,7 +321,7 @@ public class ArriveePrincipale extends Arrivee {
 			if (modeImposition != null) {
 				if (motifOuverture == null) {
 					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.add(new EvenementCivilExterneErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
+					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal");
 				}
 				if (forFiscal == null) {
 					Audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + ']');
@@ -339,7 +336,7 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	@Override
-	protected void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		/*
 		 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire.
 		 */
@@ -363,7 +360,7 @@ public class ArriveePrincipale extends Arrivee {
 	 * @param warnings liste des erreurs à peupler en cas de problème
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de souci
 	 */
-	private void createOrUpdateForFiscalPrincipalOnCouple(PersonnePhysique arrivant, MenageCommun menageCommun, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	private void createOrUpdateForFiscalPrincipalOnCouple(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		Assert.notNull(menageCommun);
 
@@ -445,7 +442,7 @@ public class ArriveePrincipale extends Arrivee {
 			if (modeImposition != null) {
 				if (motifOuverture == null) {
 					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.add(new EvenementCivilExterneErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
+					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal");
 				}
 				if (ffpMenage == null) {
 					Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');

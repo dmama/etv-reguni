@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -46,11 +47,11 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		}
 
 		@Override
-		protected void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+		protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		}
 
 		@Override
-		public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+		public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 			return null;
 		}
 	}
@@ -161,11 +162,11 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		assertEquals(ModeImposition.SOURCE, forLausanne.getModeImposition());
 	}
 
-	private static void assertContent(List<String> msgs, List<EvenementCivilExterneErreur> erreurs) {
+	private static void assertContent(List<String> msgs, List<? extends EvenementCivilErreur> erreurs) {
 		assertEquals(msgs.size(), erreurs.size());
 		for (int i = 0 ; i < msgs.size() ; ++ i) {
 			final String expected = msgs.get(i);
-			final EvenementCivilExterneErreur erreur = erreurs.get(i);
+			final EvenementCivilErreur erreur = erreurs.get(i);
 			assertNotNull(expected);
 			assertNotNull(erreur);
 			assertEquals(expected, erreur.getMessage());
@@ -175,49 +176,44 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateCommon() throws EvenementCivilException {
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = new MessageCollector();
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, null);
 
 		//test OK
 		final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1),356, context);
-		even.validate(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
+		even.validate(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
 
 		//test KO date null
 		final EvenementCivilInterne evenDateNull = new DummyEvenementCivilInterne(individu, null, null, 356, context);
-		evenDateNull.validate(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		assertContent(Arrays.asList("L'événement n'est pas daté"), erreurs);
-		erreurs.clear();
-		warnings.clear();
+		evenDateNull.validate(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		assertContent(Arrays.asList("L'événement n'est pas daté"), collector.getErreurs());
+		collector.clear();
 
 		//test KO date future
 		final EvenementCivilInterne evenDateFuture = new DummyEvenementCivilInterne(individu, null, RegDate.get().addYears(2), 356, context);
-		evenDateFuture.validate(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		assertContent(Arrays.asList("La date de l'événement est dans le futur"), erreurs);
-		erreurs.clear();
-		warnings.clear();
+		evenDateFuture.validate(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		assertContent(Arrays.asList("La date de l'événement est dans le futur"), collector.getErreurs());
+		collector.clear();
 
 		//test KO numéro OFS null
 		final EvenementCivilInterne evenOFSNull = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), null, context);
-		evenOFSNull.validate(erreurs, warnings);
-		assertFalse(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		assertContent(Arrays.asList("La commune d'annonce n'est pas renseignée"), erreurs);
-		erreurs.clear();
-		warnings.clear();
+		evenOFSNull.validate(collector, collector);
+		assertTrue(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		assertContent(Arrays.asList("La commune d'annonce n'est pas renseignée"), collector.getErreurs());
+		collector.clear();
 
 		//test OK numéro OFS commune du sentier
 		final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 8000, context);
-		evenOFSSentier.validate(erreurs, warnings);
-		assertTrue(erreurs.isEmpty());
-		assertTrue(warnings.isEmpty());
-		erreurs.clear();
-		warnings.clear();
+		evenOFSSentier.validate(collector, collector);
+		assertFalse(collector.hasErreurs());
+		assertFalse(collector.hasWarnings());
+		collector.clear();
 	}
 }

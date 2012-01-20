@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.mariage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -68,15 +65,13 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateFictive = RegDate.get(2008, 1, 1);
 		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_CELIBATAIRE, dateFictive);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", collector.getErreurs());
 		
 		boolean errorFound = false;
 		try {
-			annulation.handle(warnings);
+			annulation.handle(collector);
 		}
 		catch (Exception ex) {
 			errorFound = true;
@@ -93,13 +88,11 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
 		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE_SEUL, dateMariage);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", collector.getErreurs());
 
-		annulation.handle(warnings);
+		annulation.handle(collector);
 		
 		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
 		assertNotNull("Le tiers n'as pas été trouvé", pierre);
@@ -139,13 +132,11 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
 		final AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE, NO_INDIVIDU_MARIE_CONJOINT, dateMariage);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de mariage", collector.getErreurs());
 
-		annulation.handle(warnings);
+		annulation.handle(collector);
 
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
 		assertNotNull("Le tiers n'as pas été trouvé", momo);

@@ -8,11 +8,12 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Adapter pour l'annulation de mariage.
@@ -50,19 +50,19 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Cas d'annulation de mariage
 		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
 
 		final EtatCivil ec = serviceCivil.getEtatCivilActif(getNoIndividu(), getDate());
 		if (EtatCivilHelper.estMarieOuPacse(ec)) {
-			erreurs.add(new EvenementCivilExterneErreur("L'individu est toujours marié ou pacsé dans le civil"));
+			erreurs.addErreur("L'individu est toujours marié ou pacsé dans le civil");
 		}
 	}
 
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
 		final PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
 
@@ -112,13 +112,13 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	 * @param date la date de mariage
 	 * @param warnings la liste de warnings
 	 */
-	private void checkForsAnnulesApres(PersonnePhysique pp, RegDate date, List<EvenementCivilExterneErreur> warnings) {
+	private void checkForsAnnulesApres(PersonnePhysique pp, RegDate date, EvenementCivilWarningCollector warnings) {
 		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxOuvertsApres(date);
 		final int nombreFors = forsFiscaux.size();
 		if (nombreFors > 1 || (nombreFors == 1 && !isAnnuleEtOuvert(forsFiscaux.get(0)))) {
 			String message = MessageFormat.format("Le tiers n° {0} possède au moins un for fiscal principal après la date de mariage ({1})",
 					FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
-			warnings.add(new EvenementCivilExterneErreur(message, TypeEvenementErreur.WARNING));
+			warnings.addWarning(message);
 		}
 	}
 

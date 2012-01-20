@@ -17,20 +17,15 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sV8aMGzmEdy3RbcXGfSeBw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sV8aMGzmEdy3RbcXGfSeBw"
+ * Erreur associée à un événement civil en provenance de RegPP
  */
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ERREUR")
-public class EvenementCivilExterneErreur extends HibernateEntity {
+public class EvenementCivilExterneErreur extends HibernateEntity implements EvenementCivilErreur {
 
 	private static final long serialVersionUID = -1077312693852919409L;
 
@@ -65,20 +60,8 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		validateMessage();
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_trepwGzmEdy3RbcXGfSeBw"
-	 */
 	private Long id;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xTqRYGzmEdy3RbcXGfSeBw"
-	 */
 	private String message;
 
 	private String callstack;
@@ -91,12 +74,6 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		return id;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the id
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_trepwGzmEdy3RbcXGfSeBw?GETTER"
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
@@ -105,24 +82,13 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theId the id to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_trepwGzmEdy3RbcXGfSeBw?SETTER"
-	 */
 	public void setId(Long theId) {
 		// begin-user-code
 		id = theId;
 		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the message
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xTqRYGzmEdy3RbcXGfSeBw?GETTER"
-	 */
+	@Override
 	@Column(name = "MESSAGE", length = LengthConstants.EVTCIVILERREUR_MESSAGE)
 	public String getMessage() {
 		// begin-user-code
@@ -130,12 +96,6 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theMessage the message to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xTqRYGzmEdy3RbcXGfSeBw?SETTER"
-	 */
 	public void setMessage(String theMessage) {
 		// begin-user-code
 		message = theMessage;
@@ -143,6 +103,7 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		// end-user-code
 	}
 
+	@Override
 	@Column(name = "CALLSTACK", length = LengthConstants.MAXLEN)
 	public String getCallstack() {
 		return callstack;
@@ -157,6 +118,7 @@ public class EvenementCivilExterneErreur extends HibernateEntity {
 		}
 	}
 
+	@Override
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.EVTCIVILERREUR_TYPE)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementErreurUserType")
 	public TypeEvenementErreur getType() {

@@ -1,21 +1,19 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.nationalite;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInterneTest {
@@ -59,11 +57,9 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		remiseBlancFinNationalite.validate(erreurs, warnings);
-		assertTrue("La mise à blanc de la date de fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
+		final MessageCollector collector = buildMessageCollector();
+		remiseBlancFinNationalite.validate(collector, collector);
+		assertTrue("La mise à blanc de la date de fin de nationalité suisse devrait être traitée manuellement", collector.getErreurs().size() == 1);
 	}
 
 	@Test
@@ -75,11 +71,9 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		RemiseBlancDateFinNationalite remiseBlancFinNationalite = createRemiseBlancDateFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		remiseBlancFinNationalite.validate(erreurs, warnings);
-		assertTrue("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		remiseBlancFinNationalite.validate(collector, collector);
+		assertFalse("La mise à blanc de la date de fin de nationalité non suisse devrait être ignorée", collector.hasErreurs());
 	}
 
 	private RemiseBlancDateFinNationalite createRemiseBlancDateFinNationaliteSuisse(Individu individu, RegDate date) {

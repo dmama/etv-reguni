@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -11,9 +10,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -39,10 +39,10 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private static class ErrorFoundException extends Exception {
 		public final ErrorLocation location;
-		public final List<EvenementCivilExterneErreur> erreurs;
-		public final List<EvenementCivilExterneErreur> warnings;
+		public final List<? extends EvenementCivilErreur> erreurs;
+		public final List<? extends EvenementCivilErreur> warnings;
 
-		private ErrorFoundException(ErrorLocation location, List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+		private ErrorFoundException(ErrorLocation location, List<? extends EvenementCivilErreur> erreurs, List<? extends EvenementCivilErreur> warnings) {
 			this.location = location;
 			this.erreurs = erreurs;
 			this.warnings = warnings;
@@ -63,18 +63,16 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * @return la liste des warnings reçus
 	 * @throws ErrorFoundException si des erreurs ont été levées dans la méthode validate du handler
 	 */
-	private List<EvenementCivilExterneErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
+	private List<? extends EvenementCivilErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
 
-		final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		evt.validate(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
-			throw new ErrorFoundException(ErrorLocation.VALIDATE, erreurs, warnings);
+		final MessageCollector collector = buildMessageCollector();
+		evt.validate(collector, collector);
+		if (collector.hasErreurs()) {
+			throw new ErrorFoundException(ErrorLocation.VALIDATE, collector.getErreurs(), collector.getWarnings());
 		}
 
-		evt.handle(warnings);
-		return warnings;
+		evt.handle(collector);
+		return collector.getWarnings();
 	}
 
 	@Test
@@ -102,7 +100,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que la personne physique n'a toujours pas de for
@@ -139,7 +137,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que la personne physique n'a toujours pas de for
@@ -218,7 +216,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -267,7 +265,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -369,7 +367,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -425,7 +423,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<EvenementCivilExterneErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for

@@ -1,17 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -28,7 +26,7 @@ public class CorrectionAdresse extends ModificationAdresseBase {
 	}
 
 	@Override
-	protected void doHandle(PersonnePhysique pp, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	protected void doHandle(PersonnePhysique pp, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// [UNIREG-1892] on ignore la date de l'événement et on ne prend en compte que
 		// la date de traitement par rapport au for actif sur la personne

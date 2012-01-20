@@ -1,18 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.nationalite;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
@@ -43,11 +41,9 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		FinNationalite finNationalite = createValidFinNationaliteSuisse(individu, DATE_FIN_NATIONALITE);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		finNationalite.validate(erreurs, warnings);
-		assertTrue("La fin de nationalité suisse devrait être traitée manuellement", erreurs.size() == 1);
+		final MessageCollector collector = buildMessageCollector();
+		finNationalite.validate(collector, collector);
+		assertTrue("La fin de nationalité suisse devrait être traitée manuellement", collector.getErreurs().size() == 1);
 	}
 
 	@Test
@@ -59,11 +55,9 @@ public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, date(2008, 12, 31));
 		FinNationalite finNationalite = createValidFinNationaliteNonSuisse(individu, DATE_FIN_NATIONALITE);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-		
-		finNationalite.validate(erreurs, warnings);
-		assertTrue("La fin de nationalité non suisse devrait être ignorée", erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		finNationalite.validate(collector, collector);
+		assertFalse("La fin de nationalité non suisse devrait être ignorée", collector.hasErreurs());
 	}
 
 	private FinNationalite createValidFinNationaliteSuisse(Individu individu, RegDate dateFinNationalite) {

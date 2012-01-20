@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -24,6 +21,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
@@ -92,18 +90,14 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
-
-		annulationNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationNationalite.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", collector.getErreurs());
+		annulationNationalite.handle(collector);
 
 		 // Test de récupération du Tiers
 		PersonnePhysique julie = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
-		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)",
-				julie);
+		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", julie);
 
 		// Vérification des fors fiscaux
 		assertNotNull("Les for fiscaux de Julie ont disparus",
@@ -120,14 +114,10 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		SuppressionNationalite annulationNationalite = createValidAnnulationNationatieNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
-				erreurs);
-
-		annulationNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationNationalite.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de l'annulation.", collector.hasErreurs());
+		annulationNationalite.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -151,14 +141,10 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(marieSeul, DATE_OBTENTION_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
-				erreurs);
-
-		annulationNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationNationalite.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de l'annulation.", collector.hasErreurs());
+		annulationNationalite.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique pierre = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
@@ -188,12 +174,9 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		// Vérification du for principal du tiers MenageCommun
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",
-				forCommun);
-		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)",
-				forCommun.getDateFin());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)",
-				forCommun.getMotifFermeture());
+		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
+		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
 	}
 
 	@Test
@@ -204,27 +187,20 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2007, 12, 31));
 		SuppressionNationalite annulationNationalite = createValidAnnulationNationaliteSuisse(marieADeux, DATE_OBTENTION_NATIONALITE);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationNationalite.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
-				erreurs);
-
-		annulationNationalite.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationNationalite.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de l'annulation.", collector.hasErreurs());
+		annulationNationalite.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE);
-		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)",
-				momo);
+		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", momo);
 
 		// Vérification des fors fiscaux
-		assertNull("Momo ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse",
-				momo.getForFiscalPrincipalAt(null));
+		assertNull("Momo ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				assertNotNull("Un for fiscal principal non fermé a été trouvé",
-						forFiscal.getDateFin());
+				assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		// Test de récupération du Conjoint
@@ -232,12 +208,10 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", bea);
 
 		// Vérification des fors fiscaux
-		assertNull("Béa ne doit toujours pas avoir de for principal actif après  l'obtention de nationalité suisse",
-				bea.getForFiscalPrincipalAt(null));
+		assertNull("Béa ne doit toujours pas avoir de for principal actif après  l'obtention de nationalité suisse", bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				assertNotNull("Un for fiscal principal non fermé a été trouvé",
-						forFiscal.getDateFin());
+				assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		// Vérification de la présence d'un tiers MenageCommun
@@ -253,12 +227,9 @@ public class SuppressionNationaliteTest extends AbstractEvenementCivilInterneTes
 
 		// Vérification du for principal du tiers MenageCommun
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",
-				forCommun);
-		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)",
-				forCommun.getDateFin());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)",
-				forCommun.getMotifFermeture());
+		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
+		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
 	}
 
 	private SuppressionNationalite createValidAnnulationNationaliteSuisse(Individu individu, RegDate dateObtentionNationalite) {

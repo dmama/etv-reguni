@@ -1,15 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.deces;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -83,13 +80,11 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008,12,31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				annulation.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-				annulation.handle(warnings);
+				annulation.handle(collector);
 				return null;
 			}
 		});
@@ -164,13 +159,11 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				annulation.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-				annulation.handle(warnings);
+				annulation.handle(collector);
 				return null;
 			}
 		});
@@ -273,13 +266,11 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
 				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				annulation.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", erreurs);
-
-				annulation.handle(warnings);
+				annulation.handle(collector);
 				return null;
 			}
 		});

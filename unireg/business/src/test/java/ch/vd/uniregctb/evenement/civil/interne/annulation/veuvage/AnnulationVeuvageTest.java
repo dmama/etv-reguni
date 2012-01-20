@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.veuvage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -84,13 +81,10 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		AnnulationVeuvage annulation = createValidAnnulationVeuvage(veuf);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulation.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de veuvage", erreurs);
-
-		annulation.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de veuvage", collector.getErreurs());
+		annulation.handle(collector);
 
 		PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
 		assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", andre);
@@ -140,11 +134,9 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 		Individu fauxVeuf = serviceCivil.getIndividu(NO_INDIVIDU_NON_VEUF, date(2008, 12, 31));
 		AnnulationVeuvage annulation = createValidAnnulationVeuvage(fauxVeuf);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulation.validate(erreurs, warnings);
-		assertEquals("Une erreur aurait dû se produire lors du validate de l'annulation.", 1, erreurs.size());
+		final MessageCollector collector = buildMessageCollector();
+		annulation.validate(collector, collector);
+		assertEquals("Une erreur aurait dû se produire lors du validate de l'annulation.", 1, collector.getErreurs().size());
 	}
 
 	private AnnulationVeuvage createValidAnnulationVeuvage(Individu individu) {

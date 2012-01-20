@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -27,6 +24,7 @@ import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
@@ -119,11 +117,9 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermis(celibataire, DATE_OBTENTION_PERMIS);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulationPermis.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de l'annulation.", collector.hasErreurs());
 	}
 
 	@Test
@@ -134,13 +130,10 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(celibataire, DATE_OBTENTION_PERMIS);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", erreurs);
-
-		annulationPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationPermis.validate(collector, collector);
+		assertFalse("Une erreur est survenue lors du validate de l'annulation.", collector.hasErreurs());
+		annulationPermis.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique julie  = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_CELIBATAIRE);
@@ -164,14 +157,10 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermisNonC(marieSeul, DATE_OBTENTION_PERMIS);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
-				erreurs);
-
-		annulationPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationPermis.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", collector.getErreurs());
+		annulationPermis.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique andre = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_MARIE_SEUL);
@@ -201,12 +190,9 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 
 		// Vérification du for principal du tiers MenageCommun
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",
-				forCommun);
-		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)",
-				forCommun.getDateFin());
-		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)",
-				forCommun.getMotifFermeture());
+		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)", forCommun.getDateFin());
+		assertNull("Le for fiscal principal précédent devrait être rouvert (motif fermeture null)", forCommun.getMotifFermeture());
 	}
 
 	@Test
@@ -217,14 +203,10 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2008, 12, 31));
 		AnnulationPermis annulationPermis = createValidAnnulationPermis(marie, DATE_OBTENTION_PERMIS);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationPermis.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation.",
-				erreurs);
-
-		annulationPermis.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationPermis.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation.", collector.getErreurs());
+		annulationPermis.handle(collector);
 
 		// Test de récupération du Tiers
 		PersonnePhysique roger = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_MARIE);

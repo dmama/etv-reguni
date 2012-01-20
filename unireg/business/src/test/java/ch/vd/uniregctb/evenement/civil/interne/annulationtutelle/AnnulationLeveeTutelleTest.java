@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationtutelle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -12,8 +10,8 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -80,13 +78,10 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, date(2008, 12, 31));
 		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationLeveeTutelle.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);
-
-		annulationLeveeTutelle.handle(warnings);
+		final MessageCollector collector = buildMessageCollector();
+		annulationLeveeTutelle.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", collector.getErreurs());
+		annulationLeveeTutelle.handle(collector);
 
 		// Récupération du tiers pupille
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
@@ -120,15 +115,13 @@ public class AnnulationLeveeTutelleTest extends AbstractEvenementCivilInterneTes
 		Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_ERREUR, date(2008, 12, 31));
 		AnnulationLeveeTutelle annulationLeveeTutelle = createAnnulationLeveeTutelle(pupille);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		annulationLeveeTutelle.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		annulationLeveeTutelle.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du validate de l'annulation de levée de tutelle.", collector.getErreurs());
 
 		boolean errorFound = false;
 		try {
-			annulationLeveeTutelle.handle(warnings);
+			annulationLeveeTutelle.handle(collector);
 		}
 		catch (EvenementCivilException eche) {
 			errorFound = true;

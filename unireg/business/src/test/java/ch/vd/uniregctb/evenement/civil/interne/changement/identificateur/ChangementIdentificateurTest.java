@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.identificateur;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -74,13 +73,11 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
 		ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, principalPPId, null, null, RegDate.get(), 4848, context);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs
+		chgtIdentificateur.handle(collector);
 
-		chgtIdentificateur.validate(erreurs, warnings);// Valider la conformite sexe et numavs
-		chgtIdentificateur.handle(warnings);
-
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du changement d' identificateur");
+		Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement d' identificateur");
 
 		// on cherche de nouveau
 		List<TiersIndexedData> l = searcher.search(criteria);

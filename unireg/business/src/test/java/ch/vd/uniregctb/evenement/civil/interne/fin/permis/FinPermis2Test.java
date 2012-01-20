@@ -1,22 +1,20 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.permis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
@@ -71,13 +69,11 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		finPermis.validate(collector, collector);
+		assertFalse("La fin de permis C devrait être ignorée", collector.hasErreurs());
 
-		finPermis.validate(erreurs, warnings);
-		assertTrue("La fin de permis C devrait être ignorée", erreurs.isEmpty());
-
-		finPermis.handle(warnings);
+		finPermis.handle(collector);
 	}
 
 	@Test
@@ -89,13 +85,11 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_2, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisC(individu, DATE_FIN_PERMIS );
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		finPermis.validate(collector, collector);
+		assertTrue("La fin de permis C devrait passer en traitement manuel", collector.getErreurs().size() == 1);
 
-		finPermis.validate(erreurs, warnings);
-		assertTrue("La fin de permis C devrait passer en traitement manuel", erreurs.size() == 1);
-
-		finPermis.handle(warnings);
+		finPermis.handle(collector);
 	}
 
 	@Test
@@ -107,13 +101,11 @@ public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 		Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_PERMIS_L, DATE_FIN_PERMIS);
 		FinPermis finPermis = createValidFinPermisNonC(individu, DATE_FIN_PERMIS );
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		finPermis.validate(collector, collector);
+		assertFalse("La fin de permis non C devrait être ignorée", collector.hasErreurs());
 
-		finPermis.validate(erreurs, warnings);
-		assertTrue("La fin de permis non C devrait être ignorée", erreurs.isEmpty());
-
-		finPermis.handle(warnings);
+		finPermis.handle(collector);
 
 	}
 

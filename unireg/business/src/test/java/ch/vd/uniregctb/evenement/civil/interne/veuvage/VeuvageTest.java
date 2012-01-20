@@ -1,16 +1,13 @@
 package ch.vd.uniregctb.evenement.civil.interne.veuvage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -113,14 +110,12 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		
 		Individu veufSuisse = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufSuisse);
-	
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-	
-		veuvage.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		veuvage.handle(warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
+
+		final MessageCollector collector = buildMessageCollector();
+		veuvage.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du traitement de veuvage", collector.getErreurs());
+		veuvage.handle(collector);
+		assertEmpty("Une erreur est survenue lors du traitement de veuvage", collector.getErreurs());
 		
 		/*
 		 * Test de récupération du Tiers
@@ -168,13 +163,11 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		Individu veufEtranger = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufEtranger);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-	
-		veuvage.validate(erreurs, warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
-		veuvage.handle(warnings);
-		assertEmpty("Une erreur est survenue lors du traitement de veuvage", erreurs);
+		final MessageCollector collector = buildMessageCollector();
+		veuvage.validate(collector, collector);
+		assertEmpty("Une erreur est survenue lors du traitement de veuvage", collector.getErreurs());
+		veuvage.handle(collector);
+		assertEmpty("Une erreur est survenue lors du traitement de veuvage", collector.getErreurs());
 		
 		/*
 		 * Test de récupération du Tiers
@@ -222,11 +215,9 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		Individu veufMarie = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_MARIE, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufMarie);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		veuvage.validate(erreurs, warnings);
-		assertTrue("Le validate doit échouer car l'individu est marié", !erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		veuvage.validate(collector, collector);
+		assertTrue("Le validate doit échouer car l'individu est marié", collector.hasErreurs());
 		
 	}
 	
@@ -239,11 +230,9 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		Individu veuf = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veuf);
 		
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-		veuvage.validate(erreurs, warnings);
-		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", !erreurs.isEmpty());
+		final MessageCollector collector = buildMessageCollector();
+		veuvage.validate(collector, collector);
+		assertTrue("Le validate doit échouer car l'individu possède un for principal ouvert après la date de veuvage.", collector.hasErreurs());
 	}
 	
 	protected Veuvage createVeuvage(Individu individu) {

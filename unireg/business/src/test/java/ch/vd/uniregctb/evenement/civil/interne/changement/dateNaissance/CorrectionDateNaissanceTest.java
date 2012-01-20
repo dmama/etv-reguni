@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.dateNaissance;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,8 +16,8 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -110,12 +109,10 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
 				final CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				correctionDateNaissane.validate(erreurs, warnings);
-				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
-				correctionDateNaissane.handle(warnings);
+				final MessageCollector collector = buildMessageCollector();
+				correctionDateNaissane.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
+				correctionDateNaissane.handle(collector);
 
 				return null;
 			}
@@ -172,12 +169,10 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, date(2008, 12, 31));
 					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
 
-					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-					correctionDateNaissane.validate(erreurs, warnings);
-					assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", erreurs);
-					correctionDateNaissane.handle(warnings);
+					final MessageCollector collector = buildMessageCollector();
+					correctionDateNaissane.validate(collector, collector);
+					assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
+					correctionDateNaissane.handle(collector);
 
 					return null;
 				}
@@ -262,12 +257,10 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 				final Individu individu = serviceCivil.getIndividu(noIndJean, date(2008, 12, 31));
 				CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-				correctionDateNaissane.validate(erreurs, warnings);
-				assertEmpty(erreurs);
-				correctionDateNaissane.handle(warnings);
+				final MessageCollector collector = buildMessageCollector();
+				correctionDateNaissane.validate(collector, collector);
+				assertEmpty(collector.getErreurs());
+				correctionDateNaissane.handle(collector);
 				return null;
 			}
 		});
@@ -329,12 +322,10 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 					final Individu individu = serviceCivil.getIndividu(noIndHuguette, date(2008, 12, 31));
 					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
-					final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-					final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
-
-					correctionDateNaissane.validate(erreurs, warnings);
-					assertEmpty(erreurs);
-					correctionDateNaissane.handle(warnings);
+					final MessageCollector collector = buildMessageCollector();
+					correctionDateNaissane.validate(collector, collector);
+					assertEmpty(collector.getErreurs());
+					correctionDateNaissane.handle(collector);
 					return null;
 				}
 			});

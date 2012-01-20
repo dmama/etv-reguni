@@ -6,11 +6,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class DepartPrincipal extends Depart {
 
@@ -49,11 +49,11 @@ public class DepartPrincipal extends Depart {
 		this.ancienneCommune = ancienneCommunePrincipale;
 	}
 
-	public void checkCompleteness(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) {
+	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 		Audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
 
 		if (getNouvelleAdressePrincipale() == null) {
-			warnings.add(new EvenementCivilExterneErreur("La nouvelle adresse principale de l'individu est vide", TypeEvenementErreur.WARNING));
+			warnings.addWarning("La nouvelle adresse principale de l'individu est vide");
 		}
 
 		verifierMouvementIndividu(this, false, erreurs, warnings);
@@ -61,23 +61,19 @@ public class DepartPrincipal extends Depart {
 		// Si le pays de destination est inconnu, on leve un warning
 		if (findMotifFermetureFor() == MotifFor.DEPART_HS) {
 			if (isPaysInconnu()) {
-				warnings.add(new EvenementCivilExterneErreur(
-						"Le nouveau pays n'a pas été trouvé : veuillez vérifier le motif de fermeture du for principal",
-						TypeEvenementErreur.WARNING));
+				warnings.addWarning("Le nouveau pays n'a pas été trouvé : veuillez vérifier le motif de fermeture du for principal");
 			}
 
 		} // Verification de la nouvelle commune principale en hors canton
 		else if (getNouvelleCommunePrincipale() == null) {
-			warnings.add(new EvenementCivilExterneErreur(
-					"La nouvelle commune principale n'a pas été trouvée : veuillez vérifier le motif de fermeture du for principal",
-					TypeEvenementErreur.WARNING));
+			warnings.addWarning("La nouvelle commune principale n'a pas été trouvée : veuillez vérifier le motif de fermeture du for principal");
 		}
 	}
 
 	@Override
-	public void validateSpecific(List<EvenementCivilExterneErreur> erreurs, List<EvenementCivilExterneErreur> warnings) throws EvenementCivilException {
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		checkCompleteness(erreurs, warnings);
-		if (!erreurs.isEmpty()) {
+		if (erreurs.hasErreurs()) {
 			return;
 		}
 
@@ -88,7 +84,7 @@ public class DepartPrincipal extends Depart {
 
 		// la nouvelle commune est toujours dans le canton de vaud
 		if (getNouvelleCommunePrincipale() != null && getNouvelleCommunePrincipale().isVaudoise()) {
-			erreurs.add(new EvenementCivilExterneErreur("La nouvelle commune est toujours dans le canton de Vaud"));
+			erreurs.addErreur("La nouvelle commune est toujours dans le canton de Vaud");
 		}
 	}
 

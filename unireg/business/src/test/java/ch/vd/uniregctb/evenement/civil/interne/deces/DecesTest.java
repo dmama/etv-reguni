@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.deces;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -15,8 +13,8 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
@@ -260,13 +258,11 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, date(2008, 12, 31));
 		final Deces deces = createValidDeces(celibataire, null, DATE_DECES);
 
-		List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-		List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+		final MessageCollector collector = buildMessageCollector();
+		deces.validate(collector, collector);
+		deces.handle(collector);
 
-		deces.validate(erreurs, warnings);
-		deces.handle(warnings);
-
-		assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
+		assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
 
 		{
 			final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
@@ -306,13 +302,11 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
 				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				deces.validate(collector, collector);
+				deces.handle(collector);
 
-				deces.validate(erreurs, warnings);
-				deces.handle(warnings);
-
-				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
+				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
 				return null;
 			}
 		});
@@ -402,13 +396,11 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31), AttributeIndividu.ADRESSES);
 				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				deces.validate(collector, collector);
+				deces.handle(collector);
 
-				deces.validate(erreurs, warnings);
-				deces.handle(warnings);
-
-				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
+				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
 				return null;
 			}
 		});
@@ -533,13 +525,11 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
 				final Deces deces = createValidDeces(ind, null, dateDeces);
 
-				final List<EvenementCivilExterneErreur> erreurs = new ArrayList<EvenementCivilExterneErreur>();
-				final List<EvenementCivilExterneErreur> warnings = new ArrayList<EvenementCivilExterneErreur>();
+				final MessageCollector collector = buildMessageCollector();
+				deces.validate(collector, collector);
+				deces.handle(collector);
 
-				deces.validate(erreurs, warnings);
-				deces.handle(warnings);
-
-				assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
+				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
 				return null;
 			}
 		});
