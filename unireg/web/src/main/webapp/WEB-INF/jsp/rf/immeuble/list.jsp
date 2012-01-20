@@ -35,7 +35,9 @@
 				<display:column titleKey="label.ref.estimation.fiscale" property="referenceEstimationFiscale"/>
 				<display:column titleKey="label.date.derniere.mutation" property="dateDernierMutation"/>
 				<display:column titleKey="label.type.derniere.mutation">
-					<fmt:message key="option.rf.type.mutation.${immeuble.derniereMutation}" />
+					<c:if test="${immeuble.derniereMutation != null}">
+						<fmt:message key="option.rf.type.mutation.${immeuble.derniereMutation}" />
+					</c:if>
 				</display:column>
 				<display:column titleKey="label.date.debut" property="dateDebut"/>
 				<display:column titleKey="label.date.fin" property="dateFin"/>
