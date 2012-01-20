@@ -169,19 +169,19 @@ public class LoadDataSet {
 			final Date time = cal.getTime();
 
 			// does not repeat the year-month-day part of label when looping within the same day
-			final String format;
+			final TimeKey timeKey;
 			if (previousTime != null && isSameDay(previousTime, time)) {
-				format = shortDateFormat.format(time);
+				timeKey = new TimeKey(time, shortDateFormat.format(time));
 			}
 			else {
-				format = fullDateFormat.format(time);
+				timeKey = new TimeKey(time, fullDateFormat.format(time));
 			}
 			previousTime = time;
 
 			// fill data for each criterion
 			for (Label label : criterionLabels) {
 				final MutableInt value = data.get(new Cell(label.criterionValue, time));
-				dataset.addValue(value == null ? 0 : value.intValue(), label.toString(), format);
+				dataset.addValue(value == null ? 0 : value.intValue(), label.toString(), timeKey);
 			}
 		}
 	}
