@@ -18,7 +18,10 @@
 	<tiles:put name="body">
 		<fieldset>
 			<legend><span><fmt:message key="label.liste.immeubles" /></span></legend>
-			<display:table name="${immeubles}" id="immeuble" class="display" pagesize="10">
+
+			<div id="immeubleLoadingSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>
+
+			<display:table name="${immeubles}" id="immeuble" class="display" pagesize="10" requestURI="/rf/immeuble/list.do">
 				<display:column titleKey="label.commune">
 					<c:out value="${immeuble.noCommune}"/> <c:out value="${immeuble.nomCommune}"/>
 				</display:column>
@@ -47,6 +50,23 @@
 				</display:column>
 			</display:table>
 		</fieldset>
+
+		<script>
+			$(function() {
+
+				// on change le comportement des liens de pagination : au lieu de charger une nouvelle page, on lance
+				// une requête ajax pour charger la nouvelle page dans l onglet courant.
+				$('#immeublesDiv td.pagelinks a').each(function(a) {
+					//alert($(this).attr('href'));
+					$(this).click(function() {
+						$('#immeubleLoadingSpinner').show();
+						$('#immeublesDiv').load($(this).attr('href'));
+						return false;
+					});
+				});
+			});
+		</script>
+
 	</tiles:put>
 
 </tiles:insert>
