@@ -74,6 +74,9 @@ public enum TypePermis {
 		if (StringUtils.isBlank(evdPermisCode)) {
 			return null;
 		}
+		if (evdPermisCode.length() < 4) {
+			throw new IllegalArgumentException("Le type de permis [" + evdPermisCode + "] est inconnu.");
+		}
 		// voir spécification RCPers "TEC-CatalogueOfficielCaracteres.doc"
 		final int code = Integer.parseInt(evdPermisCode.substring(0,4));
 		if (100 >= code && code < 200) {

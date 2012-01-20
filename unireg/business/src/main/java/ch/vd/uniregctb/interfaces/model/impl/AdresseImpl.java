@@ -58,7 +58,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.numero = target.getNumero();
 		this.numeroAppartement = target.getNumeroAppartement();
-		this.numeroRue = target.getNumeroTechniqueRue();
+		this.numeroRue = initNoRue(target.getNumeroTechniqueRue());
 		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
@@ -78,6 +78,15 @@ public class AdresseImpl implements Adresse, Serializable {
 			// [SIFISC-3460] la valeur minimale admise pour les EGID et les EWID est 1 (on teste aussi les valeurs maximales, tant qu'on y est)
 			this.egid = string2int(target.getEgid(), 1, 999999999);
 			this.ewid = string2int(target.getEwid(), 1, 999);
+		}
+	}
+
+	private static Integer initNoRue(Integer numeroTechniqueRue) {
+		if (numeroTechniqueRue == null || numeroTechniqueRue == 0) {
+			return null;
+		}
+		else {
+			return numeroTechniqueRue;
 		}
 	}
 

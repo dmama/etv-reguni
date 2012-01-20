@@ -1640,19 +1640,23 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final List<PersonnePhysique> enfants = new ArrayList<PersonnePhysique>();
-		for (RelationVersIndividu rel : individu.getEnfants()) {
-			final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(rel.getNumeroAutreIndividu(), true);
-			if (enfant != null) {
-				enfants.add(enfant);
-			}
-		}
-		for (AdoptionReconnaissance adopt : individu.getAdoptionsReconnaissances()) {
-			final RegDate debutLien = RegDateHelper.maximum(adopt.getDateAdoption(), adopt.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-			final DateRange dureeLien = new DateRangeHelper.Range(debutLien, adopt.getDateDesaveu());
-			if (dureeLien.isValidAt(dateValidite)) {
-				final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(adopt.getAdopteReconnu().getNoTechnique(), true);
+		if (individu.getEnfants() != null) {
+			for (RelationVersIndividu rel : individu.getEnfants()) {
+				final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(rel.getNumeroAutreIndividu(), true);
 				if (enfant != null) {
 					enfants.add(enfant);
+				}
+			}
+		}
+		if (individu.getAdoptionsReconnaissances() != null) {
+			for (AdoptionReconnaissance adopt : individu.getAdoptionsReconnaissances()) {
+				final RegDate debutLien = RegDateHelper.maximum(adopt.getDateAdoption(), adopt.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+				final DateRange dureeLien = new DateRangeHelper.Range(debutLien, adopt.getDateDesaveu());
+				if (dureeLien.isValidAt(dateValidite)) {
+					final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(adopt.getAdopteReconnu().getNoTechnique(), true);
+					if (enfant != null) {
+						enfants.add(enfant);
+					}
 				}
 			}
 		}
@@ -1818,10 +1822,12 @@ public class TiersServiceImpl implements TiersService {
 
 		// enfants biologiques
 		final Collection<RelationVersIndividu> enfants = ind.getEnfants();
-		for (RelationVersIndividu enfant : enfants) {
-			RapportFiliation r = createRapportPourEnfant(personnePhysique, ind, enfant);
-			if (r != null) {
-				filiations.add(r);
+		if (enfants != null) {
+			for (RelationVersIndividu enfant : enfants) {
+				RapportFiliation r = createRapportPourEnfant(personnePhysique, ind, enfant);
+				if (r != null) {
+					filiations.add(r);
+				}
 			}
 		}
 

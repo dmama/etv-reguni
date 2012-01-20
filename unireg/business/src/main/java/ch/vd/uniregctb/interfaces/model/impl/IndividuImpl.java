@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -162,32 +161,31 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions, RegDate upTo) {
+		if (targetAdoptions == null || targetAdoptions.isEmpty()) {
+			return null;
+		}
 		final List<AdoptionReconnaissance> list = new ArrayList<AdoptionReconnaissance>();
-		if (targetAdoptions != null) {
-			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
-			for (Object o : targetAdoptions) {
-				final ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
-				final Date dateDebut = (a.getDateAdoption() == null ? a.getDateReconnaissance() : a.getDateAdoption());
-				if (isValidUpTo(dateDebut, upToJava)) {
-					list.add(AdoptionReconnaissanceImpl.get(a, upTo));
-				}
+		final Date upToJava = upTo == null ? null : upTo.asJavaDate();
+		for (Object o : targetAdoptions) {
+			final ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
+			final Date dateDebut = (a.getDateAdoption() == null ? a.getDateReconnaissance() : a.getDateAdoption());
+			if (isValidUpTo(dateDebut, upToJava)) {
+				list.add(AdoptionReconnaissanceImpl.get(a, upTo));
 			}
 		}
 		return list;
 	}
 
 	private static List<Origine> initOrigines(Collection<ch.vd.registre.civil.model.Origine> targetOrigines) {
+		if (targetOrigines == null || targetOrigines.isEmpty()) {
+			return null;
+		}
 		final List<Origine> list;
-		if (targetOrigines != null) {
-			final Set<Origine> set = new LinkedHashSet<Origine>();
-			for (ch.vd.registre.civil.model.Origine origine : targetOrigines) {
-				set.add(OrigineImpl.get(origine));
-			}
-			list = new ArrayList<Origine>(set);     // pour éliminer les doublons...
+		final Set<Origine> set = new LinkedHashSet<Origine>();
+		for (ch.vd.registre.civil.model.Origine origine : targetOrigines) {
+			set.add(OrigineImpl.get(origine));
 		}
-		else {
-			list = Collections.emptyList();
-		}
+		list = new ArrayList<Origine>(set);     // pour éliminer les doublons...
 		return list;
 	}
 
@@ -212,8 +210,14 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static List<RelationVersIndividu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere, RegDate upTo) {
+
+		if (pere == null && mere == null) {
+			return null;
+		}
+
 		final Individu m = IndividuImpl.get(mere, upTo);
 		final Individu p = IndividuImpl.get(pere, upTo);
+
 		final List<RelationVersIndividu> parents = new ArrayList<RelationVersIndividu>(2);
 		if (p != null) {
 			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), p.getDateNaissance(), p.getDateDeces()));
@@ -221,6 +225,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (m != null) {
 			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), m.getDateNaissance(), m.getDateDeces()));
 		}
+
 		return parents;
 	}
 
@@ -230,14 +235,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static List<RelationVersIndividu> initEnfants(Collection<?> targetEnfants, RegDate upTo) {
+		if (targetEnfants == null || targetEnfants.isEmpty()) {
+			return null;
+		}
 		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
-		if (targetEnfants != null) {
-			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
-			for (Object o : targetEnfants) {
-				final ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
-				if (isValidUpTo(i.getDateNaissance(), upToJava)) {
-					list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
-				}
+		final Date upToJava = upTo == null ? null : upTo.asJavaDate();
+		for (Object o : targetEnfants) {
+			final ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
+			if (isValidUpTo(i.getDateNaissance(), upToJava)) {
+				list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
 			}
 		}
 		return list;
@@ -295,7 +301,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 				}
 			}
 		}
-		return list;
+		return list.isEmpty() ? null : list;
 	}
 
 	@Override
@@ -304,14 +310,15 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static List<Nationalite> initNationalites(Collection<?> targetNationalites, RegDate upTo) {
+		if (targetNationalites == null || targetNationalites.isEmpty()) {
+			return null;
+		}
 		final List<Nationalite> list = new ArrayList<Nationalite>();
-		if (targetNationalites != null) {
-			final Date upToJava = upTo == null ? null : upTo.asJavaDate();
-			for (Object o : targetNationalites) {
-				ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
-				if (isValidUpTo(n.getDateDebutValidite(), upToJava)) {
-					list.add(NationaliteImpl.get(n));
-				}
+		final Date upToJava = upTo == null ? null : upTo.asJavaDate();
+		for (Object o : targetNationalites) {
+			ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
+			if (isValidUpTo(n.getDateDebutValidite(), upToJava)) {
+				list.add(NationaliteImpl.get(n));
 			}
 		}
 		return list;
