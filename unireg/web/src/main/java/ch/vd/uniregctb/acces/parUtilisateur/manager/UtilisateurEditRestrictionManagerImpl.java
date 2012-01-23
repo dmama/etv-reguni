@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.displaytag.pagination.PaginatedList;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;
@@ -102,21 +104,22 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws ServiceInfrastructureException, AdresseException {
-
+	public UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException {
 		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
 		final UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
 		utilisateurEditRestrictionView.setUtilisateur(utilisateurView);
 		final List<DroitAccesUtilisateurView> views = new ArrayList<DroitAccesUtilisateurView>();
-		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur);
+		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur, pagination);
 		for (DroitAcces droitAcces : restrictions) {
 			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
 			views.add(droitAccesView);
 		}
 		utilisateurEditRestrictionView.setRestrictions(views);
+		utilisateurEditRestrictionView.setSize(droitAccesDAO.getDroitAccesCount(noIndividuOperateur));
 		return utilisateurEditRestrictionView;
 
 	}
+
 
 
 	/**

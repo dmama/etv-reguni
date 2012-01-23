@@ -8,6 +8,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.DroitAccesException;
@@ -22,7 +23,7 @@ public interface UtilisateurEditRestrictionManager {
      * @throws ServiceInfrastructureException
      */
     @Transactional(readOnly = true)
-    public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws ServiceInfrastructureException, AdresseException;
+    public UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException;
 
 
     /**

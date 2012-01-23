@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.acces.parUtilisateur;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.manager.UtilisateurEditRestrictionMa
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
@@ -20,6 +22,7 @@ import ch.vd.uniregctb.security.SecurityCheck;
 
 @Controller
 public class UtilisateurEditRestrictionController {
+
 
     private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits";
     protected final Logger LOGGER = Logger.getLogger(UtilisateurEditRestrictionController.class);
@@ -32,8 +35,9 @@ public class UtilisateurEditRestrictionController {
 
     @RequestMapping(value = "/acces/restrictions-utilisateur.do", method = RequestMethod.GET)
     @SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR, Role.SEC_DOS_LEC}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-    public ModelAndView getRestrictionsUtilisateur(@RequestParam("noIndividuOperateur") Long noIndividuOperateur) throws Exception {
-        UtilisateurEditRestrictionView utilisateurEditRestrictionView = utilisateurEditRestrictionManager.get(noIndividuOperateur);
+    public ModelAndView getRestrictionsUtilisateur(HttpServletRequest request, @RequestParam("noIndividuOperateur") Long noIndividuOperateur) throws Exception {
+        	    final WebParamPagination pagination = new WebParamPagination(request, "restriction", 25, "id", true);
+	    UtilisateurEditRestrictionView utilisateurEditRestrictionView = utilisateurEditRestrictionManager.get(noIndividuOperateur, pagination);
         return new ModelAndView("acces/par-utilisateur/restrictions-utilisateur", "command", utilisateurEditRestrictionView);
     }
 

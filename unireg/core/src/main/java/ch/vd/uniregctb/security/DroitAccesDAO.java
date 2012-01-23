@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
 /**
@@ -27,6 +28,14 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	 * @return
 	 */
 	List<DroitAcces> getDroitsAcces(long noIndividuOperateur);
+
+	/**
+	 * Renvoie la liste des droits d'acces d'un utilisateur paginée
+	 *
+	 * @param noIndividuOperateur
+	 * @return
+	 */
+	List<DroitAcces> getDroitsAcces(long noIndividuOperateur, ParamPagination paramPagination);
 
 		/**
 	 * Renvoie la liste des ids des  droits d'acces d'un utilisateur
@@ -58,4 +67,6 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	 * @return les ids des contribuables sur lesquels des autorisations ou des restrictions sont actives actuellement.
 	 */
 	Set<Long> getContribuablesControles();
+
+	Integer getDroitAccesCount(long noIndividuOperateur);
 }

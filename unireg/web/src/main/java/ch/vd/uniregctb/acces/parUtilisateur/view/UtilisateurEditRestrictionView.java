@@ -10,6 +10,8 @@ public class UtilisateurEditRestrictionView {
 
 	private List<DroitAccesUtilisateurView> restrictions;
 
+	private Integer size;
+
 	public UtilisateurView getUtilisateur() {
 		return utilisateur;
 	}
@@ -26,4 +28,11 @@ public class UtilisateurEditRestrictionView {
 		this.restrictions = restrictions;
 	}
 
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
+	}
 }

@@ -81,7 +81,7 @@
 			</script>
 			<display:table
 					name="command.restrictions" id="restriction" pagesize="25"
-					requestURI="${url}"
+					requestURI="${url}" defaultsort="1" defaultorder="ascending" partialList="true" sort="external" size="command.size"
 					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:column sortable ="false" title="<input type='checkbox'  class='master' onclick='javascript:onClickMaster(this);' />">
 				<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
@@ -90,26 +90,26 @@
 					</c:if>
 				</authz:authorize>
 				</display:column>
-				<display:column sortable ="true" titleKey="label.type.restriction">
+				<display:column sortable ="false" titleKey="label.type.restriction">
 						<fmt:message key="option.type.droit.acces.${restriction.type}"  />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.numero.contribuable" >
+				<display:column sortable ="false" titleKey="label.numero.contribuable" >
 						<unireg:numCTB numero="${restriction.numeroCTB}" />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.prenom.nom">
+				<display:column sortable ="false" titleKey="label.prenom.nom">
 						<c:out value="${restriction.prenomNom}" />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.localite">
+				<display:column sortable ="false" titleKey="label.localite">
 						<c:out value="${restriction.localite}" />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.date.naissance">
+				<display:column sortable ="false" titleKey="label.date.naissance">
 						<unireg:date date="${restriction.dateNaissance}"></unireg:date>
 				</display:column>
-				<display:column sortable ="true" titleKey="label.lecture.seule">
+				<display:column sortable ="false" titleKey="label.lecture.seule">
 					<input type="checkbox" name="lectureSeule" value="True"   
 							<c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
 				</display:column>
-				<display:column style="action">
+				<display:column style="action" sortable ="false">
 					<unireg:consulterLog entityNature="DroitAcces"  entityId="${restriction.id}"/>
 				</display:column>
 				<display:setProperty name="paging.banner.all_items_found" value=""/>

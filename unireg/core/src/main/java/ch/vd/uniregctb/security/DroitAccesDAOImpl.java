@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.security;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -8,10 +9,13 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
 public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implements DroitAccesDAO {
@@ -44,10 +48,36 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAcces(long noIndividuOperateur) {
+		return getDroitsAcces(noIndividuOperateur, null);
+	}
+
+	@Override
+	public List<DroitAcces> getDroitsAcces(final long noIndividuOperateur, final ParamPagination paramPagination) {
 		Object[] criteria = {noIndividuOperateur};
-		String query = "from DroitAcces da where da.noIndividuOperateur = ? order by da.annulationDate desc, da.dateDebut desc";
-		List<DroitAcces> list = getHibernateTemplate().find(query, criteria);
+		final String query = "from DroitAcces da where da.noIndividuOperateur = ? order by da.annulationDate desc, da.dateDebut desc, da.id";
+		List<DroitAcces> list;
+		if (paramPagination == null) {
+			list = getHibernateTemplate().find(query, criteria);
+		} else {
+			list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DroitAcces>>() {
+				@Override
+				public List<DroitAcces> doInHibernate(Session session) throws HibernateException, SQLException {
+					Query q = session.createQuery(query);
+					q.setLong(0, noIndividuOperateur);
+					q.setMaxResults(paramPagination.getTaillePage());
+					q.setFirstResult((paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage());
+					return q.list();
+				}
+			});
+
+		}
 		return list;
+	}
+
+	@Override
+	public Integer getDroitAccesCount(long noIndividuOperateur) {
+		Object[] criteria = {noIndividuOperateur};
+		return DataAccessUtils.intResult(getHibernateTemplate().find("select count (*) from DroitAcces da where da.noIndividuOperateur = ?",criteria));
 	}
 
 	@Override
