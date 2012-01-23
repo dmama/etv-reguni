@@ -233,7 +233,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final AddressInformation courrierInfo0 = courrier0.getAddressInformation();
 		assertNotNull(courrierInfo0);
-		assertEquals(new Integer(0), courrierInfo0.getStreetId());
+		assertNull(courrierInfo0.getStreetId());
 		assertNull(courrierInfo0.getHouseNumber());
 		assertEquals(Integer.valueOf(283), courrierInfo0.getSwissZipCodeId());
 		assertEquals(Long.valueOf(1168), courrierInfo0.getSwissZipCode());
@@ -263,7 +263,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final AddressInformation represInfo0 = repres0.getAddressInformation();
 		assertNotNull(represInfo0);
-		assertEquals(new Integer(0), represInfo0.getStreetId());
+		assertNull(represInfo0.getStreetId());
 		assertNull(represInfo0.getHouseNumber());
 		assertEquals(Integer.valueOf(283), represInfo0.getSwissZipCodeId());
 		assertEquals("La Tuilière", represInfo0.getStreet());

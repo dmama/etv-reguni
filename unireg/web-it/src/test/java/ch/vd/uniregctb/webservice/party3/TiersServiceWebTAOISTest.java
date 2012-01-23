@@ -681,7 +681,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNull(info0.getPostOfficeBoxNumber());
 		assertNull(info0.getPostOfficeBoxText());
 		assertNull(info0.getDwellingNumber());
-		assertEquals(Integer.valueOf(0), info0.getStreetId());
+		assertNull(info0.getStreetId());
 		assertEquals(Integer.valueOf(175), info0.getSwissZipCodeId());
 
 		final Address addressCourrier1 = adressesCourrier.get(1);
