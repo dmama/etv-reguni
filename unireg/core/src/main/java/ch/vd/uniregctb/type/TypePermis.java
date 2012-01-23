@@ -74,50 +74,48 @@ public enum TypePermis {
 		if (StringUtils.isBlank(evdPermisCode)) {
 			return null;
 		}
-		if (evdPermisCode.length() < 4) {
-			throw new IllegalArgumentException("Le type de permis [" + evdPermisCode + "] est inconnu.");
-		}
-		// voir spécification RCPers "TEC-CatalogueOfficielCaracteres.doc"
-		final int code = Integer.parseInt(evdPermisCode.substring(0,4));
-		if (100 >= code && code < 200) {
+		// selon la documentation eCH-0006 (http://www.ech.ch/alfresco/guestDownload/attach/workspace/SpacesStore/55bbdceb-5696-4dbe-8b5c-e12ad073c49f/STAN_f_DEF_2005-11-02_eCH-0006%20Ausl%C3%A4nderkategorien.pdf),
+		// la catégorie de permis est une chaîne de caractères "XXYYZZ" découpée en trois groupes :
+		//   - XX : catégorie d'étranger (par exemple, permis L)
+		//   - YY : réglement en action (par exemple, accord UE/AELE)
+		//   - ZZ : précisions réservées à certaines catégories d'étranger
+		// Dès le 1er janvier 2013, tous les permis devront avec les deux premiers groupes renseignés, mais en attendant, certains permis
+		// n'ont que le premier groupe renseigné.
+
+		// voir aussi la spécification RCPers "TEC-CatalogueOfficielCaracteres.doc"
+
+		final int categorie = Integer.parseInt(evdPermisCode.substring(0, 2));
+		switch (categorie) {
+		case 1:
 			// permis A, pas d'équivalence
 			return null;
-		}
-		else if (200 >= code && code < 300) {
+		case 2:
 			// permis B
 			return ANNUEL;
-		}
-		else if (300 >= code && code < 500) {
+		case 3:
+		case 4:
 			// permis C
 			return ETABLISSEMENT;
-		}
-		else if (500 >= code && code < 600) {
+		case 5:
 			// permis F
 			return PROVISOIRE;
-		}
-		else if (600 >= code && code < 700) {
+		case 6:
 			// permis G
 			return FRONTALIER;
-		}
-		else if (700 >= code && code < 800) {
+		case 7:
 			// permis L
 			return COURTE_DUREE;
-		}
-		else if (800 >= code && code < 900) {
+		case 8:
 			// permis N
 			return REQUERANT_ASILE_AVANT_DECISION;
-		}
-		else if (900 >= code && code < 1000) {
+		case 9:
 			// permis S
 			return PERSONNE_A_PROTEGER;
-		}
-		else if (code == 1107) {
+		case 11:
 			return DIPLOMATE;
-		}
-		else if (code == 1208) {
+		case 12:
 			return FONCTIONNAIRE_INTERNATIONAL;
-		}
-		else {
+		default:
 			// hors-catégorie
 			return null;
 		}
