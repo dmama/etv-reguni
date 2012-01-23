@@ -62,11 +62,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
-public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
+public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 
 	//private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebTAOISTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceTAOISTest.xml";
 
 	private UserLogin login;
 
@@ -83,7 +83,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		}
 
 		login = new UserLogin();
-		login.setUserId("[UT] TiersServiceWebTAOISTest");
+		login.setUserId("[UT] PartyWebServiceTAOISTest");
 		login.setOid(22);
 	}
 

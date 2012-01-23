@@ -21,9 +21,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
 
-public abstract class AbstractTiersServiceWebTest extends WebitTest {
+public abstract class AbstractPartyWebServiceTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(AbstractTiersServiceWebTest.class);
+	private static final Logger LOGGER = Logger.getLogger(AbstractPartyWebServiceTest.class);
 
 	protected static PartyWebService service;
 

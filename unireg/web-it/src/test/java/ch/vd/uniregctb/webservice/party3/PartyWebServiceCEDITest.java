@@ -31,17 +31,17 @@ import static org.junit.Assert.assertTrue;
  * Test d'intégration des fonctions du web-service Tiers v2 utilisées par le CEDI.
  */
 @SuppressWarnings({"JavaDoc"})
-public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
+public class PartyWebServiceCEDITest extends AbstractPartyWebServiceTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(TiersServiceWebTest.class);
+	// private static final Logger LOGGER = Logger.getLogger(PartyWebServiceTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebCEDITest.xml";
+	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceCEDITest.xml";
 
 	private UserLogin login;
 
 	private static boolean alreadySetUp = false;
 
-	public TiersServiceWebCEDITest() throws Exception {
+	public PartyWebServiceCEDITest() throws Exception {
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class TiersServiceWebCEDITest extends AbstractTiersServiceWebTest {
 		}
 
 		login = new UserLogin();
-		login.setUserId("[UT] TiersServiceWebCEDITest");
+		login.setUserId("[UT] PartyWebServiceCEDITest");
 		login.setOid(22);
 	}
 

@@ -46,11 +46,11 @@ import static org.junit.Assert.assertTrue;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @SuppressWarnings({"JavaDoc"})
-public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
+public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 	// private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebSIPFTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceSIPFTest.xml";
 
 	private UserLogin login;
 
@@ -67,7 +67,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		}
 
 		login = new UserLogin();
-		login.setUserId("[UT] TiersServiceWebSIPFTest");
+		login.setUserId("[UT] PartyWebServiceSIPFTest");
 		login.setOid(22);
 	}
 

@@ -23,10 +23,10 @@ import static org.junit.Assert.assertTrue;
 /**
  * Voir la spécification "BesoinsContentieux.doc"
  */
-public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
+public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 
 	// Les données du fichier ont été extraites des tests unitaires AdresseServiceTest.testGetAdressesPoursuite*().
-	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebPoursuiteTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "PartyWebServicePoursuiteTest.xml";
 
 	private UserLogin login;
 
@@ -43,7 +43,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		}
 
 		login = new UserLogin();
-		login.setUserId("[UT] TiersServiceWebPoursuiteTest");
+		login.setUserId("[UT] PartyWebServicePoursuiteTest");
 		login.setOid(22);
 	}
 

@@ -83,11 +83,11 @@ import static org.junit.Assert.fail;
  * Test unitaire pour le web service de la recherche.
  */
 @SuppressWarnings({"JavaDoc"})
-public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
+public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(TiersServiceWebTest.class);
+	// private static final Logger LOGGER = Logger.getLogger(PartyWebServiceTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "TiersServiceWebTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceTest.xml";
 	private static final int PREMIERE_ANNEE_FISCALE = 2003;
 
 	private UserLogin login;
@@ -95,7 +95,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 	private static boolean alreadySetUp = false;
 
-	public TiersServiceWebTest() throws Exception {
+	public PartyWebServiceTest() throws Exception {
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		}
 
 		login = new UserLogin();
-		login.setUserId("[UT] TiersServiceWebTest");
+		login.setUserId("[UT] PartyWebServiceTest");
 		login.setOid(22);
 
 		zairfa = new UserLogin();
