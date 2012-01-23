@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -255,32 +256,16 @@ public class DAOImpl implements DAO {
 			@Override
 			public Collection<CallStats> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final String projection = buildProjection(criteria);
-				final String timeGrouping = buildTimeGrouping(resolution);
+				final String s = buildLoadStatsForQueryString(criteria, resolution, from, to);
 
-				// build the mighty query
-				final Query query;
-				if (from != null && to != null) {
-					query = session.createSQLQuery(
-							String.format("select sum(1), %s, %s from calls where env_id = :env_id and date >= :from and date <= :to group by %s, %s;", projection, timeGrouping,
-									projection, timeGrouping));
-					query.setParameter("from", from);
-					query.setParameter("to", to);
-				}
-				else if (from != null) {
-					query = session.createSQLQuery(
-							String.format("select sum(1), %s, %s from calls where env_id = :env_id and date >= :from group by %s, %s;", projection, timeGrouping, projection, timeGrouping));
-					query.setParameter("from", from);
-				}
-				else if (to != null) {
-					query = session.createSQLQuery(
-							String.format("select sum(1), %s, %s from calls where env_id = :env_id and date <= :to group by %s, %s;", projection, timeGrouping, projection, timeGrouping));
-					query.setParameter("to", to);
-				}
-				else {
-					query = session.createSQLQuery(String.format("select sum(1), %s, %s from calls where env_id = :env_id  group by %s, %s;", projection, timeGrouping, projection, timeGrouping));
-				}
+				final Query query = session.createSQLQuery(s);
 				query.setParameter("env_id", environment.getId());
+				if (from != null ){
+					query.setParameter("from", from);
+				}
+				if (to != null) {
+					query.setParameter("to", to);
+				}
 
 				// run the query
 				final List<?> list = query.list();
@@ -321,6 +306,42 @@ public class DAOImpl implements DAO {
 		});
 	}
 
+	protected static String buildLoadStatsForQueryString(@org.jetbrains.annotations.Nullable BreakdownCriterion[] criteria, @Nullable TimeResolution resolution, @Nullable Date from, @Nullable Date to) {
+
+		final String projection = buildProjection(criteria);
+		final String timeGrouping = buildTimeGrouping(resolution);
+
+		// build the mighty query
+		final StringBuilder s = new StringBuilder();
+		s.append("select sum(1)");
+		if (projection != null) {
+			s.append(", ").append(projection);
+		}
+		if (timeGrouping != null) {
+			s.append(", ").append(timeGrouping);
+		}
+		s.append(" from calls where env_id = :env_id");
+		if (from != null) {
+			s.append(" and date >= :from");
+		}
+		if (to != null) {
+			s.append(" and date <= :to");
+		}
+		if (projection != null || timeGrouping != null) {
+			s.append(" group by");
+			if (projection != null) {
+				s.append(" ").append(projection);
+			}
+			if (projection != null && timeGrouping != null) {
+				s.append(",");
+			}
+			if (timeGrouping != null) {
+				s.append(" ").append(timeGrouping);
+			}
+		}
+		return s.toString();
+	}
+
 	private static Date round(Date timestamp, TimeResolution resolution) {
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.setTime(timestamp);
@@ -331,7 +352,10 @@ public class DAOImpl implements DAO {
 		return cal.getTime();
 	}
 
-	private String buildTimeGrouping(TimeResolution resolution) {
+	private static String buildTimeGrouping(TimeResolution resolution) {
+		if (resolution == null) {
+			return null;
+		}
 		switch (resolution) {
 		case MINUTE:
 		case FIVE_MINUTES:
@@ -346,7 +370,10 @@ public class DAOImpl implements DAO {
 		}
 	}
 
-	private String buildProjection(BreakdownCriterion[] criteria) {
+	private static String buildProjection(BreakdownCriterion[] criteria) {
+		if (criteria == null || criteria.length == 0) {
+			return null;
+		}
 		StringBuilder projection = new StringBuilder();
 		boolean first = true;
 		for (BreakdownCriterion criterion : criteria) {

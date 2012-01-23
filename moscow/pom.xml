@@ -36,6 +36,11 @@
 			<version>1.2.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>6.0.2</version>
+		</dependency>
+		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>

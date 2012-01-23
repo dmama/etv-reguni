@@ -2,6 +2,9 @@ package ch.vd.moscow;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
@@ -26,6 +29,8 @@ import org.springframework.util.ResourceUtils;
 		TransactionalTestExecutionListener.class})
 public abstract class MoscowTest implements ApplicationContextAware {
 
+	private static final Calendar CAL = GregorianCalendar.getInstance();
+
 	static {
 		try {
 			Log4jConfigurer.initLogging("classpath:log4j.xml");
@@ -36,6 +41,11 @@ public abstract class MoscowTest implements ApplicationContextAware {
 	}
 
 	protected ApplicationContext context;
+
+	protected static Date date(int year, int month, int day) {
+		CAL.set(year, month + 1, day);
+		return CAL.getTime();
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

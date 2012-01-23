@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.moscow.MoscowTest;
+import ch.vd.moscow.controller.graph.BreakdownCriterion;
+import ch.vd.moscow.controller.graph.TimeResolution;
 import ch.vd.moscow.data.Call;
 import ch.vd.moscow.data.CompletionStatus;
 import ch.vd.moscow.data.Environment;
@@ -38,6 +40,35 @@ public class DAOTest extends MoscowTest {
 		final CompletionStatus status = dao.getCompletionStatus(env);
 		assertNotNull(status);
 		assertEquals(ts, status.getUpTo());
+	}
+
+	@Test
+	public void testBuildLoadStatsForQueryString() {
+		// no criterion
+		assertEquals("select sum(1) from calls where env_id = :env_id", DAOImpl.buildLoadStatsForQueryString(null, null, null, null));
+
+		// date criterion
+		assertEquals("select sum(1) from calls where env_id = :env_id and date >= :from", DAOImpl.buildLoadStatsForQueryString(null, null, date(2011, 1, 1), null));
+		assertEquals("select sum(1) from calls where env_id = :env_id and date <= :to", DAOImpl.buildLoadStatsForQueryString(null, null, null, date(2011, 1, 1)));
+
+		// time resolution
+		assertEquals("select sum(1), date_trunc('day', date) from calls where env_id = :env_id group by date_trunc('day', date)",
+				DAOImpl.buildLoadStatsForQueryString(null, TimeResolution.DAY, null, null));
+		assertEquals("select sum(1), date_trunc('hour', date) from calls where env_id = :env_id group by date_trunc('hour', date)",
+				DAOImpl.buildLoadStatsForQueryString(null, TimeResolution.HOUR, null, null));
+		assertEquals("select sum(1), date_trunc('minute', date) from calls where env_id = :env_id group by date_trunc('minute', date)",
+				DAOImpl.buildLoadStatsForQueryString(null, TimeResolution.FIFTEEN_MINUTES, null, null));
+
+		// breakdown
+		assertEquals("select sum(1) from calls where env_id = :env_id", DAOImpl.buildLoadStatsForQueryString(new BreakdownCriterion[]{}, null, null, null));
+		assertEquals("select sum(1), caller from calls where env_id = :env_id group by caller",
+				DAOImpl.buildLoadStatsForQueryString(new BreakdownCriterion[]{BreakdownCriterion.CALLER}, null, null, null));
+		assertEquals("select sum(1), caller, env from calls where env_id = :env_id group by caller, env",
+				DAOImpl.buildLoadStatsForQueryString(new BreakdownCriterion[]{BreakdownCriterion.CALLER, BreakdownCriterion.ENVIRONMENT}, null, null, null));
+
+		// all criteria
+		assertEquals("select sum(1), caller, date_trunc('hour', date) from calls where env_id = :env_id and date >= :from and date <= :to group by caller, date_trunc('hour', date)",
+				DAOImpl.buildLoadStatsForQueryString(new BreakdownCriterion[]{BreakdownCriterion.CALLER}, TimeResolution.HOUR, date(2011, 1, 1), date(2011, 1, 2)));
 	}
 
 	private Environment getDevEnv() {
