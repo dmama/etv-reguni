@@ -40,7 +40,7 @@ public class AntiChronologiqueMouvementComparator implements Comparator<Mouvemen
 	private static int compateSelonDates(MouvementDossier mvt1, MouvementDossier mvt2) {
 		final RegDate dateMvt1 = mvt1.getDateMouvement();
 		final RegDate dateMvt2 = mvt2.getDateMouvement();
-		if (RegDateHelper.equals(dateMvt1, dateMvt2)) {
+		if (dateMvt1 == dateMvt2) {
 			final Timestamp ts1 = mvt1.getLogModifDate();
 			final Timestamp ts2 = mvt2.getLogModifDate();
 			if (ts1 == ts2) {

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseCouche;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 
@@ -106,7 +105,7 @@ public class AdresseTimelineView {
 			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					if (r.getCell(couche) != TimelineCell.FILLER) {
 						throw new IllegalArgumentException();
 					}

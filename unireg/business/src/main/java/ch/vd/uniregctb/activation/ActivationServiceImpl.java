@@ -65,7 +65,7 @@ public class ActivationServiceImpl implements ActivationService {
 			// s'il existe un for fiscal principal fermé justement à la date d'annulation pour
 			// un autre motif, alors on change son motif de fermeture !
 			final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(dateAnnulation);
-			if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && RegDateHelper.equals(ffp.getDateFin(), dateAnnulation)) {
+			if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && ffp.getDateFin() == dateAnnulation) {
 				ffp.setMotifFermeture(MotifFor.ANNULATION);
 			}
 

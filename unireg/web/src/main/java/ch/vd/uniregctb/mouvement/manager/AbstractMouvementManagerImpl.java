@@ -15,7 +15,6 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
@@ -278,7 +277,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			else if (mvt instanceof ReceptionDossier) {
 				final RegDate aujourdhui = RegDate.get();
 				final RegDate dateMouvement = mvt.getDateMouvement();
-				if (dateMouvement == null || RegDateHelper.equals(aujourdhui, dateMouvement)) {
+				if (dateMouvement == null || aujourdhui == dateMouvement) {
 					final String visaConnecte = AuthenticationHelper.getCurrentPrincipal();
 					final String createurMouvement = mvt.getLogCreationUser();
 					if (StringUtils.equals(visaConnecte, createurMouvement)) {

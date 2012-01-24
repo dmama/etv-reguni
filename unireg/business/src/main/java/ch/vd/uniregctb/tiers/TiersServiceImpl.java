@@ -3288,7 +3288,7 @@ public class TiersServiceImpl implements TiersService {
 					break;
 				}
 			}
-			if (forPrecedent != null && RegDateHelper.equals(forPrecedent.getDateFin(), forDPI.getDateDebut().getOneDayBefore())) {
+			if (forPrecedent != null && forPrecedent.getDateFin() == forDPI.getDateDebut().getOneDayBefore()) {
 				reopenForDebiteur(forPrecedent);
 			}
 		}

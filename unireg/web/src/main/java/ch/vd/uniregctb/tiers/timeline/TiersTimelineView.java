@@ -7,7 +7,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 
@@ -111,7 +110,7 @@ public class TiersTimelineView {
 			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
 					r.forPrincipal = c;
 					longueur++;
@@ -132,7 +131,7 @@ public class TiersTimelineView {
 			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					Assert.isTrue(r.forGestion == TimelineCell.FILLER);
 					r.forGestion = c;
 					longueur++;
@@ -153,7 +152,7 @@ public class TiersTimelineView {
 			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
 					r.assujettissement = c;
 					longueur++;
@@ -174,7 +173,7 @@ public class TiersTimelineView {
 			TimelineCell c = new TimelineCell(range);
 			int longueur = 0;
 			for (Row r : rows) {
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
 					r.periodeImposition = c;
 					longueur++;
@@ -201,11 +200,11 @@ public class TiersTimelineView {
 			for (int i = 0; i < rows.size(); ++i) {
 				Row r = rows.get(i);
 				levels = r.forsSecondaires.size();
-				if (RegDateHelper.equals(range.getDateDebut(), r.periode.getDateDebut())) {
+				if (range.getDateDebut() == r.periode.getDateDebut()) {
 					debut = i;
 					fin = i;
 				}
-				else if (RegDateHelper.equals(range.getDateFin(), r.periode.getDateFin())) {
+				else if (range.getDateFin() == r.periode.getDateFin()) {
 					fin = i;
 					break;
 				}

@@ -836,7 +836,7 @@ public class MetierServiceImpl implements MetierService {
 			if (rapport != null) {
 				dateMariage = rapport.getDateDebut();
 			}
-			if (!RegDateHelper.equals(date, dateMariage)) {
+			if (date != dateMariage) {
 				results.addError("La date ne correspond pas à celle du mariage.");
 			}
 		}
@@ -2188,7 +2188,7 @@ public class MetierServiceImpl implements MetierService {
 		if (defunt != null) {
 			final RegDate lendemainDeces = date.getOneDayAfter();
 			final ForFiscalPrincipal ffp = defunt.getForFiscalPrincipalAt(lendemainDeces);
-			if (ffp != null && RegDateHelper.equals(lendemainDeces, ffp.getDateDebut()) && ffp.getMotifOuverture() == MotifFor.VEUVAGE_DECES) {
+			if (ffp != null && lendemainDeces == ffp.getDateDebut() && ffp.getMotifOuverture() == MotifFor.VEUVAGE_DECES) {
 
 				// il faut alors simplement annuler le for fiscal principal
 				Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");

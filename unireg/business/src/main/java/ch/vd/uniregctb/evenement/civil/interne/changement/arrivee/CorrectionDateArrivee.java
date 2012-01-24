@@ -113,7 +113,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 		if (ffp != null) {
 			final Tiers tiersDeterminant = ffp.getTiers();
 			final RegDate ancienneDateOuverture = ffp.getDateDebut();
-			if (RegDateHelper.equals(ancienneDateOuverture, getDate())) {
+			if (ancienneDateOuverture == getDate()) {
 				final String msg = String.format("La date d'ouverture du dernier for fiscal principal du contribuable %s est déjà au %s",
 												FormatNumeroHelper.numeroCTBToDisplay(tiersDeterminant.getNumero()), RegDateHelper.dateToDisplayString(ancienneDateOuverture));
 				Audit.info(getNumeroEvenement(), msg);

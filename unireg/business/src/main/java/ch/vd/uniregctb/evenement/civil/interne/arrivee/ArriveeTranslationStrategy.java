@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -70,10 +69,10 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 			// sinon, si on trouve une adresse secondaire qui commence ce jour-là, c'est une arrivée secondaire
 			// sinon... on n'en sait rien... et boom !
 
-			if (adressesCiviles.principale != null && RegDateHelper.equals(adressesCiviles.principale.getDateDebut(), event.getDateEvenement())) {
+			if (adressesCiviles.principale != null && adressesCiviles.principale.getDateDebut() == event.getDateEvenement()) {
 				return true;
 			}
-			else if (adressesCiviles.secondaire != null && RegDateHelper.equals(adressesCiviles.secondaire.getDateDebut(), event.getDateEvenement())) {
+			else if (adressesCiviles.secondaire != null && adressesCiviles.secondaire.getDateDebut() == event.getDateEvenement()) {
 				return false;
 			}
 			else {
