@@ -19,9 +19,15 @@
 		<!-- Debut Bouton -->
 		<table>
 			<tr><td>
-				<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:retourVisuFromDI(${command.contribuable.numero});" />
+				<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourVisuFromDI(${command.contribuable.numero});" />
 			</td></tr>
 		</table>
+
+		<script>
+			function retourVisuFromDI(numero) {
+				document.location.href='../tiers/visu.do?id=' + numero ;
+			}
+		</script>
 		<!-- Fin Bouton -->
 		&nbsp;
 	</tiles:put>

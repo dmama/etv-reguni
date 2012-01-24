@@ -34,6 +34,17 @@
 	</table>
 </fieldset>
 <script type="text/javascript">
+
+	function selectPeriodeDecompte(name) {
+		if( name == 'UNIQUE' ){
+			$('#div_periodeDecompte_label').show();
+			$('#div_periodeDecompte_input').show();
+		} else {
+			$('#div_periodeDecompte_label').hide();
+			$('#div_periodeDecompte_input').hide();
+		}
+	}
+
 	selectPeriodeDecompte('${command.periodicite.periodiciteDecompte}');
 </script>
 <!-- Fin fiscal pour debiteurs impot a la source-->

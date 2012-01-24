@@ -15,7 +15,7 @@
 		<script type="text/javascript">
 			function updateMotifsFors(element) {
 				// les paramètres ci-dessous correspondent aux ids des selects correspondants
-				updateMotifsFor(element, 'motifOuverture', 'motifFermeture', '${command.numeroCtb}', 'genre_impot', 'rattachement');
+				Fors.updateMotifsFor(element, 'motifOuverture', 'motifFermeture', '${command.numeroCtb}', 'genre_impot', 'rattachement');
 			}
 		</script>
 
@@ -26,14 +26,14 @@
 				<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
 				<td>
 					<form:select path="genreImpot" items="${genresImpot}" id="genre_impot"
-						onchange="selectGenreImpot(this.options[this.selectedIndex].value, updateMotifsFors);" />
+						onchange="Fors.selectGenreImpot(this.options[this.selectedIndex].value, updateMotifsFors);" />
 					<form:errors path="genreImpot" cssClass="error"/>
 				</td>
 				<td id="div_rattachement_label" ><fmt:message key="label.rattachement"/>&nbsp;:</td>
 				<td id="div_rattachement" >
 					<form:select path="motifRattachement"
 							items="${rattachements}" id="rattachement" 
-							onchange="updateMotifsFors(this); selectRattachement(this.options[this.selectedIndex].value);"/>
+							onchange="updateMotifsFors(this); Fors.selectRattachement(this.options[this.selectedIndex].value);"/>
 					<form:errors path="motifRattachement" cssClass="error"/>
 				</td>
 			</tr>
@@ -91,10 +91,10 @@
 		
 		<script type="text/javascript">
 			// on initialise les motifs au chargement de la page
-			updateMotifsFor($('#motifFermeture').get(0), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}',
+			Fors.updateMotifsFor($('#motifFermeture').get(0), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}',
 					'genre_impot', 'rattachement', '${command.motifOuverture}', '${command.motifFermeture}');
 
-			selectGenreImpot('${command.genreImpot}');
+			Fors.selectGenreImpot('${command.genreImpot}');
 		</script>
 	</fieldset>
 	<table border="0">

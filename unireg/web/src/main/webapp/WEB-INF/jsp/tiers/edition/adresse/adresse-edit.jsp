@@ -137,7 +137,7 @@
 								<form:hidden path="numCommune" id="numCommune"  />
 								<script>
 									$(function() {
-										autocomplete_infra('localite', '#localiteSuisse', true, function(item) {
+										Autocomplete.infra('localite', '#localiteSuisse', true, function(item) {
 											if (item) {
 												$('#numeroOrdrePoste').val(item.id1);
 												$('#numCommune').val(item.id2);
@@ -153,7 +153,7 @@
 											$('#rue').val('');
 
 											// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
-											autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
+											Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
 												if (i) {
 													$('#numeroRue').val(i.id1);
 													$('#numeroOrdrePoste').val(i.id2);
@@ -196,7 +196,7 @@
 								<form:errors path="paysNpa" cssClass="error"/>
 								<script>
 									$(function() {
-										autocomplete_infra('etatOuTerritoire', '#pays', true, function(item) {
+										Autocomplete.infra('etatOuTerritoire', '#pays', true, function(item) {
 											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 										});
 									});
@@ -211,7 +211,7 @@
 							<form:hidden path="numeroRue" id="numeroRue"/>
 							<script>
 								$(function() {
-									autocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
+									Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
 										if (i) {
 											$('#numeroRue').val(i.id1);
 											$('#numeroOrdrePoste').val(i.id2);
@@ -318,6 +318,14 @@
 			$(function() {
 				$("#adresseEditTabs").tabs();
 			});
+			
+			function reprise(mode,index) {
+					var form = document.getElementById('formAddAdresse');
+					form.mode.value =	mode ;
+					form.index.value = index ;
+					form.action = 'adresse.do';
+					form.submit();
+			}
 		</script>
 
 	</div>
@@ -420,7 +428,7 @@
 		var form = $("#formAddAdresse").get(0);
 		if (form.typeLocalite1.checked) {
 			// localité suisse -> la localité est un prérequis pour que l'autocompletion soit activée sur le champs rue
-			if (!isBlankString(form.numeroOrdrePoste.value)) {
+			if (!StringUtils.isBlankString(form.numeroOrdrePoste.value)) {
 				form.rue.readOnly = '';
 				$('#rue').removeClass("readonly");
 				$('#rue').autocomplete("enable");

@@ -49,7 +49,7 @@ public class JspTagConsulterLog extends BodyTagSupport {
 	}
 
 	public String buildHtml() {
-		return String.format("<a href=\"#\" class=\"consult\" title=\"Consultation des logs\" onclick=\"return open_consulter_log('%s', %s);\">&nbsp;</a>", entityNature, entityId);
+		return String.format("<a href=\"#\" class=\"consult\" title=\"Consultation des logs\" onclick=\"return Dialog.open_consulter_log('%s', %s);\">&nbsp;</a>", entityNature, entityId);
 	}
 }
 

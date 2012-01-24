@@ -82,7 +82,7 @@
 				<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_TRA)) ||
 					((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_NO_TRA))  && (dossierApparente.id != null)}">
 						<unireg:raccourciModifier link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}" tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
+						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -94,7 +94,7 @@
 
 <script>
 	$(function() {
-		activate_static_tooltips();
+		Tooltips.activate_static_tooltips();
 	});
 </script>
 

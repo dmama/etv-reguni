@@ -11,7 +11,7 @@
 		<%-- modification du type d'autorité fiscale autorisé --%>
 		<td id="select_type_for" >
 			<form:select path="typeAutoriteFiscale" items="${typesForFiscal}" id="optionTypeAutoriteFiscale"
-						 onchange="selectForFiscal(this.options[this.selectedIndex].value);" />
+						 onchange="Fors.selectForFiscal(this.options[this.selectedIndex].value);" />
 		</td>
 		<td id="type_for_fraction" style="display:none;"><fmt:message key="option.type.for.fiscal.COMMUNE_OU_FRACTION_VD" /></td>
 		<td id="type_for_hs" style="display:none;"><fmt:message key="option.type.for.fiscal.PAYS_HS" /></td>
@@ -24,7 +24,7 @@
 		<form:hidden path="numeroForFiscalCommune" />		
 		<script>
 			$(function() {
-				autocomplete_infra('communeVD', '#libFractionCommune', true, function(item) {
+				Autocomplete.infra('communeVD', '#libFractionCommune', true, function(item) {
 					$('#numeroForFiscalCommune').val(item ? item.id1 : null);
 					<c:if test="${param['onChange'] != null}">
 					${param['onChange']}();
@@ -40,7 +40,7 @@
 		<form:hidden path="numeroForFiscalCommuneHorsCanton" />			
 		<script>
 			$(function() {
-				autocomplete_infra('communeHC', '#libCommuneHorsCanton', true, function(item) {
+				Autocomplete.infra('communeHC', '#libCommuneHorsCanton', true, function(item) {
 					$('#numeroForFiscalCommuneHorsCanton').val(item ? item.id1 : null);
 					<c:if test="${param['onChange'] != null}">
 					${param['onChange']}();
@@ -56,7 +56,7 @@
 		<form:hidden path="numeroForFiscalPays" />
 		<script>
 			$(function() {
-				autocomplete_infra('etat', '#libPays', true, function(item) {
+				Autocomplete.infra('etat', '#libPays', true, function(item) {
 					$('#numeroForFiscalPays').val(item ? item.id1 : null);
 					<c:if test="${param['onChange'] != null}">
 					${param['onChange']}();
@@ -66,6 +66,6 @@
 		</script>
 	</td>
 	<script type="text/javascript">
-		selectForFiscal('${command.typeAutoriteFiscale}');
+		Fors.selectForFiscal('${command.typeAutoriteFiscale}');
 	</script>
 </tr>

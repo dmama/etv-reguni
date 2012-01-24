@@ -25,7 +25,8 @@
 	</tr>
 		
    </table>
-   </fieldset>
+</fieldset>
+
 <input type="button" id="annuler" value="<fmt:message key="label.bouton.retour" />" onclick="javascript:Page_RetourNonIdentification()">
 &nbsp;
 <input type="button" name="nonIdentifier" value="<fmt:message key="label.bouton.identification.valider" />" onClick="javascript:confirmerImpossibleAIdentifier(${command.demandeIdentificationView.id});" />
@@ -34,6 +35,7 @@
 
 <!-- Fin Boutons -->
 
-	
+<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
+
 
 <!-- Fin Caracteristiques identification -->

@@ -136,7 +136,7 @@
 			}
 
 			$(function() {
-				activate_static_tooltips();
+				Tooltips.activate_static_tooltips();
 				$('#isRapportHisto').click(refresh_rapports_table);
 				$('#typeRapportId').bind('change keyup',refresh_rapports_table);
 

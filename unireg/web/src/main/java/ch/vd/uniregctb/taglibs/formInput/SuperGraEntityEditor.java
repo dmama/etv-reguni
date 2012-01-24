@@ -75,7 +75,7 @@ class SuperGraEntityEditor implements Editor {
 
 				tagWriter.startTag("button");
 				tagWriter.writeAttribute("id", "button_" + id);
-				tagWriter.writeAttribute("onclick", "return open_tiers_picker(this, function(id) {$('#" + id + "').val(id);});");
+				tagWriter.writeAttribute("onclick", "return Dialog.open_tiers_picker(this, function(id) {$('#" + id + "').val(id);});");
 				tagWriter.appendValue("...");
 				tagWriter.endTag();
 			}

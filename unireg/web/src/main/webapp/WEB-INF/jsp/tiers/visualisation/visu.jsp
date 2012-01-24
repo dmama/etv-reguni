@@ -2,7 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <%@ taglib uri="http://www.unireg.com/uniregTagLib" prefix="unireg" %>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="head"><script type="text/javascript" src="<c:url value="/js/tiers.js"/>"></script></tiles:put>
 	<tiles:put name="title"><fmt:message key="title.visualisation.tiers" /></tiles:put>
 	
 	<tiles:put name="fichierAide">
@@ -194,7 +193,7 @@
 				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});
 
 				// [SIFISC-2587] sélection automatique d'un onglet (cas général)
-				var params = get_url_params();
+				var params = App.get_url_params();
 				if (params && params.selectTab) {
 					try {
 						var index = $('#' + params.selectTab).index();
@@ -274,20 +273,20 @@
 
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
-				toggleAffichageRows('forFiscal',false, 6);
-				toggleRowsIsHisto('situationFamille','isSFHisto', 5);
-				toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
-				toggleRowsIsHisto('adresse','isAdrHisto',2);
-				toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',2);
-				toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);
+				Histo.toggleAffichageRows('forFiscal',false, 6);
+				Histo.toggleRowsIsHisto('situationFamille','isSFHisto', 5);
+				Histo.toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
+				Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
+				Histo.toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',2);
+				Histo.toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);
 		</script>
 	</c:if>
 	<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
-			toggleRowsIsHisto('adresse','isAdrHisto',2);
-			toggleAffichageRows('forFiscal',false, 2);
-			toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);
-			toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);
+			Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
+			Histo.toggleAffichageRows('forFiscal',false, 2);
+			Histo.toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);
+			Histo.toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);
 		</script>
 	</c:if>
 

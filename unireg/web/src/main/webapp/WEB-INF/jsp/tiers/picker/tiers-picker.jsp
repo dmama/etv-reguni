@@ -10,7 +10,7 @@
 			<div id="tiers-picker-filter-description"></div>
 
 			<div id="tiers-picker-quicktab">
-				<%-- voir la méthode open_tiers_picker() dans dialog.js --%>
+				<%-- voir la méthode Dialog.open_tiers_picker() dans unireg.js --%>
 				<table><tr>
 				<td style="vertical-align:middle"><input type="text" id="tiers-picker-query" class="text ui-widget-content ui-corner-all" placeholder="Entrez vos critères de recherche ici" autofocus/></td>
 				<td width="12px"></td>
@@ -47,7 +47,7 @@
 						return false;
 					}
 					$(function() {
-						autocomplete_infra('localiteOuPays', '#tiers-picker-localite');
+						Autocomplete.infra('localiteOuPays', '#tiers-picker-localite');
 						$('#tiers-picker-datenaissance').datepicker({
 							showOn: "button",
 							showAnim: '',

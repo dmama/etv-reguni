@@ -134,7 +134,7 @@
 			<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="13" size="20" />
 			<script>
 				$(function() {
-					autocomplete_infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', true, function(item) {
+					Autocomplete.infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', true, function(item) {
 						$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
 					});
 				});
@@ -150,7 +150,7 @@
 			<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="14" size="20" />
 			<script>
 				$(function() {
-					autocomplete_infra('commune', '#tiers_libelleOfsCommuneOrigine', true, function(item) {
+					Autocomplete.infra('commune', '#tiers_libelleOfsCommuneOrigine', true, function(item) {
 						$('#tiers_numeroOfsCommuneOrigine').val(item ? item.id1 : null);
 					});
 				});
@@ -162,7 +162,7 @@
 
 <script>
 	$(function() {
-		activate_ajax_tooltips();
+		Tooltips.activate_ajax_tooltips();
 	});
 </script>
 

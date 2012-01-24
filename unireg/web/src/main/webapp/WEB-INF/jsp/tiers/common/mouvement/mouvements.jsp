@@ -43,7 +43,7 @@
 
 	<display:column style="action">
 		<c:if test="${page == 'visu' }">
-			<a href="#" class="detail" title="Détail d'un mouvement" onclick="return open_details_mouvement(${mouvement.id});">&nbsp;</a>
+			<a href="#" class="detail" title="Détail d'un mouvement" onclick="return Dialog.open_details_mouvement(${mouvement.id});">&nbsp;</a>
 			<unireg:consulterLog entityNature="MouvementDossier" entityId="${mouvement.id}"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">

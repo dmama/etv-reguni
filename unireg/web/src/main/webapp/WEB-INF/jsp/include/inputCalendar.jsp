@@ -35,7 +35,7 @@
 
 <script>
 	$(function() {
-		activate_ajax_tooltips();
+		Tooltips.activate_ajax_tooltips();
 	});
 </script>
 

@@ -73,7 +73,7 @@
 			}
 
 			function search_remplacant(button) {
-				return open_tiers_picker_with_filter(button, 'tiersPickerFilterFactory', 'typeTiers:${command.typeTiers}', function(id) {
+				return Dialog.open_tiers_picker_with_filter(button, 'tiersPickerFilterFactory', 'typeTiers:${command.typeTiers}', function(id) {
 					$('#numeroTiersRemplacant').val(id);
 					refresh_remplacant(id);
 				});

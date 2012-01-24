@@ -19,7 +19,7 @@
             <form:hidden path="noCollAdmDestinataire" id="noCollAdmDestinataire"  />
 			<script>
 				$(function() {
-					autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataire', true, function(item) {
+					Autocomplete.infra('collectiviteAdministrative', '#collAdmDestinataire', true, function(item) {
 						$('#noCollAdmDestinataire').val(item ? item.id1 : null); // le numéro de collectivité
 					});
 				});

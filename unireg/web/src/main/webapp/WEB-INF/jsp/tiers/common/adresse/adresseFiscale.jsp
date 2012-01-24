@@ -111,3 +111,15 @@
 
 	<fmt:message key="error.adresse.fiscale.correction" />
 </c:if>
+
+<script>
+	function annulerAdresse(idAdresse) {
+		if (confirm('Voulez-vous vraiment annuler cette adresse surchargée ?')) {
+			var form = $('<form method="POST" action="' + getContextPath() + '/adresses/edit.do">' +
+				'<input type="hidden" name="__TARGET__" value="annulerAdresse"/>' +
+				'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idAdresse + '"/></form>');
+			form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
+			form.submit();
+		}
+	}
+</script>

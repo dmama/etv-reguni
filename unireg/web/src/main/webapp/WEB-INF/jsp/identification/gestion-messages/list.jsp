@@ -144,6 +144,8 @@
 		<!-- Fin Boutons -->
 			
 		</form:form>
-		
+
+		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
+
 	</tiles:put>
 </tiles:insert>

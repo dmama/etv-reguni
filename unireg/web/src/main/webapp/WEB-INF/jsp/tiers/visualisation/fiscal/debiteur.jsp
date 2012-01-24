@@ -41,7 +41,7 @@
 <fieldset>
 		<legend><span><fmt:message key="label.periodicites" /></span></legend>
 		<c:if test="${not empty command.periodicites}">
-			<input class="noprint" name="periodicites_histo"  id="isPeriodiciteHisto" type="checkbox" onClick="toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);"/>
+			<input class="noprint" name="periodicites_histo"  id="isPeriodiciteHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);"/>
 			<label class="noprint" for="isPeriodiciteHisto"><fmt:message key="label.historique" /></label>
 
 			<jsp:include page="../../common/fiscal/periodicites.jsp">

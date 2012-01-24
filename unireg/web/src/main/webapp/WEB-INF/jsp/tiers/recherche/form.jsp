@@ -38,7 +38,7 @@
 			<form:input path="localiteOuPays" id="localiteOuPays" />
 			<script>
 				$(function() {
-					autocomplete_infra('localiteOuPays', '#localiteOuPays', true);
+					Autocomplete.infra('localiteOuPays', '#localiteOuPays', true);
 				});
 			</script>
 		</td>
@@ -56,7 +56,7 @@
 				<form:hidden path="noOfsFor" id="noOfsFor" />
 				<script>
 					$(function() {
-						autocomplete_infra('communeOuPays', '#forAll', true, function(item) {
+						Autocomplete.infra('communeOuPays', '#forAll', true, function(item) {
 							$('#noOfsFor').val(item ? item.id1 : null);
 						});
 					});
@@ -166,7 +166,7 @@
 
 <script>
 	$(function() {
-		activate_ajax_tooltips();
+		Tooltips.activate_ajax_tooltips();
 	});
 </script>
 

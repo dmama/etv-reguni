@@ -24,6 +24,7 @@
 		<!-- Fin Bouton -->
 		&nbsp;
 	</form:form>
+	<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>
 	<script type="text/javascript">
 		function SubmitFormEditMvt(){
 			$('#formEditMvt').submit();

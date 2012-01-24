@@ -69,7 +69,7 @@
 				<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
 				<td id="select_type_for" >
 					<form:select path="typeAutoriteFiscale" items="${typesForFiscalDPI}" id="optionTypeAutoriteFiscale"  
-								 onchange="selectForFiscalDPI(this.options[this.selectedIndex].value);" />
+								 onchange="Fors.selectForFiscalDPI(this.options[this.selectedIndex].value);" />
 				</td> 
 				<td id="for_fraction_commune_label"><fmt:message key="label.commune.fraction"/>&nbsp;:</td>
 				<td id="for_fraction_commune">
@@ -78,7 +78,7 @@
 					<form:hidden path="numeroForFiscalCommune" />		
 					<script>
 						$(function() {
-							autocomplete_infra('communeVD', '#libFractionCommune', true, function(item) {
+							Autocomplete.infra('communeVD', '#libFractionCommune', true, function(item) {
 								$('#numeroForFiscalCommune').val(item ? item.id1 : null);
 							});
 						});
@@ -91,7 +91,7 @@
 					<form:hidden path="numeroForFiscalCommuneHorsCanton" />			
 					<script>
 						$(function() {
-							autocomplete_infra('communeHC', '#libCommuneHorsCanton', true, function(item) {
+							Autocomplete.infra('communeHC', '#libCommuneHorsCanton', true, function(item) {
 								$('#numeroForFiscalCommuneHorsCanton').val(item ? item.id1 : null);
 							});
 						});
@@ -112,7 +112,7 @@
 	</form:form>	
 
 	<script type="text/javascript">
-		selectForFiscalDPI('${typeAutoriteFiscale}');
+		Fors.selectForFiscalDPI('${typeAutoriteFiscale}');
 	</script>
 
 	</tiles:put>

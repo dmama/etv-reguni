@@ -67,7 +67,7 @@
 						<form:hidden path="autoriteTutelaireId" id="autoriteTutelaireId" />
 						<script>
 							$(function() {
-								autocomplete_infra('justicePaix', '#nomAutoriteTutelaire', true, function(item) {
+								Autocomplete.infra('justicePaix', '#nomAutoriteTutelaire', true, function(item) {
 									$('#autoriteTutelaireId').val(item ? item.id1 : null);
 								});
 							});
@@ -253,6 +253,13 @@
 		<c:if test="${!command.allowed}">
 			<span class="error"><fmt:message key="error.rapport.interdit" /></span>
 		</c:if>
+		<script>
+			function retourRapport(numero) {
+				if(confirm('Voulez-vous quitter cette page sans sauver ?')) {
+					document.location.href='search.do?numero=' + numero ;
+				}
+			}
+		</script>
 	</form:form>
 	</tiles:put>
 </tiles:insert>

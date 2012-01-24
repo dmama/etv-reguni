@@ -111,40 +111,6 @@
 			
 		</form:form>
 		
-		<script type="text/javascript">
-		
-			function page_NonIdentification( id ) {
-				document.location.href='nonIdentifie.do?id='+id;
-			}
-
-			function voirMessage(id) {
-				document.location.href='voirMessage.do?id='+id;
-			}
-		
-			function Page_Identifier(idCtb) {
-				if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {					
-					Form.doPostBack("theForm", "identifier", idCtb);
-				}
-			}
-			function AppSelect_OnChange(select) {
-				var value = select.options[select.selectedIndex].value;
-				if ( value && value !== '') {
-					//window.open(value, '_blank') ;
-					window.location.href = value;
-				}
-			}
-
-			function getParamValue( name )
-			{
-			  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-			  var regexS = "[\\?&]"+name+"=([^&#]*)";
-			  var regex = new RegExp( regexS );
-			  var results = regex.exec( window.location.href );
-			  if( results == null )
-			    return "";
-			  else
-			    return results[1];
-			}
-		</script>
+		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
 	</tiles:put>
 </tiles:insert>

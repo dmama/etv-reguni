@@ -4,7 +4,7 @@
 <html>
 <head>
 	<title>rafraichir la page parent période</title>
-	<c:url value="/js/jquery.js" var="urlJQuery"/>
+	<c:url value="/js/jquery-all.js" var="urlJQuery"/>
 	<script type="text/javascript" language="Javascript" src="${urlJQuery}"></script>
 	<script type="text/javascript">
 	  $(document).ready(function() {$("form").submit()})

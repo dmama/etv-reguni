@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" 		uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head><title>Page bidon JSP pour rafraichir la page parent</title>
-<script type="text/javascript" language="Javascript" src="<c:url value="/js/custom.js"/>"></script>
+<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
 </head>
 <body>
 

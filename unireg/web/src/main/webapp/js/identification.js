@@ -52,6 +52,14 @@ function Page_RetourNonIdentification() {
 	}
 }
 
+function page_NonIdentification( id ) {
+	document.location.href='nonIdentifie.do?id='+id;
+}
+
+function voirMessage(id) {
+	document.location.href='voirMessage.do?id='+id;
+}
+
 /*
 * message impossible � identifier
 */
@@ -64,14 +72,8 @@ function confirmerImpossibleAIdentifier(id) {
 	
 }
 
-function getParamValue( name )
-{
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results == null )
-    return "";
-  else
-    return results[1];
+function Page_Identifier(idCtb) {
+	if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {
+		Form.doPostBack("theForm", "identifier", idCtb);
+	}
 }

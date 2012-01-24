@@ -4,14 +4,11 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-
 import java.util.Date;
 
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Button qui ouvre une boîte de dialogue pour la consultation des information de traitements du messsage  d'identification
@@ -65,7 +62,7 @@ public class JspTagConsulterInfoTraitement extends BodyTagSupport {
 		String stringDate = DateHelper.dateTimeToDisplayString(dateTraitement);
 		String stringUser = HtmlUtils.htmlEscape(userTraitement);
 		String stringMessageRetour = messageRetour == null ? "" : HtmlUtils.htmlEscape(messageRetour);
-		String onclick = "return open_consulter_info_traitement('" + stringUser + "', '" + stringDate + "', '" + stringMessageRetour + "');";
+		String onclick = "return Dialog.open_consulter_info_traitement('" + stringUser + "', '" + stringDate + "', '" + stringMessageRetour + "');";
 		return String.format("<a href=\"#\" class=\"infotraitement\" title=\"Consultation des infos de traitement\" onclick=\"%s\">&nbsp;</a>", onclick);
 
 	}

@@ -26,7 +26,7 @@
 						<form:hidden path="numeroUtilisateur" id="numeroUtilisateur"  />
 						<script>
 							$(function() {
-								autocomplete_security('user', '#utilisateur', false, function(item) {
+								Autocomplete.security('user', '#utilisateur', false, function(item) {
 									if (item) {
 										$('#numeroUtilisateur').val(item.id2); // le numéro technique
 									}

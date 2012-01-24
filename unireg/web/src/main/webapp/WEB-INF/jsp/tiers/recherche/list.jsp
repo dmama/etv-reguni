@@ -79,7 +79,7 @@
 				<display:column sortable ="false" titleKey="label.ouvrir.vers">
 					<c:if test="${!tiers.annule}">
 						<c:if test="${urlRetour == null}">
-							<select name="AppSelect" onchange="javascript:AppSelect_OnChange(this);" <c:if test="${!tiers.annule}">readonly="true"</c:if> >
+							<select name="AppSelect" onchange="App.gotoExternalApp(this);" <c:if test="${!tiers.annule}">readonly="true"</c:if> >
 								<option value="">---</option>
 								<c:if test="${!tiers.debiteurInactif}">
 									<option value="<c:out value='${tiers.urlTaoPP}'/>"><fmt:message key="label.TAOPP" /></option>

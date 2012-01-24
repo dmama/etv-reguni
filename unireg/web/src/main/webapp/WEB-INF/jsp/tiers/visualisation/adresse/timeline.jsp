@@ -4,7 +4,6 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<tiles:put name="head"><script type="text/javascript" src="<c:url value="/js/tiers.js"/>"></script></tiles:put>
 	<tiles:put name="title">Vue chronologique des adresses</tiles:put>
 
 	<tiles:put name="body">
@@ -138,7 +137,7 @@
 
 		<script>
 			$(function() {
-				activate_static_tooltips();
+				Tooltips.activate_static_tooltips();
 			});
 		</script>
 

@@ -112,10 +112,10 @@
 			<script type="text/javascript">
 				// on met-à-jour les motifs d'ouverture et de fermeture au chargement de la page (genre impôt et rattachement sont fixés)
 				<c:if test="${command.dateOuvertureEditable}">
-					updateMotifsOuverture($('#motifOuverture').get(0), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
+					Fors.updateMotifsOuverture($('#motifOuverture').get(0), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
 				</c:if>
 				<c:if test="${command.dateFermetureEditable}">
-					updateMotifsFermeture($('#motifFermeture').get(0), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
+					Fors.updateMotifsFermeture($('#motifFermeture').get(0), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
 				</c:if>
 			</script>
 

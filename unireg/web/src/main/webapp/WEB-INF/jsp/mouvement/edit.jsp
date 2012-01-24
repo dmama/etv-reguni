@@ -24,6 +24,7 @@
 		<input type="submit" name="sauverMvt" value="<fmt:message key="label.bouton.sauver" />" />
 		<!-- Fin Boutons -->
 	</form:form>
+	<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>
 	<script type="text/javascript" language="Javascript1.3">
 			$(function() {
 				selectTypeMouvement($("#type_mouvement").val());

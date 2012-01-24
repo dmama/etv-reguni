@@ -77,6 +77,8 @@
 		<!-- Fin Boutons -->
 		
 		</form:form>		
-		
+
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
+
 	</tiles:put>
 </tiles:insert>

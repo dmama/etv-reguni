@@ -57,5 +57,17 @@
 		<input type="submit" value="<fmt:message key="label.bouton.sauver" />" />
 		<!-- Fin Boutons -->
 	</form:form>
+	<script>
+		function retourRT(numeroSrc, numeroDpi) {
+			if(confirm('Voulez-vous quitter cette page sans sauver ?')) {
+				if (numeroSrc != null) {
+					document.location.href='list-debiteur.do?numeroSrc=' + numeroSrc ;
+				}
+				if (numeroDpi != null) {
+					document.location.href='list-sourcier.do?numeroDpi=' + numeroDpi ;
+				}
+			}
+		}
+	</script>
 	</tiles:put>
 </tiles:insert>

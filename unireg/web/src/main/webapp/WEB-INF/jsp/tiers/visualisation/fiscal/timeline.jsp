@@ -11,7 +11,6 @@
 
 <tiles:insert template="${templateUrl}">
 
-	<tiles:put name="head"><script type="text/javascript" src="<c:url value="/js/tiers.js"/>"></script></tiles:put>
 	<tiles:put name="title">Vue chronologique des fors fiscaux et des assujettissements</tiles:put>
 
 	<tiles:put name="body">
@@ -256,7 +255,7 @@
 
 		<script>
 			$(function() {
-				activate_static_tooltips();
+				Tooltips.activate_static_tooltips();
 			});
 		</script>
 

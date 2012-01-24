@@ -59,7 +59,7 @@
 					<a href="#" class="detail" title="DI" onclick="return open_details_di(<c:out value="${di.id}"/>);">&nbsp;</a>
 					<script>
 					function open_details_di(id) {
-						var dialog = create_dialog_div('details-di-dialog');
+						var dialog = Dialog.create_dialog_div('details-di-dialog');
 
 						// charge le contenu de la boîte de dialogue
 						dialog.load('di.do?idDi=' + id);

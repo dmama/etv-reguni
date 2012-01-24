@@ -55,3 +55,4 @@
 	</tr>
 </table>
 <!-- Fin Boutons -->
+<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>

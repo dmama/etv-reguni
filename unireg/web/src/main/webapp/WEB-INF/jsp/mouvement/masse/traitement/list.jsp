@@ -121,7 +121,7 @@
 					</display:column>
 
 					<display:column style="action">
-						<a href="#" class="detail" title="Détail d'un mouvement" onclick="return open_details_mouvement(${mvt.id});">&nbsp;</a>
+						<a href="#" class="detail" title="Détail d'un mouvement" onclick="return Dialog.open_details_mouvement(${mvt.id});">&nbsp;</a>
 						<unireg:consulterLog entityNature="MouvementDossier" entityId="${mvt.id}"/>
 						<c:if test="${mvt.etatMouvement == 'A_TRAITER'}">
 							<unireg:raccourciAnnuler onClick="annulerMouvementDossierMasse(${mvt.id});" tooltip="Annuler un mouvement"/>

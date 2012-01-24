@@ -80,6 +80,7 @@
 	</tr>
 </table>
 <!-- Fin Boutons -->
+<script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
 <script type="text/javascript">
 	selectTypeTache('${command.typeTache}');
 </script>

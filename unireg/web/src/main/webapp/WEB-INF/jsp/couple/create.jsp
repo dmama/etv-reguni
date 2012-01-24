@@ -151,21 +151,21 @@
 			}
 
 			function search_pp1() {
-				return open_tiers_picker_with_filter($('#button_pp1Id'), 'couplePpPickerFilterFactory', null, function(id) {
+				return Dialog.open_tiers_picker_with_filter($('#button_pp1Id'), 'couplePpPickerFilterFactory', null, function(id) {
 					$('#pp1Id').val(id);
 					refresh_all();
 				});
 			}
 
 			function search_pp2() {
-				return open_tiers_picker_with_filter($('#button_pp2Id'), 'couplePpPickerFilterFactory', null, function(id) {
+				return Dialog.open_tiers_picker_with_filter($('#button_pp2Id'), 'couplePpPickerFilterFactory', null, function(id) {
 					$('#pp2Id').val(id);
 					refresh_all();
 				});
 			}
 
 			function search_mc() {
-				return open_tiers_picker_with_filter($('#button_mcId'), 'coupleMcPickerFilterFactory', null, function(id) {
+				return Dialog.open_tiers_picker_with_filter($('#button_mcId'), 'coupleMcPickerFilterFactory', null, function(id) {
 					$('#mcId').val(id);
 					refresh_all();
 				});

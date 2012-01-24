@@ -40,7 +40,7 @@
 					<form:hidden path="numeroUtilisateurEnvoi" id="numeroUtilisateurEnvoi"  />
 					<script>
 						$(function() {
-							autocomplete_security('user', '#utilisateurEnvoi', false, function(item) {
+							Autocomplete.security('user', '#utilisateurEnvoi', false, function(item) {
 								if (item) {
 									$('#numeroUtilisateurEnvoi').val(item.id2); // le numéro technique
 								}
@@ -64,7 +64,7 @@
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
 					<script>
 						$(function() {
-							autocomplete_infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', true, function(item) {
+							Autocomplet.infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', true, function(item) {
 								$('#noCollAdmDestinataireEnvoi').val(item ? item.id1 : null); // le numéro de collectivité
 							});
 						});
@@ -89,7 +89,7 @@
 					<form:hidden path="numeroUtilisateurReception" id="numeroUtilisateurReception"  />
 					<script>
 						$(function() {
-							autocomplete_security('user', '#utilisateurReception', false, function(item) {
+							Autocomplete.security('user', '#utilisateurReception', false, function(item) {
 								if (item) {
 									$('#numeroUtilisateurReception').val(item.id2); // le numéro technique
 								}
@@ -125,6 +125,8 @@
 		</tr>
 	</table>
 	</div>
+
+	<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>
 
 </fieldset>
 <!-- Fin  Mouvement de dossier -->

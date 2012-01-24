@@ -56,7 +56,7 @@
 					<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di(${command.id});">
 					<script>
 					function open_imprime_di(id) {
-						var dialog = create_dialog_div('imprime-di-dialog');
+						var dialog = Dialog.create_dialog_div('imprime-di-dialog');
 
 						// charge le contenu de la boîte de dialogue
 						dialog.load('impression.do?id=' + id);

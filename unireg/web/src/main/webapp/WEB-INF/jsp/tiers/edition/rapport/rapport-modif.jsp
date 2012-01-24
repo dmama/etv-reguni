@@ -57,7 +57,7 @@
 					<td width="25%"><fmt:message key="label.type.activite" />&nbsp;:</td>
 					<td width="25%">
 						<form:select path="typeActivite"  items="${typesActivite}"
-						id="typeActivite" onchange="selectTypeActivite(this.options[this.selectedIndex].value);" />	
+						id="typeActivite" onchange="Rapport.selectTypeActivite(this.options[this.selectedIndex].value);" />
 					</td>
 					<td width="25%"><div id="tauxActiviteLabel" ><fmt:message key="label.taux.activite" />&nbsp;:</div></td>
 					<td width="25%">
@@ -103,9 +103,9 @@
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>
-	<%-- 
+	<%--
 	<script type="text/javascript">
-			selectTypeActivite('${command.typeActivite}');
+			Rapport.selectTypeActivite('${command.typeActivite}');
 	</script>
 	--%>
 	</form:form>

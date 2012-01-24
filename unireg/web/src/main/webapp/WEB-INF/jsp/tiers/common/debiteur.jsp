@@ -41,7 +41,7 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!debiteur.annule}">
-				<unireg:raccourciAnnuler onClick="javascript:annulerRapport(${debiteur.id});" tooltip="Annuler"/>
+				<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${debiteur.id});" tooltip="Annuler"/>
 			</c:if>
 		</c:if>
 	</display:column>

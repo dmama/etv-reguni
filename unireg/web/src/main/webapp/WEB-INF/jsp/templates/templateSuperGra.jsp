@@ -35,17 +35,9 @@ function ouvrirAide(url) {
 		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
 		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
 
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.bgiframe.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-ui.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.ui.datepicker-fr-CH.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.cookie.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/tiers.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/dialog.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/autocomplete.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/util.js"/>"></script>
-		<script type="text/javascript" language="javascript" src="<c:url value="/js/quicksearch.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
@@ -83,9 +75,9 @@ function ouvrirAide(url) {
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;
 					<input class="quicksearch" size="15" type="text" 
-						onKeyPress="javascript:quickSearch(this, event)" 
-						onfocus="javascript:quickSearchFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
-						onblur="javascript:quickSearchBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')" 
+						onKeyPress="return Quicksearch.onKeyPress(this, event);"
+						onfocus="Quicksearch.onFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
+						onblur="Quicksearch.onBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')"
 						value="<fmt:message key="label.acces.rapide.invite"/>"/> 
 				</div>
 			</div>

@@ -352,7 +352,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("\t<td width=\"25%\">\n");
 				s.append("\t<div style=\"float:right;margin-right:10px;text-align:right\">\n");
 				s.append("\t\t<span>").append(message("label.actions")).append(" : </span>\n");
-				s.append("\t\t<select onchange=\"return executeAction($(this).val() + ").append(tiers.getNumero()).append(");\">\n");
+				s.append("\t\t<select onchange=\"return App.executeAction($(this).val() + ").append(tiers.getNumero()).append(");\">\n");
 				s.append("\t\t\t<option>---</option>\n");
 
 				for (Action action : actionsToDisplay) {
@@ -511,7 +511,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		s.append("<span>").append(message("label.ouvrir.vers")).append(" : </span>\n");
 
 		if (StringUtils.isBlank(urlRetour)) {
-			s.append("<select name=\"AppSelect\" onchange=\"javascript:AppSelect_OnChange(this);\">\n");
+			s.append("<select name=\"AppSelect\" onchange=\"App.gotoExternalApp(this);\">\n");
 			s.append("\t<option value=\"\">---</option>\n");
 			final boolean isEntreprise = tiers instanceof Entreprise;
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
@@ -532,15 +532,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		else {
 			s.append("<a href=\"").append(urlRetour).append(tiers.getNumero()).append("\" class=\"detail\" title=\"").append(message("label.retour.application.appelante")).append("\">&nbsp;</a>\n");
 		}
-
-		s.append("<script type=\"text/javascript\">\n");
-		s.append("\tfunction AppSelect_OnChange(select) {\n");
-		s.append("\t\tvar value = select.options[select.selectedIndex].value;\n");
-		s.append("\t\tif ( value && value !== '') {\n");
-		s.append("\t\t\twindow.location.href = value;\n");
-		s.append("\t\t}\n");
-		s.append("\t}\n");
-		s.append("</script>\n");
 
 		s.append("</div>\n");
 

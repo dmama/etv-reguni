@@ -45,7 +45,7 @@
 					<a href="#" class="detail" title="LR" onclick="return open_details_lr(<c:out value="${lr.id}"/>);">&nbsp;</a>
 					<script>
 					function open_details_lr(id) {
-					   var dialog = create_dialog_div('details-lr-dialog');
+					   var dialog = Dialog.create_dialog_div('details-lr-dialog');
 
 					   // charge le contenu de la boîte de dialogue
 					   dialog.load('lr.do?idLr=' + id);

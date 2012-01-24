@@ -14,7 +14,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.contribuable.associe" /></span></legend>
 	
-	<input class="noprint" name="rt_histo" type="checkbox" onClick="toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);" id="isCtbAssoHisto" />
+	<input class="noprint" name="rt_histo" type="checkbox" onClick="Histo.toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);" id="isCtbAssoHisto" />
 	<fmt:message key="label.historique" />
 		
 	<jsp:include page="../common/contribuable-associe.jsp">

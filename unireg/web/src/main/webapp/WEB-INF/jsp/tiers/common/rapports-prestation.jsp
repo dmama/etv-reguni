@@ -63,7 +63,7 @@
 				<c:if test="${page == 'edit' }">
 					<c:if test="${!rapportPrestation.annule}">
 						<unireg:raccourciModifier link="../tiers/rapport.do?idRapport=${rapportPrestation.id}&sens=SUJET&viewRetour=%2Frapports-prestation%2Fedit.do%3Fid%3D${command.tiers.numero}" tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:annulerRapport(${rapportPrestation.id});" tooltip="Annuler"/>
+						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${rapportPrestation.id});" tooltip="Annuler"/>
 					</c:if>
 				</c:if>
 			</display:column>

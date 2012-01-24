@@ -19,7 +19,7 @@ function submit(url, methodType, delegateName){
 		<fieldset>
 			<legend><span><fmt:message key="label.importer.tiers" /></span></legend>
 
-		    <form:form id="formBean" method="post" action="upload.do" enctype="multipart/form-data"  modelAttribute="script" onsubmit="return confirm_trash_db()">
+		    <form:form id="formBean" method="post" action="upload.do" enctype="multipart/form-data"  modelAttribute="script" onsubmit="return App.confirm_trash_db()">
 			    <table>
 					<tr class="odd" >
 						<td >
@@ -51,7 +51,7 @@ function submit(url, methodType, delegateName){
 		    
 		   	    <display:table 	name="listFilesName" id="descr" pagesize="20" defaultsort="2">
 					<display:column titleKey="label.admin.dbunit.action" >
-						<unireg:raccourciDemarrer id="loadFile-${descr.filename}" tooltip="Demarrer" onClick="if (confirm_trash_db()) {submit('import.do?fileName=${descr.filename}&action=launchUnit');}"/>
+						<unireg:raccourciDemarrer id="loadFile-${descr.filename}" tooltip="Demarrer" onClick="if (App.confirm_trash_db()) {submit('import.do?fileName=${descr.filename}&action=launchUnit');}"/>
 					</display:column>
 					<display:column titleKey="label.admin.dbunit.name" >
 						<c:out value="${descr.description}"  escapeXml="false"/>
@@ -96,7 +96,7 @@ function submit(url, methodType, delegateName){
 					<c:out value="${file.fileSize}" />
 				</display:column>
 				<display:column>
-					<a href="#" onclick="if (confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump.do?action=fs2import&file=<c:out value="${file.id}" />');}">
+					<a href="#" onclick="if (App.confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump.do?action=fs2import&file=<c:out value="${file.id}" />');}">
 						<fmt:message key="label.bouton.reimport"/>
 					</a>
 				</display:column>

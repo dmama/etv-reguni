@@ -57,7 +57,7 @@
 	function refreshforsFiscauxPM(checkbox) {
 		var showHisto = $(checkbox).get(0).checked;
 		var table = $('#forsFiscauxPM');
-		refreshHistoTable(showHisto, table, 4);
+		Histo.refreshHistoTable(showHisto, table, 4);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page

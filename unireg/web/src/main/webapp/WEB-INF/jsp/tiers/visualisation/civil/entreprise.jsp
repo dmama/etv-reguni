@@ -126,7 +126,7 @@
 	function refreshSiegesTable(checkbox) {
 		var showHisto = $(checkbox).get(0).checked;
 		var table = $('#sieges');
-		refreshHistoTable(showHisto, table, 1);
+		Histo.refreshHistoTable(showHisto, table, 1);
 	}
 
 	/**
@@ -135,7 +135,7 @@
 	function refreshFormesJuridiquesTable(checkbox) {
 		var showHisto = $(checkbox).get(0).checked;
 		var table = $('#formesJuridiques');
-		refreshHistoTable(showHisto, table, 1);
+		Histo.refreshHistoTable(showHisto, table, 1);
 	}
 
 	/**
@@ -144,7 +144,7 @@
 	function refreshCapitauxTable(checkbox) {
 		var showHisto = $(checkbox).get(0).checked;
 		var table = $('#capitaux');
-		refreshHistoTable(showHisto, table, 1);
+		Histo.refreshHistoTable(showHisto, table, 1);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page

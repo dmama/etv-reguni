@@ -62,12 +62,12 @@ public class JspTagToggleAffichage extends BodyTagSupport implements MessageSour
 			final String displayAll = getMessage("label.bouton.afficher.tout");
 			final String tooltipAll = "Afficher toutes les lignes";
 			final String idAll = "linkAll";
-			final String onClickAll = "toggleAffichageRows('" + tableId + "',true," + numeroColonne + ");";
+			final String onClickAll = "Histo.toggleAffichageRows('" + tableId + "',true," + numeroColonne + ");";
 
 			final String displayReduce = getMessage("label.bouton.reduire");
 			final String tooltipReduce = "Réduire l'affichage aux 3 premières lignes";
 			final String idReduce = "linkReduce";
-			final String onClickReduce = "toggleAffichageRows('" + tableId + "',false," + numeroColonne + ");";
+			final String onClickReduce = "Histo.toggleAffichageRows('" + tableId + "',false," + numeroColonne + ");";
 
 
 			final JspWriter out = pageContext.getOut();

@@ -38,7 +38,7 @@
 	function refreshEtatsPM(checkbox) {
 		var showHisto = $(checkbox).get(0).checked;
 		var table = $('#etatsPM');
-		refreshHistoTable(showHisto, table, 1);
+		Histo.refreshHistoTable(showHisto, table, 1);
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page

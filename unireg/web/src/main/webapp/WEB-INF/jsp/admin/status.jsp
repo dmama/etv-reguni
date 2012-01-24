@@ -3,10 +3,6 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<tiles:put name="head">
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery.timers.js"/>"></script>
-	</tiles:put>
-
   	<tiles:put name="title"><fmt:message key="title.info"/></tiles:put>
 
   	<tiles:put name="body">
