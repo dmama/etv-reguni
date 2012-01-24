@@ -32,7 +32,7 @@ PERIODE_MINUTES=5
 TS_SEUIL=$(date +"%Y%m%d%H%M%S" --date "$PERIODE_MINUTES minutes ago")
 
 # Au dela de cinquante appels pour le quittancement de la même DI, il y a un problème, non ?
-ANALYSIS=$(read_file "$FILE" | grep "\[cedi\]" | grep "QuittancerDeclaration" | filter_timestamp $TS_SEUIL | sed -e 's/QuittanceDeclarationDemande/\n/g' | grep "DeclarationImpotOrdinaireKey" | sed -e 's/[^0-9 ]\+//g' | awk '{ print $1 "-" $2 "-" $3; }' | sort | uniq -c | awk '$1 > 49 { print $0; }')
+ANALYSIS=$(read_file "$FILE" | grep "\[cedi\]" | grep "QuittancerDeclaration" | filter_timestamp $TS_SEUIL | sed -e 's/DemandeQuittancementDeclaration/\n/g' | grep "DeclarationImpotOrdinaireKey" | sed -e 's/[^0-9 ]\+//g' | awk '{ print $1 "-" $2 "-" $3; }' | sort | uniq -c | awk '$1 > 49 { print $0; }')
 
 # si la variable est vide, il n'y a plus rien à faire
 MSG=$(if [ -n "$ANALYSIS" ]; then
