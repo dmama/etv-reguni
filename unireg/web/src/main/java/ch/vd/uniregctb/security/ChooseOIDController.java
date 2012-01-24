@@ -111,6 +111,7 @@ public class ChooseOIDController {
 	 * @throws URISyntaxException si l'url d'entrée n'est pas valide
 	 */
 	private static String setParam(String url, String paramName, String paramValue) throws URISyntaxException {
+		url = url.replaceAll("\\{.*?\\}", ""); // [SIFISC-3906] on supprime les éventuels placeholders non-résolus (par exemple "{OID}") qui ne sont pas valides syntaxiquement parlant
 		URI uri = new URI(url);
 		final UrlEncodedQueryString queryString = UrlEncodedQueryString.parse(uri);
 		queryString.set(paramName, paramValue);
