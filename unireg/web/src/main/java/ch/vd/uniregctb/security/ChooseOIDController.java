@@ -88,7 +88,6 @@ public class ChooseOIDController {
 		final Object e = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 		if (e instanceof MultipleOIDFoundException) {
 			final MultipleOIDFoundException exception = (MultipleOIDFoundException) e;
-			Flash.message(exception.getMessage());
 			return exception.getInitialUrl();
 		}
 		else if (e instanceof UnauthorizedOIDException) {
