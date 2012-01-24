@@ -1494,12 +1494,18 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdressesCiviles getAdressesCiviles(PersonnePhysique habitant, RegDate date, boolean strict) throws AdresseException {
+		return getAdressesCiviles(habitant.getNumeroIndividu(), date, strict);
+	}
+
+	@Override
+	public AdressesCiviles getAdressesCiviles(long numeroIndividu, RegDate date, boolean strict) throws AdresseException {
 		try {
-			return new AdressesCiviles(serviceCivilService.getAdresses(habitant.getNumeroIndividu(), date, strict));
+			return new AdressesCiviles(serviceCivilService.getAdresses(numeroIndividu, date, strict));
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
 		}
+
 	}
 
 	/**

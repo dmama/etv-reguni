@@ -17,7 +17,7 @@ public interface AdresseService {
 	/**
 	 * Extrait les adresses civiles définies pour une date donnée.
 	 * <p/>
-	 * Les adresses civiles sont extraites: <ul> <li>du registre civile (contrôle des habitants) pour les individus</li> <li>du registre infrastructure pour les collectivités administratives</li> </ul>
+	 * Les adresses civiles sont extraites: <ul> <li>du registre civil (contrôle des habitants) pour les individus</li> <li>du registre infrastructure pour les collectivités administratives</li> </ul>
 	 *
 	 * @param tiers  le tiers dont on recherche les adresses
 	 * @param date   la date de référence, ou null pour obtenir les adresses existantes jusqu'à ce jour.
@@ -27,6 +27,20 @@ public interface AdresseService {
 	 * @throws AdresseException en cas d'erreur sur les adresses récupérées du registre civil.
 	 */
 	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
+
+	/**
+	 * Extrait les adresses civiles définies pour une date donnée.
+	 * <p/>
+	 * Les adresses civiles sont extraites du registre civil (contrôle des habitants)
+	 *
+	 * @param numeroIndividu l'identifiant de l'individu civil dont on cherche les adresses
+	 * @param date   la date de référence, ou null pour obtenir les adresses existantes jusqu'à ce jour.
+	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
+	 *               (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @return les adresses civiles du tiers, ou <b>null</b> si l'individu ne possède pas d'adresse.
+	 * @throws AdresseException en cas d'erreur sur les adresses récupérées du registre civil.
+	 */
+	public AdressesCiviles getAdressesCiviles(long numeroIndividu, RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait les adresses fiscales (= adresses civiles + adresses tiers) définies pour une date donnée. Les adresses annulées sont ignorées et ne sont pas retournées.

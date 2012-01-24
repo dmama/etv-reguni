@@ -11,10 +11,19 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilEchTranslator;
 import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -27,8 +36,11 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
+	private EvenementCivilEchTranslator translator;
 
 	private Processor processor;
+
+	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setNotificationQueue(EvenementCivilNotificationQueue notificationQueue) {
@@ -43,6 +55,11 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilDAO(EvenementCivilEchDAO evtCivilDAO) {
 		this.evtCivilDAO = evtCivilDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTranslator(EvenementCivilEchTranslator translator) {
+		this.translator = translator;
 	}
 
 	/**
@@ -117,15 +134,45 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
 	 */
 	private boolean processEvent(final EvenementCivilNotificationQueue.EvtCivilInfo info) {
-		return doInNewTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
-				if (evt.getEtat().isTraite()) {
-					LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.idEvenement, evt.getEtat()));
-					return Boolean.TRUE;
+		try {
+			return doInNewTransaction(new TransactionCallback<Boolean>() {
+				@Override
+				public Boolean doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
+					if (evt == null) {
+						LOGGER.warn(String.format("Pas d'événement trouvé correspondant à l'identifiant %d", info.idEvenement));
+						return Boolean.TRUE;
+					}
+					else if (evt.getEtat().isTraite()) {
+						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.idEvenement, evt.getEtat()));
+						return Boolean.TRUE;
+					}
+					return processEvent(evt);
 				}
-				return processEvent(evt);
+			});
+		}
+		catch (Exception e) {
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.idEvenement), e);
+			onException(info, e);
+			return false;
+		}
+	}
+
+	/**
+	 * Assigne le message d'erreur à l'événement en fonction de l'exception
+	 * @param info description de l'événement en cours de traitement
+	 * @param e exception qui a sauté
+	 */
+	private void onException(final EvenementCivilNotificationQueue.EvtCivilInfo info, final Exception e) {
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
+				final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
+				evt.getErreurs().clear();
+				evt.getErreurs().add(erreur);
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				return null;
 			}
 		});
 	}
@@ -169,10 +216,67 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	private boolean processEvent(EvenementCivilEch event) {
 		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
 
-		// TODO jde à implémenter
-		event.setEtat(EtatEvenementCivil.EN_ERREUR);
-		event.setCommentaireTraitement("A implémenter...");
-		return false;
+		// élimination des erreurs en cas de retraitement
+		event.getErreurs().clear();
+
+		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<EvenementCivilEchErreur>(ERREUR_FACTORY);
+		processEvent(event, collector, collector);
+
+		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
+		final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
+		final List<EvenementCivilEchErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
+		event.getErreurs().addAll(erreurs);
+		event.getErreurs().addAll(warnings);
+		event.setDateTraitement(DateHelper.getCurrentDate());
+
+		for (EvenementCivilEchErreur e : erreurs) {
+			Audit.error(event.getId(), e.getMessage());
+		}
+		for (EvenementCivilEchErreur w : warnings) {
+			Audit.warn(event.getId(), w.getMessage());
+		}
+
+		final boolean hasErrors = collector.hasErreurs();
+		if (hasErrors) {
+			event.setEtat(EtatEvenementCivil.EN_ERREUR);
+			Audit.error(event.getId(), "Statut de l'événement passé à 'EN_ERREUR'");
+		}
+		else if (collector.hasWarnings()) {
+			event.setEtat(EtatEvenementCivil.A_VERIFIER);
+			Audit.warn(event.getId(), "Statut de l'événement passé à 'A_VERIFIER'");
+		}
+		else {
+			event.setEtat(EtatEvenementCivil.TRAITE);
+			Audit.success(event.getId(), "Statut de l'événement passé à 'TRAITE'");
+		}
+
+		return !hasErrors;
+	}
+
+	private void processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
+		try {
+			final EvenementCivilInterne evtInterne = buildInterne(event);
+			if (evtInterne == null) {
+				LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
+				erreurs.addErreur("Aucun code de traitement trouvé");
+			}
+			else {
+				// validation et traitement
+				evtInterne.validate(erreurs, warnings);
+				if (!erreurs.hasErreurs()) {
+					evtInterne.handle(warnings);
+				}
+			}
+		}
+		catch (EvenementCivilException e) {
+			LOGGER.error(String.format("Exception lancée lors du traitement de l'événement %d", event.getId()), e);
+			erreurs.addErreur(e);
+		}
+	}
+
+	private EvenementCivilInterne buildInterne(EvenementCivilEch event) throws EvenementCivilException {
+		final EvenementCivilOptions options = new EvenementCivilOptions(true);
+		return translator.toInterne(event, options);
 	}
 
 	@Override

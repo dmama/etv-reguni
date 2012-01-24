@@ -16,10 +16,13 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -39,13 +42,11 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class ArriveePrincipale extends Arrivee {
 
-	private static enum WorldLocation { VD, HC, HS }
-
 	private final Adresse ancienneAdresse;
 	private final Adresse nouvelleAdresse;
 	private final Commune ancienneCommune;
 	private final Commune nouvelleCommune;
-	private final WorldLocation previousLocation;
+	private final LocalisationType previousLocation;
 
 	public ArriveePrincipale(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -64,6 +65,23 @@ public class ArriveePrincipale extends Arrivee {
 		previousLocation = computePreviousLocation(evenement.getType());
 	}
 
+	public ArriveePrincipale(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+
+		final RegDate dateArrivee = getDate();
+		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+
+		final AdressesCiviles anciennesAdresses = getAdresses(context, veilleArrivee);
+		ancienneAdresse = anciennesAdresses.principale;
+		ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, veilleArrivee);
+
+		final AdressesCiviles nouvellesAdresses = getAdresses(context, dateArrivee);
+		nouvelleAdresse = nouvellesAdresses.principale;
+		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
+
+		previousLocation = computePreviousLocation(nouvelleAdresse);
+	}
+
 	/**
 	 * Pour les tests seulement
 	 */
@@ -78,33 +96,46 @@ public class ArriveePrincipale extends Arrivee {
 		this.previousLocation = computePreviousLocation(type);
 	}
 
-	private WorldLocation computePreviousLocation(TypeEvenementCivil type) {
-		final WorldLocation previousLocation;
+	private LocalisationType computePreviousLocation(Adresse nouvelleAdresse) {
+		final LocalisationType loc;
+		final Localisation avant = nouvelleAdresse.getLocalisationPrecedente();
+		if (avant != null && avant.getType() != null) {
+			loc = avant.getType();
+		}
+		else {
+			// inconnu...
+			loc = null;
+		}
+		return loc;
+	}
+
+	private LocalisationType computePreviousLocation(TypeEvenementCivil type) {
+		final LocalisationType previousLocation;
 		switch (type) {
 		case ARRIVEE_PRINCIPALE_HC:
-			previousLocation = WorldLocation.HC;
+			previousLocation = LocalisationType.HORS_CANTON;
 			break;
 		case ARRIVEE_PRINCIPALE_HS:
-			previousLocation = WorldLocation.HS;
+			previousLocation = LocalisationType.HORS_SUISSE;
 			break;
 		case ARRIVEE_PRINCIPALE_VAUDOISE:
 		case DEMENAGEMENT_DANS_COMMUNE:     // dans le cas de déménagement dans une commune fusionnée civilement mais pas encore fiscalement
-			previousLocation = WorldLocation.VD;
+			previousLocation = LocalisationType.CANTON_VD;
 			break;
 		case ARRIVEE_DANS_COMMUNE:
 			if (ancienneCommune == null) {
 				if (ancienneAdresse != null && ancienneAdresse.getNoOfsPays() != null && ancienneAdresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
-					previousLocation = WorldLocation.HS;
+					previousLocation = LocalisationType.HORS_SUISSE;
 				}
 				else {
 					previousLocation = null;
 				}
 			}
 			else if (ancienneCommune.isVaudoise()) {
-				previousLocation = WorldLocation.VD;
+				previousLocation = LocalisationType.CANTON_VD;
 			}
 			else {
-				previousLocation = WorldLocation.HC;
+				previousLocation = LocalisationType.HORS_CANTON;
 			}
 			break;
 		default:
@@ -226,7 +257,7 @@ public class ArriveePrincipale extends Arrivee {
 	@Override
 	protected RegDate getDateArriveeEffective(RegDate date) {
 		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
-		if (previousLocation == WorldLocation.VD) {
+		if (previousLocation == LocalisationType.CANTON_VD) {
 			// vérification du dépassement du 20/12
 			return FiscalDateHelper.getDateOuvertureForFiscal(date);
 		}
@@ -240,13 +271,13 @@ public class ArriveePrincipale extends Arrivee {
 		final MotifFor motif;
 		if (previousLocation != null) {
 		    switch (previousLocation) {
-		        case HC:
+		        case HORS_CANTON:
 			        motif = MotifFor.ARRIVEE_HC;
 			        break;
-		        case VD:
+		        case CANTON_VD:
 			        motif = MotifFor.DEMENAGEMENT_VD;
 			        break;
-		        case HS:
+		        case HORS_SUISSE:
 			        motif = MotifFor.ARRIVEE_HS;
 			        break;
 		        default:

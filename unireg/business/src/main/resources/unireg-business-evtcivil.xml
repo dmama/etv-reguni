@@ -24,4 +24,18 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
+	<!-- Evénements civil e-CH -->
+
+	<bean id="evenementCivilEchTranslator" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilEchTranslatorImpl">
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+		<property name="adresseService" ref="adresseService"/>
+		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+	</bean>
+
 </beans>

@@ -9,6 +9,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -19,17 +20,17 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 	/**
 	 * L'adresse principale de l'individu .
 	 */
-	private Adresse adressePrincipale;
+	private final Adresse adressePrincipale;
 
 	/**
 	 * L'adresse secondaire de l'individu.
 	 */
-	private Adresse adresseSecondaire;
+	private final Adresse adresseSecondaire;
 
 	/**
 	 * L'adresse courrier de l'individu .
 	 */
-	private Adresse adresseCourrier;
+	private final Adresse adresseCourrier;
 
 	protected EvenementCivilInterneAvecAdresses(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -38,7 +39,25 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 		// On recupère les adresses à la date de l'événement plus 1 jour
 		try {
 			final AdressesCiviles adresses =  new AdressesCiviles(context.getServiceCivil().getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false));
-			Assert.notNull(adresses, "L'individu principal n'a pas d'adresses valide");
+			Assert.notNull(adresses, "L'individu principal n'a pas d'adresse valide");
+
+			this.adressePrincipale = adresses.principale;
+			this.adresseSecondaire = adresses.secondaire;
+			this.adresseCourrier = adresses.courrier;
+		}
+		catch (DonneesCivilesException e) {
+			throw new EvenementCivilException(e);
+		}
+	}
+
+	protected EvenementCivilInterneAvecAdresses(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+
+		// Distinction adresse principale et adresse courrier
+		// On recupère les adresses à la date de l'événement plus 1 jour
+		try {
+			final AdressesCiviles adresses =  new AdressesCiviles(context.getServiceCivil().getAdresses(evenement.getNumeroIndividu(), evenement.getDateEvenement().getOneDayAfter(), false));
+			Assert.notNull(adresses, "L'individu n'a pas d'adresse valide");
 
 			this.adressePrincipale = adresses.principale;
 			this.adresseSecondaire = adresses.secondaire;

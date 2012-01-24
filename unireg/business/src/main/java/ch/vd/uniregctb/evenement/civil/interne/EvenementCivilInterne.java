@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -79,6 +80,42 @@ public abstract class EvenementCivilInterne {
 		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
+
+		if (options.isRefreshCache()) {
+
+			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
+			context.getDataEventService().onIndividuChange(noIndividu);
+
+			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
+			if (forceRefreshCacheConjoint()) {
+
+				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
+				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
+
+				// nettoyage du cache pour tous ces individus
+				for (Long noInd : conjoints) {
+					context.getDataEventService().onIndividuChange(noInd);
+				}
+			}
+		}
+	}
+
+	protected EvenementCivilInterne(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		this.context = context;
+
+		/* récupération des informations liés à l'événement civil */
+		this.date = evenement.getDateEvenement();
+		this.numeroEvenement = evenement.getId();
+		this.numeroOfsCommuneAnnonce = null;
+		this.noIndividu = evenement.getNumeroIndividu();
+		this.principalPPId = evenement.getNumeroContribuablePersonnePhysique();
+		this.noIndividuConjoint = null;
+		this.conjointPPId = null;
+
+		/*
+		 * Récupération des informations sur l'individu depuis RCPers.
+		 */
+		parts = null;
 
 		if (options.isRefreshCache()) {
 

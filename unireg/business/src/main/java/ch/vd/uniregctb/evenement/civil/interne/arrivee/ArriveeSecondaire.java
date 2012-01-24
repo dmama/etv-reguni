@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -22,6 +23,21 @@ public class ArriveeSecondaire extends Arrivee {
 	private final Commune nouvelleCommune;
 
 	public ArriveeSecondaire(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+
+		final RegDate dateArrivee = getDate();
+		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+
+		final AdressesCiviles anciennesAdresses = getAdresses(context, veilleArrivee);
+		ancienneAdresse = anciennesAdresses.secondaire;
+		ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, veilleArrivee);
+
+		final AdressesCiviles nouvellesAdresses = getAdresses(context, dateArrivee);
+		nouvelleAdresse = nouvellesAdresses.secondaire;
+		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
+	}
+
+	public ArriveeSecondaire(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		final RegDate dateArrivee = getDate();

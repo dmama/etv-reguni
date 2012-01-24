@@ -86,6 +86,7 @@
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="translator" ref="evenementCivilEchTranslator"/>
 	</bean>
 
 </beans>
