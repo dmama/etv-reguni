@@ -3,12 +3,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<script type="text/javascript" language="Javascript1.3">
-function ouvrirAide(url) {
- 	window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
-}
-</script>
-
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -16,11 +10,8 @@ function ouvrirAide(url) {
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
 		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {
@@ -30,10 +21,7 @@ function ouvrirAide(url) {
 
 		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 
-		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
+		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
@@ -157,6 +145,12 @@ function ouvrirAide(url) {
 			</div>
 
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>
+
+			<script type="text/javascript" language="Javascript1.3">
+				function ouvrirAide(url) {
+					window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
+				}
+			</script>
 
 	</body>
 

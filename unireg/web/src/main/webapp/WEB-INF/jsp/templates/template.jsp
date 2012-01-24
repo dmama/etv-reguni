@@ -16,23 +16,12 @@ function ouvrirAide(url) {
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
 		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/jquery-ui-tooltip.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tabs.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tools.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/unireg.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/tooltip.css"/>" rel="stylesheet" type="text/css">
+		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
 
 		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 		<%@ include file="/WEB-INF/jsp/include/fieldsets-workaround.jsp" %>
 
-		<link media="print" href="<c:url value="/css/print/layout.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/tabs.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/tools.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/displaytag.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/unireg.css"/>" rel="stylesheet" type="text/css">
-		<link media="print" href="<c:url value="/css/print/common.css"/>" rel="stylesheet" type="text/css">
+		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {
