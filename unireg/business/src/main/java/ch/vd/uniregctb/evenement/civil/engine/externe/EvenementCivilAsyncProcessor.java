@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.uniregctb.evenement.civil.engine.externe;
 
 /**
  * Interface publique du composant qui gère le traitement

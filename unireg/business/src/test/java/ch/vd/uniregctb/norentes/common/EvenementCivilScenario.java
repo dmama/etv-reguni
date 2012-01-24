@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.common;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;

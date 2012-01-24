@@ -17,7 +17,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;

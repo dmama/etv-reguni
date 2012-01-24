@@ -18,7 +18,7 @@ import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;

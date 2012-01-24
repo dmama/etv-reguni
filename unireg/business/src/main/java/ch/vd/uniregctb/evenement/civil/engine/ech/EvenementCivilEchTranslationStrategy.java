@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;

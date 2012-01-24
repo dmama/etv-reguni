@@ -10,7 +10,7 @@ import ch.vd.evd0001.v3.Person;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

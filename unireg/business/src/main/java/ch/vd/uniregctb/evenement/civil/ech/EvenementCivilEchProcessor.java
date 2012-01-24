@@ -21,8 +21,8 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilEchTranslator;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslator;
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 

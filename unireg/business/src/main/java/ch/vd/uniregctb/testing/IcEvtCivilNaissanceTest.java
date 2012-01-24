@@ -6,7 +6,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;

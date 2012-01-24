@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.civil.interne.tutelle;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.engine.EvenementCivilTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;

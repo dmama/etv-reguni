@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Dispatcher des handlers des evenements civil -->
-	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilProcessorImpl">
+	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessorImpl">
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
@@ -12,7 +12,7 @@
 		<property name="evenementCivilTranslator" ref="evenementCivilTranslator" />
 	</bean>
 
-	<bean id="evenementCivilTranslator" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilTranslatorImpl">
+	<bean id="evenementCivilTranslator" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslatorImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -26,7 +26,7 @@
 
 	<!-- Evénements civil e-CH -->
 
-	<bean id="evenementCivilEchTranslator" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilEchTranslatorImpl">
+	<bean id="evenementCivilEchTranslator" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslatorImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />

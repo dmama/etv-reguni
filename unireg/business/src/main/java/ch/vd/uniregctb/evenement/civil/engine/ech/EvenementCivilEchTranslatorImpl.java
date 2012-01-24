@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.HashMap;
 import java.util.Map;

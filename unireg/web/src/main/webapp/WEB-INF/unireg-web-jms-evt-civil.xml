@@ -29,7 +29,7 @@
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
 	</bean>
 
-	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilAsyncProcessorImpl">
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
 		<property name="fetchAwaitingEventsOnStart" value="true"/>
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
@@ -54,7 +54,7 @@
 		</property>
 	</bean>
 
-	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilNotificationQueueImpl">
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>

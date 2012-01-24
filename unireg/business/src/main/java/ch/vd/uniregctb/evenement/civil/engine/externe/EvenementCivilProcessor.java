@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.uniregctb.evenement.civil.engine.externe;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;

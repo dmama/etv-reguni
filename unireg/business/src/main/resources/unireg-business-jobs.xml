@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
     <bean id="schedulerJob" class="ch.vd.uniregctb.scheduler.JobDefinition" abstract="true">
         <property name="batchScheduler" ref="batchScheduler"/>
@@ -98,7 +95,7 @@
 	</bean>
 
     <!-- Job qui traite les evenements civils -->
-    <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilHandlerJob">
+    <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>
         <constructor-arg value="Traitement (ou retraitement) des événements civils"/>
         <property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
