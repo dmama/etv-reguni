@@ -5,8 +5,8 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -142,15 +142,15 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 	@Check(id=3, descr="Vérifie les fors et adresse d'envoi")
 	public void check3() throws Exception {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
 		assertNotNull(evt, "Où est l'événement civil d'arrivée de Charles ?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil devrait être en erreur (for déjà HC).");
 
-		final Set<EvenementCivilExterneErreur> erreurs = evt.getErreurs();
+		final Set<EvenementCivilRegPPErreur> erreurs = evt.getErreurs();
 		assertNotNull(erreurs, "Evénement en erreur sans erreur?");
 		assertEquals(1, erreurs.size(), "Mauvais nombre d'erreurs");
 
-		final EvenementCivilExterneErreur erreur = erreurs.iterator().next();
+		final EvenementCivilRegPPErreur erreur = erreurs.iterator().next();
 		assertNotNull(erreur, "Evénement en erreur sans erreur?");
 		assertEquals("Le for du contribuable est déjà hors du canton", erreur.getMessage(), "Mauvaise erreur");
 	}

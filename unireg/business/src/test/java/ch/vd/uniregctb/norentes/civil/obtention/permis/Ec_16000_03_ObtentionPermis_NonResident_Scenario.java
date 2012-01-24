@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.obtention.permis;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -100,7 +100,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 	@Check(id=2, descr="Vérification de l'état du for courant")
 	public void check2() throws Exception {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noCtbMomo);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noCtbMomo);
 		assertNotNull(evt, "L'événement est introuvable.");
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 

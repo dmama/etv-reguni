@@ -6,11 +6,11 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCriteriaView extends EvenementCivilExterneCriteria {
+public class EvenementCriteriaView extends EvenementCivilRegPPCriteria {
 
 	public static final String TOUS = "TOUS";
 

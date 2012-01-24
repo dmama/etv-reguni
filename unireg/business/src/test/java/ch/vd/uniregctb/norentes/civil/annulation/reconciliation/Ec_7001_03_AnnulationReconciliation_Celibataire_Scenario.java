@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.norentes.civil.annulation.reconciliation;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
@@ -71,11 +71,11 @@ public class Ec_7001_03_AnnulationReconciliation_Celibataire_Scenario extends Ab
 
 	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
 	public void check2() {
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement d'annulation de réconciliation devrait être en erreur car l'habitant n'est pas marié");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 
-		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilRegPPErreur erreur = evt.getErreurs().iterator().next();
 		assertEquals("Le tiers ménage commun n'a pu être trouvé", erreur.getMessage(), "L'erreur n'est pas la bonne");
 	}
 }

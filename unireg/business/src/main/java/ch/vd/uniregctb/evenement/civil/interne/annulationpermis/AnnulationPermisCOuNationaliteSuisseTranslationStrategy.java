@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :

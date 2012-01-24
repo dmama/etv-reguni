@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.separation;
 
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 public abstract class AnnulationSeparationOuDivorceTranslationStrategy implements EvenementCivilTranslationStrategy {
 

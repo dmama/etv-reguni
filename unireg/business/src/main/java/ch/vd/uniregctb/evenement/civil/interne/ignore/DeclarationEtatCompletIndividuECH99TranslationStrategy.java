@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.ignore;
 
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilIgnoreTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilIgnoreTranslationStrategy;
 
 /**
  * handler spécifique à l'événement civil ECH99

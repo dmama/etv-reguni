@@ -18,8 +18,8 @@ import ch.vd.uniregctb.declaration.EtatDeclarationDAO;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
@@ -53,7 +53,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	private MouvementDossierDAO mouvementDossierDAO;
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
-	private EvenementCivilExterneDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
@@ -140,7 +140,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 					return fillConsultLogView(droitAcces);
 				}
 				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
-					EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
+					EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(id);
 					return fillConsultLogView(evenementCivilExterne);
 				}
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
@@ -233,7 +233,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
+	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
 		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 

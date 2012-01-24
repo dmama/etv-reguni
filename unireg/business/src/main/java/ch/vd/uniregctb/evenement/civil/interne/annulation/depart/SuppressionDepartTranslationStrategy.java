@@ -3,9 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.depart;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
  * Gère l'annulation de départ d'un individu dans les cas suivants:
@@ -20,7 +20,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 public class SuppressionDepartTranslationStrategy implements EvenementCivilTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilRegPP event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new SuppressionDepart(event, context, options);
 	}
 }

@@ -10,8 +10,8 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -24,7 +24,7 @@ public class ChangementNom extends ChangementBase {
 
 	protected static Logger LOGGER = Logger.getLogger(ChangementNom.class);
 
-	protected ChangementNom(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected ChangementNom(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

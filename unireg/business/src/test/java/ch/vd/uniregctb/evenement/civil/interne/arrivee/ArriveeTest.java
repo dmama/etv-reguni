@@ -17,11 +17,11 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -93,8 +93,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		habitant.setNumero(numeroIndividu);
 
 		// Crée l'événement
-		EvenementCivilExterne
-				evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, habitant, 0L, null, 1234, null);
 
 		// Prend le mock infrastructure par défaut
 		ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
@@ -499,7 +499,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
@@ -561,7 +561,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
@@ -623,7 +623,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
@@ -677,7 +677,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
@@ -734,7 +734,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
 
 			// Simule un événement de déménagement de la part de la commune fusionnée
-			final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+			final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 					MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 			// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,

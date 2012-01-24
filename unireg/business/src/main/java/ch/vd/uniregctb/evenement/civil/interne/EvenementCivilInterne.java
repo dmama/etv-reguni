@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -61,7 +61,7 @@ public abstract class EvenementCivilInterne {
 	 * @param options les options de traitement de l'événement
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	protected EvenementCivilInterne(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected EvenementCivilInterne(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */

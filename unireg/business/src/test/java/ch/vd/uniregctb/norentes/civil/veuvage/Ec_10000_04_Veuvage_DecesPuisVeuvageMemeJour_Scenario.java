@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -145,11 +145,11 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de l'individu créé")
 	public void check2() {
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.DECES);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.DECES);
 		assertNotNull(evts, "Pas du tout d'événement de décès?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de DECES pour Pierre");
 
-		final EvenementCivilExterne evt = evts.get(0);
+		final EvenementCivilRegPP evt = evts.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{
@@ -181,11 +181,11 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
 	public void check3() {
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 		assertNotNull(evts, "Pas du tout d'événement de veuvage?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de VEUVAGE pour Pierre");
 
-		final EvenementCivilExterne evt = evts.get(0);
+		final EvenementCivilRegPP evt = evts.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{

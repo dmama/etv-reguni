@@ -5,7 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -134,8 +134,8 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 	@Check(id=2, descr="Vérifie que l'evenement d'arrivée est au statut traité et qu'un habitant a été créé")
 	public void check2() {
 		
-		List<EvenementCivilExterne> list = evtExterneDAO.getAll();
-		for (EvenementCivilExterne evt : list) {
+		List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
+		for (EvenementCivilRegPP evt : list) {
 			if (noIndMaria == evt.getNumeroIndividuPrincipal()) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 			}

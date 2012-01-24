@@ -41,7 +41,7 @@
 
 	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender"/>
 
-	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilAsyncProcessorImpl">
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="1"/>
 		<property name="fetchAwaitingEventsOnStart" value="false"/>
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>

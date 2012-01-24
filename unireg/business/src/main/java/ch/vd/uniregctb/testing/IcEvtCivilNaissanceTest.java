@@ -6,15 +6,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class IcEvtCivilNaissanceTest extends InContainerTest {
 
-	private EvenementCivilExterneDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
 	private EvenementCivilProcessor evenementCivilProcessor;
 
 
@@ -30,7 +30,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		tmpl.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				EvenementCivilExterne evt = new EvenementCivilExterne();
+				EvenementCivilRegPP evt = new EvenementCivilRegPP();
 				evt.setId(9006L);
 				evt.setDateEvenement(RegDate.get(2008, 2, 14));
 				evt.setType(TypeEvenementCivil.NAISSANCE);
@@ -58,7 +58,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
+	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
 		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 

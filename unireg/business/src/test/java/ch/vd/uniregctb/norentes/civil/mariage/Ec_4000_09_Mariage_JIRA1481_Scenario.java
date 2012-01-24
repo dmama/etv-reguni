@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -141,8 +141,8 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 	@Check(id=2, descr="Vérifie que l'evenement est au statut traité et que le ménage est assujetti sur Lausanne")
 	public void check2() {
 		
-		final List<EvenementCivilExterne> list = evtExterneDAO.getAll();
-		for (EvenementCivilExterne evt : list) {
+		final List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
+		for (EvenementCivilRegPP evt : list) {
 			if (noIndAngela == evt.getNumeroIndividuPrincipal()) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité");
 			}

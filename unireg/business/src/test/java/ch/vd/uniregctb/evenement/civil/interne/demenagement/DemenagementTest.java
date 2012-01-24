@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
@@ -366,7 +366,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		addForPrincipal(pp, dateFusion, MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
 
 		// Simule un événement de déménagement de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, pas de surprise ici,

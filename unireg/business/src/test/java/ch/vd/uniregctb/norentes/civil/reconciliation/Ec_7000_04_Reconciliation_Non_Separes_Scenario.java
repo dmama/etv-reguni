@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.norentes.civil.reconciliation;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -137,12 +137,12 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 	@Check(id = 2, descr = "Vérifie que l'événement civil est en erreur")
 	public void check2() {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(),
 				"L'événement de réconciliation devrait être en erreur car le couple n'était pas séparé");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 
-		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilRegPPErreur erreur = evt.getErreurs().iterator().next();
 		assertEquals("Le couple n'est pas séparé", erreur.getMessage(), "L'erreur n'est pas la bonne");
 	}
 }

@@ -14,9 +14,9 @@ import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.Mariage;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -62,7 +62,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		 * Création d'un événement civil composé de deux individus
 		 */
 		final RegDate dateEvenement = RegDate.get(2008, 3, 10);
-		final EvenementCivilExterne evenementArriveeCouple = new EvenementCivilExterne(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
+		final EvenementCivilRegPP evenementArriveeCouple = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
 				EtatEvenementCivil.A_TRAITER, dateEvenement, noIndividuPrincipal,
 				null, noIndividuConjoint, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
@@ -114,8 +114,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		/*
 		 * Création d'un événement civil de mariage
 		 */
-		final EvenementCivilExterne
-				evtMariage = new EvenementCivilExterne(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
+		final EvenementCivilRegPP
+				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		// passage dans l'init de l'adapter
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, null, null);

@@ -5,7 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -239,7 +239,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 
 		// On check que le couple est parti
 		{
-			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabCedric);
+			final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabCedric);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
 
 			final PersonnePhysique cedric = (PersonnePhysique) tiersDAO.get(noHabCedric);

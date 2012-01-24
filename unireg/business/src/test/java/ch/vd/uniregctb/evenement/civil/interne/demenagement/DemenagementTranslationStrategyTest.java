@@ -4,11 +4,11 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockBatiment;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -68,7 +68,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
@@ -117,7 +117,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
-		final EvenementCivilExterne externe = new EvenementCivilExterne(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, parce que

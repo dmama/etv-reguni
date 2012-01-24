@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -86,7 +86,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 		assertNull(pp, "Pourquoi devrait-on trouver un tiers ? Pourquoi a-t-il été créé ?");
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER);
 		assertNotNull(evts, "Pas d'événement civil ?");
 		assertEquals(1, evts.size(), "Où est passé l'événement civil d'obtention du permis ?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evts.get(0).getEtat(), "Pourquoi pas parti en erreur (le tiers n'existe pas) ?");
@@ -116,7 +116,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 	public void check2() throws Exception {
 
 		// si l'événement a été traité, c'est qu'un tiers a été créé
-		final List<EvenementCivilExterne> arrivees = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
+		final List<EvenementCivilRegPP> arrivees = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
 		assertNotNull(arrivees, "Pas d'événements civils ?");
 		assertEquals(1, arrivees.size(), "Où est passé l'événement civil d'arrivée ?");
 		assertEquals(EtatEvenementCivil.TRAITE, arrivees.get(0).getEtat(), "Aurait dû être traité, non ?");
@@ -135,7 +135,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 		assertNull(ffpAvantArrivee, "Pourquoi y a-t-il déjà un for avant l'arrivée ?");
 
 		// vérification que l'événement de permis a également été traité (en fait, ignoré!)
-		final List<EvenementCivilExterne> obtentionPermis = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER);
+		final List<EvenementCivilRegPP> obtentionPermis = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER);
 		assertNotNull(obtentionPermis, "Pas d'événements civils ?");
 		assertEquals(1, obtentionPermis.size(), "Où est passé l'événement civil d'obtention de permis ?");
 		assertEquals(EtatEvenementCivil.TRAITE, obtentionPermis.get(0).getEtat(), "Aurait dû être traité, non ?");

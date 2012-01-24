@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -96,7 +96,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		// Simulation de l'annulation du permis dans le host
 		permisRoberto.setDateAnnulation(DATE_ANNULATION_PERMIS);
 		// Crée l'événement
-		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
 		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
@@ -111,7 +111,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		// Simulation de l'annulation du permis dans le host
 		permisRosa.setDateAnnulation(DATE_ANNULATION_PERMIS);
 		// Crée l'événement
-		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
 		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);

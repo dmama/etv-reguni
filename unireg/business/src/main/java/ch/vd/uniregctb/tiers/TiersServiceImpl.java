@@ -1,20 +1,77 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.registre.base.date.*;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.adresse.*;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.*;
+import ch.vd.uniregctb.common.EntityKey;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.*;
+import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.District;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.Region;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -29,27 +86,23 @@ import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
-import ch.vd.uniregctb.type.*;
+import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeActivite;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  * Service de recherche des tiers. Effectue conjointement la recherche en base et dans le moteur de recherche.
@@ -58,23 +111,23 @@ public class TiersServiceImpl implements TiersService {
 
     private static final Logger LOGGER = Logger.getLogger(TiersServiceImpl.class);
 
-    private TiersDAO tiersDAO;
-    private EvenementFiscalService evenementFiscalService;
-    private GlobalTiersSearcher tiersSearcher;
-    private EvenementCivilExterneDAO evenementCivilExterneDAO;
-    private ServiceInfrastructureService serviceInfra;
-    private ServiceCivilService serviceCivilService;
-    private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-    private TacheService tacheService;
-    private SituationFamilleService situationFamilleService;
-    private AdresseService adresseService;
-    private RemarqueDAO remarqueDAO;
-    private ServicePersonneMoraleService servicePM;
-    private ValidationService validationService;
-    private ValidationInterceptor validationInterceptor;
-    private HibernateTemplate hibernateTemplate;
-    private PlatformTransactionManager transactionManager;
-    private AssujettissementService assujettissementService;
+	private TiersDAO tiersDAO;
+	private EvenementFiscalService evenementFiscalService;
+	private GlobalTiersSearcher tiersSearcher;
+	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private ServiceInfrastructureService serviceInfra;
+	private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private TacheService tacheService;
+	private SituationFamilleService situationFamilleService;
+	private AdresseService adresseService;
+	private RemarqueDAO remarqueDAO;
+	private ServicePersonneMoraleService servicePM;
+	private ValidationService validationService;
+	private ValidationInterceptor validationInterceptor;
+	private HibernateTemplate hibernateTemplate;
+	private PlatformTransactionManager transactionManager;
+	private AssujettissementService assujettissementService;
 
     /**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -1237,10 +1290,10 @@ public class TiersServiceImpl implements TiersService {
         return null;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
-        this.evenementCivilExterneDAO = evenementCivilExterneDAO;
-    }
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
+		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	}
 
     private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
         forFiscalPrincipal.setDateFin(null);
@@ -3972,19 +4025,20 @@ public class TiersServiceImpl implements TiersService {
         return menageCommun;
     }
 
-    @Override
-    public List<EvenementCivilExterne> getEvenementsCivilsNonTraites(Tiers tiers) {
-        final Set<Long> noTiers = new HashSet<Long>(1);
-        noTiers.add(tiers.getNumero());
-        final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
-        final List<EvenementCivilExterne> liste;
-        if (!nosIndividus.isEmpty()) {
-            liste = evenementCivilExterneDAO.getEvenementsCivilsNonTraites(nosIndividus);
-        } else {
-            liste = Collections.emptyList();
-        }
-        return liste;
-    }
+	@Override
+	public List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(Tiers tiers) {
+		final Set<Long> noTiers = new HashSet<Long>(1);
+		noTiers.add(tiers.getNumero());
+		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
+		final List<EvenementCivilRegPP> liste;
+		if (!nosIndividus.isEmpty()) {
+			liste = evenementCivilExterneDAO.getEvenementsCivilsNonTraites(nosIndividus);
+		}
+		else {
+			liste = Collections.emptyList();
+		}
+		return liste;
+	}
 
     @Override
     public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {

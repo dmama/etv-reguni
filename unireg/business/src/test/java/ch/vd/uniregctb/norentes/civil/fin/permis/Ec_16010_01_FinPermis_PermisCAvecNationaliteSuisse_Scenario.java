@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.fin.permis;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -117,7 +117,7 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 	@Check(id = 2, descr = "Vérifie que l'événement est traité, mais qu'il n'y a aucun changement effectué (en attente de l'événement d'obtention de nationalité Suisse)")
 	public void check2() {
 		{
-			final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabRoberto);
+			final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabRoberto);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 
 			final PersonnePhysique roberto = (PersonnePhysique) tiersDAO.get(noHabRoberto);

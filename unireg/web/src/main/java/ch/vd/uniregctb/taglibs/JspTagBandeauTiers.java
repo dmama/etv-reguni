@@ -25,7 +25,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -278,11 +278,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showEvenementsCivils && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) {
-			final List<EvenementCivilExterne> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
+			final List<EvenementCivilRegPP> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
 			if (evtsNonTraites != null && !evtsNonTraites.isEmpty()) {
 
 				final Set<Long> nos = new TreeSet<Long>();
-				for (EvenementCivilExterne evt : evtsNonTraites) {
+				for (EvenementCivilRegPP evt : evtsNonTraites) {
 					final Long indPrincipal = evt.getNumeroIndividuPrincipal();
 					if (indPrincipal != null) {
 						nos.add(indPrincipal);

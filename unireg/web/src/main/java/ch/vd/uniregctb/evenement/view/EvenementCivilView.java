@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -25,13 +25,13 @@ public class EvenementCivilView {
 	private PersonnePhysique habitantPrincipal;
 	private PersonnePhysique habitantConjoint;
 	private Integer numeroOfsCommuneAnnonce;
-	private Set<EvenementCivilExterneErreur> erreurs;
+	private Set<EvenementCivilRegPPErreur> erreurs;
 	private Long numeroCTB;
 	private String nom1;
 	private String nom2;
 	private String commentaireTraitement;
 
-	public EvenementCivilView(EvenementCivilExterne evt, TiersDAO tiersDAO) {
+	public EvenementCivilView(EvenementCivilRegPP evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
 		if (evt.getHabitantPrincipalId() != null) {
@@ -129,11 +129,11 @@ public class EvenementCivilView {
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 	}
 
-	public Set<EvenementCivilExterneErreur> getErreurs() {
+	public Set<EvenementCivilRegPPErreur> getErreurs() {
 		return erreurs;
 	}
 
-	public void setErreurs(Set<EvenementCivilExterneErreur> erreurs) {
+	public void setErreurs(Set<EvenementCivilRegPPErreur> erreurs) {
 		this.erreurs = erreurs;
 	}
 

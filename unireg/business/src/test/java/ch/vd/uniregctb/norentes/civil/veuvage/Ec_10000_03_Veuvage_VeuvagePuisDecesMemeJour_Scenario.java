@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.veuvage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -179,7 +179,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
 	public void check3() {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabPierre);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabPierre);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{

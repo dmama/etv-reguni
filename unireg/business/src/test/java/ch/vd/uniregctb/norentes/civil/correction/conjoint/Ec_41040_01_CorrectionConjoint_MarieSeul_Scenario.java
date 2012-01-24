@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.correction.conjoint;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -168,7 +168,7 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 	@Check(id=2, descr="Vérifie que le ménage est complet et l'habitant ajouté n'a plus de for ouvert")
 	public void check2() {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabRafa);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabRafa);
 		assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "L'événement civil devrait être à vérifier");
 		assertEquals(2, evt.getWarnings().size(), "Il devrait y avoir 2 warnings");
 

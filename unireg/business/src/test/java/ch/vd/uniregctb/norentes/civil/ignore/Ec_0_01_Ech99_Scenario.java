@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.norentes.civil.ignore;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -20,7 +20,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 
 	private long idEvenementCivil;
 
-	private EvenementCivilExterneDAO evtCivilExterneDAO;
+	private EvenementCivilRegPPDAO evtCivilExterneDAO;
 
 	@Override
 	public TypeEvenementCivil geTypeEvenementCivil() {
@@ -37,7 +37,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 		return "Test de l'arrivée d'un événement de déclaration de l'état complet des données d'un individu (doit être traité sans autre)";
 	}
 
-	public void setEvtCivilExterneDAO(EvenementCivilExterneDAO evtCivilExterneDAO) {
+	public void setEvtCivilExterneDAO(EvenementCivilRegPPDAO evtCivilExterneDAO) {
 		this.evtCivilExterneDAO = evtCivilExterneDAO;
 	}
 
@@ -64,7 +64,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 
 	@Check(id=1, descr="L'événement doit être traité")
 	public void check1() throws Exception {
-		final EvenementCivilExterne evtCivil = evtCivilExterneDAO.get(idEvenementCivil);
+		final EvenementCivilRegPP evtCivil = evtCivilExterneDAO.get(idEvenementCivil);
 		assertNotNull(evtCivil, "L'événement est introuvable.");
 		assertEquals(EtatEvenementCivil.TRAITE, evtCivil.getEtat(), "Evénement non traité");
 	}

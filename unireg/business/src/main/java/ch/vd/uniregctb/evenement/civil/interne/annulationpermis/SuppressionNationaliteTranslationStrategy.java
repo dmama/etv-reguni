@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
  * Règles métiers permettant de traiter les événements de suppression de nationalité.
@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 public class SuppressionNationaliteTranslationStrategy extends AnnulationPermisCOuNationaliteSuisseTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilRegPP event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		final EvenementCivilInterne interne;
 		switch (event.getType()) {
 			case SUP_NATIONALITE_SUISSE:

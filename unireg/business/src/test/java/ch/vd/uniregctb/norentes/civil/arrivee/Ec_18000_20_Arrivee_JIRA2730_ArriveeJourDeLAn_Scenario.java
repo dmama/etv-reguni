@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -163,7 +163,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 	public void check2() throws Exception {
 
 		// si l'événement a été traité, c'est qu'il n'y avait qu'un seul candidat (ou aucun)
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(numeroIndividu, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
 		assertNotNull(evts, "Pas d'événements civils ?");
 		assertEquals(1, evts.size(), "Où est passé l'événement civil d'arrivée ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evts.get(0).getEtat(), "Aurait dû être traité, non ?");

@@ -7,10 +7,10 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -23,7 +23,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 public class DemenagementTranslationStrategy implements EvenementCivilTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilRegPP event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		final Communes communes = determineCommunesAvantEtApres(event, context);
 
@@ -66,7 +66,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	 * @return les communes trouvées (qui peuvent être nulles)
 	 * @throws EvenementCivilException un cas de problème
 	 */
-	private Communes determineCommunesAvantEtApres(EvenementCivilExterne event, EvenementCivilContext context) throws EvenementCivilException {
+	private Communes determineCommunesAvantEtApres(EvenementCivilRegPP event, EvenementCivilContext context) throws EvenementCivilException {
 		final Long principal = event.getNumeroIndividuPrincipal();
 		final RegDate jourDemenagement = event.getDateEvenement();
 		final RegDate veilleDemenagement = jourDemenagement.getOneDayBefore();

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -201,7 +201,7 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 
 	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
 	public void check2() {
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabAlexandre);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabAlexandre);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement d'annulation de mariage devrait être traité");
 
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabAlexandre), dateDebutAlexandre, MotifFor.ARRIVEE_HC, null);

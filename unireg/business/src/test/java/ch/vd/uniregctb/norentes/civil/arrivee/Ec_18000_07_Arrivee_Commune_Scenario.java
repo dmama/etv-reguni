@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import java.util.Collection;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -128,7 +128,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 	@Check(id=3, descr="Vérifie que l'evenement d'arrivée est au statut à verifier et qu'Antoine a un for ouvert sur ")
 	public void check3() throws Exception {
 		{
-			EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabAdrienne);
+			EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabAdrienne);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 		{

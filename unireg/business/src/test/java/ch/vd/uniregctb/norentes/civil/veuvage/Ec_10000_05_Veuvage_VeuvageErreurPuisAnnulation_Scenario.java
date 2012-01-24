@@ -5,8 +5,8 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
@@ -140,11 +140,11 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 	@Check(id=2, descr="L'événement de veuvage doit être en erreur car Pierre est déjà veuf")
 	public void check2() {
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
-		final EvenementCivilExterne evt = evts.get(0);
+		final EvenementCivilRegPP evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
 
@@ -176,29 +176,29 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 	public void check3() {
 
 		{
-			final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.ANNUL_VEUVAGE);
+			final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.ANNUL_VEUVAGE);
 			assertNotNull(evts, "Pas d'événement trouvé!");
 			assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil d'annulation de veuvage sur Pierre");
 
-			final EvenementCivilExterne evt = evts.get(0);
+			final EvenementCivilRegPP evt = evts.get(0);
 			assertNotNull(evt, "Evenement null?");
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil n'a pas été traité!");
 		}
 
 		{
-			final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
+			final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 			assertNotNull(evts, "Pas d'événement trouvé!");
 			assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
-			final EvenementCivilExterne evt = evts.get(0);
+			final EvenementCivilRegPP evt = evts.get(0);
 			assertNotNull(evt, "Evenement null?");
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
 
-			final Set<EvenementCivilExterneErreur> erreurs = evt.getErreurs();
+			final Set<EvenementCivilRegPPErreur> erreurs = evt.getErreurs();
 			assertNotNull(erreurs, "Evénement en erreur mais collection d'erreurs nulle?");
 			assertEquals(1, erreurs.size(), "J'attends une erreur");
 
-			final EvenementCivilExterneErreur erreur = erreurs.iterator().next();
+			final EvenementCivilRegPPErreur erreur = erreurs.iterator().next();
 			assertNotNull(erreur, "Erreur nulle?");
 			assertEquals(String.format("L'individu %d n'est pas veuf dans le civil au %s", noIndPierre, RegDateHelper.dateToDisplayString(dateVeuvage)), erreur.getMessage(), "Mauvaise erreur");
 		}

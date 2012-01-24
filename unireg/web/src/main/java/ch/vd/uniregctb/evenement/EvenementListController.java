@@ -14,8 +14,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -50,7 +50,7 @@ public class EvenementListController extends AbstractEvenementController {
 
 		if (bean == null || isAppuiSurEffacer(request)) {
 	 		bean = (EvenementCriteriaView) super.formBackingObject(request);
-			bean.setTypeRechercheDuNom(EvenementCivilExterneCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
+			bean.setTypeRechercheDuNom(EvenementCivilRegPPCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
 			bean.setEtat(EtatEvenementCivil.A_VERIFIER);
 			session.setAttribute(EVENEMENT_CRITERIA_NAME, bean);
 			session.setAttribute(EVENEMENT_LIST_PAGE_INFO, null);
@@ -90,7 +90,7 @@ public class EvenementListController extends AbstractEvenementController {
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, getEvenementManager().count(bean));
 		}
 		else {
-			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilExterne>());
+			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilRegPP>());
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, 0);
 		}
 

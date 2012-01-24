@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilSenderImpl">
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.EvenementCivilSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbMessageFactory" ref="esbMessageFactory"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtCivil}" />
@@ -24,12 +24,12 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
 	</bean>
 
-	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.civil.externe.jms.EvenementCivilListener" parent="esbMessageListener">
+	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.civil.regpp.jms.EvenementCivilListener" parent="esbMessageListener">
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
 	</bean>
 
-	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilAsyncProcessorImpl">
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
 		<property name="fetchAwaitingEventsOnStart" value="true"/>
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>

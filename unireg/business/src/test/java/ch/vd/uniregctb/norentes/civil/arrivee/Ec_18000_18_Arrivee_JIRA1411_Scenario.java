@@ -11,7 +11,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -138,7 +138,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 	@Check(id = 2, descr = "Vérifions maintenant que la surcharge fiscale n'est pas effacée et que l'historique des adresses est correct")
 	public void check2() throws Exception {
 
-		final EvenementCivilExterne evenement = evtExterneDAO.get(evenementId);
+		final EvenementCivilRegPP evenement = evtExterneDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
 		final PersonnePhysique antoine = (PersonnePhysique) tiersDAO.get(noHabAntoine);

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -263,7 +263,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 		// On check que l'evenement de Alain est traité et qu'il a bien déménagé
 		{
-			EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
+			EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		}
@@ -287,7 +287,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 		// On check que Julien a déménagé
 		{
-			EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabJulien);
+			EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabJulien);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabJulien);
@@ -322,7 +322,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 		// On check que Fanny n'a tjrs pas de fors
 		{
-			EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabFanny);
+			EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabFanny);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabFanny);
@@ -346,8 +346,8 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 		// Check que tous les evt sont OK
 		{
-			List<EvenementCivilExterne> list = evtExterneDAO.getAll();
-			for (EvenementCivilExterne evt : list) {
+			List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
+			for (EvenementCivilRegPP evt : list) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 			}
 		}

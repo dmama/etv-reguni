@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -44,7 +44,8 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 	public void testIsNationaliteSuisseAvecNationaliteSuisse() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_SUISSE);
-		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , habitant, 0L, null, 1234, null);
 		ObtentionNationalite adapter = new ObtentionNationaliteSuisse(evenement, context, options);
 	}
 
@@ -56,7 +57,8 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 	public void testIsNationaliteSuisseAvecNationaliteFrancaise() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_FRANCE);
-		EvenementCivilExterne evenement = new EvenementCivilExterne(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , habitant, 0L, null, 1234, null);
 		ObtentionNationalite adapter = new ObtentionNationaliteNonSuisse(evenement, context, options);
 	}
 

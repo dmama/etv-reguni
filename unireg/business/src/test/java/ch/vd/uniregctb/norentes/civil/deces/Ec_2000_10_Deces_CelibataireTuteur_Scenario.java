@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -123,7 +123,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 	@Check(id = 2, descr = "Vérification que le for est bien fermé sur Lausanne après le décès, et que les remboursements automatiques sont bien bloqués")
 	public void check2() {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(noHabCharles);

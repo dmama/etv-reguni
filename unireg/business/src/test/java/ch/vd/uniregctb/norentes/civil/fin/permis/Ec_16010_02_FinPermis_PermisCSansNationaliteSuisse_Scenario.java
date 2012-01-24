@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.fin.permis;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -113,7 +113,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	@Check(id=2, descr="Vérifie que l'événement est bien en erreur (un traitement manuel est requis)")
 	public void check2() {
 		{
-			EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabRosa);
+			EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabRosa);
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement devrait être passé en mode manuel");
 
 			final PersonnePhysique roberto = (PersonnePhysique) tiersDAO.get(noHabRosa);

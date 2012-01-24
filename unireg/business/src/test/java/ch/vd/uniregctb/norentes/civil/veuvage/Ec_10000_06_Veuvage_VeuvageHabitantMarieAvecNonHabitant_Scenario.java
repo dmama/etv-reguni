@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
@@ -154,11 +154,11 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 	@Check(id=2, descr="L'événement de veuvage doit être traité correctement même si Pierre n'est pas marié seul au fiscal (il l'est au civil)")
 	public void check2() {
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
-		final EvenementCivilExterne evt = evts.get(0);
+		final EvenementCivilRegPP evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil n'a pas été traité!");
 
@@ -221,11 +221,11 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 	@Check(id=3, descr="Vérification après annulation de veuvage : le conjoint doit être rescussité et les fors rétablis")
 	public void check3() throws Exception {
 
-		final List<EvenementCivilExterne> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.ANNUL_VEUVAGE);
+		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.ANNUL_VEUVAGE);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil d'annulation de veuvage sur Pierre");
 
-		final EvenementCivilExterne evt = evts.get(0);
+		final EvenementCivilRegPP evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil n'a pas été traité!");
 

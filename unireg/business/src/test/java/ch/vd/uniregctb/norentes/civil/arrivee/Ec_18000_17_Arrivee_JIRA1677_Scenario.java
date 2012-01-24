@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.arrivee;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -148,11 +148,11 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		assertTrue(olivier.isHabitantVD(), "Olivier est maintenant arrivé!");
 		assertEquals(noIndOlivier, olivier.getNumeroIndividu(), "Olivier est maintenant connu du registre civil!");
 
-		final EvenementCivilExterne evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
+		final EvenementCivilRegPP evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementOlivier.getEtat(), "L'événement civil devrait être en traité.");
 
-		final EvenementCivilExterne evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
+		final EvenementCivilRegPP evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
 		assertNotNull(evenementAlex, "Où est l'événement civil d'arrivée d'Alexandra ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAlex.getEtat(), "L'événement civil devrait être en traité.");
 

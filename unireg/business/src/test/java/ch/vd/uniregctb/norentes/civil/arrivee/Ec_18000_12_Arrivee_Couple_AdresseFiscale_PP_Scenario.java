@@ -7,7 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -169,7 +169,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 
 	@Check(id = 2, descr = "Vérifions maintenant que le couple (ainsi qu'Antoine, qui était à la source de la surcharge d'adresse) sont bien passés sur Lausanne")
 	public void check2() throws Exception {
-		final EvenementCivilExterne evenement = evtExterneDAO.get(evenementId);
+		final EvenementCivilRegPP evenement = evtExterneDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);

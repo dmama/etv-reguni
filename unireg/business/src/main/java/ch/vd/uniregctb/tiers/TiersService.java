@@ -1,5 +1,12 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -7,7 +14,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -16,13 +23,15 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
-import ch.vd.uniregctb.type.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeActivite;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Fournit les differents services d'accès aux données du Tiers.
@@ -1128,14 +1137,21 @@ public interface TiersService {
      */
     Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date);
 
-    /**
-     * Renvoie une liste des composants du ménage valides sur une période fiscale (1 janvier au 31 décembre) donnée.
-     *
-     * @param menageCommun le ménage en question
-     * @param anneePeriode la période fiscale de référence
-     * @return un ensemble contenant 1 ou 2 personnes physiques correspondants au composants du ménage, ou <b>null</b> si aucune personne n'est trouvée
-     */
-    Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, int anneePeriode);
+	/**
+	 * Renvoie une liste des composants du ménage valides sur une période fiscale (1 janvier au 31 décembre) donnée.
+	 *
+	 * @param menageCommun le ménage en question
+	 * @param anneePeriode la période fiscale de référence
+	 * @return un ensemble contenant 1 ou 2 personnes physiques correspondants au composants du ménage, ou <b>null</b> si aucune personne n'est trouvée
+	 */
+	Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, int anneePeriode);
+
+	/**
+	 * Renvoie les événements civils non traités concernant le tiers donné
+	 * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
+	 * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
+	 */
+	List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(Tiers tiers);
 
     /**
      * Recherche le menage commun actif auquel est rattaché une personne
@@ -1146,14 +1162,6 @@ public interface TiersService {
      * @throws TiersException si plus d'un ménage commun est trouvé
      */
     MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException;
-
-    /**
-     * Renvoie les événements civils non traités concernant le tiers donné
-     *
-     * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
-     * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
-     */
-    List<EvenementCivilExterne> getEvenementsCivilsNonTraites(Tiers tiers);
 
     /**
      * Permet de savoir si un tiers est un veuf(ve) marié seul

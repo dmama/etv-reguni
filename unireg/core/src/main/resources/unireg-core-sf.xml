@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
-							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+
+
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
@@ -41,8 +41,8 @@
 		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur</value>
-		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne</value>
-		<value>ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur</value>
+		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP</value>
+		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur</value>
 		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>

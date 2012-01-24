@@ -41,7 +41,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
-	<bean id="evenementService" class="ch.vd.uniregctb.evenement.civil.externe.EvenementServiceImpl">
+	<bean id="evenementService" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementServiceImpl">
 		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
 	</bean>
 	

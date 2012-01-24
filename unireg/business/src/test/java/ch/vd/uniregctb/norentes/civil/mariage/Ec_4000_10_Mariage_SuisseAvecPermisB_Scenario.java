@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -130,8 +130,8 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 	@Check(id=2, descr="Vérifie que l'événement de mariage est passé et que le for du couple est bon")
 	public void check2() {
 
-		final List<EvenementCivilExterne> list = evtExterneDAO.getAll();
-		for (EvenementCivilExterne evt : list) {
+		final List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
+		for (EvenementCivilRegPP evt : list) {
 			if (noIndRafa == evt.getNumeroIndividuPrincipal()) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), String.valueOf(evt.getId()));
 			}

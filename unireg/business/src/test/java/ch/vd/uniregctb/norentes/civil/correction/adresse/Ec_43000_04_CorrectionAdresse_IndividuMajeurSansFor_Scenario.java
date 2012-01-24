@@ -3,8 +3,8 @@ package ch.vd.uniregctb.norentes.civil.correction.adresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -95,11 +95,11 @@ public class Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario extend
 
 	@Check(id=2, descr="Vérification que l'événement a bien été mis en erreur")
 	public void check2() throws Exception {
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement devrait être en erreur");
 		assertEquals(1, evt.getErreurs().size(), "Mauvais nombre d'erreurs");
 
-		final EvenementCivilExterneErreur erreur = evt.getErreurs().iterator().next();
+		final EvenementCivilRegPPErreur erreur = evt.getErreurs().iterator().next();
 		assertNotNull(erreur, "Erreur devrait être non nulle");
 
 		final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'individu %d (ctb %s)",

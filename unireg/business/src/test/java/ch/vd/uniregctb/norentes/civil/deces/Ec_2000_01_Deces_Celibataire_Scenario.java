@@ -3,7 +3,7 @@ package ch.vd.uniregctb.norentes.civil.deces;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -98,7 +98,7 @@ public class Ec_2000_01_Deces_Celibataire_Scenario extends EvenementCivilScenari
 	@Check(id = 2, descr = "Vérification que le for est bien fermé sur Lausanne après le décès, et que les remboursements automatiques sont bien bloqués")
 	public void check2() {
 
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		final PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabGuillaume);

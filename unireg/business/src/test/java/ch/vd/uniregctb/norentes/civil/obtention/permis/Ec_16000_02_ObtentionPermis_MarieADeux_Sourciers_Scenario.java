@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.obtention.permis;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -132,7 +132,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 
 	@Check(id=1, descr="Vérification que le couple est passé au mode ordinaire")
 	public void check2() {
-		final EvenementCivilExterne evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 
 		checkCouple(ModeImposition.ORDINAIRE, dateObtentionPermis);

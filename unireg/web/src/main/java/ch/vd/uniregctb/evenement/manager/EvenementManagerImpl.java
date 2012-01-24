@@ -17,11 +17,11 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneCriteria;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterneDAO;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementService;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementService;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.evenement.view.EvenementView;
@@ -63,13 +63,13 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private MessageSource messageSource;
 	private HostCivilService hostCivilService;
-	private EvenementCivilExterneDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilExterneDAO evenementCivilExterneDAO) {
+	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
 		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
 	}
 
@@ -102,7 +102,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
 		final EvenementView evtView = new EvenementView();
-		final EvenementCivilExterne evt = evenementCivilExterneDAO.get(id);
+		final EvenementCivilRegPP evt = evenementCivilExterneDAO.get(id);
 		if (evt == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
@@ -256,7 +256,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		final EvenementCivilExterne evenementCivilExterne = evenementCivilExterneDAO.get(id);
+		final EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(id);
 		evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 	}
 
@@ -271,8 +271,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	@Transactional(readOnly = true)
 	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
-		final List<EvenementCivilExterne> evts = evenementService.find(bean, pagination);
-		for (EvenementCivilExterne evt : evts) {
+		final List<EvenementCivilRegPP> evts = evenementService.find(bean, pagination);
+		for (EvenementCivilRegPP evt : evts) {
 			final EvenementCivilView evtView = buildView(evt);
 			evtsView.add(evtView);
 		}
@@ -280,7 +280,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		return evtsView;
 	}
 
-	private EvenementCivilView buildView(EvenementCivilExterne evt) throws AdresseException {
+	private EvenementCivilView buildView(EvenementCivilRegPP evt) throws AdresseException {
 		final EvenementCivilView evtView = new EvenementCivilView(evt, tiersDAO);
 		final PersonnePhysique habitantPrincipal = evtView.getHabitantPrincipal();
 		try {
@@ -317,7 +317,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(EvenementCivilExterneCriteria criterion) {
+	public int count(EvenementCivilRegPPCriteria criterion) {
 		return evenementService.count(criterion);
 	}
 

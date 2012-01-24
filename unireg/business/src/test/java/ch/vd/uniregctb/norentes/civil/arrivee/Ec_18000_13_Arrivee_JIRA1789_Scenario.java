@@ -7,7 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -165,7 +165,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 	@Check(id = 2, descr = "Vérifions maintenant que le couple est bien resté à Bex (un seul des deux conjoints a déménagé pour le moment)")
 	public void check2() throws Exception {
 
-		final EvenementCivilExterne evenement = getEvenementCivilRegoupeForHabitant(noHabAntonio);
+		final EvenementCivilRegPP evenement = getEvenementCivilRegoupeForHabitant(noHabAntonio);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
@@ -196,7 +196,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 	@Check(id = 3, descr = "Vérifions maintenant que le couple est bien passés sur Lausanne (les deux membres ont déménagé)")
 	public void check3() throws Exception {
-		final EvenementCivilExterne evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
+		final EvenementCivilRegPP evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
 		assertNotNull(evenement, "Pas d'événement pour Anne-Laure?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 

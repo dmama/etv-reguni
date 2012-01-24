@@ -10,10 +10,10 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.depart.Depart;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -23,7 +23,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 
-	protected Mouvement(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected Mouvement(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

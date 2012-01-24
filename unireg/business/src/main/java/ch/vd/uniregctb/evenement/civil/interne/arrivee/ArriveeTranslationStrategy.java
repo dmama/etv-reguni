@@ -7,9 +7,9 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.engine.externe.EvenementCivilTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
  * Gère l'arrivée d'un individu dans les cas suivants:
@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 public class ArriveeTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilExterne event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilRegPP event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		// arrivée principale ou secondaire ?
 		if (isArriveePrincipale(event)) {
 			return new ArriveePrincipale(event, context, options);
@@ -32,7 +32,7 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 		}
 	}
 
-	private boolean isArriveePrincipale(EvenementCivilExterne event) {
+	private boolean isArriveePrincipale(EvenementCivilRegPP event) {
 		switch (event.getType()) {
 			case ARRIVEE_DANS_COMMUNE:
 			case ARRIVEE_PRINCIPALE_HC:

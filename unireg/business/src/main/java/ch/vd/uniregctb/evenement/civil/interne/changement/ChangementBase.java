@@ -7,8 +7,8 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.externe.EvenementCivilExterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -22,7 +22,7 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
 	 *          si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	protected ChangementBase(EvenementCivilExterne evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected ChangementBase(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 
