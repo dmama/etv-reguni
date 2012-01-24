@@ -261,7 +261,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		final EventTypeKey key = new EventTypeKey(event);
 		final EvenementCivilEchTranslationStrategy strategy = strategies.get(key);
 		if (strategy == null) {
-			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement de type = [" + key + ']');
+			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement e-CH de type = [" + key + ']');
 		}
 		return strategy.create(event, context, options);
 	}

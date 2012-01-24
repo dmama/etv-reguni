@@ -83,7 +83,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 		final String businessId = message.getBusinessId();
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Réception d'un message JMS événement civil {businessId='%s'}", businessId));
+			LOGGER.info(String.format("Réception d'un message JMS événement civil e-CH {businessId='%s'}", businessId));
 		}
 		final long start = System.nanoTime();
 		try {
@@ -115,7 +115,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		finally {
 			if (LOGGER.isInfoEnabled()) {
 				final long end = System.nanoTime();
-				LOGGER.info(String.format("Réception du message JMS événement civil {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
+				LOGGER.info(String.format("Réception du message JMS événement civil e-CH {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
 		}
 	}

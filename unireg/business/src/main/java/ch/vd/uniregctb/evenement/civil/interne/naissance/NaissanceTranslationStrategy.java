@@ -11,9 +11,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 
 /**
  * Règle métiers permettant de traiter les événements de naissance.
- *
- * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
- *
  */
 public class NaissanceTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 
