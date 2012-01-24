@@ -347,6 +347,59 @@ public class ForFiscalManagerTest extends WebTest {
 		});
 	}
 
+    @Test
+    public void testAjoutForDebiteurFerme() throws Exception {
+
+        final RegDate dateDebut = date(2010, 9, 1);
+        final RegDate dateFermeture = date(2010, 12, 30);
+
+        // mise en place fiscale
+        final ForFiscalView view = doInNewTransactionAndSession(new TransactionCallback<ForFiscalView>() {
+            @Override
+            public ForFiscalView doInTransaction(TransactionStatus status) {
+
+                final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+                final ForDebiteurPrestationImposable ff = createForDebiteur(dpi, dateDebut, dateFermeture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Villette);
+
+                final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+                addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+
+                return new ForFiscalView(ff, false, true);
+            }
+        });
+
+        // ajout du for
+        manager.addFor(view);
+
+        // vérification que le for fermé est ajouté correctement et que le rapport de travail est fermé
+        doInNewTransactionAndSession(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getNumeroCtb());
+                assertNotNull(dpi);
+
+                final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
+                assertNotNull(ff);
+                assertFalse(ff.isAnnule());
+                assertEquals(dateDebut, ff.getDateDebut());
+                assertEquals(dateFermeture, ff.getDateFin());
+
+                final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+                assertNotNull(rapports);
+                assertEquals(1, rapports.size());
+
+                final RapportEntreTiers r = rapports.iterator().next();
+                assertNotNull(r);
+                assertInstanceOf(RapportPrestationImposable.class, r);
+                assertEquals(dateDebut, r.getDateDebut());
+                assertEquals(dateFermeture, r.getDateFin());
+                assertFalse(r.isAnnule());
+                return null;
+            }
+        });
+    }
+
+
 	@Test
 	public void testDemenagementDebiteur() throws Exception {
 

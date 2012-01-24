@@ -480,14 +480,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return debiteur;
 	}
 
-	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
-		ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
-		f.setTypeAutoriteFiscale(typeAutorite);
-		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
-		f.setDateDebut(dateDebut);
-		f.setDateFin(dateFin);
-		return tiersDAO.addAndSave(dpi, f);
-	}
+    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
+        ForDebiteurPrestationImposable f = createForDebiteur(dpi, dateDebut, dateFin, typeAutorite, commune);
+        return tiersDAO.addAndSave(dpi, f);
+    }
+
+    protected ForDebiteurPrestationImposable createForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
+        ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
+        f.setTiers(dpi);
+        f.setTypeAutoriteFiscale(typeAutorite);
+        f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
+        f.setDateDebut(dateDebut);
+        f.setDateFin(dateFin);
+        return f;
+    }
 
 	protected ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable ctb, RegDate dateDebut, RegDate dateFin, MockCommune commune, TypeAutoriteFiscale taf,
 	                                                                     MotifRattachement rattachement) {

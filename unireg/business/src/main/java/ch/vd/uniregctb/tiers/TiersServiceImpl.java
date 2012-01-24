@@ -1485,6 +1485,27 @@ public class TiersServiceImpl implements TiersService {
 
 	}
 
+    public ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, RegDate dateFermeture, int numeroOfsAutoriteFiscale,
+                                                                                     TypeAutoriteFiscale typeAutoriteFiscale) {
+        // Ouvre un nouveau for à la date d'événement
+        ForDebiteurPrestationImposable nouveauForFiscal = new ForDebiteurPrestationImposable();
+        nouveauForFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+        nouveauForFiscal.setDateDebut(dateOuverture);
+        nouveauForFiscal.setDateFin(dateFermeture);
+        nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
+        nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+        nouveauForFiscal = tiersDAO.addAndSave(debiteur, nouveauForFiscal);
+
+        if (validationService.validate(debiteur).errorsCount() == 0) {
+            afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
+        }
+
+        Assert.notNull(nouveauForFiscal);
+        nouveauForFiscal = closeForDebiteurPrestationImposable(debiteur, nouveauForFiscal, dateFermeture, true);
+        return nouveauForFiscal;
+
+    }
+
 	private ForFiscalPrincipal openOrReopenForFiscalPrincipal(ForFiscalPrincipal forFP, boolean changeHabitantFlag) {
 
 		if (!changeHabitantFlag) {
@@ -2762,11 +2783,13 @@ public class TiersServiceImpl implements TiersService {
 			adaptPremierePeriodicite(debiteur, dateDebut);
 		}
 
-		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, typeAutoriteFiscale);
-		if (dateFin != null) {
-			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin, true);
-		}
-		return forRtr;
+        ForDebiteurPrestationImposable forRtr = null;
+        if (dateFin == null) {
+            forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, typeAutoriteFiscale);
+        } else {
+            forRtr = openAndCloseForDebiteurPrestationImposable(debiteur, dateDebut, dateFin, autoriteFiscale, typeAutoriteFiscale);
+        }
+        return forRtr;
 	}
 
 	/**

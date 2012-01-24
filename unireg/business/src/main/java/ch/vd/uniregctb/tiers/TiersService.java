@@ -948,6 +948,19 @@ public interface TiersService {
 	                                                         ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
 	                                                         boolean changeHabitantFlag);
 
+    /**
+     * OUvre et ferme un for debiteur préstation imposable sur un débiteur
+     *
+     * @param debiteur                 sur lequel le for est ouvert et ferme
+     * @param dateOuverture            date d'ouverture du for
+     * @param dateFermeture            date de fermeture du for
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+     * @param typeAutoriteFiscale      le type d'autorité fiscale.
+     * @return le nouveau for principal
+     */
+
+    public ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, RegDate dateFermeture, int numeroOfsAutoriteFiscale,
+                                                                                     TypeAutoriteFiscale typeAutoriteFiscale);
 	/**
 	 * Lance la correction des flags "habitant" sur les personnes physiques en fonction de leur for fiscal principal actif
 	 * @param nbThreads
