@@ -823,9 +823,6 @@ var Histo = {
 					else if (i <= 3) {
 						tbl.rows[i].style.display = '';
 					}
-					else if (StringUtils.trim(x[numCol].innerHTML) == '' && x[numCol].innerHTML.indexOf('strike')== -1 && !this.hasClassName(tbl.rows[i], 'strike')) {
-						tbl.rows[i].style.display = '';
-					}
 					else {
 						tbl.rows[i].style.display = 'none';
 					}
