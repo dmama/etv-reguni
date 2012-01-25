@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +21,10 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslator;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 

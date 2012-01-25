@@ -82,7 +82,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessor">
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor">
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
