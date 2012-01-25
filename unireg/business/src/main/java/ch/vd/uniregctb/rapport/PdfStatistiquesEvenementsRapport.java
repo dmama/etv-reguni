@@ -354,7 +354,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				}
 
 				final StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo erreur = iter.next();
-				if (erreur != null) {
+				if (erreur != null && erreur.etat == EtatEvenementCivil.EN_ERREUR) {
 					final MsgTypeKey key = new MsgTypeKey(erreur.message, erreur.type);
 					final MutableInt nb = map.get(key);
 					if (nb == null) {
