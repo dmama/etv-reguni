@@ -42,7 +42,7 @@
 	</bean>
 	
 	<bean id="evenementService" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementServiceImpl">
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 	</bean>
 	
 	<bean id="scheduler" class="ch.vd.uniregctb.scheduler.OverrideSchedulerFactoryBean">

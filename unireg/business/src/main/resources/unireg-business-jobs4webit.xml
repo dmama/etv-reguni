@@ -49,7 +49,7 @@
 	<!-- Test le traitement des evt civils -->
 	<bean id="icEvtCivilNaissanceTest" class="ch.vd.uniregctb.testing.IcEvtCivilNaissanceTest" parent="inContainerTest">
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 	</bean>
 
 </beans>

@@ -11,10 +11,10 @@ import ch.vd.uniregctb.common.ParamPagination;
  */
 public class EvenementServiceImpl implements EvenementService{
 
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 
@@ -23,7 +23,7 @@ public class EvenementServiceImpl implements EvenementService{
 	 */
 	@Override
 	public List<EvenementCivilRegPP> find(EvenementCivilRegPPCriteria criterion, ParamPagination paramPagination) {
-		return evenementCivilExterneDAO.find(criterion, paramPagination);
+		return evenementCivilRegPPDAO.find(criterion, paramPagination);
 	}
 
 	/**
@@ -31,14 +31,14 @@ public class EvenementServiceImpl implements EvenementService{
 	 */
 	@Override
 	public int count(EvenementCivilRegPPCriteria criterion){
-		return evenementCivilExterneDAO.count(criterion);
+		return evenementCivilRegPPDAO.count(criterion);
 	}
 	/**
 	 * @see EvenementService#get(java.lang.Long)
 	 */
 	@Override
 	public EvenementCivilRegPP get(Long id) {
-		return evenementCivilExterneDAO.get(id);
+		return evenementCivilRegPPDAO.get(id);
 	}
 
 }

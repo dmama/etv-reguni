@@ -25,14 +25,14 @@
 	</bean>
 
 	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.civil.regpp.jms.EvenementCivilListener" parent="esbMessageListener">
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO" />
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
 	</bean>
 
 	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
 		<property name="fetchAwaitingEventsOnStart" value="true"/>
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>

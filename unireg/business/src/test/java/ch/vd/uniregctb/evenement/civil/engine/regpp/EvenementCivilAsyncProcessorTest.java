@@ -76,8 +76,8 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		// sont postés dans ce laps de temps
 		asyncProcessor.setDelaiPriseEnCompte(delaiPriseEnCompte);
 
-		final EvenementCivilRegPPDAO evtCivilExterneDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilExterneDAO");
-		asyncProcessor.setEvenementCivilExterneDAO(evtCivilExterneDAO);
+		final EvenementCivilRegPPDAO evtCivilExterneDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilRegPPDAO");
+		asyncProcessor.setEvenementCivilRegPPDAO(evtCivilExterneDAO);
 		asyncProcessor.setEvenementCivilProcessor(processor);
 		asyncProcessor.setHibernateTemplate(hibernateTemplate);
 		asyncProcessor.setTransactionManager(transactionManager);

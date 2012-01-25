@@ -61,7 +61,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorTest.class);
 
 	private EvenementCivilProcessor evenementCivilProcessor;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private TiersDAO tiersDAO;
 	private GlobalTiersSearcher searcher;
 	private DefaultMockServiceCivil mockServiceCivil;
@@ -78,7 +78,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		evenementCivilExterneDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilExterneDAO");
+		evenementCivilRegPPDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilRegPPDAO");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 	}
 
@@ -97,7 +97,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -119,7 +119,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -144,7 +144,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -166,7 +166,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.TRAITE, e);
@@ -193,7 +193,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -216,7 +216,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -256,7 +256,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -295,7 +295,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
@@ -336,7 +336,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 //			public Object doInTransaction(TransactionStatus status) {
 //
 //				// Test de l'état des événements;
-//				List<EvenementCivilData> list = evenementCivilExterneDAO.getAll();
+//				List<EvenementCivilData> list = evenementCivilRegPPDAO.getAll();
 //				assertEquals(1, list.size());
 //				EvenementCivilData e = list.get(0);
 //				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -360,7 +360,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -395,7 +395,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
@@ -424,7 +424,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
-				List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, list.size());
 				EvenementCivilRegPP e = list.get(0);
 				//evenement en erreur car pas d'adresse de départ spécifiée
@@ -460,7 +460,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegPP> listEv = evenementCivilExterneDAO.getAll();
+				List<EvenementCivilRegPP> listEv = evenementCivilRegPPDAO.getAll();
 				assertEquals(1, listEv.size());
 				EvenementCivilRegPP e = listEv.get(0);
 				assertEvtState(EtatEvenementCivil.TRAITE, e);
@@ -498,7 +498,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertNotNull(list);
 				sortEvenements(list);
 				assertEquals(2, list.size());
@@ -516,7 +516,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> list = evenementCivilExterneDAO.getAll();
+				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
 				assertNotNull(list);
 				sortEvenements(list);
 				assertEquals(3, list.size());
@@ -561,7 +561,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setHabitantConjointId(tiersDAO.getNumeroPPByNumeroIndividu(indSec, true));
 				}
 				evt.setNumeroOfsCommuneAnnonce(ofs);
-				evt = evenementCivilExterneDAO.save(evt);
+				evt = evenementCivilRegPPDAO.save(evt);
 				if (etat == EtatEvenementCivil.EN_ERREUR) {
 					evt.addErrors(Arrays.asList(new EvenementCivilRegPPErreur("Erreur de test")));
 				}
@@ -725,7 +725,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 				final EvenementCivilRegPPCriteria criterion = new EvenementCivilRegPPCriteria();
 				criterion.setNumeroIndividu(noIndividuMonsieur);
-				final List<EvenementCivilRegPP> evts = evenementCivilExterneDAO.find(criterion, null);
+				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
 				assertNotNull(evts);
 				assertEquals(1, evts.size());
 
@@ -787,7 +787,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
 				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-				return evenementCivilExterneDAO.save(evt);
+				return evenementCivilRegPPDAO.save(evt);
 			}
 		});
 		traiteEvenements();
@@ -802,7 +802,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 				final EvenementCivilRegPPCriteria criterion = new EvenementCivilRegPPCriteria();
 				criterion.setNumeroIndividu(noIndividuMonsieur);
-				final List<EvenementCivilRegPP> evts = evenementCivilExterneDAO.find(criterion, null);
+				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
 				assertNotNull(evts);
 				assertEquals(1, evts.size());
 
@@ -891,7 +891,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 					evt.setNumeroIndividuPrincipal(noIndividu);
 					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-					evenementCivilExterneDAO.save(evt);
+					evenementCivilRegPPDAO.save(evt);
 					return null;
 				}
 			});
@@ -997,7 +997,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 					evt.setNumeroIndividuPrincipal(noIndividu);
 					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-					evenementCivilExterneDAO.save(evt);
+					evenementCivilRegPPDAO.save(evt);
 					return null;
 				}
 			});
@@ -1017,7 +1017,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilRegPP evt = evenementCivilExterneDAO.get(evtId);
+					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
 					evenementCivilProcessor.forceEvenementCivil(evt);
 					return null;
 				}
@@ -1031,7 +1031,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					final String prenomNom = tiersService.getNomPrenom(pp);
 					assertEquals("Alfred Hitchcock", prenomNom);
 
-					final EvenementCivilRegPP evt = evenementCivilExterneDAO.get(evtId);
+					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
 					assertNotNull(evt);
 					assertEquals(EtatEvenementCivil.FORCE, evt.getEtat());
 

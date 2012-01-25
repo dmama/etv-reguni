@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class IcEvtCivilNaissanceTest extends InContainerTest {
 
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilProcessor evenementCivilProcessor;
 
 
@@ -37,7 +37,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 				evt.setNumeroOfsCommuneAnnonce(5516);
 				evt.setNumeroIndividuPrincipal(noInd);
 
-				evenementCivilExterneDAO.save(evt);
+				evenementCivilRegPPDAO.save(evt);
 				return null;
 			}
 		});
@@ -58,8 +58,8 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 }

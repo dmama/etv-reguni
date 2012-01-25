@@ -33,7 +33,7 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 
 	private static final String DEFAULT_BUSINESS_USER = "JMSEvtCivil-SansVisa";
 
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
 	private final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
@@ -178,12 +178,12 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
 
-				if (evenementCivilExterneDAO.exists(id)) {
+				if (evenementCivilRegPPDAO.exists(id)) {
 					Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));
 					return false; // rien de plus à faire
 				}
 
-				evenementCivilExterneDAO.save(evenement);
+				evenementCivilRegPPDAO.save(evenement);
 
 				final StringBuilder b = new StringBuilder();
 				b.append("L'événement civil ").append(id).append(" est inséré en base de données {");
@@ -201,8 +201,8 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 		return ok;
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 	public void setEvenementCivilAsyncProcessor(EvenementCivilAsyncProcessor evenementCivilAsyncProcessor) {

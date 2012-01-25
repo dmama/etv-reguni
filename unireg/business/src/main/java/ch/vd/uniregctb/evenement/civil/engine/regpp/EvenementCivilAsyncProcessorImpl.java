@@ -76,7 +76,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 	private boolean fetchAwaitingEventsOnStart = true;
 
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -219,8 +219,8 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -265,7 +265,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 							final EvenementCivilRegPPCriteria criteres = new EvenementCivilRegPPCriteria();
 							criteres.setEtat(EtatEvenementCivil.A_TRAITER);
-							final List<EvenementCivilRegPP> evts = evenementCivilExterneDAO.find(criteres, null);
+							final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criteres, null);
 							if (evts != null && !evts.isEmpty()) {
 
 								LOGGER.info(String.format("Trouvé %d événements civils 'A_TRAITER'", evts.size()));

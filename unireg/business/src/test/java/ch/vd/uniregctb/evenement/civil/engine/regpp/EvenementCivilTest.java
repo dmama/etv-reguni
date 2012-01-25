@@ -39,7 +39,7 @@ import static junit.framework.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc"})
 public class EvenementCivilTest extends BusinessTest {
 
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilListener evenementCivilListener;
 	private GlobalTiersSearcher searcher;
 	private EvenementCivilAsyncProcessor evenementCivilProcessor;
@@ -47,14 +47,14 @@ public class EvenementCivilTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		evenementCivilExterneDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilExterneDAO");
+		evenementCivilRegPPDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilRegPPDAO");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
 		evenementCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
 		evenementCivilListener = new EvenementCivilListener();
 		evenementCivilListener.setEvenementCivilAsyncProcessor(evenementCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
-		evenementCivilListener.setEvenementCivilExterneDAO(evenementCivilExterneDAO);
+		evenementCivilListener.setEvenementCivilRegPPDAO(evenementCivilRegPPDAO);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class EvenementCivilTest extends BusinessTest {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
-					final List<EvenementCivilRegPP> evenements = evenementCivilExterneDAO.getAll();
+					final List<EvenementCivilRegPP> evenements = evenementCivilRegPPDAO.getAll();
 					assertNotNull(evenements);
 					assertEquals(1, evenements.size());
 					assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
@@ -219,7 +219,7 @@ public class EvenementCivilTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> evenements = evenementCivilExterneDAO.getAll();
+				final List<EvenementCivilRegPP> evenements = evenementCivilRegPPDAO.getAll();
 				assertNotNull(evenements);
 				assertEquals(1, evenements.size());
 				// le visa de mutation doit être present

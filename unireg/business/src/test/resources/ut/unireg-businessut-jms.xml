@@ -44,7 +44,7 @@
 	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
 		<property name="delaiPriseEnCompte" value="1"/>
 		<property name="fetchAwaitingEventsOnStart" value="false"/>
-		<property name="evenementCivilExterneDAO" ref="evenementCivilExterneDAO"/>
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>

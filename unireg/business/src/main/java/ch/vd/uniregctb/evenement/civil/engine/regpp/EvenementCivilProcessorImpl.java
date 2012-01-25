@@ -51,7 +51,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private PlatformTransactionManager transactionManager;
 	private ServiceInfrastructureService serviceInfrastructureService;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private TiersDAO tiersDAO;
 
 	private EvenementCivilTranslator evenementCivilTranslator;
@@ -69,7 +69,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return evenementCivilExterneDAO.getEvenementCivilsNonTraites();
+				return evenementCivilRegPPDAO.getEvenementCivilsNonTraites();
 			}
 		});
 
@@ -123,7 +123,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<EvenementCivilRegPPErreur>(new EvenementCivilRegPPErreurFactory());
 
 					// Charge l'événement
-					final EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
+					final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
 					Assert.notNull(evenementCivilExterne, "l'événement est null");
 
 					if (evenementCivilExterne.getEtat().isTraite()) {
@@ -168,7 +168,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				final EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(evenementCivilId);
+				final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
 
 				// [SIFISC-982] En cas d'erreur ayant provoqué le rollback de la transaction, on veut quand même garder (autant que possible) les liens vers
 				// les personnes physiques. Pour cela, on va chercher on nouvelle fois ces derniers par le numéro d'individu.
@@ -344,7 +344,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return evenementCivilExterneDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
+				return evenementCivilRegPPDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
 			}
 		});
 
@@ -382,7 +382,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				final Long numIndividu = template.execute(new TransactionCallback<Long>() {
 					@Override
 					public Long doInTransaction(TransactionStatus status) {
-						return evenementCivilExterneDAO.get(id).getNumeroIndividuPrincipal();
+						return evenementCivilRegPPDAO.get(id).getNumeroIndividuPrincipal();
 					}
 				});
 
@@ -412,8 +412,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

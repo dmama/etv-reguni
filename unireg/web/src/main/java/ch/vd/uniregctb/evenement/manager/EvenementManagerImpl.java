@@ -63,14 +63,14 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private MessageSource messageSource;
 	private HostCivilService hostCivilService;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 	public void setHostCivilService(HostCivilService hostCivilService) {
@@ -102,7 +102,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
 		final EvenementView evtView = new EvenementView();
-		final EvenementCivilRegPP evt = evenementCivilExterneDAO.get(id);
+		final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(id);
 		if (evt == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
@@ -256,7 +256,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		final EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(id);
+		final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
 		evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 	}
 

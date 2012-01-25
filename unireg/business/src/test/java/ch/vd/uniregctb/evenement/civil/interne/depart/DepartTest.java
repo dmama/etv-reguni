@@ -88,7 +88,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 */
 	private static final String DB_UNIT_DATA_FILE = "deparHC26012004.xml";
 
-	//private EvenementCivilExterneDAO evenementCivilDAO;
+	//private evenementCivilRegPPDAO evenementCivilDAO;
 
 	@Override
 	public void onSetUp() throws Exception {

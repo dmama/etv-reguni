@@ -114,7 +114,7 @@ public class TiersServiceImpl implements TiersService {
 	private TiersDAO tiersDAO;
 	private EvenementFiscalService evenementFiscalService;
 	private GlobalTiersSearcher tiersSearcher;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
@@ -1291,8 +1291,8 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
     private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
@@ -4032,7 +4032,7 @@ public class TiersServiceImpl implements TiersService {
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
 		final List<EvenementCivilRegPP> liste;
 		if (!nosIndividus.isEmpty()) {
-			liste = evenementCivilExterneDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			liste = evenementCivilRegPPDAO.getEvenementsCivilsNonTraites(nosIndividus);
 		}
 		else {
 			liste = Collections.emptyList();

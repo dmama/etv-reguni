@@ -25,7 +25,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 
 	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOTest.class);
 
-	private static final String DAO_NAME = "evenementCivilExterneDAO";
+	private static final String DAO_NAME = "evenementCivilRegPPDAO";
 
 	private static final String DB_UNIT_DATA_FILE = "EvenementCivilDAOTest.xml";
 

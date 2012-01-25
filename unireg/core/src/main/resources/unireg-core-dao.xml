@@ -30,7 +30,7 @@
 	</bean>
 	<bean id="situationFamilleDAO" class="ch.vd.uniregctb.tiers.SituationFamilleDAOImpl" parent="hibernateDaoSupport">
 	</bean>
-	<bean id="evenementCivilExterneDAO" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAOImpl" parent="hibernateDaoSupport">
+	<bean id="evenementCivilRegPPDAO" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAOImpl" parent="hibernateDaoSupport">
 	</bean>
 	<bean id="evenementCivilEchDAO" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDaoSupport">
 	</bean>

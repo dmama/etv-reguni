@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jee="http://www.springframework.org/schema/jee"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/jee
-							http://www.springframework.org/schema/jee/spring-jee.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="norentesFrameworkTestScenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario" />
 
 	<bean id="ec_0_01_Ech99Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.ignore.Ec_0_01_Ech99_Scenario">
-		<property name="evtCivilExterneDAO" ref="evenementCivilExterneDAO" />
+		<property name="evtCivilExterneDAO" ref="evenementCivilRegPPDAO" />
 	</bean>
 
 	<bean id="ec_1000_01_NaissanceScenario" parent="evenementCivilScenario"

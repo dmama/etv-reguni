@@ -53,7 +53,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	private MouvementDossierDAO mouvementDossierDAO;
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
@@ -140,7 +140,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 					return fillConsultLogView(droitAcces);
 				}
 				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
-					EvenementCivilRegPP evenementCivilExterne = evenementCivilExterneDAO.get(id);
+					EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
 					return fillConsultLogView(evenementCivilExterne);
 				}
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
@@ -233,8 +233,8 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilExterneDAO(EvenementCivilRegPPDAO evenementCivilExterneDAO) {
-		this.evenementCivilExterneDAO = evenementCivilExterneDAO;
+	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
+		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

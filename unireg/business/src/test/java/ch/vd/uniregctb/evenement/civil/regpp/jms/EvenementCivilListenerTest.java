@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertTrue;
 public class EvenementCivilListenerTest extends BusinessTest {
 
 	private EvenementCivilListener evenementCivilListener;
-	private EvenementCivilRegPPDAO evenementCivilExterneDAO;
+	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private AuditLineDAO auditLineDAO;
 
 	@Override
@@ -59,7 +59,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 			}
 		});
 
-		evenementCivilExterneDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilExterneDAO");
+		evenementCivilRegPPDAO = getBean(EvenementCivilRegPPDAO.class, "evenementCivilRegPPDAO");
 		auditLineDAO = getBean(AuditLineDAO.class, "auditLineDAO");
 
 		final EvenementCivilAsyncProcessor evtCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
@@ -68,7 +68,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		evenementCivilListener = new EvenementCivilListener();
 		evenementCivilListener.setEvenementCivilAsyncProcessor(evtCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
-		evenementCivilListener.setEvenementCivilExterneDAO(evenementCivilExterneDAO);
+		evenementCivilListener.setEvenementCivilRegPPDAO(evenementCivilRegPPDAO);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		sendMessageSync(xmlContent);
 
 		// test que l'evenement est bien la
-		final List<EvenementCivilRegPP> ecr = evenementCivilExterneDAO.getAll();
+		final List<EvenementCivilRegPP> ecr = evenementCivilRegPPDAO.getAll();
 		assertEquals(1, ecr.size());
 
 		final EvenementCivilRegPP evenement = ecr.get(0);
@@ -142,7 +142,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		sendMessageSync(xmlContent);
 
 		// vérifie que l'evenement est bien là, mais que le numéro d'individu inconnu a bien provoqué une erreur
-		final List<EvenementCivilRegPP> evenements = evenementCivilExterneDAO.getAll();
+		final List<EvenementCivilRegPP> evenements = evenementCivilRegPPDAO.getAll();
 		assertEquals(1, evenements.size());
 		final EvenementCivilRegPP evenement = evenements.get(0);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat());
@@ -166,7 +166,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 	public void testMessageDeTypeInconnu() throws Exception {
 		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
 		sendMessageSync(xmlContent);
-		assertEmpty(evenementCivilExterneDAO.getAll());
+		assertEmpty(evenementCivilRegPPDAO.getAll());
 	}
 
 	@Test(timeout = 10000)
@@ -179,7 +179,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 
 		final String xmlContent = createMessage(42, typeConnuMaisIgnore, 9876543, RegDate.get(2007, 9, 18), 111);
 		sendMessageSync(xmlContent);
-		assertEmpty(evenementCivilExterneDAO.getAll());
+		assertEmpty(evenementCivilRegPPDAO.getAll());
 	}
 
 	@Test(timeout = 10000)
@@ -192,7 +192,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		// Le premier doit passer sans probleme
 		sendMessageSync(xmlContent);
 		{
-			final List<EvenementCivilRegPP> evenements = evenementCivilExterneDAO.getAll();
+			final List<EvenementCivilRegPP> evenements = evenementCivilRegPPDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 		}
@@ -200,7 +200,7 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		// Le deuxieme doit aussi passer mais sans etre inséré
 		sendMessageSync(xmlContent);
 		{
-			final List<EvenementCivilRegPP> evenements = evenementCivilExterneDAO.getAll();
+			final List<EvenementCivilRegPP> evenements = evenementCivilRegPPDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 
