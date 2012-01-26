@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.lang.mutable.MutableBoolean;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
@@ -40,11 +40,16 @@ public abstract class EvenementCivilEchProcessorTest extends BusinessTest {
 
 	protected void traiterEvenement(long noIndividu, final long noEvenement) throws InterruptedException {
 		// on se met en position pour voir quand le traitement aura été effectué
-		final AtomicBoolean jobDone = new AtomicBoolean(false);
+		final MutableBoolean jobDone = new MutableBoolean(false);
 		processor.setMonitor(new EvenementCivilEchProcessor.ProcessingMonitor() {
 			@Override
 			public void onProcessingEnd(long evtId) {
-				jobDone.set(evtId == noEvenement);
+				if (evtId == noEvenement) {
+					synchronized(jobDone) {
+						jobDone.setValue(true);
+						jobDone.notifyAll();
+					}
+				}
 			}
 		});
 
@@ -52,8 +57,11 @@ public abstract class EvenementCivilEchProcessorTest extends BusinessTest {
 		queue.add(noIndividu);
 
 		// on attend que le traitement se fasse
-		while (!jobDone.get()) {
-			Thread.sleep(100L);
+		while (!jobDone.booleanValue()) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (jobDone) {
+				jobDone.wait();
+			}
 		}
 	}
 }
