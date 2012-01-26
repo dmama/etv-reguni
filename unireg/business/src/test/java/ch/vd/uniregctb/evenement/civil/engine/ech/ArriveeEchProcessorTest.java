@@ -28,6 +28,14 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class ArriveeEchProcessorTest extends EvenementCivilEchProcessorTest {
 
+	private ServiceInfrastructureService infraService;
+
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+	}
+
 	@Test(timeout = 10000L)
 	public void testArriveeCelibataire() throws Exception {
 
@@ -95,7 +103,6 @@ public class ArriveeEchProcessorTest extends EvenementCivilEchProcessorTest {
 		final RegDate dateMariage = date(2001, 10, 1);
 		
 		// mise en place civile
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceCivil.setUp(new MockServiceCivil(infraService) {
 			@Override
 			protected void init() {

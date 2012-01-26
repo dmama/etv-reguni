@@ -56,10 +56,10 @@ public abstract class EvenementCivilEchProcessorTest extends BusinessTest {
 		// notification d'arrivée d'événement sur l'individu
 		queue.add(noIndividu);
 
-		// on attend que le traitement se fasse
-		while (!jobDone.booleanValue()) {
-			//noinspection SynchronizationOnLocalVariableOrMethodParameter
-			synchronized (jobDone) {
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (jobDone) {
+			// on attend que le traitement se fasse
+			while (!jobDone.booleanValue()) {
 				jobDone.wait();
 			}
 		}
