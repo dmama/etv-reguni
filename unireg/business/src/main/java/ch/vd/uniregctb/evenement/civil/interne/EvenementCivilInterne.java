@@ -434,19 +434,6 @@ public abstract class EvenementCivilInterne {
 				ModeImposition.ORDINAIRE, changeHabitantFlag);
 	}
 
-	/**
-	 * Vérifie la non-existence d'un habitant.
-	 *
-	 * @param noIndividu le numéro de l'individu pointé par l'habitant dont on veut vérifier l'existence.
-	 * @throws EvenementCivilException si un ou plusieurs tiers sont trouvés
-	 */
-	protected void verifieNonExistenceTiers(Long noIndividu) throws EvenementCivilException {
-		if (context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu) != null) {
-			throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + noIndividu
-					+ " alors que c'est une naissance");
-		}
-	}
-
 	public static void addValidationResults(EvenementCivilErreurCollector errors, EvenementCivilWarningCollector warnings, ValidationResults resultat) {
 		if (resultat.hasErrors()) {
 			for (String erreur : resultat.getErrors()) {

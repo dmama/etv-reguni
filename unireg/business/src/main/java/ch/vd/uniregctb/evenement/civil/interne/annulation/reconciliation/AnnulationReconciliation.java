@@ -43,7 +43,7 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
-		PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique principal = getPrincipalPP();
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
 		// Récupération du tiers MenageCommun
@@ -70,7 +70,7 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Récupération du tiers principal.
-		PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique principal = getPrincipalPP();
 		// Obtention du tiers correspondant au conjoint.
 		PersonnePhysique conjoint = null;
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());

@@ -101,7 +101,7 @@ public abstract class Depart extends Mouvement {
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique pp = getPrincipalPP();
 		if (pp == null) {
 			// si on ne connaissait pas le gaillard, c'est un problème
 			throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());

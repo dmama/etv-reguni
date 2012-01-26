@@ -69,7 +69,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers correspondant à l'ancient defunt.
 		 */
-		PersonnePhysique defunt = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique defunt = getPrincipalPP();
 
 		/*
 		 * Deux cas de figure :
@@ -111,7 +111,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers correspondant a l'ancient defunt.
 		 */
-		PersonnePhysique defunt = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique defunt = getPrincipalPP();
 
 		try {
 			context.getMetierService().annuleDeces(defunt, getDate());

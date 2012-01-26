@@ -364,6 +364,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
 			tiersDAO.save(habitant);
 		}
+		hibernateTemplate.flush();
 
 		/*
 		 * Ok : événement d'arrivée à date courante
@@ -516,6 +517,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			tiersDAO.save(jacques);
 			tiersDAO.save(jean);
 		}
+		hibernateTemplate.flush();
 
 		final MessageCollector collector = buildMessageCollector();
 
@@ -723,6 +725,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 			tiersDAO.save(habitant);
 		}
+		hibernateTemplate.flush();
 
 		/*
 		 * Ok : événement d'arrivée standard
@@ -872,6 +875,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
 		}
+		hibernateTemplate.flush();
 
 		{
 			/*
@@ -1145,6 +1149,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
 		}
+		hibernateTemplate.flush();
 
 		{
 			/*
@@ -1687,6 +1692,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 		}
+		hibernateTemplate.flush();
 
 		{
 			/*

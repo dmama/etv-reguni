@@ -52,7 +52,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 
 		// il se peut encore ici qu'aucun tiers ne soit trouvé avec ce numéro d'individu... si c'est le cas, l'erreur a déjà été logguée dans
 		// le validateCommon, donc pas besoin de la logguer une nouvelle fois, si ?
-		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique pp = getPrincipalPP();
 		if (pp == null) {
 			if (!erreurs.hasErreurs()) {
 				erreurs.addErreur(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", getNoIndividu()));

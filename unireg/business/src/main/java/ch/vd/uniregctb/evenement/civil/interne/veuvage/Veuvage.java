@@ -52,8 +52,7 @@ public class Veuvage extends EvenementCivilInterne {
 			erreurs.addErreur(String.format("L'individu %d n'est pas veuf dans le civil au %s", individu.getNoTechnique(), RegDateHelper.dateToDisplayString(getDate())));
 		}
 		else {
-			final long numeroIndividu = individu.getNoTechnique();
-			final PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
+			final PersonnePhysique veuf = getPrincipalPP();
 
 			/*
 			 * Validations métier
@@ -68,7 +67,7 @@ public class Veuvage extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers correspondant au veuf.
 		 */
-		PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique veuf = getPrincipalPP();
 
 		/*
 		 * Traitement de l'événement

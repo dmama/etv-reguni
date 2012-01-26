@@ -49,7 +49,7 @@ public class ChangementNom extends ChangementBase {
 
 		Audit.info(getNumeroEvenement(), String.format("Changement de nom de l'individu : %d", noIndividu));
 
-		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(noIndividu, true);
+		final PersonnePhysique pp = getPrincipalPP();
 		if (pp != null && !pp.isHabitantVD()) {
 			// pour les non-habitants, il faut recharger les données, non?
 			// quelles sont les données à recharger ? nom/prénom !

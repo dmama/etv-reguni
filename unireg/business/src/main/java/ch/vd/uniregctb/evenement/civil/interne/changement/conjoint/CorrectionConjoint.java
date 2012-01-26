@@ -86,7 +86,7 @@ public class CorrectionConjoint extends EvenementCivilInterne {
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
-		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
+		final PersonnePhysique habitant = getPrincipalPP();
 
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(individu.getNoTechnique(), getDate());
 		final PersonnePhysique conjoint = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());

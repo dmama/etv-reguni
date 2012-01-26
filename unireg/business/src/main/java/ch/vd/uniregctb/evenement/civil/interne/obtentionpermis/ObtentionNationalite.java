@@ -83,7 +83,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 
 		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous
-		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique pp = getPrincipalPP();
 		if (doHandle(pp, warnings)) {
 			return super.handle(warnings);
 		}

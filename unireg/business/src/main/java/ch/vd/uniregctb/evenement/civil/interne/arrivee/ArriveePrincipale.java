@@ -190,7 +190,7 @@ public class ArriveePrincipale extends Arrivee {
 		 * leur date d'arrivée
 		 */
 		if (isDansLeCanton(ancienneCommune)) {
-			final PersonnePhysique habitant = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
+			final PersonnePhysique habitant = getPrincipalPP();
 			if (habitant == null) {
 				final String message = "L'individu est inconnu dans registre fiscal mais possédait déjà une adresse dans le " +
 						"registre civil avant son arrivée (incohérence entre les deux registres)";
@@ -203,7 +203,7 @@ public class ArriveePrincipale extends Arrivee {
 		final MotifFor motifFor = getMotifOuvertureFor();
 		if (motifFor == MotifFor.ARRIVEE_HC || motifFor == MotifFor.ARRIVEE_HS) {
 			// Si le motif d'ouverture du for est arrivee HS ou HC, alors l'eventuel for principal actuel ne doit pas être vaudois
-			final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(getNoIndividu());
+			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
 				final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 

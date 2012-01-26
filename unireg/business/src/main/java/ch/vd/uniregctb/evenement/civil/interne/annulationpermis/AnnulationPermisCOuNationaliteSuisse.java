@@ -33,12 +33,10 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		Individu individu = getIndividu();
-
 		// si l'habitant a un permis C (événement annulation permis C)
 		// ou a la nationalité suisse (événement annulation de l'obtention de la nationalité suisse)
 		RegDate dateObtention = getDate();
-		PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
+		PersonnePhysique habitant = getPrincipalPP();
 		// récupération du For fiscal principal actuel
 		ForFiscalPrincipal ffp = getForPrincipalActif(habitant, null);
 		if (ffp == null) { // passer en erreur

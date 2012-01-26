@@ -31,8 +31,7 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		long numeroIndividu = getNoIndividu();
-		PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
+		PersonnePhysique veuf = getPrincipalPP();
 
 		/*
 				 * Récupération du ménage du veuf
@@ -53,7 +52,7 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers
 		 */
-		PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique veuf = getPrincipalPP();
 
 		/*
 		 * Traitement de l'événement

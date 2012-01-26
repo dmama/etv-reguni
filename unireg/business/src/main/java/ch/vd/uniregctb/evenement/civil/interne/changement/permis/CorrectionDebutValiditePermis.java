@@ -60,7 +60,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 			final RegDate aujourdhui = RegDate.get();
 			boolean ignorable = false;
 			if (individu.isMineur(aujourdhui)) {
-				final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
+				final PersonnePhysique pp = getPrincipalPP();
 				if (pp != null) {
 					boolean mineurs = true;
 					final Contribuable ctb;

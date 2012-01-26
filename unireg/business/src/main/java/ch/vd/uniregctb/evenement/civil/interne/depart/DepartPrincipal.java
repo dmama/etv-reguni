@@ -180,8 +180,7 @@ public class DepartPrincipal extends Depart {
 	 * @return <b>true</b> si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti; <b>false</b> autrement.
 	 */
 	private boolean isDepartComplet() {
-		final Individu individuPrincipal = getIndividu();
-		final PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(individuPrincipal.getNoTechnique());
+		final PersonnePhysique habitant = getPrincipalPP();
 		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, getDate());
 		final PersonnePhysique conjoint;
 		if (couple != null) {

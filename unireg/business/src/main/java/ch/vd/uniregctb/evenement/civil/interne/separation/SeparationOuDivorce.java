@@ -219,7 +219,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	private void handleSeparation(EvenementCivilInterne evenement, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Obtention du premier tiers.
-		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
+		final PersonnePhysique principal = getPrincipalPP();
 
 		final RegDate dateEvt = evenement.getDate();
 

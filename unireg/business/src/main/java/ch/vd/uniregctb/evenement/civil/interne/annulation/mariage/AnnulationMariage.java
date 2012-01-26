@@ -64,7 +64,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
-		final PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique principal = getPrincipalPP();
 
 		// Récupération de l'ensemble tiers couple
 		final EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());

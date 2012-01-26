@@ -497,6 +497,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final PersonnePhysique pp = addHabitant(noInd);
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+		hibernateTemplate.flush();
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
@@ -559,6 +560,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final PersonnePhysique pp = addHabitant(noInd);
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+		hibernateTemplate.flush();
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
@@ -621,6 +623,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final PersonnePhysique pp = addHabitant(noInd);
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+		hibernateTemplate.flush();
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
@@ -675,6 +678,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final PersonnePhysique pp = addHabitant(noInd);
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+		hibernateTemplate.flush();
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
@@ -732,6 +736,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		try {
 			final PersonnePhysique pp = addHabitant(noInd);
 			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
+			hibernateTemplate.flush();
 
 			// Simule un événement de déménagement de la part de la commune fusionnée
 			final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,

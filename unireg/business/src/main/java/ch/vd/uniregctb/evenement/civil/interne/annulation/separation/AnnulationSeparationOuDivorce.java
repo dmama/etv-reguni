@@ -43,7 +43,7 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
-		PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique principal = getPrincipalPP();
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate().getOneDayBefore());
 		// Récupération du tiers MenageCommun
@@ -70,7 +70,7 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Récupération du tiers principal.
-		PersonnePhysique principal = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique principal = getPrincipalPP();
 		// Récupération du menage du tiers
 		MenageCommun menage = context.getTiersService().getEnsembleTiersCouple(principal, getDate().getOneDayBefore()).getMenage();
 		// Traitement de l'annulation de séparation

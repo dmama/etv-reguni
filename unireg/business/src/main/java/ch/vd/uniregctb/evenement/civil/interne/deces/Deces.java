@@ -81,7 +81,7 @@ public class Deces extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers correspondant au defunt.
 		 */
-		PersonnePhysique defunt = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		PersonnePhysique defunt = getPrincipalPP();
 
 		/*
 		 * Deux cas de figure :
@@ -137,7 +137,7 @@ public class Deces extends EvenementCivilInterne {
 		/*
 		 * Obtention du tiers correspondant au defunt.
 		 */
-		final PersonnePhysique defunt = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique defunt = getPrincipalPP();
 
 		// [UNIREG-775]
 		final RegDate dateDecesUnireg = defunt.getDateDeces();

@@ -43,7 +43,7 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 
 		// [UNIREG-3017] si le CTB PP est mineur (ou le couple à la date de l'événement CTB MC a deux individus mineurs) et n'a aucun for (du tout) ou que tous sont annulés -> Traiter l'événement tout droit
 		final Individu individu = getIndividu();
-		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+		final PersonnePhysique pp = getPrincipalPP();
 		final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(pp, getDate());
 		final boolean mineur;
 		if (couple == null) {

@@ -37,9 +37,9 @@ public abstract class ModificationAdresseBase extends ChangementBase {
 	@Override
 	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		final long noIndividu = getNoIndividu();
-		final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		final PersonnePhysique pp = getPrincipalPP();
 		if (pp == null) {
+			final long noIndividu = getNoIndividu();
 			throw new EvenementCivilException("Impossible de retrouver le tiers correspondant à l'individu " + noIndividu);
 		}
 

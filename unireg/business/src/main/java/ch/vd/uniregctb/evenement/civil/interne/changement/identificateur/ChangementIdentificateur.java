@@ -33,7 +33,7 @@ public class ChangementIdentificateur extends ChangementBase {
 		final long noIndividu = getNoIndividu();
 		Audit.info(getNumeroEvenement(), String.format("Traitement du changement d'identificateur de l'individu : %d", noIndividu));
 
-		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(noIndividu, true);
+		final PersonnePhysique pp = getPrincipalPP();
 		if (pp != null && !pp.isHabitantVD()) {
 			// pour les non-habitants, il faut recharger les données, non?
 			// quelles sont les données à recharger ? NAVS13 pour sûr !

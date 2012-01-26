@@ -78,7 +78,9 @@ public class Naissance extends EvenementCivilInterne {
 			/*
 			 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
 			 */
-			verifieNonExistenceTiers(individu.getNoTechnique());
+			if (getPrincipalPP() != null) {
+				throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
+			}
 
 			/*
 			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
