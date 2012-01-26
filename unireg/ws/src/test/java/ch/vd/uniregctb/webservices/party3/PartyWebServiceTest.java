@@ -59,6 +59,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -981,6 +982,56 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
 			assertEquals(Integer.valueOf(2), d0.getSegmentationCode());
+		}
+	}
+
+	/**
+	 * [SIFISC-2528] Vérifie que le code de segmentation par défaut est bien retourné pour les DI >= 2011
+ 	 */
+	@Test
+	public void testGetPartyTaxDefaultDeclarationSegmentationOn() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 12, 31), TypeContribuable.HORS_CANTON, md);
+				di.setCodeSegment(null);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int)ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEquals(Integer.valueOf(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT), d0.getSegmentationCode());
 		}
 	}
 
