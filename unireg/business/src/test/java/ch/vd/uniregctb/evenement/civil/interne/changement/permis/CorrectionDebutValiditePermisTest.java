@@ -51,7 +51,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, null);
-				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", noIndividu)));
+				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
 				return null;
 			}
 		});

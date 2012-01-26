@@ -423,7 +423,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
-				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));
+				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", NO_IND_INCONNU)));
 				return null;
 			}
 		});

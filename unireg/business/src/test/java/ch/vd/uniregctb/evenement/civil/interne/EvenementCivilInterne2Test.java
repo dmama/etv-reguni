@@ -201,14 +201,6 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		assertContent(Arrays.asList("La date de l'événement est dans le futur"), collector.getErreurs());
 		collector.clear();
 
-		//test KO numéro OFS null
-		final EvenementCivilInterne evenOFSNull = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), null, context);
-		evenOFSNull.validate(collector, collector);
-		assertTrue(collector.hasErreurs());
-		assertFalse(collector.hasWarnings());
-		assertContent(Arrays.asList("La commune d'annonce n'est pas renseignée"), collector.getErreurs());
-		collector.clear();
-
 		//test OK numéro OFS commune du sentier
 		final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 8000, context);
 		evenOFSSentier.validate(collector, collector);

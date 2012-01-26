@@ -41,8 +41,20 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	private EvenementCivilEchTranslator translator;
 
 	private Processor processor;
+	private ProcessingMonitor monitor;
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
+
+	/**
+	 * Interface utilisable dans les tests afin de réagir au traitement d'un événement civil
+	 */
+	public static interface ProcessingMonitor {
+		/**
+		 * Appelé à la fin du traitement de l'événement identifié
+		 * @param evtId identifiant de l'événement civil pour lequel le traitement vient de se terminer
+		 */
+		void onProcessingEnd(long evtId);
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setNotificationQueue(EvenementCivilNotificationQueue notificationQueue) {
@@ -62,6 +74,11 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTranslator(EvenementCivilEchTranslator translator) {
 		this.translator = translator;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setMonitor(ProcessingMonitor monitor) {
+		this.monitor = monitor;
 	}
 
 	/**
@@ -115,6 +132,9 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 						}
 						finally {
 							AuthenticationHelper.popPrincipal();
+							if (monitor != null) {
+								monitor.onProcessingEnd(evt.idEvenement);
+							}
 						}
 					}
 				}

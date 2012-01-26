@@ -209,6 +209,13 @@ public abstract class Depart extends Mouvement {
 		if (getIndividu().getDateDeces() != null) {
 			erreurs.addErreur("L'individu est décédé");
 		}
+
+		/**
+		 * La commune d'annonce est nécessaire
+		 */
+		if (getNumeroOfsCommuneAnnonce() == null) {
+			erreurs.addErreur("La commune d'annonce n'est pas renseignée");
+		}
 	}
 
 	/**

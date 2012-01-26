@@ -186,11 +186,6 @@ public abstract class EvenementCivilInterne {
 			return;
 		}
 
-		if (getNumeroOfsCommuneAnnonce() == null) {
-			erreurs.addErreur("La commune d'annonce n'est pas renseignée");
-			return;
-		}
-
 		/*
 		 * La date de l'événement se situe dans le futur.
 		 */
@@ -207,7 +202,7 @@ public abstract class EvenementCivilInterne {
 			 * l’individu.
 			 */
 			if (getPrincipalPP() == null) {
-				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu " + getNoIndividu());
+				erreurs.addErreur("Aucun tiers contribuable ne correspond au numéro d'individu " + getNoIndividu());
 			}
 
 			/*
@@ -215,7 +210,7 @@ public abstract class EvenementCivilInterne {
 			 * l’individu.
 			 */
 			if (getNoIndividuConjoint() != null && getConjointPP() == null) {
-				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + getNoIndividuConjoint());
+				erreurs.addErreur("Aucun tiers contribuable ne correspond au numéro d'individu du conjoint " + getNoIndividuConjoint());
 			}
 		}
 
