@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import junit.framework.Assert;
-import org.apache.commons.lang.mutable.MutableBoolean;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -55,11 +56,11 @@ public class EvenementCivilEchProcessorTest extends BusinessTest {
 
 	private void traiterEvenement(long noIndividu, final long noEvenement) throws InterruptedException {
 		// on se met en position pour voir quand le traitement aura été effectué
-		final MutableBoolean jobDone = new MutableBoolean(false);
+		final AtomicBoolean jobDone = new AtomicBoolean(false);
 		processor.setMonitor(new EvenementCivilEchProcessor.ProcessingMonitor() {
 			@Override
 			public void onProcessingEnd(long evtId) {
-				jobDone.setValue(evtId == noEvenement);
+				jobDone.set(evtId == noEvenement);
 			}
 		});
 
@@ -67,7 +68,7 @@ public class EvenementCivilEchProcessorTest extends BusinessTest {
 		queue.add(noIndividu);
 
 		// on attend que le traitement se fasse
-		while (!jobDone.booleanValue()) {
+		while (!jobDone.get()) {
 			Thread.sleep(100L);
 		}
 	}
