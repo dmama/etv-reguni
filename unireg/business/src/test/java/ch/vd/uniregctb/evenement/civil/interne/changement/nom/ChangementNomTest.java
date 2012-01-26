@@ -93,8 +93,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-				final ChangementNom chgtNom = new ChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848, context);
+				final ChangementNom chgtNom = new ChangementNom(individu, null, RegDate.get(), 4848, context);
 
 				final MessageCollector collector = buildMessageCollector();
 				chgtNom.validate(collector, collector);// ne fait rien
@@ -189,8 +188,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-				final ChangementNom chgtNom = new ChangementNom(individu, principalPPId, null, null, RegDate.get(), 4848, context);
+				final ChangementNom chgtNom = new ChangementNom(individu, null, RegDate.get(), 4848, context);
 
 				final MessageCollector collector = buildMessageCollector();
 				chgtNom.validate(collector, collector);// ne fait rien

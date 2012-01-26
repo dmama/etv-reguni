@@ -17,6 +17,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -45,7 +46,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_SUISSE);
 		EvenementCivilRegPP
-				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , habitant, 0L, null, 1234, null);
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_SUISSE , 0L, 1234, null);
 		ObtentionNationalite adapter = new ObtentionNationaliteSuisse(evenement, context, options);
 	}
 
@@ -58,7 +59,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_NATIONALITE_FRANCE);
 		EvenementCivilRegPP
-				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , habitant, 0L, null, 1234, null);
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.NATIONALITE_NON_SUISSE, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_NATIONALITE, NO_INDIVIDU_NATIONALITE_FRANCE , 0L, 1234, null);
 		ObtentionNationalite adapter = new ObtentionNationaliteNonSuisse(evenement, context, options);
 	}
 
@@ -99,6 +100,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 		}
 	};
 
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService);
+	private MockTiersDAO tiersDAO = new MockTiersDAO();
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 }

@@ -215,8 +215,7 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	private Tutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(pupille.getNoTechnique(), true);
-		return new Tutelle(pupille, principalPPId, null, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire, context);
+		return new Tutelle(pupille, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire, context);
 	}
 
 }

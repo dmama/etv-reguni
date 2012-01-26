@@ -45,7 +45,6 @@
     <column>ID</column>
     <column>TYPE</column>
     <column>DATE_EVENEMENT</column>
-    <column>HAB_PRINCIPAL</column>
     <column>NO_INDIVIDU_PRINCIPAL</column>
     <column>NUMERO_OFS_ANNONCE</column>
     <column>ETAT</column>
@@ -54,7 +53,6 @@
       <value>12</value>
       <value>DEMENAGEMENT_DANS_COMMUNE</value>
       <value>20071025</value>
-      <value>12300003</value>
       <value>327706</value>
       <value>5586</value>
       <value>A_TRAITER</value>

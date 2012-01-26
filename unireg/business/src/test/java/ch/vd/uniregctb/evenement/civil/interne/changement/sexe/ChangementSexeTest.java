@@ -70,7 +70,7 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 
 
 		// déclenchement de l'événement
-		ChangementSexe chgtSexe = new ChangementSexe(individu, tiersDAO.getNumeroPPByNumeroIndividu(NO_INDIVIDU, true), null, null, RegDate.get(), 4848, context);
+		ChangementSexe chgtSexe = new ChangementSexe(individu, null, RegDate.get(), 4848, context);
 
 		final MessageCollector collector = buildMessageCollector();
 		chgtSexe.validate(collector, collector);// Valider la conformite sexe et numavs

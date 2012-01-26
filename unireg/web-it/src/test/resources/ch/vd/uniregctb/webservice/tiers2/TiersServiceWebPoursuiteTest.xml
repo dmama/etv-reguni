@@ -1306,8 +1306,6 @@
     <column>NO_INDIVIDU_PRINCIPAL</column>
     <column>NUMERO_OFS_ANNONCE</column>
     <column>TYPE</column>
-    <column>HAB_CONJOINT</column>
-    <column>HAB_PRINCIPAL</column>
   </table>
   <table name="EVENEMENT_CIVIL_ERREUR">
     <column>ID</column>

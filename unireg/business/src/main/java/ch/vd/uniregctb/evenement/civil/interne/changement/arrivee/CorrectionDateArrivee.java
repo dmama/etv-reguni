@@ -31,8 +31,8 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected CorrectionDateArrivee(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
+	protected CorrectionDateArrivee(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
 	private ForFiscalPrincipal getForFiscalPrincipalDeterminant(PersonnePhysique pp) {
@@ -108,7 +108,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 
 		// le dernier for principal doit voir sa date d'ouverture modifiée à la date de l'événement
 
-		final PersonnePhysique pp = (PersonnePhysique) context.getTiersService().getTiers(getPrincipalPPId());
+		final PersonnePhysique pp = getPrincipalPP();
 		final ForFiscalPrincipal ffp = getForFiscalPrincipalDeterminant(pp);
 		if (ffp != null) {
 			final Tiers tiersDeterminant = ffp.getTiers();

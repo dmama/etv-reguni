@@ -403,11 +403,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 	}
 
 	private Mariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
-
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
-
-		return new Mariage(individu, principalPPId, conjoint, conjointPPId, dateMariage, 5586, context);
+		return new Mariage(individu, conjoint, dateMariage, 5586, context);
 	}
 
 }

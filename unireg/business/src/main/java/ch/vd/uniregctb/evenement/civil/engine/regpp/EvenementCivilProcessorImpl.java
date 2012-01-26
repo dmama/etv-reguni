@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CheckedTransactionCallback;
@@ -35,8 +34,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -52,7 +49,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private PlatformTransactionManager transactionManager;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
-	private TiersDAO tiersDAO;
 
 	private EvenementCivilTranslator evenementCivilTranslator;
 
@@ -169,16 +165,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
-
-				// [SIFISC-982] En cas d'erreur ayant provoqué le rollback de la transaction, on veut quand même garder (autant que possible) les liens vers
-				// les personnes physiques. Pour cela, on va chercher on nouvelle fois ces derniers par le numéro d'individu.
-				try {
-					fillHabitants(evenementCivilExterne);
-				}
-				catch (Exception e1) {
-					LOGGER.error("Impossible d'établir les liens vers les personnes physiques", e1);
-				}
-
 				final List<EvenementCivilRegPPErreur> erreurs = new ArrayList<EvenementCivilRegPPErreur>();
 				final List<EvenementCivilRegPPErreur> warnings = new ArrayList<EvenementCivilRegPPErreur>();
 				erreurs.add(new EvenementCivilRegPPErreur(exception));
@@ -187,26 +173,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				return traiteErreurs(evenementCivilExterne, erreurs, warnings);
 			}
 		});
-	}
-
-	/**
-	 * Renseigne sur un événement les liens vers les habitants à partir des numéros d'individus.
-	 *
-	 * @param event un événement
-	 */
-	private void fillHabitants(EvenementCivilRegPP event) {
-
-		final Long noIndPrincipal = event.getNumeroIndividuPrincipal();
-		if (noIndPrincipal != null) {
-			final Long principalID = tiersDAO.getNumeroPPByNumeroIndividu(noIndPrincipal, true);
-			event.setHabitantPrincipalId(principalID);
-		}
-
-		final Long noIndConj = event.getNumeroIndividuConjoint();
-		if (noIndConj != null) {
-			final Long conjointID = tiersDAO.getNumeroPPByNumeroIndividu(noIndConj, true);
-			event.setHabitantConjointId(conjointID);
-		}
 	}
 
 	/**
@@ -282,11 +248,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private EvenementCivilInterne buildInterne(EvenementCivilRegPP evenementCivilExterne, boolean refreshCache) throws EvenementCivilException {
 		assertEvenement(evenementCivilExterne);
-
-		// On complète l'événement à la volée (on est obligé de le faire ici dans tous les cas, car le tiers
-		// correspondant peut avoir été créé entre la réception de l'événement et son re-traitement).
-		fillHabitants(evenementCivilExterne);
-
 		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
 		final EvenementCivilOptions options = new EvenementCivilOptions(refreshCache);
 		return evenementCivilTranslator.toInterne(evenementCivilExterne, options);
@@ -301,9 +262,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
 		final EvenementCivilInterne event = buildInterne(evenementCivilExterne, refreshCache);
 
-		final Long noIndPrinc = evenementCivilExterne.getNumeroIndividuPrincipal();
-		final Long noIndConj = evenementCivilExterne.getNumeroIndividuConjoint();
-
 		// 2.2 - lancement de la validation
 		event.validate(erreurs, warnings);
 		if (erreurs.hasErreurs()) {
@@ -312,27 +270,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 
 		// 2.3 - lancement du traitement
-		final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = event.handle(warnings);
-
-		// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
-		if (nouveauxHabitants != null) {
-			if (nouveauxHabitants.getFirst() != null && noIndPrinc != null && noIndPrinc > 0L) {
-				if (evenementCivilExterne.getHabitantPrincipalId() == null) {
-					evenementCivilExterne.setHabitantPrincipalId(nouveauxHabitants.getFirst().getId());
-				}
-				else {
-					Assert.isEqual(evenementCivilExterne.getHabitantPrincipalId(), nouveauxHabitants.getFirst().getNumero());
-				}
-			}
-			if (nouveauxHabitants.getSecond() != null && noIndConj != null && noIndConj > 0L) {
-				if (evenementCivilExterne.getHabitantConjointId() == null) {
-					evenementCivilExterne.setHabitantConjointId(nouveauxHabitants.getSecond().getId());
-				}
-				else {
-					Assert.isEqual(evenementCivilExterne.getHabitantConjointId(), nouveauxHabitants.getSecond().getNumero());
-				}
-			}
-		}
+		event.handle(warnings);
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -414,10 +352,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
 		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {

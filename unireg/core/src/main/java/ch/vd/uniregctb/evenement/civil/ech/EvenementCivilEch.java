@@ -37,7 +37,6 @@ public class EvenementCivilEch extends HibernateEntity {
 	private Date dateTraitement;
 	private RegDate dateEvenement;
 	private Long numeroIndividu;
-	private Long numeroContribuablePersonnePhysique;
 	private String commentaireTraitement;
 	private Set<EvenementCivilEchErreur> erreurs;
 
@@ -53,7 +52,6 @@ public class EvenementCivilEch extends HibernateEntity {
 		this.action = ActionEvenementCivilEch.fromEchCode(bean.getAction());
 		this.dateTraitement = null;
 		this.numeroIndividu = null;
-		this.numeroContribuablePersonnePhysique = null;
 		this.commentaireTraitement = null;
 	}
 
@@ -139,16 +137,6 @@ public class EvenementCivilEch extends HibernateEntity {
 
 	public void setNumeroIndividu(Long numeroIndividu) {
 		this.numeroIndividu = numeroIndividu;
-	}
-
-	@Column(name = "PP_ID")
-	@Index(name = "IDX_EV_CIV_ECH_PP")
-	public Long getNumeroContribuablePersonnePhysique() {
-		return numeroContribuablePersonnePhysique;
-	}
-
-	public void setNumeroContribuablePersonnePhysique(Long numeroContribuablePersonnePhysique) {
-		this.numeroContribuablePersonnePhysique = numeroContribuablePersonnePhysique;
 	}
 
 	/**

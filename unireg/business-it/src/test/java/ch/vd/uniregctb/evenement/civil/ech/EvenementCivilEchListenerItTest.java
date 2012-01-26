@@ -103,7 +103,6 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 		evt.setCommentaireTraitement("turlututu");
 		evt.setDateTraitement(DateHelper.getCurrentDate());
 		evt.setEtat(EtatEvenementCivil.A_VERIFIER);
-		evt.setNumeroContribuablePersonnePhysique(426721527L);
 		evt.setNumeroIndividu(23153612L);
 		evt.setRefMessageId(refMessageId);
 		evt.setType(type);
@@ -125,7 +124,6 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 		Assert.assertNull(recu.getCommentaireTraitement());
 		Assert.assertNull(recu.getDateTraitement());
 		Assert.assertEquals(EtatEvenementCivil.A_TRAITER, recu.getEtat());
-		Assert.assertNull(recu.getNumeroContribuablePersonnePhysique());
 		Assert.assertNull(recu.getNumeroIndividu());
 		Assert.assertEquals(refMessageId, recu.getRefMessageId());
 		Assert.assertEquals(type, recu.getType());

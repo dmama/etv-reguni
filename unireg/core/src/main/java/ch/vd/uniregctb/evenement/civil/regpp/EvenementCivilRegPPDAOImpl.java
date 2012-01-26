@@ -253,4 +253,18 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 			}
 		});
 	}
+
+	@Override
+	public List<EvenementCivilRegPP> findEvenementByIndividu(final Long numIndividu) {
+		final String s = "select distinct e from EvenementCivilRegPP e where e.numeroIndividuPrincipal = :numIndividu or e.numeroIndividuConjoint = :numIndividu";
+		return getHibernateTemplate().execute(new HibernateCallback<List<EvenementCivilRegPP>>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public List<EvenementCivilRegPP> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(s);
+				query.setParameter("numIndividu", numIndividu);
+				return query.list();
+			}
+		});
+	}
 }

@@ -78,9 +78,9 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Demenagement(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce,
-	                       Commune communePrincipale, Adresse ancienneAdressePrincipale, Adresse nouvelleAdressePrincipale, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
+	protected Demenagement(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Commune communePrincipale, Adresse ancienneAdressePrincipale,
+	                       Adresse nouvelleAdressePrincipale, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
 		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
 		this.nouvelleCommunePrincipale = communePrincipale;
 	}

@@ -339,8 +339,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private AnnulationDeces createValidAnnulationDeces(Individu individu) {
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		return new AnnulationDeces(individu, principalPPId, null, null, DATE_DECES, 5652, context);
+		return new AnnulationDeces(individu, null, DATE_DECES, 5652, context);
 	}
 
 	private AnnulationDeces createValidAnnulationDeces(Individu individu, Individu conjoint) {

@@ -30,9 +30,9 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ChangementBase(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
+	protected ChangementBase(Individu individu, Individu conjoint, RegDate dateEvenement,
 	                         Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override
@@ -40,10 +40,10 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 
 		// si on n'a pas de contribuable correspondant à l'événement, on ne pourra pas l'indexer, mais c'est tout, ce n'est
 		// pas ici que l'on va déterminer si c'est un problème ou pas
-		final Long numero = getPrincipalPPId();
-		if (numero != null) {
+		final PersonnePhysique principal = getPrincipalPP();
+		if (principal != null) {
 			// on demande la réindexation du tiers
-			context.getIndexer().schedule(numero);
+			context.getIndexer().schedule(principal.getNumero());
 		}
 		else {
 			Audit.info(getNumeroEvenement(), String.format("L'individu %d ne correspond à aucun contribuable connu, pas d'indexation", getNoIndividu()));

@@ -34,14 +34,14 @@ public class EvenementCivilView {
 	public EvenementCivilView(EvenementCivilRegPP evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
-		if (evt.getHabitantPrincipalId() != null) {
-			this.habitantPrincipal = (PersonnePhysique) tiersDAO.get(evt.getHabitantPrincipalId());
-		}
-		if (evt.getHabitantConjointId() != null) {
-			this.habitantConjoint = (PersonnePhysique) tiersDAO.get(evt.getHabitantConjointId());
-		}
 		this.numeroIndividuPrincipal = evt.getNumeroIndividuPrincipal();
 		this.numeroIndividuConjoint = evt.getNumeroIndividuConjoint();
+		if (this.numeroIndividuPrincipal != null) {
+			this.habitantPrincipal = tiersDAO.getPPByNumeroIndividu(this.numeroIndividuPrincipal, true);
+		}
+		if (this.numeroIndividuConjoint != null) {
+			this.habitantConjoint = tiersDAO.getPPByNumeroIndividu(this.numeroIndividuConjoint, true);
+		}
 		this.type = evt.getType();
 		this.numeroOfsCommuneAnnonce = evt.getNumeroOfsCommuneAnnonce();
 		this.dateEvenement = evt.getDateEvenement();

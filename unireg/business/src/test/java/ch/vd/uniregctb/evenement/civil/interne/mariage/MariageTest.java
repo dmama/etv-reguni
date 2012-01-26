@@ -17,6 +17,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -64,7 +65,8 @@ public class MariageTest extends WithoutSpringTest {
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new DefaultMockServiceCivil();
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	private MockTiersDAO tiersDAO = new MockTiersDAO();
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
@@ -72,7 +74,7 @@ public class MariageTest extends WithoutSpringTest {
 		PersonnePhysique pierre = new PersonnePhysique(true);
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
-				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
+				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, 0L, 1234, null );
 		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getConjoint());
 	}
@@ -84,7 +86,7 @@ public class MariageTest extends WithoutSpringTest {
 		PersonnePhysique bea = new PersonnePhysique(true);
 		bea.setNumero(INDIVIDU_MARIE_CONJOINT);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
-				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, INDIVIDU_MARIE_CONJOINT, bea, 1234, null );
+				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, INDIVIDU_MARIE_CONJOINT, 1234, null );
 		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}
@@ -96,7 +98,7 @@ public class MariageTest extends WithoutSpringTest {
 		PersonnePhysique julien = new PersonnePhysique(true);
 		julien.setNumero(INDIVIDU_PACSE_CONJOINT);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
-				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, INDIVIDU_PACSE_CONJOINT, julien, 1234, null );
+				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, INDIVIDU_PACSE_CONJOINT, 1234, null );
 		Mariage adapter = new Mariage(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getConjoint());
 	}

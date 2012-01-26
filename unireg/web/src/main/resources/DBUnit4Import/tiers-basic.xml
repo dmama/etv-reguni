@@ -9545,8 +9545,6 @@
     <column>DATE_EVENEMENT</column>
     <column>DATE_TRAITEMENT</column>
     <column>ETAT</column>
-    <column>HAB_CONJOINT</column>
-    <column>HAB_PRINCIPAL</column>
     <column>NO_INDIVIDU_CONJOINT</column>
     <column>NO_INDIVIDU_PRINCIPAL</column>
     <column>NUMERO_OFS_ANNONCE</column>
@@ -9563,8 +9561,6 @@
       <value>20071025</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>A_VERIFIER</value>
-      <null/>
-      <value>43308102</value>
       <null/>
       <value>325740</value>
       <value>1010</value>

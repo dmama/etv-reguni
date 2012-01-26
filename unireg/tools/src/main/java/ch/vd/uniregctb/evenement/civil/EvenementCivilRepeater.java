@@ -53,7 +53,7 @@ public class EvenementCivilRepeater {
 			int index = 0;
 			for (LogFileExtractor.EvenementRecu evt : extractor.getEvenementsRecus()) {
 
-				final EvenementCivilRegPP externe = new EvenementCivilRegPP(evt.id, evt.type, EtatEvenementCivil.A_TRAITER, evt.dateEvement, evt.noIndividu, null, null, null, evt.ofsAnnonce, null);
+				final EvenementCivilRegPP externe = new EvenementCivilRegPP(evt.id, evt.type, EtatEvenementCivil.A_TRAITER, evt.dateEvement, evt.noIndividu, null, evt.ofsAnnonce, null);
 
 				final EsbMessage m = messageFactory.createMessage();
 				m.setBusinessId(Long.toString(evt.id));

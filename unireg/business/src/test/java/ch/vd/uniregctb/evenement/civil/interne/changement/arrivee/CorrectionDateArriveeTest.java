@@ -66,7 +66,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 
 	private CorrectionDateArrivee createValidEvenement(long noIndividu, int ofsCommune, Long principalId) {
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-		return new CorrectionDateArrivee(individu, principalId, null, null, DATE_EVT, ofsCommune, context);
+		return new CorrectionDateArrivee(individu, null, DATE_EVT, ofsCommune, context);
 	}
 
 	@Test
@@ -81,8 +81,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MINEUR, 123454, ppId);
-		assertSansErreurNiWarning(evt);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MINEUR, 123454, ppId);
+				assertSansErreurNiWarning(evt);
+				return null;
+			}
+		});
 
 		// check des fors
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -109,8 +115,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAJEUR_SANS_FOR, 123454, ppId);
-		assertErreurs(evt, Arrays.asList("L'individu n'a pas de for fiscal principal connu."));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAJEUR_SANS_FOR, 123454, ppId);
+				assertErreurs(evt, Arrays.asList("L'individu n'a pas de for fiscal principal connu."));
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -126,8 +138,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_HS, 123454, ppId);
-		assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_HS, 123454, ppId);
+				assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -143,8 +161,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAUVAISE_COMMUNE, MockCommune.Aubonne.getNoOFS(), ppId);
-		assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAUVAISE_COMMUNE, MockCommune.Aubonne.getNoOFS(), ppId);
+				assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -161,10 +185,16 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
-		final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
-										FormatNumeroHelper.numeroCTBToDisplay(ppId), MotifFor.CHGT_MODE_IMPOSITION.getDescription(true));
-		assertErreurs(evt, Arrays.asList(msg));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
+				final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
+						FormatNumeroHelper.numeroCTBToDisplay(ppId), MotifFor.CHGT_MODE_IMPOSITION.getDescription(true));
+				assertErreurs(evt, Arrays.asList(msg));
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -180,8 +210,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
-		assertErreurs(evt, Arrays.asList("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
+				assertErreurs(evt, Arrays.asList("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -197,8 +233,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_DEJA_BONNE_DATE, MockCommune.Cossonay.getNoOFS(), ppId);
-		assertSansErreurNiWarning(evt);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_DEJA_BONNE_DATE, MockCommune.Cossonay.getNoOFS(), ppId);
+				assertSansErreurNiWarning(evt);
+				return null;
+			}
+		});
 
 		// check des fors
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -226,8 +268,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
-		assertSansErreurNiWarning(evt);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
+				assertSansErreurNiWarning(evt);
+				return null;
+			}
+		});
 
 		// check des fors
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -279,8 +327,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MARIE, MockCommune.Cossonay.getNoOFS(), ids.ppal);
-		assertSansErreurNiWarning(evt);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MARIE, MockCommune.Cossonay.getNoOFS(), ids.ppal);
+				assertSansErreurNiWarning(evt);
+				return null;
+			}
+		});
 
 		// check des fors
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -321,8 +375,14 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
-		assertSansErreurNiWarning(evt);
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_CELIBATAIRE, MockCommune.Cossonay.getNoOFS(), ppId);
+				assertSansErreurNiWarning(evt);
+				return null;
+			}
+		});
 
 		// check des fors
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -359,7 +419,13 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 
 	@Test
 	public void testIndividuInconnu() throws Exception {
-		final CorrectionDateArrivee evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
-		assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
+				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numero d'individu %d", NO_IND_INCONNU)));
+				return null;
+			}
+		});
 	}
 }

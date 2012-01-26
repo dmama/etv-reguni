@@ -8,7 +8,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="evenementCivilTranslator" ref="evenementCivilTranslator" />
 	</bean>
 

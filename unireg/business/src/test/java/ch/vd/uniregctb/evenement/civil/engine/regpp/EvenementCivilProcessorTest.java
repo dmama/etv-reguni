@@ -552,14 +552,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setType(type);
 				evt.setDateEvenement(date);
 				evt.setEtat(etat);
-				if (indPri != null) {
-					evt.setNumeroIndividuPrincipal(indPri);
-					evt.setHabitantPrincipalId(tiersDAO.getNumeroPPByNumeroIndividu(indPri, true));
-				}
-				if (indSec != null) {
-					evt.setNumeroIndividuConjoint(indSec);
-					evt.setHabitantConjointId(tiersDAO.getNumeroPPByNumeroIndividu(indSec, true));
-				}
+				evt.setNumeroIndividuPrincipal(indPri);
+				evt.setNumeroIndividuConjoint(indSec);
 				evt.setNumeroOfsCommuneAnnonce(ofs);
 				evt = evenementCivilRegPPDAO.save(evt);
 				if (etat == EtatEvenementCivil.EN_ERREUR) {
@@ -811,7 +805,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				assertEquals(TypeEvenementCivil.SUP_INDIVIDU, externe.getType());
 				assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
 				assertEquals(1, externe.getErreurs().size());
-				assertEquals(ppId, externe.getHabitantPrincipalId());
 
 				final EvenementCivilRegPPErreur erreur = externe.getErreurs().iterator().next();
 				assertNotNull(erreur);

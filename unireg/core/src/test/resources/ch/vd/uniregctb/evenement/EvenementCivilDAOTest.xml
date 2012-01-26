@@ -31,9 +31,7 @@
     <column>DATE_EVENEMENT</column>
     <column>NUMERO_OFS_ANNONCE</column>
     <column>ETAT</column>
-    <column>HAB_PRINCIPAL</column>
     <column>NO_INDIVIDU_PRINCIPAL</column>
-    <column>HAB_CONJOINT</column>
     <column>NO_INDIVIDU_CONJOINT</column>
     <row>
       <value>2008-01-01</value>
@@ -42,9 +40,7 @@
       <value>19851025</value>
       <value>1010</value>
       <value>TRAITE</value>
-      <value>6789</value>
       <value>12345</value>
-      <value>5678</value>
       <value>23456</value>
     </row>
     <row>
@@ -54,9 +50,7 @@
       <value>19891025</value>
       <value>2020</value>
       <value>A_TRAITER</value>
-      <value>6789</value>
       <value>12345</value>
-      <value>5678</value>
       <value>23456</value>
     </row>
   </table>

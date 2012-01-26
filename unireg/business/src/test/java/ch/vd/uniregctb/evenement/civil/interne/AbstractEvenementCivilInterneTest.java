@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.civil.interne;
 import java.util.List;
 
 import junit.framework.Assert;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
@@ -63,16 +62,10 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	}
 
 	protected void launchEvent(final EvenementCivilInterne evtCivil, final EvenementCivilErreurCollector erreurs, final EvenementCivilWarningCollector warnings) throws Exception {
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				evtCivil.validate(erreurs, warnings);
-				if (!erreurs.hasErreurs()) {
-					evtCivil.handle(warnings);
-				}
-				return null;
-			}
-		});
+		evtCivil.validate(erreurs, warnings);
+		if (!erreurs.hasErreurs()) {
+			evtCivil.handle(warnings);
+		}
 	}
 
 	protected static MessageCollector buildMessageCollector() {

@@ -28,8 +28,7 @@ import ch.vd.uniregctb.type.MotifFor;
 public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private AnnulationArrivee createValideAnnulationArrivee(Individu individu) {
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		return new AnnulationArrivee(individu, principalPPId, null, null, RegDate.get(), MockCommune.Lausanne.getNoOFSEtendu(), context);
+		return new AnnulationArrivee(individu, null, RegDate.get(), MockCommune.Lausanne.getNoOFSEtendu(), context);
 	}
 
 	private static enum ErrorLocation {

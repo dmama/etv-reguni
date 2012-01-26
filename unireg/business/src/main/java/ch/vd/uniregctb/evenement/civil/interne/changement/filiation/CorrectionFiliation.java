@@ -27,9 +27,9 @@ public class CorrectionFiliation extends ChangementBase {
 	/**
 	 * Testing only
 	 */
-	public CorrectionFiliation(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
+	public CorrectionFiliation(Individu individu, Individu conjoint, RegDate dateEvenement,
 	                           Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
 	@Override

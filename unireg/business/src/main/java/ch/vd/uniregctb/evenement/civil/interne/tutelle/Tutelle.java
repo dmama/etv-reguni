@@ -93,9 +93,9 @@ public class Tutelle extends EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Tutelle(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate date, Integer numeroOfsCommuneAnnonce, Individu tuteur, TuteurGeneral tuteurGeneral,
+	protected Tutelle(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Individu tuteur, TuteurGeneral tuteurGeneral,
 	                  TypeTutelle typeTutelle, CollectiviteAdministrative autoriteTutelaire, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, date, numeroOfsCommuneAnnonce, context);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.tuteur = tuteur;
 		this.tuteurGeneral = tuteurGeneral;
 		this.typeTutelle = typeTutelle;

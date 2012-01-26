@@ -11,6 +11,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -62,11 +63,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		evt.setDateEvenement(date);
 		evt.setEtat(EtatEvenementCivil.A_TRAITER);
 		evt.setNumeroIndividuPrincipal(numeroIndividuPrincipal);
-		evt.setHabitantPrincipalId(tiersDAO.getNumeroPPByNumeroIndividu(numeroIndividuPrincipal, true));
-		if (numeroIndividuConjoint != null) {
-			evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
-			evt.setHabitantConjointId(tiersDAO.getNumeroPPByNumeroIndividu(numeroIndividuConjoint, true));
-		}
+		evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
 		evt.setType(type);
 		evt.setNumeroOfsCommuneAnnonce(ofs);
 
@@ -79,26 +76,16 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected EvenementCivilRegPP getEvenementCivilRegoupeForHabitant(long id) {
-		List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
+		
+		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
+		final Long numeroInd = pp.getNumeroIndividu();
 
-		EvenementCivilRegPP evt = null;
-		for (EvenementCivilRegPP e : list) {
-			Long h1 = e.getHabitantPrincipalId();
-			if (h1 != null) {
-				if (h1.equals(id)) {
-					evt = e;
-					break;
-				}
-			}
-			Long h2 = e.getHabitantConjointId();
-			if (h2 != null) {
-				if (h2.equals(id)) {
-					evt = e;
-					break;
-				}
-			}
+		final List<EvenementCivilRegPP> list = evtExterneDAO.findEvenementByIndividu(numeroInd);
+		if (list == null || list.isEmpty()) {
+			return null;
 		}
-		return evt;
+
+		return list.get(0);
 	}
 
 	protected List<EvenementCivilRegPP> getEvenementsCivils(long habitant, TypeEvenementCivil type) {

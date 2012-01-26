@@ -62,4 +62,12 @@ public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, 
 	 * @return une liste d'ids des événements civils
 	 */
 	List<Long> getIdsEvenementCivilsErreurIndividu(Long numIndividu);
+
+	/**
+	 * Recherche et retourne les événements qui référence un individu donné.
+	 *
+	 * @param numIndividu un numéro d'individu
+	 * @return une liste d'événements
+	 */
+	List<EvenementCivilRegPP> findEvenementByIndividu(Long numIndividu);
 }

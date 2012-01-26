@@ -319,10 +319,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateEvenement);
 		nouvelleAdresse.setNumeroOrdrePostal(1342);
 
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
-
-		return new Demenagement(individu, principalPPId, conjoint, conjointPPId, dateEvenement, nouvelleCommune.getNoOFSEtendu(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
+		return new Demenagement(individu, conjoint, dateEvenement, nouvelleCommune.getNoOFSEtendu(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
 	}
 
 	private boolean existTacheControlePourAncienOID(List<Tache> mesTaches,CollectiviteAdministrative collectiviteAttendue){
@@ -364,9 +361,10 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = addHabitant(noInd);
 		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, MockCommune.Villette);
 		addForPrincipal(pp, dateFusion, MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
+		hibernateTemplate.flush();
 
 		// Simule un événement de déménagement de la part de la commune fusionnée
-		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, pas de surprise ici,

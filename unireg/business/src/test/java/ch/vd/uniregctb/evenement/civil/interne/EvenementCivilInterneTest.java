@@ -25,6 +25,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -64,12 +65,13 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final RegDate dateEvenement = RegDate.get(2008, 3, 10);
 		final EvenementCivilRegPP evenementArriveeCouple = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
 				EtatEvenementCivil.A_TRAITER, dateEvenement, noIndividuPrincipal,
-				null, noIndividuConjoint, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
+				noIndividuConjoint, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		/*
 		 * Création et initialisation de l'adapter
 		 */
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+		final MockTiersDAO tiersDAO = new MockTiersDAO();
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 		final EvenementCivilOptions options = new EvenementCivilOptions(false);
 		final EvenementCivilInterne adapter = new ArriveePrincipale(evenementArriveeCouple, context, options);
 
@@ -115,10 +117,10 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		 * Création d'un événement civil de mariage
 		 */
 		final EvenementCivilRegPP
-				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, null, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
+				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, null, null, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, new MockTiersDAO(), null, null);
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 

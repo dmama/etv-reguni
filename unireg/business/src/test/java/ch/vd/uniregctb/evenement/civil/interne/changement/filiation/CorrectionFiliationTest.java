@@ -132,9 +132,15 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Traitement d'un événement de correction de filiation
 			 */
-			final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
-			final CorrectionFiliation correction = new CorrectionFiliation(jean, jeanId, null, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFSEtendu(), context);
-			assertSansErreurNiWarning(correction);
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
+					final CorrectionFiliation correction = new CorrectionFiliation(jean, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFSEtendu(), context);
+					assertSansErreurNiWarning(correction);
+					return null;
+				}
+			});
 
 			// On vérifie que les individus ont maintenant le nouveau nom (ce qui prouve que le cache des trois individus a été nettoyé)
 			// (sauf pour Véronique, évidemment, puisqu'elle n'est pas concernées par la correction de filiation)

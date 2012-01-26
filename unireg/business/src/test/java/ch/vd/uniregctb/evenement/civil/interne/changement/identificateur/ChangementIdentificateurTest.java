@@ -70,8 +70,7 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		individu.setNoAVS11("7561261400563");
 
 		// déclenchement de l'événement
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, principalPPId, null, null, RegDate.get(), 4848, context);
+		ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, null, RegDate.get(), 4848, context);
 
 		final MessageCollector collector = buildMessageCollector();
 		chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs

@@ -18,6 +18,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -79,7 +80,8 @@ public class FinPermisTest extends WithoutSpringTest {
 		}
 	};
 
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	final MockTiersDAO tiersDAO = new MockTiersDAO();
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test
@@ -87,7 +89,7 @@ public class FinPermisTest extends WithoutSpringTest {
 		PersonnePhysique roberto = new PersonnePhysique(true);
 		roberto.setNumero(NUMERO_INDIVIDU);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
-				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
+				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, 0L, 1234, null);
 		FinPermis adapter = new FinPermis(evenementsCivils, context, options);
 	}
 
@@ -96,7 +98,7 @@ public class FinPermisTest extends WithoutSpringTest {
 		PersonnePhysique rosa = new PersonnePhysique(true);
 		rosa.setNumero(NUMERO_INDIVIDU_2);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
-				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
+				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, 0L, 1234, null);
 		FinPermis adapter = new FinPermis(evenementsCivils, context, options);
 	}
 }

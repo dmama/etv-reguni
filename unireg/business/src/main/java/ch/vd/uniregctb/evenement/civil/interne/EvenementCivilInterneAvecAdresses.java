@@ -80,18 +80,6 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 		this.adresseCourrier = adresseCourrier;
 	}
 
-	/**
-	 * Pour le testing uniquement.
-	 */
-	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterneAvecAdresses(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement,
-	                                            Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
-		super(individu, principalPPId, conjoint, conjointPPId, dateEvenement, numeroOfsCommuneAnnonce, context);
-		this.adressePrincipale = adressePrincipale;
-		this.adresseSecondaire = adresseSecondaire;
-		this.adresseCourrier = adresseCourrier;
-	}
-
 	@Override
 	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);

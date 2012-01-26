@@ -22,14 +22,14 @@ public class EvenementCivilContext {
 	private final AdresseService adresseService;
 	private final EvenementFiscalService evenementFiscalService;
 
-	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra) {
+	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
+		this.tiersDAO = tiersDAO;
 		this.dataEventService = null;
 		this.tiersService = null;
 		this.indexer = null;
 		this.metierService = null;
-		this.tiersDAO = null;
 		this.adresseService = null;
 		this.evenementFiscalService = null;
 	}

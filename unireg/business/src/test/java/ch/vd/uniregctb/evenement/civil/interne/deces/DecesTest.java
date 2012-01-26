@@ -118,7 +118,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
 		EvenementCivilRegPP
-				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , habitant, 0L, null, 1234, null);
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, contextSimple, options);
 		Assert.isNull(adapter.getConjointSurvivant(), "le conjoint survivant d'un celibataire ne doit pas exister");
 	}
@@ -135,7 +135,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE_SEUL);
 		EvenementCivilRegPP
-				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , habitant, 0L, null, 1234, null);
+				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, contextSimple, options);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié seul ne doit pas exister");
 	}
@@ -150,7 +150,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		// Cas du marié
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE);
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, contextSimple, options);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié doit exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_MARIE, "le conjoint survivant n'est pas celui attendu");
@@ -166,7 +166,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		// Cas du pacsé
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_PACSE);
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, contextSimple, options);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un pacsé doit pas exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_PACSE, "le conjoint survivant n'est pas celui attendu");
@@ -222,7 +222,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		}
 	};
 
-	private EvenementCivilContext contextSimple = new EvenementCivilContext(serviceCivilSimple, infrastructureService);
+	private EvenementCivilContext contextSimple;
 
 	private static final Logger LOGGER = Logger.getLogger(DecesTest.class);
 
@@ -237,6 +237,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		super.onSetUp();
 
 		serviceCivil.setUp(new DefaultMockServiceCivil(false));
+		contextSimple = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -473,10 +474,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(ppal.getNoTechnique(), true);
-		final Long conjointPPId = (conjoint == null ? null : tiersDAO.getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
-
-		return new Deces(ppal, principalPPId, conjoint, conjointPPId, dateDeces, 5652, context);
+		return new Deces(ppal, conjoint, dateDeces, 5652, context);
 	}
 
 	/**

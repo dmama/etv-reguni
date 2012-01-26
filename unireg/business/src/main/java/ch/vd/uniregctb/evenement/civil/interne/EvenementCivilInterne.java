@@ -38,12 +38,12 @@ public abstract class EvenementCivilInterne {
 
 	// L'individu principal.
 	private final Long noIndividu;
-	private final Long principalPPId;
+	private final PersonnePhysique principalPP;
 	private Individu individuPrincipal;
 
 	// Le conjoint (mariage ou pacs).
 	private final Long noIndividuConjoint;
-	private final Long conjointPPId;
+	private final PersonnePhysique conjointPP;
 	private Individu conjoint;
 
 	private final RegDate date;
@@ -69,9 +69,9 @@ public abstract class EvenementCivilInterne {
 		this.numeroEvenement = evenement.getId();
 		this.numeroOfsCommuneAnnonce = evenement.getNumeroOfsCommuneAnnonce();
 		this.noIndividu = evenement.getNumeroIndividuPrincipal();
-		this.principalPPId = evenement.getHabitantPrincipalId();
+		this.principalPP = this.noIndividu == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividu, true);
 		this.noIndividuConjoint = evenement.getNumeroIndividuConjoint();
-		this.conjointPPId = evenement.getHabitantConjointId();
+		this.conjointPP = this.noIndividuConjoint == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividuConjoint, true);
 
 		/*
 		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
@@ -81,7 +81,7 @@ public abstract class EvenementCivilInterne {
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 
-		if (options.isRefreshCache()) {
+		if (noIndividu != null && options.isRefreshCache()) {
 
 			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
 			context.getDataEventService().onIndividuChange(noIndividu);
@@ -108,16 +108,16 @@ public abstract class EvenementCivilInterne {
 		this.numeroEvenement = evenement.getId();
 		this.numeroOfsCommuneAnnonce = null;
 		this.noIndividu = evenement.getNumeroIndividu();
-		this.principalPPId = evenement.getNumeroContribuablePersonnePhysique();
+		this.principalPP = this.noIndividu == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividu, true);
 		this.noIndividuConjoint = null;
-		this.conjointPPId = null;
+		this.conjointPP = null;
 
 		/*
 		 * Récupération des informations sur l'individu depuis RCPers.
 		 */
 		parts = null;
 
-		if (options.isRefreshCache()) {
+		if (noIndividu != null && options.isRefreshCache()) {
 
 			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
 			context.getDataEventService().onIndividuChange(noIndividu);
@@ -140,36 +140,16 @@ public abstract class EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterne(Individu individu, Long principalPPId, Individu conjoint, Long conjointPPId, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
-		this.context = context;
-
-		this.individuPrincipal = individu;
-		this.noIndividu = (individu == null ? null : individu.getNoTechnique());
-		this.principalPPId = principalPPId;
-
-		this.conjoint = conjoint;
-		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
-		this.conjointPPId = conjointPPId;
-
-		this.date = dateEvenement;
-		this.numeroEvenement = 0L;
-		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
-	}
-
-	/**
-	 * Pour le testing uniquement.
-	 */
-	@SuppressWarnings({"JavaDoc"})
 	protected EvenementCivilInterne(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		this.context = context;
 
 		this.individuPrincipal = individu;
 		this.noIndividu = (individu == null ? null : individu.getNoTechnique());
-		this.principalPPId = (individu == null ? null : context.getTiersDAO().getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true));
+		this.principalPP = this.noIndividu == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividu, true);
 
 		this.conjoint = conjoint;
 		this.noIndividuConjoint = (conjoint == null ? null : conjoint.getNoTechnique());
-		this.conjointPPId = (conjoint == null ? null : context.getTiersDAO().getNumeroPPByNumeroIndividu(conjoint.getNoTechnique(), true));
+		this.conjointPP = this.noIndividuConjoint == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividuConjoint, true);
 
 		this.date = dateEvenement;
 		this.numeroEvenement = 0L;
@@ -226,7 +206,7 @@ public abstract class EvenementCivilInterne {
 			 * Il n’existe pas de tiers contribuable correspondant à l’individu, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
 			 */
-			if (getPrincipalPPId() == null) {
+			if (getPrincipalPP() == null) {
 				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu " + getNoIndividu());
 			}
 
@@ -234,7 +214,7 @@ public abstract class EvenementCivilInterne {
 			 * Il n’existe pas de tiers contribuable correspondant au conjoint, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
 			 */
-			if (getNoIndividuConjoint() != null && getConjointPPId() == null) {
+			if (getNoIndividuConjoint() != null && getConjointPP() == null) {
 				erreurs.addErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + getNoIndividuConjoint());
 			}
 		}
@@ -273,8 +253,8 @@ public abstract class EvenementCivilInterne {
 		return conjoint;
 	}
 
-	public Long getConjointPPId() {
-		return conjointPPId;
+	public PersonnePhysique getConjointPP() {
+		return conjointPP;
 	}
 
 	public RegDate getDate() {
@@ -292,8 +272,8 @@ public abstract class EvenementCivilInterne {
 		return individuPrincipal;
 	}
 
-	public Long getPrincipalPPId() {
-		return principalPPId;
+	public PersonnePhysique getPrincipalPP() {
+		return principalPP;
 	}
 
 	public final Long getNumeroEvenement() {

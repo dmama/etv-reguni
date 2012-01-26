@@ -68,7 +68,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
-		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
@@ -117,7 +117,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
-		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, pp, null, null,
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, parce que

@@ -185,11 +185,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	}
 
 	private CorrectionDateNaissance createValidCorrectionDateNaissane(Individu individu, RegDate dateNaissanceCorrigee) {
-
-		final Long principalPPId = tiersDAO.getNumeroPPByNumeroIndividu(individu.getNoTechnique(), true);
-		CorrectionDateNaissance correctionDateNaissane = new CorrectionDateNaissance(individu, principalPPId, null, null, dateNaissanceCorrigee, 5652, context);
-
-		return correctionDateNaissane;
+		return new CorrectionDateNaissance(individu, null, dateNaissanceCorrigee, 5652, context);
 	}
 
 	/**

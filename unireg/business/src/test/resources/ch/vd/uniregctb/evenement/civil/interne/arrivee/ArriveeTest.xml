@@ -212,7 +212,6 @@
     <column>ID</column>
     <column>TYPE</column>
     <column>DATE_EVENEMENT</column>
-    <column>HAB_PRINCIPAL</column>
     <column>NO_INDIVIDU_PRINCIPAL</column>
     <column>NUMERO_OFS_ANNONCE</column>
     <column>ETAT</column>
@@ -221,7 +220,6 @@
       <value>9001</value>
       <value>DEMENAGEMENT_DANS_COMMUNE</value>
       <value>20071025</value>
-      <value>6789</value>
       <value>12345</value>
       <value>1010</value>
       <value>A_TRAITER</value>

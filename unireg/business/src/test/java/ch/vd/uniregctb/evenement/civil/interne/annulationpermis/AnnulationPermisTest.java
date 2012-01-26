@@ -19,6 +19,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -85,19 +86,26 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		}
 	};
 
-	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService);
+	final MockTiersDAO tiersDAO = new MockTiersDAO();
+	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	final EvenementCivilOptions options = new EvenementCivilOptions(false);
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();    //To change body of overridden methods use File | Settings | File Templates.
+		tiersDAO.clear();
+	}
 
 	@Test
 	public void testAnnulationPermisC() throws Exception {
 		// Crée l'habitant
 		PersonnePhysique habitant = new PersonnePhysique(true);
-		habitant.setNumero(NUMERO_INDIVIDU);
+		habitant.setNumero(12345678L);
+		habitant.setNumeroIndividu(NUMERO_INDIVIDU);
 		// Simulation de l'annulation du permis dans le host
 		permisRoberto.setDateAnnulation(DATE_ANNULATION_PERMIS);
 		// Crée l'événement
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
-				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, 0L, 1234, null);
 		// Teste l'adapter
 		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
 		assertEquals(TypePermis.ETABLISSEMENT, adapter.getTypePermis());
@@ -107,12 +115,12 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	public void testPermisCSansNationalite() throws Exception {
 		// Crée l'habitant
 		PersonnePhysique habitant = new PersonnePhysique(true);
+		habitant.setNumero(12345678L);
 		habitant.setNumero(NUMERO_INDIVIDU_2);
 		// Simulation de l'annulation du permis dans le host
 		permisRosa.setDateAnnulation(DATE_ANNULATION_PERMIS);
 		// Crée l'événement
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER,
-				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, habitant, 0L, null, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, 0L, 1234, null);
 		// Teste l'adapter
 		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
 		assertEquals(TypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
