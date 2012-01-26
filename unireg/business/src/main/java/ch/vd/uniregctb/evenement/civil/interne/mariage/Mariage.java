@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.mariage;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
@@ -11,6 +12,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -25,8 +27,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Modélise un événement conjugal (mariage, pacs)
- *
- * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public class Mariage extends EvenementCivilInterne {
 
@@ -39,15 +39,12 @@ public class Mariage extends EvenementCivilInterne {
 
 	public Mariage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
+	}
 
-		/*
-		 * Récupération des informations sur le conjoint de l'individu depuis le host.
-		 * getIndividu().getConjoint() peut être null si mariage le 01.01
-		 */
-		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
-		this.nouveauConjoint = getConjointValide(individuPrincipal, context.getServiceCivil());
-		//this.nouveauConjoint = individuPrincipal.getConjoint();
+	public Mariage(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
 	}
 
 	/**
@@ -72,36 +69,44 @@ public class Mariage extends EvenementCivilInterne {
 		return nouveauConjoint;
 	}
 
-	/**UNIREG-2055
-	 * Cette méthode permet de vérifier que le conjoint trouvé pour l'individu principal a bien
-	 * un état civil cohérent avec l'événement de mariage traité
+	/**
+	 * [UNIREG-2055] Cette méthode permet de vérifier que le conjoint trouvé pour l'individu principal a bien un état civil cohérent avec l'événement de mariage traité
 	 *
-	 * @param individuPrincipal
+	 * @param noPrincipal  le numéro d'individu principal considéré
+	 * @param date         la date de valeur
+	 * @param serviceCivil le service civil
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
 	 */
-	private Individu getConjointValide(Individu individuPrincipal,ServiceCivilService serviceCivil) {
-		Individu conjointTrouve = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayAfter());
-		if (conjointTrouve!=null && isBonConjoint(individuPrincipal, conjointTrouve, serviceCivil)) {
-			final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjointTrouve.getNoTechnique(), getDate());
-			//Si le conjoint n'a pas d'état civil ou son état civil est différent de marié, on renvoie null
-			if (etatCivilConjoint!=null ) {
-				if (TypeEtatCivil.MARIE == etatCivilConjoint.getTypeEtatCivil() || TypeEtatCivil.PACS == etatCivilConjoint.getTypeEtatCivil()) {
-					return conjointTrouve;
-				}
+	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil) {
 
-			}
-
+		final Individu conjoint = serviceCivil.getConjoint(noPrincipal, date.getOneDayAfter());
+		if (conjoint == null) {
+			return null;
 		}
-		return null;
+
+		final Individu principal = serviceCivil.getIndividu(noPrincipal, date);
+		if (!isBonConjoint(principal, conjoint, date, serviceCivil)) {
+			return null;
+		}
+
+		// si le conjoint n'a pas d'état civil, on renvoie null
+		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), date);
+		if (etatCivil == null) {
+			return null;
+		}
+
+		// si le conjoint n'est pas marié/pacsé, on renvoie null
+		if (TypeEtatCivil.MARIE != etatCivil.getTypeEtatCivil() && TypeEtatCivil.PACS != etatCivil.getTypeEtatCivil()) {
+			return null;
+		}
+
+		// on a trouvé le conjoint !
+		return conjoint;
 	}
 
-
-	private boolean isBonConjoint(Individu principal, Individu conjoint, ServiceCivilService serviceCivil){
-		Individu principalAttendu = serviceCivil.getConjoint(conjoint.getNoTechnique(),getDate().getOneDayAfter());
-		if (principalAttendu!=null && principal.getNoTechnique()== principalAttendu.getNoTechnique()) {
-			return true;
-		}
-		return false;
+	private static boolean isBonConjoint(Individu principal, Individu conjoint, @NotNull RegDate date, ServiceCivilService serviceCivil){
+		final Individu principalAttendu = serviceCivil.getConjoint(conjoint.getNoTechnique(), date.getOneDayAfter());
+		return principalAttendu != null && principal.getNoTechnique() == principalAttendu.getNoTechnique();
 	}
 
 	@Override
