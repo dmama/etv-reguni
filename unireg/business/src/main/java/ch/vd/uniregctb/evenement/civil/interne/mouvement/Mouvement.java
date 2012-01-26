@@ -71,9 +71,6 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 
 		String message = null;
 
-		if (mouvement.getNumeroOfsCommuneAnnonce() == null) {
-			erreurs.addErreur("La commune d'annonce est vide");
-		}
 		/*
 		 * Vérifie les individus
 		 */

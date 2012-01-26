@@ -172,8 +172,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié.
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String rue, String numeroMaison, Integer numeroPostal, Localite localite, CasePostale casePostale,
-			RegDate debutValidite, RegDate finValidite) {
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, String rue, String numeroMaison, Integer numeroPostal, Localite localite, CasePostale casePostale,
+									RegDate debutValidite, RegDate finValidite) {
 
 		final MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(type);
@@ -199,7 +199,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse étrangère pour l'individu spécifié
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable String rue, @Nullable String numeroMaison, @Nullable Integer numeroPostal, @Nullable CasePostale casePostale,
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable String rue, @Nullable String numeroMaison, @Nullable Integer numeroPostal, @Nullable CasePostale casePostale,
 	                             @Nullable String localite, @NotNull Pays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		Assert.isFalse(pays.isSuisse());
@@ -224,9 +224,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
-
-		final Adresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
+		final MockAdresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -234,9 +233,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'un bâtiment).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
-
-		final Adresse adresse = newAdresse(type, batiment, casePostale, debutValidite, finValidite);
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
+		final MockAdresse adresse = newAdresse(type, batiment, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -244,9 +242,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
-	protected Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
-
-		final Adresse adresse = newAdresse(type, casePostale, localite, debutValidite, finValidite);
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
+		final MockAdresse adresse = newAdresse(type, casePostale, localite, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -254,7 +251,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à partie d'une rue.
 	 */
-	public static Adresse newAdresse(TypeAdresseCivil type, MockRue rue, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	public static MockAdresse newAdresse(TypeAdresseCivil type, MockRue rue, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(rue);
 
 		final MockLocalite localite = rue.getLocalite();
@@ -269,7 +266,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à partie d'un bâtiment.
 	 */
-	public static Adresse newAdresse(TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	public static MockAdresse newAdresse(TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(batiment);
 
 		MockRue rue = batiment.getRue();
@@ -282,7 +279,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à partie d'une localité.
 	 */
-	public static Adresse newAdresse(TypeAdresseCivil type, CasePostale casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+	public static MockAdresse newAdresse(TypeAdresseCivil type, CasePostale casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 		Assert.notNull(localite);
 
 		final MockAdresse adresse = new MockAdresse();
@@ -307,7 +304,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Crée une nouvelle adresse à l'étranger
 	 */
-	public static Adresse newAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
+	public static MockAdresse newAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 		Assert.notNull(pays);
 		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureService.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
 

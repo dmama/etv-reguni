@@ -56,6 +56,10 @@ public class DepartPrincipal extends Depart {
 			warnings.addWarning("La nouvelle adresse principale de l'individu est vide");
 		}
 
+		if (getNumeroOfsCommuneAnnonce() == null) {
+			erreurs.addErreur("La commune d'annonce est vide");
+		}
+
 		verifierMouvementIndividu(this, false, erreurs, warnings);
 
 		// Si le pays de destination est inconnu, on leve un warning
