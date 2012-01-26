@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
 	<xs:complexType abstract="true" name="requestType">
 		<xs:annotation>
-			<xs:documentation>Données de base communes à toutes les requêtes au web-service Tiers d'Unireg.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Données de base communes à toutes les requêtes au web-service Tiers d'Unireg.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="login" type="common:userLoginType">
 				<xs:annotation>
-					<xs:documentation>Information de login de l'utilisateur qui a initié la requête.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Information de login de l'utilisateur qui a initié la requête.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -19,7 +28,11 @@
 
 	<xs:simpleType name="partyPartType">
 		<xs:annotation>
-			<xs:documentation>Les différents collections (= parties) qui peuvent être renseignées sur un tiers.</xs:documentation>
+			<xs:appinfo>
+				<typesafeEnumClass>
+					<jxb:javadoc>Les différents collections (= parties) qui peuvent être renseignées sur un tiers.</jxb:javadoc>
+				</typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ADDRESSES">
@@ -139,11 +152,15 @@
 
 	<xs:complexType name="partyNumberListType">
 		<xs:annotation>
-			<xs:documentation>Une liste de numéros de tiers.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Une liste de numéros de tiers.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="item" nillable="true" type="common:partyNumberType" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element name="item" nillable="true" type="common:partyNumberType" maxOccurs="unbounded" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
-	
+
 </xs:schema>

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1">
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 
@@ -9,19 +10,31 @@
 
 	<xs:complexType name="getTaxOfficesRequestType">
 		<xs:annotation>
-			<xs:documentation>Requête qui demande les offices d'impôt de district et de région pour une commune vaudoise.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui demande les offices d'impôt de district et de région pour une commune vaudoise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="ws:requestType">
 				<xs:sequence>
 					<xs:element name="municipalityFSOId" type="xs:int">
 						<xs:annotation>
-							<xs:documentation>Le numéro Ofs d'une commune vaudoise.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le numéro Ofs d'une commune vaudoise.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="date" type="common:dateType">
 						<xs:annotation>
-							<xs:documentation>La date de validité de la commune considérée (ou null pour la date du jour).</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La date de validité de la commune considérée (ou null pour la date du jour).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -31,20 +44,32 @@
 
 	<xs:complexType name="getTaxOfficesResponseType">
 		<xs:annotation>
-			<xs:documentation>Réponse de la demande d'obtention des offices d'impôt de district et de région pour une commune vaudoise.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Réponse de la demande d'obtention des offices d'impôt de district et de région pour une commune vaudoise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="districtTaxOfficePartyNumber" type="common:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro de tiers de l'office d'impôt de district.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers de l'office d'impôt de district.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="regionTaxOfficePartyNumber" type="common:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro de tiers de l'office d'impôt de région.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers de l'office d'impôt de région.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
 

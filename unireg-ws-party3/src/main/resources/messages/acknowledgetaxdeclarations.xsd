@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
@@ -9,14 +10,22 @@
 	<xs:include schemaLocation="base.xsd" />
 	<xs:complexType name="acknowledgeTaxDeclarationsRequestType">
 		<xs:annotation>
-			<xs:documentation>Requête qui demande de quittancer une ou plusieurs déclarations.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui demande de quittancer une ou plusieurs déclarations.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="ws:requestType">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" name="requests" type="ws:acknowledgeTaxDeclarationRequestType">
 						<xs:annotation>
-							<xs:documentation>Les demandes de quittancement à traiter.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les demandes de quittancement à traiter.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -25,66 +34,114 @@
 	</xs:complexType>
 	<xs:complexType name="acknowledgeTaxDeclarationRequestType">
 		<xs:annotation>
-			<xs:documentation>Demande de quittancement (= douchage au CEDI) d'une déclaration d'impôt ordinaire.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Demande de quittancement (= douchage au CEDI) d'une déclaration d'impôt ordinaire.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
 				<xs:annotation>
-					<xs:documentation>La clé qui permet d'identification la déclaration.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La clé qui permet d'identification la déclaration.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="acknowledgeDate" type="common:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de retour (= date de quittancement) de la déclaration.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de retour (= date de quittancement) de la déclaration.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="source" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>La source du quittancement (= nom de l'application à la source du quittancement : CEDI, ADDI, ...).</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La source du quittancement (= nom de l'application à la source du quittancement : CEDI, ADDI, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ordinaryTaxDeclarationKeyType">
 		<xs:annotation>
-			<xs:documentation>Contient les données qui permettent d'identifier de manière unique une déclaration d'impôt ordinaire.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les données qui permettent d'identifier de manière unique une déclaration d'impôt ordinaire.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="taxpayerNumber" type="common:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro de contribuable auquel appartient la déclaration.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de contribuable auquel appartient la déclaration.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="taxPeriod" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>La période fiscale complète (ex. 2010) pour laquelle la déclaration a été émise.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La période fiscale complète (ex. 2010) pour laquelle la déclaration a été émise.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="sequenceNumber" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Le numéro de séquence de la déclaration (pour le contribuable et la période fiscale considérée)..</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de séquence de la déclaration (pour le contribuable et la période fiscale considérée)..</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="acknowledgeTaxDeclarationResponseType">
 		<xs:annotation>
-			<xs:documentation>Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations de réponse d'une demande de quittancement d'une déclaration d'impôt ordinaire.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="key" type="ws:ordinaryTaxDeclarationKeyType">
 				<xs:annotation>
-					<xs:documentation>La clé qui permet d'identifier la déclaration concernée</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La clé qui permet d'identifier la déclaration concernée</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="code" type="ws:taxDeclarationAcknowledgeCodeType">
 				<xs:annotation>
-					<xs:documentation>Le code de retour du quittancement.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le code de retour du quittancement.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="exceptionInfo" type="exception:serviceExceptionInfoType">
 				<xs:annotation>
-					<xs:documentation>Le type et le message de l'erreur ou de l'exception levée si code != OK</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le type et le message de l'erreur ou de l'exception levée si code != OK</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>

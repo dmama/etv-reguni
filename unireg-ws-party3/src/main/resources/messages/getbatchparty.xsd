@@ -2,7 +2,8 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1"
-		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1">
+		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
@@ -11,19 +12,31 @@
 	<xs:include schemaLocation="base.xsd" />
 	<xs:complexType name="getBatchPartyRequestType">
 		<xs:annotation>
-			<xs:documentation>Requête qui demande les informations de plusieurs tiers d'un seul coup.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui demande les informations de plusieurs tiers d'un seul coup.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="ws:requestType">
 				<xs:sequence>
 					<xs:element maxOccurs="unbounded" name="partyNumbers" type="common:partyNumberType">
 						<xs:annotation>
-							<xs:documentation>Les ids des tiers à retourner</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les ids des tiers à retourner</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="parts" type="ws:partyPartType">
 						<xs:annotation>
-							<xs:documentation>Les parties à renseigner sur les tiers retournés.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les parties à renseigner sur les tiers retournés.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -37,27 +50,44 @@
 	</xs:complexType>
 	<xs:complexType name="batchPartyEntryType">
 		<xs:annotation>
-			<xs:documentation>Les données trouvées pour un tiers demandé à travers la méthode 'getBatchParty'.</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Les données trouvées pour un tiers demandé à travers la méthode 'getBatchParty'.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="number" type="common:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro de tiers demandé.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers demandé.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="party" type="party:partyType">
 				<xs:annotation>
-					<xs:documentation>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
-						S'il le tiers est non-renseigné, il y a deux possibilités :
-						- si 'exceptionInfo' est non-renseigné : le tiers n'existe pas.
-						- si 'exceptionInfo' est renseigné : le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas, la raison est stockée dans 'exceptionInfo'.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le tiers demandé, ou non-renseigné si le tiers n'a pas été trouvé.
+								S'il le tiers est non-renseigné, il y a deux possibilités :
+								- si 'exceptionInfo' est non-renseigné : le tiers n'existe pas.
+								- si 'exceptionInfo' est renseigné : le tiers existe mais le web-service n'a pu pas le retourner. Dans ce cas, la raison est stockée dans 'exceptionInfo'.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element minOccurs="0" name="exceptionInfo" type="exception:serviceExceptionInfoType">
 				<xs:annotation>
-					<xs:documentation>La raison de l'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement pas.
-					</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La raison de l'exception si le tiers n'a pas pu être retourné à cause d'une exception, non renseigné si le tiers a été retourné ou qu'il n'existe simplement
+								pas.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
