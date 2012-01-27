@@ -998,7 +998,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
