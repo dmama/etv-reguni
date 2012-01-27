@@ -291,7 +291,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le veuvage
 	 */
-	public void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, String remarque, Long numeroEvenement) throws MetierServiceException;
+	public void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, @Nullable String remarque, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Annule un veuvage.

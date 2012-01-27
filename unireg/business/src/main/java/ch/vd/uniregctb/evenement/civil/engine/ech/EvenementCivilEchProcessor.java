@@ -242,7 +242,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		event.getErreurs().clear();
 
 		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<EvenementCivilEchErreur>(ERREUR_FACTORY);
-		processEvent(event, collector, collector);
+		final EtatEvenementCivil etat = processEvent(event, collector, collector);
 
 		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
 		final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
@@ -259,40 +259,44 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		}
 
 		final boolean hasErrors = collector.hasErreurs();
-		if (hasErrors) {
+		if (hasErrors || etat == EtatEvenementCivil.EN_ERREUR) {
 			event.setEtat(EtatEvenementCivil.EN_ERREUR);
 			Audit.error(event.getId(), "Statut de l'événement passé à 'EN_ERREUR'");
 		}
-		else if (collector.hasWarnings()) {
+		else if (collector.hasWarnings() || etat == EtatEvenementCivil.A_VERIFIER) {
 			event.setEtat(EtatEvenementCivil.A_VERIFIER);
 			Audit.warn(event.getId(), "Statut de l'événement passé à 'A_VERIFIER'");
 		}
 		else {
-			event.setEtat(EtatEvenementCivil.TRAITE);
-			Audit.success(event.getId(), "Statut de l'événement passé à 'TRAITE'");
+			event.setEtat(etat);
+			Audit.success(event.getId(), "Statut de l'événement passé à '" + etat.name() + "'");
 		}
 
 		return !hasErrors;
 	}
 
-	private void processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
+	private EtatEvenementCivil processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 		try {
 			final EvenementCivilInterne evtInterne = buildInterne(event);
 			if (evtInterne == null) {
 				LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
 				erreurs.addErreur("Aucun code de traitement trouvé");
+				return EtatEvenementCivil.EN_ERREUR;
 			}
 			else {
 				// validation et traitement
 				evtInterne.validate(erreurs, warnings);
-				if (!erreurs.hasErreurs()) {
-					evtInterne.handle(warnings);
+				if (erreurs.hasErreurs()) {
+					return EtatEvenementCivil.EN_ERREUR;
 				}
+
+				return evtInterne.handle(warnings).toEtat();
 			}
 		}
 		catch (EvenementCivilException e) {
 			LOGGER.error(String.format("Exception lancée lors du traitement de l'événement %d", event.getId()), e);
 			erreurs.addErreur(e);
+			return EtatEvenementCivil.EN_ERREUR;
 		}
 	}
 

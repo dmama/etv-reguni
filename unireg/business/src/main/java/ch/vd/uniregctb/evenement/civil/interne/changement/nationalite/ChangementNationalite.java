@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.nationalite;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class ChangementNationalite extends EvenementCivilInterne {
 
@@ -22,8 +23,9 @@ public class ChangementNationalite extends EvenementCivilInterne {
 		throw new NotImplementedException();
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		throw new NotImplementedException();
 	}
 }

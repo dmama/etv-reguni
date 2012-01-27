@@ -3,12 +3,12 @@ package ch.vd.uniregctb.evenement.civil.interne;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -50,9 +50,10 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		}
 
+		@NotNull
 		@Override
-		public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-			return null;
+		public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			return HandleStatus.TRAITE;
 		}
 	}
 

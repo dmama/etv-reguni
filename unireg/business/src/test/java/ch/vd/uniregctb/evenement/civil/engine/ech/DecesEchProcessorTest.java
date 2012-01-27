@@ -17,7 +17,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class DecesEchProcessorTest extends EvenementCivilEchProcessorTest {
+public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test(timeout = 10000L)
 	public void testDeces() throws Exception {

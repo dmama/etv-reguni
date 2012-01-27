@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.mouvement;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -36,7 +38,7 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected Mouvement(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
-	                    Adresse adressePrincipale, Adresse adresseSecondaire, Adresse adresseCourrier, EvenementCivilContext context) {
+	                    @Nullable Adresse adressePrincipale, @Nullable Adresse adresseSecondaire, @Nullable Adresse adresseCourrier, EvenementCivilContext context) {
 		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, adressePrincipale, adresseSecondaire, adresseCourrier, context);
 	}
 

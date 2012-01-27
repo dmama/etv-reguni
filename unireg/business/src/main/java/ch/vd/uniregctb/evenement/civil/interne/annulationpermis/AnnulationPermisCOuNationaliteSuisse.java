@@ -1,13 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -30,8 +32,9 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// si l'habitant a un permis C (événement annulation permis C)
 		// ou a la nationalité suisse (événement annulation de l'obtention de la nationalité suisse)
@@ -55,7 +58,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 			// il y a eu d'autres opérations aprés l'obtention, passer en erreur
 			throw new EvenementCivilException("Il y a eu d'autres opérations après l'obtention du permis C/nationalité");
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 
 	/**

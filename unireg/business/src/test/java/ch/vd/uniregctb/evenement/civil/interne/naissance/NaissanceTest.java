@@ -8,12 +8,12 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -184,11 +184,12 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final Pair<PersonnePhysique, PersonnePhysique> res = naissance.handle(collector);
+				final HandleStatus code = naissance.handle(collector);
+				assertEquals(HandleStatus.TRAITE, code);
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				ids.fils = res.getFirst().getNumero();
+				ids.fils = tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
 				return null;
 			}
 		});

@@ -3,15 +3,16 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -89,8 +90,9 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 		this.typePermis = typePermis;
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// quelque soit le permis, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour le permis chez nous
@@ -104,7 +106,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 		/* Seul le permis C a une influence */
 		if (getTypePermis() != TypePermis.ETABLISSEMENT) {
 			Audit.info(getNumeroEvenement(), "Permis non C : ignoré fiscalement");
-			return null;
+			return HandleStatus.TRAITE;
 		}
 		else {
 			return super.handle(warnings);

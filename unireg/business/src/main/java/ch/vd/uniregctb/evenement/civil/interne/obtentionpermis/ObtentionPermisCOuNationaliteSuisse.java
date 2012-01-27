@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -114,8 +116,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * Traite l'événement passé en paramètre.
 	 *
 	 */
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
@@ -246,6 +249,6 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				Audit.info(getNumeroEvenement(), "Domicile hors du territoire cantonal : pas d'ouverture de for");
 			}
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

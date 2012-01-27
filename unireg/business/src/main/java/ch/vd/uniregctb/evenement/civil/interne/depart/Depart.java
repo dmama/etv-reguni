@@ -3,10 +3,10 @@ package ch.vd.uniregctb.evenement.civil.interne.depart;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -98,8 +99,9 @@ public abstract class Depart extends Mouvement {
 	 */
 	protected abstract void doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final PersonnePhysique pp = getPrincipalPP();
 		if (pp == null) {
@@ -112,7 +114,7 @@ public abstract class Depart extends Mouvement {
 		final Contribuable contribuable = findContribuable(dateFermeture, pp);
 
 		doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
-		return null;
+		return HandleStatus.TRAITE;
 	}
 
 	/**

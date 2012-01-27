@@ -50,7 +50,8 @@ public enum TypeEvenementCivilEch {
 	CORR_CATEGORIE_ETRANGER(56, 20),
 	CORR_ETAT_CIVIL(57, 7),
 	CORR_LIEU_NAISSANCE(58, null),
-	CORR_DATE_DECES(59, 24);
+	CORR_DATE_DECES(59, 24),
+	TESTING(499999, 0);
 
 	private final int codeECH;
 	private final Integer priorite;

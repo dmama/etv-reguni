@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
@@ -49,6 +50,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -306,47 +308,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-// TODO (msi) : supprimer une fois pour toute ce test lorsque les informations de conjoint auront été supprimées des événements civils
-//	@NotTransactional
-//	@Test
-//	@Transactional(rollbackFor = Throwable.class)
-//	public void testEvenementsIndividuConjointDifferentQueDansEvenement() throws Exception {
-//
-//		final long noInd2 = 34567L;
-//		final long noInd1 = 78912L;
-//		doInNewTransaction(new TxCallback() {
-//			@Override
-//			public Object execute(TransactionStatus status) throws Exception {
-//				final PersonnePhysique hab1 = new PersonnePhysique(true);
-//				hab1.setNumeroIndividu(noInd1);
-//				tiersDAO.save(hab1);
-//
-//				final PersonnePhysique hab2 = new PersonnePhysique(true);
-//				hab2.setNumeroIndividu(noInd2);
-//				tiersDAO.save(hab2);
-//				return null;
-//			}
-//		});
-//
-//		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
-//
-//		traiteEvenements();
-//
-//		doInTransaction(new TransactionCallback() {
-//			public Object doInTransaction(TransactionStatus status) {
-//
-//				// Test de l'état des événements;
-//				List<EvenementCivilData> list = evenementCivilRegPPDAO.getAll();
-//				assertEquals(1, list.size());
-//				EvenementCivilData e = list.get(0);
-//				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-//				assertErreurs(1, e);
-//
-//				return null;
-//			}
-//		});
-//	}
-
 	@Test
 	public void testEvenementsPasDeTiersPrincipal() throws Exception {
 
@@ -401,6 +362,124 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				assertErreurs(1, e);
 
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementExceptionDansHandle() throws Exception {
+
+		traiterEvenementTesting(Testing.NoExceptionDansHandle, new AfterHandleCallback() {
+			@Override
+			public void checkEvent(EvenementCivilRegPP e) {
+				assertEquals(EtatEvenementCivil.EN_ERREUR, e.getEtat());
+
+				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+				assertNotNull(erreur0);
+				assertEquals(TypeEvenementErreur.ERROR, erreur0.getType());
+				assertEquals("Exception de test", erreur0.getMessage());
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementTraiteAvecWarningDansHandle() throws Exception {
+
+		traiterEvenementTesting(Testing.NoTraiteAvecWarningDansHandle, new AfterHandleCallback() {
+			@Override
+			public void checkEvent(EvenementCivilRegPP e) {
+				assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
+
+				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+				assertNotNull(erreur0);
+				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+				assertEquals("Warning de test", erreur0.getMessage());
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementRedondantAvecWarningDansHandle() throws Exception {
+
+		traiterEvenementTesting(Testing.NoRedondantAvecWarningDansHandle, new AfterHandleCallback() {
+			@Override
+			public void checkEvent(EvenementCivilRegPP e) {
+				assertEquals(EtatEvenementCivil.A_VERIFIER, e.getEtat());
+
+				final Set<EvenementCivilRegPPErreur> erreurs = e.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilRegPPErreur erreur0 = erreurs.iterator().next();
+				assertNotNull(erreur0);
+				assertEquals(TypeEvenementErreur.WARNING, erreur0.getType());
+				assertEquals("Warning de test", erreur0.getMessage());
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementTraiteSansWarningDansHandle() throws Exception {
+
+		traiterEvenementTesting(Testing.NoTraiteSansWarning, new AfterHandleCallback() {
+			@Override
+			public void checkEvent(EvenementCivilRegPP e) {
+				assertEquals(EtatEvenementCivil.TRAITE, e.getEtat());
+				assertEmpty(e.getErreurs());
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementRedondantSansWarningDansHandle() throws Exception {
+
+		traiterEvenementTesting(Testing.NoRedondantSansWarning, new AfterHandleCallback() {
+			@Override
+			public void checkEvent(EvenementCivilRegPP e) {
+				assertEquals(EtatEvenementCivil.REDONDANT, e.getEtat());
+				assertEmpty(e.getErreurs());
+			}
+		});
+	}
+
+	private interface AfterHandleCallback {
+		void checkEvent(EvenementCivilRegPP e);
+	}
+
+	private void traiterEvenementTesting(long noEventTesting, final AfterHandleCallback callback) throws Exception {
+
+		final long noInd1 = 12345L;
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumeroIndividu(noInd1);
+				tiersDAO.save(hab);
+				return null;
+			}
+		});
+
+		saveEvenement(noEventTesting, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, null, 5402, EtatEvenementCivil.A_TRAITER);
+
+		traiteEvenements();
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+				assertEquals(1, list.size());
+
+				final EvenementCivilRegPP e = list.get(0);
+				callback.checkEvent(e);
 				return null;
 			}
 		});

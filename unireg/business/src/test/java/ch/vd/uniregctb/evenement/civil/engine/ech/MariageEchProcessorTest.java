@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-public class MariageEchProcessorTest extends EvenementCivilEchProcessorTest {
+public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test(timeout = 10000L)
 	public void testMariage() throws Exception {

@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -197,8 +199,9 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		long numeroIndividu = getNoIndividu();
 		RegDate dateEvenement = getDate();
@@ -213,7 +216,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		if (EtatCivilHelper.estSepare(etatCivil) || EtatCivilHelper.estDivorce(etatCivil)) { // si l'individu est séparé ou divorcé
 			handleSeparation(this, warnings);
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 
 	private void handleSeparation(EvenementCivilInterne evenement, EvenementCivilWarningCollector warnings) throws EvenementCivilException {

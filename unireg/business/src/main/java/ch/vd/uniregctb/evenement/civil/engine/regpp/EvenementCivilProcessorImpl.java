@@ -131,9 +131,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 					evenementCivilExterne.getErreurs().clear();
 
 					// Traitement de l'événement
-					traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
+					final EtatEvenementCivil etat = traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
 
-					return traiteErreurs(evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
+					return traiteErreurs(etat, evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
 				}
 			});
 		}
@@ -170,7 +170,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				erreurs.add(new EvenementCivilRegPPErreur(exception));
 
 				evenementCivilExterne.getErreurs().clear();
-				return traiteErreurs(evenementCivilExterne, erreurs, warnings);
+				return traiteErreurs(EtatEvenementCivil.EN_ERREUR, evenementCivilExterne, erreurs, warnings);
 			}
 		});
 	}
@@ -205,21 +205,21 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		Assert.notNull(event.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
 	}
 
-	private Long traiteErreurs(EvenementCivilRegPP evenementCivilExterne, List<EvenementCivilRegPPErreur> errorList, List<EvenementCivilRegPPErreur> warningList) {
+	private Long traiteErreurs(EtatEvenementCivil etat, EvenementCivilRegPP evenementCivilExterne, List<EvenementCivilRegPPErreur> errorList, List<EvenementCivilRegPPErreur> warningList) {
 
 		final List<EvenementCivilRegPPErreur> erreurs = EvenementCivilHelper.eliminerDoublons(errorList);
 		final List<EvenementCivilRegPPErreur> warnings = EvenementCivilHelper.eliminerDoublons(warningList);
 
 		final Long result;
 		
-		if (!erreurs.isEmpty()) {
+		if (!erreurs.isEmpty() || etat == EtatEvenementCivil.EN_ERREUR) {
 			evenementCivilExterne.setEtat(EtatEvenementCivil.EN_ERREUR);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
 			Audit.error(evenementCivilExterne.getId(), "Status changé à ERREUR");
 			result = null;
 			dumpForDebug(erreurs);
 		}
-		else if (!warnings.isEmpty()) {
+		else if (!warnings.isEmpty() || etat == EtatEvenementCivil.A_VERIFIER) {
 			evenementCivilExterne.setEtat(EtatEvenementCivil.A_VERIFIER);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
 			Audit.warn(evenementCivilExterne.getId(), "Status changé à A VERIFIER");
@@ -227,9 +227,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			dumpForDebug(warnings);
 		}
 		else {
-			evenementCivilExterne.setEtat(EtatEvenementCivil.TRAITE);
+			evenementCivilExterne.setEtat(etat);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
-			Audit.success(evenementCivilExterne.getId(), "Status changé à TRAITE");
+			Audit.success(evenementCivilExterne.getId(), "Status changé à " + etat.name() + "");
 			result = evenementCivilExterne.getNumeroIndividuPrincipal();
 		}
 
@@ -253,8 +253,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		return evenementCivilTranslator.toInterne(evenementCivilExterne, options);
 	}
 
-	private void traiteEvenement(final EvenementCivilRegPP evenementCivilExterne, boolean refreshCache, final EvenementCivilErreurCollector erreurs,
-	                             final EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private EtatEvenementCivil traiteEvenement(final EvenementCivilRegPP evenementCivilExterne, boolean refreshCache, final EvenementCivilErreurCollector erreurs,
+	                                           final EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
 		Audit.info(evenementCivilExterne.getId(), message);
@@ -266,11 +266,11 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		event.validate(erreurs, warnings);
 		if (erreurs.hasErreurs()) {
 			Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
-			return;
+			return EtatEvenementCivil.EN_ERREUR;
 		}
 
 		// 2.3 - lancement du traitement
-		event.handle(warnings);
+		return event.handle(warnings).toEtat();
 	}
 
 	@SuppressWarnings({"unchecked"})

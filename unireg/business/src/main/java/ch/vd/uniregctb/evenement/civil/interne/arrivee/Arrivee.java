@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -36,7 +36,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -98,8 +97,9 @@ public abstract class Arrivee extends Mouvement {
 		}
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (isIndividuEnMenage(getIndividu(), getDate())) {
 			return handleIndividuEnMenage(warnings);
 		}
@@ -121,7 +121,8 @@ public abstract class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrivée d'un contribuable seul.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	@NotNull
+	protected final HandleStatus handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		try {
 			final Individu individu = getIndividu();
@@ -132,8 +133,7 @@ public abstract class Arrivee extends Mouvement {
 			 * Création à la demande de l'habitant
 			 */
 			// [UNIREG-770] rechercher si un Non-Habitant assujetti existe (avec Nom - Prénom)
-			final MutableBoolean nouvelHabitant = new MutableBoolean(false);
-			final PersonnePhysique habitant = getOrCreateHabitant(individu, dateArrivee, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL, nouvelHabitant);
+			final PersonnePhysique habitant = getOrCreateHabitant(individu, dateArrivee, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
 
 			/*
 			 * Mise-à-jour des adresses
@@ -150,7 +150,7 @@ public abstract class Arrivee extends Mouvement {
 			 */
 			doHandleCreationForIndividuSeul(habitant, warnings);
 
-			return nouvelHabitant.booleanValue() ? new Pair<PersonnePhysique, PersonnePhysique>(habitant, null) : null;
+			return HandleStatus.TRAITE;
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
@@ -260,22 +260,17 @@ public abstract class Arrivee extends Mouvement {
 		}
 	}
 
-	/**
-	 * @param nouveau rempli en sortie, à <code>true</code> si un nouvel habitant a été créé, et <code>false</code> sinon
-	 */
-	private PersonnePhysique getOrCreateHabitant(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior, MutableBoolean nouveau) throws EvenementCivilException {
+	private PersonnePhysique getOrCreateHabitant(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique habitant;
 		if (pp != null) {
 			if (pp.isHabitantVD()) {
-				nouveau.setValue(false);
 				habitant = pp;
 			}
 			else {
 				habitant = getService().changeNHenHabitant(pp, pp.getNumeroIndividu(), dateEvenement);
 				Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
-				nouveau.setValue(true);
 			}
 		}
 		else {
@@ -302,7 +297,6 @@ public abstract class Arrivee extends Mouvement {
 					// [UNIREG-1603] le candidat correspond parfaitement aux critères
 					habitant = getService().changeNHenHabitant(candidat, individu.getNoTechnique(), dateEvenement);
 					Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
-					nouveau.setValue(true);
 				}
 			}
 			else if (nonHabitants.isEmpty() || !behavior.isErrorOnMultiples()) {
@@ -310,7 +304,6 @@ public abstract class Arrivee extends Mouvement {
 				nouvelHabitant.setNumeroIndividu(individu.getNoTechnique());
 				Audit.info(evenementId, "Un tiers a été créé pour le nouvel arrivant");
 				habitant = (PersonnePhysique) context.getTiersDAO().save(nouvelHabitant);
-				nouveau.setValue(true);
 			}
 			else {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...
@@ -330,10 +323,6 @@ public abstract class Arrivee extends Mouvement {
 		}
 
 		return habitant;
-	}
-
-	private static boolean isSourcier(ModeImposition modeImposition) {
-		return ModeImposition.SOURCE == modeImposition || ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
 	private static RegDate findDateDebutMenageAvant(Individu individu, RegDate limiteSuperieureEtDefaut) {
@@ -366,7 +355,8 @@ public abstract class Arrivee extends Mouvement {
 	/**
 	 * Gère l'arrive d'un contribuable en ménage commun.
 	 */
-	protected final Pair<PersonnePhysique, PersonnePhysique> handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	@NotNull
+	protected final HandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
 		Assert.notNull(individu); // prérequis
@@ -379,12 +369,10 @@ public abstract class Arrivee extends Mouvement {
 		/*
 		 * Récupération/création des habitants
 		 */
-		final MutableBoolean nouvelArrivant = new MutableBoolean(false);
-		final PersonnePhysique arrivant = getOrCreateHabitant(individu, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL, nouvelArrivant);
-		final MutableBoolean nouveauConjoint = new MutableBoolean(false);
+		final PersonnePhysique arrivant = getOrCreateHabitant(individu, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		final PersonnePhysique conjointArrivant;
 		if (conjoint != null) {
-			conjointArrivant = getOrCreateHabitant(conjoint, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL, nouveauConjoint);
+			conjointArrivant = getOrCreateHabitant(conjoint, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		}
 		else {
 			conjointArrivant = null;
@@ -412,14 +400,7 @@ public abstract class Arrivee extends Mouvement {
 		// création du for principal si nécessaire
 		doHandleCreationForMenage(arrivant, menageCommun, warnings);
 
-		if (nouvelArrivant.booleanValue() || nouveauConjoint.booleanValue()) {
-			final PersonnePhysique arrivantCree = nouvelArrivant.booleanValue() ? arrivant : null;
-			final PersonnePhysique conjointCree = nouveauConjoint.booleanValue() ? conjointArrivant : null;
-			return new Pair<PersonnePhysique, PersonnePhysique>(arrivantCree, conjointCree);
-		}
-		else {
-			return null;
-		}
+		return HandleStatus.TRAITE;
 	}
 
 	/**

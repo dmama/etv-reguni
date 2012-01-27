@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.regpp;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
@@ -16,7 +18,7 @@ public interface EvenementCivilProcessor {
 	 *
 	 * @param status un status manager (optionel, peut être nul)
 	 */
-	void traiteEvenementsCivils(StatusManager status);
+	void traiteEvenementsCivils(@Nullable StatusManager status);
 
 
 	/**

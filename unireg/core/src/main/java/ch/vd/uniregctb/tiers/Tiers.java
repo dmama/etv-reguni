@@ -738,7 +738,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return le rapport sujet du type demandé valide à cette date.
 	 */
 	@Transient
-	public RapportEntreTiers getRapportSujetValidAt(RegDate date, TypeRapportEntreTiers type) {
+	public RapportEntreTiers getRapportSujetValidAt(@Nullable RegDate date, TypeRapportEntreTiers type) {
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
 			if (rapportSujet.isValidAt(date) && rapportSujet.getType() == type) {
 				return rapportSujet;

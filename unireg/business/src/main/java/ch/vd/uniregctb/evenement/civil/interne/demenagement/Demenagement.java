@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -134,8 +135,9 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		}
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Dans le cas d'une commune normale, rien a faire. Traitement
@@ -252,6 +254,6 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 				fermeAdresseTiersTemporaire(menage, getDate().getOneDayBefore());
 			}
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

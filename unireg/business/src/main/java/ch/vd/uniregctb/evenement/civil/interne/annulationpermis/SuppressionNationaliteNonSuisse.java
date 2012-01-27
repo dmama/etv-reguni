@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class SuppressionNationaliteNonSuisse extends SuppressionNationalite {
 
@@ -24,9 +25,10 @@ public class SuppressionNationaliteNonSuisse extends SuppressionNationalite {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// rien à faire pour les nationalités non suisses
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

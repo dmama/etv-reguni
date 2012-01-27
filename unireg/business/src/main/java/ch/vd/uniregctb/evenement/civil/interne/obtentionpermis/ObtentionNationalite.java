@@ -3,13 +3,14 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -78,8 +79,9 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 	 */
 	protected abstract boolean doHandle(PersonnePhysique pp, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous
@@ -88,7 +90,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 			return super.handle(warnings);
 		}
 		else {
-			return null;
+			return HandleStatus.TRAITE;
 		}
 	}
 }

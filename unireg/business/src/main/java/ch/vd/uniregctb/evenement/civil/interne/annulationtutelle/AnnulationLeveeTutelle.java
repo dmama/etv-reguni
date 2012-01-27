@@ -1,13 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulationtutelle;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.tutelle.Tutelle;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -38,8 +40,9 @@ public class AnnulationLeveeTutelle extends EvenementCivilInterne {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Récupération du tiers habitant correspondant au pupille
 		long numeroIndividu = getNoIndividu();
@@ -53,6 +56,6 @@ public class AnnulationLeveeTutelle extends EvenementCivilInterne {
 
 		// Remise à null de la date de fin de tutelle
 		rapportEntreTiers.setDateFin(null);
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

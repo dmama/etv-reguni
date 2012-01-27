@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.interne.deces;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
@@ -131,8 +132,9 @@ public class Deces extends EvenementCivilInterne {
 		addValidationResults(erreurs, warnings, validationResults);
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant au defunt.
@@ -150,7 +152,7 @@ public class Deces extends EvenementCivilInterne {
 				if (defunt.isHabitantVD()) {
 					context.getTiersService().changeHabitantenNH(defunt);
 				}
-				return null;
+				return HandleStatus.TRAITE;
 			}
 			else {
 
@@ -162,7 +164,7 @@ public class Deces extends EvenementCivilInterne {
 					if (defunt.isHabitantVD()) {
 						context.getTiersService().changeHabitantenNH(defunt);
 					}
-					return null;
+					return HandleStatus.TRAITE;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {
 					// si plus d'1 jour d'écart ou sur une PF différente : KO (evt en Erreur --> pour traitement par la Cellule vérif de la date de décès)
@@ -177,6 +179,6 @@ public class Deces extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

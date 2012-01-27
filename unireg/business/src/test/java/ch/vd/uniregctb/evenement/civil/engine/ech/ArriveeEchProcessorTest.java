@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class ArriveeEchProcessorTest extends EvenementCivilEchProcessorTest {
+public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	private ServiceInfrastructureService infraService;
 

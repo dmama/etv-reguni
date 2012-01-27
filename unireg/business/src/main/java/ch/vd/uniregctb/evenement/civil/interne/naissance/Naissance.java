@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -64,8 +65,9 @@ public class Naissance extends EvenementCivilInterne {
 		}
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
 
 		try {
@@ -98,7 +100,7 @@ public class Naissance extends EvenementCivilInterne {
 				context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
 			}
 
-			return new Pair<PersonnePhysique, PersonnePhysique>(bebe, null);
+			return HandleStatus.TRAITE;
 		}
 		catch (Exception e) {
 			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);

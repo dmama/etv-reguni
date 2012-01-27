@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -38,8 +40,9 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 		getPersonnePhysiqueOrFillErrors(getNoIndividu(), erreurs);
 	}
 
+	@NotNull
 	@Override
-	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// [UNIREG-3017] si le CTB PP est mineur (ou le couple à la date de l'événement CTB MC a deux individus mineurs) et n'a aucun for (du tout) ou que tous sont annulés -> Traiter l'événement tout droit
 		final Individu individu = getIndividu();
@@ -71,6 +74,6 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 		if (erreur) {
 			throw new EvenementCivilException("Veuillez effectuer cette opération manuellement");
 		}
-		return null;
+		return HandleStatus.TRAITE;
 	}
 }

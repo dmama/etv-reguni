@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -163,7 +163,23 @@ public abstract class EvenementCivilInterne {
 		}
 	}
 
-	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
+	/**
+	 * Effectue le traitement métier voulu pour l'événement civil courant.
+	 * <p/>
+	 * Cette méthode lève une exception en cas d'erreur inattendue dans le traitement (la majorité des erreurs prévisibles devraient avoir été traitées dans la méthode {@link
+	 * #validate(ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector, ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector)}). Les éventuels avertissement sont renseignés dans la
+	 * collection de warnings passée en paramètre. Cette méthode retourne un status qui permet de savoir si l'événement est redondant ou non.
+	 * <p/>
+	 * En fonction des différentes valeurs renseignées par cette méthode, le framework de traitement des événements civils va déterminer l'état de l'événement civil de la manière suivante : <ul>
+	 * <li>exception => état de l'événement = EN_ERREUR</li><li>status = TRAITE et pas de warnings => état de l'événement = TRAITE</li> <li>status = REDONDANT et pas de warnings => état de l'événement =
+	 * REDONDANT</li> <li>status = TRAITE avec warnings => état de l'événement = A_VERIFIER</li> <li>status = REDONDANT avec warnings => état de l'événement = A_VERIFIER</li> </ul>
+	 *
+	 * @param warnings une liste de warnings qui sera remplie - si nécessaire - par la méthode.
+	 * @return un code de status permettant de savoir si lévénement a été traité ou s'il était redondant.
+	 * @throws EvenementCivilException si le traitement de l'événement est impossible pour une raison ou pour une autre.
+	 */
+	@NotNull
+	public abstract HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	/**
 	 * Validation commune l'objet target passé en paramètre.

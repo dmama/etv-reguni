@@ -1,17 +1,9 @@
-/**
- *
- */
 package ch.vd.uniregctb.type;
 
-/** 
- * <!-- begin-user-doc -->
+/**
+ * Les différents état que peut prendre un événement civil.
+ * <p/>
  * Longueur de colonne : 10
- * <!-- end-user-doc -->
- * @author jec
- * 
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WqFYYMgEEdyvxsruSlJY5Q"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WqFYYMgEEdyvxsruSlJY5Q"
  */
 public enum EtatEvenementCivil {
 
@@ -21,8 +13,8 @@ public enum EtatEvenementCivil {
 	A_TRAITER(false),
 
 	/**
-	 * Evénement dont le traitement n'a pas été tenté en raison de la présence d'autres événements
-	 * antérieurs eux-mêmes en attente ou en erreur
+	 * Evénement dont le traitement n'a pas été tenté en raison de la présence d'autres événements antérieurs eux-mêmes en attente ou en erreur
+	 *
 	 * @since 5.x
 	 */
 	EN_ATTENTE(false),
@@ -43,10 +35,16 @@ public enum EtatEvenementCivil {
 	A_VERIFIER(true),
 
 	/**
-	 * Evénement initialement en erreur mais qu'un opérateur a traité
-	 * manuellement (aucun contrôle du traitement effectif n'est fait)
+	 * Evénement initialement en erreur mais qu'un opérateur a traité manuellement (aucun contrôle du traitement effectif n'est fait)
 	 */
-	FORCE(true);
+	FORCE(true),
+
+	/**
+	 * Evénement dont l'effet sur Unireg a été null car les données étaient déjà dans l'état voulu.
+	 *
+	 * @since 5.x
+	 */
+	REDONDANT(true);
 
 	private final boolean isTraite;
 

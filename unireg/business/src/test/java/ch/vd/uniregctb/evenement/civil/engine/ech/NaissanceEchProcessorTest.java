@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class NaissanceEchProcessorTest extends EvenementCivilEchProcessorTest {
+public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test(timeout = 10000L)
 	public void testNaissance() throws Exception {
