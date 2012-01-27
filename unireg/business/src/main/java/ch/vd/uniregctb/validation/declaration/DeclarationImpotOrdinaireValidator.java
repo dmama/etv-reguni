@@ -30,7 +30,7 @@ public class DeclarationImpotOrdinaireValidator extends DeclarationValidator<Dec
 			if (di.getPeriode() != null
 					&& di.getPeriode().getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE
 					&& di.getCodeSegment() == null) {
-				vr.addError(String.format("Le code segment ne peut être nul pour une déclaration à partir de %d", di.getPeriode().getAnnee()));
+				vr.addError(String.format("Le code segment ne peut être nul pour une déclaration à partir de %d", DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE));
 			}
 		}
 
