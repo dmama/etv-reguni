@@ -19,4 +19,10 @@ public interface EvenementCivilEchTranslator {
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème
 	 */
 	EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException;
+
+	/**
+	 * @param event un événement civil externe
+	 * @return <code>true</code> dans le cas où le seul traitement de cet événement sera une ré-indexation du tiers, <code>false</code> s'il y a plus
+	 */
+	boolean isIndexationOnly(EvenementCivilEch event);
 }

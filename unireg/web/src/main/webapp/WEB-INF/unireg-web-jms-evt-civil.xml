@@ -87,6 +87,8 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="translator" ref="evenementCivilEchTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
 	</bean>
 
 </beans>

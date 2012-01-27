@@ -248,6 +248,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+
+		// pour les tests uniquement
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());
 	}
 
@@ -265,12 +267,27 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException {
+		return getStrategy(event).create(event, context, options);
+	}
+
+	@Override
+	public boolean isIndexationOnly(EvenementCivilEch event) {
+		try {
+			return getStrategy(event) == INDEXATION_ONLY;
+		}
+		catch (EvenementCivilException e) {
+			return false;
+		}
+	}
+
+	@NotNull
+	private static EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
 		final EventTypeKey key = new EventTypeKey(event);
 		final EvenementCivilEchTranslationStrategy strategy = strategies.get(key);
 		if (strategy == null) {
 			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement e-CH de type = [" + key + ']');
 		}
-		return strategy.create(event, context, options);
+		return strategy;
 	}
 
 	@Override

@@ -26,6 +26,9 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -40,21 +43,13 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	private EvenementCivilEchDAO evtCivilDAO;
 	private EvenementCivilEchTranslator translator;
 
+	private GlobalTiersIndexer indexer;
+	private TiersService tiersService;
+
 	private Processor processor;
 	private ProcessingMonitor monitor;
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
-
-	/**
-	 * Interface utilisable dans les tests afin de réagir au traitement d'un événement civil
-	 */
-	public static interface ProcessingMonitor {
-		/**
-		 * Appelé à la fin du traitement de l'événement identifié
-		 * @param evtId identifiant de l'événement civil pour lequel le traitement vient de se terminer
-		 */
-		void onProcessingEnd(long evtId);
-	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setNotificationQueue(EvenementCivilNotificationQueue notificationQueue) {
@@ -74,6 +69,27 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTranslator(EvenementCivilEchTranslator translator) {
 		this.translator = translator;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setIndexer(GlobalTiersIndexer indexer) {
+		this.indexer = indexer;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	/**
+	 * Interface utilisable dans les tests afin de réagir au traitement d'un événement civil
+	 */
+	public static interface ProcessingMonitor {
+		/**
+		 * Appelé à la fin du traitement de l'événement identifié
+		 * @param evtId identifiant de l'événement civil pour lequel le traitement vient de se terminer
+		 */
+		void onProcessingEnd(long evtId);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -209,18 +225,41 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 			doInNewTransaction(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
+					boolean hasIndexationOnly = false;
 					for (EvenementCivilNotificationQueue.EvtCivilInfo info : remainingEvents) {
 						if (info.etat == EtatEvenementCivil.A_TRAITER) {
 							final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
 							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {
-								evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
-								Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
+								if (translator.isIndexationOnly(evt)) {
+									evt.setEtat(EtatEvenementCivil.TRAITE);
+									hasIndexationOnly = true;
+									Audit.info(evt.getId(), String.format("Indexation pure, traitement directde l'événement %d", evt.getId()));
+								}
+								else {
+									evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
+									Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
+								}
 							}
 						}
+					}
+					if (hasIndexationOnly) {
+						scheduleIndexation(remainingEvents.get(0).noIndividu);
 					}
 					return null;
 				}
 			});
+		}
+	}
+
+	/**
+	 * Demande une ré-indexation du tiers lié à l'individu dont l'identifiant est fourni (doit être appelé dans un
+	 * context transactionnel)
+	 * @param noIndividu identifiant d'individu
+	 */
+	private void scheduleIndexation(long noIndividu) {
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		if (pp != null) {
+			indexer.schedule(pp.getNumero());
 		}
 	}
 

@@ -29,6 +29,8 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		processor.setNotificationQueue(queue);
 		processor.setTransactionManager(transactionManager);
 		processor.setTranslator(translator);
+		processor.setTiersService(tiersService);
+		processor.setIndexer(globalTiersIndexer);
 		processor.start();
 	}
 
