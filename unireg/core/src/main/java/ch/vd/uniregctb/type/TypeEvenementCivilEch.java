@@ -51,7 +51,7 @@ public enum TypeEvenementCivilEch {
 	CORR_ETAT_CIVIL(57, 7),
 	CORR_LIEU_NAISSANCE(58, null),
 	CORR_DATE_DECES(59, 24),
-	TESTING(499999, 0);
+	TESTING(499999, null);
 
 	private final int codeECH;
 	private final Integer priorite;
