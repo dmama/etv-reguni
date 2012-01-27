@@ -751,7 +751,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			di.setQualification(derniereQualification);
 
 			final Integer codeSegment = PeriodeImposition.determineCodeSegment(ctb, di.getDateFin().year());
-			di.setCodeSegment(codeSegment);
+			if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+			} else {
+				di.setCodeSegment(codeSegment);
+			}
+
 
 			final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
 			di.addEtat(emission);

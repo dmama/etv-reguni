@@ -989,7 +989,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 	 * [SIFISC-2528] Vérifie que le code de segmentation par défaut est bien retourné pour les DI >= 2011
  	 */
 	@Test
-	public void testGetPartyTaxDefaultDeclarationSegmentationOn() throws Exception {
+	public void testGetPartyDefaultTaxDeclarationSegmentationOn() throws Exception {
 
 		final class Ids {
 			long ppId;
