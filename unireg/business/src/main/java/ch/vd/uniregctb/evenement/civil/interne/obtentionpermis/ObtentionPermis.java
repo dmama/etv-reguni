@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -44,11 +45,18 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 	protected ObtentionPermis(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+		init(evenement.getDateEvenement(), context);
+	}
 
+	protected ObtentionPermis(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+		init(evenement.getDateEvenement(), context);
+	}
+	
+	private void init(RegDate date, EvenementCivilContext context) throws EvenementCivilException {
 		try {
 			// on récupère le permis (= à la date d'événement)
-			final int anneeCourante = evenement.getDateEvenement().year();
-			final Permis permis = context.getServiceCivil().getPermis(super.getNoIndividu(), evenement.getDateEvenement());
+			final Permis permis = context.getServiceCivil().getPermis(super.getNoIndividu(), date);
 			if (permis == null) {
 				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}
@@ -64,7 +72,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 			// à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for vaudois
 			final Adresse adressePrincipale = getAdressePrincipale();
 			if (context.getServiceInfra().estDansLeCanton(adressePrincipale)) {
-				final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, evenement.getDateEvenement());
+				final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(adressePrincipale, date);
 				if (communePrincipale == null) {
 					throw new EvenementCivilException("Incohérence dans l'adresse principale");
 				}

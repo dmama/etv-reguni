@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 /**
@@ -10,5 +11,5 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
  * @author Ludovic BERTIN <mailto:ludovic.bertin@oosphere.com>
  *
  */
-public abstract class ObtentionPermisCOuNationaliteSuisseTranslationStrategy implements EvenementCivilTranslationStrategy {
+public abstract class ObtentionPermisCOuNationaliteSuisseTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 }

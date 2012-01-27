@@ -10,8 +10,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Suisse = new MockPays(ServiceInfrastructureService.noOfsSuisse, "Suisse", "CH", "CH", "CHE");
 	public static final MockPays Albanie = new MockPays(8201, "Albanie", "AL", "AL", "ALB");
 	public static final MockPays Danemark = new MockPays(8206, "Danemark", "DK", "DK", "DNK");
-	public static final MockPays Allemagne = new MockPays(8207, "Allemagne", "DE", "DE");
-	public static final MockPays France = new MockPays(8212, "France", "FR", "DEU");
+	public static final MockPays Allemagne = new MockPays(8207, "Allemagne", "DE", "DE", "DEU");
+	public static final MockPays France = new MockPays(8212, "France", "FR", "FR", "FRA");
 	public static final MockPays Gibraltar = new MockPays(8213, "Gibraltar", "GI", true, false, "GI", "GIB");
 	public static final MockPays RoyaumeUni = new MockPays(8215, "Royaume-Uni", "GB", "GB", "GBR");
 	public static final MockPays Liechtenstein = new MockPays(8222, "Liechtenstein", "LI", "LI", "LIE");
@@ -20,6 +20,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Russie = new MockPays(8264, "Russie", "RU", "RU", "RUS");
 	public static final MockPays Colombie = new MockPays(8424, "Colombie", "CO", "CO", "COL");
 	public static final MockPays EtatsUnis = new MockPays(8439, "Etats-Unis", "US", "US", "USA");
+	public static final MockPays Japon = new MockPays(8515, "Japon", "JP", "JP", "JPN");
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR", "KR", "KOR");
 
 	public static final MockPays PaysInconnu = new MockPays(ServiceInfrastructureService.noPaysInconnu, "PaysInconnu", "INC", null, null);

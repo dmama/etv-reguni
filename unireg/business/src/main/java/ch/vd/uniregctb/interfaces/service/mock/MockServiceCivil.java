@@ -105,7 +105,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	 */
 	protected abstract void init();
 
-	protected void setNationalite(MockIndividu ind, RegDate debut, RegDate fin, MockPays pays) {
+	protected void setNationalite(MockIndividu ind, RegDate debut, @Nullable RegDate fin, MockPays pays) {
 		final ArrayList<Nationalite> nationalites = new ArrayList<Nationalite>();
 		final MockNationalite nati = new MockNationalite();
 		nati.setDateDebutValidite(debut);

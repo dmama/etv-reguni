@@ -20,6 +20,8 @@ import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrateg
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.MariageTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.naissance.NaissanceTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionNationaliteTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.testing.TestingTranslationStrategy;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -153,7 +155,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.OBENTION_DROIT_CITE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
@@ -165,10 +167,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECHEANCE_NATIONALITE_SUISSE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECHEANCE_NATIONALITE_SUISSE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECHEANCE_NATIONALITE_SUISSE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionPermisTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ArriveeTranslationStrategy());

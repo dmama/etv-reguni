@@ -10,6 +10,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -38,11 +39,19 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 
 	protected ObtentionNationalite(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+		init(evenement.getDateEvenement(), context);
+	}
 
+	protected ObtentionNationalite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+		init(evenement.getDateEvenement(), context);
+	}
+	
+	private void init(RegDate date, EvenementCivilContext context) throws EvenementCivilException {
 		try {
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
-			final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), evenement.getDateEvenement());
+			final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), date);
 			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
 		}
 		catch (ServiceInfrastructureException e) {
