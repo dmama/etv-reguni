@@ -70,41 +70,36 @@ public class Naissance extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
 
-		try {
-			/*
-			 * Transtypage de l'événement en naissance
-			 */
-			final Individu individu = getIndividu();
-			final RegDate dateEvenement = getDate();
 
-			/*
-			 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
-			 */
-			if (getPrincipalPP() != null) {
-				throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
-			}
+		/*
+		 * Transtypage de l'événement en naissance
+		 */
+		final Individu individu = getIndividu();
+		final RegDate dateEvenement = getDate();
 
-			/*
-			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
-			 */
-			PersonnePhysique bebe = new PersonnePhysique(true);
-			bebe.setNumeroIndividu(individu.getNoTechnique());
-			bebe = (PersonnePhysique) context.getTiersDAO().save(bebe);
-			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
-
-			context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
-
-			// [UNIREG-3244] on envoie les fairs-parts de naissance
-			final Contribuable parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
-			if (parent != null) {
-				context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
-			}
-
-			return HandleStatus.TRAITE;
+		/*
+		 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
+		 */
+		if (getPrincipalPP() != null) {
+			throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
 		}
-		catch (Exception e) {
-			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);
-			throw new EvenementCivilException(e.getMessage(), e);
+
+		/*
+		 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
+		 */
+		PersonnePhysique bebe = new PersonnePhysique(true);
+		bebe.setNumeroIndividu(individu.getNoTechnique());
+		bebe = (PersonnePhysique) context.getTiersDAO().save(bebe);
+		Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
+
+		context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
+
+		// [UNIREG-3244] on envoie les fairs-parts de naissance
+		final Contribuable parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
+		if (parent != null) {
+			context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
 		}
+
+		return HandleStatus.TRAITE;
 	}
 }

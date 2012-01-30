@@ -19,6 +19,7 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -181,46 +182,45 @@ public class Mariage extends EvenementCivilInterne {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		try {
-			if (isRedondant) {
-				return HandleStatus.REDONDANT;
-			}
+		if (isRedondant) {
+			return HandleStatus.REDONDANT;
+		}
 
-			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
-			final PersonnePhysique conjointContribuable = (getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(getNouveauConjoint().getNoTechnique());
+		final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
+		final PersonnePhysique conjointContribuable = (getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(getNouveauConjoint().getNoTechnique());
 
-			// état civil pour traitement
-			final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
-			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
-			
-			// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables
-			boolean remariage = false;
-			MenageCommun ancienMenage = null;
-			for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
-				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
-					final MenageCommun menage = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
-					final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
-					if (couple != null && couple.estComposeDe(contribuable, conjointContribuable)) {
-						// les contribuables se sont remariés
-						remariage = true;
-						ancienMenage = menage;
-					}
+		// état civil pour traitement
+		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
+		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
+		
+		// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables
+		boolean remariage = false;
+		MenageCommun ancienMenage = null;
+		for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
+				final MenageCommun menage = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
+				final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
+				if (couple != null && couple.estComposeDe(contribuable, conjointContribuable)) {
+					// les contribuables se sont remariés
+					remariage = true;
+					ancienMenage = menage;
 				}
 			}
-			
+		}
+		
+		// [UNIREG-780]
+		try {
 			if (remariage) {
-				// [UNIREG-780]
 				context.getMetierService().rattachToMenage(ancienMenage, contribuable, conjointContribuable, getDate(), null, etatCivilUnireg, false, getNumeroEvenement());
 			}
 			else {
 				context.getMetierService().marie(getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, false, getNumeroEvenement());
 			}
-
-			return HandleStatus.TRAITE;
 		}
-		catch (Exception e) {
-			LOGGER.error("Erreur lors du traitement de mariage", e);
+		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
+
+		return HandleStatus.TRAITE;
 	}
 }

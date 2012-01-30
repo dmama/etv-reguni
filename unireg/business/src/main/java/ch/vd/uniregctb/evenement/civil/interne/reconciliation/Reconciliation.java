@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class Reconciliation extends EvenementCivilInterne {
@@ -107,17 +108,16 @@ public class Reconciliation extends EvenementCivilInterne {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		try {
-			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
-			final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
-			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getPersonnePhysiqueOrThrowException(individuConjoint.getNoTechnique());
+		final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
+		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
+		final PersonnePhysique conjoint = (individuConjoint == null) ? null : getPersonnePhysiqueOrThrowException(individuConjoint.getNoTechnique());
 
+		try {
 			context.getMetierService().reconcilie(contribuable, conjoint, getDateReconciliation(), null, false, getNumeroEvenement());
-			return HandleStatus.TRAITE;
 		}
-		catch (Exception e) {
-			LOGGER.error("Erreur lors du traitement de réconciliation", e);
+		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
+		return HandleStatus.TRAITE;
 	}
 }
