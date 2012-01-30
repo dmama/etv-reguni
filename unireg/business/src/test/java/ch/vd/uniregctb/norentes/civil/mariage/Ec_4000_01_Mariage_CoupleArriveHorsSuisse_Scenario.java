@@ -2,12 +2,9 @@ package ch.vd.uniregctb.norentes.civil.mariage;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -134,14 +131,14 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 		}
 	}
 
-	@Etape(id=2, descr="Envoi de l'événement de Mariage")
+	@Etape(id=2, descr="Envoi de l'événement de Mariage (redondant)")
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.MARIAGE, noIndRafa, dateMariage, 0);
 		commitAndStartTransaction();
 		traiteEvenements(id);
 	}
 
-	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
+	@Check(id=2, descr="Vérifie que l'événement civil est dans l'état REDONDANT")
 	public void check2() throws Exception {
 
 		final List<EvenementCivilRegPP> evts = getEvenementsCivils(noIndRafa, TypeEvenementCivil.MARIAGE);
@@ -149,11 +146,7 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 		assertEquals(1, evts.size(), "Rafa ne s'est marié qu'une seule fois!");
 		final EvenementCivilRegPP evt = evts.get(0);
 
-		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement de mariage devrait être en erreur car le couple existe déjà");
-		assertEquals(2, evt.getErreurs().size(), "Il devrait y avoir exactement deux erreurs");
-
-		for (EvenementCivilRegPPErreur erreur : evt.getErreurs()) {
-			Assert.isTrue(erreur.getMessage().contains("appartient déjà au ménage commun n°"), "L'erreur n'est pas la bonne");
-		}
+		assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat(), "L'événement de mariage devrait être dans l'état REDONDANT car le couple est arrivé marié");
+		assertEquals(0, evt.getErreurs().size(), "Il ne devrait pas y avoir exactement d'erreurs");
 	}
 }

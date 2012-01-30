@@ -36,6 +36,7 @@ public class Mariage extends EvenementCivilInterne {
 	 * Le nouveau conjoint de l'individu concerné par le mariage.
 	 */
 	private Individu nouveauConjoint;
+	private boolean isRedondant;
 
 	public Mariage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -123,11 +124,12 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		final ServiceCivilService serviceCivil = context.getServiceCivil();
+		final RegDate dateMariage = getDate();
 
 		// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
 		if (habitant.isHabitantVD()) {
 
-			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), getDate());
+			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), dateMariage);
 			if (etatCivil == null) {
 				erreurs.addErreur("L'individu principal ne possède pas d'état civil à la date de l'événement");
 			}
@@ -155,7 +157,7 @@ public class Mariage extends EvenementCivilInterne {
 			// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
 			if (habitantConjoint.isHabitantVD()) {
 
-				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), getDate());
+				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), dateMariage);
 				if (etatCivilConjoint == null) {
 					erreurs.addErreur("Le conjoint ne possède pas d'état civil à la date de l'événement");
 				}
@@ -166,8 +168,13 @@ public class Mariage extends EvenementCivilInterne {
 			}
 		}
 
-		final ValidationResults resultat = context.getMetierService().validateMariage(getDate(), habitant, habitantConjoint);
-		addValidationResults(erreurs, warnings, resultat);
+		// détection d'un événement redondant
+		isRedondant = context.getMetierService().isEnMenageDepuis(habitant, habitantConjoint, dateMariage);
+
+		if (!isRedondant) {
+			final ValidationResults resultat = context.getMetierService().validateMariage(dateMariage, habitant, habitantConjoint);
+			addValidationResults(erreurs, warnings, resultat);
+		}
 	}
 
 	@NotNull
@@ -175,11 +182,15 @@ public class Mariage extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		try {
+			if (isRedondant) {
+				return HandleStatus.REDONDANT;
+			}
+
 			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
 			final PersonnePhysique conjointContribuable = (getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(getNouveauConjoint().getNoTechnique());
 
 			// état civil pour traitement
-			final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
+			final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
 			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
 			
 			// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables

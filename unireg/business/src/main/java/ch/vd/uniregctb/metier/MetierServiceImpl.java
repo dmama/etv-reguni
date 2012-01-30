@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -41,6 +42,7 @@ import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
 import ch.vd.uniregctb.metier.modeimposition.TerminaisonCoupleModeImpositionResolver;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -173,6 +175,31 @@ public class MetierServiceImpl implements MetierService {
 		else {
 			checkRapportsMenage(pp, date, resultat);
 		}
+	}
+
+	@Override
+	public boolean isEnMenageDepuis(PersonnePhysique personneA, @Nullable PersonnePhysique personneB, RegDate date) {
+
+		final AppartenanceMenage appartenanceA = (AppartenanceMenage) personneA.getRapportSujetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		if (appartenanceA == null || appartenanceA.getDateDebut() != date) {
+			// pas en ménage ou en ménage mais pas à partir de la bonne date
+			return false;
+		}
+
+		if (personneB != null) {
+			final AppartenanceMenage appartenanceB = (AppartenanceMenage) personneB.getRapportSujetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			if (appartenanceB == null || appartenanceB.getDateDebut() != date) {
+				// pas en ménage ou en ménage mais pas à partir de la bonne date
+				return false;
+			}
+
+			if (!appartenanceA.getObjetId().equals(appartenanceB.getObjetId())) {
+				// pas le même ménage entre les deux personnes !
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**

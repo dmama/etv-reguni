@@ -18,14 +18,21 @@ import ch.vd.uniregctb.type.EtatCivil;
 public interface MetierService {
 
 	/**
+	 * Détermine si les deux personnes physiques spécifiées sont en ménage (d'un point de vue fiscal) depuis la date exacte spécifiée.
+	 *
+	 * @param personneA une personne physique
+	 * @param personneB une autre personne physique (optionnelle, dans ce cas la première personne est supposée mariée-seule)
+	 * @param date      la date de début du ménage supposé
+	 * @return <b>vrai</b> si les deux personnes sont en ménage à partir de la date exacte spécifiée; <b>faux</b> dans tous les autres cas.
+	 */
+	public boolean isEnMenageDepuis(PersonnePhysique personneA, @Nullable PersonnePhysique personneB, RegDate date);
+
+	/**
 	 * Vérifie que deux personne physique peuvent bien se marier.
 	 *
-	 * @param dateMariage
-	 *            la date effective du mariage
-	 * @param principal
-	 *            le tiers principal du ménage commun
-	 * @param conjoint
-	 *            le conjoint du ménage commun. Cette valeur peut-être laissée nulle si le conjoint n'est pas connu (cas du marié seul).
+	 * @param dateMariage    la date effective du mariage
+	 * @param principal      le tiers principal du ménage commun
+	 * @param conjoint       le conjoint du ménage commun. Cette valeur peut-être laissée nulle si le conjoint n'est pas connu (cas du marié seul).
 	 * @return le résultat de la validation.
 	 */
 	public ValidationResults validateMariage(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint);

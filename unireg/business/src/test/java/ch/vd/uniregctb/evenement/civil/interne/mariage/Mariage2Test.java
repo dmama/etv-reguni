@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.mariage;
 
+import java.util.List;
+
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -8,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -24,6 +29,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
@@ -402,6 +411,148 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
+	@Test
+	public void testEvenementMariageRedondant() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+
+		// création d'un ménage-commun marié au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				marieIndividus(monsieur, madame, dateMariage);
+			}
+		});
+
+		// création d'un ménage-commun marié au fiscal
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de mariage redondant
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateMariage);
+				final Individu madame = serviceCivil.getIndividu(noMadame, dateMariage);
+				final Mariage mariage = createValidMariage(monsieur, madame, dateMariage);
+
+				final MessageCollector collector = buildMessageCollector();
+				mariage.validate(collector, collector);
+				final HandleStatus etat = mariage.handle(collector);
+
+				assertEmpty(collector.getErreurs());
+				assertEmpty(collector.getWarnings());
+				assertEquals(HandleStatus.REDONDANT, etat);
+				return null;
+			}
+		});
+
+		// on s'assure que rien n'a changé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(madame, dateMariage);
+				assertNotNull(ensemble);
+				assertSame(monsieur, ensemble.getPrincipal());
+				assertSame(madame, ensemble.getConjoint());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testEvenementMariageJustePasRedondant() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariageCivil = date(2005, 5, 5);
+		final RegDate dateMariageFiscal = date(2005, 5, 4);
+
+		// création d'un ménage-commun marié au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				marieIndividus(monsieur, madame, dateMariageCivil);
+			}
+		});
+		
+		class Ids {
+			long monsieur;
+			long madame;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		// création d'un ménage-commun marié au fiscal
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariageFiscal.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariageFiscal.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariageFiscal, null);
+				addForPrincipal(ensemble.getMenage(), dateMariageFiscal, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				
+				ids.monsieur = monsieur.getNumero();
+				ids.madame = madame.getNumero();
+				ids.menage = ensemble.getMenage().getNumero();
+				return null;
+			}
+		});
+
+		// traitement de l'événement de mariage
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateMariageCivil);
+				final Individu madame = serviceCivil.getIndividu(noMadame, dateMariageCivil);
+				final Mariage mariage = createValidMariage(monsieur, madame, dateMariageCivil);
+
+				final MessageCollector collector = buildMessageCollector();
+				mariage.validate(collector, collector);
+				assertEmpty(collector.getWarnings());
+
+				final List<MessageCollector.Msg> erreurs = collector.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(2, erreurs.size());
+				assertEquals("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.monsieur) + " appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.menage) +
+						" en date du 05.05.2005", erreurs.get(0).getMessage());
+				assertEquals("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.madame) + " appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.menage) +
+						" en date du 05.05.2005", erreurs.get(1).getMessage());
+				return null;
+			}
+		});
+	}
+	
 	private Mariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
 		return new Mariage(individu, conjoint, dateMariage, 5586, context);
 	}
