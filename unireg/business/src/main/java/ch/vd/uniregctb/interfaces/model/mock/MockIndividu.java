@@ -45,6 +45,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private Permis permis;
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
+	private RegDate dateArriveeVD;
 
 	public MockIndividu() {
 	}
@@ -57,6 +58,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nomNaissance = right.nomNaissance;
 		this.dateDeces = right.dateDeces;
 		this.dateNaissance = right.dateNaissance;
+		this.dateArriveeVD = right.dateArriveeVD;
 		this.etatsCivils = right.etatsCivils;
 		this.conjoints = right.conjoints;
 		this.noTechnique = right.noTechnique;
@@ -131,8 +133,17 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return dateNaissance;
 	}
 
-	public void setDateNaissance(RegDate dateNaissance) {
+    public void setDateNaissance(RegDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
+	}
+
+	@Override
+	public RegDate getDateArriveeVD() {
+		return dateArriveeVD;
+	}
+
+	public void setDateArriveeVD(RegDate dateArriveeVD) {
+		this.dateArriveeVD = dateArriveeVD;
 	}
 
 	@Override

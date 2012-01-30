@@ -50,6 +50,11 @@ public interface Individu extends EntiteCivile {
     RegDate getDateNaissance();
 
 	/**
+	 * @return la date d'arrivée dans le canton.
+	 */
+	RegDate getDateArriveeVD();
+
+	/**
 	 * Renvoie <code>true</code> si la date de naissance de l'individu est connue
 	 * et si elle est moins de 18 ans avant la date passée en paramètre
 	 * @param date date pour laquelle la réponse est valable

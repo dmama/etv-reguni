@@ -17,7 +17,9 @@ import ch.vd.evd0001.v3.PersonIdentification;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.evd0001.v3.UpiPerson;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.ech.EchHelper;
@@ -58,6 +60,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private boolean isMasculin;
 	private RegDate deces;
 	private RegDate naissance;
+	private RegDate dateArriveeVD;
 	private Collection<Origine> origines;
 	private Tutelle tutelle;
 	private Collection<AdoptionReconnaissance> adoptions;
@@ -96,6 +99,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.isMasculin = initIsMasculin(identification);
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
 		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
+		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
 		this.origines = initOrigins(person);
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
@@ -255,6 +259,17 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 	}
 
+	private static RegDate initDateArriveeVD(List<Residence> residenceHistory) {
+		if (residenceHistory == null || residenceHistory.isEmpty()) {
+			return null;
+		}
+		RegDate dateArrivee = RegDate.getLateDate();
+		for (Residence residence : residenceHistory) {
+			dateArrivee = RegDateHelper.minimum(dateArrivee, XmlUtils.xmlcal2regdate(residence.getArrivalDate()), NullDateBehavior.EARLIEST);
+		}
+		return dateArrivee == RegDate.getLateDate() ? null : dateArrivee;
+	}
+
 	@Override
 	public String getPrenom() {
 		return prenom;
@@ -293,6 +308,11 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public RegDate getDateNaissance() {
 		return naissance;
+	}
+
+	@Override
+	public RegDate getDateArriveeVD() {
+		return dateArriveeVD;
 	}
 
 	@Override

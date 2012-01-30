@@ -159,7 +159,7 @@ public class PersonnePhysique extends Contribuable {
 	/**
 	 * Date d'arrivée dans le canton. Nulle si cette information n'est pas connue.
 	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>activityStartDate</i>.
+	 * <b>Dans la version 3 du web-service :</b> pas disponible.
 	 */
 	@XmlElement(required = false)
 	public Date dateArrivee;
@@ -215,7 +215,7 @@ public class PersonnePhysique extends Contribuable {
 
 			this.nouveauNumeroAssureSocial = individu.getNouveauNoAVS();
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
-			this.dateArrivee = DataHelper.coreToWeb(personne.getDateDebutActivite());
+			this.dateArrivee = DataHelper.coreToWeb(individu.getDateArriveeVD());
 
 			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis();
 			if (permis == null) {

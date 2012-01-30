@@ -28,7 +28,6 @@ import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
 public abstract class IndividuDumper {
 
-
 	private static final TIntObjectHashMap tabs = new TIntObjectHashMap();
 
 	/**
@@ -57,6 +56,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsversIndividus(individu.getConjoints(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("dateDeces=").append(individu.getDateDeces()).append(", \n");
 		s.append(tab(depth + 1)).append("dateNaissance=").append(individu.getDateNaissance()).append(", \n");
+		s.append(tab(depth + 1)).append("dateArriveeVD=").append(individu.getDateArriveeVD()).append(", \n");
 		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsversIndividus(individu.getEnfants(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
