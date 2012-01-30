@@ -154,7 +154,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 
 		final EvenementCivilRegPP evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
 		assertNotNull(evenementAlex, "Où est l'événement civil d'arrivée d'Alexandra ?");
-		assertEquals(EtatEvenementCivil.TRAITE, evenementAlex.getEtat(), "L'événement civil devrait être en traité.");
+		assertEquals(EtatEvenementCivil.REDONDANT, evenementAlex.getEtat(), "L'événement civil devrait être considéré comme redondant.");
 
 		final MenageCommun mc = couple.getMenage();
 		final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(dateMariage);

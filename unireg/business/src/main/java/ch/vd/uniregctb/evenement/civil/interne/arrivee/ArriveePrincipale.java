@@ -25,6 +25,7 @@ import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -477,11 +478,10 @@ public class ArriveePrincipale extends Arrivee {
 				}
 				if (ffpMenage == null) {
 					Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
-							false);
+					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition, false);
 				}
 				else {
-					Audit.info(getNumeroEvenement(), "Mise-à-jour for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
+					Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
 					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
 				}
 			}
@@ -650,4 +650,54 @@ public class ArriveePrincipale extends Arrivee {
 		return commune;
 	}
 
+	@Override
+	protected boolean isArriveeRedondantePourIndividuSeul() {
+		// l'événement sera considéré comme redondant si
+		//  - le tiers contribuable existe déjà
+		//  - si majeur, ce tiers a un for principal ouvert sur la bonne commune à la bonne date avec un motif d'arrivée (jamais de redondance sur l'arrivée d'un mineur)
+		boolean isRedondant = getPrincipalPP() != null;
+		if (isRedondant) {
+			final RegDate dateArrivee = getDateArriveeEffective(getDate());
+			final boolean isMajeur = FiscalDateHelper.isMajeurAt(getIndividu(), dateArrivee);
+			isRedondant = isMajeur && isForDejaBon(getPrincipalPP(), dateArrivee, true);
+		}
+		return isRedondant;
+	}
+
+	private boolean isForDejaBon(Contribuable ctb, RegDate dateArrivee, boolean beginDateMustMatch) {
+		final ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(dateArrivee);
+		final MotifFor motifAttendu = getMotifOuvertureFor();
+		final int ofsCommuneArrivee = nouvelleCommune.getNoOFSEtendu();
+		return ffp != null && (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) && motifAttendu == ffp.getMotifOuverture()
+				&& ofsCommuneArrivee == ffp.getNumeroOfsAutoriteFiscale() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+	}
+
+	@Override
+	protected boolean isArriveeRedondantePourIndividuEnMenage() {
+		// l'événement sera considéré comme redondant si
+		//   - le tiers contribuable PP existe déjà, ainsi que celui de son couple (lié au même conjoint si couple complet)
+		//   - le for du couple a été ouvert à la bonne date sur la bonne commune avec le bon motif
+		boolean isRedondant = getPrincipalPP() != null;
+		if (isRedondant) {
+			final RegDate dateArrivee = getDateArriveeEffective(getDate());
+			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
+			isRedondant = (coupleExistant != null && isForDejaBon(coupleExistant.getMenage(), dateArrivee, false));
+			if (isRedondant) {
+				// reste le conjoint à vérifier
+				final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), dateArrivee);
+				if (individuConjoint != null) {
+					final PersonnePhysique conjoint = context.getTiersDAO().getPPByNumeroIndividu(individuConjoint.getNoTechnique(), true);
+					if (conjoint == null) {
+						// visiblement, le conjoint n'a pas encore été créé chez nous... Il reste donc des trucs à faire
+						isRedondant = false;
+					}
+					else {
+						final PersonnePhysique conjointFiscal = coupleExistant.getConjoint(getPrincipalPP());
+						isRedondant = conjointFiscal != null && conjointFiscal.getNumero().equals(conjoint.getNumero());
+					}
+				}
+			}
+		}
+		return isRedondant;
+	}
 }

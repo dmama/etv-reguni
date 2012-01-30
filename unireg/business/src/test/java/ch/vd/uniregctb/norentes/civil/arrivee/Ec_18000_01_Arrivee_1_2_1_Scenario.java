@@ -348,7 +348,12 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 		{
 			List<EvenementCivilRegPP> list = evtExterneDAO.getAll();
 			for (EvenementCivilRegPP evt : list) {
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
+				if (evt.getNumeroIndividuPrincipal() == noIndJanine) {
+					assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat(), "L'arrivée de Janine aurait dû être considérée comme redondante car Alain est déjà arrivé");
+				}
+				else {
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Mauvais état de l'événenemt d'arrivée de l'individu " + evt.getNumeroIndividuPrincipal());
+				}
 			}
 		}
 

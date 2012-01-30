@@ -94,7 +94,7 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 
 		final EvenementCivilRegPP evenementAnneLaure = getEvenementCivilRegoupeForHabitant(anneLaure.getNumero());
 		assertNotNull(evenementAnneLaure, "Où est l'événement civil d'arrivée d'Anne-Laure ?");
-		assertEquals(EtatEvenementCivil.TRAITE, evenementAnneLaure.getEtat(), "L'événement civil devrait être en traité.");
+		assertEquals(EtatEvenementCivil.REDONDANT, evenementAnneLaure.getEtat(), "L'événement civil devrait être considéré comme redondant.");
 
 		// recherche du couple créé pour ces habitant
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(antonio, dateMariage);

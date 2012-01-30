@@ -96,4 +96,16 @@ public class ArriveeSecondaire extends Arrivee {
 	protected void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) {
 		// Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire
 	}
+
+	@Override
+	protected boolean isArriveeRedondantePourIndividuSeul() {
+		// comme on ne fait rien, il est impossible de dire si l'événement est effectivement redondant
+		return false;
+	}
+
+	@Override
+	protected boolean isArriveeRedondantePourIndividuEnMenage() {
+		// comme on ne fait rien, il est impossible de dire si l'événement est effectivement redondant
+		return false;
+	}
 }

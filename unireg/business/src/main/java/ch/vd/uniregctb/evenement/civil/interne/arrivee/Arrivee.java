@@ -124,6 +124,10 @@ public abstract class Arrivee extends Mouvement {
 	@NotNull
 	protected final HandleStatus handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
+		if (isArriveeRedondantePourIndividuSeul()) {
+			return HandleStatus.REDONDANT;
+		}
+
 		try {
 			final Individu individu = getIndividu();
 			final RegDate dateArrivee = getDateArriveeEffective(getDate());
@@ -164,6 +168,16 @@ public abstract class Arrivee extends Mouvement {
 	protected RegDate getDateArriveeEffective(RegDate date) {
 		return date;
 	}
+
+	/**
+	 * @return <code>true</code> si l'arrivée de cet individu seul a déjà été traitée
+	 */
+	protected abstract boolean isArriveeRedondantePourIndividuSeul();
+
+	/**
+	 * @return <code>true</code> si l'arrivée de cet individu en ménage a déjà été traitée
+	 */
+	protected abstract boolean isArriveeRedondantePourIndividuEnMenage();
 
 	/**
 	 * Création des fors lors de l'arrivée d'un invididu seul
@@ -357,6 +371,10 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	@NotNull
 	protected final HandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+
+		if (isArriveeRedondantePourIndividuEnMenage()) {
+			return HandleStatus.REDONDANT;
+		}
 
 		final Individu individu = getIndividu();
 		Assert.notNull(individu); // prérequis
