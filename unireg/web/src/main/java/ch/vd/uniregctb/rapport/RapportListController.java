@@ -62,7 +62,6 @@ public class RapportListController extends AbstractTiersListController {
 		HttpSession session = request.getSession();
 		RapportListView bean = (RapportListView) session.getAttribute(TIERS_LIE_CRITERIA_NAME);
 		ModelAndView mav = showFormForList(request, response, errors, model, TIERS_LIE_CRITERIA_NAME, TIERS_LIE_LIST_ATTRIBUTE_NAME, bean, true);
-		session.removeAttribute(TIERS_LIE_CRITERIA_NAME);
 		return mav;
 	}
 
