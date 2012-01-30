@@ -82,36 +82,45 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		}
 
 		Long foundId = null;
-		Statement stat = null;
-		ResultSet rs = null;
+		final Connection con = session.connection();
 		try {
-			Connection con = session.connection();
-			stat = con.createStatement();
-			// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
-			final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
-					+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
-			rs = stat.executeQuery(query);
+			final Statement stat = con.createStatement();
+			try {
+				
+				// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
+				final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
+						+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
 
-			foundId = firstId;
-			while (rs.next()) {
-				final int noCurrent = rs.getInt(1);
-				final boolean inUse = (noCurrent == foundId);
-
-				// Si on a un trou, le dernier ID+1 est retourné
-				if (!inUse) {
-					break;
+				ResultSet rs = stat.executeQuery(query);
+				try {
+					foundId = firstId;
+					while (rs.next()) {
+						final int noCurrent = rs.getInt(1);
+						final boolean inUse = (noCurrent == foundId);
+		
+						// Si on a un trou, le dernier ID+1 est retourné
+						if (!inUse) {
+							break;
+						}
+		
+						// Prends le prochain ID dans la sequence
+						foundId = (Long) generator.generate(session, object);
+		
+						// Si le numero est trop grand, on wrap
+						if (foundId > maxId) {
+							rs.close();
+							dropAndCreateSequence(session);
+							foundId = (Long) generator.generate(session, object);
+							rs = stat.executeQuery("SELECT numero FROM " + tableName + " WHERE numero >= " + foundId + " ORDER BY numero");
+						}
+					}
 				}
-
-				// Prends le prochain ID dans la sequence
-				foundId = (Long) generator.generate(session, object);
-
-				// Si le numero est trop grand, on wrap
-				if (foundId > maxId) {
+				finally {
 					rs.close();
-					dropAndCreateSequence(session);
-					foundId = (Long) generator.generate(session, object);
-					rs = stat.executeQuery("SELECT numero FROM " + tableName + " WHERE numero >= " + foundId + " ORDER BY numero");
 				}
+			}
+			finally {
+				stat.close();
 			}
 		}
 		catch (Exception e) {
@@ -119,15 +128,10 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		}
 		finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stat != null) {
-					stat.close();
-				}
+				con.close();
 			}
 			catch (SQLException e) {
-				// sous-exception ignorée
+				// ignorée... ça marche pas...
 			}
 		}
 

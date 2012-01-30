@@ -184,8 +184,13 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		final Statement stat = con.createStatement();
 		try {
 			final ResultSet rs = stat.executeQuery(nextValSql);
-			Assert.isTrue(rs.next());
-			return rs.getLong(1);
+			try {
+				Assert.isTrue(rs.next());
+				return rs.getLong(1);
+			}
+			finally {
+				rs.close();
+			}
 		}
 		finally {
 			stat.close();

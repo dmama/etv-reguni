@@ -75,127 +75,134 @@ public class JdbcHibernateEntityDaoGenerator {
 	public void generate(String inputTemplate, String outputFilename) throws IOException {
 
 		BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(ResourceUtils.getFile(inputTemplate))));
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)));
+		try {
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)));
+			try {
 
-		// Construction des portions de code dynamiques
+				// Construction des portions de code dynamiques
 
-		final List<Property> properties = new ArrayList<Property>(allProperties.values());
-		Collections.sort(properties);
+				final List<Property> properties = new ArrayList<Property>(allProperties.values());
+				Collections.sort(properties);
 
-		String primaryKey = null;
-		Property foreignKey = null;
-		Property discriminant = null;
-		String discriminantVar = null;
+				String primaryKey = null;
+				Property foreignKey = null;
+				Property discriminant = null;
+				String discriminantVar = null;
 
-		String baseSelect = "";
-		String mappingCode = "";
+				String baseSelect = "";
+				String mappingCode = "";
 
-		for (int i = 0, propSize = properties.size(); i < propSize; i++) {
-			final Property p = properties.get(i);
-			p.setIndex(i + 1);
-			final boolean last = (i == propSize - 1);
-			baseSelect += '\"' + p.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + '\n';
+				for (int i = 0, propSize = properties.size(); i < propSize; i++) {
+					final Property p = properties.get(i);
+					p.setIndex(i + 1);
+					final boolean last = (i == propSize - 1);
+					baseSelect += '\"' + p.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + '\n';
 
-			if (p.isPrimaryKey()) {
-				Assert.isNull(primaryKey);
-				primaryKey = p.getColumnName();
-			}
-			if (p.isParentForeignKey()) {
-				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + p.getColumnName() + ']');
-				foreignKey = p;
-			}
-			if (p.isDiscriminator()) {
-				Assert.isNull(discriminant);
-				discriminant = p;
-				discriminantVar = toVar(p.getColumnName());
-			}
-		}
-		baseSelect += "\"from " + table + '\"';
-		Assert.notNull(primaryKey);
+					if (p.isPrimaryKey()) {
+						Assert.isNull(primaryKey);
+						primaryKey = p.getColumnName();
+					}
+					if (p.isParentForeignKey()) {
+						Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + p.getColumnName() + ']');
+						foreignKey = p;
+					}
+					if (p.isDiscriminator()) {
+						Assert.isNull(discriminant);
+						discriminant = p;
+						discriminantVar = toVar(p.getColumnName());
+					}
+				}
+				baseSelect += "\"from " + table + '\"';
+				Assert.notNull(primaryKey);
 
-		mappingCode += "\n";
+				mappingCode += "\n";
 
-		// le discriminant
-		if (discriminant != null) {
-			mappingCode += generateDeclareAndGetValue("", discriminant);
-		}
+				// le discriminant
+				if (discriminant != null) {
+					mappingCode += generateDeclareAndGetValue("", discriminant);
+				}
 
-		// la foreign key
-		if (foreignKey != null) {
-			mappingCode += generateDeclareAndGetValue("", foreignKey);
-		}
+				// la foreign key
+				if (foreignKey != null) {
+					mappingCode += generateDeclareAndGetValue("", foreignKey);
+				}
 
-		// l'objet retourné
-		mappingCode += "final " + baseClass.getSimpleName() + " res;\n\n";
+				// l'objet retourné
+				mappingCode += "final " + baseClass.getSimpleName() + " res;\n\n";
 
-		// création et remplissage des objets
-		boolean hierarchy = false;
-		for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
-			final MetaEntity e = entities.get(i);
-			final boolean first = (i == 0);
+				// création et remplissage des objets
+				boolean hierarchy = false;
+				for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
+					final MetaEntity e = entities.get(i);
+					final boolean first = (i == 0);
 
-			String tab = "";
-			if (e.getDiscriminant() != null) { // hiérarchie dans une table
-				mappingCode += (first ? "" : "else ") + "if (" + discriminantVar + ".equals(\"" + e.getDiscriminant() + "\")) {\n";
-				tab = "\t";
-				hierarchy = true;
-			}
+					String tab = "";
+					if (e.getDiscriminant() != null) { // hiérarchie dans une table
+						mappingCode += (first ? "" : "else ") + "if (" + discriminantVar + ".equals(\"" + e.getDiscriminant() + "\")) {\n";
+						tab = "\t";
+						hierarchy = true;
+					}
 
-			mappingCode += "\n";
-			
-			for (Property p : e.getProperties()) {
-				if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
-					mappingCode += generateDeclareAndGetValue(tab, p);
+					mappingCode += "\n";
+
+					for (Property p : e.getProperties()) {
+						if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
+							mappingCode += generateDeclareAndGetValue(tab, p);
+						}
+					}
+
+					mappingCode += '\n' + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
+
+					for (Property p : e.getProperties()) {
+						if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
+							mappingCode += tab + "o." + toSetter(p.getName()) + '(' + toVar(p.getColumnName()) + ");\n";
+						}
+					}
+
+					mappingCode += tab + "res = o;\n";
+					if (e.getDiscriminant() != null) {
+						mappingCode += "}\n";
+					}
+				}
+
+				if (hierarchy) {
+					mappingCode += "else {\n";
+					mappingCode += "\tthrow new IllegalArgumentException(\"Type inconnu = [\" + " + discriminantVar + " + \"]\");\n";
+					mappingCode += "}\n";
+				}
+				mappingCode += "\n";
+
+				if (foreignKey != null) {
+					mappingCode += "final Pair<Long, " + baseClass.getSimpleName() + "> pair = new Pair<Long, " + baseClass.getSimpleName() + ">();\n";
+					mappingCode += "pair.setFirst(" + toVar(foreignKey.getColumnName()) + ");\n";
+					mappingCode += "pair.setSecond(res);\n\n";
+					mappingCode += "return pair;";
+				}
+				else {
+					mappingCode += "return res;";
+				}
+
+				// Remplissage du template et création du fichier
+				String line = input.readLine();
+				while (line != null) {
+					line = replace(line, "BASE_SELECT", baseSelect);
+					line = replace(line, "PRIMARY_KEY", primaryKey);
+					line = replace(line, "MAPPING_CODE", mappingCode);
+					if (foreignKey != null) {
+						line = replace(line, "FOREIGN_KEY", foreignKey.getColumnName());
+					}
+					writer.write(line);
+					writer.newLine();
+					line = input.readLine();
 				}
 			}
-
-			mappingCode += '\n' + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
-
-			for (Property p : e.getProperties()) {
-				if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
-					mappingCode += tab + "o." + toSetter(p.getName()) + '(' + toVar(p.getColumnName()) + ");\n";
-				}
-			}
-
-			mappingCode += tab + "res = o;\n";
-			if (e.getDiscriminant() != null) {
-				mappingCode += "}\n";
+			finally {
+				writer.close();
 			}
 		}
-
-		if (hierarchy) {
-			mappingCode += "else {\n";
-			mappingCode += "\tthrow new IllegalArgumentException(\"Type inconnu = [\" + " + discriminantVar + " + \"]\");\n";
-			mappingCode += "}\n";
+		finally {
+			input.close();
 		}
-		mappingCode += "\n";
-
-		if (foreignKey != null) {
-			mappingCode += "final Pair<Long, " + baseClass.getSimpleName() + "> pair = new Pair<Long, " + baseClass.getSimpleName() + ">();\n";
-			mappingCode += "pair.setFirst(" + toVar(foreignKey.getColumnName()) + ");\n";
-			mappingCode += "pair.setSecond(res);\n\n";
-			mappingCode += "return pair;";
-		}
-		else {
-			mappingCode += "return res;";
-		}
-
-		// Remplissage du template et création du fichier
-		String line = input.readLine();
-		while (line != null) {
-			line = replace(line, "BASE_SELECT", baseSelect);
-			line = replace(line, "PRIMARY_KEY", primaryKey);
-			line = replace(line, "MAPPING_CODE", mappingCode);
-			if (foreignKey != null) {
-				line = replace(line, "FOREIGN_KEY", foreignKey.getColumnName());
-			}
-			writer.write(line);
-			writer.newLine();
-			line = input.readLine();
-		}
-
-		input.close();
-		writer.close();
 	}
 
 	private String generateDeclareAndGetValue(String tab, Property p) {
