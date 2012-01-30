@@ -601,9 +601,9 @@ public class ImportImmeublesProcessor {
 		}
 	}
 
-	private static final SimpleDateFormat TIMESTAMP = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSSSSSSSS");
+	private static final SimpleDateFormat TIMESTAMP = new SimpleDateFormat("dd.MM.yy HH:mm:ss.SSSSSSSSS");
 
-	protected static RegDate parseTimestamp(String str) throws ParseException {
+	private static RegDate parseTimestamp(String str) throws ParseException {
 		if (StringUtils.isBlank(str)) {
 			return null;
 		}

@@ -367,13 +367,4 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
 		assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
 	}
-
-	@Test
-	public void testParseTimestamp() throws Exception {
-		assertNull(ImportImmeublesProcessor.parseTimestamp("01.01.10 00:00:00.000000000"));
-		assertNull(ImportImmeublesProcessor.parseTimestamp("01.01.70 00:00:00.000000000"));
-		assertEquals(date(1910, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1910 00:00:00.000000000"));
-		assertEquals(date(1970, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1970 00:00:00.000000000"));
-		assertEquals(date(2010, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.2010 00:00:00.000000000"));
-	}
 }
