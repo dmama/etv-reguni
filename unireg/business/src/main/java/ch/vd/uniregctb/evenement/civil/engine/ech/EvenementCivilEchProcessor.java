@@ -144,13 +144,13 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 								errorPostProcessing(evts.subList(pointer + 1, evts.size()));
 								break;
 							}
-							++ pointer;
 						}
 						finally {
 							AuthenticationHelper.popPrincipal();
 							if (monitor != null) {
 								monitor.onProcessingEnd(evt.idEvenement);
 							}
+							++ pointer;
 						}
 					}
 				}
