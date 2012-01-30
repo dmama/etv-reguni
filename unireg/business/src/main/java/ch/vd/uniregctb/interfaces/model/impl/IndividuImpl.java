@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.civil.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -43,6 +44,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private Collection<AdoptionReconnaissance> adoptions;
 	private final RegDate deces;
 	private final RegDate naissance;
+	private final RegDate dateArriveeVD;
 	private List<RelationVersIndividu> parents;
 	private Collection<RelationVersIndividu> enfants;
 	private final EtatCivilListHost etatsCivils;
@@ -82,6 +84,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances());
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
+		//noinspection unchecked
+		this.dateArriveeVD = initDateArriveVD(target.getHistoriqueIndividu());
 		this.parents = initParents(target.getPere(), target.getMere());
 		this.enfants = initEnfants(target.getEnfants());
 		this.etatsCivils = initEtatsCivils(target);
@@ -91,7 +95,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.tutelle = TutelleImpl.get(target.getTutelle());
 	}
 
-	protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
+    protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
 		super(individuWrapper, parts);
 		this.prenom = individuWrapper.getPrenom();
 		this.autresPrenoms = individuWrapper.getAutresPrenoms();
@@ -104,7 +108,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.isMasculin = individuWrapper.isMasculin;
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
-		this.etatsCivils = individuWrapper.etatsCivils;
+	    this.dateArriveeVD = individuWrapper.dateArriveeVD;
+	    this.etatsCivils = individuWrapper.etatsCivils;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
@@ -188,6 +193,18 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	@Override
 	public RegDate getDateNaissance() {
 		return naissance;
+	}
+
+	@Override
+	public RegDate getDateArriveeVD() {
+		return dateArriveeVD;
+	}
+
+	private static RegDate initDateArriveVD(Collection<HistoriqueIndividu> historiqueIndividu) {
+		if (historiqueIndividu == null || historiqueIndividu.isEmpty()) {
+			return null;
+		}
+		return RegDate.get(historiqueIndividu.iterator().next().getDateDebutValidite());
 	}
 
 	@Override

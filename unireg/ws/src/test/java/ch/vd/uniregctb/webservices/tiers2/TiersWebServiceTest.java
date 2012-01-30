@@ -11,7 +11,6 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -78,7 +77,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceTest extends WebserviceTest {
 
-	private TiersWebService service;
+    private TiersWebService service;
 	private UserLogin login;
 
 	@Override
@@ -93,7 +92,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-1985] Vérifie que les fors fiscaux virtuels sont bien retournés <b>même si</b> on demande l'adresse d'envoi en même temps.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchTiersHistoForsFiscauxVirtuelsEtAdresseEnvoi() throws Exception {
 
 		class Ids {
@@ -171,7 +169,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-2227] Cas du contribuable n°237.056.03
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecTuteur() throws Exception {
 
 		class Ids {
@@ -257,7 +254,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * -> l'appel à la méthode GetTiers ne renvoie pas d'adresse de domicile correcte (qui aurait dû être recopiée de la seule adresse connue : l'adresse courrier)
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseDomicileSiSurchargeAnnuleeExiste() throws Exception {
 
 		final long idDpi = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -301,7 +297,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-3203] Cas du contribuable n°497.050.02
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecConseilLegal() throws Exception {
 
 		class Ids {
@@ -386,7 +381,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesTiersAvecCurateur() throws Exception {
 
 		final long noIndividuTiia = 339619;
@@ -593,7 +587,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtat());
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
@@ -679,7 +673,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtat());
 				assertEquals(TypeEtatDeclaration.EMISE, di.getDernierEtat().getEtat());
@@ -727,7 +721,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				return null;
 			}
 
-			private PersonnePhysique addPersonnePhysiqueAvecFor(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+			private PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 				final PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
 				addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
 				addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -787,12 +781,12 @@ public class TiersWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire diValide = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
+				final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
 				assertNotNull(diValide);
 				assertNotNull(diValide.getDernierEtat());
 				assertEquals(TypeEtatDeclaration.RETOURNEE, diValide.getDernierEtat().getEtat());
 
-				final DeclarationImpotOrdinaire diInvalide = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
+				final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
 				assertNotNull(diInvalide);
 				assertNotNull(diInvalide.getDernierEtat());
 				assertEquals(TypeEtatDeclaration.EMISE, diInvalide.getDernierEtat().getEtat());
@@ -805,7 +799,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	 * [UNIREG-2950] Vérifie que les rapports-entre-tiers d'appartenance ménage annulés ne sont pas pris en compte lors du calcul des fors fiscaux virtuels
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxVirtuelsPersonnePhysiqueAvecAppartenanceMenageAnnulee() throws Exception {
 
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -869,7 +862,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 	}
 
-	private static void assertAdresse(Date dateDebut, @Nullable Date dateFin, String rue, String localite, Adresse adresse) {
+	private static void assertAdresse(@Nullable Date dateDebut, @Nullable Date dateFin, String rue, String localite, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.dateDebut);
 		assertEquals(dateFin, adresse.dateFin);
@@ -882,7 +875,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testQuittancementAvecPlusieursDiQuiPartagentLeMemeNumeroDeSequence() throws Exception {
 
 		final class Ids {
@@ -939,7 +931,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testQuittancementAvecSourceRenseignee() throws Exception {
 
 		final class Ids {
@@ -1016,7 +1007,6 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testQuittancementSansSourceRenseignee() throws Exception {
 
 		final class Ids {
@@ -1090,5 +1080,55 @@ public class TiersWebServiceTest extends WebserviceTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-4023] Vérifie que la date d'arrivée dans le canton de Vaud est bien renseignée sur les personne physiques connue au contrôle des habitants
+	 */
+	@Test
+	public void testDateArriveeVD() throws Exception {
+
+		final int NO_IND = 123456;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(NO_IND, date(1953, 2, 1), "Grogniard", "Ralf", true);
+				ind.setDateArriveeVD(date(1967, 12, 31));
+			}
+		});
+
+		// création d'un habitant sans for fiscal
+		final Long noPP = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique pp = addHabitant(NO_IND);
+				return pp.getNumero();
+			}
+		});
+
+		// getTiers
+		{
+			final GetTiers params = new GetTiers();
+			params.tiersNumber = noPP;
+			params.login = login;
+
+			final ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique pp = (ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique) service.getTiers(params);
+			assertNotNull(pp);
+			assertNull(pp.dateDebutActivite); // pas de for fiscal
+			assertEquals(newDate(1967, 12, 31), pp.dateArrivee);
+		}
+
+		// getTiersHisto
+		{
+			final GetTiersHisto params = new GetTiersHisto();
+			params.tiersNumber = noPP;
+			params.login = login;
+
+			final PersonnePhysiqueHisto pp = (PersonnePhysiqueHisto) service.getTiersHisto(params);
+			assertNotNull(pp);
+			assertNull(pp.dateDebutActivite); // pas de for fiscal
+			assertEquals(newDate(1967, 12, 31), pp.dateArrivee);
+		}
 	}
 }
