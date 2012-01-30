@@ -41,7 +41,7 @@ public class SeparationTest extends WithoutSpringTest {
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, 0L, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null, options);
+		Separation adapter = new Separation(evenementsCivils, context, options);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getAncienConjoint());
 	}
 	
@@ -51,7 +51,7 @@ public class SeparationTest extends WithoutSpringTest {
 		momo.setNumero(INDIVIDU_MARIE);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, 0L, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null, options);
+		Separation adapter = new Separation(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getAncienConjoint());
 	}
 	
@@ -61,7 +61,7 @@ public class SeparationTest extends WithoutSpringTest {
 		david.setNumero(INDIVIDU_PACSE);
 		EvenementCivilRegPP evenementsCivils = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, 0L, 1234, null );
-		Separation adapter = new Separation(evenementsCivils, context, null, options);
+		Separation adapter = new Separation(evenementsCivils, context, options);
 		assertNotNull("le conjoint d'un pacsé doit exister", adapter.getAncienConjoint());
 	}
 }

@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -39,13 +40,20 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	protected SeparationOuDivorce(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
-		/*
-		 * Récupération des informations sur le conjoint de l'individu depuis le host.
-		 */
+		// Récupération des informations sur le conjoint de l'individu depuis le service-civil.
 		final long noIndividu = getNoIndividu();
 		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
 		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
 		
+	}
+
+	protected SeparationOuDivorce(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+
+		// Récupération des informations sur le conjoint de l'individu depuis le service-civil.
+		final long noIndividu = getNoIndividu();
+		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
+		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
 	}
 
 	/**

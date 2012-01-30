@@ -50,7 +50,7 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long naissanceId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long mariageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = new EvenementCivilEch();
@@ -66,12 +66,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, naissanceId);
+		traiterEvenement(noMonsieur, mariageId);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(naissanceId);
+				final EvenementCivilEch evt = evtCivilDAO.get(mariageId);
 				assertNotNull(evt);
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
