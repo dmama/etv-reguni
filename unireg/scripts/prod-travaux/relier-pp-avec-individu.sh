@@ -24,5 +24,3 @@ fi
 echo "-- Association de la personne physique $CTB_PP avec l'individu = $IND"
 echo "UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-SIFISC-$JIRA', PP_HABITANT=1, NUMERO_INDIVIDU=$IND, INDEX_DIRTY=1 WHERE NUMERO=$CTB_PP;"
 echo "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=$CTB_PP;"
-echo
-$(dirname "$0")/aligner-pp-avec-evenements-civils.sh $JIRA $CTB_PP $IND
