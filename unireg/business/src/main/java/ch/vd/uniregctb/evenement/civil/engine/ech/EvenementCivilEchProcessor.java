@@ -156,7 +156,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error(String.format("Erreur lors du traitement des événements civils %d", evts.get(pointer).idEvenement), e);
+				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", evts.get(pointer).idEvenement), e);
 			}
 		}
 
