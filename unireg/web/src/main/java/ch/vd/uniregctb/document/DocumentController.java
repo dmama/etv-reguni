@@ -9,6 +9,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.servlet.ServletService;
 
 /**
@@ -73,7 +74,7 @@ public class DocumentController extends AbstractSimpleFormController {
 			}
 		});
 
-		Audit.info("Le document '" + doc.getNom() + "' a été téléchargé.");
+		Audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
 	}
 
 	private void delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
