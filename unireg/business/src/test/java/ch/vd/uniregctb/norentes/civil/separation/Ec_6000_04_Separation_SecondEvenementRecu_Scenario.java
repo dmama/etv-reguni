@@ -262,10 +262,10 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 
-		// l'événement envoyé pour Momo est traité (en fait, il n'avait rien à faire!)
+		// l'événement envoyé pour Momo est redondant (en fait, il n'avait rien à faire!)
 		{
 			final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
-			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat(), "");
 		}
 
 		assertBlocageRemboursementAutomatique(false, false, true);

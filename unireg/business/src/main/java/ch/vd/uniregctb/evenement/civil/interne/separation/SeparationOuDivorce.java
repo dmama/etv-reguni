@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -168,12 +169,15 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 	/**
 	 * Retourne true si les tiers appartenant au ménage sont séparés fiscalement.
-	 * @param date date pour laquelle la vérification s'effectue
+	 *
+	 * @param date     date pour laquelle la vérification s'effectue
 	 * @param habitant l'habitant
 	 * @param conjoint son conjoint
-	 * @return
+	 * @return <b>true</b> si les tiers appartenant au ménage sont séparés fiscalement; <b>false</b> autrement.
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 *          en cas de données incohérentes
 	 */
-	protected boolean isSeparesFiscalement(RegDate date, PersonnePhysique habitant, PersonnePhysique conjoint) throws EvenementCivilException {
+	protected boolean isSeparesFiscalement(RegDate date, PersonnePhysique habitant, @Nullable PersonnePhysique conjoint) throws EvenementCivilException {
 
 		MenageCommun menage = getService().findMenageCommun(habitant, date);
 		if (menage != null) {
@@ -221,34 +225,38 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(numeroIndividu, dateEvenement);
 		Assert.notNull(etatCivil);
 
-		if (EtatCivilHelper.estSepare(etatCivil) || EtatCivilHelper.estDivorce(etatCivil)) { // si l'individu est séparé ou divorcé
-			handleSeparation(this, warnings);
+		if (!EtatCivilHelper.estSepare(etatCivil) && !EtatCivilHelper.estDivorce(etatCivil)) {
+			throw new EvenementCivilException("L'individu " + numeroIndividu + " n'est ni séparé ni divorcé dans le civil");
 		}
-		return HandleStatus.TRAITE;
+
+		return handleSeparation();
 	}
 
-	private void handleSeparation(EvenementCivilInterne evenement, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private HandleStatus handleSeparation() throws EvenementCivilException {
 
 		// Obtention du premier tiers.
 		final PersonnePhysique principal = getPrincipalPP();
 
-		final RegDate dateEvt = evenement.getDate();
+		final RegDate dateEvt = getDate();
 
-		if (!isSeparesFiscalement(dateEvt, principal, null)) {
-			// récupération de l'ensemble tiers-couple
-			final EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, dateEvt);
-			// Récupération du ménage du tiers
-			final MenageCommun menageCommun = menageComplet.getMenage();
-			// état civil pour traitement
-			final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(menageComplet.getPrincipal().getNumeroIndividu(), dateEvt);
-			final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
-			// traitement de la séparation
-			try {
-				context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, false, evenement.getNumeroEvenement());
-			}
-			catch (MetierServiceException e) {
-				throw new EvenementCivilException(e.getMessage(), e);
-			}
+		if (isSeparesFiscalement(dateEvt, principal, null)) {
+			return HandleStatus.REDONDANT;
 		}
+
+		// récupération de l'ensemble tiers-couple
+		final EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, dateEvt);
+		// Récupération du ménage du tiers
+		final MenageCommun menageCommun = menageComplet.getMenage();
+		// état civil pour traitement
+		final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(menageComplet.getPrincipal().getNumeroIndividu(), dateEvt);
+		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
+		// traitement de la séparation
+		try {
+			context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, false, getNumeroEvenement());
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementCivilException(e.getMessage(), e);
+		}
+		return HandleStatus.TRAITE;
 	}
 }

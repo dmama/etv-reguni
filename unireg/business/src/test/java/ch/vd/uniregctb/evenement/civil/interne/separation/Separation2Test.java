@@ -11,17 +11,20 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -262,5 +265,91 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 
 	private Separation createValidSeparation(Individu individu, Individu conjoint) {
 		return new Separation(individu, conjoint, DATE_SEPARATION, 5652, context);
+	}
+
+	@Test
+	public void testEvenementSeparationRedondant() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateSeparation = date(2008, 11, 23);
+
+		// création d'un ménage-commun séparé au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				marieIndividus(monsieur, madame, dateMariage);
+				separeIndividus(monsieur, madame, dateSeparation);
+			}
+		});
+
+		// création d'un ménage-commun séparé au fiscal
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				addForPrincipal(monsieur, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+				addForPrincipal(madame, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateSeparation);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de séparé redondant
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateSeparation);
+				final Individu madame = serviceCivil.getIndividu(noMadame, dateSeparation);
+
+				// la date de l'événement séparation corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
+				final Separation separation = new Separation(monsieur, madame, dateSeparation.getOneDayAfter(), MockCommune.Echallens.getNoOFSEtendu(), context);
+
+				final MessageCollector collector = buildMessageCollector();
+				separation.validate(collector, collector);
+				final HandleStatus etat = separation.handle(collector);
+
+				assertEmpty(collector.getErreurs());
+				assertEmpty(collector.getWarnings());
+				assertEquals(HandleStatus.REDONDANT, etat);
+				return null;
+			}
+		});
+
+		// on s'assure que rien n'a changé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final AppartenanceMenage appartenanceMonsieur = (AppartenanceMenage) monsieur.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				assertNotNull(appartenanceMonsieur);
+				assertEquals(dateMariage, appartenanceMonsieur.getDateDebut());
+				assertEquals(dateSeparation, appartenanceMonsieur.getDateFin());
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				assertNotNull(appartenanceMadame);
+				assertEquals(dateMariage, appartenanceMadame.getDateDebut());
+				assertEquals(dateSeparation, appartenanceMadame.getDateFin());
+
+				assertNull(tiersService.getEnsembleTiersCouple(madame, dateSeparation.getOneDayAfter()));
+				return null;
+			}
+		});
 	}
 }

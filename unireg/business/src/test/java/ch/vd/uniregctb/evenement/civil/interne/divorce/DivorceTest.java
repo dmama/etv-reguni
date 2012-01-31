@@ -2,19 +2,27 @@ package ch.vd.uniregctb.evenement.civil.interne.divorce;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -263,10 +271,94 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
 	}
-	
+
 	private Divorce createValidDivorce(Individu individu, Individu conjoint) {
 		return new Divorce(individu, conjoint, DATE_DIVORCE, 5652, context);
-	
 	}
-	
+
+	@Test
+	public void testEvenementDivorceRedondant() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateDivorce = date(2008, 11, 23);
+
+		// création d'un ménage-commun divorcé au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				marieIndividus(monsieur, madame, dateMariage);
+				divorceIndividus(monsieur, madame, dateDivorce);
+			}
+		});
+
+		// création d'un ménage-commun divorcé au fiscal
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				addForPrincipal(monsieur, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+				addForPrincipal(madame, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateDivorce);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de divorce redondant
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateDivorce);
+				final Individu madame = serviceCivil.getIndividu(noMadame, dateDivorce);
+
+				// la date de l'événement divorce corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
+				final Divorce divorce = new Divorce(monsieur, madame, dateDivorce.getOneDayAfter(), MockCommune.Echallens.getNoOFSEtendu(), context);
+
+				final MessageCollector collector = buildMessageCollector();
+				divorce.validate(collector, collector);
+				final HandleStatus etat = divorce.handle(collector);
+
+				assertEmpty(collector.getErreurs());
+				assertEmpty(collector.getWarnings());
+				assertEquals(HandleStatus.REDONDANT, etat);
+				return null;
+			}
+		});
+
+		// on s'assure que rien n'a changé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final AppartenanceMenage appartenanceMonsieur = (AppartenanceMenage) monsieur.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				assertNotNull(appartenanceMonsieur);
+				assertEquals(dateMariage, appartenanceMonsieur.getDateDebut());
+				assertEquals(dateDivorce, appartenanceMonsieur.getDateFin());
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				assertNotNull(appartenanceMadame);
+				assertEquals(dateMariage, appartenanceMadame.getDateDebut());
+				assertEquals(dateDivorce, appartenanceMadame.getDateFin());
+
+				assertNull(tiersService.getEnsembleTiersCouple(madame, dateDivorce.getOneDayAfter()));
+				return null;
+			}
+		});
+	}
 }
