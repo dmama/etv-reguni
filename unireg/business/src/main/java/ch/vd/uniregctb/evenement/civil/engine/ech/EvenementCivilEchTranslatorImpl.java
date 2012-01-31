@@ -297,30 +297,37 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
@@ -333,9 +340,5 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
-	}
-
-	public void setContext(EvenementCivilContext context) {
-		this.context = context;
 	}
 }
