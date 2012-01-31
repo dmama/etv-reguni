@@ -99,8 +99,8 @@ public abstract class MetierTest extends BusinessTest {
 	protected EnsembleTiersCouple createMenageSansFor(@Nullable Long noTiers, RegDate dateMariage, @Nullable RegDate datePremiereSeparation, @Nullable RegDate dateReconciliation,
 	                                                  @Nullable RegDate dateSecondeSeparation) {
 
-		final PersonnePhysique principal = addNonHabitant("Jean", "Moulin", date(1934, 1, 1), Sexe.MASCULIN);
-		final PersonnePhysique conjoint = addNonHabitant("Jeanne", "Moulin", date(1934, 1, 1), Sexe.FEMININ);
+		final PersonnePhysique principal = addNonHabitant(noTiers == null ? null : noTiers + 1000, "Jean", "Moulin", date(1934, 1, 1), Sexe.MASCULIN);
+		final PersonnePhysique conjoint = addNonHabitant(noTiers == null ? null : noTiers + 1001, "Jeanne", "Moulin", date(1934, 1, 1), Sexe.FEMININ);
 
 		// mariage puis séparation
 		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noTiers, principal, conjoint, dateMariage, datePremiereSeparation);
