@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement;
 
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 /**
@@ -8,5 +9,5 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
  * @author Pavel BLANCO
  *
  */
-public abstract class AbstractChangementTranslationStrategy implements EvenementCivilTranslationStrategy {
+public abstract class AbstractChangementTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 }

@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -17,15 +18,30 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public abstract class ChangementBase extends EvenementCivilInterne {
 
 	/**
-	 * Construit un événement civil interne sur la base d'un événement civil externe.
+	 * Construit un événement civil interne sur la base d'un événement civil externe (Reg-PP).
 	 *
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
+	 * @param options les options de l'evt
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
 	 *          si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
 	protected ChangementBase(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+	}
+
+	/**
+	 * Construit un événement civil interne sur la base d'un événement civil externe (eCH).
+	 *
+	 * @param event un événement civil externe
+	 * @param context   le context d'exécution de l'événement
+	 * @param options les options de l'evt
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 *          si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
+	 */
+
+	public ChangementBase(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
 	}
 
 	/**
@@ -36,6 +52,8 @@ public abstract class ChangementBase extends EvenementCivilInterne {
 	                         Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
 	}
+
+
 
 	@NotNull
 	@Override
