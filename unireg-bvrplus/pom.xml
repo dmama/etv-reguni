@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-bvrplus</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.7</version>
+	<version>1.1.8</version>
 
 	<name>UniregCTB - BVRPlus</name>
 	<description>UniregCTB - Projet de base pour les classes client du WebService SipfBvrPlus</description>
@@ -119,11 +119,11 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2009</copyright.year>
+		<copyright.year>2012</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.0.6.RELEASE</spring.version>
-		<cxf.version>2.4.2-fuse-00-08</cxf.version>
+		<cxf.version>2.4.3-fuse-00-20</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
 		<unireg.log4j.location>classpath:log4j.xml</unireg.log4j.location>

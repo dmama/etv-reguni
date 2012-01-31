@@ -227,11 +227,11 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2011</copyright.year>
+		<copyright.year>2012</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.0.6.RELEASE</spring.version>
-		<cxf.version>2.4.2-fuse-00-08</cxf.version>
+		<cxf.version>2.4.3-fuse-00-20</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>
 	</properties>

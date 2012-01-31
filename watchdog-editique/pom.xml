@@ -8,7 +8,7 @@
 
 	<groupId>ch.vd.watchdog</groupId>
 	<artifactId>watchdog</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	
 	<packaging>jar</packaging>
 
@@ -109,7 +109,7 @@
 		<dependency>
 		    <groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-ra</artifactId>
-			<version>5.5.0-fuse-00-53</version>
+			<version>5.5.1-fuse-01-20</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
