@@ -663,9 +663,9 @@
 		<shared-base.version>4.0.0</shared-base.version>
 		<spring.version>3.0.6.RELEASE</spring.version>
 		<spring-modules.version>0.9</spring-modules.version>
-		<cxf.version>2.4.2-fuse-00-08</cxf.version>
+		<cxf.version>2.4.3-fuse-00-20</cxf.version>
 		<lucene.version>3.0.1</lucene.version>
-		<activemq.version>5.5.1-fuse-00-08</activemq.version>
+		<activemq.version>5.5.1-fuse-01-20</activemq.version>
 		<jencks.version>2.2</jencks.version>
 		<wsparty3.version>3.2-SNAPSHOT</wsparty3.version>
 

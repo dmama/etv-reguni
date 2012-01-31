@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
-			<version>1.2.3</version>
+			<version>1.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -167,7 +167,7 @@
 		<copyright.year>2011</copyright.year>
 
 		<!-- Framework dependency versions -->
-		<cxf.version>2.4.2-fuse-00-08</cxf.version>
+		<cxf.version>2.4.3-fuse-00-20</cxf.version>
 		<slf4j.version>1.6.1</slf4j.version>
 
 	</properties>
