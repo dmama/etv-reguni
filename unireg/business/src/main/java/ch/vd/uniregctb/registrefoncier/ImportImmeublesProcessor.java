@@ -7,6 +7,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -601,14 +602,18 @@ public class ImportImmeublesProcessor {
 		}
 	}
 
-	private static final SimpleDateFormat TIMESTAMP = new SimpleDateFormat("dd.MM.yy HH:mm:ss.SSSSSSSSS");
+	private static final SimpleDateFormat TIMESTAMP = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSSSSSSSS");
 
-	private static RegDate parseTimestamp(String str) throws ParseException {
+	protected static RegDate parseTimestamp(String str) throws ParseException {
 		if (StringUtils.isBlank(str)) {
 			return null;
 		}
 		else {
-			return RegDate.get(TIMESTAMP.parse(str));
+			final Date date = TIMESTAMP.parse(str);
+			if (date == null) {
+				throw new ParseException("Date '" + str + "' cannot be parsed.", 0);
+			}
+			return RegDate.get(date);
 		}
 	}
 }

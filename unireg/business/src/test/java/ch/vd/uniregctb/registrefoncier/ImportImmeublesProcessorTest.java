@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.Set;
 
 import org.junit.Test;
@@ -366,5 +367,24 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals("132/3129", erreur0.getNoImmeuble());
 		assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
 		assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
+	}
+
+	@Test
+	public void testParseTimestamp() throws Exception {
+		try {
+			ImportImmeublesProcessor.parseTimestamp("01.01.10 00:00:00.000000000");
+		}
+		catch (ParseException e) {
+			assertEquals("Date '01.01.10 00:00:00.000000000' cannot be parsed", e.getMessage());
+		}
+		try {
+			ImportImmeublesProcessor.parseTimestamp("01.01.70 00:00:00.000000000");
+		}
+		catch (ParseException e) {
+			assertEquals("Date '01.01.70 00:00:00.000000000' cannot be parsed", e.getMessage());
+		}
+		assertEquals(date(1910, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1910 00:00:00.000000000"));
+		assertEquals(date(1970, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1970 00:00:00.000000000"));
+		assertEquals(date(2010, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.2010 00:00:00.000000000"));
 	}
 }
