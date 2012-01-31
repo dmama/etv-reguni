@@ -8,10 +8,12 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -25,6 +27,7 @@ public class DepartSecondaire extends Depart {
 
 	private final Adresse ancienneAdresse;
 	private final Commune ancienneCommune;
+	private final Integer numeroOfsEntiteForAnnonce;
 
 	protected DepartSecondaire(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -33,12 +36,23 @@ public class DepartSecondaire extends Depart {
 		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
 		this.ancienneAdresse = anciennesAdresses.secondaire;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
+		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
 	}
 
 	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Commune communePrincipale, Adresse ancienneAdresseSecondaire, Commune ancienneCommuneSecondaire, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adressePrincipale, communePrincipale, context);
 		this.ancienneAdresse = ancienneAdresseSecondaire;
 		this.ancienneCommune = ancienneCommuneSecondaire;
+		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
+	}
+
+	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+		final RegDate dateDepart = getDate();
+		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
+		this.ancienneAdresse = anciennesAdresses.secondaire;
+		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
+		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 	}
 
 	@Override
@@ -47,6 +61,16 @@ public class DepartSecondaire extends Depart {
 
 		Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
+	}
+
+	@Override
+	public Localisation getLocalisationSuivante() {
+		return ancienneAdresse.getLocalisationSuivante();
+	}
+
+	@Override
+	protected Integer getNumeroOfsEntiteForAnnonce() {
+		return numeroOfsEntiteForAnnonce;
 	}
 
 	@Override
@@ -72,7 +96,7 @@ public class DepartSecondaire extends Depart {
 		//ce cas d'arrangement fiscal ne sera pas détecté, il faut mettre l'événement en erreur pour
 		//traitement manuel
 
-		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsCommuneAnnonce())) {
+		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
 
 			final ServiceInfrastructureService serviceInfra = context.getServiceInfra();
 			Commune commune = null;

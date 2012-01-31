@@ -15,12 +15,15 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -50,6 +53,7 @@ public abstract class Depart extends Mouvement {
 	private final Adresse nouvelleAdressePrincipale;
 	private final Commune nouvelleCommunePrincipale;
 	private final Pays paysInconnu;
+
 
 	protected Depart(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -87,6 +91,25 @@ public abstract class Depart extends Mouvement {
 	 * Indique si l'evenement est un ancien type de départ
 	 */
 	private boolean isAncienTypeDepart = false;
+
+	public Depart(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+		//On ne connait pas la nouvelle adresse
+		nouvelleAdressePrincipale = null;
+
+		//Recherche de la nouvelle commune
+		nouvelleCommunePrincipale  = findNouvelleCommuneByLocalisation(context);
+
+		try {
+			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
+		}
+		catch (ServiceInfrastructureException e) {
+			throw new EvenementCivilException(e);
+		}
+
+	}
+
+
 
 	/**
 	 * Traitement spécifique du départ dans les fors
@@ -167,9 +190,9 @@ public abstract class Depart extends Mouvement {
 		MotifFor motifFermeture;
 
 		// Départ vers l'etranger
-		if (nouvelleAdressePrincipale != null && nouvelleAdressePrincipale.getNoOfsPays() != null) {
+		if (isPaysEstConnu()) {
 			boolean estEnSuisse;
-			estEnSuisse = getService().getServiceInfra().estEnSuisse(nouvelleAdressePrincipale);
+			estEnSuisse = determineSiEnSuisse();
 			if (!estEnSuisse) {
 				motifFermeture = MotifFor.DEPART_HS;
 			}
@@ -196,6 +219,27 @@ public abstract class Depart extends Mouvement {
 		return motifFermeture;
 	}
 
+	/**Determine si la nouvelle adresse est en suisse en fonction du type d'évènement traité.  evenement regPP ou evenement regCh
+	 *
+	 * @return true si la nouvelle adresse se situe en suisse, false sinon
+	 */
+
+	private boolean determineSiEnSuisse() {
+		final boolean isEnSuisseForRegPP  = nouvelleAdressePrincipale!=null && getService().getServiceInfra().estEnSuisse(nouvelleAdressePrincipale);
+		final boolean isEnSuisseForEch = (getLocalisationSuivante()!=null && getLocalisationSuivante().getType() != LocalisationType.HORS_SUISSE);
+		return isEnSuisseForRegPP || isEnSuisseForEch;
+	}
+
+	/** determine si le le numéro ofs du pays est renseigné
+	 *
+	 * @return true si on a numéro ofs, false sinon
+	 */
+	protected boolean isPaysEstConnu() {
+		final boolean isPaysConnuForRegPP =  (nouvelleAdressePrincipale != null && nouvelleAdressePrincipale.getNoOfsPays() != null);
+		final boolean isPaysConnuForEch = (getLocalisationSuivante()!=null && getLocalisationSuivante().getNoOfs()!=0);
+		return isPaysConnuForRegPP || isPaysConnuForEch;
+	}
+
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
@@ -215,7 +259,7 @@ public abstract class Depart extends Mouvement {
 		/**
 		 * La commune d'annonce est nécessaire
 		 */
-		if (getNumeroOfsCommuneAnnonce() == null) {
+		if (getNumeroOfsEntiteForAnnonce() == null) {
 			erreurs.addErreur("La commune d'annonce n'est pas renseignée");
 		}
 	}
@@ -245,8 +289,8 @@ public abstract class Depart extends Mouvement {
 		// de départ
 		//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
 		if (commune != null) {
-			if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsCommuneAnnonce()) ||
-					(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsCommuneAnnonce())) {
+			if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsEntiteForAnnonce()) ||
+					(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsEntiteForAnnonce())) {
 				erreurs.addErreur("La commune d'annonce est differente de la dernière commune de résidence");
 			}
 		}
@@ -324,6 +368,31 @@ public abstract class Depart extends Mouvement {
 		return ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
+	private Commune findNouvelleCommuneByLocalisation(EvenementCivilContext context) throws EvenementCivilException {
+		Commune nouvelleCommune = null;
+		final RegDate dateDepart = getDate();
+		final RegDate lendemain = dateDepart.getOneDayAfter();
+		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
+		Adresse ancienneAdresse = anciennesAdresses.principale;
+		if (ancienneAdresse != null) {
+
+			Localisation localisationSuivante = ancienneAdresse.getLocalisationSuivante();
+			if (localisationSuivante != null && localisationSuivante.getType() != LocalisationType.HORS_SUISSE) {
+				try {
+					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisationSuivante.getNoOfs(), lendemain);
+				}
+				catch (ServiceInfrastructureException e) {
+					throw new EvenementCivilException(e);
+				}
+			}
+			else {
+				nouvelleCommune = null;
+			}
+		}
+
+		return nouvelleCommune;
+	}
+
 	public Adresse getNouvelleAdressePrincipale() {
 		return nouvelleAdressePrincipale;
 	}
@@ -339,4 +408,10 @@ public abstract class Depart extends Mouvement {
 	public boolean isAncienTypeDepart() {
 		return isAncienTypeDepart;
 	}
+
+
+
+	protected abstract Localisation getLocalisationSuivante();
+	
+	protected abstract Integer getNumeroOfsEntiteForAnnonce();
 }

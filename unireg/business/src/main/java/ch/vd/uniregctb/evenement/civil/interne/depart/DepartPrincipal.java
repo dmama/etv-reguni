@@ -11,10 +11,12 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -28,7 +30,7 @@ public class DepartPrincipal extends Depart {
 
 	private Adresse ancienneAdresse;
 	private Commune ancienneCommune;
-
+	private final Integer numeroOfsEntiteForAnnonce;
 	protected DepartPrincipal(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
@@ -36,6 +38,8 @@ public class DepartPrincipal extends Depart {
 		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
 		this.ancienneAdresse = anciennesAdresses.principale;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
+		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
+
 	}
 
 	/**
@@ -47,16 +51,27 @@ public class DepartPrincipal extends Depart {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, nouvelleCommunePrincipale, context);
 		this.ancienneAdresse = ancienneAdressePrincipale;
 		this.ancienneCommune = ancienneCommunePrincipale;
+		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
+	}
+
+	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+		final RegDate dateDepart = getDate();
+		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
+		this.ancienneAdresse = anciennesAdresses.principale;
+		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
+		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 		Audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
 
-		if (getNouvelleAdressePrincipale() == null) {
-			warnings.addWarning("La nouvelle adresse principale de l'individu est vide");
-		}
+	//Suppression de la verification de la nouvelle adresse. Celle ci n'est pas renseignée pour les évènements ech
+	//	if (getNouvelleAdressePrincipale() == null) {
+	//		warnings.addWarning("La nouvelle adresse principale de l'individu est vide");
+	//	}
 
-		if (getNumeroOfsCommuneAnnonce() == null) {
+		if (getNumeroOfsEntiteForAnnonce() == null) {
 			erreurs.addErreur("La commune d'annonce est vide");
 		}
 
@@ -92,8 +107,18 @@ public class DepartPrincipal extends Depart {
 		}
 	}
 
+	@Override
+	public Localisation getLocalisationSuivante() {
+		return ancienneAdresse.getLocalisationSuivante();
+	}
+
+	@Override
+	protected Integer getNumeroOfsEntiteForAnnonce() {
+		return numeroOfsEntiteForAnnonce;
+	}
+
 	private boolean isPaysInconnu() {
-		return getNouvelleAdressePrincipale() == null || getNouvelleAdressePrincipale().getNoOfsPays() == null;
+		return !isPaysEstConnu();
 	}
 
 	@Override
@@ -156,7 +181,7 @@ public class DepartPrincipal extends Depart {
 				numeroOfsAutoriteFiscale = getPaysInconnu().getNoOFS();
 			}
 			else {
-				numeroOfsAutoriteFiscale = getNouvelleAdressePrincipale().getNoOfsPays();
+				numeroOfsAutoriteFiscale =findNoOfsPays();
 			}
 		}
 
@@ -227,6 +252,22 @@ public class DepartPrincipal extends Depart {
 			else {
 				throw new RuntimeException("Départ en résidence principale, motif non supporté : " + motifFermeture);
 			}
+		}
+	}
+
+	/** retourne le numéro ofs du pays en fonction du type d'evenement, regPP ou eCH. ne s'utilise que lorsque
+	 * l'on a un départ hors suisse
+	 *
+	 * @return le numéro ofs du pay
+	 */
+	protected Integer findNoOfsPays(){
+		//regPP
+		if(getNouvelleAdressePrincipale()!=null){
+			return getNouvelleAdressePrincipale().getNoOfsPays();
+		}
+		else {
+			//eCH
+			return ancienneAdresse.getLocalisationSuivante().getNoOfs();
 		}
 	}
 }
