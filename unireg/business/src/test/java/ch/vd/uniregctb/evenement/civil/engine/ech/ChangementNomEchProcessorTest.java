@@ -20,7 +20,7 @@ public class ChangementNomEchProcessorTest extends AbstractEvenementCivilEchProc
 		final long noIndividu = 126673246L;
 		final RegDate dateEvt = date(2011, 10, 31);
 
-		// Mme Lara Clette à changer de nom...
+		// Mme Lara Clette a changé de nom...
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
 			@Override
 			protected void init() {
