@@ -341,9 +341,9 @@ public class ImportImmeublesProcessor {
 		final String nature = StringUtils.trimToNull(data.get(HEADER_NATURE));
 		// pas de test sur la nature : elle n'est pas forcément renseignée
 
-		final int estimationFiscale;
+		final Integer estimationFiscale;
 		try {
-			estimationFiscale = Integer.parseInt(data.get(HEADER_ESTIMATION_FISCALE));
+			estimationFiscale = parseInteger(data.get(HEADER_ESTIMATION_FISCALE));
 		}
 		catch (NumberFormatException e) {
 			rapport.addError(numero, ErreurType.BAD_EF, "Estimation fiscale = " + data.get(HEADER_ESTIMATION_FISCALE));
@@ -493,6 +493,15 @@ public class ImportImmeublesProcessor {
 		}
 		else {
 			return Long.parseLong(str);
+		}
+	}
+
+	private static Integer parseInteger(String str) {
+		if (StringUtils.isBlank(str)) {
+			return null;
+		}
+		else {
+			return Integer.parseInt(str);
 		}
 	}
 

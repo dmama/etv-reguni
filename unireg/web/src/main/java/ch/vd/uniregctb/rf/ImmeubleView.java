@@ -15,7 +15,7 @@ public class ImmeubleView {
 	private final Integer noCommune;
 	private final String nomCommune;
 	private final String nature;
-	private final int estimationFiscale;
+	private final Integer estimationFiscale;
 	private final String referenceEstimationFiscale;
 	private final TypeImmeuble typeImmeuble;
 	private final GenrePropriete genrePropriete;
@@ -107,7 +107,7 @@ public class ImmeubleView {
 		return nature;
 	}
 
-	public int getEstimationFiscale() {
+	public Integer getEstimationFiscale() {
 		return estimationFiscale;
 	}
 
