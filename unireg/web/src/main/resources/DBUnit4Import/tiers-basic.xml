@@ -8960,6 +8960,33 @@
       <value>ACHAT</value>
       <value>10246283</value>
     </row>
+	  <row>
+		  <value>4</value>
+		  <value>37772</value>
+		  <value>1232</value>
+		  <value>47637</value>
+		  <null/>
+		  <null/>
+		  <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+		  <value>tiers-basic</value>
+		  <value><![CDATA[2008-01-01 00:00:00.0]]></value>
+		  <value>tiers-basic</value>
+		  <value>20120103</value>
+		  <null/>
+		  <null/>
+		  <value>BIEN_FOND</value>
+		  <value>INDIVIDUELLE</value>
+		  <value>http://arstechnica.com</value>
+		  <value>Route</value>
+		  <value>Aubonne</value>
+		  <value>118-4732-1-1</value>
+		  <value>1</value>
+		  <value>1</value>
+		  <null/>
+		  <value>20120110</value>
+		  <value>ACHAT</value>
+		  <value>10246283</value>
+	  </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">
     <column>ID</column>

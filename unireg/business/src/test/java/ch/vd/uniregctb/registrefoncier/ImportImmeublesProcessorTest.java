@@ -370,6 +370,60 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	public void testRunFichierAvecUnImmeubleSansEstimationFiscale() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addHabitant(12345678L, 12345);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("un_immeuble_sans_ef.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(1, res.nbLignes);
+		assertEquals(1, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(0, res.erreurs.size());
+
+		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+		assertNotNull(traite0);
+		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+		assertEquals("132/3129", traite0.getNoImmeuble());
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(12345678L);
+				assertNotNull(pp);
+
+				final Set<Immeuble> immeubles = pp.getImmeubles();
+				assertNotNull(immeubles);
+				assertEquals(1, immeubles.size());
+
+				final Immeuble immeuble0 = immeubles.iterator().next();
+				assertNotNull(immeuble0);
+				assertEquals("132/3129", immeuble0.getNumero());
+				assertEquals(date(2001, 1, 9), immeuble0.getDateDebut());
+				assertNull(immeuble0.getDateFin());
+				assertEquals("Revêtement dur", immeuble0.getNature());
+				assertNull(immeuble0.getEstimationFiscale());
+				assertNull(immeuble0.getReferenceEstimationFiscale());
+				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
+				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
+				assertEquals("B4455", immeuble0.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble0.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble0.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble0.getDerniereMutation());
+				return null;
+			}
+		});
+	}
+
+	@Test
 	public void testParseTimestamp() throws Exception {
 		try {
 			ImportImmeublesProcessor.parseTimestamp("01.01.10 00:00:00.000000000");
