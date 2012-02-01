@@ -53,6 +53,7 @@ public class ForFiscalViewValidator implements Validator {
 		final ForFiscalView forFiscalView = (ForFiscalView) obj;
 		final TypeForFiscal typeFor = TypeForFiscal.getType(forFiscalView.getGenreImpot(), forFiscalView.getMotifRattachement());
 		final Tiers tiers = this.tiersService.getTiers(forFiscalView.getNumeroCtb());
+		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
 		if (forFiscalView.isChangementModeImposition()) {
 			if (forFiscalView.getRegDateChangement() == null) {
 				errors.rejectValue("dateChangement", "error.date.changement.vide");
@@ -109,9 +110,15 @@ public class ForFiscalViewValidator implements Validator {
 
 			if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
 				if (forFiscalView.getDateOuverture() != null && forFiscalView.getMotifOuverture() == null) {
-					if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-							(typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE)) {
-						errors.rejectValue("motifOuverture", "error.motif.ouverture.vide");
+					if (typeFor == TypeForFiscal.PRINCIPAL || typeFor == TypeForFiscal.SECONDAIRE) {
+						boolean allowEmptyMotif = typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC || typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS;
+						if (allowEmptyMotif) {
+							// [SIFISC-4065] On n'autorise les motifs d'ouverture vide que s'il n'y a pas de for principal non annulé existant avant le for que l'on veut créer maintenant
+							allowEmptyMotif = tiers.getDernierForFiscalPrincipalAvant(forFiscalView.getRegDateOuverture()) == null;
+						}
+						if (!allowEmptyMotif) {
+							errors.rejectValue("motifOuverture", "error.motif.ouverture.vide");
+						}
 					}
 				}
 				else if (forFiscalView.getMotifOuverture() != null) {
@@ -173,7 +180,7 @@ public class ForFiscalViewValidator implements Validator {
 				}
 			}
 
-			if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				if (forFiscalView.getNumeroForFiscalCommune() == null) {
 					if (forFiscalView.getLibFractionCommune() == null) {
 						errors.rejectValue("libFractionCommune", "error.commune.vide");
@@ -183,7 +190,7 @@ public class ForFiscalViewValidator implements Validator {
 					}
 				}
 			}
-			else if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			else if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
 				if (forFiscalView.getNumeroForFiscalCommuneHorsCanton() == null) {
 					if (forFiscalView.getLibCommuneHorsCanton() == null) {
 						errors.rejectValue("libCommuneHorsCanton", "error.commune.vide");
@@ -193,7 +200,7 @@ public class ForFiscalViewValidator implements Validator {
 					}
 				}
 			}
-			else if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
 				if (forFiscalView.getNumeroForFiscalPays() == null) {
 					if (forFiscalView.getLibPays() == null) {
 						errors.rejectValue("libPays", "error.pays.vide");
@@ -273,7 +280,7 @@ public class ForFiscalViewValidator implements Validator {
 				}
 				else if (forFiscalView.getNatureTiers() == NatureTiers.NonHabitant) {
 					boolean isGris = false;
-					if (forFiscalView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						isGris = true;
 					}
 					if ((isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HCHS)) ||
@@ -305,12 +312,12 @@ public class ForFiscalViewValidator implements Validator {
 				}
 			}
 			if (TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE == typeFor) {
-				if (TypeAutoriteFiscale.PAYS_HS == forFiscalView.getTypeAutoriteFiscale()) {
+				if (TypeAutoriteFiscale.PAYS_HS == typeAutoriteFiscale) {
 					errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 				}
 			}
 			else if (TypeForFiscal.PRINCIPAL != typeFor
-					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forFiscalView.getTypeAutoriteFiscale()) {
+					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != typeAutoriteFiscale) {
 				errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 			}
 
@@ -322,7 +329,7 @@ public class ForFiscalViewValidator implements Validator {
 		if (tiers instanceof PersonnePhysique) {
 			if (MotifRattachement.DOMICILE == forFiscalView.getMotifRattachement()
 					&& TypeForFiscal.PRINCIPAL == typeFor
-					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscalView.getTypeAutoriteFiscale()) {
+					&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == typeAutoriteFiscale) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				final RegDate date;

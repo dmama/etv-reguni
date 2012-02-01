@@ -251,4 +251,143 @@ public class ForFiscalViewValidatorTest extends WebTest {
 			Assert.assertEquals(0, errors.getErrorCount());
 		}
 	}
+
+	/**
+	 * SIFISC-4065
+	 */
+	@Test
+	public void testAbsenceMotifOuvertureForPrincipal() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		final long noCtb = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Bidule", "Tartempion", date(1965, 6, 1), Sexe.MASCULIN);
+				pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
+				return pp.getNumero();
+			}
+		});
+
+		final ForFiscalView view = new ForFiscalView();
+		view.setAnnule(false);
+		view.setChangementModeImposition(false);
+		view.setNumeroCtb(noCtb);
+		view.setNatureTiers(NatureTiers.NonHabitant);
+		view.setModeImposition(ModeImposition.ORDINAIRE);
+		view.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		view.setMotifRattachement(MotifRattachement.DOMICILE);
+		view.setDateOuverture(RegDate.get().addMonths(-2));
+
+		// motif d'ouverture absent pour seul for HS -> ok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getFieldErrorCount());
+		}
+
+		// motif d'ouverture absent pour seul for HC -> ok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bale.getNoOFSEtendu());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getFieldErrorCount());
+		}
+
+		// motif d'ouverture absent pour seul for VD -> nok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("motifOuverture");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
+
+		// maintenant, on ouvre un for
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noCtb);
+				Assert.assertNotNull(pp);
+				addForPrincipal(pp, date(2001, 1, 2), null, MockCommune.Bale);
+				return null;
+			}
+		});
+
+		// motif d'ouverture absent pour for HS qui n'est pas le premier -> nok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("motifOuverture");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
+
+		// motif d'ouverture absent pour for HC qui n'est pas le premier -> nok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bale.getNoOFSEtendu());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("motifOuverture");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
+
+		// motif d'ouverture absent pour for VD qui n'est pas le premier -> nok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu());
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("motifOuverture");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
+
+		// motif d'ouverture absent pour for HS qui est le premier -> ok (c'est ici la validation globale sur le tiers qui échouera si le cas se présente...)
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS());
+			view.setDateOuverture(date(2001, 1, 1));
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getFieldErrorCount());
+		}
+
+		// motif d'ouverture absent pour for HC qui est le premier -> ok (c'est ici la validation globale sur le tiers qui échouera si le cas se présente...)
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bale.getNoOFSEtendu());
+			view.setDateOuverture(date(2001, 1, 1));
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getFieldErrorCount());
+		}
+
+		// motif d'ouverture absent pour for VD qui est le premier -> nok
+		{
+			view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu());
+			view.setDateOuverture(date(2001, 1, 1));
+			final Errors errors = validate(view);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getFieldErrorCount());
+
+			final FieldError error = errors.getFieldError("motifOuverture");
+			Assert.assertNotNull(error);
+			Assert.assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
+	}
 }
