@@ -125,7 +125,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.4.2</version>
 				<configuration>
-					<argLine>-Xms256m -Xmx512m</argLine>
+					<argLine>${surefire.argline}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -624,6 +624,13 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>jacoco</id>
+			<properties>
+				<surefire.argline>-javaagent:${jacoco.agent.path}=destfile=${jacoco.dump.path} -Xmx512m -XX:PermSize=128m -XX:MaxPermSize=512m</surefire.argline>
+			</properties>
+		</profile>
 	</profiles>
 	
 	<properties>
@@ -701,6 +708,7 @@
 
 		<!-- Parametres de Testing -->
 		<surefire.useFile>false</surefire.useFile>
+		<surefire.argline>-Xms256m -Xmx512m</surefire.argline>
 
 		<!-- Editique -->
 		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
