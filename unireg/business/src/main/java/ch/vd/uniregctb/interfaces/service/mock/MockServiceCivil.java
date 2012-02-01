@@ -341,6 +341,11 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 		/* les maries peuvent s'embrasser */
 	}
+	
+	public static void reconcilieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateReconciliation) {
+		// pour ce que l'on fait ici, c'est équivalent à un re-mariage, non ?
+		marieIndividus(individu, conjoint, dateReconciliation);
+	}
 
 	/**
 	 * Marie un individu, mais seul.
