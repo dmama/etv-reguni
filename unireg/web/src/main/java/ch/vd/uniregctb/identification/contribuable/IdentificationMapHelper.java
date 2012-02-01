@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -221,7 +225,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
 
-		return mapMessage;
+		return sortMapAccordingToValues(mapMessage);
 	}
 
 
@@ -253,7 +257,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
 
-		return mapMessage;
+		return sortMapAccordingToValues(mapMessage);
 	}
 
 
@@ -296,7 +300,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		}
 		//Ajout du user de traitement automatique ignoré dans la requete
 		mapUtilisateur.put("Traitement automatique", "Traitement automatique");
-		return mapUtilisateur;
+		return sortMapAccordingToValues(mapUtilisateur);
 	}
 
 	/**
@@ -412,5 +416,44 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		for (Map.Entry<String, Object> entry : maps.entrySet()) {
 			model.addAttribute(entry.getKey(), entry.getValue());
 		}
+	}
+
+	/**
+	 * Tri les éléments dans une map (i.e. l'itérateur fournira les éléments dans cet ordre)
+	 * par rapport au tri naturel de la valeur
+	 * @param source map dont les éléments doivent être triés
+	 * @param <K> type des clés de la map
+	 * @param <V> type des valeurs de la map (doit implémenter {@link Comparable})
+	 * @return une nouvelle map triée
+	 */
+	private static <K, V extends Comparable<V>> Map<K, V> sortMapAccordingToValues(Map<K, V> source) {
+		if (source == null) {
+			return null;
+		}
+		final List<Map.Entry<K, V>> content = new ArrayList<Map.Entry<K, V>>(source.entrySet());
+		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
+			@Override
+			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+				final V v1 = o1.getValue();
+				final V v2 = o2.getValue();
+				if (v1 == v2) {
+					return 0;
+				}
+				else if (v1 == null) {
+					return -1;
+				}
+				else if (v2 == null) {
+					return 1;
+				}
+				else {
+					return v1.compareTo(v2);
+				}
+			}
+		});
+		final Map<K, V> sorted = new LinkedHashMap<K, V>(source.size());
+		for (Map.Entry<K, V> item : content) {
+			sorted.put(item.getKey(), item.getValue());
+		}
+		return sorted;
 	}
 }
