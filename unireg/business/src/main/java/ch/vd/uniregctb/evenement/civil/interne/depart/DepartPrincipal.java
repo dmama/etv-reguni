@@ -41,13 +41,6 @@ public class DepartPrincipal extends Depart {
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
 
 
-		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
-		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
-		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
-
-
-
-
 	}
 
 	/**

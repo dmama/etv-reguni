@@ -110,7 +110,7 @@ public abstract class Depart extends Mouvement {
 		}
 
 		//Recherche de la nouvelle commune
-		nouvelleCommunePrincipale  = findNouvelleCommuneByLocalisation(context);
+		nouvelleCommunePrincipale  = findNouvelleCommuneByLocalisation(nouvelleLocalisation,context,getDate());
 
 		try {
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
@@ -375,14 +375,13 @@ public abstract class Depart extends Mouvement {
 		return ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
-	private Commune findNouvelleCommuneByLocalisation(EvenementCivilContext context) throws EvenementCivilException {
+	private  static Commune findNouvelleCommuneByLocalisation(Localisation localisation, EvenementCivilContext context,RegDate dateDepart) throws EvenementCivilException {
 		Commune nouvelleCommune = null;
-		final RegDate dateDepart = getDate();
 		final RegDate lendemain = dateDepart.getOneDayAfter();
 
-			if (nouvelleLocalisation != null && nouvelleLocalisation.getType() != LocalisationType.HORS_SUISSE) {
+			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE) {
 				try {
-					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(nouvelleLocalisation.getNoOfs(), lendemain);
+					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
 				}
 				catch (ServiceInfrastructureException e) {
 					throw new EvenementCivilException(e);
