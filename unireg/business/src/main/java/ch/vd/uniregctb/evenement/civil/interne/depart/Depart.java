@@ -26,6 +26,7 @@ import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -50,9 +51,9 @@ public abstract class Depart extends Mouvement {
 	/** LOGGER log4J */
 	protected static Logger LOGGER = Logger.getLogger(Depart.class);
 
-	private final Adresse nouvelleAdressePrincipale;
 	private final Commune nouvelleCommunePrincipale;
 	private final Pays paysInconnu;
+	private final Localisation nouvelleLocalisation;
 
 
 	protected Depart(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -72,8 +73,9 @@ public abstract class Depart extends Mouvement {
 		final RegDate dateDepart = getDate();
 		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
-		nouvelleAdressePrincipale = nouvellesAdresses.principale;
+		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
 		nouvelleCommunePrincipale = getCommuneByAdresse(context, nouvelleAdressePrincipale, lendemainDepart);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
 	}
 
 	/**
@@ -83,8 +85,8 @@ public abstract class Depart extends Mouvement {
 	protected Depart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
 		this.paysInconnu = context.getServiceInfra().getPaysInconnu();
-		this.nouvelleAdressePrincipale = nouvelleAdressePrincipale;
 		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
+		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
 	}
 
 	/**
@@ -94,8 +96,18 @@ public abstract class Depart extends Mouvement {
 
 	public Depart(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
-		//On ne connait pas la nouvelle adresse
-		nouvelleAdressePrincipale = null;
+
+		final RegDate dateDepart = getDate();
+		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
+		final Adresse ancienneAdresse = anciennesAdresses.principale;
+		if(ancienneAdresse != null)
+		{
+			this.nouvelleLocalisation = ancienneAdresse.getLocalisationSuivante();
+		}
+
+		else{
+			this.nouvelleLocalisation = null;
+		}
 
 		//Recherche de la nouvelle commune
 		nouvelleCommunePrincipale  = findNouvelleCommuneByLocalisation(context);
@@ -106,6 +118,7 @@ public abstract class Depart extends Mouvement {
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
+
 
 	}
 
@@ -191,9 +204,7 @@ public abstract class Depart extends Mouvement {
 
 		// Départ vers l'etranger
 		if (isPaysEstConnu()) {
-			boolean estEnSuisse;
-			estEnSuisse = determineSiEnSuisse();
-			if (!estEnSuisse) {
+			if (!estEnSuisse()) {
 				motifFermeture = MotifFor.DEPART_HS;
 			}
 			else if (!nouvelleCommunePrincipale.isVaudoise()) {
@@ -219,15 +230,13 @@ public abstract class Depart extends Mouvement {
 		return motifFermeture;
 	}
 
-	/**Determine si la nouvelle adresse est en suisse en fonction du type d'évènement traité.  evenement regPP ou evenement regCh
+	/**Determine si la nouvelle adresse est en suisse
 	 *
 	 * @return true si la nouvelle adresse se situe en suisse, false sinon
 	 */
 
-	private boolean determineSiEnSuisse() {
-		final boolean isEnSuisseForRegPP  = nouvelleAdressePrincipale!=null && getService().getServiceInfra().estEnSuisse(nouvelleAdressePrincipale);
-		final boolean isEnSuisseForEch = (getLocalisationSuivante()!=null && getLocalisationSuivante().getType() != LocalisationType.HORS_SUISSE);
-		return isEnSuisseForRegPP || isEnSuisseForEch;
+	protected boolean estEnSuisse() {
+		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getType() != LocalisationType.HORS_SUISSE);
 	}
 
 	/** determine si le le numéro ofs du pays est renseigné
@@ -235,9 +244,7 @@ public abstract class Depart extends Mouvement {
 	 * @return true si on a numéro ofs, false sinon
 	 */
 	protected boolean isPaysEstConnu() {
-		final boolean isPaysConnuForRegPP =  (nouvelleAdressePrincipale != null && nouvelleAdressePrincipale.getNoOfsPays() != null);
-		final boolean isPaysConnuForEch = (getLocalisationSuivante()!=null && getLocalisationSuivante().getNoOfs()!=0);
-		return isPaysConnuForRegPP || isPaysConnuForEch;
+		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getNoOfs()!=0);
 	}
 
 	@Override
@@ -372,14 +379,10 @@ public abstract class Depart extends Mouvement {
 		Commune nouvelleCommune = null;
 		final RegDate dateDepart = getDate();
 		final RegDate lendemain = dateDepart.getOneDayAfter();
-		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
-		Adresse ancienneAdresse = anciennesAdresses.principale;
-		if (ancienneAdresse != null) {
 
-			Localisation localisationSuivante = ancienneAdresse.getLocalisationSuivante();
-			if (localisationSuivante != null && localisationSuivante.getType() != LocalisationType.HORS_SUISSE) {
+			if (nouvelleLocalisation != null && nouvelleLocalisation.getType() != LocalisationType.HORS_SUISSE) {
 				try {
-					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisationSuivante.getNoOfs(), lendemain);
+					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(nouvelleLocalisation.getNoOfs(), lendemain);
 				}
 				catch (ServiceInfrastructureException e) {
 					throw new EvenementCivilException(e);
@@ -388,14 +391,10 @@ public abstract class Depart extends Mouvement {
 			else {
 				nouvelleCommune = null;
 			}
-		}
 
 		return nouvelleCommune;
 	}
 
-	public Adresse getNouvelleAdressePrincipale() {
-		return nouvelleAdressePrincipale;
-	}
 
 	public Pays getPaysInconnu() {
 		return paysInconnu;
@@ -411,7 +410,33 @@ public abstract class Depart extends Mouvement {
 
 
 
-	protected abstract Localisation getLocalisationSuivante();
+	private Localisation computeNouvelleLocalisation(Adresse nouvelleAdresse) {
+		final Localisation nextLocalisation;
+		if (getNouvelleCommunePrincipale() == null) {
+			if (nouvelleAdresse != null && nouvelleAdresse.getNoOfsPays() != null && nouvelleAdresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
+				nextLocalisation = new Localisation(LocalisationType.HORS_SUISSE, nouvelleAdresse.getNoOfsPays());
+			}
+			else {
+				nextLocalisation = null;
+			}
+		}
+		else {
+			Localisation localisationSuisse = new Localisation();
+			localisationSuisse.setNoOfs(getNouvelleCommunePrincipale().getNoOFS());
+			if (getNouvelleCommunePrincipale().isVaudoise()) {
+				localisationSuisse.setType(LocalisationType.CANTON_VD);
+			}
+			else {
+				localisationSuisse.setType(LocalisationType.HORS_CANTON);
+			}
+			nextLocalisation = localisationSuisse;
+		}
+		return nextLocalisation;
+	}
+
+	protected Localisation getNouvelleLocalisation() {
+		return nouvelleLocalisation;
+	}
 	
 	protected abstract Integer getNumeroOfsEntiteForAnnonce();
 }

@@ -16,7 +16,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -31,6 +30,7 @@ public class DepartPrincipal extends Depart {
 	private Adresse ancienneAdresse;
 	private Commune ancienneCommune;
 	private final Integer numeroOfsEntiteForAnnonce;
+
 	protected DepartPrincipal(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
@@ -39,6 +39,14 @@ public class DepartPrincipal extends Depart {
 		this.ancienneAdresse = anciennesAdresses.principale;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
+
+
+		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
+		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
+		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
+
+
+
 
 	}
 
@@ -52,6 +60,7 @@ public class DepartPrincipal extends Depart {
 		this.ancienneAdresse = ancienneAdressePrincipale;
 		this.ancienneCommune = ancienneCommunePrincipale;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
+
 	}
 
 	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -61,6 +70,7 @@ public class DepartPrincipal extends Depart {
 		this.ancienneAdresse = anciennesAdresses.principale;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
+
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
@@ -107,10 +117,6 @@ public class DepartPrincipal extends Depart {
 		}
 	}
 
-	@Override
-	public Localisation getLocalisationSuivante() {
-		return ancienneAdresse.getLocalisationSuivante();
-	}
 
 	@Override
 	protected Integer getNumeroOfsEntiteForAnnonce() {
@@ -181,7 +187,7 @@ public class DepartPrincipal extends Depart {
 				numeroOfsAutoriteFiscale = getPaysInconnu().getNoOFS();
 			}
 			else {
-				numeroOfsAutoriteFiscale =findNoOfsPays();
+				numeroOfsAutoriteFiscale =getNouvelleLocalisation().getNoOfs();
 			}
 		}
 
@@ -255,19 +261,5 @@ public class DepartPrincipal extends Depart {
 		}
 	}
 
-	/** retourne le numéro ofs du pays en fonction du type d'evenement, regPP ou eCH. ne s'utilise que lorsque
-	 * l'on a un départ hors suisse
-	 *
-	 * @return le numéro ofs du pay
-	 */
-	protected Integer findNoOfsPays(){
-		//regPP
-		if(getNouvelleAdressePrincipale()!=null){
-			return getNouvelleAdressePrincipale().getNoOfsPays();
-		}
-		else {
-			//eCH
-			return ancienneAdresse.getLocalisationSuivante().getNoOfs();
-		}
-	}
+
 }

@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -63,10 +62,6 @@ public class DepartSecondaire extends Depart {
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
 	}
 
-	@Override
-	public Localisation getLocalisationSuivante() {
-		return ancienneAdresse.getLocalisationSuivante();
-	}
 
 	@Override
 	protected Integer getNumeroOfsEntiteForAnnonce() {
@@ -100,10 +95,8 @@ public class DepartSecondaire extends Depart {
 
 			final ServiceInfrastructureService serviceInfra = context.getServiceInfra();
 			Commune commune = null;
-			final Adresse nouvelleAdresse = getNouvelleAdressePrincipale();
-			final boolean estEnSuisse = serviceInfra.estEnSuisse(nouvelleAdresse);
-			if (estEnSuisse) {
-				commune = serviceInfra.getCommuneByAdresse(nouvelleAdresse, dateFermeture.getOneDayAfter());
+			if (estEnSuisse()) {
+				commune = getNouvelleCommunePrincipale();
 			}
 
 			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
@@ -117,7 +110,7 @@ public class DepartSecondaire extends Depart {
 				getService().closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
 
 				// l'individu a sa residence principale en suisse
-				if (estEnSuisse) {
+				if (estEnSuisse()) {
 					if (commune.isVaudoise()) {
 						/*
 						 * passage d'une commune vaudoise ouverte sur une résidence secondaire à une commune vaudoise ouverte sur la résidence
@@ -132,7 +125,7 @@ public class DepartSecondaire extends Depart {
 				}
 				else if (ffp != null) {
 					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
-					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), nouvelleAdresse.getNoOfsPays(), modeImposition, MotifFor.DEPART_HS);
+					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), getNouvelleLocalisation().getNoOfs(), modeImposition, MotifFor.DEPART_HS);
 				}
 			}
 		}
