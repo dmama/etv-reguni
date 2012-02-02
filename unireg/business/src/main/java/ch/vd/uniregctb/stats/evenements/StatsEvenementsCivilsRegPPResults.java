@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class StatsEvenementsCivilsResults {
+public class StatsEvenementsCivilsRegPPResults {
 
 	public static class EvenementCivilInfo {
 		public final long id;
@@ -92,54 +92,26 @@ public class StatsEvenementsCivilsResults {
 	}
 
 	private final Map<EtatEvenementCivil, Integer> etats;
-	private final Map<EtatEvenementCivil, Integer> etatsNouveaux;
 	private final Map<TypeEvenementCivil, Integer> erreursParType;
-	private final Map<TypeEvenementCivil, Integer> erreursParTypeNouveaux;
 	private final List<EvenementCivilEnErreurInfo> toutesErreurs;
-	private final List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles;
-	private final Map<Integer, Integer> ignores;
 
-	public StatsEvenementsCivilsResults(Map<EtatEvenementCivil, Integer> etats,
-	                                    Map<EtatEvenementCivil, Integer> etatsNouveaux,
-	                                    Map<TypeEvenementCivil, Integer> erreursParType,
-	                                    Map<TypeEvenementCivil, Integer> erreursParTypeNouveaux,
-	                                    List<EvenementCivilEnErreurInfo> toutesErreurs,
-	                                    List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles,
-	                                    Map<Integer, Integer> ignores) {
+	public StatsEvenementsCivilsRegPPResults(Map<EtatEvenementCivil, Integer> etats,
+	                                         Map<TypeEvenementCivil, Integer> erreursParType,
+	                                         List<EvenementCivilEnErreurInfo> toutesErreurs) {
 		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementCivil, Integer>emptyMap();
-		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.erreursParType = erreursParType != null ? Collections.unmodifiableMap(erreursParType) : Collections.<TypeEvenementCivil, Integer>emptyMap();
-		this.erreursParTypeNouveaux = erreursParTypeNouveaux != null ? Collections.unmodifiableMap(erreursParTypeNouveaux) : Collections.<TypeEvenementCivil, Integer>emptyMap();
 		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<EvenementCivilEnErreurInfo>emptyList();
-		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<EvenementCivilTraiteManuellementInfo>emptyList();
-		this.ignores = ignores != null ? Collections.unmodifiableMap(ignores) : Collections.<Integer, Integer>emptyMap();
 	}
 
 	public Map<EtatEvenementCivil, Integer> getEtats() {
 		return etats;
 	}
 
-	public Map<EtatEvenementCivil, Integer> getEtatsNouveaux() {
-		return etatsNouveaux;
-	}
-
 	public Map<TypeEvenementCivil, Integer> getErreursParType() {
 		return erreursParType;
 	}
 
-	public Map<TypeEvenementCivil, Integer> getErreursParTypeNouveaux() {
-		return erreursParTypeNouveaux;
-	}
-
 	public List<EvenementCivilEnErreurInfo> getToutesErreurs() {
 		return toutesErreurs;
-	}
-
-	public List<EvenementCivilTraiteManuellementInfo> getManipulationsManuelles() {
-		return manipulationsManuelles;
-	}
-
-	public Map<Integer, Integer> getIgnores() {
-		return ignores;
 	}
 }

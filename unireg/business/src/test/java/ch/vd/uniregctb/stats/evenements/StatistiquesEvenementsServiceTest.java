@@ -28,9 +28,23 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	 * être amené à changer à l'avenir) sont toujours syntaxiquement correcte (si ce n'est
 	 * plus le cas, une exception sera lancée de tout en bas...)
 	 */
-	public void testEvenementsCivils() {
+	public void testEvenementsCivilsRegPP() {
 		if (dbOracle) {
-			statService.getStatistiquesEvenementsCivils(RegDate.get());
+			statService.getStatistiquesEvenementsCivilsRegPP();
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	/**
+	 * Ce test est surtout là pour vérifier que les requêtes SQL présentes dans le service
+	 * (et qui sont écrites en dur, donc dépendantes du schéma de base de données qui peut
+	 * être amené à changer à l'avenir) sont toujours syntaxiquement correcte (si ce n'est
+	 * plus le cas, une exception sera lancée de tout en bas...)
+	 */
+	public void testEvenementsCivilsEch() {
+		if (dbOracle) {
+			statService.getStatistiquesEvenementsCivilsEch(RegDate.get().addDays(-7));
 		}
 	}
 
@@ -45,6 +59,20 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	public void testEvenementsExternes() {
 		if (dbOracle) {
 			statService.getStatistiquesEvenementsExternes();
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	/**
+	 * Ce test est surtout là pour vérifier que les requêtes SQL présentes dans le service
+	 * (et qui sont écrites en dur, donc dépendantes du schéma de base de données qui peut
+	 * être amené à changer à l'avenir) sont toujours syntaxiquement correcte (si ce n'est
+	 * plus le cas, une exception sera lancée de tout en bas...)
+	 */
+	public void testEvenementsIdentification() {
+		if (dbOracle) {
+			statService.getStatistiquesEvenementsIdentificationContribuable(RegDate.get().addDays(-7));
 		}
 	}
 }

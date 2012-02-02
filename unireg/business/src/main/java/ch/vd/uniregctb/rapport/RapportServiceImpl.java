@@ -86,7 +86,8 @@ import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
@@ -725,8 +726,8 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
-	                                                     final StatsEvenementsIdentificationContribuableResults identCtb,
+	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsRegPPResults civilsRegPP, final StatsEvenementsCivilsEchResults civilEch,
+	                                                     final StatsEvenementsExternesResults externes, final StatsEvenementsIdentificationContribuableResults identCtb,
 	                                                     final RegDate dateReference, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -739,7 +740,7 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(StatistiquesEvenementsRapport doc, OutputStream os) throws Exception {
 					final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
-					document.write(civils, externes, identCtb, dateReference, nom, description, dateGeneration, os, status);
+					document.write(civilsRegPP, civilEch, externes, identCtb, dateReference, nom, description, dateGeneration, os, status);
 				}
 			});
 		}

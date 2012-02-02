@@ -76,7 +76,8 @@ import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
@@ -322,15 +323,11 @@ public interface RapportService {
 
 	/**
 	 * Génère le rapport des statistiques sur les événements unireg
-	 * @param civils
-	 * @param externes
-	 * @param identCtb
 	 * @param dateReference date que les requêtes du type "évolutions depuis le..." utilisent
-	 * @param statusManager
 	 * @return le rapport
 	 */
-	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsResults civils, StatsEvenementsExternesResults externes,
-	                                              StatsEvenementsIdentificationContribuableResults identCtb,
+	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsRegPPResults civilsRegPP, StatsEvenementsCivilsEchResults civilsEch,
+	                                              StatsEvenementsExternesResults externes, StatsEvenementsIdentificationContribuableResults identCtb,
 	                                              RegDate dateReference, StatusManager statusManager);
 
 	/**
