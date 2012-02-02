@@ -17,7 +17,7 @@ public class ModificationAdresseNotificationTranslationStrategy extends Abstract
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		throw new EvenementCivilException("Not yet Implemented");
+		return new ModificationAdresseNotification (event, context, options);
 	}
 
 }

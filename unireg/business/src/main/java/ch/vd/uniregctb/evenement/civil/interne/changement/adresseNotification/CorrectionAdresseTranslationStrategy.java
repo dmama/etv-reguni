@@ -17,6 +17,6 @@ public class CorrectionAdresseTranslationStrategy extends AbstractChangementTran
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		throw new EvenementCivilException("Not yet Implemented");
+		return new CorrectionAdresse(event, context, options);
 	}
 }
