@@ -127,15 +127,15 @@
 					<xs:documentation>Caractère 2.4 du catalogue officiel des caractères vaudois </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="parent" minOccurs="0" maxOccurs="2">
+			<xs:element name="parent" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 2.5 du catalogue officiel des caractères vaudois </xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:choice>
+					<xs:sequence>
 						<xs:element name="mothersName" type="eCH-0084:fullName_Type" minOccurs="0"/>
 						<xs:element name="fathersName" type="eCH-0084:fullName_Type" minOccurs="0"/>
-					</xs:choice>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="origin" type="eCH-0011:placeOfOriginType" minOccurs="0" maxOccurs="unbounded">
@@ -162,6 +162,7 @@
 					<xs:documentation>Caractère 521 du catalogue officiel des caractères vaudois </xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="residencePermitValidFrom" type="xs:date" minOccurs="0"/>
 			<xs:element name="residencePermitTill" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 522 du catalogue officiel des caractères vaudois </xs:documentation>
@@ -409,12 +410,12 @@
 			<xs:element name="typeOfRelationship" type="eVD-0001:typeOfRelationshipType">
 				<xs:annotation>
 					<xs:documentation>Caractère 10.1 du catalogue officiel des caractères vaudois :
-• 1 = Est conjoint(e),
-• 2 = Est partenaire
-• 3 = Est mère,
-• 4 = Est père,
-• 101 =  Est fille,
-• 102 = Est fils.</xs:documentation>
+						• 1 = Est conjoint(e),
+						• 2 = Est partenaire
+						• 3 = Est mère,
+						• 4 = Est père,
+						• 101 =  Est fille,
+						• 102 = Est fils.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="personLink" type="xs:string">

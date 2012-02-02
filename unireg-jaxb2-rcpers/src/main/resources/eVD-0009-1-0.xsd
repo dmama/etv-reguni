@@ -51,7 +51,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="OLCP"/>
 			<xs:enumeration value="OLE"/>
-			<xs:enumeration value="LSEE/LAsi"/>
+			<xs:enumeration value="LSEE"/>
 			<xs:enumeration value="LAsi"/>
 			<xs:enumeration value="Ldét"/>
 			<xs:enumeration value="Convention de Vienne"/>
@@ -61,6 +61,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="SRNumberType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="142.203"/>
 			<xs:enumeration value="823.21"/>
 			<xs:enumeration value="142.20"/>
 			<xs:enumeration value="142.31"/>
@@ -154,13 +155,13 @@
 	</xs:complexType>
 	<xs:complexType name="residencePermitType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitType"/>
+			<xs:element name="residencePermit" type="eCH-0006:residencePermitType"/>
 			<xs:element name="residencePermitCategory" type="eCH-0006:residencePermitCategoryType" minOccurs="0"/>
 			<xs:element name="residencePermitRuling" type="eCH-0006:residencePermitRulingType" minOccurs="0"/>
 			<xs:choice>
 				<xs:element name="residencePermitBorder" type="eCH-0006:residencePermitBorderType" minOccurs="0"/>
-				<xs:element name="residencePermitShortType" type="eCH-0006:residencePermitShortType" minOccurs="0"/>
-				<xs:element name="residencePermitToBeRegisteredType" type="eCH-0006:residencePermitToBeRegisteredType" minOccurs="0"/>
+				<xs:element name="residencePermitShort" type="eCH-0006:residencePermitShortType" minOccurs="0"/>
+				<xs:element name="residencePermitToBeRegistered" type="eCH-0006:residencePermitToBeRegisteredType" minOccurs="0"/>
 			</xs:choice>
 			<xs:element name="residencePermitCategoryCode" type="eVD-0009:residencePermitCategoryCodeType" minOccurs="0"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
@@ -170,7 +171,7 @@
 	</xs:complexType>
 	<xs:complexType name="typeOfResidencePermitCategoryType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitCategoryType"/>
+			<xs:element name="residencePermitCategory" type="eCH-0006:residencePermitCategoryType"/>
 			<xs:element name="residencePermitCategoryCode" type="eVD-0009:residencePermitCategoryCodeType" minOccurs="0"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
 			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
@@ -179,16 +180,15 @@
 	</xs:complexType>
 	<xs:complexType name="typeOfResidencePermitRulingType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitRulingType"/>
+			<xs:element name="residencePermitRuling" type="eCH-0006:residencePermitRulingType"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
 			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
-			<xs:element name="legalBasis" type="eVD-0009:legalBasisType" maxOccurs="unbounded"/>
 			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="typeOfResidencePermitBorderType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitBorderType"/>
+			<xs:element name="residencePermitBorder" type="eCH-0006:residencePermitBorderType"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
 			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
 			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
@@ -196,7 +196,7 @@
 	</xs:complexType>
 	<xs:complexType name="typeOfResidencePermitShortType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitShortType"/>
+			<xs:element name="residencePermitShort" type="eCH-0006:residencePermitShortType"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
 			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
 			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
@@ -204,13 +204,13 @@
 	</xs:complexType>
 	<xs:complexType name="typeOfResidencePermitToBeRegisteredType">
 		<xs:sequence>
-			<xs:element name="code" type="eCH-0006:residencePermitToBeRegisteredType"/>
+			<xs:element name="residencePermitToBeRegistered" type="eCH-0006:residencePermitToBeRegisteredType"/>
 			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
 			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
 			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="typeOfReportingMunicipalityType">
+	<xs:complexType name="typeOfReportingRelationshipType">
 		<xs:sequence>
 			<xs:element name="code" type="eVD-0009:typeOfReportingRelationshipCodeType"/>
 			<xs:element name="longDescription"/>
@@ -257,7 +257,7 @@
 				<xs:element name="typeOfresidencePermitShort" type="eVD-0009:typeOfResidencePermitShortType" minOccurs="0"/>
 				<xs:element name="typeOfResidencePermitBorder" type="eVD-0009:typeOfResidencePermitBorderType" minOccurs="0"/>
 				<xs:element name="typeOfResidencePermitToBeRegistered" type="eVD-0009:typeOfResidencePermitToBeRegisteredType" minOccurs="0"/>
-				<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingMunicipalityType" minOccurs="0"/>
+				<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipType" minOccurs="0"/>
 				<xs:element name="typeOfHousehold" type="eVD-0009:typeOfHouseholdType" minOccurs="0"/>
 				<xs:element name="religion" type="eVD-0009:religionType" minOccurs="0"/>
 				<xs:element name="language" type="eVD-0009:languageType" minOccurs="0"/>
@@ -362,7 +362,7 @@
 							<xs:element name="listOfTypesOfReportingRelationship">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingMunicipalityType" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipType" minOccurs="0" maxOccurs="unbounded"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>

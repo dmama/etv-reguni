@@ -60,10 +60,10 @@
 				<xs:element name="action">
 					<xs:annotation>
 						<xs:documentation>Action :
-• 1 = Nouveau,
-• 3 = Annulation,
-• 4 = Correction,
-• 7 = Échange de clé.</xs:documentation>
+							• 1 = Nouveau,
+							• 3 = Annulation,
+							• 4 = Correction,
+							• 7 = Échange de clé.</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -81,5 +81,4 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>
