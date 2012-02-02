@@ -179,7 +179,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			{
 				final String filename = "erreurs_evts_civils_ech.csv";
 				final String contenu = asCsvFile(civilsEch.getToutesErreurs(), filename, status);
-				final String titre = "Erreurs des événements civils";
+				final String titre = "Erreurs des événements civils e-CH";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, civilsEch.getToutesErreurs().size(), titre, listVide, filename, contenu);
 			}
