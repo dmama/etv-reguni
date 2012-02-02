@@ -54,11 +54,4 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 		assertEquals(date, etat.getDateObtention());
 		assertEquals(type, etat.getEtat());
 	}
-
-	/**
-	 * Raccourci pour créer une RegDate.
-	 */
-	private static RegDate date(int year, int month, int day) {
-		return RegDate.get(year, month, day);
-	}
 }

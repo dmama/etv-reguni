@@ -420,8 +420,4 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 			assertEquals(se.get(i), sa.get(i));
 		}
 	}
-
-	private static RegDate date(int year, int month, int day) {
-		return RegDate.get(year, month, day);
-	}
 }

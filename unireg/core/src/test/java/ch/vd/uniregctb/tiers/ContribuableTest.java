@@ -80,10 +80,6 @@ public class ContribuableTest extends WithoutSpringTest {
 		assertSame(for6, list.get(1));
 	}
 
-	private RegDate date(int year, int month, int day) {
-		return RegDate.get(year, month, day);
-	}
-
 	@Test
 	public void testDateDesactivation() throws Exception {
 

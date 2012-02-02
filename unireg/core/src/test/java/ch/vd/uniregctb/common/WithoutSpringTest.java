@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.Collection;
 
+import ch.vd.registre.base.date.RegDate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,4 +83,16 @@ public abstract class WithoutSpringTest {
 		containee = (containee == null ? null : containee.toLowerCase());
 		assertContains(containee, container);
 	}
+
+    public static RegDate date(int year, int month, int day) {
+        return RegDate.get(year, month, day);
+    }
+
+    public static RegDate date(int year, int month) {
+        return RegDate.get(year, month);
+    }
+
+    public static RegDate date(int year) {
+        return RegDate.get(year);
+    }
 }

@@ -97,16 +97,4 @@ public class FiscalDateHelperTest extends WithoutSpringTest {
 		assertEquals(date(2018, 4, 1), FiscalDateHelper.getDateMajorite(date(2000, 4))); // date partielle
 		assertEquals(date(2018, 1, 1), FiscalDateHelper.getDateMajorite(date(2000))); // date partielle
 	}
-
-	private static RegDate date(int year, int month, int day) {
-		return RegDate.get(year, month, day);
-	}
-
-	private static RegDate date(int year, int month) {
-		return RegDate.get(year, month);
-	}
-
-	private static RegDate date(int year) {
-		return RegDate.get(year);
-	}
 }

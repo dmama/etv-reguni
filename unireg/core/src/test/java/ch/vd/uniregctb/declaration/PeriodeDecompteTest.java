@@ -142,11 +142,4 @@ public class PeriodeDecompteTest extends WithoutSpringTest {
 		dateReference = date(annee,8, 14);
 		assertEquals(new DateRangeHelper.Range(date(anneeSuivante, 1, 1), date(anneeSuivante, 12, 31)), PeriodeDecompte.A.getPeriodeSuivante(dateReference));
 	}
-
-
-
-
-	private RegDate date(int i, int i1, int i2) {
-		return RegDate.get(i, i1, i2);
-	}
 }

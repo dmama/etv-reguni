@@ -60,8 +60,4 @@ public class PeriodiciteTest extends WithoutSpringTest {
 		assertEquals(date(2009,7,1),listePeriodicite.get(1).getDateDebut());
 		assertEquals(date(2009,8,1),listePeriodicite.get(2).getDateDebut());
 	}
-
-	private RegDate date(int i, int i1, int i2) {
-		return RegDate.get(i,i1,i2);
-	}
 }
