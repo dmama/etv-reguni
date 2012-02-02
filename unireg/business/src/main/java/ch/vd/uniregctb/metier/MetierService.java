@@ -145,15 +145,13 @@ public interface MetierService {
 	/**
 	 * Vérifie que deux personnes physiques sont mariés puis séparés et peuvent donc se reconcilier.
 	 *
-	 * @param principal
-	 *            le tiers principal du ménage commun
-	 * @param conjoint
-	 *            le conjoint du ménage commun. Cette valeur peut-être laissée nulle si le conjoint n'est pas connu (cas du marié seul).
-	 * @param date
-	 *            la date effective de la réconciliation.
+	 * @param principal le tiers principal du ménage commun
+	 * @param conjoint le conjoint du ménage commun. Cette valeur peut-être laissée nulle si le conjoint n'est pas connu (cas du marié seul).
+	 * @param date la date effective de la réconciliation.
+	 * @param okCoupleValideFormeMemeDate si <code>true</code>, signifie que la présence d'un couple valide débutant à la date donnée ne sera pas constitutif d'une erreur
 	 * @return le résultat de la validation.
 	 */
-	public ValidationResults validateReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date);
+	public ValidationResults validateReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, boolean okCoupleValideFormeMemeDate);
 
 	/**
 	 * Réconcilie deux personnes à la date donnée. Les fors associés au ménage

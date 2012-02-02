@@ -1280,9 +1280,9 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public ValidationResults validateReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date) {
+	public ValidationResults validateReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, boolean okCoupleValideFormeMemeDate) {
 
-		ValidationResults results = new ValidationResults();
+		final ValidationResults results = new ValidationResults();
 
 		/*
 		 * Vérifie que les tiers soient pas le même
@@ -1294,18 +1294,29 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Validation de l'existence d'un ménage commun
 		 */
-		EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(principal, date);
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(principal, date);
 		if (ensemble != null) {
 			if (ensemble.estComposeDe(principal, conjoint)) {
-				results.addError("Le couple n'est pas séparé");
+				final boolean erreur;
+				if (okCoupleValideFormeMemeDate) {
+					// la date de début d'un rapport d'appartenance ménage est-elle la même que celle qui est donnée ?
+					final AppartenanceMenage am = (AppartenanceMenage) principal.getRapportSujetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+					erreur = am.getDateDebut() != date;
+				}
+				else {
+					erreur = true;
+				}
+				
+				if (erreur) {
+					results.addError(String.format("Le couple n'est pas séparé en date du %s", RegDateHelper.dateToDisplayString(date)));
+				}
 			}
 			else {
-				results.addError("Les deux tiers ne sont pas mariés");
+				results.addError(String.format("Les deux tiers ne forment pas un couple en date du %s", RegDateHelper.dateToDisplayString(date)));
 			}
 		}
 
 		return results;
-
 	}
 
 	/**

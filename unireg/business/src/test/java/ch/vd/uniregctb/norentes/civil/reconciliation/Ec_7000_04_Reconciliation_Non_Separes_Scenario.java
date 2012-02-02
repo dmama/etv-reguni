@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.reconciliation;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -143,6 +144,6 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 
 		final EvenementCivilRegPPErreur erreur = evt.getErreurs().iterator().next();
-		assertEquals("Le couple n'est pas séparé", erreur.getMessage(), "L'erreur n'est pas la bonne");
+		assertEquals(String.format("Le couple n'est pas séparé en date du %s", RegDateHelper.dateToDisplayString(evt.getDateEvenement())), erreur.getMessage(), "L'erreur n'est pas la bonne");
 	}
 }

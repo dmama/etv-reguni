@@ -19,7 +19,10 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 
 public class Reconciliation extends EvenementCivilInterne {
 
@@ -92,7 +95,7 @@ public class Reconciliation extends EvenementCivilInterne {
 		/*
 		 * Validations métier
 		 */
-		ValidationResults results = context.getMetierService().validateReconciliation(habitant, habitantConjoint, getDate());
+		ValidationResults results = context.getMetierService().validateReconciliation(habitant, habitantConjoint, getDate(), true);
 		addValidationResults(erreurs, warnings, results);
 	}
 
@@ -116,6 +119,18 @@ public class Reconciliation extends EvenementCivilInterne {
 		final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 		final PersonnePhysique conjoint = (individuConjoint == null) ? null : getPersonnePhysiqueOrThrowException(individuConjoint.getNoTechnique());
+		
+		// détermination du cas redondant : ils ont un for qui commencent pour motif "MARIAGE_RECONCILIATION..." le jour de l'événement, justement...
+		final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(contribuable, getDate());
+		if (couple != null) {
+			// c'est bien le même conjoint ?
+			if (couple.estComposeDe(contribuable, conjoint)) {
+				final ForFiscalPrincipal ffp = couple.getMenage().getForFiscalPrincipalAt(getDate());
+				if (ffp != null && ffp.getDateDebut() == getDate() && ffp.getMotifOuverture() == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
+					return HandleStatus.REDONDANT;
+				}
+			}
+		}
 
 		try {
 			context.getMetierService().reconcilie(contribuable, conjoint, getDateReconciliation(), null, false, getNumeroEvenement());

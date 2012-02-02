@@ -138,7 +138,7 @@ public class CoupleValidator implements Validator {
 				break;
 
 			case RECONCILIATION:
-				validationResults.merge(metierService.validateReconciliation(principal, conjoint, dateDebut));
+				validationResults.merge(metierService.validateReconciliation(principal, conjoint, dateDebut, false));
 				break;
 
 			case RECONSTITUTION_MENAGE:
