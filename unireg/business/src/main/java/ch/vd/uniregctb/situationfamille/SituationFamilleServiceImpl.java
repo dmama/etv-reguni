@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -299,8 +300,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		if (etatCivil.getTypeEtatCivil()== TypeEtatCivil.CELIBATAIRE) {
 			dateDebutEtatCivil = individu.getDateNaissance();
 		}
-		else if (etatCivil.getTypeEtatCivil()==TypeEtatCivil.MARIE
-				|| etatCivil.getTypeEtatCivil()==TypeEtatCivil.PACS) {
+		else if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
 			Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
 			if (rapports != null) {
 				for (RapportEntreTiers rapport : rapports) {

@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -16,8 +17,8 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -58,15 +59,15 @@ public class Deces extends EvenementCivilInterne {
 
 	public Individu getConjointSurvivant() {
 
-		final TypeEtatCivil typeEtatCivil = getIndividu().getEtatCivilCourant().getTypeEtatCivil();
+		final EtatCivil etatCivil = getIndividu().getEtatCivilCourant();
 
 		// [UNIREG-1190] on n'expose pas le conjoint dans l'état-civil séparé (pas de différence avec le divorce au niveau fiscal)
-		if (typeEtatCivil == TypeEtatCivil.CELIBATAIRE || typeEtatCivil == TypeEtatCivil.DIVORCE || typeEtatCivil == TypeEtatCivil.PACS_ANNULE ||
-				typeEtatCivil == TypeEtatCivil.PACS_INTERROMPU || typeEtatCivil == TypeEtatCivil.VEUF || typeEtatCivil == TypeEtatCivil.SEPARE) {
+		if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
+			return conjointSurvivant;
+		}
+		else {
 			return null;
 		}
-
-		return conjointSurvivant;
 	}
 
 	@Override

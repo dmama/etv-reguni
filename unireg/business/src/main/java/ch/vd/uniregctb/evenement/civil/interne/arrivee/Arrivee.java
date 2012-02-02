@@ -28,7 +28,6 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -347,7 +346,7 @@ public abstract class Arrivee extends Mouvement {
 			RegDate candidate = limiteSuperieureEtDefaut;
 			while (iterator.hasPrevious()) {
 				final EtatCivil etatCivil = iterator.previous();
-				if (TypeEtatCivil.MARIE == etatCivil.getTypeEtatCivil() || TypeEtatCivil.PACS == etatCivil.getTypeEtatCivil()) {
+				if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
 					if (etatCivil.getDateDebut() == null) {
 						// si si, ça arrive...
 						break;

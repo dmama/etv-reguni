@@ -79,13 +79,17 @@ public abstract class EnumHelper {
 			return MaritalStatus.REGISTERED_PARTNER;
 		case MARIE:
 			return MaritalStatus.MARRIED;
-		case PACS_ANNULE:
+		case PACS_TERMINE:
 		case PACS_INTERROMPU:
 			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW;
+		case PACS_VEUF:
+			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_DEATH;
 		case SEPARE:
 			return MaritalStatus.SEPARATED;
 		case VEUF:
 			return MaritalStatus.WIDOWED;
+		case NON_MARIE:
+			return MaritalStatus.NOT_MARRIED;
 		default:
 			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
 		}

@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
@@ -44,9 +43,29 @@ public abstract class EnumHelper {
 			return null;
 		}
 
-		final EtatCivil value = EtatCivil.fromValue(EtatCivilHelper.getString(etatCivil));
-		Assert.notNull(value);
-		return value;
+		switch (etatCivil) {
+		case CELIBATAIRE:
+			return EtatCivil.CELIBATAIRE;
+		case DIVORCE:
+			return EtatCivil.DIVORCE;
+		case PACS:
+			return EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
+		case MARIE:
+			return EtatCivil.MARIE;
+		case PACS_TERMINE:
+		case PACS_INTERROMPU:
+			return EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
+		case PACS_VEUF:
+			return EtatCivil.PARTENARIAT_DISSOUS_DECES;
+		case SEPARE:
+			return EtatCivil.SEPARE;
+		case VEUF:
+			return EtatCivil.VEUF;
+		case NON_MARIE:
+			return EtatCivil.NON_MARIE;
+		default:
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
+		}
 	}
 
 	public static CategorieDebiteur coreToWeb(ch.vd.uniregctb.type.CategorieImpotSource categorieImpotSource) {

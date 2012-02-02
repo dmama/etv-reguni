@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -21,7 +22,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -221,15 +221,14 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 					throw new EvenementCivilException("Impossible de récupérer l'état civil courant de l'individu");
 				}
 
-				TypeEtatCivil typeEtatCivilIndividu = etatCivilIndividu.getTypeEtatCivil();
 				ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
-				if (forPrincipalHabitant != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
+				if (forPrincipalHabitant != null && !EtatCivilHelper.estSepare(etatCivilIndividu)) {
 					throw new EvenementCivilException(
 							"l'habitant possède un for principal actif alors qu'il a un conjoint et qu'il n'est pas séparé");
 				}
 
 				ForFiscalPrincipal forPrincipalConjoint = conjoint.getForFiscalPrincipalAt(null);
-				if (forPrincipalConjoint != null && typeEtatCivilIndividu != TypeEtatCivil.SEPARE) {
+				if (forPrincipalConjoint != null && !EtatCivilHelper.estSepare(etatCivilIndividu)) {
 					throw new EvenementCivilException(
 							"le conjoint possède un for principal actif");
 				}

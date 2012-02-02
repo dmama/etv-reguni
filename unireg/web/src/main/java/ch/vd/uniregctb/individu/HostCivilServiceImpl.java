@@ -9,7 +9,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -140,7 +139,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 
 			final EtatCivil etatCivil = indSource.getEtatCivilCourant();
 			if (etatCivil != null) {
-				indCible.setEtatCivil(EtatCivilHelper.getString(etatCivil.getTypeEtatCivil()));
+				indCible.setEtatCivil(etatCivil.getTypeEtatCivil().asCore().name());
 				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(etatCivil.getDateDebut()));
 			}
 

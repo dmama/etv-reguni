@@ -23,14 +23,6 @@ public class EtatCivilHelper {
 	}
 
 	/**
-	 * Retourne true si l'état civil représente la valeur MARIE ou LIE_PARTENARIAT_ENREGISTRE
-	 * @param etatCivil
-	 * @return
-	 */
-	public static boolean estMarieOuPacse(ch.vd.uniregctb.type.EtatCivil etatCivil) {
-		return ch.vd.uniregctb.type.EtatCivil.MARIE == etatCivil || ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE == etatCivil;
-	}
-	/**
 	 * Retourne true si l'état civil représente la valeur SEPARE ou PACS_INTERROMPU.
 	 * @param etatCivil
 	 * @return
@@ -43,7 +35,7 @@ public class EtatCivilHelper {
 	}
 
 	/**
-	 * Retourne true si l'état civil représente la valeur DIVORCE ou PACS_ANNULE.
+	 * Retourne true si l'état civil représente la valeur DIVORCE ou PACS_TERMINE.
 	 * @param etatCivil
 	 * @return
 	 */
@@ -51,7 +43,7 @@ public class EtatCivilHelper {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == TypeEtatCivil.DIVORCE || type == TypeEtatCivil.PACS_ANNULE;
+		return type == TypeEtatCivil.DIVORCE || type == TypeEtatCivil.PACS_TERMINE;
 	}
 
 	/**
@@ -61,10 +53,6 @@ public class EtatCivilHelper {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == TypeEtatCivil.VEUF;
-	}
-
-	public static String getString(TypeEtatCivil typeEtatCivil) {
-		return typeEtatCivil.asCore().name();
+		return type == TypeEtatCivil.VEUF || type == TypeEtatCivil.PACS_VEUF;
 	}
 }

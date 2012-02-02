@@ -120,7 +120,9 @@ public abstract class EchHelper {
 		return date;
 	}
 
-	public static TypeEtatCivil etatCivilFromEch11(String maritalStatus) {
+	public static TypeEtatCivil etatCivilFromEch11(String maritalStatus, String cancelationReason) {
+		// voir la spécification http://subversion.etat-de-vaud.ch/SVN_ACI/registre/rcpers/trunk/06-Deploiement/ManuelsTechniques/TEC-CatalogueOfficielCaracteres.doc
+		// au chapitre "Etat civil".
 		if (maritalStatus == null) {
 			return null;
 		}
@@ -142,8 +144,30 @@ public abstract class EchHelper {
 		else if ("6".equals(maritalStatus)) {
 			return TypeEtatCivil.PACS;
 		}
-		else if ("7".equals(maritalStatus)) {
-			return TypeEtatCivil.PACS_ANNULE;
+		else if ("7".equals(maritalStatus)) { // Partenariat dissous...
+			if ("1".equals(cancelationReason)) {
+				// Partenariat dissous judiciairement
+				return TypeEtatCivil.PACS_TERMINE;
+			}
+			else if ("2".equals(cancelationReason)) {
+				// Partenariat dissous en suite déclaration d'annulation
+				return TypeEtatCivil.NON_MARIE;
+			}
+			else if ("3".equals(cancelationReason)) {
+				// Partenariat dissous en suite déclaration d'abscence
+				return TypeEtatCivil.PACS_VEUF;
+			}
+			else if ("4".equals(cancelationReason)) {
+				// Partenariat dissous par décès
+				return TypeEtatCivil.PACS_VEUF;
+			}
+			else if ("9".equals(cancelationReason)) {
+				// Inconnu / autres motifs
+				return TypeEtatCivil.PACS_TERMINE;
+			}
+			else {
+				throw new IllegalArgumentException("Type de cancelation reason inconnu = [" + cancelationReason + ']');
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Type de marital status inconnu = [" + maritalStatus + ']');

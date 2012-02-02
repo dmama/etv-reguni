@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.type.*;
 
 /**
  * L'état civil à connotation <i>fiscale</i> d'une personne physique. Par rapport à l'état civil officiel, cet état civil possède les états <i>séparé</i> et <i>pacs interrompu</i> en plus.
@@ -11,7 +12,17 @@ public enum TypeEtatCivil {
 	DIVORCE(ch.vd.uniregctb.type.EtatCivil.DIVORCE),
 	MARIE(ch.vd.uniregctb.type.EtatCivil.MARIE),
 	PACS(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE),
-	PACS_ANNULE(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT),
+	/**
+	 * Etat civil équivalent à l'état {@link #DIVORCE} mais pour les pacs.
+	 */
+	PACS_TERMINE(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT),
+	/**
+	 * Etat civil équivalent à l'état {@link #VEUF} mais pour les pacs.
+	 */
+	PACS_VEUF(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_DECES),
+	/**
+	 * Etat civil équivalent à l'état {@link #SEPARE} mais pour les pacs.
+	 */
 	PACS_INTERROMPU(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT),
 	SEPARE(ch.vd.uniregctb.type.EtatCivil.SEPARE),
 	VEUF(ch.vd.uniregctb.type.EtatCivil.VEUF),
@@ -40,7 +51,7 @@ public enum TypeEtatCivil {
 			return PACS;
 		}
 		else if (right == EnumTypeEtatCivil.PACS_ANNULE) {
-			return PACS_ANNULE;
+			return PACS_TERMINE;
 		}
 		else if (right == EnumTypeEtatCivil.PACS_INTERROMPU) {
 			return PACS_INTERROMPU;

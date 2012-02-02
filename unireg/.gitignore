@@ -5,3 +5,6 @@ web/src/main/webapp/WEB-INF/web.xml
 ws/src/main/webapp/WEB-INF/web.xml
 base/profiles.xml
 base/unireg-ut.properties
+.idea
+target
+business/tmp/

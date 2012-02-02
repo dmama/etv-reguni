@@ -17,7 +17,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -98,7 +97,7 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		// si le conjoint n'est pas marié/pacsé, on renvoie null
-		if (TypeEtatCivil.MARIE != etatCivil.getTypeEtatCivil() && TypeEtatCivil.PACS != etatCivil.getTypeEtatCivil()) {
+		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
 			return null;
 		}
 
