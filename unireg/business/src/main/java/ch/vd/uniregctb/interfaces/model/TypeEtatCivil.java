@@ -2,6 +2,9 @@ package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 
+/**
+ * L'état civil à connotation <i>fiscale</i> d'une personne physique. Par rapport à l'état civil officiel, cet état civil possède les états <i>séparé</i> et <i>pacs interrompu</i> en plus.
+ */
 public enum TypeEtatCivil {
 
 	CELIBATAIRE(ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE),
@@ -49,7 +52,7 @@ public enum TypeEtatCivil {
 			return VEUF;
 		}
 		else {
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + right.getName()+ ']');
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + right.getName() + ']');
 		}
 	}
 
