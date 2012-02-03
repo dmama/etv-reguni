@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -440,6 +441,18 @@ public class DAOImpl implements DAO {
 			projection.append(dimToColumn(criterion));
 		}
 		return projection.toString();
+	}
+
+	@Override
+	public List<Object> getDimensionValues(final CallDimension dimension) {
+		return hibernateTemplate.execute(new HibernateCallback<List<Object>>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public List<Object> doInHibernate(Session session) throws HibernateException, SQLException {
+				SQLQuery query = session.createSQLQuery("select distinct " + dimToColumn(dimension) + " from calls order by " + dimToColumn(dimension));
+				return query.list();
+			}
+		});
 	}
 
 	@Override

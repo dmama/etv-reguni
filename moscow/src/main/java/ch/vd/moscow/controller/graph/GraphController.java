@@ -1,6 +1,7 @@
 package ch.vd.moscow.controller.graph;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.moscow.data.Environment;
 import ch.vd.moscow.database.CallStats;
@@ -48,6 +50,7 @@ public class GraphController {
 	private static final Logger LOGGER = Logger.getLogger(GraphController.class);
 
 	private DAO dao;
+	private final List<DimensionInfo> dimensionsInfo = new ArrayList<DimensionInfo>();
 
 	public void setDao(DAO dao) {
 		this.dao = dao;
@@ -66,6 +69,25 @@ public class GraphController {
 		final List<Environment> environments = dao.getEnvironments();
 		model.addAttribute("environments", environments);
 		return "graph/custom";
+	}
+
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@RequestMapping(value = "/dimensions.do", method = RequestMethod.GET)
+	@ResponseBody
+	public List<DimensionInfo> dimensions() {
+		if (dimensionsInfo.isEmpty()) { // TODO (msi) rafraîchir cette map si nécessaire
+			initDimensionsMap();
+		}
+		return dimensionsInfo;
+	}
+
+	private synchronized void initDimensionsMap() {
+		if (dimensionsInfo.isEmpty()) {
+			for (CallDimension dimension : CallDimension.values()) {
+				final List<Object> values = dao.getDimensionValues(dimension);
+				dimensionsInfo.add(new DimensionInfo(dimension, dimension.getDisplayName(), values));
+			}
+		}
 	}
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)

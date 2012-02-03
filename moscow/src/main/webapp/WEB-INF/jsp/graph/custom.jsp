@@ -24,10 +24,6 @@
 			<div class="breakout">
 				<ol id="filters">(aucun)</ol>
 				<select id="filterSelect" style="display:inline-block;">
-					<option value="CALLER">par utilisateur</option>
-					<option value="METHOD">par méthode</option>
-					<option value="SERVICE">par service</option>
-					<option value="ENVIRONMENT">par environnement</option>
 				</select>
 				<input type="button" id="addFilter" value="Ajouter"/><br/>
 			</div>
@@ -57,10 +53,6 @@
 			<div class="breakout">
 				<ol id="criteria">(aucun)</ol>
 				<select id="criterionSelect" style="display:inline-block;">
-					<option value="CALLER">par utilisateur</option>
-					<option value="METHOD">par méthode</option>
-					<option value="SERVICE">par service</option>
-					<option value="ENVIRONMENT">par environnement</option>
 				</select>
 				<input type="button" id="addCriterion" value="Ajouter"/><br/>
 			</div>
@@ -75,6 +67,20 @@
 
 		<script>
 			$(function() {
+
+				// get the dimensions info (ajax call)
+			    var dimensionsValues = [];
+			    $.get('dimensions.do', function(dimensions) {
+			    	for (var i in dimensions) {
+			    		var dim = dimensions[i];
+			    		// add dimensions to needed select boxes
+			    		$('<option value="' + dim.type + '">par ' + dim.label + '</option>').appendTo('#filterSelect');
+			    		$('<option value="' + dim.type + '">par ' + dim.label + '</option>').appendTo('#criterionSelect');
+			    		dimensionsValues[dim.type] = dim.values;
+			    	}
+			    });
+
+				// init the date pickers
 			    $('#dateDebut').datepicker();
 			    $('#dateFin').datepicker();
 
@@ -82,15 +88,13 @@
 			    var today = new Date(now.getFullYear, now.getMonth(), now.getDate(), 0, 0, 0, 0);
 			    $('#dateDebut').datepicker('setDate', today);
 
-				$('#graph').load(function() {
-					$('#message').text('');
-				});
-
 				$('#addFilter').click(function() {
 					$("#filters:contains('aucun')").html('');
 					var text = $('#filterSelect option:selected').text();
-					var filterId = 'filter'+ $('#filterSelect').val();
-					$('<li id="' + filterId + '">' + text + ' = <input type="text"></input> (<a href="#">supprimer</a>)</li>').appendTo('#filters');
+					var dim = $('#filterSelect').val();
+					var filterId = 'filter' + dim;
+					var selectHtml = '<select><option>' + dimensionsValues[dim].join('</option><option>') + '</option></select>';
+					$('<li id="' + filterId + '">' + text + ' = ' + selectHtml + ' (<a href="#">supprimer</a>)</li>').appendTo('#filters');
 					$('#' + filterId + ' a').click(function() {
 						$('#' + filterId).remove();
 						return false;
@@ -110,6 +114,7 @@
 
 				$('#show').click(function() {
 					$('#message').text('Veuillez patienter...');
+
 					var from = formatDate($('#dateDebut').datepicker('getDate'));
 					var to = formatDate($('#dateFin').datepicker('getDate'));
 					var res = $('#resolution').val();
@@ -119,7 +124,7 @@
 					var filters = [];
 					$('#filters li').each(function(index, element) {
 						var dim = $(element).attr('id').substring(6);
-						var val = $("input", element).val();
+						var val = $("select", element).val();
 						filters.push(dim + ':' + val);
 					});
 					var filters = filters.join(",");
@@ -139,6 +144,10 @@
 						'&width=' + width +
 						'&height=' + height);
 					return false;
+				});
+
+				$('#graph').load(function() {
+					$('#message').text('');
 				});
 			});
 

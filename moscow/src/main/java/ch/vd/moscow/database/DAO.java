@@ -51,6 +51,8 @@ public interface DAO {
 
 	Collection<CallStats> getLoadStatsFor(Filter[] filters, Date from, Date to, CallDimension[] criteria, TimeResolution resolution);
 
+	List<Object> getDimensionValues(CallDimension dimension);
+
 	void clearImportedFiles();
 
 	Long addImportedFile(final LogFile file);
@@ -82,5 +84,4 @@ public interface DAO {
 	JobDefinition getJob(Long id);
 
 	void delJob(JobDefinition job);
-
 }

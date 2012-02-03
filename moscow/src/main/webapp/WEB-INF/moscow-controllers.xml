@@ -30,7 +30,8 @@
 		<property name="messageConverters">
 			<util:list>
 				<!-- Support for returning images in MVC controllers -->
-				<bean id="byteArrayMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
 			</util:list>
 		</property>
 	</bean>
