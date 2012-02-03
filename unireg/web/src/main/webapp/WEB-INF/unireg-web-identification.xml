@@ -28,6 +28,7 @@
 		<property name="successView" value="listEnCours.do" />
 		<property name="validator" ref="identificationMessagesListValidator" />
 		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
 	</bean>
 	
 	<bean id="identificationMessagesListTraiteController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListTraiteController" parent="abstractIdentificationController">

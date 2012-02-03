@@ -192,4 +192,18 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 			identificationContribuable.setUtilisateurTraitant(null);
 		}
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isMessageVerouille(Long idIdentification) throws Exception {
+		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		final String utilisateurTraitant = identificationContribuable.getUtilisateurTraitant();
+		final String user = AuthenticationHelper.getCurrentPrincipal();
+		if(utilisateurTraitant !=null && !user.equals(utilisateurTraitant)){
+			return true;
+		}else{
+			return false;
+		}
+
+	}
 }

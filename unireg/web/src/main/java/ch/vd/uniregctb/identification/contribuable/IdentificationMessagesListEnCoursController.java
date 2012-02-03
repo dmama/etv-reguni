@@ -12,10 +12,12 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
@@ -41,11 +43,20 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	public static final String IDENTIFICATION_LIST_ATTRIBUTE_SIZE = "identificationsSize";
 	private static final String TABLE_IDENTIFICATION_ID = "message";
 
+	public final static String ID_MESSAGE_NAME = "id";
+
 
 	private IdentificationMessagesListManager identificationMessagesListManager;
+	
+	private IdentificationMessagesEditManager identificationMessagesEditManager;
+
 
 	public void setIdentificationMessagesListManager(IdentificationMessagesListManager identificationMessagesListManager) {
 		this.identificationMessagesListManager = identificationMessagesListManager;
+	}
+
+	public void setIdentificationMessagesEditManager(IdentificationMessagesEditManager identificationMessagesEditManager) {
+		this.identificationMessagesEditManager = identificationMessagesEditManager;
 	}
 
 	/**
@@ -172,6 +183,18 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		IdentificationMessagesListView bean = (IdentificationMessagesListView) command;
 		HttpSession session = request.getSession();
 
+		final String idAsString = request.getParameter(ID_MESSAGE_NAME);
+		final Long id = idAsString != null ? Long.valueOf(idAsString) : null;
+
+
+		if(!identificationMessagesEditManager.isMessageVerouille(id)){
+			mav.setView(new RedirectView("edit.do?id="+id));
+			return mav;
+		}
+		else{
+			Flash.warning("le message sélectionné est en cours de traitement par un autre utilisateur");
+		}
+
 		if (request.getParameter(BOUTON_SUSPENDRE) != null) {
 			identificationMessagesListManager.suspendreIdentificationMessages(bean);
 			mav.setView(new RedirectView(getSuccessView()));
@@ -254,4 +277,6 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
 	}
+
+	
 }
