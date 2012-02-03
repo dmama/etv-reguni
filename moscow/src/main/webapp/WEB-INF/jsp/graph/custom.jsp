@@ -14,18 +14,23 @@
 
 		<fieldset class="ui-widget-content">
 
-			<label for="environment">Environnement :</label>
-			<select id="environment">
-				<c:forEach items="${environments}" var="env">
-					<option value="<c:out value="${env.id}"/>"><c:out value="${env.name}"/></option>
-				</c:forEach>
-			</select>
-			<br/>
-
 			<label for="graphType">Type de graphique :</label>
 			<select id="graphType">
 				<option value="load">charge</option>
 			</select>
+			<br/>
+
+			<label>Filtres :</label>
+			<div class="breakout">
+				<ol id="filters">(aucun)</ol>
+				<select id="filterSelect" style="display:inline-block;">
+					<option value="CALLER">par utilisateur</option>
+					<option value="METHOD">par méthode</option>
+					<option value="SERVICE">par service</option>
+					<option value="ENVIRONMENT">par environnement</option>
+				</select>
+				<input type="button" id="addFilter" value="Ajouter"/><br/>
+			</div>
 			<br/>
 
 			<label for="dateDebut">Du :</label>
@@ -51,7 +56,7 @@
 			<label>Critères de séparation :</label>
 			<div class="breakout">
 				<ol id="criteria">(aucun)</ol>
-				<select id="criterion" style="display:inline-block;">
+				<select id="criterionSelect" style="display:inline-block;">
 					<option value="CALLER">par utilisateur</option>
 					<option value="METHOD">par méthode</option>
 					<option value="SERVICE">par service</option>
@@ -81,33 +86,52 @@
 					$('#message').text('');
 				});
 
-				$('#addCriterion').click(function() {
-					$("ol:contains('aucun')").html('');
-					var text = $('#criterion option:selected').text();
-					var crit = $('#criterion').val();
-					$('<li id="' + crit + '">' + text + ' (<a href="#">supprimer</a>)</li>').appendTo('#criteria');
-					$('#' + crit + ' a').click(function() {
-						$('#' + crit).remove();
+				$('#addFilter').click(function() {
+					$("#filters:contains('aucun')").html('');
+					var text = $('#filterSelect option:selected').text();
+					var filterId = 'filter'+ $('#filterSelect').val();
+					$('<li id="' + filterId + '">' + text + ' = <input type="text"></input> (<a href="#">supprimer</a>)</li>').appendTo('#filters');
+					$('#' + filterId + ' a').click(function() {
+						$('#' + filterId).remove();
 						return false;
 					});
 				});
-				
+
+				$('#addCriterion').click(function() {
+					$("#criteria:contains('aucun')").html('');
+					var text = $('#criterionSelect option:selected').text();
+					var critId = 'crit' + $('#criterionSelect').val();
+					$('<li id="' + critId + '">' + text + ' (<a href="#">supprimer</a>)</li>').appendTo('#criteria');
+					$('#' + critId + ' a').click(function() {
+						$('#' + critId).remove();
+						return false;
+					});
+				});
+
 				$('#show').click(function() {
 					$('#message').text('Veuillez patienter...');
-					var env_id = $('#environment').val();
 					var from = formatDate($('#dateDebut').datepicker('getDate'));
 					var to = formatDate($('#dateFin').datepicker('getDate'));
 					var res = $('#resolution').val();
 					var width = $('#width').val().replace(/[^0-9]*/g, '');
 					var height = $('#height').val().replace(/[^0-9]*/g, '');
 
+					var filters = [];
+					$('#filters li').each(function(index, element) {
+						var dim = $(element).attr('id').substring(6);
+						var val = $("input", element).val();
+						filters.push(dim + ':' + val);
+					});
+					var filters = filters.join(",");
+
 					var criteria = [];
 					$('#criteria li').each(function(index, element) {
-						criteria.push($(element).attr('id'));
+						var dim = $(element).attr('id').substring(4);
+						criteria.push(dim);
 					});
 					var criteria = criteria.join(",");
 
-					$('#graph').attr('src', 'load.do?env=' + env_id +
+					$('#graph').attr('src', 'load.do?filters=' + filters +
 						'&criteria=' + criteria +
 						'&from=' + from  +
 						'&to=' + to +

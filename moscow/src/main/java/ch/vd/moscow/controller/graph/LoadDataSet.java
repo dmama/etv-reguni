@@ -20,7 +20,7 @@ import ch.vd.moscow.database.CallStats;
  */
 public class LoadDataSet {
 
-	private List<BreakdownCriterion> criteria = new ArrayList<BreakdownCriterion>();
+	private List<CallDimension> breakouts = new ArrayList<CallDimension>();
 	private final TimeResolution resolution;
 
 	private Date minDate;
@@ -86,8 +86,8 @@ public class LoadDataSet {
 		this.resolution = resolution;
 	}
 
-	public void addBreakdown(BreakdownCriterion criterion) {
-		criteria.add(criterion);
+	public void addBreakout(CallDimension criterion) {
+		breakouts.add(criterion);
 	}
 
 	public void addCall(CallStats call) {
@@ -99,11 +99,11 @@ public class LoadDataSet {
 		maxDate = (maxDate == null || maxDate.before(date)) ? date : maxDate;
 
 		// add value for the breakout decomposition if any
-		if (!criteria.isEmpty()) {
+		if (!breakouts.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
 			boolean first = true;
 			final List<Object> coords = call.getCoord();
-			for (int i = 0, criteriaSize = criteria.size(); i < criteriaSize; i++) {
+			for (int i = 0, criteriaSize = breakouts.size(); i < criteriaSize; i++) {
 				if (first) {
 					first = false;
 				}

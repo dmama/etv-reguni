@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import ch.vd.moscow.controller.graph.BreakdownCriterion;
+import ch.vd.moscow.controller.graph.CallDimension;
+import ch.vd.moscow.controller.graph.Filter;
 import ch.vd.moscow.controller.graph.TimeResolution;
 import ch.vd.moscow.data.Call;
 import ch.vd.moscow.data.CompletionStatus;
@@ -48,7 +49,7 @@ public interface DAO {
 
 	Iterator<Call> iterateCalls(Environment environment, Date from, Date to);
 
-	Collection<CallStats> getLoadStatsFor(Environment environment, Date from, Date to, BreakdownCriterion[] criteria, TimeResolution resolution);
+	Collection<CallStats> getLoadStatsFor(Filter[] filters, Date from, Date to, CallDimension[] criteria, TimeResolution resolution);
 
 	void clearImportedFiles();
 

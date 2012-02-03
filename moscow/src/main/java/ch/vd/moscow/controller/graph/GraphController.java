@@ -27,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,6 +53,13 @@ public class GraphController {
 		this.dao = dao;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(Filter.class, new FilterEditor());
+		binder.registerCustomEditor(Filter[].class, new FilterEditor());
+	}
+
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/custom.do", method = RequestMethod.GET)
 	public String custom(Model model) {
@@ -61,10 +70,10 @@ public class GraphController {
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/load.do", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> load(@RequestParam(value = "env") long envId,
-	                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "from", required = false) Date from,
+	public ResponseEntity<byte[]> load(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "from", required = false) Date from,
 	                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "to", required = false) Date to,
-	                                   @RequestParam(value = "criteria", required = false) BreakdownCriterion[] criteria,
+	                                   @RequestParam(value = "filters", required = false) Filter[] filters,
+	                                   @RequestParam(value = "criteria", required = false) CallDimension[] breakoutCriteria,
 	                                   @RequestParam(value = "resolution", required = false) TimeResolution resolution,
 	                                   @RequestParam(value = "height", required = false) Integer height,
 	                                   @RequestParam(value = "width", required = false) Integer width) throws Exception {
@@ -74,21 +83,16 @@ public class GraphController {
 		}
 
 		final LoadDataSet bds = new LoadDataSet(resolution);
-		if (criteria != null) {
-			for (BreakdownCriterion criterion : criteria) {
-				bds.addBreakdown(criterion);
+		if (breakoutCriteria != null) {
+			for (CallDimension criterion : breakoutCriteria) {
+				bds.addBreakout(criterion);
 			}
 		}
 
 //		long start = System.nanoTime();
 
 
-		final Environment environment = dao.getEnvironment(envId);
-		if (environment == null) {
-			throw new RuntimeException("Environment id #" + envId + " is unknown.");
-		}
-
-		final Collection<CallStats> calls = dao.getLoadStatsFor(environment, from, to, criteria, resolution);
+		final Collection<CallStats> calls = dao.getLoadStatsFor(filters, from, to, breakoutCriteria, resolution);
 		for (CallStats call : calls) {
 			bds.addCall(call);
 		}

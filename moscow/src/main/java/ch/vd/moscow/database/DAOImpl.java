@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-import ch.vd.moscow.controller.graph.BreakdownCriterion;
+import ch.vd.moscow.controller.graph.CallDimension;
+import ch.vd.moscow.controller.graph.Filter;
 import ch.vd.moscow.controller.graph.TimeResolution;
 import ch.vd.moscow.data.Call;
 import ch.vd.moscow.data.CompletionStatus;
@@ -251,15 +252,20 @@ public class DAOImpl implements DAO {
 
 	@SuppressWarnings({"unchecked"})
 	@Override
-	public Collection<CallStats> getLoadStatsFor(final Environment environment, final Date from, final Date to, final BreakdownCriterion[] criteria, final TimeResolution resolution) {
+	public Collection<CallStats> getLoadStatsFor(final Filter[] filters, final Date from, final Date to, final CallDimension[] criteria, final TimeResolution resolution) {
 		return hibernateTemplate.execute(new HibernateCallback<Collection<CallStats>>() {
 			@Override
 			public Collection<CallStats> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final String s = buildLoadStatsForQueryString(criteria, resolution, from, to);
+				final String s = buildLoadStatsForQueryString(filters, criteria, resolution, from, to);
 
 				final Query query = session.createSQLQuery(s);
-				query.setParameter("env_id", environment.getId());
+				if (filters != null) {
+					for (int i = 0, filtersLength = filters.length; i < filtersLength; i++) {
+						final Filter filter = filters[i];
+						query.setParameter("filterValue" + i, dimValueToDb(filter.getDimension(), filter.getValue()));
+					}
+				}
 				if (from != null ){
 					query.setParameter("from", from);
 				}
@@ -306,7 +312,8 @@ public class DAOImpl implements DAO {
 		});
 	}
 
-	protected static String buildLoadStatsForQueryString(@org.jetbrains.annotations.Nullable BreakdownCriterion[] criteria, @Nullable TimeResolution resolution, @Nullable Date from, @Nullable Date to) {
+	protected static String buildLoadStatsForQueryString(@Nullable Filter[] filters, @Nullable CallDimension[] criteria, @Nullable TimeResolution resolution, @Nullable Date from,
+	                                                     @Nullable Date to) {
 
 		final String projection = buildProjection(criteria);
 		final String timeGrouping = buildTimeGrouping(resolution);
@@ -320,13 +327,30 @@ public class DAOImpl implements DAO {
 		if (timeGrouping != null) {
 			s.append(", ").append(timeGrouping);
 		}
-		s.append(" from calls where env_id = :env_id");
+		s.append(" from calls");
+
+		// where clause
+		final StringBuilder where = new StringBuilder();
+
+		if (filters != null) {
+			for (int i = 0, filtersLength = filters.length; i < filtersLength; i++) {
+				final Filter filter = filters[i];
+				where.append(" and ").append(dimToColumn(filter.getDimension())).append(" = :filterValue").append(i);
+			}
+		}
+
 		if (from != null) {
-			s.append(" and date >= :from");
+			where.append(" and date >= :from");
 		}
 		if (to != null) {
-			s.append(" and date <= :to");
+			where.append(" and date <= :to");
 		}
+
+		if (where.length() != 0) {
+			s.append(" where ").append(where.substring(5)); // remove first " and "
+		}
+
+		// grouping
 		if (projection != null || timeGrouping != null) {
 			s.append(" group by");
 			if (projection != null) {
@@ -342,6 +366,36 @@ public class DAOImpl implements DAO {
 		return s.toString();
 	}
 
+	private static String dimToColumn(CallDimension dimension) {
+		switch (dimension) {
+		case CALLER:
+			return "caller";
+		case ENVIRONMENT:
+			return "env_id";
+		case METHOD:
+			return "method";
+		case SERVICE:
+			return "service";
+		default:
+			throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
+		}
+	}
+
+	private static Object dimValueToDb(CallDimension dimension, String value) {
+		switch (dimension) {
+		case CALLER:
+			return value;
+		case ENVIRONMENT:
+			return Integer.valueOf(value);
+		case METHOD:
+			return value;
+		case SERVICE:
+			return value;
+		default:
+			throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
+		}
+	}
+	
 	private static Date round(Date timestamp, TimeResolution resolution) {
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.setTime(timestamp);
@@ -370,35 +424,20 @@ public class DAOImpl implements DAO {
 		}
 	}
 
-	private static String buildProjection(BreakdownCriterion[] criteria) {
+	private static String buildProjection(CallDimension[] criteria) {
 		if (criteria == null || criteria.length == 0) {
 			return null;
 		}
 		StringBuilder projection = new StringBuilder();
 		boolean first = true;
-		for (BreakdownCriterion criterion : criteria) {
+		for (CallDimension criterion : criteria) {
 			if (first) {
 				first = false;
 			}
 			else {
 				projection.append(", ");
 			}
-			switch (criterion) {
-			case CALLER:
-				projection.append("caller");
-				break;
-			case ENVIRONMENT:
-				projection.append("env");
-				break;
-			case METHOD:
-				projection.append("method");
-				break;
-			case SERVICE:
-				projection.append("service");
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown criterion = [" + criterion + "]");
-			}
+			projection.append(dimToColumn(criterion));
 		}
 		return projection.toString();
 	}
