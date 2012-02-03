@@ -1,3 +1,7 @@
+-- table VERSION
+create table version_db (version_nb varchar(10) not null, script_id varchar(50) not null, ts timestamp default now());
+insert into version_db (version_nb, script_id) values ('1.0', 'create');
+
 create table calls (id  bigserial not null, caller varchar(20), latency int8, method varchar(50), params text, service varchar(20), date timestamp, env_id int8 not null, primary key (id));
 
 create table completion_statuses (id  bigserial not null, up_to timestamp, env_id int8 not null, primary key (id));

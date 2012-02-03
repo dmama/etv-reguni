@@ -1,3 +1,5 @@
+drop table version_db;
+
 alter table calls drop constraint fk_call_env_id;
 
 alter table completion_statuses drop constraint FKE74D8D23676825D9;
