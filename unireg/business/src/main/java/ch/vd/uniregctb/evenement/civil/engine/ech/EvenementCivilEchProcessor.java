@@ -308,7 +308,12 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		}
 		else {
 			event.setEtat(etat);
-			Audit.success(event.getId(), "Statut de l'événement passé à '" + etat.name() + "'");
+			Audit.success(event.getId(), String.format("Statut de l'événement passé à '%s'", etat.name()));
+
+			// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
+			if (etat == EtatEvenementCivil.REDONDANT) {
+				scheduleIndexation(event.getNumeroIndividu());
+			}
 		}
 
 		return !hasErrors;
