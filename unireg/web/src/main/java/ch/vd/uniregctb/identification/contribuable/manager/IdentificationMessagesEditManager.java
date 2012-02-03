@@ -58,4 +58,15 @@ public interface IdentificationMessagesEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public  void deVerouillerMessage(Long idIdentification) throws Exception;
+
+	/**
+	 * Indique si le message dont l'id est passé en paramètre est en cours de traitement donc vérouillé
+	 *
+	 *
+	 * @param idIdentification l'id du message a vérifier
+	 * @return true si le message est en cours de traitement par un user false sinon
+	 * @throws Exception
+	 */
+	@Transactional(readOnly = true)
+	public boolean isMessageVerouille(Long idIdentification) throws Exception;
 }
