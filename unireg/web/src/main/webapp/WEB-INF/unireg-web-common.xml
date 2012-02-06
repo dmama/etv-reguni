@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:util="http://www.springframework.org/schema/util"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Multipart Resolver, necessaire pour l'upload de fichier -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -34,10 +33,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
-	</bean>
-
-	<bean id="ajaxPostItHandler" class="ch.vd.uniregctb.web.xt.handler.PostItHandler">
-		<property name="tacheService" ref="tacheService" />
 	</bean>
 
 	<bean id="dataAccessor" class="ch.vd.uniregctb.web.xt.handler.DataAccessor" />

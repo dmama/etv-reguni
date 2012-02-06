@@ -1413,3 +1413,28 @@ var Modifier = {
 			return true
 	  }
 };
+
+var Postit = {
+	refresh : function() {
+		$.get(getContextPath() + '/postit/todo.do?' + new Date().getTime() + '"/>', function(todo) {
+			if (todo.taches > 0 || todo.dossiers > 0) {
+				var text = 'Bonjour !<br>Il y a ';
+				if (todo.taches > 0) {
+					text += '<a href="../tache/list.do">' + todo.taches + ' tâche(s)</a>';
+				}
+				if (todo.taches > 0 && todo.dossiers > 0) {
+					text += ' et ';
+				}
+				if (todo.dossiers > 0) {
+					text += '<a href="../tache/list.do">' + todo.dossiers + ' dossier(s)</a>';
+				}
+				text += ' en instance.';
+				$('#postitText').html(text);
+				$('#postit').show();
+			}
+			else {
+				$('#postit').hide();
+			}
+		});
+	}
+}

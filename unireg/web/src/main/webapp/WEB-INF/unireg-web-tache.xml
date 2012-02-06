@@ -50,4 +50,8 @@
 		<property name="tacheListManager" ref="tacheListManager" />
 	</bean>
 	
+	<bean id="postItController" class="ch.vd.uniregctb.tache.PostItController">
+		<property name="tacheService" ref="tacheService" />
+	</bean>
+	
 </beans>

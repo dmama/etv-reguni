@@ -213,12 +213,27 @@ function ouvrirAide(url) {
 				</ul>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_FORM_OUV_DOSS">
-						<div id="postit" class="postit">
+
+						<div id="postit" class="postit" style="display:none;">
+							<table cellpadding="0" class="postit" classname="postit" border="0" cellspacing="0">
+								<tbody>
+									<tr class="top" classname="top">
+										<td class="iepngfix" classname="iepngfix"></td>
+									</tr>
+									<tr class="middle" classname="middle">
+										<td><span id="postitText"></span></td>
+									</tr>
+									<tr class="bottom" classname="bottom">
+										<td class="iepngfix" classname="iepngfix"></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-						
-						<script type="text/javascript">
-							// appels ajax pour mettre-à-jour le post-it
-							XT.doAjaxAction('updatePostIt', $('#postit').get(0));
+
+						<script>
+							$(function() {
+								Postit.refresh();
+							});
 						</script>
 					</authz:authorize>
 				</authz:authorize>
