@@ -257,7 +257,11 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
 		final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
-		evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
+
+		// l'état "FORCE" n'est accessible qu'aux événements civils qui ne sont pas encore traités
+		if (!evenementCivilExterne.getEtat().isTraite()) {
+			evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
+		}
 	}
 
 	/**
