@@ -6,6 +6,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.correction.identication.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class CorrectionDateNaissanceTranslationStrategy extends AbstractChangementTranslationStrategy {
@@ -17,7 +18,13 @@ public class CorrectionDateNaissanceTranslationStrategy extends AbstractChangeme
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		throw new EvenementCivilException("Not yet Implemented");
+		throw new EvenementCivilException(
+				String.format (
+						"La correction de date de naissance passe par une correction d'identification pour un evenement ech cf. la classe %s"
+						,CorrectionIdentificationTranslationStrategy.class.getSimpleName()
+				)
+		);
+
 	}
 
 }

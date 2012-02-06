@@ -192,7 +192,7 @@ public abstract class EvenementCivilInterne {
 	 */
 	protected abstract void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
-	private void validateCommon(EvenementCivilErreurCollector erreurs) {
+	protected void validateCommon(EvenementCivilErreurCollector erreurs) {
 
 		/*
 		 * Vérifie que les éléments de base sont renseignés
