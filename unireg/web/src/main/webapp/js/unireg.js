@@ -1072,7 +1072,7 @@ var App = {
 	is_dev_env: function() {
 		var url = window.location.toString();
 		// toutes urls sur les ports 7001 (weblogic) ou 8080 (tomcat) sont considérées comme "développement"
-		return url.match(/http:\/\/[.\w]+:7001\) || url.match(/http:\/\/[.\w]+:8080\//);
+		return url.match(/http:\/\/[.\w]+:7001\//) || url.match(/http:\/\/[.\w]+:8080\//);
 	},
 
 	/**
