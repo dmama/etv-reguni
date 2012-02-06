@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -49,16 +50,16 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	/**
 	 * Clé de détermination de la stratégie de conversion à appliquer
 	 */
-	private static final class EventTypeKey {
+	protected static final class EventTypeKey {
 
 		public final TypeEvenementCivilEch type;
 		public final ActionEvenementCivilEch action;
 
-		private EventTypeKey(EvenementCivilEch evt) {
+		protected EventTypeKey(EvenementCivilEch evt) {
 			this(evt.getType(), evt.getAction());
 		}
 
-		private EventTypeKey(TypeEvenementCivilEch type, ActionEvenementCivilEch action) {
+		protected EventTypeKey(TypeEvenementCivilEch type, ActionEvenementCivilEch action) {
 			if (type == null || action == null) {
 				throw new NullPointerException();
 			}
@@ -291,11 +292,16 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@NotNull
 	private static EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
 		final EventTypeKey key = new EventTypeKey(event);
-		final EvenementCivilEchTranslationStrategy strategy = strategies.get(key);
+		final EvenementCivilEchTranslationStrategy strategy = getStrategy(key);
 		if (strategy == null) {
 			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement e-CH de type = [" + key + ']');
 		}
 		return strategy;
+	}
+
+	@Nullable
+	protected static EvenementCivilEchTranslationStrategy getStrategy(EventTypeKey key) {
+		return strategies.get(key);
 	}
 
 	@Override
