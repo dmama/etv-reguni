@@ -130,6 +130,15 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
+
+			// manipulations manuelles
+			{
+				final String filename = "manipulations_evts_civils_regpp.csv";
+				final String contenu = asCsvFile(civilsRegPP.getManipulationsManuelles(), filename, status);
+				final String titre = String.format("Manipulations manuelles des événements civils RegPP depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
+				final String listVide = "(aucune)";
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		if (civilsEch != null) {

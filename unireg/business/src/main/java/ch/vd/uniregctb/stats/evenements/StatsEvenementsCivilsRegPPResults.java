@@ -94,13 +94,15 @@ public class StatsEvenementsCivilsRegPPResults {
 	private final Map<EtatEvenementCivil, Integer> etats;
 	private final Map<TypeEvenementCivil, Integer> erreursParType;
 	private final List<EvenementCivilEnErreurInfo> toutesErreurs;
+	private final List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles;
 
 	public StatsEvenementsCivilsRegPPResults(Map<EtatEvenementCivil, Integer> etats,
 	                                         Map<TypeEvenementCivil, Integer> erreursParType,
-	                                         List<EvenementCivilEnErreurInfo> toutesErreurs) {
+	                                         List<EvenementCivilEnErreurInfo> toutesErreurs, List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles) {
 		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.erreursParType = erreursParType != null ? Collections.unmodifiableMap(erreursParType) : Collections.<TypeEvenementCivil, Integer>emptyMap();
 		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<EvenementCivilEnErreurInfo>emptyList();
+		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<EvenementCivilTraiteManuellementInfo>emptyList();
 	}
 
 	public Map<EtatEvenementCivil, Integer> getEtats() {
@@ -113,5 +115,9 @@ public class StatsEvenementsCivilsRegPPResults {
 
 	public List<EvenementCivilEnErreurInfo> getToutesErreurs() {
 		return toutesErreurs;
+	}
+
+	public List<EvenementCivilTraiteManuellementInfo> getManipulationsManuelles() {
+		return manipulationsManuelles;
 	}
 }

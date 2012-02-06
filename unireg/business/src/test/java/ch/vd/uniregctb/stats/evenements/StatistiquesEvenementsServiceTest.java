@@ -30,7 +30,7 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	 */
 	public void testEvenementsCivilsRegPP() {
 		if (dbOracle) {
-			statService.getStatistiquesEvenementsCivilsRegPP();
+			statService.getStatistiquesEvenementsCivilsRegPP(RegDate.get().addDays(-7));
 		}
 	}
 

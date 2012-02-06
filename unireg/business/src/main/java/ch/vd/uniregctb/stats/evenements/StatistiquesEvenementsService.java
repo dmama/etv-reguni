@@ -11,8 +11,9 @@ public interface StatistiquesEvenementsService {
 	/**
 	 * Renvoie les statistiques sur les événements civils issus de RegPP
 	 * @return les données nécessaires à l'établissement d'un rapport
+	 * @param debutActivite date à partir de laquelle on liste les modifications récentes
 	 */
-	StatsEvenementsCivilsRegPPResults getStatistiquesEvenementsCivilsRegPP();
+	StatsEvenementsCivilsRegPPResults getStatistiquesEvenementsCivilsRegPP(RegDate debutActivite);
 
 	/**
 	 * Renvoie les statistiques sur les événements civils issus de RCPers (événements basés e-CH)

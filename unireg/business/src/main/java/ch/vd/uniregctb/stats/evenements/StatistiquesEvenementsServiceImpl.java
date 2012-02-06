@@ -38,13 +38,15 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	/**
 	 * Renvoie les statistiques sur les événements civils issus de RegPP (= les vieux)
+	 * @param debutActivite date à partir de laquelle on liste les nouvelles modifications
 	 */
 	@Override
-	public StatsEvenementsCivilsRegPPResults getStatistiquesEvenementsCivilsRegPP() {
+	public StatsEvenementsCivilsRegPPResults getStatistiquesEvenementsCivilsRegPP(RegDate debutActivite) {
 		final Map<EtatEvenementCivil, Integer> etats = getEtatsEvenementsCivilsRegPP(null);
 		final Map<TypeEvenementCivil, Integer> erreursParType = getNombreEvenementsCivilsEnErreurParTypeRegPP(null);
 		final List<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsRegPP();
-		return new StatsEvenementsCivilsRegPPResults(etats, erreursParType, toutesErreurs);
+		final List<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesRegPP(debutActivite);
+		return new StatsEvenementsCivilsRegPPResults(etats, erreursParType, toutesErreurs, manipulationsManuelles);
 	}
 
 	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsRegPP(@Nullable RegDate debutActivite) {
@@ -102,8 +104,34 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		});
 	}
 
+	private List<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuellesRegPP(RegDate debutActivite) {
+
+		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU_PRINCIPAL, NO_INDIVIDU_CONJOINT, NUMERO_OFS_ANNONCE, TYPE FROM EVENEMENT_CIVIL"
+				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
+
+		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo>() {
+			@Override
+			public StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
+
+				Assert.isEqual(10, row.length);
+
+				final long id = ((Number) row[0]).longValue();
+				final Date dateReception = (Date) row[1];
+				final Date dateModification = (Date) row[2];
+				final String visaOperateur = (String) row[3];
+				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[4]).intValue(), false);
+				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[5]);
+				final Long individuPrincipal = ((Number) row[6]).longValue();
+				final Long individuConjoint = row[7] != null ? ((Number) row[7]).longValue() : null;
+				final Integer ofsAnnonce = row[8] != null ? ((Number) row[8]).intValue() : null;
+				final TypeEvenementCivil type = TypeEvenementCivil.valueOf((String) row[9]);
+				return new StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo(id, type, dateEvenement, etat, individuPrincipal, individuConjoint, ofsAnnonce, visaOperateur, dateReception, dateModification);
+			}
+		});
+	}
+
 	/**
-	 * @param debutActivite date à partir de laquelle on liste les modifications manuelles
+	 * @param debutActivite date à partir de laquelle on liste les nouvelles modifications
 	 * @return statistiques sur les événements civils e-CH
 	 */
 	@Override

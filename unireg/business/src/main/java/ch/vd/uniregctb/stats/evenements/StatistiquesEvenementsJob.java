@@ -100,7 +100,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final StatsEvenementsCivilsRegPPResults resultatsCivilsRegPP;
 		final StatsEvenementsCivilsEchResults resultatsCivilsEch;
 		if (civils) {
-			resultatsCivilsRegPP = service.getStatistiquesEvenementsCivilsRegPP();
+			resultatsCivilsRegPP = service.getStatistiquesEvenementsCivilsRegPP(debutActivite);
 			resultatsCivilsEch = service.getStatistiquesEvenementsCivilsEch(debutActivite);
 		}
 		else {
