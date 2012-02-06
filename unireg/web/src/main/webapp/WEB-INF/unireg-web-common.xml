@@ -29,12 +29,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="ajaxRemarqueHandler" class="ch.vd.uniregctb.web.xt.handler.remarque.RemarqueHandler">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="remarqueDAO" ref="remarqueDAO" />
-	</bean>
-
 	<bean id="dataAccessor" class="ch.vd.uniregctb.web.xt.handler.DataAccessor" />
 
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">

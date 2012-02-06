@@ -1681,8 +1681,11 @@ div.newMc {
 	padding: 0.2em;
 }
 
-#remarques table.remarques {
+#remarquesContentDiv {
 	margin-top: 0.5em;
+}
+
+#remarques table.remarques {
 	color: gray;
 	background-color:transparent;
 	background-image:url("bgpannelinner.jpg");

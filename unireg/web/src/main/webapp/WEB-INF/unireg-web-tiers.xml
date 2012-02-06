@@ -228,5 +228,10 @@
 	</bean>
 
 	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactoryImpl"/>
+	
+	<bean id="remarqueController" class="ch.vd.uniregctb.remarque.RemarqueController">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="remarqueDAO" ref="remarqueDAO" />
+	</bean>
 
 </beans>
