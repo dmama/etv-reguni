@@ -39,11 +39,6 @@
 			</div>
 
             <script type="text/javascript">
-                function reinitMouvementDossierMasse(id) {
-                    var form = $('<form method="POST" action="' + getContextPath() + '/mouvement/masse/reinit.do?id=' + id +'&pagination=${pagination}"/>');
-                    form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
-                    form.submit();
-                }
 
                 function traiterMessage(id) {
                     var form = $('<form method="POST" action="' + getContextPath() + 'identification/gestion-messages/listEnCours.do?id=' + id +'"/>');
