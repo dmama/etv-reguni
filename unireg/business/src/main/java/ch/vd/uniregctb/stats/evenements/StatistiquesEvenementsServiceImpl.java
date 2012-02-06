@@ -114,7 +114,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux = getNombreEvenementsCivilsEnErreurParTypeEch(debutActivite);
 		final List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsEch();
 		final List<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesEch(debutActivite);
-		return new StatsEvenementsCivilsEchResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs, manipulationsManuelles);
+		final List<StatsEvenementsCivilsEchResults.QueueAttenteInfo> queuesAttente = getQueuesAttente();
+		return new StatsEvenementsCivilsEchResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs, manipulationsManuelles, queuesAttente);
 	}
 	
 	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsEch(@Nullable RegDate debutActivite) {
@@ -204,6 +205,22 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
 				return new StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, visaOperateur, dateReception, dateModification);
+			}
+		});
+	}
+	
+	private List<StatsEvenementsCivilsEchResults.QueueAttenteInfo> getQueuesAttente() {
+		final String sql = "SELECT NO_INDIVIDU, MIN(DATE_EVENEMENT), MAX(DATE_EVENEMENT), COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT IN ('EN_ERREUR', 'EN_ATTENTE') GROUP BY NO_INDIVIDU ORDER BY COUNT(*) DESC, NO_INDIVIDU ASC";
+		
+		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.QueueAttenteInfo>() {
+			@Override
+			public StatsEvenementsCivilsEchResults.QueueAttenteInfo onRow(Object[] row) {
+				Assert.isEqual(4, row.length);
+				final long noIndividu = ((Number) row[0]).longValue();
+				final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
+				final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
+				final int count = ((Number) row[3]).intValue();
+				return new StatsEvenementsCivilsEchResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
 			}
 		});
 	}

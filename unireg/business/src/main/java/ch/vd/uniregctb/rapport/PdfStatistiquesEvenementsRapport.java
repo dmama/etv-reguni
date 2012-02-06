@@ -81,9 +81,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 		if (civilsRegPP != null) {
 
-			addEntete1("Evénements civils (RegPP)");
+			newPage();
+			addTitrePrincipal("Evénements civils (RegPP)");
 
 			// Evénements civils : états
+			addEntete1("Répartition par état");
 			{
 				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 					@Override
@@ -132,9 +134,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 		if (civilsEch != null) {
 
-			addEntete1("Evénements civils (e-CH)");
+			newPage();
+			addTitrePrincipal("Evénements civils (e-CH)");
 
 			// Evénements civils : états
+			addEntete1("Répartition par état");
 			{
 				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
 					@Override
@@ -192,13 +196,25 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
+			
+			// taille des queues d'attente
+			{
+				final String filename = "queues_attente_ech.csv";
+				final String contenu = asCsvFile(civilsEch.getQueuesAttente(), filename, status);
+				final String titre = "Queues d'événements e-CH en attente";
+				final String listeVide = "(aucune)";
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
 		}
 
 		// événements externes
 		if (externes != null) {
+			
+			newPage();
+			addTitrePrincipal("Evénements externes");
 
 			// événements externes : états
-			addEntete1("Evénements externes");
+			addEntete1("Répartition par état");
 			{
 				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 					@Override
@@ -229,9 +245,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		// événements d'identification de contribuable
 		if (identCtb != null) {
 
-			addEntete1("Demandes d'identification de contribuable");
+			newPage();
+			addTitrePrincipal("Demandes d'identification de contribuable");
 
 			// événements d'identification de contribuable : états
+			addEntete1("Répartition par état");
 			{
 				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
 					@Override

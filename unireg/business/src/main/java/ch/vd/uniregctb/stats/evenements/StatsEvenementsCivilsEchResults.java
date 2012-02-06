@@ -85,22 +85,52 @@ public class StatsEvenementsCivilsEchResults {
 		}
 	}
 	
+	public static final class QueueAttenteInfo implements StatistiqueEvenementInfo {
+
+		private static final String[] COLONNES = { "NO_INDIVIDU", "PLUS_ANCIEN", "PLUS_RECENT", "TAILLE_QUEUE" };
+		
+		private final long noIndividu;
+		private final RegDate dateEvtPlusAncien;
+		private final RegDate dateEvtPlusRecent;
+		private final int tailleQueue;
+
+		public QueueAttenteInfo(long noIndividu, RegDate dateEvtPlusAncien, RegDate dateEvtPlusRecent, int tailleQueue) {
+			this.noIndividu = noIndividu;
+			this.dateEvtPlusAncien = dateEvtPlusAncien;
+			this.dateEvtPlusRecent = dateEvtPlusRecent;
+			this.tailleQueue = tailleQueue;
+		}
+
+		@Override
+		public String[] getNomsColonnes() {
+			return COLONNES;
+		}
+
+		@Override
+		public String[] getValeursColonnes() {
+			return new String[] { Long.toString(noIndividu), RegDateHelper.dateToDashString(dateEvtPlusAncien), RegDateHelper.dateToDashString(dateEvtPlusRecent), Integer.toString(tailleQueue) };
+		}
+	}
+	
 	private final Map<EtatEvenementCivil, Integer> etats;
 	private final Map<EtatEvenementCivil, Integer> etatsNouveaux;
 	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType;
 	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux;
 	private final List<EvenementCivilEnErreurInfo> toutesErreurs;
 	private final List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles;
+	private final List<QueueAttenteInfo> queuesAttente;
 
-	public StatsEvenementsCivilsEchResults(Map<EtatEvenementCivil, Integer> etats, Map<EtatEvenementCivil, Integer> etatsNouveaux, Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType,
+	public StatsEvenementsCivilsEchResults(Map<EtatEvenementCivil, Integer> etats, Map<EtatEvenementCivil, Integer> etatsNouveaux,
+	                                       Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType,
 	                                       Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux, List<EvenementCivilEnErreurInfo> toutesErreurs,
-	                                       List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles) {
+	                                       List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles, List<QueueAttenteInfo> queuesAttente) {
 		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.erreursParType = erreursParType != null ? Collections.unmodifiableMap(erreursParType) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
 		this.erreursParTypeNouveaux = erreursParTypeNouveaux != null ? Collections.unmodifiableMap(erreursParTypeNouveaux) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
 		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<EvenementCivilEnErreurInfo>emptyList();
 		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<EvenementCivilTraiteManuellementInfo>emptyList();
+		this.queuesAttente = queuesAttente != null ? Collections.unmodifiableList(queuesAttente) : Collections.<QueueAttenteInfo>emptyList();
 	}
 
 	public Map<EtatEvenementCivil, Integer> getEtats() {
@@ -125,5 +155,9 @@ public class StatsEvenementsCivilsEchResults {
 
 	public List<EvenementCivilTraiteManuellementInfo> getManipulationsManuelles() {
 		return manipulationsManuelles;
+	}
+
+	public List<QueueAttenteInfo> getQueuesAttente() {
+		return queuesAttente;
 	}
 }
