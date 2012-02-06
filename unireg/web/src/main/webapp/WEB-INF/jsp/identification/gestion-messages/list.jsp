@@ -37,14 +37,7 @@
 			<div id="desynchro" style="display:none;">
 				<FONT COLOR="#FF0000">Attention la recherche est désynchronisée après la suspension ou la soumission de messages</FONT>
 			</div>
-
             <script type="text/javascript">
-                function reinitMouvementDossierMasse(id) {
-                    var form = $('<form method="POST" action="' + getContextPath() + '/mouvement/masse/reinit.do?id=' + id +'&pagination=${pagination}"/>');
-                    form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
-                    form.submit();
-                }
-
                 function traiterMessage(id) {
                     var form = $('<form method="POST" action="' + getContextPath() + 'identification/gestion-messages/listEnCours.do?id=' + id +'"/>');
                     form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
