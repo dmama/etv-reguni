@@ -210,6 +210,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 				evt.getErreurs().clear();
 				evt.getErreurs().add(erreur);
 				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				Audit.error(info.idEvenement, "Statut de l'événement passé à 'EN_ERREUR'");
 				return null;
 			}
 		});
@@ -233,7 +234,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 								if (translator.isIndexationOnly(evt)) {
 									evt.setEtat(EtatEvenementCivil.TRAITE);
 									hasIndexationOnly = true;
-									Audit.info(evt.getId(), String.format("Indexation pure, traitement directde l'événement %d", evt.getId()));
+									Audit.info(evt.getId(), String.format("Indexation pure, traitement direct de l'événement %d", evt.getId()));
 								}
 								else {
 									evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
