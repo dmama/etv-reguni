@@ -49,7 +49,7 @@
 	}
 
 	function escapeHTML(text) {
-		return $('<div/>').text(text).html();
+		return StringUtils.escapeHTML(text);
 	}
 
 	$('#addRemarque').click(function() {

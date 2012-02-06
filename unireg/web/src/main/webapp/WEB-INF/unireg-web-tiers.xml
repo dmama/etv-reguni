@@ -234,4 +234,13 @@
 		<property name="remarqueDAO" ref="remarqueDAO" />
 	</bean>
 
+	<bean id="simulationController" class="ch.vd.uniregctb.simulation.SimulationController">
+		<property name="forFiscalDAO" ref="forFiscalDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tacheService" ref="tacheService" />
+		<property name="validationService" ref="validationService" />
+		<property name="forFiscalManager" ref="forFiscalManager" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
 </beans>

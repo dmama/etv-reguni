@@ -137,16 +137,22 @@
 		</tr></table>
 
 		<script type="text/javascript">
+
 			function updateSyncActions() {
 
+				var idFor = ${command.id};
+				var dateChangement = $('#dateChangement').val();
 				var modeImposition = $('#modeImposition').val();
-				var motifChangement = $('#motifImposition').val();
+				var motifImposition = $('#motifImposition').val();
 
-				XT.doAjaxAction('updateActionListSurModificationDuModeImposition', $('#actions_list').get(), {
-					'forId' : ${command.id},
-					'dateChangement' : $('#dateChangement').val(),
-					'modeImposition' : modeImposition,
-					'motifChangement' : motifChangement
+				$.get('<c:url value="/simulate/modeImpositionUpdate.do"/>?idFor=' + idFor + '&changeOn=' + dateChangement + '&newMode=' + modeImposition + '&reason=' + motifImposition, function(results) {
+					if (!results || results.empty) {
+						$('#actions_column').hide();
+					}
+					else {
+						$('#actions_list').attr('innerHTML', Fors.buildActionTableHtml(results));
+						$('#actions_column').show();
+					}
 				});
 			}
 

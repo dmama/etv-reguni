@@ -181,14 +181,20 @@
 
 				var f = $('#formFor').get(0);
 				var noOfsAut = f.numeroForFiscalCommune.value + f.numeroForFiscalCommuneHorsCanton.value + f.numeroForFiscalPays.value;
+				noOfsAut = noOfsAut.replace(/[^\d]/g, "");
 
-				XT.doAjaxAction('buildSynchronizeActionsTableSurModificationDeFor', $('#actions_list').get(0), {
-					'forId' : ${command.id},
-					'dateOuverture' : dateOuverture,
-					'motifOuverture' : motifsOuverture,
-					'dateFermeture' : dateFermeture,
-					'motifFermeture' : motifsFermeture,
-					'nOfsAutoriteFiscale' : noOfsAut
+				var idFor = ${command.id};
+				var queryString = 'idFor=' + idFor + '&startDate=' + dateOuverture + '&startReason=' + motifsOuverture +
+								  '&endDate=' + dateFermeture + '&endReason=' + motifsFermeture + '&noOfs=' + noOfsAut;
+
+				$.get('<c:url value="/simulate/forFiscalUpdate.do"/>?' + queryString, function(results) {
+					if (!results || results.empty) {
+						$('#actions_column').hide();
+					}
+					else {
+						$('#actions_list').attr('innerHTML', Fors.buildActionTableHtml(results));
+						$('#actions_column').show();
+					}
 				});
 			}
 

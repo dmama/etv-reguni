@@ -2,31 +2,17 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.ParseException;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springmodules.xt.ajax.AjaxActionEvent;
-import org.springmodules.xt.ajax.AjaxEvent;
-import org.springmodules.xt.ajax.AjaxResponse;
-import org.springmodules.xt.ajax.AjaxResponseImpl;
-import org.springmodules.xt.ajax.action.ReplaceContentAction;
-import org.springmodules.xt.ajax.action.prototype.HideElement;
-import org.springmodules.xt.ajax.action.prototype.ShowElement;
-import org.springmodules.xt.ajax.component.Component;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
@@ -52,9 +38,6 @@ public class TiersForController extends AbstractTiersController {
 		return referenceData;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		ForFiscalView forFiscalView;
@@ -79,10 +62,6 @@ public class TiersForController extends AbstractTiersController {
 		return forFiscalView;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -116,123 +95,5 @@ public class TiersForController extends AbstractTiersController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParamService(ParametreAppService paramService) {
 		this.paramService = paramService;
-	}
-
-	@Override
-	public boolean supports(AjaxEvent event) {
-		if (!(event instanceof AjaxActionEvent)) {
-			return false;
-		}
-		// [SIFISC-2644] plutôt que d'utiliser la réflexion pour trouver le nom des méthodes (voir la méthode de base), on fait comme ça, c'est plus simple et plus sûr.
-		final String id = event.getEventId();
-		return "buildSynchronizeActionsTableSurModificationDeFor".equals(id) || "updateActionListSurModificationDuModeImposition".equals(id);
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public AjaxResponse buildSynchronizeActionsTableSurModificationDeFor(AjaxActionEvent event) throws ParseException {
-
-		Component component;
-		try {
-			final Map<String, String> parameters = event.getParameters();
-			final String motifOuvertureAsString = getTrimmedParameter(parameters, "motifOuverture");
-			final String dateOuvertureAsString = getTrimmedParameter(parameters, "dateOuverture");
-			final String motifFermetureAsString = getTrimmedParameter(parameters, "motifFermeture");
-			final String dateFermetureAsString = getTrimmedParameter(parameters, "dateFermeture");
-			final String noOfsAutoriteAsString = getTrimmedParameter(parameters, "nOfsAutoriteFiscale").replaceAll("[^0-9]", "");
-
-			if (!isDateValid(dateOuvertureAsString) || !isDateValidOrBlank(dateFermetureAsString)
-					|| StringUtils.isBlank(motifOuvertureAsString) || StringUtils.isBlank(noOfsAutoriteAsString)) {
-				component = null;
-			}
-			else {
-				final Long forId = Long.valueOf(getTrimmedParameter(parameters, "forId"));
-				final RegDate dateOuverture = RegDateHelper.displayStringToRegDate(dateOuvertureAsString, false);
-				final MotifFor motifOuverture = MotifFor.valueOf(motifOuvertureAsString);
-				final RegDate dateFermeture;
-				final MotifFor motifFermeture;
-				if (StringUtils.isNotBlank(dateFermetureAsString) && StringUtils.isNotBlank(motifFermetureAsString)) {
-					dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
-					motifFermeture = MotifFor.valueOf(motifFermetureAsString);
-				}
-				else {
-					dateFermeture = null;
-					motifFermeture = null;
-				}
-				final int noOfsAutoriteFiscale = Integer.parseInt(noOfsAutoriteAsString);
-
-				component = forFiscalManager.buildSynchronizeActionsTableSurModificationDeFor(forId, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-			}
-		}
-		catch (Exception e) {
-			LOGGER.error(e, e);
-			component = null;
-		}
-
-		final AjaxResponse response = new AjaxResponseImpl();
-		if (component == null) {
-			response.addAction(new HideElement("actions_column"));
-		}
-		else {
-			response.addAction(new ReplaceContentAction("actions_list", component));
-			response.addAction(new ShowElement("actions_column"));
-		}
-		return response;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public AjaxResponse updateActionListSurModificationDuModeImposition(AjaxActionEvent event) throws ParseException {
-
-		Component component;
-		try {
-			final Map<String, String> parameters = event.getParameters();
-			final String modeImpositionAsString = getTrimmedParameter(parameters, "modeImposition");
-			final String motifChangementAsString = getTrimmedParameter(parameters, "motifChangement");
-			final String dateChangementAsString = getTrimmedParameter(parameters, "dateChangement");
-
-			if (StringUtils.isBlank(modeImpositionAsString) || StringUtils.isBlank(motifChangementAsString) || !isDateValid(dateChangementAsString)) {
-				component = null;
-			}
-			else {
-				final Long forId = Long.valueOf(getTrimmedParameter(parameters, "forId"));
-				final RegDate dateChangement = RegDateHelper.displayStringToRegDate(dateChangementAsString, false);
-				final ModeImposition modeImposition = ModeImposition.valueOf(modeImpositionAsString);
-				final MotifFor motifChangement = MotifFor.valueOf(motifChangementAsString);
-
-				component = forFiscalManager.buildSynchronizeActionsTableSurModificationDuModeImposition(forId, dateChangement, modeImposition, motifChangement);
-			}
-		}
-		catch (Exception e) {
-			LOGGER.error(e, e);
-			component = null;
-		}
-
-		final AjaxResponse response = new AjaxResponseImpl();
-		if (component == null) {
-			response.addAction(new HideElement("actions_column"));
-		}
-		else {
-			response.addAction(new ReplaceContentAction("actions_list", component));
-			response.addAction(new ShowElement("actions_column"));
-		}
-		return response;
-	}
-
-	private static String getTrimmedParameter(Map<String, String> parameters, String key) {
-		final String v = parameters.get(key);
-		return v == null ? null : v.trim();
-	}
-
-	private static boolean isDateValidOrBlank(String string) {
-		return StringUtils.isBlank(string) || isDateValid(string);
-	}
-
-	private static boolean isDateValid(String string) {
-		try {
-			RegDateHelper.displayStringToRegDate(string, false);
-			return true;
-		}
-		catch (Exception e) {
-			return false;
-		}
 	}
 }

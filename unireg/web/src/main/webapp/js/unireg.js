@@ -655,6 +655,50 @@ var Fors = {
 		if(confirm('Voulez-vous vraiment ré-ouvrir ce for fiscal ?')) {
 			Form.doPostBack("theForm", "reOuvrirFor", idFor);
 		}
+	},
+
+	/**
+	 * Construit la représentation Html de la table qui contient le résultat de simulation d'une action sur un for fiscal.
+	 */
+	buildActionTableHtml: function(results) {
+
+		var table = '<table class="sync_actions" border="0" cellspacing="0"><tbody>';
+
+		// header
+		if (results.exception) {
+			table += '<tr class="header"><td colspan="2">'
+			table += 'Les erreurs de validation suivantes seront levées si vous confirmez les changements';
+			table += '</tr>'
+			table += '<tr class="exception" colspan="2">';
+			table += '<td>' + StringUtils.escapeHTML(results.exception) + '</td>';
+			table += '</tr>'
+		}
+		else if (results.errors && results.errors.length > 0) {
+			table += '<tr class="header"><td colspan="2">'
+			table += 'Les erreurs de validation suivantes seront levées si vous confirmez les changements';
+			table += '</tr>'
+			for (var i = 0; i < results.errors.length; ++i) {
+				table += '<tr class="action">';
+				table += '<td class="rowheader">»</td>';
+				table += '<td class="error">' + StringUtils.escapeHTML(results.errors[i]) + '</td>';
+				table += '</tr>'
+			}
+		}
+		else {
+			table += '<tr class="header"><td colspan="2">'
+			table += 'Les actions suivantes seront exécutées si vous confirmez les changements'
+			table += '</tr>'
+			for (var i = 0; i < results.actions.length; ++i) {
+				table += '<tr class="action">';
+				table += '<td class="rowheader">»</td>';
+				table += '<td class="action">' + StringUtils.escapeHTML(results.actions[i]) + '</td>';
+				table += '</tr>'
+			}
+		}
+
+		table += '</tbody></table>';
+
+		return table;
 	}
 
 }
@@ -1001,6 +1045,10 @@ var StringUtils = {
 
 	isBlankString: function(str) {
 		return (!str || /^\s*$/.test(str));
+	},
+
+	escapeHTML: function(text) {
+		return $('<div/>').text(text).html();
 	}
 }
 

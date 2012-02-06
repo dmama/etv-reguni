@@ -3,17 +3,10 @@ package ch.vd.uniregctb.tiers.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -52,11 +45,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	private ForFiscalDAO forFiscalDAO;
 	private ServiceInfrastructureService serviceInfra;
-	private TacheManager tacheManager;
-	private PlatformTransactionManager transactionManager;
-
-	private static final String TITRE_SYNC_ACTIONS = "Les actions suivantes seront exécutées si vous confirmez les changements";
-	private static final String TITRE_SYNC_ACTIONS_INVALIDES = "Les erreurs de validation suivantes seront levées si vous confirmez les changements";
 
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
 		this.forFiscalDAO = forFiscalDAO;
@@ -64,14 +52,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	public void setServiceInfra(ServiceInfrastructureService service) {
 		serviceInfra = service;
-	}
-
-	public void setTacheManager(TacheManager tacheManager) {
-		this.tacheManager = tacheManager;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	/**
@@ -273,7 +253,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return updated;
 	}
 
-	private ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
+	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
 
 		ForDebiteurPrestationImposable updated = null;
 
@@ -285,7 +265,8 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return updated;
 	}
 
-	private ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
+	@Override
+	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
 
 		ForFiscalAutreElementImposable updated = null;
 
@@ -297,8 +278,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return updated;
 	}
 
-	private ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
-	                                                int noOfsAutoriteFiscale) {
+	@Override
+	public ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+	                                               int noOfsAutoriteFiscale) {
 
 		ForFiscalSecondaire updated = null;
 
@@ -320,7 +302,8 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return updated;
 	}
 
-	private ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+	@Override
+	public ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
 
 		ForFiscalPrincipal updated = null;
 
@@ -483,97 +466,4 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		tiersService.traiterReOuvertureForDebiteur(forFiscal);
 	}
 
-	@Override
-	public Component buildSynchronizeActionsTableSurModificationDeFor(final long forId, final RegDate dateOuverture, final MotifFor motifOuverture, final RegDate dateFermeture,
-	                                                                  final MotifFor motifFermeture, final int noOfsAutoriteFiscale) {
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		return template.execute(new TransactionCallback<Component>() {
-			@Override
-			public Component doInTransaction(TransactionStatus status) {
-
-				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
-				status.setRollbackOnly();
-
-				final ForFiscal ff = forFiscalDAO.get(forId);
-				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof Contribuable)) {
-					return null;
-				}
-				final Contribuable ctb = (Contribuable) tiers;
-
-				SynchronizeActionsTable table;
-				try {
-					// simule la mise-à-jour du for fiscal
-					if (ff instanceof ForFiscalPrincipal) {
-						updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-					}
-					else if (ff instanceof ForFiscalSecondaire) {
-						updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-					}
-					else if (ff instanceof ForFiscalAutreElementImposable) {
-						updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture);
-					}
-					else {
-						// les autres types de fors ne sont pas pris en compte pour l'instant
-						return null;
-					}
-
-					table = tacheManager.buildSynchronizeActionsTable(ctb, TITRE_SYNC_ACTIONS, TITRE_SYNC_ACTIONS_INVALIDES);
-				}
-				catch (ValidationException e) {
-					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
-					for (ValidationMessage message : e.getErrors()) {
-						table.addError(message.getMessage());
-					}
-				}
-
-				return table;
-			}
-		});
-	}
-
-	@Override
-	public Component buildSynchronizeActionsTableSurModificationDuModeImposition(final long forId, final RegDate dateChangement, final ModeImposition modeImposition, final MotifFor motifChangement) {
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		return template.execute(new TransactionCallback<Component>() {
-			@Override
-			public Component doInTransaction(TransactionStatus status) {
-
-				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
-				status.setRollbackOnly();
-
-				final ForFiscal ff = forFiscalDAO.get(forId);
-				if (!(ff instanceof ForFiscalPrincipal)) {
-					return null;
-				}
-				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof Contribuable)) {
-					return null;
-				}
-				final Contribuable ctb = (Contribuable) tiers;
-
-				SynchronizeActionsTable table;
-				try {
-					// applique le changement du mode d'imposition (transaction rollback-only)
-					tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
-
-					table = tacheManager.buildSynchronizeActionsTable(ctb, TITRE_SYNC_ACTIONS, TITRE_SYNC_ACTIONS_INVALIDES);
-				}
-				catch (ValidationException e) {
-					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
-					for (ValidationMessage message : e.getErrors()) {
-						table.addError(message.getMessage());
-					}
-				}
-
-				return table;
-			}
-		});
-	}
 }

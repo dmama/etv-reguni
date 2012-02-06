@@ -26,13 +26,6 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
-		<property name="tacheManager" ref="tacheManager" />
-		<property name="transactionManager" ref="transactionManager"/>
-	</bean>
-
-	<bean id="tacheManager" class="ch.vd.uniregctb.tiers.manager.TacheManagerImpl">
-		<property name="tacheService" ref="tacheService" />
-		<property name="validationService" ref="validationService" />
 	</bean>
 
 	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
