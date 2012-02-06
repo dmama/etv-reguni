@@ -46,10 +46,11 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
 
+	private static final EvenementCivilRegPPErreurFactory ERREUR_FACTORY = new EvenementCivilRegPPErreurFactory();
+
 	private PlatformTransactionManager transactionManager;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
-
 	private EvenementCivilTranslator evenementCivilTranslator;
 
 	/**
@@ -116,7 +117,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				@Override
 				public Long doInTransaction(TransactionStatus status) throws Exception {
 
-					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<EvenementCivilRegPPErreur>(new EvenementCivilRegPPErreurFactory());
+					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<EvenementCivilRegPPErreur>(ERREUR_FACTORY);
 
 					// Charge l'événement
 					final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);

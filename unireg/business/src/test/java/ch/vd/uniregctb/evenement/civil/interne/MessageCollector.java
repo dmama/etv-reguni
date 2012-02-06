@@ -41,8 +41,10 @@ public class MessageCollector extends EvenementCivilMessageCollector<MessageColl
 			return new Msg(buildActualMessage(message, e), type);
 		}
 	}
+	
+	private static final MsgFactory ERREUR_FACTORY = new MsgFactory();
 
 	public MessageCollector() {
-		super(new MsgFactory());
+		super(ERREUR_FACTORY);
 	}
 }
