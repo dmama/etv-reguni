@@ -1070,9 +1070,9 @@ var App = {
 	 * @return <b>true</b> si l'application courante est déployée en développement
 	 */
 	is_dev_env: function() {
-		var url = this.location.toString();
+		var url = window.location.toString();
 		// toutes urls sur les ports 7001 (weblogic) ou 8080 (tomcat) sont considérées comme "développement"
-		return url.match(/http:\/\/[.\w]+:7001\//) || url.match(/http:\/\/[.\w]+:8080\//);
+		return url.match(/http:\/\/[.\w]+:7001\) || url.match(/http:\/\/[.\w]+:8080\//);
 	},
 
 	/**
@@ -1100,7 +1100,7 @@ var App = {
 	 * @return <b>true</b> si l'utilisateur veut continuer, <b>false</b> autrement.
 	 */
 	confirm_trash_db: function() {
-		if (is_dev_env()) {
+		if (this.is_dev_env()) {
 			// A priori, un développeur sait ce qu'il fait...
 			return true;
 		}
