@@ -1426,7 +1426,7 @@ var Postit = {
 					text += ' et ';
 				}
 				if (todo.dossiers > 0) {
-					text += '<a href="../tache/list.do">' + todo.dossiers + ' dossier(s)</a>';
+					text += '<a href="../tache/list-nouveau-dossier.do">' + todo.dossiers + ' dossier(s)</a>';
 				}
 				text += ' en instance.';
 				$('#postitText').html(text);
