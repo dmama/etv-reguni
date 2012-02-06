@@ -93,7 +93,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 			final String titre = "Liste des périodes";
 			final String listeVide = "(aucun)";
 			final int taille = results.getListePeriode().size();
-			addListeDetaillee(writer, taille, titre, listeVide, filename, contenu);
+			addListeDetaillee(writer, titre, listeVide, filename, contenu);
 		}
 
 		// Contribuables en erreurs
@@ -102,7 +102,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 			final String contenu = genererListeErreurs(results, filename, status);
 			final String titre = "Liste des contribuables en erreur";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getListeErreurs().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
@@ -111,7 +111,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 			final String contenu = genererListeIgnores(results, filename, status);
 			final String titre = " Liste des contribuables ignorés ayant un for sur la période fiscale concernée";
 			final String listeVide = "(aucun)";
-			addListeDetaillee(writer, results.getListeCtbsIgnores().size(), titre, listeVide, filename, contenu);
+			addListeDetaillee(writer, titre, listeVide, filename, contenu);
 		}
 
 		close();

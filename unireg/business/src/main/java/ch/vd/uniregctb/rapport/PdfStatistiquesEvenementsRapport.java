@@ -108,7 +108,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(civilsRegPP.getErreursParType(), null, dateReference, TypeEvenementCivil.class, filename, status);
 				final String titre = "Erreurs des événements civils RegPP par type d'événement";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, civilsRegPP.getErreursParType().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 			// messages d'erreur regroupés par type
@@ -117,7 +117,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = buildStatsMessagesErreursRegPPParType(civilsRegPP.getToutesErreurs(), filename, status);
 				final String titre = "Messages d'erreurs des événements civils RegPP par type d'événement";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, civilsRegPP.getErreursParType().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 			// toutes les erreurs
@@ -126,7 +126,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(civilsRegPP.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils RegPP";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, civilsRegPP.getToutesErreurs().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
@@ -163,7 +163,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), dateReference, filename, status);
 				final String titre = "Erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, civilsEch.getErreursParType().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 			// messages d'erreur regroupés par type
@@ -172,7 +172,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = buildStatsMessagesErreursEchParType(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Messages d'erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, civilsEch.getErreursParType().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 			// toutes les erreurs
@@ -181,7 +181,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils e-CH";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, civilsEch.getToutesErreurs().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 			// manipulations manuelles
@@ -190,7 +190,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(civilsEch.getManipulationsManuelles(), filename, status);
 				final String titre = String.format("Manipulations manuelles des événements civils e-CH depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, civilsEch.getManipulationsManuelles().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
@@ -222,7 +222,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(externes.getErreurs(), filename, status);
 				final String titre = "Erreurs des événements externes";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, externes.getErreurs().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
@@ -260,7 +260,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String contenu = asCsvFile(identCtb.getATraiter(), filename, status);
 				final String titre = "Evénements d'identification à traiter";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, identCtb.getATraiter().size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 

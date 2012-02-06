@@ -71,7 +71,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 			String contenu = traitesAsCsvFile(results.traites, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traité)";
-			addListeDetaillee(writer, results.traites.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// CTBs ignorés
@@ -80,7 +80,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.ignores, filename, status);
 			String titre = "Liste des contribuables ignorés";
 			String listVide = "(aucun contribuable ignoré)";
-			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// CTBs en erreurs
@@ -89,7 +89,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.erreurs, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucun contribuable en erreur)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// HeaderFooter header = new HeaderFooter(new Phrase("This is a header."), false);

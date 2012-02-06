@@ -72,7 +72,7 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.LRTraitees, filename, status);
 			String titre = "Liste des listes récapitulatives générées";
 			String listVide = "(aucune liste récapitulative générée)";
-			addListeDetaillee(writer, results.LRTraitees.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Débiteurs en erreurs
@@ -81,7 +81,7 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.LREnErreur, filename, status);
 			String titre = "Liste des erreurs";
 			String listVide = "(aucune erreur)";
-			addListeDetaillee(writer, results.LREnErreur.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

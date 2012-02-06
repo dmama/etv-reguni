@@ -69,7 +69,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 			String contenu = disEchuesAsCsvFile(results.disEchues, filename, status);
 			String titre = "Liste des déclarations nouvellement échues";
 			String listVide = "(aucun déclaration échue)";
-			addListeDetaillee(writer, results.disEchues.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// DIs en erreur
@@ -78,7 +78,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucun déclaration en erreur)";
-			addListeDetaillee(writer, results.disEnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

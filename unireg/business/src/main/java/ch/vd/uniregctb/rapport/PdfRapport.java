@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -39,7 +39,6 @@ public abstract class PdfRapport extends Document {
 
 	private static final Font WARNING_FONT = new Font(Font.HELVETICA, 12, Font.BOLD);
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-	public static final int AVG_LINE_LEN = 384; // longueur moyenne d'une ligne d'un fichier CVS (d'après relevé sur le batch d'ouverture des fors)
 	public static final char COMMA = CsvHelper.COMMA;
 	public static final String EMPTY = StringUtils.EMPTY;
 
@@ -185,9 +184,9 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un paragraphe listant de manière détaillée un résultat de processing.
 	 */
-	protected void addListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu) throws DocumentException {
+	protected void addListeDetaillee(PdfWriter writer, String titre, String listVide, String filename, String contenu) throws DocumentException {
 		addEnteteListeDetaillee(titre);
-		addPartieDeListeDetaillee(writer, size == 0, titre, listVide, filename, contenu);
+		addPartieDeListeDetaillee(writer, titre, listVide, filename, contenu);
 	}
 
 	private void addEnteteListeDetaillee(String titre) throws DocumentException {
@@ -200,15 +199,16 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un lien vers un fichier de détails
 	 */
-	private void addPartieDeListeDetaillee(PdfWriter writer, boolean vide, String titre, String listVide, String filename, String contenu) throws DocumentException {
+	private void addPartieDeListeDetaillee(PdfWriter writer, String titre, String descriptionListeVide, String filename, String contenu) throws DocumentException {
 		final Paragraph details = new Paragraph();
 		details.setIndentationLeft(50);
 		details.setSpacingBefore(10);
 		details.setSpacingAfter(10);
 		details.setFont(normalFont);
 
+		final boolean vide = StringUtils.isBlank(contenu);
 		if (vide) {
-			details.add(new Chunk(listVide));
+			details.add(new Chunk(descriptionListeVide));
 		}
 		else {
 			details.add(new Chunk("(voir le fichier attaché " + filename + ')'));
@@ -217,22 +217,21 @@ public abstract class PdfRapport extends Document {
 		add(details);
 
 		if (!vide) {
-			Assert.notNull(contenu);
 			attacheFichier(writer, filename, titre, contenu);
 		}
 	}
 
-	protected void addListeDetailleeDecoupee(PdfWriter writer, boolean vide, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
+	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
 		Assert.isEqual(filenames.length, contenus.length);
 
 		addEnteteListeDetaillee(titre);
 		if (filenames.length > 0) {
 			for (int i = 0 ; i < filenames.length ; ++ i) {
-				addPartieDeListeDetaillee(writer, vide, titre, listVide, filenames[i], contenus[i]);
+				addPartieDeListeDetaillee(writer, titre, listVide, filenames[i], contenus[i]);
 			}
 		}
 		else {
-			addPartieDeListeDetaillee(writer, vide, titre, listVide, "empty-file", "");
+			addPartieDeListeDetaillee(writer, titre, listVide, "empty-file", "");
 		}
 	}
 

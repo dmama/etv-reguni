@@ -75,7 +75,7 @@ public class PdfValidationRapport extends PdfRapport {
 			String contenu = asCsvFile(results.erreursValidation, filename, statusManager);
 			String titre = "Liste des contribuables invalides";
 			String listVide = "(aucun contribuable invalide)";
-			addListeDetaillee(writer, results.erreursValidation.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Assujettissements
@@ -84,7 +84,7 @@ public class PdfValidationRapport extends PdfRapport {
 			String contenu = asCsvFile(results.erreursPeriodesImposition, filename, statusManager);
 			String titre = "Liste des périodes d'imposition qui ne sont pas calculables";
 			String listVide = "(aucune période d'imposition incalculable)";
-			addListeDetaillee(writer, results.erreursPeriodesImposition.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Cohérence DI
@@ -93,7 +93,7 @@ public class PdfValidationRapport extends PdfRapport {
 			String contenu = asCsvFile(results.erreursCoherenceDI, filename, statusManager);
 			String titre = "Liste des DIs émises dont les dates ne correspondent pas aux dates d'assujettissement";
 			String listVide = "(aucune DI émise dont les dates ne correspondent pas aux dates d'assujettissement)";
-			addListeDetaillee(writer, results.erreursCoherenceDI.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Adresses
@@ -102,7 +102,7 @@ public class PdfValidationRapport extends PdfRapport {
 			String contenu = asCsvFile(results.erreursAdresses, filename, statusManager);
 			String titre = "Liste des contribuables dont les adresses ne sont pas calculables";
 			String listVide = "(aucun contribuable dont les adresses ne sont pas calculables)";
-			addListeDetaillee(writer, results.erreursAdresses.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

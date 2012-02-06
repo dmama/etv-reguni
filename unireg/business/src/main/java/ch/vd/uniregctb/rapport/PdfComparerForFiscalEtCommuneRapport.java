@@ -70,7 +70,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 				final String contenu = getCsvForFiscalEtCommuneDifferente(results.listeCommunesDifferentes, filename, status);
 				final String titre = "Liste des communes différentes";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, results.listeCommunesDifferentes.size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 
@@ -81,7 +81,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

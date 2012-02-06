@@ -75,7 +75,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        String contenu = asCsvFile(results.ctbsIgnores, filename, status);
 	        String titre = "Liste des contribuables ignorés";
 	        String listVide = "(aucun contribuable ignoré)";
-	        addListeDetaillee(writer, results.ctbsIgnores.size(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    // DIs en erreur
@@ -84,7 +84,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 	        String titre = "Liste des contribuables en erreur";
 	        String listVide = "(aucun contribuable en erreur)";
-	        addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    close();

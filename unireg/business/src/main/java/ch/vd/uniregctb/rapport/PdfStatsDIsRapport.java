@@ -73,7 +73,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 			String contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des déclarations d'impôt ordinaires";
 			String listVide = "(aucune déclaration)";
-			addListeDetaillee(writer, results.stats.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Déclarations en erreurs
@@ -82,7 +82,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucune déclaration en erreur)";
-			addListeDetaillee(writer, results.disEnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

@@ -71,7 +71,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			final String contenu = getCsvDebiteursNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des débiteurs ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// listes récapitulatives échues
@@ -80,7 +80,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			final String contenu = getCsvLrEchues(results.lrEchues, filename, status);
 			final String titre = "Liste des LR échues";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.lrEchues.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// erreurs
@@ -89,7 +89,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			final String contenu = getCsvDebiteursNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

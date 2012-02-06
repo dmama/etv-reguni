@@ -68,7 +68,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 			final String contenu = getCsvEvenementTraite(results.traites, filename, status);
 			final String titre = "Liste des événements externes traités";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.traites.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// erreurs
@@ -77,7 +77,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

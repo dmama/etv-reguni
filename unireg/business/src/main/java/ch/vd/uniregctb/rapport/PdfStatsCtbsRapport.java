@@ -75,7 +75,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 			String contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des contribuables assujettis";
 			String listVide = "(aucune contribuable)";
-			addListeDetaillee(writer, results.stats.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Contribuables en erreurs
@@ -84,7 +84,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 			String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucune contribuable en erreur)";
-			addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

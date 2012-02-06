@@ -77,7 +77,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			final String contenu = genererListeModifications(pp.getNouveauxHabitants(), filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, pp.getNouveauxHabitants().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Nouveaux non-habitants
@@ -86,7 +86,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			final String contenu = genererListeModifications(pp.getNouveauxNonHabitants(), filename, status);
 			final String titre = "Liste des nouveaux non-habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, pp.getNouveauxNonHabitants().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs sur les personnes physiques
@@ -95,7 +95,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			final String contenu = genererListeErreurs(pp.getErreurs(), filename, status);
 			final String titre = "Liste des personnes physiques en erreur";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, pp.getErreurs().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs sur les ménages communs
@@ -104,7 +104,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 			final String contenu = genererListeErreurs(mc.getErreurs(), filename, status);
 			final String titre = "Liste des ménages communs en erreur";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, mc.getErreurs().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

@@ -58,7 +58,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		    String contenu = buildListeContribuablesIdentifies(results.getContribuablesIdentifies(), filename, status);
 		    String titre = "Liste des contribuables identifiés";
 		    String listVide = "(aucun)";
-		    addListeDetaillee(writer, results.getContribuablesIdentifies().size(), titre, listVide, filename, contenu);
+		    addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// contribuables ignorés
@@ -67,7 +67,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		    String contenu = buildContribuablesIgnores(results.getContribuablesIgnores(), filename, status);
 		    String titre = "Liste des contribuables ignorés";
 		    String listVide = "(aucun)";
-		    addListeDetaillee(writer, results.getContribuablesIdentifies().size(), titre, listVide, filename, contenu);
+		    addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// erreurs
@@ -76,7 +76,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		    String contenu = buildErreurs(results.getListeErreurs(), filename, status);
 		    String titre = "Liste des erreurs";
 		    String listVide = "(aucune)";
-		    addListeDetaillee(writer, results.getListeErreurs().size(), titre, listVide, filename, contenu);
+		    addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

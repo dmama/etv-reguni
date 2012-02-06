@@ -73,7 +73,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	        final String contenu = genererListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers";
 	        final String listVide = "(aucun)";
-	        addListeDetaillee(writer, results.getListeTiers().size(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    // Contribuables en erreurs
@@ -82,7 +82,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	        final String contenu = genererErreursListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers en erreur";
 	        final String listVide = "(aucun)";
-	        addListeDetaillee(writer, results.getListeErreurs().size(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    close();

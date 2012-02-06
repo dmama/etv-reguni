@@ -76,7 +76,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 			String contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traités)";
-			addListeDetaillee(writer, results.infoCtbTraites.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// CTBs ignorés
@@ -85,7 +85,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 			String contenu = asCsvFile(results.ctbsIgnores, filename, status);
 			String titre = "Liste des contribuables ignorés";
 			String listVide = "(aucun contribuable ignoré)";
-			addListeDetaillee(writer, results.ctbsIgnores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// CTBs en erreurs
@@ -94,7 +94,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 			String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucun contribuable en erreur)";
-			addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 

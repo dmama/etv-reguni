@@ -70,7 +70,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 				final String contenu = getCsvAdresseResolue(results.listeAdresseResolues, filename, status);
 				final String titre = "Liste des adresses résolues";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, results.listeAdresseResolues.size(), titre, listVide, filename, contenu);
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 
 
@@ -81,7 +81,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

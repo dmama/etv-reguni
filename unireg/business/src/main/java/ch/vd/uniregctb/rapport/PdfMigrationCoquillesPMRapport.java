@@ -66,7 +66,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 			final String contenu = ctbIdsAsCsvFile(results.traitees, filename, status);
 			final String titre = "Liste des personnes morales migrées";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.traitees.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 
@@ -76,7 +76,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

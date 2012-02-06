@@ -54,7 +54,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 			final String contenu = buildContenuTraites(results.getTraites(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation a été modifié";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getTraites().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Cas ignorés
@@ -63,7 +63,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 			final String contenu = buildContenuIgnores(results.getIgnores(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation n'a pas été touché";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getIgnores().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
@@ -72,7 +72,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 			final String contenu = buildContenuErreurs(results.getErreurs(), status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.getErreurs().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

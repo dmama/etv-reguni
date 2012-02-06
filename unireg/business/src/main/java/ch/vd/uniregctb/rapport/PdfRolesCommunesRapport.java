@@ -96,7 +96,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    final String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 		    final String titre = "Liste des contribuables en erreur";
 		    final String listVide = "(aucun contribuable en erreur)";
-		    addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+		    addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		if (!results.ctbsIgnores.isEmpty()) {
@@ -104,7 +104,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    final String contenu = asCsvFile(results.ctbsIgnores, filename, status);
 		    final String titre = "Liste des contribuables ignorés";
 		    final String listVide = "(aucun contribuable ignoré)";
-		    addListeDetaillee(writer, results.ctbsIgnores.size(), titre, listVide, filename, contenu);
+		    addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		writeCommuneParCommune(results, dateGeneration, status, writer);

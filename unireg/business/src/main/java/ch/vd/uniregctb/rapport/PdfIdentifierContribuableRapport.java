@@ -68,7 +68,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 			final String contenu = getCsvMessagesIdentifies(results.identifies, filename, status);
 			final String titre = "Liste des messages identifiés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.identifies.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Messages non-identifiés
@@ -77,7 +77,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 			final String contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status);
 			final String titre = "Liste des messages non-identifiés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.nonIdentifies.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// erreurs
@@ -86,7 +86,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

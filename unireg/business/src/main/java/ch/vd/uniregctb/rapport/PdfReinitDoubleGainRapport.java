@@ -69,7 +69,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 			String contenu = situationsTraiteesAsCsvFile(results.situationsTraitees, filename, status);
 			String titre = "Liste des situations réinitialisées";
 			String listVide = "(aucun situation réinitialisée)";
-			addListeDetaillee(writer, results.situationsTraitees.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Situations en erreur
@@ -78,7 +78,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 			String contenu = asCsvFile(results.situationsEnErrors, filename, status);
 			String titre = "Liste des situations en erreur";
 			String listVide = "(aucun situation en erreur)";
-			addListeDetaillee(writer, results.situationsEnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

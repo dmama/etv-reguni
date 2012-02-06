@@ -66,7 +66,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 			String contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des tâches en instance par OID";
 			String listVide = "(aucune tâche traitée)";
-			document.addListeDetaillee(writer, results.getLignes().size(), titre, listVide, filename, contenu);
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		document.close();

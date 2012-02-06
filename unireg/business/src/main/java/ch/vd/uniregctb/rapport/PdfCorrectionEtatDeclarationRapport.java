@@ -55,7 +55,7 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 			final String contenu = traitesAsCsvFile(results.doublons, filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.doublons.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 
@@ -65,7 +65,7 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

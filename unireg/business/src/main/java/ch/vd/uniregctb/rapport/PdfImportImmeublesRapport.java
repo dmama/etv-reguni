@@ -54,7 +54,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 			final String contenu = buildContenuTraites(results.traites, status, filename);
 			final String titre = "Liste des immeubles importés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.traites.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Cas ignorés
@@ -63,7 +63,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 			final String contenu = buildContenuIgnores(results.ignores, status, filename);
 			final String titre = "Liste des immeubles ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// A vérifier
@@ -72,7 +72,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 			final String contenu = buildContenuAVerifier(results.averifier, status, filename);
 			final String titre = "Liste des immeubles qui doivent être vérifiés dans le registre foncier";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.averifier.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
@@ -81,7 +81,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 			final String contenu = buildContenuErreurs(results.erreurs, status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

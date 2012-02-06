@@ -56,7 +56,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		}
 		final String titre = "Liste détaillée";
 		final String listVide = "(aucun rôle trouvé)";
-	    addListeDetailleeDecoupee(writer, vide, titre, listVide, filenames, contenu);
+	    addListeDetailleeDecoupee(writer, titre, listVide, filenames, contenu);
 	}
 
 	/**

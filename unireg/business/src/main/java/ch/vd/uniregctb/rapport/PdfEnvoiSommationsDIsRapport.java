@@ -79,7 +79,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status);
             String titre = "Liste des déclarations impossibles à sommer";
             String listVide = "(aucune déclaration à sommer en erreur)";
-            addListeDetaillee(writer, results.getTotalSommationsEnErreur(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // DI avec contribuables non assujettis.
@@ -88,7 +88,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status);
             String titre = "Liste des déclarations dont les contribuables ne sont pas assujettis";
             String listVide = "(aucune déclaration n'est liée à un contribuable non assujetti)";
-            addListeDetaillee(writer, results.getTotalNonAssujettissement(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // DI avec contribuables indigents.
@@ -97,7 +97,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont indigents";
             String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
-            addListeDetaillee(writer, results.getTotalIndigent(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
 	     // DI avec contribuables sourcier purs.
@@ -106,7 +106,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont sourciers";
             String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
-            addListeDetaillee(writer, results.getTotalSourcierPur(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // DI optionnelles
@@ -115,7 +115,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status);
             String titre = "Liste des déclarations non-sommées car optionnelles";
             String listVide = "(aucune déclaration sommable n'est optionnelle)";
-            addListeDetaillee(writer, results.getTotalDisOptionnelles(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // DI sommées.
@@ -124,7 +124,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getSommations(), filename, status);
             String titre = "Liste des déclarations sommées";
             String listVide = "(aucune déclaration sommée)";
-            addListeDetaillee(writer, results.getTotalDisSommees(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         close();

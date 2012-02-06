@@ -77,7 +77,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			String contenu = delaisTraitesAsCsvFile(results.traites, filename, status);
 			String titre = "Liste des déclarations traitées";
 			String listVide = "(aucun déclaration traitée)";
-			addListeDetaillee(writer, results.traites.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// DIs ignorées
@@ -86,7 +86,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			String contenu = asCsvFile(results.ignores, filename, status);
 			String titre = "Liste des déclarations ignorées";
 			String listVide = "(aucun déclaration ignorée)";
-			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// les erreur
@@ -95,7 +95,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			String contenu = asCsvFile(results.errors, filename, status);
 			String titre = "Liste des erreurs";
 			String listVide = "(aucune erreur)";
-			addListeDetaillee(writer, results.errors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

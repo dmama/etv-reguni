@@ -70,7 +70,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	        final String contenu = genererListeChemisesTO(results, filename, status);
 	        final String titre = "Liste des chemises TO imprimées";
 	        final String listVide = "(aucun)";
-	        addListeDetaillee(writer, results.getNbChemisesImprimees(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    // Impressions en erreur
@@ -79,7 +79,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	        final String contenu = genererErreursChemisesTO(results, filename, status);
 	        final String titre = "Liste des déclarations d'impôt en erreur";
 	        final String listVide = "(aucune)";
-	        addListeDetaillee(writer, results.getErreurs().size(), titre, listVide, filename, contenu);
+	        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	    }
 
 	    close();

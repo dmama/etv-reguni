@@ -71,7 +71,7 @@ public class PdfMajoriteRapport extends PdfRapport {
             String contenu = asCsvFile(results.habitantTraites, filename, status);
             String titre = "Liste des habitants traités";
             String listVide = "(aucun habitant traité)";
-            document.addListeDetaillee(writer, results.habitantTraites.size(), titre, listVide, filename, contenu);
+            document.addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // Habitants en erreurs
@@ -80,7 +80,7 @@ public class PdfMajoriteRapport extends PdfRapport {
             String contenu = asCsvFile(results.habitantEnErrors, filename, status);
             String titre = "Liste des habitants en erreur";
             String listVide = "(aucun habitant en erreur)";
-            document.addListeDetaillee(writer, results.habitantEnErrors.size(), titre, listVide, filename, contenu);
+            document.addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         document.close();

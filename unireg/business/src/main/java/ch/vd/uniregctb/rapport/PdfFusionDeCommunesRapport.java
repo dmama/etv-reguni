@@ -82,7 +82,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			String contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status);
 			String titre = "Liste des tiers traités";
 			String listVide = "(aucun tiers traité)";
-			document.addListeDetaillee(writer, results.tiersTraites.size(), titre, listVide, filename, contenu);
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Habitants en erreurs
@@ -91,7 +91,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			String contenu = asCsvFile(results.tiersIgnores, filename, status);
 			String titre = "Liste des tiers ignorés";
 			String listVide = "(aucun tiers ignoré)";
-			document.addListeDetaillee(writer, results.tiersIgnores.size(), titre, listVide, filename, contenu);
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Habitants en erreurs
@@ -100,7 +100,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			String contenu = asCsvFile(results.tiersEnErrors, filename, status);
 			String titre = "Liste des tiers en erreur";
 			String listVide = "(aucun tiers en erreur)";
-			document.addListeDetaillee(writer, results.tiersEnErrors.size(), titre, listVide, filename, contenu);
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		document.close();

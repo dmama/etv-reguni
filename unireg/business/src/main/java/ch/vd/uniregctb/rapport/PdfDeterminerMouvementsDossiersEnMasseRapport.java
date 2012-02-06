@@ -69,7 +69,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 			final String contenu = genererListeMouvements(results.mouvements, filename, status);
 			final String titre = "Liste des mouvements générés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.mouvements.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Contribuables ignorés
@@ -78,7 +78,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 			final String contenu = genererListeDossiersNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des dossiers ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.ignores.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
@@ -87,7 +87,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 			final String contenu = genererListeDossiersNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs rencontrées";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

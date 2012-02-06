@@ -74,7 +74,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 			final String contenu = buildContenuAssujettis(results.getAssujettis(), status, filename);
 			final String titre = "Liste des contribuables assujettis et de leurs assujettissements";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getAssujettis().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Contribuables ignorés
@@ -83,7 +83,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 			final String contenu = buildContenuIgnores(results.getIgnores(), filename, status);
 			final String titre = "Liste des contribuables ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getIgnores().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		// Erreurs
@@ -92,7 +92,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 			final String contenu = buildContenuErreurs(results.getListeErreurs(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.getListeErreurs().size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

@@ -74,7 +74,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 			final String contenu = getCsvContribuablesNotes(results.listeContribuableAvecNote, filename, status, results.periode);
 			final String titre = "Liste des contribuables avec note pour la période fiscale " + results.getPeriode();
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.listeContribuableAvecNote.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 
@@ -84,7 +84,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 			final String contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, results.erreurs.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		close();

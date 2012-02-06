@@ -82,7 +82,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
             final String contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
             final String titre = "Liste des contribuables rapprochés";
             final String listVide = "(aucun)";
-            addListeDetaillee(writer, results.listeRapproche.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // les erreurs
@@ -91,7 +91,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
             final String contenu = asCsvFile(results.ctbsEnErreur, filename, status);
             final String titre = "Liste des erreurs";
             final String listVide = "(aucune)";
-            addListeDetaillee(writer, results.ctbsEnErreur.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         close();

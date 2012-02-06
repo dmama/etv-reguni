@@ -65,7 +65,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 			String contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traité)";
-			document.addListeDetaillee(writer, results.getLignes().size(), titre, listVide, filename, contenu);
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
 		document.close();

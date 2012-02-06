@@ -82,7 +82,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = ctbIdsAsCsvFile(results.ctbsTraites, filename, status);
             String titre = "Liste des contribuables traités";
             String listVide = "(aucun contribuable traité)";
-            addListeDetaillee(writer, results.ctbsTraites.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // CTBs indigents
@@ -91,7 +91,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = ctbIdsAsCsvFile(results.ctbsIndigents, filename, status);
             String titre = "Liste des contribuables indigents";
             String listVide = "(aucun contribuable indigent)";
-            addListeDetaillee(writer, results.ctbsIndigents.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // CTBs ignorés
@@ -100,7 +100,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = asCsvFile(results.ctbsIgnores, filename, status);
             String titre = "Liste des contribuables ignorés";
             String listVide = "(aucun contribuable ignoré)";
-            addListeDetaillee(writer, results.ctbsIgnores.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // CTBs en erreurs
@@ -109,7 +109,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
             String titre = "Liste des contribuables en erreur";
             String listVide = "(aucun contribuable en erreur)";
-            addListeDetaillee(writer, results.ctbsEnErrors.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // CTBs rollback
@@ -118,7 +118,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = asCsvFile(results.ctbsRollback, filename, status);
             String titre = "Liste des contribuables rollback";
             String listVide = "(aucun contribuable rollback)";
-            addListeDetaillee(writer, results.ctbsRollback.size(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // HeaderFooter header = new HeaderFooter(new Phrase("This is a header."), false);
