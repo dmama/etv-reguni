@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
@@ -53,13 +54,23 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 	protected Demenagement(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
+		final RegDate dateEvenement = evenement.getDateEvenement();
+
 		// il faut récupérer les adresses actuelles, ce seront les nouvelles
 		// adresses
+		setAncienneAdresseEtNouvelleCommune(context, dateEvenement);
+
+
+	}
+
+	private void setAncienneAdresseEtNouvelleCommune(EvenementCivilContext context, RegDate dateEvenement) throws EvenementCivilException {
+		final RegDate oneDayBefore = dateEvenement.getOneDayBefore();
 
 		// Distinction adresse principale et adresse courrier
 		final AdressesCiviles adresses;
 		try {
-			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), evenement.getDateEvenement().getOneDayBefore(), false));
+
+			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), oneDayBefore, false));
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilException(e);
@@ -68,7 +79,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 
 		// on recupere la commune de la nouvelle adresse
 		try {
-			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), evenement.getDateEvenement());
+			this.nouvelleCommunePrincipale = context.getServiceInfra().getCommuneByAdresse(getNouvelleAdressePrincipale(), dateEvenement);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
@@ -84,6 +95,15 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
 		this.ancienneAdressePrincipale = ancienneAdressePrincipale;
 		this.nouvelleCommunePrincipale = communePrincipale;
+	}
+
+	public Demenagement(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
+		final RegDate dateEvenement = event.getDateEvenement();
+		// il faut récupérer les adresses actuelles, ce seront les nouvelles
+		// adresses
+		setAncienneAdresseEtNouvelleCommune(context, dateEvenement);
+
 	}
 
 	public Commune getNouvelleCommunePrincipale() {
