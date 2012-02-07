@@ -12,8 +12,10 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.uniregctb.webservices.tiers2.data.DeclarationImpotOrdinaire;
 
 public class TaxDeclarationBuilder {
 
@@ -34,7 +36,12 @@ public class TaxDeclarationBuilder {
 			d.setManagingMunicipalityFSOId(numeroOfsForGestion);
 		}
 
-		d.setSegmentationCode(declaration.getCodeSegment()); // SIFISC-2528
+		Integer cs = declaration.getCodeSegment();
+		// SIFISC-3873 : Code segment 0 par défaut pour les DI >= 2011
+		if (cs == null && declaration.getPeriode().getAnnee() >= ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			cs = DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT;
+		}
+		d.setSegmentationCode(cs); // SIFISC-2528
 
 		return d;
 	}
