@@ -124,11 +124,6 @@
 				<!-- Testing -->
 				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
 				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
-				<entry key="/admin/evenementExterne/main.do" value-ref="evenementExterneController" />
-				<entry key="/admin/evenementExterne/quittancement.do" value-ref="quittancementController" />
-				<entry key="/admin/evenementExterne/rapporttravail.do" value-ref="rapportTravailController" />
-				<entry key="/admin/evenementExterne/evolution.do" value-ref="evolutionController" />
-				<entry key="/admin/evenementExterne/civilunitaire.do" value-ref="civilUnitaireController" />
 
 				<!-- Paramétrage -->
 				<entry key="/param/application.do" value-ref="paramApplicationController" />

@@ -89,45 +89,4 @@
 		<property name="successView" value="../admin/tiersImport/list.do" /> <!-- msi: temp hack -->
 	</bean>
 	
-	<bean id="ajaxContainer" abstract="true" parent="abstractSimpleFormController">
-		<property name="errorRenderingCallback">
-			<bean class="ch.vd.uniregctb.web.xt.action.FormRenderingCallback" />
-		</property>
-		<property name="successRenderingCallback">
-			<bean class="ch.vd.uniregctb.web.xt.action.FormRenderingCallback" />
-		</property>
-		<property name="ajaxResponseEncoding" value="UTF-8" />
-	</bean>
-
-	<bean id="evenementExterneController" class="ch.vd.uniregctb.admin.evenementExterne.EvenementExterneController"
-		parent="abstractSimpleFormController">
-		<property name="formView" value="admin/evenementExterne/main" />
-		<property name="successView" value="admin/evenementExterne/main.do" />
-		<property name="evenementExterneDAO" ref="evenementExterneDAO" />
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
-
-	<bean id="quittancementController" class="ch.vd.uniregctb.admin.evenementExterne.QuittancementController" parent="ajaxContainer">
-		<property name="formView" value="admin/evenementExterne/quittancement" />
-		<property name="successView" value="admin/evenementExterne/quittancement.do" />
-		<property name="evenementExterneService" ref="evenementExterneService" />
-
-	</bean>
-
-	<bean id="rapportTravailController" class="ch.vd.uniregctb.admin.evenementExterne.RapportTravailController" parent="ajaxContainer">
-		<property name="formView" value="admin/evenementExterne/rapporttravail" />
-		<property name="successView" value="admin/evenementExterne/rapporttravail.do" />
-	</bean>
-
-	<bean id="evolutionController" class="ch.vd.uniregctb.admin.evenementExterne.EvolutionController" parent="ajaxContainer">
-		<property name="formView" value="admin/evenementExterne/evolution" />
-		<property name="successView" value="admin/evenementExterne/evolution.do" />
-	</bean>
-
-	<bean id="civilUnitaireController" class="ch.vd.uniregctb.admin.evenementExterne.EvenementCivilController" parent="ajaxContainer">
-		<property name="formView" value="admin/evenementExterne/civilunitaire" />
-		<property name="successView" value="admin/evenementExterne/civilunitaire.do" />
-		<property name="evtCivilSender" ref="evtCivilSender" />
-	</bean>
-	
 </beans>

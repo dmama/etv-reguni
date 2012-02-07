@@ -1184,30 +1184,6 @@ var Form = {
 			$('input[name="__EVENT_ARGUMENT__"]', theForm).val(eventArgument);
 	        theForm.submit();
 	    }
-	},
-	doAjaxActionPostBack : function(formName, event, eventTarget, eventArgument) {
-		eventTarget = $(eventTarget);
-		var eventId = eventTarget.attr('name');
-		if (!eventId) {
-			eventId = eventTarget.attr('id');
-		}
-		eventArgument = (!eventArgument ? {}: eventArgument);
-		XT.doAjaxAction(eventId + event, eventTarget, eventArgument, {
-			clearQueryString: true,
-			formName: formName
-		});
-	},
-	doAjaxSubmitPostBack : function(formName, event, eventTarget, eventArgument) {
-		eventTarget = $(eventTarget);
-		var eventId = eventTarget.attr('name');
-		if (!eventId) {
-			eventId = eventTarget.attr('id');
-		}
-		eventArgument = (!eventArgument ? {}: eventArgument);
-		XT.doAjaxSubmit(eventId + event, eventTarget, eventArgument, {
-			clearQueryString: true,
-			formName:formName
-		});
 	}
 };
 
