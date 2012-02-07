@@ -243,4 +243,9 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
+	<bean id="forsController" class="ch.vd.uniregctb.fors.ForsController">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
 </beans>

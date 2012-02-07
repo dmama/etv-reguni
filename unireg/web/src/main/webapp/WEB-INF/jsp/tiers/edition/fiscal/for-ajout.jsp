@@ -15,7 +15,7 @@
 		<script type="text/javascript">
 			function updateMotifsFors(element) {
 				// les paramètres ci-dessous correspondent aux ids des selects correspondants
-				Fors.updateMotifsFor(element, 'motifOuverture', 'motifFermeture', '${command.numeroCtb}', 'genre_impot', 'rattachement');
+				Fors.updateMotifsFor($('#motifOuverture'), $('#motifFermeture'), '${command.numeroCtb}', 'genre_impot', 'rattachement');
 			}
 		</script>
 
@@ -91,9 +91,7 @@
 		
 		<script type="text/javascript">
 			// on initialise les motifs au chargement de la page
-			Fors.updateMotifsFor($('#motifFermeture').get(0), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}',
-					'genre_impot', 'rattachement', '${command.motifOuverture}', '${command.motifFermeture}');
-
+			Fors.updateMotifsFor($('#motifOuverture'), $('#motifFermeture'), '${command.numeroCtb}', 'genre_impot', 'rattachement', '${command.motifOuverture}', '${command.motifFermeture}');
 			Fors.selectGenreImpot('${command.genreImpot}');
 		</script>
 	</fieldset>

@@ -360,61 +360,37 @@ var Fors = {
 	 * Cette fonction met-à-jour la liste des motifs d'ouverture et de fermeture en
 	 * fonction des valeurs de genre d'impôt et motif de rattachement spécifiés.
 	 *
-	 * @param element
-	 *            l'élément qui vient d'être changé
-	 * @param motifsOuvertureSelectId
-	 *            l'id du select contenant les motifs d'ouverture à mettre-à-jour
-	 * @param motifsFermetureSelectId
-	 *            l'id du select contenant les motifs de fermeture à mettre-à-jour
+	 * @param motifsOuvertureSelect
+	 *            le select contenant les motifs d'ouverture à mettre-à-jour
+	 * @param motifsFermetureSelect
+	 *            le select contenant les motifs de fermeture à mettre-à-jour
 	 * @param genreImpotSelectId
 	 *            l'id du select contenant le genre d'impôt courant
 	 * @param rattachementSelectId
 	 *            l'id du select contenant le motif de rattachement courant
 	 * @param defaultMotifOuverture
 	 *            (optionel) la valeur par défaut du motif d'ouverture lorsqu'aucune
-	 *            valeur n'est sélectionné dans la liste 'motifsOuvertureSelectId'
+	 *            valeur n'est sélectionné dans la liste 'motifsOuvertureSelect'
 	 * @param defaultMotifFermeture
 	 *            (optionel) la valeur par défaut du motif de fermeture
 	 *            lorsqu'aucune valeur n'est sélectionné dans la liste
-	 *            'motifsFermetureSelectId'
+	 *            'motifsFermetureSelect'
 	 */
-	updateMotifsFor: function(element, motifsOuvertureSelectId, motifsFermetureSelectId, numeroCtb, genreImpotSelectId, rattachementSelectId, defaultMotifOuverture, defaultMotifFermeture) {
+	updateMotifsFor: function(motifsOuvertureSelect, motifsFermetureSelect, numeroCtb, genreImpotSelectId, rattachementSelectId, defaultMotifOuverture, defaultMotifFermeture) {
 
-		// on récupère les valeurs courantes / par défaut
-		var motifOuverture = $('#' + motifsOuvertureSelectId).val();
-		if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
-		var motifsFermeture = $('#' + motifsFermetureSelectId).val();
-		if (motifsFermeture == null) motifsFermeture = defaultMotifFermeture;
 		var genreImpot = $('#' + genreImpotSelectId).val();
 		var rattachement = $('#' + rattachementSelectId).val();
 
-		// appels ajax pour mettre-à-jour les motifs d'ouverture
-		XT.doAjaxAction('updateMotifsOuverture', element, {
-			'motifsOuvertureSelectId' : motifsOuvertureSelectId,
-			'numeroCtb' : numeroCtb,
-			'genreImpot' : genreImpot,
-			'rattachement' : rattachement,
-			'motifCourant' : motifOuverture
-		});
-
-		// appels ajax pour mettre-à-jour les motifs de fermeture
-		XT.doAjaxAction('updateMotifsFermeture', element, {
-			'motifsFermetureSelectId' : motifsFermetureSelectId,
-			'numeroCtb' : numeroCtb,
-			'genreImpot' : genreImpot,
-			'rattachement' : rattachement,
-			'motifCourant' : motifsFermeture
-		});
+		this.updateMotifsOuverture(motifsOuvertureSelect, numeroCtb, genreImpot, rattachement, defaultMotifOuverture);
+		this.updateMotifsFermeture(motifsFermetureSelect, numeroCtb, genreImpot, rattachement, defaultMotifFermeture)
 	},
 
 	/**
 	 * Cette fonction met-à-jour la liste des motifs d'ouverture en fonction des
 	 * valeurs de genre d'impôt et motif de rattachement spécifiés.
 	 *
-	 * @param element
-	 *            l'élément qui vient d'être changé
-	 * @param motifsOuvertureSelectId
-	 *            l'id du select contenant les motifs d'ouverture à mettre-à-jour
+	 * @param motifsOuvertureSelect
+	 *            le select contenant les motifs d'ouverture à mettre-à-jour
 	 * @param genreImpot
 	 *            le genre d'impôt courant
 	 * @param rattachement
@@ -422,20 +398,25 @@ var Fors = {
 	 * @param defaultMotifOuverture
 	 *            (optionel) la valeur par défaut du motif de ouverture
 	 *            lorsqu'aucune valeur n'est sélectionné dans la liste
-	 *            'motifsOuvertureSelectId'
+	 *            'motifsOuvertureSelect'
 	 */
-	updateMotifsOuverture: function(element, motifsOuvertureSelectId, numeroCtb, genreImpot, rattachement, defaultMotifOuverture) {
+	updateMotifsOuverture: function(motifsOuvertureSelect, numeroCtb, genreImpot, rattachement, defaultMotifOuverture) {
 
-		var motifsOuverture = $('#' + motifsOuvertureSelectId).val();
-		if (motifsOuverture == null) motifsOuverture = defaultMotifOuverture;
+		var motifOuverture = motifsOuvertureSelect.val();
+		if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
 
-		// appels ajax pour mettre-à-jour les motifs de ouverture
-		XT.doAjaxAction('updateMotifsOuverture', element, {
-			'motifsOuvertureSelectId' : motifsOuvertureSelectId,
-			'numeroCtb' : numeroCtb,
-			'genreImpot' : genreImpot,
-			'rattachement' : rattachement,
-			'motifCourant' : motifsOuverture
+		// appels ajax pour mettre-à-jour les motifs d'ouverture
+		$.get(getContextPath() + '/fors/motifsOuverture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement, function(motifs) {
+			var list = '';
+			if (!motifOuverture || !(motifOuverture in motifs) && motifs.length > 1) {
+				// on ajoute une option vide si le motif courant (= ancienne valeur) n'est pas mappable sur les nouveaux motifs disponibles (et qu'il y en a plusieurs)
+				list += '<option></option>';
+			}
+			for(var i = 0; i < motifs.length; ++i) {
+				var motif = motifs[i];
+				list += '<option value="' + motif.type + '"' + (motif.type == motifOuverture ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(motif.label) + '</option>';
+			}
+			motifsOuvertureSelect.html(list);
 		});
 	},
 
@@ -443,10 +424,8 @@ var Fors = {
 	 * Cette fonction met-à-jour la liste des motifs de fermeture en fonction des
 	 * valeurs de genre d'impôt et motif de rattachement spécifiés.
 	 *
-	 * @param element
-	 *            l'élément qui vient d'être changé
-	 * @param motifsFermetureSelectId
-	 *            l'id du select contenant les motifs de fermeture à mettre-à-jour
+	 * @param motifsFermetureSelect
+	 *            le select contenant les motifs de fermeture à mettre-à-jour
 	 * @param genreImpot
 	 *            le genre d'impôt courant
 	 * @param rattachement
@@ -454,20 +433,21 @@ var Fors = {
 	 * @param defaultMotifFermeture
 	 *            (optionel) la valeur par défaut du motif de fermeture
 	 *            lorsqu'aucune valeur n'est sélectionné dans la liste
-	 *            'motifsFermetureSelectId'
+	 *            'motifsFermetureSelect'
 	 */
-	updateMotifsFermeture: function(element, motifsFermetureSelectId, numeroCtb, genreImpot, rattachement, defaultMotifFermeture) {
+	updateMotifsFermeture: function(motifsFermetureSelect, numeroCtb, genreImpot, rattachement, defaultMotifFermeture) {
 
-		var motifsFermeture = $('#' + motifsFermetureSelectId).val();
-		if (motifsFermeture == null) motifsFermeture = defaultMotifFermeture;
+		var motifFermeture = motifsFermetureSelect.val();
+		if (motifFermeture == null) motifFermeture = defaultMotifFermeture;
 
 		// appels ajax pour mettre-à-jour les motifs de fermeture
-		XT.doAjaxAction('updateMotifsFermeture', element, {
-			'motifsFermetureSelectId' : motifsFermetureSelectId,
-			'numeroCtb' : numeroCtb,
-			'genreImpot' : genreImpot,
-			'rattachement' : rattachement,
-			'motifCourant' : motifsFermeture
+		$.get(getContextPath() + '/fors/motifsFermeture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement, function(motifs) {
+			var list = '<option></option>'; // dans le cas du motif de fermeture, on ajoute toujours une option vide
+			for(var i = 0; i < motifs.length; ++i) {
+				var motif = motifs[i];
+				list += '<option value="' + motif.type + '"' + (motif.type == motifFermeture ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(motif.label) + '</option>';
+			}
+			motifsFermetureSelect.html(list);
 		});
 	},
 
