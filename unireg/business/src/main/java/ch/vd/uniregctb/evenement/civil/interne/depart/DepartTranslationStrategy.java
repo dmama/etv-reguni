@@ -37,7 +37,6 @@ public class DepartTranslationStrategy implements EvenementCivilTranslationStrat
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
-		final EvenementCivilInterne interne;
 		//Départ de la commune ou secondaire
 		// si on trouve une adresse principale qui se termine le jour de l'événement, alors c'est une départ principal (de la commune)
 		// sinon, si on trouve une adresse secondaire qui se termine ce jour-là, c'est un départ secondaire
