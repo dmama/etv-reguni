@@ -275,7 +275,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private EvenementFiscalService evenementFiscalService;
 
 	private EvenementCivilContext context;
-
+	
 	@Override
 	public EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException {
 		return getStrategy(event).create(event, context, options);
@@ -292,7 +292,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@NotNull
-	private static EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
+	private EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
 		final EventTypeKey key = new EventTypeKey(event);
 		final EvenementCivilEchTranslationStrategy strategy = getStrategy(key);
 		if (strategy == null) {
@@ -302,7 +302,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@Nullable
-	protected static EvenementCivilEchTranslationStrategy getStrategy(EventTypeKey key) {
+	protected EvenementCivilEchTranslationStrategy getStrategy(EventTypeKey key) {
+		return getStrategyFromMap(key);
+	}
+
+	@Nullable
+	protected static EvenementCivilEchTranslationStrategy getStrategyFromMap(EventTypeKey key) {
 		return strategies.get(key);
 	}
 

@@ -24,13 +24,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		queue.setTransactionManager(transactionManager);
 		queue.afterPropertiesSet();
 
-		processor = new EvenementCivilEchProcessor();
-		processor.setEvtCivilDAO(evtCivilDAO);
-		processor.setNotificationQueue(queue);
-		processor.setTransactionManager(transactionManager);
-		processor.setTranslator(translator);
-		processor.setTiersService(tiersService);
-		processor.setIndexer(globalTiersIndexer);
+		buildProcessor(translator, false);
 		processor.start();
 	}
 
@@ -39,7 +33,24 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		processor.stop();
 		super.onTearDown();
 	}
-
+	
+	protected void buildProcessor(EvenementCivilEchTranslator translator, boolean restart) {
+		final EvenementCivilEchProcessor proc = new EvenementCivilEchProcessor();
+		proc.setEvtCivilDAO(evtCivilDAO);
+		proc.setNotificationQueue(queue);
+		proc.setTransactionManager(transactionManager);
+		proc.setTranslator(translator);
+		proc.setTiersService(tiersService);
+		proc.setIndexer(globalTiersIndexer);
+		if (restart && processor != null) {
+			processor.stop();
+		}
+		processor = proc;
+		if (restart) {
+			processor.start();
+		}
+	}
+	
 	protected void traiterEvenement(long noIndividu, final long noEvenement) throws InterruptedException {
 		// on se met en position pour voir quand le traitement aura été effectué
 		final MutableBoolean jobDone = new MutableBoolean(false);

@@ -1,17 +1,32 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Arrays;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -19,7 +34,9 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+@SuppressWarnings("JavaDoc")
 public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test(timeout = 10000L)
@@ -282,6 +299,152 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 				final EvenementCivilEch evt = evtCivilDAO.get(testingId);
 				assertNotNull(evt);
 				afterHandleCallback.checkEvent(evt);
+				return null;
+			}
+		});
+	}
+	
+	@Test(timeout = 10000L)
+	public void testEvenementCompositeEtTransactionAvecRuntimeException() throws Exception {
+		doTestEvenementCompositeEtTransaction(new Handler() {
+			@Override
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+				throw new RuntimeException("Boom!");
+			}
+		});
+	}
+	
+	@Test(timeout = 10000L)
+	public void testEvenementCompositeEtTransactionAvecCheckedException() throws Exception {
+		doTestEvenementCompositeEtTransaction(new Handler() {
+			@Override
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+				throw new EvenementCivilException("Boom!");
+			}
+		});
+	}
+	
+	private static interface Handler {
+		HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
+	}
+
+	/**
+	 * Le handler sera appelé dans l'événement interne suivant celui qui a créé un nouveau contribuable
+	 * @param handler handler
+	 */
+	private void doTestEvenementCompositeEtTransaction(final Handler handler) throws Exception {
+		
+		final long noIndividu = 25614312L;
+		
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
+			}
+		});
+
+		// stratégie qui génère un événement composite qui appelle le handler sur le deuxième traitement
+		// après avoir créé un nouveau contribuable sur le premier
+		final EvenementCivilEchTranslationStrategy strategy = new EvenementCivilEchTranslationStrategy() {
+			@Override
+			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+
+				// un événement qui crée un truc en base
+				final EvenementCivilInterne naissance = new EvenementCivilInterne(event, context, options) {
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						final PersonnePhysique pp = new PersonnePhysique(true);
+						pp.setNumeroIndividu(getNoIndividu());
+						context.getTiersDAO().save(pp);
+						return HandleStatus.TRAITE;
+					}
+
+					@Override
+					protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					}
+
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return false;
+					}
+				};
+
+				// un événement qui explose avec une erreur métier
+				final EvenementCivilInterne boom = new EvenementCivilInterne(event, context, options) {
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						return handler.handle(warnings);
+					}
+
+					@Override
+					protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					}
+
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return false;
+					}
+				};
+
+				return new EvenementCivilInterneComposite(event, context, options, Arrays.asList(naissance, boom));
+			}
+		};
+
+		final EvenementCivilEchTranslatorImplOverride translator = new EvenementCivilEchTranslatorImplOverride();
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setIndexer(globalTiersIndexer);
+		translator.setMetierService(getBean(MetierService.class, "metierService"));
+		translator.setServiceCivilService(serviceCivil);
+		translator.setServiceInfrastructureService(serviceInfra);
+		translator.setTiersDAO(tiersDAO);
+		translator.setTiersService(tiersService);
+		translator.afterPropertiesSet();
+
+		translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
+		buildProcessor(translator, true);
+		
+		// construction de l'événement en base
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1367813456723L);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setDateEvenement(RegDate.get());
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+		
+		// traitement de l'événement
+		traiterEvenement(noIndividu, evtId);
+		
+		// vérification que rien n'a été committé en base (autre que les messages d'erreur, bien-sûr)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				assertNotNull(erreur);
+				assertEquals("Boom!", erreur.getMessage());
+				
+				// la personne physique ne doit pas avoir été créée
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNull("La personne physique n'aurait pas dû survivre à la transaction", pp);
 				return null;
 			}
 		});

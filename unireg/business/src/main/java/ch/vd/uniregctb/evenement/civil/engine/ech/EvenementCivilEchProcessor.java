@@ -167,6 +167,20 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	}
 
 	/**
+	 * Classe d'exception utilisée pour wrapper une {@link EvenementCivilException}
+	 */
+	private static final class EvenementCivilWrappingException extends RuntimeException {
+		private EvenementCivilWrappingException(EvenementCivilException cause) {
+			super(cause);
+		}
+
+		@Override
+		public EvenementCivilException getCause() {
+			return (EvenementCivilException) super.getCause();
+		}
+	}
+
+	/**
 	 * Lancement du processing de l'événement civil décrit dans la structure donnée
 	 * @param info description de l'événement civil à traiter maintenant
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
@@ -185,9 +199,20 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.idEvenement, evt.getEtat()));
 						return Boolean.TRUE;
 					}
-					return processEvent(evt);
+					
+					try {
+						return processEvent(evt);
+					}
+					catch (EvenementCivilException e) {
+						throw new EvenementCivilWrappingException(e);
+					}
 				}
 			});
+		}
+		catch (EvenementCivilWrappingException e) {
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.idEvenement), e.getCause());
+			onException(info, e.getCause());
+			return false;
 		}
 		catch (Exception e) {
 			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.idEvenement), e);
@@ -274,8 +299,9 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	 * Appelé dans une transaction pour lancer le traitement de l'événement civil
 	 * @param event événement à traiter
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a été mis en erreur
+	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème métier
 	 */
-	private boolean processEvent(EvenementCivilEch event) {
+	private boolean processEvent(EvenementCivilEch event) throws EvenementCivilException {
 		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
 
 		// élimination des erreurs en cas de retraitement
@@ -320,28 +346,20 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		return !hasErrors;
 	}
 
-	private EtatEvenementCivil processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
-		try {
-			final EvenementCivilInterne evtInterne = buildInterne(event);
-			if (evtInterne == null) {
-				LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
-				erreurs.addErreur("Aucun code de traitement trouvé");
+	private EtatEvenementCivil processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		final EvenementCivilInterne evtInterne = buildInterne(event);
+		if (evtInterne == null) {
+			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
+			erreurs.addErreur("Aucun code de traitement trouvé");
+			return EtatEvenementCivil.EN_ERREUR;
+		}
+		else {
+			// validation et traitement
+			evtInterne.validate(erreurs, warnings);
+			if (erreurs.hasErreurs()) {
 				return EtatEvenementCivil.EN_ERREUR;
 			}
-			else {
-				// validation et traitement
-				evtInterne.validate(erreurs, warnings);
-				if (erreurs.hasErreurs()) {
-					return EtatEvenementCivil.EN_ERREUR;
-				}
-
-				return evtInterne.handle(warnings).toEtat();
-			}
-		}
-		catch (EvenementCivilException e) {
-			LOGGER.error(String.format("Exception lancée lors du traitement de l'événement %d", event.getId()), e);
-			erreurs.addErreur(e);
-			return EtatEvenementCivil.EN_ERREUR;
+			return evtInterne.handle(warnings).toEtat();
 		}
 	}
 
