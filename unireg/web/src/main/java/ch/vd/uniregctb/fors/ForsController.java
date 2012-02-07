@@ -89,7 +89,7 @@ public class ForsController {
 	}
 
 	private String getLabelFermeture(MotifFor motifFor) {
-		final String key = String.format("%s%s", ApplicationConfig.masterKeyMotifOuverture, motifFor.name());
+		final String key = String.format("%s%s", ApplicationConfig.masterKeyMotifFermeture, motifFor.name());
 		return messageSource.getMessage(key);
 	}
 
