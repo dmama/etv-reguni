@@ -19,17 +19,17 @@ public class CorrectionIdentificationTranslationStrategy implements EvenementCiv
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
-		return new EvenementCivilInterneComposite(event, context, options,
-		                                          Arrays.<EvenementCivilInterne>asList(new ChangementIdentificateur(event, context, options),
-		                                                                               new ChangementSexe(event, context, options),
-		                                                                               new CorrectionDateNaissance(event, context, options),
-		                                                                               new ChangementNom(event, context, options)
-		                                          )
-		);
+			return new EvenementCivilInterneComposite(
+					event, context, options,
+					Arrays.<EvenementCivilInterne>asList (
+						new ChangementIdentificateur(event, context, options),
+						new ChangementSexe(event, context, options),
+						new CorrectionDateNaissance(event, context, options),
+						new ChangementNom(event, context, options)
+					)
+			);
+
 	}
 
-	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
-		return true;
-	}
+
 }
