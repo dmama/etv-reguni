@@ -389,7 +389,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 					}
 				};
 
-				return new EvenementCivilInterneComposite(event, context, options, Arrays.asList(naissance, boom));
+				return new EvenementCivilInterneComposite(event, context, options, naissance, boom);
 			}
 
 			@Override
