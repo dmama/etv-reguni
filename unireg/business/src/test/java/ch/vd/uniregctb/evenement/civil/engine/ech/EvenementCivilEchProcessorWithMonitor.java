@@ -25,9 +25,9 @@ public class EvenementCivilEchProcessorWithMonitor extends EvenementCivilEchProc
 	}
 
 	@Override
-	protected boolean processEvent(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
+	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
 		try {
-			return super.processEvent(evt, evts, pointer);
+			return super.processEventAndDoPostProcessingOnError(evt, evts, pointer);
 		}
 		finally {
 			if (monitor != null) {

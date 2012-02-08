@@ -120,7 +120,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), evts.get(0).noIndividu));
 				for (EvenementCivilNotificationQueue.EvtCivilInfo evt : evts) {
 					if (!stopping) {
-						if (!processEvent(evt, evts, pointer)) {
+						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
 							break;
 						}
 						++ pointer;
@@ -146,7 +146,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	 * @param pointer indicateur de la position de l'événement civil cible dans la liste des événements
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
-	protected boolean processEvent(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
+	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.idEvenement));
 		try {
 			final boolean success = processEvent(evt);
@@ -236,7 +236,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	}
 
 	/**
-	 * Quand la méthode {@link #processEvent} a renvoyé <code>false</code>, il faut passer tous les événements
+	 * Quand la méthode {@link #processEventAndDoPostProcessingOnError} a renvoyé <code>false</code>, il faut passer tous les événements
 	 * restant de la liste de l'état "A_TRAITER" en "EN_ATTENTE"
 	 * @param remainingEvents descriptif des événements dans la queue
 	 */
@@ -302,7 +302,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		event.getErreurs().clear();
 
 		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<EvenementCivilEchErreur>(ERREUR_FACTORY);
-		final EtatEvenementCivil etat = processEvent(event, collector, collector);
+		final EtatEvenementCivil etat = processEventAndCollectMessages(event, collector, collector);
 
 		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
 		final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
@@ -340,7 +340,7 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		return !hasErrors;
 	}
 
-	private EtatEvenementCivil processEvent(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private EtatEvenementCivil processEventAndCollectMessages(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		final EvenementCivilInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
 			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
