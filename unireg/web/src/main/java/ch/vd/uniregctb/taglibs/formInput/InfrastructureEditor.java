@@ -112,12 +112,12 @@ public class InfrastructureEditor implements Editor {
 				tagWriter.endTag();
 
 				script = "$(function() {\n" +
-						"\tautocomplete_infra('" + category.getTag() + "', '#" + id + "', true, function(item) {\n" +
+						"\tAutocomplete.infra('" + category.getTag() + "', '#" + id + "', true, function(item) {\n" +
 						"\t\t$('#" + getHiddenId(id) + "').val(item ? item.id1 : null);\n" +
 						"\t\t$('#numCommune').val(item ? item.id2 : null);\n" +
 						'\n' +
 						"\t\t// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence\n" +
-						"\t\tautocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {\n" +
+						"\t\tAutocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {\n" +
 						"\t\t\tif (i) {\n" +
 						"\t\t\t\t$('#_rueId').val(i.id1);\n" +
 						"\t\t\t\t$('#_localiteId').val(i.id2);\n" +
@@ -137,7 +137,7 @@ public class InfrastructureEditor implements Editor {
 				}
 				
 				script = "$(function() {\n" +
-						"\tautocomplete_infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {\n" +
+						"\tAutocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {\n" +
 						"\t\tif (i) {\n" +
 						"\t\t\t$('#_rueId').val(i.id1);\n" +
 						"\t\t\t$('#_localiteId').val(i.id2);\n" +
@@ -151,7 +151,7 @@ public class InfrastructureEditor implements Editor {
 			else {
 				// cas général
 				script = "$(function() {\n" +
-						"\tautocomplete_infra('" + category.getTag() + "', '#" + id + "', true, function(item) {\n" +
+						"\tAutocomplete.infra('" + category.getTag() + "', '#" + id + "', true, function(item) {\n" +
 						"\t\t$('#" + getHiddenId(id) + "').val(item ? item.id1 : null);\n" +
 						"\t});\n" +
 						"});";

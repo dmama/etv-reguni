@@ -280,7 +280,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// champ contenant le numéro Ofs invisible à l'utilisateur
 		b.append("<input id=\"").append(idInputNoOfs).append("\" name=\"").append(nameInputNoOfs).append("\" type=\"hidden\" value=\"").append(defaultNoOfsCommune).append("\"/>\n");
 
-		// la catégorie à donner à la méthode autocomplete_infra dépend du type de commune que l'on accepte
+		// la catégorie à donner à la méthode Autocomplete.infra dépend du type de commune que l'on accepte
 		final JobParamCommune type = (JobParamCommune) param.getType();
 		final String categorie;
 		switch (type.getType()) {
@@ -300,7 +300,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
 		b.append("    $(function() {\n");
-		b.append("        autocomplete_infra('").append(categorie).append("', '#").append(idInputNomCommune).append("', true, function(item) {\n");
+		b.append("        Autocomplete.infra('").append(categorie).append("', '#").append(idInputNomCommune).append("', true, function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoOfs).append("').val(item.id1);\n");
 		b.append("                $('#").append(idInputNomCommune).append("').removeClass('error');\n");
@@ -339,7 +339,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
 		b.append("    $(function() {\n");
-		b.append("        autocomplete_infra('officeImpot', '#").append(idInputNomOID).append("', true, function(item) {\n");
+		b.append("        Autocomplete.infra('officeImpot', '#").append(idInputNomOID).append("', true, function(item) {\n");
 		b.append("            if (item) {\n");
 		b.append("                $('#").append(idInputNoColAdm).append("').val(item.id1);\n");
 		b.append("                $('#").append(idInputNomOID).append("').removeClass('error');\n");
