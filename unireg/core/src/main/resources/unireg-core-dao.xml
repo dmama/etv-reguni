@@ -5,6 +5,8 @@
 
 							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
+	<bean id="applicationContext" class="ch.vd.uniregctb.common.ApplicationContextInjector"/>
+	
 	<!-- Will be auto-wired -->
 	<bean id="hibernateDaoSupport" class="org.springframework.orm.hibernate3.support.HibernateDaoSupport" abstract="true">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />

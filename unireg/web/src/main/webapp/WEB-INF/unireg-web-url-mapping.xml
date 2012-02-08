@@ -144,7 +144,6 @@
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
 				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
 				<entry key="/tiers/mouvement.do" value-ref="mouvementVisuController" />
-				<entry key="/tiers/picker/tiers-picker.do" value-ref="tiersPickerController" />
 
 				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
 				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />

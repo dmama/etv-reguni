@@ -1,15 +1,15 @@
 package ch.vd.uniregctb.couple;
 
+import ch.vd.uniregctb.search.SearchTiersFilter;
+import ch.vd.uniregctb.search.SearchTiersFilterFactory;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilter;
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory;
 
-public class CoupleMcPickerFilterFactory implements TiersPickerFilterFactory {
+public class CoupleMcPickerFilterFactory implements SearchTiersFilterFactory {
 
 	private TiersDAO tiersDAO;
 
 	@Override
-	public TiersPickerFilter parse(String paramsString) {
+	public SearchTiersFilter parse(String paramsString) {
 		return new CoupleMcPickerFilter(tiersDAO);
 	}
 

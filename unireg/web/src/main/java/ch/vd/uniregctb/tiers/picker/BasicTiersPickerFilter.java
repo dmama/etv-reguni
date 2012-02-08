@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.uniregctb.search.SearchTiersFilter;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
 /**
  * Filtre de base qui permet de filtrer sur des éléments connus de l'indexeur (sans post-filtrage).
  */
-public class BasicTiersPickerFilter implements TiersPickerFilter {
+public class BasicTiersPickerFilter implements SearchTiersFilter {
 
 	private final String description;
 	private TiersCriteria.TypeVisualisation typeVisualisation;

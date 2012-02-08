@@ -216,19 +216,11 @@
 		<property name="tiersEditManager" ref="tiersEditManager" />
 	</bean>
 
-	<bean id="tiersPickerManager" class="ch.vd.uniregctb.tiers.picker.TiersPickerManagerImpl"/>
-
 	<bean id="tiersPickerController" class="ch.vd.uniregctb.tiers.picker.TiersPickerController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.picker.TiersPickerView" />
-		<property name="formView" value="tiers/picker/tiers-picker" />
-		<property name="successView" value="tiers/picker/tiers-picker" />
-		<property name="searcher" ref="globalTiersSearcher" />
-		<property name="manager" ref="tiersPickerManager" />
 	</bean>
 
-	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactoryImpl"/>
-	
+	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory"/>
+
 	<bean id="remarqueController" class="ch.vd.uniregctb.remarque.RemarqueController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
@@ -246,6 +238,11 @@
 	<bean id="forsController" class="ch.vd.uniregctb.fors.ForsController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="messageSource" ref="messageSource" />
+	</bean>
+
+	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">
+		<property name="searcher" ref="globalTiersSearcher" />
+		<property name="applicationContext" ref="applicationContext" />
 	</bean>
 
 </beans>

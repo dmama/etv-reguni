@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.picker;
+package ch.vd.uniregctb.search;
 
 import java.util.Set;
 
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersFilter;
 
-public interface TiersPickerFilter extends TiersFilter {
+public interface SearchTiersFilter extends TiersFilter {
 
 	/**
 	 * @return une description du filtre qui sera affichée à l'utilisateur

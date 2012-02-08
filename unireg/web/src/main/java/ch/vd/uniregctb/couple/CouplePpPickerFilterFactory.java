@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.couple;
 
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilter;
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory;
+import ch.vd.uniregctb.search.SearchTiersFilter;
+import ch.vd.uniregctb.search.SearchTiersFilterFactory;
 
-public class CouplePpPickerFilterFactory implements TiersPickerFilterFactory {
+public class CouplePpPickerFilterFactory implements SearchTiersFilterFactory {
 
 	@Override
-	public TiersPickerFilter parse(String paramsString) {
+	public SearchTiersFilter parse(String paramsString) {
 		return new CouplePpPickerFilter();
 	}
 }

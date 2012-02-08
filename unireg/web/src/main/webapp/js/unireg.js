@@ -169,15 +169,21 @@ var Dialog = {
 					clearTimeout($.data(this, "tiers-picker-timer"));
 					// on retarde l'appel javascript de 200ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
 					var timer = setTimeout(function() {
-						var params = {
-							'query' : current,
-							'buttonId' : $(button).attr('id')
-						};
+
+						var buttonId = $(button).attr('id');
+
+						var queryString = '/search/quick.do?query=' + encodeURIComponent(current);
 						if (filter_bean) {
-							params['filterBean'] = filter_bean;
-							params['filterParams'] = filter_params;
+							queryString += '&filterBean=' + encodeURIComponent(filter_bean);
+							queryString += '&filterParams=' + encodeURIComponent(filter_params);
 						}
-						XT.doAjaxAction('tiersPickerQuickSearch', $('#tiers-picker-query').get(0), params);
+
+						// on effectue la recherche par ajax
+						$.get(getContextPath() + queryString, function(results) {
+							$('#tiers-picker-filter-description').text(results.filterDescription);
+							$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
+						});
+
 					}, 200); // 200 ms
 					$.data(this, "tiers-picker-timer", timer);
 				}
@@ -186,19 +192,25 @@ var Dialog = {
 			// on installe la fonction qui sera appelée lors de la demande de recherche avancée
 			var fullSearch = $('#fullSearch').button();
 			fullSearch.click(function() {
-				var params = {
-					'id' : $('#tiers-picker-id').val(),
-					'nomraison' : $('#tiers-picker-nomraison').val(),
-					'localite' : $('#tiers-picker-localite').val(),
-					'datenaissance' : $('#tiers-picker-datenaissance').val(),
-					'noavs' : $('#tiers-picker-noavs').val(),
-					'buttonId' : $(button).attr('id')
-				};
+
+				var buttonId = $(button).attr('id');
+
+				var queryString = '/search/full.do?';
+				queryString += 'id=' + encodeURIComponent($('#tiers-picker-id').val());
+				queryString += '&nomRaison=' + encodeURIComponent($('#tiers-picker-nomraison').val());
+				queryString += '&localite=' + encodeURIComponent($('#tiers-picker-localite').val());
+				queryString += '&dateNaissance=' + encodeURIComponent($('#tiers-picker-datenaissance').val());
+				queryString += '&noAvs=' + encodeURIComponent($('#tiers-picker-noavs').val());
 				if (filter_bean) {
-					params['filterBean'] = filter_bean;
-					params['filterParams'] = filter_params;
+					queryString += '&filterBean=' + encodeURIComponent(filter_bean);
+					queryString += '&filterParams=' + encodeURIComponent(filter_params);
 				}
-				XT.doAjaxAction('tiersPickerFullSearch', $('#tiers-picker-query').get(0), params);
+
+				// on effectue la recherche par ajax
+				$.get(getContextPath() + queryString, function(results) {
+					$('#tiers-picker-filter-description').text(results.filterDescription);
+					$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
+				});
 			});
 
 			// la fonction pour tout effacer, y compris les résultat de la recherche
@@ -228,6 +240,30 @@ var Dialog = {
 
 		//prevent the browser to follow the link
 		return false;
+	},
+
+	build_html_tiers_picker_results: function(results, buttonId) {
+		var table = results.summary;
+
+		if (results.entries.length > 0) {
+			table += '<table border="0" cellspacing="0">';
+			table += '<thead><tr class="header">';
+			table += '<th>Numéro</th><th>Nom / Raison sociale</th><th>Date de naissance</th><th>Domicile</th><th>For principal</th>';
+			table += '</tr></thead>';
+			table += '<tbody>';
+			for(var i = 0; i < results.entries.length; ++i) {
+				var e = results.entries[i];
+				table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
+				table += '<td><a onclick="document.getElementById(\'' + buttonId + '\').select_tiers_id(this); return false;" href="#">' + StringUtils.escapeHTML(e.numero) + '</a></td>';
+				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? ' ' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
+				table += '<td>' + StringUtils.escapeHTML(e.dateNaissance) + '</td>';
+				table += '<td>' + StringUtils.escapeHTML(e.domicile) + '</td>';
+				table += '<td>' + StringUtils.escapeHTML(e.forPrincipal) + '</td>';
+			}
+			table += '</tbody></table>';
+		}
+
+		return table;
 	},
 
 	/**

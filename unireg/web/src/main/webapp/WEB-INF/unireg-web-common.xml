@@ -29,7 +29,6 @@
 	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
 		<property name="handlerMappings">
 			<props>
-				<prop key="/**/*.do">tiersPickerController</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
 				<prop key="/admin/batch.do">gestionBatchController</prop>
 				<prop key="/admin/status.do">infoController</prop>

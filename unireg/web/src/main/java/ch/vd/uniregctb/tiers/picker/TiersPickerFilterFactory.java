@@ -1,12 +1,43 @@
 package ch.vd.uniregctb.tiers.picker;
 
-public interface TiersPickerFilterFactory {
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
+import ch.vd.uniregctb.search.SearchTiersFilter;
+import ch.vd.uniregctb.search.SearchTiersFilterFactory;
+
+public class TiersPickerFilterFactory implements SearchTiersFilterFactory {
+
+	@Override
+	public SearchTiersFilter parse(String paramsString) {
+		final Map<String, String> params = mapParams(paramsString);
+		return new BasicTiersPickerFilter(params);
+	}
 
 	/**
-	 * Parse les paramètres du filtre et retourne un filtre sous forme d'objet.
+	 * Parse une string qui représente une série de clés-valeurs et remplit une map avec les tokens.
 	 *
-	 * @param params les paramètres sous forme de string
-	 * @return un filtre
+	 * @param paramsString string représentant des clés-valeurs avec le format <i>key0:val0+key1:val1+...</i>
+	 * @return une map des clés-valeurs
 	 */
-	TiersPickerFilter parse(String params);
+	private Map<String, String> mapParams(String paramsString) {
+
+		if (StringUtils.isBlank(paramsString)) {
+			return Collections.emptyMap();
+		}
+
+		final Map<String, String> params = new HashMap<String, String>();
+		final String[] keyValues = paramsString.split("\\+");
+		for (String keyValue : keyValues) {
+			final String[] tokens = keyValue.split(":");
+			final String key = tokens[0];
+			final String value = tokens[1];
+			params.put(key, value);
+		}
+
+		return params;
+	}
 }

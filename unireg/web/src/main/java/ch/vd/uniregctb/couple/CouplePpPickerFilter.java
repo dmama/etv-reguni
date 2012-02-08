@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.search.SearchTiersFilterWithPostFiltering;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilterWithPostFiltering;
 
 /**
  * Filtre spécialisé pour l'écran de recherche de la première ou la seconde personne physique dans la constitution d'un couple.
  */
-public class CouplePpPickerFilter implements TiersPickerFilterWithPostFiltering {
+public class CouplePpPickerFilter implements SearchTiersFilterWithPostFiltering {
 
 	public CouplePpPickerFilter() {
 	}

@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.search.SearchTiersFilterWithPostFiltering;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.picker.TiersPickerFilterWithPostFiltering;
 
 /**
  * Filtre spécialisé pour l'écran de recherche d'un troisième tiers dans la constitution d'un couple.
  */
-public class CoupleMcPickerFilter implements TiersPickerFilterWithPostFiltering {
+public class CoupleMcPickerFilter implements SearchTiersFilterWithPostFiltering {
 
 	private final TiersDAO tiersDAO;
 
