@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,30 +18,29 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
  */
 public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 
-	private List<EvenementCivilInterne> listEvtEch;
+	private EvenementCivilInterne[] listEvtEch;
 
-	public EvenementCivilInterneComposite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, List<EvenementCivilInterne> listEvtEch) throws
+	public EvenementCivilInterneComposite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, EvenementCivilInterne... listEvtEch) throws
 			EvenementCivilException {
 		super(evenement, context, options);
-		this.listEvtEch = listEvtEch;
 		if (listEvtEch == null) {
-			throw new NullPointerException("Impossible de contsruire un evenement composite sans une liste d'evenement le composant");
+			throw new NullPointerException("Impossible de construire un evenement composite sans une liste d'evenement le composant");
 		}
-		if (listEvtEch.size() < 2) {
+		if (listEvtEch.length < 2) {
 			throw new IllegalArgumentException("Un evenement composite doit être constituer d'au moins 2 evenements");
 		}
-
+		this.listEvtEch = listEvtEch;
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		HandleStatus ret = HandleStatus.TRAITE;
+		HandleStatus ret = HandleStatus.REDONDANT;
 		HandleStatus hs;
 		for (EvenementCivilInterne evt : listEvtEch) {
 			hs = evt.handle(warnings);
-			if (HandleStatus.REDONDANT.equals(hs)) {
-				ret = HandleStatus.REDONDANT;
+			if (HandleStatus.TRAITE.equals(hs)) {
+				ret = HandleStatus.TRAITE;
 			}
 		}
 		return ret;

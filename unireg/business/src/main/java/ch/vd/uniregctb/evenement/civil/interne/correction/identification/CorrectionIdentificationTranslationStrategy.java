@@ -1,6 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.correction.identication;
-
-import java.util.Arrays;
+package ch.vd.uniregctb.evenement.civil.interne.correction.identification;
 
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -21,12 +19,10 @@ public class CorrectionIdentificationTranslationStrategy implements EvenementCiv
 
 			return new EvenementCivilInterneComposite(
 					event, context, options,
-					Arrays.<EvenementCivilInterne>asList (
-						new ChangementIdentificateur(event, context, options),
-						new ChangementSexe(event, context, options),
-						new CorrectionDateNaissance(event, context, options),
-						new ChangementNom(event, context, options)
-					)
+					new ChangementIdentificateur(event, context, options),
+					new ChangementSexe(event, context, options),
+					new CorrectionDateNaissance(event, context, options),
+					new ChangementNom(event, context, options)
 			);
 
 	}

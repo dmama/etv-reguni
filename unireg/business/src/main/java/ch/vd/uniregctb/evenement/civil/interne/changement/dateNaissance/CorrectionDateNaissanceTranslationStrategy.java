@@ -6,7 +6,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.correction.identication.CorrectionIdentificationTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class CorrectionDateNaissanceTranslationStrategy extends AbstractChangementTranslationStrategy {

@@ -21,7 +21,7 @@ import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrateg
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNomTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.correction.identication.CorrectionIdentificationTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.depart.DepartTranslationStrategy;
