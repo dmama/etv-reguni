@@ -27,5 +27,10 @@ public class CorrectionIdentificationTranslationStrategy implements EvenementCiv
 
 	}
 
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+		return true;
+	}
+
 
 }
