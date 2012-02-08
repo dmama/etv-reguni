@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
@@ -12,4 +15,9 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
  *
  */
 public abstract class ObtentionPermisCOuNationaliteSuisseTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
+
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+		return false;
+	}
 }

@@ -20,4 +20,9 @@ public class DecesTranslationStrategy implements EvenementCivilTranslationStrate
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new Deces(event, context, options);
 	}
+
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+		return false;
+	}
 }

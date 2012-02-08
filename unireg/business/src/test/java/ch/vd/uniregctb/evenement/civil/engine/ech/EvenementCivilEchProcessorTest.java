@@ -391,6 +391,11 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 
 				return new EvenementCivilInterneComposite(event, context, options, Arrays.asList(naissance, boom));
 			}
+
+			@Override
+			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+				return false;
+			}
 		};
 
 		final EvenementCivilEchTranslatorImplOverride translator = new EvenementCivilEchTranslatorImplOverride();
@@ -425,7 +430,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		
 		// traitement de l'événement
 		traiterEvenement(noIndividu, evtId);
-		
+
 		// vérification que rien n'a été committé en base (autre que les messages d'erreur, bien-sûr)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

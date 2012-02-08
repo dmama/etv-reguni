@@ -26,4 +26,9 @@ public class MariageTranslationStrategy implements EvenementCivilTranslationStra
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new Mariage(event, context, options);
 	}
+
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+		return false;
+	}
 }

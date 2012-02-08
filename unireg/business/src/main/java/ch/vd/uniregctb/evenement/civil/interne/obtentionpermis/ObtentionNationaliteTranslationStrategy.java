@@ -6,6 +6,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Règles métiers permettant de traiter les événements de démangement vaudois.
@@ -45,5 +46,10 @@ public class ObtentionNationaliteTranslationStrategy extends ObtentionPermisCOuN
 				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
 		}
 		return interne;
+	}
+
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+		return event.getType() == TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE;
 	}
 }

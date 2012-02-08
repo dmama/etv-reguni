@@ -106,6 +106,11 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 			throw new EvenementCivilException("Traitement non implémenté.");
 		}
+
+		@Override
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+			return false;
+		}
 	};
 
 	/**
@@ -135,6 +140,11 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 					return false;
 				}
 			};
+		}
+
+		@Override
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+			return true;
 		}
 	};
 
@@ -193,9 +203,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DemenagementTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CONTACT, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_BLOCAGE_ADRESSE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_BLOCAGE_ADRESSE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_BLOCAGE_ADRESSE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
@@ -284,7 +294,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@Override
 	public boolean isIndexationOnly(EvenementCivilEch event) {
 		try {
-			return getStrategy(event) == INDEXATION_ONLY;
+			return getStrategy(event).isPrincipalementIndexation(event, context);
 		}
 		catch (EvenementCivilException e) {
 			return false;

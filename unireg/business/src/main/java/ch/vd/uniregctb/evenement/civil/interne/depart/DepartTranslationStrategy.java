@@ -49,6 +49,11 @@ public class DepartTranslationStrategy implements EvenementCivilTranslationStrat
 		}
 	}
 
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+		return false;
+	}
+
 	private boolean isDepartPrincipal(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		try {
 			final AdressesCiviles adressesCiviles = context.getAdresseService().getAdressesCiviles(event.getNumeroIndividu(), event.getDateEvenement(), false);

@@ -60,6 +60,11 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 		}
 	}
 
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+		return !isArriveePrincipale(event, context);
+	}
+
 	private boolean isArriveePrincipale(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 
 		try {

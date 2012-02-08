@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -242,18 +243,16 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	 */
 	private void errorPostProcessing(final List<EvenementCivilNotificationQueue.EvtCivilInfo> remainingEvents) {
 		if (remainingEvents != null && remainingEvents.size() > 0) {
-			doInNewTransaction(new TransactionCallback<Object>() {
+			final List<EvenementCivilNotificationQueue.EvtCivilInfo> pourIndexation = doInNewTransaction(new TransactionCallback<List<EvenementCivilNotificationQueue.EvtCivilInfo>>() {
 				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					boolean hasIndexationOnly = false;
+				public List<EvenementCivilNotificationQueue.EvtCivilInfo> doInTransaction(TransactionStatus status) {
+					final List<EvenementCivilNotificationQueue.EvtCivilInfo> pourIndexation = new ArrayList<EvenementCivilNotificationQueue.EvtCivilInfo>(remainingEvents.size()); 
 					for (EvenementCivilNotificationQueue.EvtCivilInfo info : remainingEvents) {
 						if (info.etat == EtatEvenementCivil.A_TRAITER) {
 							final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
-							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {
+							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
 								if (translator.isIndexationOnly(evt)) {
-									evt.setEtat(EtatEvenementCivil.TRAITE);
-									hasIndexationOnly = true;
-									Audit.info(evt.getId(), String.format("Indexation pure, traitement direct de l'événement %d", evt.getId()));
+									pourIndexation.add(info);
 								}
 								else {
 									evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
@@ -262,12 +261,27 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 							}
 						}
 					}
-					if (hasIndexationOnly) {
-						scheduleIndexation(remainingEvents.get(0).noIndividu);
-					}
-					return null;
+					return pourIndexation;
 				}
 			});
+			
+			// on a mis tout le monde en attente, maintenant on va essayer de traiter les cas pour lesquels en gros seule une réindexation est nécessaire
+			if (pourIndexation.size() > 0) {
+				int pointer = 0;
+				try {
+					LOGGER.info("Lancement du traitement des événements d'indexation pure restants");
+					for (EvenementCivilNotificationQueue.EvtCivilInfo info : pourIndexation) {
+						if (!processEventAndDoPostProcessingOnError(info, pourIndexation, pointer)) {
+							// si on reviens avec <code>false</code>, c'est qu'on a essayé de re-traiter les suivants aussi
+							break;
+						}
+						++ pointer;
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", pourIndexation.get(pointer).idEvenement), e);
+				}
+			}
 		}
 	}
 

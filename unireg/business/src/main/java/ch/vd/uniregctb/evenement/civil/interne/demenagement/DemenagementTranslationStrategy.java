@@ -74,7 +74,11 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		}
 	}
 
-
+	@Override
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+		final Communes communes = determineCommunesAvantEtApres(event, context);
+		return (communes.avant == null || communes.apres == null || communes.avant.getNoOFSEtendu() == communes.apres.getNoOFSEtendu());
+	}
 
 	private static class Communes {
 

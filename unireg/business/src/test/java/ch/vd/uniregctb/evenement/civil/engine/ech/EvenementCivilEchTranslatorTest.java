@@ -75,6 +75,11 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 				appel.setValue(true);
 				return null;
 			}
+
+			@Override
+			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+				return false;
+			}
 		});
 		Assert.assertNotNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ECHANGE_DE_CLE)));
 		Assert.assertFalse(appel.booleanValue());
