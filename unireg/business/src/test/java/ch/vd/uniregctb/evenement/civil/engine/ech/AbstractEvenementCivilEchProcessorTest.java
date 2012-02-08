@@ -8,7 +8,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
 	private EvenementCivilNotificationQueueImpl queue;
-	private EvenementCivilEchProcessor processor;
+	private EvenementCivilEchProcessorWithMonitor processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
 
 	@Override
@@ -35,7 +35,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	}
 	
 	protected void buildProcessor(EvenementCivilEchTranslator translator, boolean restart) {
-		final EvenementCivilEchProcessor proc = new EvenementCivilEchProcessor();
+		final EvenementCivilEchProcessorWithMonitor proc = new EvenementCivilEchProcessorWithMonitor();
 		proc.setEvtCivilDAO(evtCivilDAO);
 		proc.setNotificationQueue(queue);
 		proc.setTransactionManager(transactionManager);
@@ -50,15 +50,15 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 			processor.start();
 		}
 	}
-	
+
 	protected void traiterEvenement(long noIndividu, final long noEvenement) throws InterruptedException {
 		// on se met en position pour voir quand le traitement aura été effectué
 		final MutableBoolean jobDone = new MutableBoolean(false);
-		processor.setMonitor(new EvenementCivilEchProcessor.ProcessingMonitor() {
+		processor.setMonitor(new EvenementCivilEchProcessorWithMonitor.ProcessingMonitor() {
 			@Override
 			public void onProcessingEnd(long evtId) {
 				if (evtId == noEvenement) {
-					synchronized(jobDone) {
+					synchronized (jobDone) {
 						jobDone.setValue(true);
 						jobDone.notifyAll();
 					}

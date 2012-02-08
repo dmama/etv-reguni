@@ -47,7 +47,6 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	private TiersService tiersService;
 
 	private Processor processor;
-	private ProcessingMonitor monitor;
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
 
@@ -79,22 +78,6 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	/**
-	 * Interface utilisable dans les tests afin de réagir au traitement d'un événement civil
-	 */
-	public static interface ProcessingMonitor {
-		/**
-		 * Appelé à la fin du traitement de l'événement identifié
-		 * @param evtId identifiant de l'événement civil pour lequel le traitement vient de se terminer
-		 */
-		void onProcessingEnd(long evtId);
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void setMonitor(ProcessingMonitor monitor) {
-		this.monitor = monitor;
 	}
 
 	/**
@@ -137,21 +120,10 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), evts.get(0).noIndividu));
 				for (EvenementCivilNotificationQueue.EvtCivilInfo evt : evts) {
 					if (!stopping) {
-						AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.idEvenement));
-						try {
-							final boolean success = processEvent(evt);
-							if (!success) {
-								errorPostProcessing(evts.subList(pointer + 1, evts.size()));
-								break;
-							}
+						if (!processEvent(evt, evts, pointer)) {
+							break;
 						}
-						finally {
-							AuthenticationHelper.popPrincipal();
-							if (monitor != null) {
-								monitor.onProcessingEnd(evt.idEvenement);
-							}
-							++ pointer;
-						}
+						++ pointer;
 					}
 				}
 			}
@@ -163,6 +135,28 @@ public class EvenementCivilEchProcessor implements SmartLifecycle {
 		public void requestStop() {
 			stopping = true;
 			LOGGER.info(String.format("Demande d'arrêt du thread %s", getName()));
+		}
+	}
+
+	/**
+	 * Traitement de l'événement donné
+	 *
+	 * @param evt descripteur de l'événement civil cible à traiter
+	 * @param evts liste des descripteurs d'événements (en cas d'échec sur le traitement de l'événement cible, ceux qui sont après lui dans cette liste seront passés en attente, voir {@link #errorPostProcessing(java.util.List)})
+	 * @param pointer indicateur de la position de l'événement civil cible dans la liste des événements
+	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
+	 */
+	protected boolean processEvent(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
+		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.idEvenement));
+		try {
+			final boolean success = processEvent(evt);
+			if (!success) {
+				errorPostProcessing(evts.subList(pointer + 1, evts.size()));
+			}
+			return success;
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
