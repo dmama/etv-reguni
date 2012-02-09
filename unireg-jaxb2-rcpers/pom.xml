@@ -46,6 +46,7 @@
 					</schemaIncludes>
 					<schemaExcludes>
 						<!-- ces XSDs sont inclus explicitement par les autres XSDs -->
+						<exclude>eVD-0001-3-0.xsd</exclude>
 						<exclude>eVD-0009-1-0.xsd</exclude>
 					</schemaExcludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>

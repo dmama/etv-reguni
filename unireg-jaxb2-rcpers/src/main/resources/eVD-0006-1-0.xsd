@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by GDL (Etat de Vaud) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eVD-0006="http://evd.vd.ch/xmlns/eVD-0006/1" targetNamespace="http://evd.vd.ch/xmlns/eVD-0006/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:eVD-0006="http://evd.vd.ch/xmlns/eVD-0006/1"
+		   xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/3"
+		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0006/1"
+		   elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0001/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0001/3/eVD-0001-3-0.xsd"/>
+
 	<xs:simpleType name="eventTypesType">
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="1"/>
@@ -25,18 +31,13 @@
 			<xs:enumeration value="22"/>
 			<xs:enumeration value="23"/>
 			<xs:enumeration value="29"/>
-			<xs:enumeration value="30"/>
 			<xs:enumeration value="31"/>
 			<xs:enumeration value="34"/>
 			<xs:enumeration value="36"/>
 			<xs:enumeration value="37"/>
-			<xs:enumeration value="38"/>
-			<xs:enumeration value="41"/>
 			<xs:enumeration value="42"/>
 			<xs:enumeration value="44"/>
 			<xs:enumeration value="46"/>
-			<xs:enumeration value="48"/>
-			<xs:enumeration value="49"/>
 			<xs:enumeration value="50"/>
 			<xs:enumeration value="51"/>
 			<xs:enumeration value="52"/>
@@ -47,38 +48,61 @@
 			<xs:enumeration value="57"/>
 			<xs:enumeration value="58"/>
 			<xs:enumeration value="59"/>
+			<xs:enumeration value="1001"/>
+			<xs:enumeration value="1002"/>
+			<xs:enumeration value="1003"/>
 		</xs:restriction>
-		<!-- C'est pas une duplication de celui des eCH -->
+		<!-- Ce n'est pas une duplication de celui des eCH -->
 		<!-- Un eVD-0006 ne renvoie pas tous les types de l'eCH -->
 	</xs:simpleType>
-	<xs:element name="eventIdentification">
+
+	<xs:simpleType name="eventActionType">
+		<xs:annotation>
+			<xs:documentation>
+				Action :
+				• 1 = Nouveau,
+				• 3 = Annulation,
+				• 4 = Correction.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<!-- New -->
+			<!-- KeyExchange -->
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="eventIdentificationType">
+		<xs:sequence>
+			<xs:element name="type" type="eVD-0006:eventTypesType"/>
+			<xs:element name="messageId" type="xs:long"/>
+			<xs:element name="date" type="xs:date"/>
+			<xs:element name="action" type="eVD-0006:eventActionType"/>
+			<xs:element name="referenceMessageId" type="xs:long" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="eventPersonType">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="type" type="eVD-0006:eventTypesType"/>
-				<xs:element name="messageId" type="xs:long"/>
-				<xs:element name="date" type="xs:date"/>
-				<xs:element name="action">
+				<xs:element name="eventIdentification" type="eVD-0006:eventIdentificationType"/>
+				<xs:element name="personAfterEvent" type="eVD-0001:personType">
 					<xs:annotation>
-						<xs:documentation>Action :
-							• 1 = Nouveau,
-							• 3 = Annulation,
-							• 4 = Correction,
-							• 7 = Échange de clé.</xs:documentation>
+						<xs:documentation>État de la personne juste après que l'événement soit survenu</xs:documentation>
 					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:maxLength value="2"/>
-							<xs:enumeration value="1"/>
-							<xs:enumeration value="3"/>
-							<xs:enumeration value="4"/>
-							<xs:enumeration value="7"/>
-							<!-- New -->
-							<!-- KeyExchange -->
-						</xs:restriction>
-					</xs:simpleType>
 				</xs:element>
-				<xs:element name="referenceMessageId" type="xs:long" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:element name="eventMessageType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="eventIdentification" type="eVD-0006:eventIdentificationType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
