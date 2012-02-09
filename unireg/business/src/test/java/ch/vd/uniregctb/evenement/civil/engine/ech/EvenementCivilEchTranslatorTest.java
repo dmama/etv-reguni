@@ -47,11 +47,12 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 
 	@Test
 	public void testCouvertureStrategies() throws Exception {
-		final Set<TypeEvenementCivilEch> typeIgnores = new HashSet<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.ETAT_COMPLET, TypeEvenementCivilEch.TESTING));
+		final Set<TypeEvenementCivilEch> typesIgnores = new HashSet<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.TESTING));
+		final Set<ActionEvenementCivilEch> actionsIgnorees = new HashSet<ActionEvenementCivilEch>(Arrays.asList(ActionEvenementCivilEch.ECHANGE_DE_CLE));
 		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
-			if (!typeIgnores.contains(type)) {
+			if (!typesIgnores.contains(type)) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {
-					if (action != ActionEvenementCivilEch.ECHANGE_DE_CLE) {
+					if (!actionsIgnorees.contains(action)) {
 						final EvenementCivilEchTranslatorImpl.EventTypeKey key = new EvenementCivilEchTranslatorImpl.EventTypeKey(type, action);
 						final EvenementCivilEchTranslationStrategy strategy = EvenementCivilEchTranslatorImpl.getStrategyFromMap(key);
 						Assert.assertNotNull(String.format("Pas de stratégie pour la combinaison %s/%s", type, action), strategy);

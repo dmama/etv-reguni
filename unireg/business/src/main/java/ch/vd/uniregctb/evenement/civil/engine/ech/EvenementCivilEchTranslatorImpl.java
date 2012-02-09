@@ -104,7 +104,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private static final EvenementCivilEchTranslationStrategy NOT_IMPLEMENTED = new EvenementCivilEchTranslationStrategy() {
 		@Override
 		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-			throw new EvenementCivilException("Traitement non implémenté.");
+			throw new EvenementCivilException("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.");
 		}
 
 		@Override
@@ -227,12 +227,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DivorceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAdresseTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ADRESSE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAdresseTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ADRESSE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ADRESSE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
@@ -269,6 +266,15 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 
 		// pour les tests uniquement
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());
@@ -306,7 +312,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		final EventTypeKey key = new EventTypeKey(event);
 		final EvenementCivilEchTranslationStrategy strategy = getStrategy(key);
 		if (strategy == null) {
-			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement e-CH de type = [" + key + ']');
+			throw new EvenementCivilException("Aucune stratégie de traduction n'existe pour l'événement e-CH [" + key + ']');
 		}
 		return strategy;
 	}

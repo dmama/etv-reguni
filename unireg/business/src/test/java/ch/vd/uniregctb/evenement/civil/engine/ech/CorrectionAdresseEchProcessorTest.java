@@ -13,6 +13,6 @@ public class CorrectionAdresseEchProcessorTest extends AbstractCorrectionEchProc
 
 	@Override
 	protected TypeEvenementCivilEch getTypeEvenementCorrection() {
-		return TypeEvenementCivilEch.CORR_ADRESSE;
+		return TypeEvenementCivilEch.CORR_RELATION_ANNONCE;
 	}
 }
