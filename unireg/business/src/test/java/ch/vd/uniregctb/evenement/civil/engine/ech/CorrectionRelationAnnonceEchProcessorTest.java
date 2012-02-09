@@ -4,10 +4,10 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class CorrectionAdresseEchProcessorTest extends AbstractCorrectionEchProcessorTest {
+public class CorrectionRelationAnnonceEchProcessorTest extends AbstractCorrectionEchProcessorTest {
 
 	@Test(timeout = 10000L)
-	public void testCorrectionAdresse() throws Exception {
+	public void testCorrectionRelationAnnonce() throws Exception {
 		test();
 	}
 
