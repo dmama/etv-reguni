@@ -48,15 +48,12 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 	@Test
 	public void testCouvertureStrategies() throws Exception {
 		final Set<TypeEvenementCivilEch> typesIgnores = new HashSet<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.TESTING));
-		final Set<ActionEvenementCivilEch> actionsIgnorees = new HashSet<ActionEvenementCivilEch>(Arrays.asList(ActionEvenementCivilEch.ECHANGE_DE_CLE));
 		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
 			if (!typesIgnores.contains(type)) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {
-					if (!actionsIgnorees.contains(action)) {
-						final EvenementCivilEchTranslatorImpl.EventTypeKey key = new EvenementCivilEchTranslatorImpl.EventTypeKey(type, action);
-						final EvenementCivilEchTranslationStrategy strategy = EvenementCivilEchTranslatorImpl.getStrategyFromMap(key);
-						Assert.assertNotNull(String.format("Pas de stratégie pour la combinaison %s/%s", type, action), strategy);
-					}
+					final EvenementCivilEchTranslatorImpl.EventTypeKey key = new EvenementCivilEchTranslatorImpl.EventTypeKey(type, action);
+					final EvenementCivilEchTranslationStrategy strategy = EvenementCivilEchTranslatorImpl.getStrategyFromMap(key);
+					Assert.assertNotNull(String.format("Pas de stratégie pour la combinaison %s/%s", type, action), strategy);
 				}
 			}
 		}
@@ -67,10 +64,10 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 
 		// vérifier que les tests qui utiliseront la méthode de strategy override seront bien appelés sur la bonne stratégie
 
-		Assert.assertNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ECHANGE_DE_CLE)));
+		Assert.assertNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ANNULATION)));
 
 		final MutableBoolean appel = new MutableBoolean(false);
-		translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ECHANGE_DE_CLE, new EvenementCivilEchTranslationStrategy() {
+		translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ANNULATION, new EvenementCivilEchTranslationStrategy() {
 			@Override
 			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 				appel.setValue(true);
@@ -82,7 +79,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 				return false;
 			}
 		});
-		Assert.assertNotNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ECHANGE_DE_CLE)));
+		Assert.assertNotNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ANNULATION)));
 		Assert.assertFalse(appel.booleanValue());
 		
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -91,7 +88,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 				final EvenementCivilEch evtCivil = new EvenementCivilEch();
 				evtCivil.setId(12367L);
 				evtCivil.setType(TypeEvenementCivilEch.TESTING);
-				evtCivil.setAction(ActionEvenementCivilEch.ECHANGE_DE_CLE);
+				evtCivil.setAction(ActionEvenementCivilEch.ANNULATION);
 				evtCivil.setEtat(EtatEvenementCivil.A_TRAITER);
 				evtCivil.setDateEvenement(RegDate.get());
 				evtCivil.setNumeroIndividu(12L);

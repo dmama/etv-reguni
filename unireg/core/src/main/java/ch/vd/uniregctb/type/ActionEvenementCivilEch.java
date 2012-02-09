@@ -7,8 +7,7 @@ public enum ActionEvenementCivilEch {
 
 	PREMIERE_LIVRAISON(1),
 	ANNULATION(3),
-	CORRECTION(4),
-	ECHANGE_DE_CLE(7);
+	CORRECTION(4);
 
 	private final int echCode;
 
