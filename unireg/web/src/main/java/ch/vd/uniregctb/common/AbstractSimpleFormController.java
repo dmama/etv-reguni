@@ -4,8 +4,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -15,7 +13,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -25,11 +22,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springmodules.xt.ajax.AjaxEvent;
-import org.springmodules.xt.ajax.AjaxHandler;
-import org.springmodules.xt.ajax.AjaxResponse;
-import org.springmodules.xt.ajax.support.EventHandlingException;
-import org.springmodules.xt.ajax.support.UnsupportedEventException;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -44,9 +36,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  * @see org.springframework.web.servlet.mvc.SimpleFormController
  *
  */
-public abstract class AbstractSimpleFormController extends CommonSimpleFormController implements AjaxHandler {
-
-	private static final Logger LOGGER = Logger.getLogger(AbstractSimpleFormController.class);
+public abstract class AbstractSimpleFormController extends CommonSimpleFormController {
 
 	public final static String PARAMETER_MODIFIER = "__MODIFIER__";
 
@@ -118,98 +108,6 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 		ModelAndView view = super.handleRequest(request, response);
 		request.setAttribute(PARAMETER_MODIFIER, modified);
 		return view;
-	}
-
-	/**
-	 * Dynamic template method for handling ajax requests depending on the event id. <br>
-	 * <br>
-	 *
-	 * @see AjaxHandler#handle(AjaxEvent )
-	 */
-	@Override
-	public AjaxResponse handle(AjaxEvent event) {
-		if (event == null || event.getEventId() == null) {
-			logger.error("Event and event id cannot be null.");
-			throw new IllegalArgumentException("Event and event id cannot be null.");
-		}
-
-		String id = event.getEventId();
-		AjaxResponse response = null;
-		try {
-			Method m = this.getMatchingMethod(event);
-			if (m != null) {
-				logger.debug(new StringBuilder("Invoking method: ").append(m));
-				response = (AjaxResponse) m.invoke(this, event);
-			}
-			else {
-				logger.error("You need to call the supports() method first!");
-				throw new UnsupportedEventException("You need to call the supports() method first!");
-			}
-		}
-		catch (IllegalAccessException ex) {
-			logger.error(ex.getMessage(), ex);
-			logger.error("Cannot handle the given event with id: " + id);
-			throw new UnsupportedEventException("Cannot handle the given event with id: " + id, ex);
-		}
-		catch (InvocationTargetException ex) {
-			logger.error(ex.getMessage(), ex);
-			logger.error("Exception while handling the given event with id: " + id);
-			throw new EventHandlingException("Exception while handling the given event with id: " + id, ex);
-		}
-
-		return response;
-	}
-
-	/**
-	 * Supports the given event if the concrete class implements a method for handling it, that is, a method with the following signature: <br>
-	 * <br>
-	 * <i>public {@link AjaxResponse} eventId({@link AjaxEvent} )</i> <br>
-	 * <br>
-	 *
-	 * @see AjaxHandler#supports(AjaxEvent )
-	 */
-	@Override
-	public boolean supports(AjaxEvent event) {
-		String id = event.getEventId();
-
-		if (id == null) {
-			logger.error("Event id cannot be null.");
-			throw new IllegalArgumentException("Event id cannot be null.");
-		}
-
-		Method m = this.getMatchingMethod(event);
-		if (m != null) {
-			logger.debug(new StringBuilder("Event supported by method: ").append(m));
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	private Method getMatchingMethod(AjaxEvent event) {
-		Class<?> eventType = this.getEventType(event);
-		Method[] methods = this.getClass().getMethods();
-		Method ret = null;
-		for (Method method : methods) {
-			if (method.getName().equals(event.getEventId()) && method.getParameterTypes()[0].isAssignableFrom(eventType)) {
-				ret = method;
-				break;
-			}
-		}
-		return ret;
-	}
-
-	private Class<?> getEventType(AjaxEvent event) {
-		Class<?>[] interfaces = event.getClass().getInterfaces();
-		Class<?> ret = event.getClass();
-		for (Class<?> intf : interfaces) {
-			if (AjaxEvent.class.isAssignableFrom(intf)) {
-				ret = intf;
-				break;
-			}
-		}
-		return ret;
 	}
 
 	/**

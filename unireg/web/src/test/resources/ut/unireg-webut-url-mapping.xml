@@ -9,11 +9,6 @@
 
 	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
 	<bean id="annotationHandlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="ajaxInterceptor" />
-			</list>
-		</property>
 	</bean>
 
 </beans>

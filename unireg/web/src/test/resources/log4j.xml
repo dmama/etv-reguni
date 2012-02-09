@@ -31,12 +31,6 @@
 
 
 	<!-- BEGIN Cas particuliers -->
-	<logger name="org.springmodules.xt.ajax.AjaxInterceptor">
-		<level value="FATAL" /> <!-- autrement chaque requête Ajax génère une ligne d'INFO ! -->
-	</logger>
-	<logger name="org.springmodules.xt.ajax.util.AjaxResponseSender">
-		<level value="INFO" /> <!-- autrement chaque requête Ajax génère une ligne de DEBUG ! -->
-	</logger>
 	<logger name="ch.vd.uniregctb.tiers.TiersHelper">
 		<level value="INFO" />
 	</logger>
@@ -66,10 +60,6 @@
 	
 	<logger name="org.springframework">
 		<level value="INFO" />
-	</logger>
-
-	<logger name="org.springmodules.xt.ajax">
-		<level value="WARN" />
 	</logger>
 
 	<!-- Suppress warnings from Commons Validator -->

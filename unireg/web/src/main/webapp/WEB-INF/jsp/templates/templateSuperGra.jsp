@@ -24,7 +24,6 @@
 		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>

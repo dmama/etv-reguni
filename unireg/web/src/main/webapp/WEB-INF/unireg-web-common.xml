@@ -22,21 +22,6 @@
 	</bean>
 
 
-	<!--  xt-Spring configuration -->
-
-	<bean id="dataAccessor" class="ch.vd.uniregctb.web.xt.handler.DataAccessor" />
-
-	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
-		<property name="handlerMappings">
-			<props>
-				<prop key="/fiscal/for.do">tiersForController</prop>
-				<prop key="/admin/batch.do">gestionBatchController</prop>
-				<prop key="/admin/status.do">infoController</prop>
-			</props>
-		</property>
-		<property name="formDataAccessor" ref="dataAccessor" />
-	</bean>
-
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="singleSession" value="false" />

@@ -10,7 +10,6 @@
 		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/springxt.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
 
 		<tiles:getAsString name='head' ignore='true'/>

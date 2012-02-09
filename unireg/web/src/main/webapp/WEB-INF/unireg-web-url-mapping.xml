@@ -31,11 +31,6 @@
 
 	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="ajaxInterceptor" />
-			</list>
-		</property>
 	</bean>
 
 	<!-- ======== Config MVC Spring 2.x ======== -->
@@ -51,11 +46,6 @@
 
 	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
 	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="ajaxInterceptor" />
-			</list>
-		</property>
 		<property name="urlMap">
 			<map>
 				<!-- SuperGra -->
@@ -100,7 +90,6 @@
 	<bean id="legacyUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
-				<ref bean="ajaxInterceptor" />
 				<ref bean="openSessionInViewInterceptor" />
 			</list>
 		</property>

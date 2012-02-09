@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
-import org.springmodules.xt.model.generator.support.IllegalArgumentPositionException;
-
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
@@ -398,7 +396,7 @@ public abstract class EnumHelper {
 		case SUISSE_SOURCIER:
 			return NaturalPersonCategory.SWISS;
 		default:
-			throw new IllegalArgumentPositionException("Type de permis inconnu = [" + permis + ']');
+			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + ']');
 		}
 	}
 
