@@ -706,6 +706,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
 		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
+		if (periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			d.setCodeSegment(0);
+		}
 		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
 	}
 
