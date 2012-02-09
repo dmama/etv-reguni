@@ -3,8 +3,8 @@ package ch.vd.unireg.wsclient.rcpers;
 import java.util.Collection;
 
 import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
 
 public interface RcPersClient {
@@ -27,7 +27,7 @@ public interface RcPersClient {
 	 * @param withHistory <b>vrai</b> si les collections historisées doivent être renseignée; <b>faux</b> autrement.
 	 * @return une liste de relations entre personnes
 	 */
-	Relations getRelations(Collection<Long> ids, RegDate date, boolean withHistory);
+	ListOfRelations getRelations(Collection<Long> ids, RegDate date, boolean withHistory);
 
 	/**
 	 * Récupère la personne liée à l'événement civil dont l'identifiant est donné
