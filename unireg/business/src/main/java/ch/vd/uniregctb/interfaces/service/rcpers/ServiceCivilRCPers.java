@@ -3,13 +3,15 @@ package ch.vd.uniregctb.interfaces.service.rcpers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -40,10 +42,19 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu.");
 		}
 
+		// il faut demander les relations entre individus dans un appel séparé
 		final Relations relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			// il faut demander les relations entre individus séparemment
-			relations = client.getRelations(Arrays.asList(noIndividu), date, true);
+			ListOfRelations rel = client.getRelations(Arrays.asList(noIndividu), date, true);
+			if (rel != null && rel.getRelationship() != null && !rel.getRelationship().isEmpty()) {
+				if (rel.getRelationship().size() > 1) {
+					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
+				}
+				relations = rel.getRelationship().get(0);
+			}
+			else {
+				relations = null;
+			}
 		}
 		else {
 			relations = null;
@@ -77,10 +88,19 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 			return null;
 		}
 
-		final Relations allRelations;
+		// il faut demander les relations entre individus dans un appel séparé
+		final Map<Long, Relations> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			// il faut demander les relations entre individus séparemment
-			allRelations = client.getRelations(nosIndividus, date, true);
+			final ListOfRelations rel = client.getRelations(nosIndividus, date, true);
+			if (rel != null && rel.getRelationship() != null) {
+				allRelations = new HashMap<Long, Relations>();
+				for (Relations relations : rel.getRelationship()) {
+					allRelations.put(IndividuRCPers.getNoIndividu(relations.getPersonId()), relations);
+				}
+			}
+			else {
+				allRelations = null;
+			}
 		}
 		else {
 			allRelations = null;
@@ -90,16 +110,12 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
 		final List<Person> people = list.getListOfResults().getPerson();
 		for (Person person : people) {
-			final Relations relations = allRelations == null ? null : filterRelations(allRelations, IndividuRCPers.getNoIndividu(person));
+			final Relations relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
 			final Individu individu = IndividuRCPers.get(person, relations, infraService);
 			individus.add(individu);
 		}
 
 		return individus;
-	}
-
-	private static Relations filterRelations(Relations allRelations, long noIndividu) {
-		throw new NotImplementedException("Impossible de filter les relations pour le moment : pas assez d'info disponible !"); // FIXME (rcpers)
 	}
 
 	@Override

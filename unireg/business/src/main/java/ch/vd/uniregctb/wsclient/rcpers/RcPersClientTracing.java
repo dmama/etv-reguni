@@ -6,8 +6,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
@@ -53,7 +53,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	}
 
 	@Override
-	public Relations getRelations(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
+	public ListOfRelations getRelations(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

@@ -116,7 +116,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.nationalites = initNationalites(person, infraService);
 	}
 
-	private static long getNoIndividu(NamedPersonId personId) {
+	public static long getNoIndividu(NamedPersonId personId) {
 		return Long.parseLong(personId.getPersonId());
 	}
 
