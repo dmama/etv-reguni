@@ -47,24 +47,115 @@
 			</c:if>
 	 	</fieldset>
 		
-		<script type="text/javascript" language="Javascript1.3"><!--
+		<script>
 			
 			var requestDone = true;
+
 			$(document).everyTime("3s", function() {
-				if ( !requestDone)
+				if (!requestDone)
 					return;
 				requestDone = false;
-				XT.doAjaxAction('loadJobActif', $("#jobsActif").get(0), {},
-				{ 
-					clearQueryString: true,
-					errorHandler :  function(ajaxRequest, exception) {
-							requestDone = true;
-						}
-    			});
+
+				$.get(getContextPath() + '/admin/batch/running.do?' + new Date().getTime(), function(jobs) {
+					var h = buildHtmlTableRunningJobs(jobs, false);
+					$("#jobsActif").html(h);
+					requestDone = true;
+				});
 			});
-			
-			function onRecieved() {
-				requestDone = true;
+
+			function buildHtmlTableRunningJobs(jobs, readonly) {
+				var table = '<table>';
+				table += '<thead><tr><th>Action</th><th>Nom</th><th>Progression</th><th>Statut</th><th>Début</th><th>Durée</th></tr></thead>';
+				table += '<tbody>';
+
+				for(var i = 0; i < jobs.length; ++i) {
+					var job = jobs[i];
+					var lastStart = job.lastStart ? new Date(job.lastStart) : null;
+					var lastEnd = job.lastEnd ? new Date(job.lastEnd) : null;
+					var isRunning = job.status == 'JOB_RUNNING';
+
+					// general description + status
+					table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
+
+					if (!isRunning || readonly) {
+						table += '<td></td>';
+					}
+					else {
+						table += '<td><a class="stop iepngfix" classname="stop iepngfix" href="javascript:stopJob(\'' + job.name + '\');"></a></td>';
+					}
+
+					table += '<td>' + StringUtils.escapeHTML(job.description) + '</td>';
+
+					if (job.percentProgression) {
+						table += '<td>' + StringUtils.escapeHTML(job.percentProgression) + '</td>';
+					}
+					else {
+						table += '<td></td>';
+					}
+
+					table += '<td align="left">' + StringUtils.escapeHTML(statusDescription(job.status)) + '</td>';
+					table += '<td nowrap="nowrap">' + DateUtils.toCompactString(lastStart) + '</td>';
+
+					if (lastStart) {
+						table += '<td nowrap="nowrap">' + DateUtils.durationToString(lastStart, lastEnd) + '</td>';
+					}
+					else {
+						table += '<td nowrap="nowrap"></td>';
+					}
+					table += '</tr>';
+
+					// detailed parameters
+					if (job.runningParams) {
+						var params = '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
+						params += '<td>&nbsp;</td>';
+						params += '<td colspan="5">';
+
+						params += '<table class="jobparams"><tbody>';
+
+						var hasParam = false;
+						for(key in job.runningParams) {
+							var value = job.runningParams[key];
+							params += '<tr><td>' + StringUtils.escapeHTML(key) + '</td><td>➭ ' + StringUtils.escapeHTML(value) + '</td></tr>';
+							hasParam = true;
+						}
+
+						params += '</tbody></table>';
+
+						params += '</td>';
+						params += '</tr>';
+
+						if (hasParam) {
+							table += params;
+						}
+					}
+				}
+
+				table += '</tbody></table>';
+				return table;
+			}
+
+			function statusDescription(status) {
+				if (status == 'JOB_OK') {
+					return 'OK';
+				}
+				else if (status == 'JOB_READY') {
+					return 'Prêt';
+				}
+				else if (status == 'JOB_RUNNING') {
+					return 'En cours';
+				}
+				else if (status == 'JOB_EXCEPTION') {
+					return 'Exception';
+				}
+				else if (status == 'JOB_INTERRUPTING') {
+					return 'En cours d\'interruption';
+				}
+				else if (status == 'JOB_INTERRUPTED') {
+					return 'Interrompu';
+				}
+				else {
+					return '';
+				}
 			}
 			
 			function startJob(name) {
@@ -92,6 +183,6 @@
 			function showAlert(options) {
                 alert(options.message);
             }
-		--></script>
+		</script>
 	</tiles:put>
 </tiles:insert>
