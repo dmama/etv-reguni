@@ -176,9 +176,11 @@
 			</c:if>
 
 			<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
-				<div id="tabContent_immeublesTab" class="visuTiers">
-					<jsp:include page="immeubles.jsp"/>
-				</div>
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
+					<div id="tabContent_immeublesTab" class="visuTiers">
+						<jsp:include page="immeubles.jsp"/>
+					</div>
+				</authz:authorize>
 			</c:if>
 
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
