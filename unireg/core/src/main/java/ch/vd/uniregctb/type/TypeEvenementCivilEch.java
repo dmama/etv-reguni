@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Les types d'événements civils issus de la norme eCH-0020
+ * Les types d'événements civils issus de la norme eVD-0006
  */
 public enum TypeEvenementCivilEch {
 
@@ -29,7 +29,7 @@ public enum TypeEvenementCivilEch {
 	DEPART(19, 3),
 	DEMENAGEMENT_DANS_COMMUNE(20, 4),
 	CONTACT(21, null),
-	CHGT_BLOCAGE_ADRESSE(22, 25),
+	CHGT_BLOCAGE_ADRESSE(22, 25),           // Attention : même priorité que CORR_RELATIONS
 	CHGT_RELATION_ANNONCE(23, 15),
 	CHGT_NOM(29, null),
 	CHGT_RELIGION(31, null),
@@ -37,7 +37,7 @@ public enum TypeEvenementCivilEch {
 	ENREGISTREMENT_PARTENARIAT(36, 12),
 	DISSOLUTION_PARTENARIAT(37, 13),
 	CORR_RELATION_ANNONCE(42, 16),
-	CORR_RELATIONS(44, 25),
+	CORR_RELATIONS(44, 25),                 // Attention : même priorité que CHGT_BLOCAGE_ADRESSE
 	CHGT_DROIT_CITE(46, null),
 	CORR_IDENTIFICATION(50, null),
 	CORR_AUTRES_NOMS(51, null),
