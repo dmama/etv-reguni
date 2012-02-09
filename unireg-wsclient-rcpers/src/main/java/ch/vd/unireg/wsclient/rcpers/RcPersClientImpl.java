@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -20,6 +21,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	private String username;
 	private String password;
 	private String peoplePath;
+	private String relationsPath;
 	private String eventPath;
 
 	public void setBaseUrl(String baseUrl) {
@@ -28,6 +30,10 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	public void setPeoplePath(String peoplePath) {
 		this.peoplePath = peoplePath;
+	}
+
+	public void setRelationsPath(String relationsPath) {
+		this.relationsPath = relationsPath;
 	}
 
 	public void setEventPath(String eventPath) {
@@ -74,6 +80,35 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		}
 
 		return wc.get(ListOfPersons.class);
+	}
+
+	@Override
+	public Relations getRelations(Collection<Long> ids, RegDate date, boolean withHistory) {
+		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		wc.path(relationsPath);
+
+		// les ids
+		final StringBuilder param = new StringBuilder();
+		int i = 0;
+		for (Long id : ids) {
+			if (i++ > 0) {
+				param.append(",");
+			}
+			param.append(String.valueOf(id));
+		}
+		wc.path(param.toString());
+
+		// l'historique
+		if (withHistory) {
+			wc.query("history", "true");
+		}
+
+		// la date
+		if (date != null) {
+			wc.query("date", RegDateHelper.dateToDisplayString(date));
+		}
+
+		return wc.get(Relations.class);
 	}
 
 	private static String addParam(MutableBoolean firstParam, String s) {
