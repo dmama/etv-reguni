@@ -182,9 +182,9 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
-		assertAdresseEnvoi(domicile, "Madame", "Anabela Lopes", "Avenue Kiener 69", "1400 Yverdon-les-Bains");
+		assertAdresseEnvoi(domicile, "Madame", "Anabela Lopes Magalhaes", "Av. de Marcelin 8", "1110 Morges");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Madame", "Anabela Lopes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Madame", "Anabela Lopes Magalhaes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Monsieur le Juge de Paix de Belmont/Conc", "ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac", "1400 Yverdon-les-Bains");
