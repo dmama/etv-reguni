@@ -46,7 +46,6 @@
 		<property name="fetchEventsOnStartup" value="true"/>
 		<property name="ignoredEventTypes">
 			<set>
-				<value>ETAT_COMPLET</value>
 				<value>CORR_RELIGION</value>
 				<value>CORR_LIEU_NAISSANCE</value>
 				<value>CHGT_RELIGION</value>
