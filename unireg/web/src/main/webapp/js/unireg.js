@@ -1689,3 +1689,147 @@ var Postit = {
 		});
 	}
 }
+
+//===================================================
+
+var Batch = {
+	loadRunning: function(div, refreshInterval, readonly) {
+		var requestDone = true;
+		$(document).everyTime(refreshInterval, function() {
+			if (!requestDone) {
+				return;
+			}
+			requestDone = false;
+
+			$.get(getContextPath() + '/admin/batch/running.do?' + new Date().getTime(), function(jobs) {
+				var h = Batch.__buildHtmlTableRunningBatches(jobs, readonly);
+				$("#jobsActif").html(h);
+				requestDone = true;
+			});
+		});
+	},
+
+	start: function(name) {
+		var form = $('#' + name);
+		form.attr('action', getContextPath() + '/admin/batch/start.do?name=' + encodeURIComponent(name));
+		// cet appel nécessite la plugin jquery.form.js pour gérer l'upload ajax de fichiers dans les formulaires (voir http://malsup.com/jquery/form/)
+		form.ajaxSubmit({
+			success: function(responseText, statusText) {
+				if (responseText) {
+					alert(responseText);
+				}
+			}
+		});
+	},
+
+	stop: function(name) {
+		$.post(getContextPath() + '/admin/batch/stop.do?name=' + encodeURIComponent(name), function(returnCode) {
+			if (returnCode) {
+				alert(returnCode);
+			}
+		});
+	},
+
+	__buildHtmlTableRunningBatches: function(jobs, readonly) {
+		var table = '<table>';
+		table += '<thead><tr><th>Action</th><th>Nom</th><th>Progression</th><th>Statut</th><th>Début</th><th>Durée</th></tr></thead>';
+		table += '<tbody>';
+
+		for(var i = 0; i < jobs.length; ++i) {
+			var job = jobs[i];
+			var lastStart = job.lastStart ? new Date(job.lastStart) : null;
+			var lastEnd = job.lastEnd ? new Date(job.lastEnd) : null;
+			var isRunning = job.status == 'JOB_RUNNING';
+
+			// general description + status
+			table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
+
+			if (!isRunning || readonly) {
+				table += '<td></td>';
+			}
+			else {
+				table += '<td><a class="stop iepngfix" href="#" onclick="return Batch.stop(\'' + job.name + '\');"></a></td>';
+			}
+
+			table += '<td>' + StringUtils.escapeHTML(job.description) + '</td>';
+			table += '<td>' + (job.runningMessage ? StringUtils.escapeHTML(job.runningMessage) : '') + '</td>';
+
+			if (job.percentProgression) {
+				table += '<td align="left">' + this.__renderPercent(100, job.percentProgression) + '</td>';
+			}
+			else {
+				table += '<td align="left">' + StringUtils.escapeHTML(this.__statusDescription(job.status)) + '</td>';
+			}
+
+			table += '<td nowrap="nowrap">' + DateUtils.toCompactString(lastStart) + '</td>';
+
+			if (lastStart) {
+				table += '<td nowrap="nowrap">' + DateUtils.durationToString(lastStart, lastEnd) + '</td>';
+			}
+			else {
+				table += '<td nowrap="nowrap"></td>';
+			}
+			table += '</tr>';
+
+			// detailed parameters
+			if (job.runningParams) {
+				var params = '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
+				params += '<td>&nbsp;</td>';
+				params += '<td colspan="5">';
+
+				params += '<table class="jobparams"><tbody>';
+
+				var hasParam = false;
+				for(key in job.runningParams) {
+					var value = job.runningParams[key];
+					params += '<tr><td>' + StringUtils.escapeHTML(key) + '</td><td>➭ ' + StringUtils.escapeHTML(value) + '</td></tr>';
+					hasParam = true;
+				}
+
+				params += '</tbody></table>';
+
+				params += '</td>';
+				params += '</tr>';
+
+				if (hasParam) {
+					table += params;
+				}
+			}
+		}
+
+		table += '</tbody></table>';
+		return table;
+	},
+
+	__renderPercent: function(width, percent) {
+		var pixels = Math.floor((width * percent) / 100);
+		var html = '<div class="progress-bar" style="width:' + width + 'px">';
+		html += '<div class="progress-bar-fill" style="width: ' + pixels + 'px"></div>';
+		html += '<div class="progress-bar-text" style="width: ' + width + 'px">' + percent + '%</div></div>';
+		return html;
+	},
+
+	__statusDescription: function(status) {
+		if (status == 'JOB_OK') {
+			return 'OK';
+		}
+		else if (status == 'JOB_READY') {
+			return 'Prêt';
+		}
+		else if (status == 'JOB_RUNNING') {
+			return 'En cours';
+		}
+		else if (status == 'JOB_EXCEPTION') {
+			return 'Exception';
+		}
+		else if (status == 'JOB_INTERRUPTING') {
+			return 'En cours d\'interruption';
+		}
+		else if (status == 'JOB_INTERRUPTED') {
+			return 'Interrompu';
+		}
+		else {
+			return '';
+		}
+	}
+}

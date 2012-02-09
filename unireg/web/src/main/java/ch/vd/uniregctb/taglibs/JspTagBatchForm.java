@@ -93,7 +93,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 				// [SIFISC-145] doit-on pouvoir lancer ce batch directement depuis l'IHM ?
 				if (job.getJobDefinition().isWebStartable()) {
 					b.append("<tr><td class=\"command\" colspan=\"4\" align=\"right\"><input id=\"start").append(job.getName()).append(
-							"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"startJob('").append(job.getName())
+							"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"Batch.start('").append(job.getName())
 							.append("');\"/></td></tr>");
 				}
 				else {

@@ -12,11 +12,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
-import org.springmodules.xt.ajax.AjaxActionEvent;
-import org.springmodules.xt.ajax.AjaxEvent;
-import org.springmodules.xt.ajax.AjaxHandler;
-import org.springmodules.xt.ajax.AjaxResponse;
-import org.springmodules.xt.ajax.support.UnsupportedEventException;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.checker.ServiceChecker;
@@ -32,14 +27,13 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class InfoController extends ParameterizableViewController implements AjaxHandler {
+public class InfoController extends ParameterizableViewController {
 
 	// private static final Logger LOGGER = Logger.getLogger(InfoController.class);
 
 	private TiersDAO dao;
 	private GlobalTiersSearcher globalSearcher;
 	private CacheManager cacheManager;
-	private GestionBatchController batchController;
 	private StatsService statsService;
 
 	private ServiceChecker serviceCivilChecker;
@@ -62,11 +56,6 @@ public class InfoController extends ParameterizableViewController implements Aja
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setBatchController(GestionBatchController batchController) {
-		this.batchController = batchController;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -214,32 +203,5 @@ public class InfoController extends ParameterizableViewController implements Aja
 			status = HtmlHelper.renderMultilines(status);
 		}
 		return status;
-	}
-
-	/**
-	 * Cette méthode est appelée par une requête Ajax pour mettre-à-jour la liste des jobs actifs dans l'écran d'état de l'application.
-	 */
-	@SuppressWarnings({"JavaDoc"})
-	public AjaxResponse loadJobActif(AjaxActionEvent event) {
-		// on affiche la table en read-only (sans les boutons pour interrompre les batches)
-		return batchController.doLoadJobActif(event, true);
-	}
-
-	@Override
-	public AjaxResponse handle(AjaxEvent event) {
-		if ("loadJobActif".equals(event.getEventId())) {
-			return loadJobActif((AjaxActionEvent) event);
-		}
-		logger.error("You need to call the supports() method first!");
-		throw new UnsupportedEventException("You need to call the supports() method first!");
-	}
-
-	@Override
-	public boolean supports(AjaxEvent event) {
-		if (!(event instanceof AjaxActionEvent)) {
-			return false;
-		}
-		final String id = event.getEventId();
-		return "loadJobActif".equals(id);
 	}
 }

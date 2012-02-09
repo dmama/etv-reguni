@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -96,7 +97,7 @@ public class ItBatchClientJob extends JobDefinition {
 
 		// DATE_DEBUT
 		final RegDate dateDebut = getRegDateValue(params, PARAM_DATE_DEBUT);
-        // COUNT
+		// COUNT
 
 		final Integer count = getOptionalIntegerValue(params, PARAM_COUNT);
 		final byte[] attachement = getFileContent(params, PARAM_ATTACHEMENT);
@@ -106,10 +107,12 @@ public class ItBatchClientJob extends JobDefinition {
 
 		final Integer duration = getOptionalIntegerValue(params, PARAM_DURATION);
 		final Integer shutdown = getOptionalIntegerValue(params, PARAM_SHUTDOWN_DURATION);
+		final StatusManager status = getStatusManager();
 
 		if (duration != null) {
-			final long inc = duration * 100;
-			for (int i = 0; i < 10; i++) {
+			final long inc = duration * 10;
+			for (int i = 0; i < 100; i++) {
+				status.setMessage("working...", i);
 				Thread.sleep(inc);
 				if (isInterrupted()) {
 					break;
@@ -120,9 +123,10 @@ public class ItBatchClientJob extends JobDefinition {
 		if (isInterrupted() && shutdown != null) {
 			Thread.sleep(shutdown * 1000);
 		}
+		status.setMessage("done");
 
-        LOGGER.info("Date début : "+dateDebut);
-        LOGGER.info("Count      : "+count);
+		LOGGER.info("Date début : " + dateDebut);
+		LOGGER.info("Count      : " + count);
 	}
 
 	@Override

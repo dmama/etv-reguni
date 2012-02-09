@@ -16,27 +16,6 @@
 			<div id="jobsActif"></div>
 		</fieldset>
 
-		<script type="text/javascript" language="Javascript1.3">
-		
-			var requestDone = true;
-			$(document).everyTime("3s", function() {
-				if (!requestDone)
-					return;
-				requestDone = false;
-				XT.doAjaxAction('loadJobActif', $("#jobsActif").get(0), {},
-					{ 
-						clearQueryString: true,
-						errorHandler : function(ajaxRequest, exception) {
-							requestDone = true;
-						}
-		   			});
-			});
-			
-			function onRecieved() {
-				requestDone = true;
-			}
-		</script>
-
 		<fieldset class="info">
 			<legend><span><fmt:message key="title.info.data" /></span></legend>
 			<table>
@@ -92,6 +71,10 @@
 		
 		<script>
 			$(function() {
+
+				// Chargement des batches en cours d'exécution
+				Batch.loadRunning($('#jobsActif'), "3s", true);
+
 				// Ajuste la taille des divs *_output par rapport à celles des divs *_fieldset, ceci pour
 				// contourner une limitation du style 'overflow:auto' qui ne supporte pas des tailles relatives
 				var divs = ['stats'];

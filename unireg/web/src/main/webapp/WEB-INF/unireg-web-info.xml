@@ -7,7 +7,6 @@
 		<property name="globalSearcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="batchController" ref="gestionBatchController" />
 		<property name="statsService" ref="statsService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
