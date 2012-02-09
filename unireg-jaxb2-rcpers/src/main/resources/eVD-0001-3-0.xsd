@@ -11,11 +11,13 @@
 		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
 		   xmlns:eCH-0084="http://www.ech.ch/xmlns/eCH-0084/1"
 		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0001/3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+
 	<xs:annotation>
 		<xs:documentation xml:lang="fr">
 			Version initiale. Types et éléments servants à la recherche de personnes dans RCPers.
 		</xs:documentation>
 	</xs:annotation>
+
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0006/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0006/2/eCH-0006-2-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0007/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0007/4/eCH-0007-4-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
@@ -24,6 +26,7 @@
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0084/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-0.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0009/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0009/1/eVD-0009-1-0.xsd"/>
+
 	<xs:simpleType name="residenceMunicipalityTypeType">
 		<xs:restriction base="xs:integer">
 			<xs:enumeration value="1"/>
@@ -31,6 +34,7 @@
 			<xs:enumeration value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="typeOfRelationshipType">
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="1">
@@ -65,6 +69,7 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:complexType name="personIdentificationType">
 		<xs:sequence>
 			<xs:element name="localPersonId" type="eCH-0044:namedPersonIdType">
@@ -99,6 +104,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="identityType">
 		<xs:sequence>
 			<xs:element name="personIdentification" type="eVD-0001:personIdentificationType"/>
@@ -155,6 +161,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="upiPersonType">
 		<xs:sequence>
 			<xs:element name="vn" type="eCH-0044:vnType"/>
@@ -165,6 +172,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="residencePermitType">
 		<xs:sequence>
 			<xs:element name="residencePermit" type="eCH-0006:residencePermitType">
@@ -180,6 +188,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="residenceMunicipalityType">
 		<xs:sequence>
 			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType">
@@ -190,6 +199,7 @@
 			<xs:element name="residenceMunicipality" type="eCH-0007:swissMunicipalityType"/>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="residenceType">
 		<xs:sequence>
 			<xs:choice>
@@ -247,6 +257,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="dwellingAddressType">
 		<xs:sequence>
 			<xs:choice minOccurs="0">
@@ -298,12 +309,14 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="householdCompositionType">
 		<xs:sequence>
 			<xs:element name="parent" type="eVD-0001:personIdentificationType" minOccurs="0" maxOccurs="2"/>
 			<xs:element name="child" type="eVD-0001:personIdentificationType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="foundPersonType">
 		<xs:sequence>
 			<xs:element name="person" type="eVD-0001:personIdentificationType"/>
@@ -321,6 +334,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="historyContactType">
 		<xs:sequence>
 			<xs:element name="contactValidTill" type="xs:date" minOccurs="0"/>
@@ -332,6 +346,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="personType">
 		<xs:sequence>
 			<xs:element name="identity" type="eVD-0001:identityType"/>
@@ -403,6 +418,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="relationshipType">
 		<xs:sequence>
 			<xs:element name="typeOfRelationship" type="eVD-0001:typeOfRelationshipType">
@@ -438,20 +454,29 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
 	<xs:complexType name="relationsType">
-		<xs:choice minOccurs="0">
-			<xs:element name="currentRelationship" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
+		<xs:sequence>
+			<xs:element name="personId" type="eCH-0044:namedPersonIdType">
 				<xs:annotation>
-					<xs:documentation>Caractère 10 du catalogue des caractères vaudois. Élément contenant les relations courantes de la personne. </xs:documentation>
+					<xs:documentation>Caractère 10.2 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="relationshipHistory" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Caractère 10 du catalogue officiel des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service persons : il contient toutes les relations connues dans RCPers pour la personne</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:choice>
+			<xs:choice minOccurs="0">
+				<xs:element name="currentRelationship" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Caractère 10 du catalogue des caractères vaudois. Élément contenant les relations courantes de la personne. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="relationshipHistory" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Caractère 10 du catalogue officiel des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service persons : il contient toutes les relations connues dans RCPers pour la personne</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
+
 	<xs:element name="listOfFoundPersons">
 		<xs:annotation>
 			<xs:documentation>Liste de personnes trouvées</xs:documentation>
@@ -470,6 +495,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="listOfPersons">
 		<xs:annotation>
 			<xs:documentation>Liste de personnes</xs:documentation>
@@ -488,6 +514,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="household">
 		<xs:complexType>
 			<xs:sequence>
@@ -499,11 +526,13 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:element name="relations">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="relationship" type="eVD-0001:relationsType"/>
+				<xs:element name="relationship" type="eVD-0001:relationsType" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 </xs:schema>
