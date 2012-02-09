@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -283,6 +284,8 @@ public interface MetierService {
 	public void annuleDeces(PersonnePhysique tiers, RegDate date) throws MetierServiceException;
 
 	public ValidationResults validateVeuvage(PersonnePhysique veuf, RegDate date);
+
+	public void validateForOfVeuvage(PersonnePhysique veuf, RegDate date, EnsembleTiersCouple couple, ValidationResults results);
 
 	/**
 	 * Traite un veuvage.

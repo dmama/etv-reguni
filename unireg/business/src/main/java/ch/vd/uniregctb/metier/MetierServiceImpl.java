@@ -2144,39 +2144,46 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		if (!results.hasErrors()) {
-			if (couple != null) {
-
-				/*
-				 * Vérifications de la non existence de fors après la date de veuvage
-				 */
-
-				// Pour le ménage (si existant)
-				final EnsembleTiersCouple dernierCouple = tiersService.getEnsembleTiersCouple(veuf, null);
-				if (dernierCouple != null && dernierCouple.getMenage() != null) {
-					final ForFiscalPrincipal ffpMenage = dernierCouple.getMenage().getDernierForFiscalPrincipal();
-					if (ffpMenage != null && ffpMenage.getDateDebut().isAfter(date)) {
-						results.addError("Le ménage du veuf possède un for fiscal principal ouvert après la date de décès");
-					}
-				}
-				else {
-
-					// Pour le veuf
-					final ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
-					if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date)) {
-						results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès");
-					}
-				}
-			}
-			else {
-				// [UNIREG-1623] Il n'y a un problème que si le veuf n'a pas de for principal existant à la date de veuvage
-				final ForFiscalPrincipal forVeuf = veuf.getForFiscalPrincipalAt(date);
-				if (forVeuf == null) {
-					results.addError("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?");
-				}
-			}
+			 validateForOfVeuvage(veuf, date, couple, results);
 		}
 
 		return results;
+	}
+
+
+
+
+	public void validateForOfVeuvage(PersonnePhysique veuf, RegDate date, EnsembleTiersCouple couple, ValidationResults results) {
+		if (couple != null) {
+
+			/*
+			 * Vérifications de la non existence de fors après la date de veuvage
+			 */
+
+			// Pour le ménage (si existant)
+			final EnsembleTiersCouple dernierCouple = tiersService.getEnsembleTiersCouple(veuf, null);
+			if (dernierCouple != null && dernierCouple.getMenage() != null) {
+				final ForFiscalPrincipal ffpMenage = dernierCouple.getMenage().getDernierForFiscalPrincipal();
+				if (ffpMenage != null && ffpMenage.getDateDebut().isAfter(date)) {
+					results.addError("Le ménage du veuf possède un for fiscal principal ouvert après la date de décès");
+				}
+			}
+			else {
+
+				// Pour le veuf
+				final ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
+				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date)) {
+					results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès");
+				}
+			}
+		}
+		else {
+			// [UNIREG-1623] Il n'y a un problème que si le veuf n'a pas de for principal existant à la date de veuvage
+			final ForFiscalPrincipal forVeuf = veuf.getForFiscalPrincipalAt(date);
+			if (forVeuf == null) {
+				results.addError("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?");
+			}
+		}
 	}
 
 	/**

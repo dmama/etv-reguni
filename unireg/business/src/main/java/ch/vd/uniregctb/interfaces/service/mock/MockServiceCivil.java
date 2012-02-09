@@ -392,6 +392,18 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		}
 	}
 
+	public static void veuvifieIndividu(MockIndividu individu, RegDate dateVeuvage) {
+		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateVeuvage, TypeEtatCivil.VEUF);
+		etatsCivilIndividu.add(etatCivilIndividu);
+
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateVeuvage);
+		if (relation != null) {
+			((RelationVersIndividuImpl)relation).setDateFin(dateVeuvage);
+		}
+	}
+
 	public static void annuleMariage(MockIndividu individu) {
 
 		final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
