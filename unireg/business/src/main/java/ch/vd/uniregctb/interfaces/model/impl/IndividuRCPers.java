@@ -9,11 +9,13 @@ import java.util.Set;
 import ch.ech.ech0011.v5.MaritalData;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.HistoryContact;
 import ch.vd.evd0001.v3.Identity;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.PersonIdentification;
+import ch.vd.evd0001.v3.Relations;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.evd0001.v3.UpiPerson;
@@ -72,15 +74,15 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Permis permis;
 	private List<Nationalite> nationalites;
 
-	public static Individu get(Person target, ServiceInfrastructureService infraService) {
+	public static Individu get(Person target, @Nullable Relations relations, ServiceInfrastructureService infraService) {
 		if (target == null) {
 			return null;
 		}
 
-		return new IndividuRCPers(target, infraService);
+		return new IndividuRCPers(target, relations, infraService);
 	}
 
-	public IndividuRCPers(Person person, ServiceInfrastructureService infraService) {
+	public IndividuRCPers(Person person, @Nullable Relations relations, ServiceInfrastructureService infraService) {
 		this.noTechnique = getNoIndividu(person);
 
 		final Identity identity = person.getIdentity();
@@ -104,10 +106,12 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
-		this.enfants = initEnfants(person.getRelationshipHistory());
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
-		this.parents = initParents(person.getRelationshipHistory());
-		this.conjoints = initConjoints(person.getRelationshipHistory());
+		if (relations != null) {
+			this.enfants = initEnfants(relations.getRelationshipHistory());
+			this.parents = initParents(relations.getRelationshipHistory());
+			this.conjoints = initConjoints(relations.getRelationshipHistory());
+		}
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
 	}

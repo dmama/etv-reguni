@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
@@ -43,6 +44,27 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 		}
 		finally {
 			tracing.end(time, t, "getPersons", new Object() {
+				@Override
+				public String toString() {
+					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Relations getRelations(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getRelations(ids, date, withHistory);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getRelations", new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);

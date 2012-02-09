@@ -109,11 +109,13 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.naissance = individuWrapper.naissance;
 	    this.dateArriveeVD = individuWrapper.dateArriveeVD;
 	    this.etatsCivils = individuWrapper.etatsCivils;
-		this.conjoints = individuWrapper.conjoints;
 		this.permis = individuWrapper.permis;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
+			conjoints = individuWrapper.conjoints;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individuWrapper.enfants;
@@ -417,6 +419,9 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		super.copyPartsFrom(individu, parts);
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individu.getAdoptionsReconnaissances();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
+			conjoints = individu.getConjoints();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();

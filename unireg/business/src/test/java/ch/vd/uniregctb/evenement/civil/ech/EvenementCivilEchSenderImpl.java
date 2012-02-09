@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
 import ch.vd.evd0006.v1.EventIdentification;
+import ch.vd.evd0006.v1.EventMessage;
 import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -50,8 +51,7 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 	public void afterPropertiesSet() throws Exception {
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		final ClassPathResource resource = new ClassPathResource("eVD-0006-1-0.xsd");
-		esbValidator.setSources(new Resource[] {resource});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0001-3-0.xsd"), new ClassPathResource("eVD-0006-1-0.xsd")});
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 	}
@@ -67,13 +67,17 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 		final DocumentBuilder db = dbf.newDocumentBuilder();
 		final Document doc = db.newDocument();
 
-		final EventIdentification eventIdentification = objectFactory.createEventIdentification();
+		final EventIdentification eventIdentification = objectFactory.createEventIdentificationType();
 		eventIdentification.setAction(String.valueOf(evt.getAction().getEchCode()));
 		eventIdentification.setDate(XmlUtils.regdate2xmlcal(evt.getDateEvenement()));
 		eventIdentification.setMessageId(evt.getId());
 		eventIdentification.setReferenceMessageId(evt.getRefMessageId());
 		eventIdentification.setType(String.valueOf(evt.getType().getCodeECH()));
-		marshaller.marshal(eventIdentification, doc);
+
+		final EventMessage message = objectFactory.createEventMessageType();
+		message.setEventIdentification(eventIdentification);
+
+		marshaller.marshal(message, doc);
 
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setServiceDestination(serviceDestination);

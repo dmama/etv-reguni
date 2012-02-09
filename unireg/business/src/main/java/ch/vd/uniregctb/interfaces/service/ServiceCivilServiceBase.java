@@ -157,7 +157,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	@Override
 	public final Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
-		final Individu individu = getIndividu(noIndividuPrincipal, date);
+		final Individu individu = getIndividu(noIndividuPrincipal, date, AttributeIndividu.CONJOINTS);
 		if (individu == null) {
 			return null;
 		}
@@ -174,7 +174,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	@Override
 	public final Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal) {
-		final Individu individu = getIndividu(noIndividuPrincipal, null);
+		final Individu individu = getIndividu(noIndividuPrincipal, null, AttributeIndividu.CONJOINTS);
 		if (individu == null) {
 			return null;
 		}

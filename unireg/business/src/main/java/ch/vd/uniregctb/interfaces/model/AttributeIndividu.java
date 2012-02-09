@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 
 /**
@@ -11,6 +14,11 @@ public enum AttributeIndividu {
 		@Override
 		public EnumAttributeIndividu toEAI() {
 			return EnumAttributeIndividu.ORIGINE;
+		}},
+	CONJOINTS {
+		@Override
+		public EnumAttributeIndividu toEAI() {
+			return null;
 		}},
 	TUTELLE {
 		@Override
@@ -55,11 +63,13 @@ public enum AttributeIndividu {
 		if (parties == null) {
 			return null;
 		}
-		final EnumAttributeIndividu[] array = new EnumAttributeIndividu[parties.length];
+		final List<EnumAttributeIndividu> list = new ArrayList<EnumAttributeIndividu>();
 		for (int i = 0, partiesLength = parties.length; i < partiesLength; i++) {
-			array[i] = parties[i].toEAI();
+			EnumAttributeIndividu e = parties[i].toEAI();
+			if (e != null) {
+				list.add(e);
+			}
 		}
-		return array;
+		return list.toArray(new EnumAttributeIndividu[list.size()]);
 	}
-
 }

@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0006.v1.EventIdentification;
+import ch.vd.evd0006.v1.EventMessage;
 import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.ErrorType;
@@ -154,7 +155,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 		try {
 			// 1. décodage de l'événement reçu
-			final EventIdentification evt = parse(xml);
+			final EventMessage message = parse(xml);
+			final EventIdentification evt = message.getEventIdentification();
 
 			final EvenementCivilEch ech;
 			try {
@@ -196,11 +198,11 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		return receptionHandler.saveIncomingEvent(event);
 	}
 
-	private EventIdentification parse(Source xml) throws JAXBException, SAXException, IOException {
+	private EventMessage parse(Source xml) throws JAXBException, SAXException, IOException {
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		return (EventIdentification) u.unmarshal(xml);
+		return (EventMessage) u.unmarshal(xml);
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {
@@ -214,9 +216,18 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source source = new StreamSource(new ClassPathResource("eVD-0006-1-0.xsd").getURL().toExternalForm());
+			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0001-3-0.xsd", "eVD-0006-1-0.xsd");
 			schemaCache = sf.newSchema(source);
 		}
+	}
+
+	private static Source[] getClasspathSources(String... pathes) throws IOException {
+		final Source[] sources = new Source[pathes.length];
+		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
+			final String path = pathes[i];
+			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
+		}
+		return sources;
 	}
 
 	@Override
