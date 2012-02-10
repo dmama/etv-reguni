@@ -527,10 +527,21 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="relations">
+	<xs:element name="listOfRelations">
+		<xs:annotation>
+			<xs:documentation>Liste de relations</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="relationship" type="eVD-0001:relationsType" maxOccurs="unbounded"/>
+				<xs:element name="numberOfResults" type="xs:integer"/>
+				<xs:element name="listOfResults">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="relation" type="eVD-0001:relationsType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="nextResults" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

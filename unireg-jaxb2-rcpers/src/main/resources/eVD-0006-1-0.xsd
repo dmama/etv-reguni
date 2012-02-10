@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:eVD-0006="http://evd.vd.ch/xmlns/eVD-0006/1"
-		   xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/3"
-		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0006/1"
-		   elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
-
+<!-- edited with XMLSpy v2012 sp1 (http://www.altova.com) by Gabrielle Déal (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eVD-0006="http://evd.vd.ch/xmlns/eVD-0006/1" xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/3" targetNamespace="http://evd.vd.ch/xmlns/eVD-0006/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0001/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0001/3/eVD-0001-3-0.xsd"/>
-
 	<xs:simpleType name="eventTypesType">
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="1"/>
@@ -55,7 +50,6 @@
 		<!-- Ce n'est pas une duplication de celui des eCH -->
 		<!-- Un eVD-0006 ne renvoie pas tous les types de l'eCH -->
 	</xs:simpleType>
-
 	<xs:simpleType name="eventActionType">
 		<xs:annotation>
 			<xs:documentation>
@@ -73,7 +67,6 @@
 			<!-- KeyExchange -->
 		</xs:restriction>
 	</xs:simpleType>
-
 	<xs:complexType name="eventIdentificationType">
 		<xs:sequence>
 			<xs:element name="type" type="eVD-0006:eventTypesType"/>
@@ -84,10 +77,13 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="eventPersonType">
+	<xs:element name="event">
+		<xs:annotation>
+			<xs:documentation>Événement complet incluant l'identification de l'événement ainsi que état complet de la personne après que l'événement soit survenu</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="eventIdentification" type="eVD-0006:eventIdentificationType"/>
+				<xs:element name="identification" type="eVD-0006:eventIdentificationType"/>
 				<xs:element name="personAfterEvent" type="eVD-0001:personType">
 					<xs:annotation>
 						<xs:documentation>État de la personne juste après que l'événement soit survenu</xs:documentation>
@@ -97,10 +93,13 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="eventMessageType">
+	<xs:element name="eventNotification">
+		<xs:annotation>
+			<xs:documentation>Identification de l'événement. Dans RCPers, envoyé par JMS</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="eventIdentification" type="eVD-0006:eventIdentificationType"/>
+				<xs:element name="identification" type="eVD-0006:eventIdentificationType"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

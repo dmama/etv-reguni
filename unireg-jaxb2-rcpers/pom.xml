@@ -56,7 +56,6 @@
 					<args>
 						<arg>-extension</arg>
 						<arg>-Xpretty-classname</arg>
-						<arg>-Xpretty-classname-force:ch.vd.evd0001.v3.Relations/ListOfRelations</arg>
 						<arg>-Xunireg-ws</arg>
 						<arg>-Xts</arg>
 						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
