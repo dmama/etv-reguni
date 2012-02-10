@@ -66,7 +66,7 @@ public class EnregistrementPartenariatEchProcessorTest extends AbstractEvenement
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noPrincipal, eventId);
+		traiterEvenements(noPrincipal);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

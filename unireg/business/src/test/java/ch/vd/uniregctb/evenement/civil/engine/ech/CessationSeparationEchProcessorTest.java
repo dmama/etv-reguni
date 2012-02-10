@@ -87,7 +87,7 @@ public class CessationSeparationEchProcessorTest extends AbstractEvenementCivilE
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, evtIdMonsieur);
+		traiterEvenements(noMonsieur);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -132,7 +132,7 @@ public class CessationSeparationEchProcessorTest extends AbstractEvenementCivilE
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMadame, evtIdMadame);
+		traiterEvenements(noMadame);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -228,7 +228,7 @@ public class CessationSeparationEchProcessorTest extends AbstractEvenementCivilE
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, evtIdMonsieur);
+		traiterEvenements(noMonsieur);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

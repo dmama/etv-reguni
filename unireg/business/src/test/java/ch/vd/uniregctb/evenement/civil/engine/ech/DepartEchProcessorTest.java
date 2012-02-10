@@ -84,7 +84,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -157,7 +157,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -225,7 +225,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -294,7 +294,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

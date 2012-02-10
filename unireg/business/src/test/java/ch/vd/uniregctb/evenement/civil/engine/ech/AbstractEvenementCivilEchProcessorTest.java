@@ -8,7 +8,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
 	private EvenementCivilNotificationQueueImpl queue;
-	private EvenementCivilEchProcessorWithMonitor processor;
+	private EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
 
 	@Override
@@ -35,7 +35,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	}
 	
 	protected void buildProcessor(EvenementCivilEchTranslator translator, boolean restart) {
-		final EvenementCivilEchProcessorWithMonitor proc = new EvenementCivilEchProcessorWithMonitor();
+		final EvenementCivilEchProcessorImpl proc = new EvenementCivilEchProcessorImpl();
 		proc.setEvtCivilDAO(evtCivilDAO);
 		proc.setNotificationQueue(queue);
 		proc.setTransactionManager(transactionManager);
@@ -51,30 +51,44 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		}
 	}
 
-	protected void traiterEvenement(long noIndividu, final long noEvenement) throws InterruptedException {
+	protected void traiterEvenements(final long noIndividu) throws InterruptedException {
 		// on se met en position pour voir quand le traitement aura été effectué
 		final MutableBoolean jobDone = new MutableBoolean(false);
-		processor.setMonitor(new EvenementCivilEchProcessorWithMonitor.ProcessingMonitor() {
+		final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(new EvenementCivilEchProcessor.Listener() {
 			@Override
-			public void onProcessingEnd(long evtId) {
-				if (evtId == noEvenement) {
-					synchronized (jobDone) {
-						jobDone.setValue(true);
-						jobDone.notifyAll();
-					}
+			public void onIndividuTraite(long noIndividuTraite) {
+				if (noIndividuTraite == noIndividu) {
+					setAndNotify();
+				}
+			}
+
+			@Override
+			public void onStop() {
+				setAndNotify();
+			}
+
+			private void setAndNotify() {
+				synchronized (jobDone) {
+					jobDone.setValue(true);
+					jobDone.notifyAll();
 				}
 			}
 		});
 
-		// notification d'arrivée d'événement sur l'individu
-		queue.add(noIndividu);
+		try {
+			// notification d'arrivée d'événement sur l'individu
+			queue.post(noIndividu);
 
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (jobDone) {
-			// on attend que le traitement se fasse
-			while (!jobDone.booleanValue()) {
-				jobDone.wait();
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (jobDone) {
+				// on attend que le traitement se fasse
+				while (!jobDone.booleanValue()) {
+					jobDone.wait();
+				}
 			}
+		}
+		finally {
+			processor.unregisterListener(handle);
 		}
 	}
 }

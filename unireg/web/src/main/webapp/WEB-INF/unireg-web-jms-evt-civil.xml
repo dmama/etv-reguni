@@ -81,13 +81,20 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor">
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="translator" ref="evenementCivilEchTranslator"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
+	</bean>
+	
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="processor" ref="evtCivilEchProcessor"/>
 	</bean>
 
 </beans>

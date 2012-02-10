@@ -3,7 +3,9 @@ package ch.vd.uniregctb.evenement.civil.ech;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -56,6 +58,20 @@ public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, 
 				final Query query = session.createQuery(hql);
 				query.setParameter("etat", EtatEvenementCivil.A_TRAITER.name());
 				return query.list();
+			}
+		});
+	}
+
+	@Override
+	public Set<Long> getIndividusConcernesParEvenementsPourRetry() {
+		final String hql = "select distinct ec.numeroIndividu from EvenementCivilEch ec where ec.annulationDate is null and ec.numeroIndividu is not null and ec.etat in (:etats)";
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(hql);
+				query.setParameterList("etats", ETATS_NON_TRAITES);
+				return new HashSet<Long>(query.list());
 			}
 		});
 	}

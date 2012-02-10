@@ -49,7 +49,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noIndividu, naissanceId);
+		traiterEvenements(noIndividu);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

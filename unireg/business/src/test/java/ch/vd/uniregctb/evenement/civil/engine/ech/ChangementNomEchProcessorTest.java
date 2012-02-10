@@ -45,7 +45,7 @@ public class ChangementNomEchProcessorTest extends AbstractEvenementCivilEchProc
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

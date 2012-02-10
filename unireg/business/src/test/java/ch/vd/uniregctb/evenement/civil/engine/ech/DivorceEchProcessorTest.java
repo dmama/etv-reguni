@@ -73,7 +73,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, divorceId);
+		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

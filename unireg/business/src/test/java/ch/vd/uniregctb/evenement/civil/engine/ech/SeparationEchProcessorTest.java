@@ -73,7 +73,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, separationId);
+		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été séparé dans le fiscal
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

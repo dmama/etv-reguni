@@ -95,7 +95,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMadame, veuvageId);
+		traiterEvenements(noMadame);
 
 		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

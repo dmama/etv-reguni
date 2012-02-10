@@ -81,7 +81,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

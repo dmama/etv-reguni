@@ -73,7 +73,7 @@ public class DissolutionPartenariatEchProcessorTest extends AbstractEvenementCiv
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noPrincipal, eventId);
+		traiterEvenements(noPrincipal);
 
 		// on vérifie que le ménage-commun a bien été dissolu dans le fiscal
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

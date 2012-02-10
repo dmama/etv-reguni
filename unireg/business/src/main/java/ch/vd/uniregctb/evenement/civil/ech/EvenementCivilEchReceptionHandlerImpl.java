@@ -111,6 +111,6 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	private void sendNotificationForNewEvent(long noIndividu) {
-		notificationQueue.add(noIndividu);
+		notificationQueue.post(noIndividu);
 	}
 }

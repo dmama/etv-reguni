@@ -82,7 +82,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		});
 		
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 		
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -161,7 +161,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

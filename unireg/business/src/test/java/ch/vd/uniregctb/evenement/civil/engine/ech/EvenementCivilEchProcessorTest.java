@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -171,7 +170,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 
 		// traitement de l'événement, passage en erreur et traitement de l'indexation pure quand-même (si tout va bien...)
-		traiterEvenement(noIndividu, evtErreurId);
+		traiterEvenements(noIndividu);
 		
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -236,7 +235,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 
 		// traitement de l'événement, passage en erreur et traitement de l'indexation pure quand-même (si tout va bien...)
-		traiterEvenement(noIndividu, evtErreurId);
+		traiterEvenements(noIndividu);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -291,7 +290,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noIndividu, testingId);
+		traiterEvenements(noIndividu);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -429,7 +428,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 		
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification que rien n'a été committé en base (autre que les messages d'erreur, bien-sûr)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -453,5 +452,73 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 				return null;
 			}
 		});
+	}
+	
+	@Test(timeout = 10000L)
+	public void testListenerSansEvenement() throws Exception {
+
+		final long noIndividu = 346783L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
+			}
+		});
+
+		// lancement du traitement des événements en queue pour cet individu
+		traiterEvenements(noIndividu);
+		
+		// mais l'individu n'en a pas, justement -> si la mécanique de listener ne fonctionne pas dans ce cas là
+		// alors la méthode traiterEvenements() ne reviendra jamais et c'est le timeout du test qui va sauter
+	}
+	
+	@Test(timeout = 10000L)
+	public void testListenerAvecEvenementTousTraites() throws Exception {
+
+		final long noIndividu = 423782690773L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
+			}
+		});
+
+		// création de quelques événements sur cet individu, déjà tous traités
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// événement déja traité
+				final EvenementCivilEch evtTraite = new EvenementCivilEch();
+				evtTraite.setId(3523732L);
+				evtTraite.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evtTraite.setDateEvenement(RegDate.get());
+				evtTraite.setEtat(EtatEvenementCivil.TRAITE);
+				evtTraite.setNumeroIndividu(noIndividu);
+				evtTraite.setType(TypeEvenementCivilEch.TESTING);
+				hibernateTemplate.merge(evtTraite);
+
+				// événement forcé (= déjà traité aussi)
+				final EvenementCivilEch evtForce = new EvenementCivilEch();
+				evtForce.setId(3427842L);
+				evtForce.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evtForce.setDateEvenement(RegDate.get());
+				evtForce.setEtat(EtatEvenementCivil.FORCE);
+				evtForce.setNumeroIndividu(noIndividu);
+				evtForce.setType(TypeEvenementCivilEch.TESTING);
+				hibernateTemplate.merge(evtForce);
+
+				return null;
+			}
+		});
+
+		// lancement du traitement des événements en queue pour cet individu
+		traiterEvenements(noIndividu);
+
+		// mais l'individu n'en a pas à traiter, justement -> si la mécanique de listener ne fonctionne pas dans ce cas là
+		// alors la méthode traiterEvenements() ne reviendra jamais et c'est le timeout du test qui va sauter
 	}
 }

@@ -66,7 +66,7 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noMonsieur, mariageId);
+		traiterEvenements(noMonsieur);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

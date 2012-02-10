@@ -68,7 +68,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noIndividu, decesId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

@@ -73,7 +73,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -139,7 +139,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 		
 		// traitement de l'arrivée de monsieur
-		traiterEvenement(noLui, evtLui);
+		traiterEvenements(noLui);
 		
 		// vérification de l'état de traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -184,7 +184,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'arrivée de monsieur
-		traiterEvenement(noElle, evtElle);
+		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -261,7 +261,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'arrivée de monsieur
-		traiterEvenement(noLui, evtLui);
+		traiterEvenements(noLui);
 
 		// vérification de l'état de traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -306,7 +306,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement de l'arrivée de monsieur
-		traiterEvenement(noElle, evtElle);
+		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

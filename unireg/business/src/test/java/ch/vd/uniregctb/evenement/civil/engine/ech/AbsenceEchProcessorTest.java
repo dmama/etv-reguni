@@ -68,7 +68,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		// vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

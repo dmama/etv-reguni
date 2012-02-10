@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,12 +21,6 @@ public interface EvenementCivilNotificationQueue {
 
 	/**
 	 * Informations de base sur un événement civil.
-	 * <p/>
-	 * L'ordre de tri naturel des éléments de cette classe est calculé ainsi :
-	 * <ol>
-	 *     <li>la date de l'événement (élément {@link #date}), du plus ancien au plus récent</li>
-	 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link #type}) de l'événement, de la plus petite à la plus grande</li>
-	 * </ol>
 	 */
 	public static final class EvtCivilInfo {
 		public final long idEvenement;
@@ -54,11 +50,45 @@ public interface EvenementCivilNotificationQueue {
 	}
 
 	/**
+	 * Lot d'événements civils à traiter pour un individu donné
+	 */
+	public static final class Batch {
+
+		/**
+		 * Identifiant de l'individu pour lequel le lot est constitué
+		 */
+		public final long noIndividu;
+
+		/**
+		 * Informations sur les événements civils à traiter.
+		 * L'ordre de tri des éléments de cette liste est calculé ainsi :
+		 * <ol>
+		 *     <li>la date de l'événement (élément {@link EvtCivilInfo#date}), du plus ancien au plus récent</li>
+		 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link EvtCivilInfo#type}) de l'événement, de la plus petite à la plus grande</li>
+		 * </ol>
+		 * <p/>
+		 * <b>Nota bene :</b> cette liste peut être vide, mais jamais nulle
+		 */
+		public final List<EvtCivilInfo> contenu;
+
+		protected Batch(long noIndividu, List<EvtCivilInfo> contenu) {
+			this.noIndividu = noIndividu;
+			this.contenu = contenu != null ? contenu : Collections.<EvtCivilInfo>emptyList();
+		}
+	}
+
+	/**
 	 * Méthode utilisée pour ajouter des éléments à la queue
 	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
 	 * @throws NullPointerException en cas de paramètre <code>null</code>
 	 */
-	void add(Long noIndividu);
+	void post(Long noIndividu);
+
+	/**
+	 * Méthode utilisée pour ajouter des éléments à la queue en bloc
+	 * @param nosIndividus collections de numéros d'individus à poster
+	 */
+	void postAll(Collection<Long> nosIndividus);
 
 	/**
 	 * Va chercher le prochain lot de traitement d'événements pour un individu
@@ -67,7 +97,7 @@ public interface EvenementCivilNotificationQueue {
 	 * @return si aucun événement, <code>null</code> ; sinon, la liste triée (premier dans la liste = plus ancien) des événements à traiter sur le prochain individu. <b>Nota bene:</b> la liste en question peut être vide...
 	 * @throws InterruptedException en cas d'interruption du thread pendant l'attente
 	 */
-	List<EvtCivilInfo> poll(long timeout, TimeUnit unit) throws InterruptedException;
+	Batch poll(long timeout, TimeUnit unit) throws InterruptedException;
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue

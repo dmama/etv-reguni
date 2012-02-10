@@ -74,7 +74,7 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 		});
 
 		// traitement synchrone de l'événement
-		traiterEvenement(noIndividu, evtId);
+		traiterEvenements(noIndividu);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

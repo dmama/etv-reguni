@@ -52,4 +52,6 @@
 
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>
+
 </beans>

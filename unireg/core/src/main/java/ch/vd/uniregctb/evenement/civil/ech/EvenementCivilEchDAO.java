@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
 
@@ -22,4 +23,10 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 	 * @return la liste des événements civils à relancer
 	 */
 	List<EvenementCivilEch> getEvenementsCivilsARelancer();
+
+	/**
+	 * @return l'ensemble des identifiants des individus pour lesquels il existe au moins un événement civil dans l'état {@link ch.vd.uniregctb.type.EtatEvenementCivil#EN_ATTENTE EN_ATTENTE}
+	 * ou {@link ch.vd.uniregctb.type.EtatEvenementCivil#EN_ERREUR EN_ERREUR}
+	 */
+	Set<Long> getIndividusConcernesParEvenementsPourRetry();
 }
