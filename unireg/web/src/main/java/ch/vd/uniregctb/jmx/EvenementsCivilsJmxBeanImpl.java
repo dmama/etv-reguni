@@ -2,18 +2,13 @@ package ch.vd.uniregctb.jmx;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
 
-@ManagedResource
-public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, InitializingBean {
+public abstract class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, InitializingBean {
 
-	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
-
-	private JmxAwareEsbMessageEndpointManager evtCivilEndpointManager;
+	private JmxAwareEsbMessageEndpointManager endpointManager;
 
 	private ErrorMonitorableMessageListener listener;
 
@@ -37,57 +32,22 @@ public class EvenementsCivilsJmxBeanImpl implements EvenementsCivilsJmxBean, Ini
 
 	@Override
 	@ManagedAttribute
-	public int getNbMeaningfullEventsReceived() {
-		return evenementCivilAsyncProcessor.getNombreEvenementsRecus();
-	}
-
-	@Override
-	@ManagedAttribute
-	public int getNbEventsTreated() {
-		return evenementCivilAsyncProcessor.getNombreEvenementsTraites();
-	}
-
-	@Override
-	@ManagedAttribute
-	public int getTreatmentQueueSize() {
-		return evenementCivilAsyncProcessor.getQueueSize();
-	}
-
-	@Override
-	@ManagedAttribute
 	public int getNbConsumers() {
-		return evtCivilEndpointManager.getMaxConcurrentConsumers();
-	}
-
-	@Override
-	@ManagedAttribute
-	public int getAcknowledgementDelay() {
-		return evenementCivilAsyncProcessor.getDelaiPriseEnCompte();
-	}
-
-	@Override
-	@ManagedAttribute
-	public void setAcknowledgementDelay(int delay) {
-		evenementCivilAsyncProcessor.setDelaiPriseEnCompte(delay);
+		return endpointManager.getMaxConcurrentConsumers();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilAsyncProcessor(EvenementCivilAsyncProcessor evenementCivilAsyncProcessor) {
-		this.evenementCivilAsyncProcessor = evenementCivilAsyncProcessor;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvtCivilEndpointManager(JmxAwareEsbMessageEndpointManager evtCivilEndpointManager) {
-		this.evtCivilEndpointManager = evtCivilEndpointManager;
+	public void setEndpointManager(JmxAwareEsbMessageEndpointManager endpointManager) {
+		this.endpointManager = endpointManager;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (evtCivilEndpointManager == null) {
-			throw new IllegalArgumentException("La propriété evtCivilEndpointManager est nulle");
+		if (endpointManager == null) {
+			throw new IllegalArgumentException("La propriété endpointManager est nulle");
 		}
 
-		final Object listener = evtCivilEndpointManager.getMessageListener();
+		final Object listener = endpointManager.getMessageListener();
 		if (listener == null || !(listener instanceof ErrorMonitorableMessageListener)) {
 			throw new IllegalArgumentException("Le listener d'événements civils doit implémenter l'interface " + ErrorMonitorableMessageListener.class.getName());
 		}

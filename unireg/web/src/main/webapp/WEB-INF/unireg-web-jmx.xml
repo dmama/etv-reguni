@@ -26,7 +26,8 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsRegPP" value-ref="evenementsCivilsRegPPJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsEch" value-ref="evenementsCivilsEchJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
@@ -42,7 +43,7 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivils" value-ref="evtCivilEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsRegPP" value-ref="evtCivilEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEch" value-ref="evtCivilEchEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
@@ -85,9 +86,14 @@
 		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
 	</bean>
 
-	<bean name="evenementsCivilsJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsJmxBeanImpl">
+	<bean name="evenementsCivilsRegPPJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsRegPPJmxBeanImpl">
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor"/>
-		<property name="evtCivilEndpointManager" ref="evtCivilEndpointManager"/>
+		<property name="endpointManager" ref="evtCivilEndpointManager"/>
+	</bean>
+
+	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
+		<property name="endpointManager" ref="evtCivilEchEndpointManager"/>
+		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">

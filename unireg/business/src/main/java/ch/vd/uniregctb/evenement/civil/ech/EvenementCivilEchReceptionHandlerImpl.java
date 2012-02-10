@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -14,12 +16,14 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 
-public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler {
+public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor {
 
 	private RcPersClient rcPersClient;
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
+	
+	private final AtomicInteger nombreEvenementsNonIgnores = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRcPersClient(RcPersClient rcPersClient) {
@@ -42,6 +46,16 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
+	public int getNombreEvenementsNonIgnores() {
+		return nombreEvenementsNonIgnores.intValue();
+	}
+
+	@Override
+	public int getNombreIndividusEnAttenteDeTraitement() {
+		return notificationQueue.getInflightCount();
+	}
+
+	@Override
 	public EvenementCivilEch saveIncomingEvent(final EvenementCivilEch event) {
 		final long id = event.getId();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -55,6 +69,9 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 					Audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
 					return null;
 				}
+
+				// pour les stats
+				nombreEvenementsNonIgnores.incrementAndGet();
 
 				final EvenementCivilEch saved = evtCivilDAO.save(event);
 				Audit.info(id, String.format("L'événement civil %d est inséré en base de données", id));
