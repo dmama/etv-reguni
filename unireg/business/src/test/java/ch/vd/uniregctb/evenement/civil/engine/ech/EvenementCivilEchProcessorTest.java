@@ -560,7 +560,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		processor.unregisterListener(handle);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testListenerRegistration() throws Exception {
 
 		final long noIndividu = 467278456783L;
