@@ -51,7 +51,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private TiersService tiersService;
 
 	private Processor processor;
-	private final Map<UUID, Listener> listeners = new LinkedHashMap<UUID, Listener>();
+	private final Map<UUID, Listener> listeners = new LinkedHashMap<UUID, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
 
@@ -187,10 +187,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			}
 		}
 	}
-	
+
+	/**
+	 * Classe interne des handles utilisés lors de l'enregistrement de listeners
+	 */
 	private static final class ListenerHandleImpl implements ListenerHandle {
 		private final UUID uuid;
-
 		private ListenerHandleImpl(UUID uuid) {
 			this.uuid = uuid;
 		}
@@ -210,10 +212,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	@Override
 	public void unregisterListener(ListenerHandle handle) {
-		if (handle == null) {
-			throw new NullPointerException("listener");
-		}
-		else if (!(handle instanceof ListenerHandleImpl)) {
+		if (!(handle instanceof ListenerHandleImpl)) {
 			throw new IllegalArgumentException("Invalid handle");
 		}
 		synchronized (listeners) {

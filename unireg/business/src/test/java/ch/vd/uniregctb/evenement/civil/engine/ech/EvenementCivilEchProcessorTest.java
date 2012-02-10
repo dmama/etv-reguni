@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Set;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -32,8 +33,11 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("JavaDoc")
 public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
@@ -520,5 +524,84 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 
 		// mais l'individu n'en a pas à traiter, justement -> si la mécanique de listener ne fonctionne pas dans ce cas là
 		// alors la méthode traiterEvenements() ne reviendra jamais et c'est le timeout du test qui va sauter
+	}
+	
+	@Test
+	public void testListenerHandleUsage() throws Exception {
+		// handle null
+		try {
+			processor.unregisterListener(null);
+			fail("Aurait dû être considéré comme invalide");
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Invalid handle", e.getMessage());
+		}
+
+		// handle non null mais bidon
+		try {
+			processor.unregisterListener(new EvenementCivilEchProcessor.ListenerHandle() {});
+			fail("Aurait dû être considéré comme invalide");
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Invalid handle", e.getMessage());
+		}
+		
+		// handle obtenu normalement
+		final EvenementCivilEchProcessor.Listener listener = new EvenementCivilEchProcessor.Listener() {
+			@Override
+			public void onIndividuTraite(long noIndividu) {
+			}
+
+			@Override
+			public void onStop() {
+			}
+		};
+		final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(listener);
+		processor.unregisterListener(handle);
+	}
+
+	@Test
+	public void testListenerRegistration() throws Exception {
+
+		final long noIndividu = 467278456783L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1982, 4, 12), "Lara", "Clette", false);
+			}
+		});
+
+		final MutableBoolean recu = new MutableBoolean(false);
+		final EvenementCivilEchProcessor.Listener listener = new EvenementCivilEchProcessor.Listener() {
+			@Override
+			public void onIndividuTraite(long noIndividu) {
+				recu.setValue(true);
+			}
+
+			@Override
+			public void onStop() {
+			}
+		};
+
+		// traitement des événements (= aucun) de l'individu
+		traiterEvenements(noIndividu);
+		
+		// notre listener n'a rien reçu
+		assertFalse(recu.booleanValue());
+		
+		// après insertion du listener, il devrait recevoir les nouveaux événements
+		final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(listener);
+		assertFalse(recu.booleanValue());
+		traiterEvenements(noIndividu);
+		assertTrue(recu.booleanValue());
+
+		// après désactivation du listener, il ne devrait plus rien recevoir
+		recu.setValue(false);
+		processor.unregisterListener(handle);
+		assertFalse(recu.booleanValue());
+		traiterEvenements(noIndividu);
+		assertFalse(recu.booleanValue());
 	}
 }

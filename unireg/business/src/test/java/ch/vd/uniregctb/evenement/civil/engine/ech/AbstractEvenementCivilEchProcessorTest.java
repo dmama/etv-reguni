@@ -8,7 +8,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
 	private EvenementCivilNotificationQueueImpl queue;
-	private EvenementCivilEchProcessorImpl processor;
+	protected EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
 
 	@Override
