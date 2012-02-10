@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0006.v1.Event;
 import ch.vd.registre.base.date.RegDate;
 
 public interface RcPersClient {
@@ -30,10 +30,10 @@ public interface RcPersClient {
 	ListOfRelations getRelations(Collection<Long> ids, RegDate date, boolean withHistory);
 
 	/**
-	 * Récupère la personne liée à l'événement civil dont l'identifiant est donné
+	 * Récupère l'événement civil (+ l'état de la personne juste après l'événement) dont l'identifiant est donné
 	 *
 	 * @param eventId l'identifiant de l'événement civil
-	 * @return la personne concernée par l'événement
+	 * @return l'événement civil demandé
 	 */
-	Person getPersonForEvent(long eventId);
+	Event getEvent(long eventId);
 }

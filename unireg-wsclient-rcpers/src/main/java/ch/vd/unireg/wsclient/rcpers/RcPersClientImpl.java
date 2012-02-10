@@ -1,14 +1,14 @@
 package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
-import java.util.List;
 
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0006.v1.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -111,20 +111,20 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	}
 
 	@Override
-	public Person getPersonForEvent(long eventId) {
+	public Event getEvent(long eventId) {
 		final WebClient wc = WebClient.create(baseUrl, username, password, null);
 		wc.path(eventPath);
 		wc.path(String.valueOf(eventId));
 
-		final ListOfPersons found = wc.get(ListOfPersons.class);
-		Person p = null;
-		if (found.getListOfResults() != null) {
-			final List<Person> pList = found.getListOfResults().getPerson();
-			if (pList != null && pList.size() > 0) {
-				p = pList.get(0);
-			}
+		try {
+			return wc.get(Event.class);
 		}
-
-		return p;
+		catch (ServerWebApplicationException e) {
+			if (e.getResponse().getStatus() == 404) {
+				// la ressource n'existe pas
+				return null;
+			}
+			throw e;
+		}
 	}
 }
