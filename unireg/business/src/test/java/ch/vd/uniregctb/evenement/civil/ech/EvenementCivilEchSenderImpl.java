@@ -11,7 +11,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
 import ch.vd.evd0006.v1.EventIdentification;
-import ch.vd.evd0006.v1.EventMessage;
+import ch.vd.evd0006.v1.EventNotification;
 import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -74,8 +74,8 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 		eventIdentification.setReferenceMessageId(evt.getRefMessageId());
 		eventIdentification.setType(String.valueOf(evt.getType().getCodeECH()));
 
-		final EventMessage message = objectFactory.createEventMessageType();
-		message.setEventIdentification(eventIdentification);
+		final EventNotification message = objectFactory.createEventNotification();
+		message.setIdentification(eventIdentification);
 
 		marshaller.marshal(message, doc);
 

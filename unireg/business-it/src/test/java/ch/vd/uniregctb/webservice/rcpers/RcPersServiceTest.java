@@ -10,6 +10,7 @@ import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relations;
 import ch.vd.evd0001.v3.Relationship;
+import ch.vd.evd0006.v1.Event;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 
@@ -29,6 +30,7 @@ public class RcPersServiceTest {
 		final Person person = list.getListOfResults().getPerson().get(0);
 		assertNotNull(person);
 		// vue de la confédération
+		assertNotNull(person.getUpiPerson());
 		assertEquals("Cuendet", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getOfficialName());
 		assertEquals("Jean-Eric", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
 
@@ -45,7 +47,7 @@ public class RcPersServiceTest {
 		final ListOfRelations list = client.getRelations(Arrays.asList(333528L), null, true);
 		assertNotNull(list);
 
-		final List<Relations> allRelations = list.getRelationship();
+		final List<Relations> allRelations = list.getListOfResults().getRelation();
 		assertNotNull(allRelations);
 		assertEquals(1, allRelations.size()); // on n'a demandé qu'une seule personne
 
@@ -71,12 +73,14 @@ public class RcPersServiceTest {
 	}
 
 	@Test
-	public void testGetPersonForEvent() throws Exception {
+	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Person p = client.getPersonForEvent(29393500L);
-		assertNotNull(p);
-		assertEquals(2000022L, IndividuRCPers.getNoIndividu(p));
+		final Event event = client.getEvent(1328541610257001L);
+		assertNotNull(event);
+
+		final Person p = event.getPersonAfterEvent();
+		assertEquals(1047898L, IndividuRCPers.getNoIndividu(p));
 	}
 
 	private static RcPersClientImpl buildClient() throws Exception {

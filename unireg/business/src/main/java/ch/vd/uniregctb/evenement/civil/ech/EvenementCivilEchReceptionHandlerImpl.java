@@ -7,6 +7,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0006.v1.Event;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -80,7 +81,11 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			return event.getNumeroIndividu();
 		}
 		else {
-			final Person person = rcPersClient.getPersonForEvent(event.getId());
+			final Event e = rcPersClient.getEvent(event.getId());
+			if (e == null) {
+				throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
+			}
+			final Person person = e.getPersonAfterEvent();
 			if (person == null) {
 				throw new EvenementCivilException(String.format("Pas d'individu lié à l'événement civil %d", event.getId()));
 			}

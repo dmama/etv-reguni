@@ -7,7 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0006.v1.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
@@ -74,18 +74,18 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	}
 
 	@Override
-	public Person getPersonForEvent(final long eventId) {
+	public Event getEvent(final long eventId) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getPersonForEvent(eventId);
+			return target.getEvent(eventId);
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonForEvent", new Object() {
+			tracing.end(time, t, "getEvent", new Object() {
 				@Override
 				public String toString() {
 					return String.format("eventId=%d", eventId);

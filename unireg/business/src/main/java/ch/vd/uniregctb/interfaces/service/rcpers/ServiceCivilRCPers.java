@@ -46,11 +46,11 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		final Relations relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
 			ListOfRelations rel = client.getRelations(Arrays.asList(noIndividu), date, true);
-			if (rel != null && rel.getRelationship() != null && !rel.getRelationship().isEmpty()) {
-				if (rel.getRelationship().size() > 1) {
+			if (rel != null && rel.getListOfResults().getRelation() != null && !rel.getListOfResults().getRelation().isEmpty()) {
+				if (rel.getListOfResults().getRelation().size() > 1) {
 					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
 				}
-				relations = rel.getRelationship().get(0);
+				relations = rel.getListOfResults().getRelation().get(0);
 			}
 			else {
 				relations = null;
@@ -92,9 +92,9 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		final Map<Long, Relations> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
 			final ListOfRelations rel = client.getRelations(nosIndividus, date, true);
-			if (rel != null && rel.getRelationship() != null) {
+			if (rel != null && rel.getListOfResults().getRelation() != null) {
 				allRelations = new HashMap<Long, Relations>();
-				for (Relations relations : rel.getRelationship()) {
+				for (Relations relations : rel.getListOfResults().getRelation()) {
 					allRelations.put(IndividuRCPers.getNoIndividu(relations.getPersonId()), relations);
 				}
 			}

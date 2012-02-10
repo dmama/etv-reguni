@@ -17,21 +17,21 @@ public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 
 	@Override
 	public void testGetIndividu() throws Exception {
-		// TODO (msi) on ne teste rien en attendant la correction de SIREF-1480
+		// TODO (rcpers) on ne teste rien en attendant la correction de SIREF-1480
 	}
 
 	@Override
 	public void testGetConjoint() throws Exception {
-		// TODO (msi) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
+		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
 	}
 
 	@Override
 	public void testGetNumeroIndividuConjoint() {
-		// TODO (msi) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
+		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
 	}
 
 	@Override
 	public void testGetIndividuConjoint() {
-		// TODO (msi) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
+		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
 	}
 }

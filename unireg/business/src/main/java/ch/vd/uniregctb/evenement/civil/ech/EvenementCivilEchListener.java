@@ -24,7 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0006.v1.EventIdentification;
-import ch.vd.evd0006.v1.EventMessage;
+import ch.vd.evd0006.v1.EventNotification;
 import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.ErrorType;
@@ -155,8 +155,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 		try {
 			// 1. décodage de l'événement reçu
-			final EventMessage message = parse(xml);
-			final EventIdentification evt = message.getEventIdentification();
+			final EventNotification message = parse(xml);
+			final EventIdentification evt = message.getIdentification();
 
 			final EvenementCivilEch ech;
 			try {
@@ -198,11 +198,11 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		return receptionHandler.saveIncomingEvent(event);
 	}
 
-	private EventMessage parse(Source xml) throws JAXBException, SAXException, IOException {
+	private EventNotification parse(Source xml) throws JAXBException, SAXException, IOException {
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		return (EventMessage) u.unmarshal(xml);
+		return (EventNotification) u.unmarshal(xml);
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {
