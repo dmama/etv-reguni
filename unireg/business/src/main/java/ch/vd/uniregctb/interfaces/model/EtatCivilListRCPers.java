@@ -36,6 +36,22 @@ public class EtatCivilListRCPers implements EtatCivilList {
 				final RegDate debut1 = o1.getDateDebut();
 				final RegDate debut2 = o2.getDateDebut();
 
+				if (o1 == o2) {
+					return 0;
+				}
+
+				// l'état-civil célibataire est TOUJOURS le premier
+				if (o1.getTypeEtatCivil() == TypeEtatCivil.CELIBATAIRE) {
+					if (o2.getTypeEtatCivil() == TypeEtatCivil.CELIBATAIRE) {
+						throw new IllegalArgumentException("Trouvé deux états-civils de type 'célibataire' !");
+					}
+					return -1;
+				}
+				else if (o2.getTypeEtatCivil() == TypeEtatCivil.CELIBATAIRE) {
+					return 1;
+				}
+
+				// pour les autres états-civil, on se base sur les dates de début de validité
 				if (debut1 == null && debut2 == null) {
 					return 0;
 				}
