@@ -109,7 +109,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
 		if (relations != null) {
 			this.enfants = initEnfants(relations.getRelationshipHistory());
-			this.parents = initParents(relations.getRelationshipHistory());
+			this.parents = initParents(this.naissance, relations.getRelationshipHistory());
 			this.conjoints = initConjoints(relations.getRelationshipHistory());
 		}
 		this.permis = initPermis(person);
@@ -175,7 +175,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return PermisRCPers.get(person.getResidencePermit());
 	}
 
-	private static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
+	protected static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
 		if (maritalStatus == null) {
 			return null;
 		}
@@ -214,10 +214,10 @@ public class IndividuRCPers implements Individu, Serializable {
 				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
-		return list;
+		return list.isEmpty() ? null : list;
 	}
 
-	private static List<RelationVersIndividu> initParents(List<Relationship> relationship) {
+	private static List<RelationVersIndividu> initParents(RegDate dateNaissance, List<Relationship> relationship) {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
@@ -227,10 +227,11 @@ public class IndividuRCPers implements Individu, Serializable {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
 				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
-				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
+				// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
+				list.add(new RelationVersIndividuImpl(numeroInd, validFrom == null ? dateNaissance : validFrom, validTill));
 			}
 		}
-		return list;
+		return list.isEmpty() ? null : list;
 	}
 
 	private static List<RelationVersIndividu> initConjoints(List<Relationship> relationship) {
@@ -246,7 +247,7 @@ public class IndividuRCPers implements Individu, Serializable {
 				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
-		return list;
+		return list.isEmpty() ? null : list;
 	}
 
 	private static Collection<Origine> initOrigins(Person person) {
