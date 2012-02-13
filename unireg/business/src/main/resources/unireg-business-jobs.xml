@@ -95,7 +95,7 @@
 	</bean>
 
     <!-- Job qui re-traite les événements civils -->
-    <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilHandlerJob">
+    <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>
         <constructor-arg value="Traitement (ou retraitement) des événements civils"/>
         <property name="processorRegPP" ref="evenementCivilProcessor"/>

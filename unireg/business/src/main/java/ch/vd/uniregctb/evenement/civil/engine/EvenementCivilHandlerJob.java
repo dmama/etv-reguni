@@ -1,9 +1,10 @@
-package ch.vd.uniregctb.evenement.civil.engine.regpp;
+package ch.vd.uniregctb.evenement.civil.engine;
 
 import java.util.Map;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessor;
+import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
