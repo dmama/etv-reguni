@@ -67,7 +67,11 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (cp == null || no == null) {
 			return null;
 		}
-		return new CasePostale(cp, no);
+		Integer npa = null;
+		if (adresseSuisse != null && adresseSuisse.getNpaCasePostale() != null) {
+			npa = adresseSuisse.getNpaCasePostale();
+		}
+		return new CasePostale(cp, no, npa);
 	}
 
 	@Override
