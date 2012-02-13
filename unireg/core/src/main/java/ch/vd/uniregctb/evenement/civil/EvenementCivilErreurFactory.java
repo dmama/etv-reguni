@@ -36,16 +36,6 @@ public abstract class EvenementCivilErreurFactory<T extends EvenementCivilErreur
 	}
 
 	/**
-	 * Crée une erreur (de type {@link TypeEvenementErreur#ERROR}) avec le message donné et la callstack définie par l'exception passée en paramètre
-	 * @param message message d'erreur
-	 * @param e exception dont on doit extraire la callstack
-	 * @return un objet erreur qui contient tout ça
-	 */
-	public T createErreur(String message, Exception e) {
-		return createErreur(message, e, TypeEvenementErreur.ERROR);
-	}
-
-	/**
 	 * Crée une erreur (ou un warning, selon le type donné) avec le message donné
 	 * @param message message à inclure dans l'erreur
 	 * @param type classification de l'erreur

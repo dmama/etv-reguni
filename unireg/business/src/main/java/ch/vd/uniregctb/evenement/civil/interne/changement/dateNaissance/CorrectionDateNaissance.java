@@ -59,10 +59,6 @@ public class CorrectionDateNaissance extends ChangementBase {
 		}
 
 		@Override
-		public void addErreur(String msg, Exception e) {
-		}
-
-		@Override
 		public boolean hasErreurs() {
 			return false;
 		}

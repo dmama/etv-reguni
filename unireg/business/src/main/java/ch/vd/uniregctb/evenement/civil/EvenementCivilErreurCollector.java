@@ -15,13 +15,6 @@ public interface EvenementCivilErreurCollector {
 	void addErreur(String msg);
 
 	/**
-	 * Ajoute une erreur à partir du message et de l'exception donnée en paramètre
-	 * @param msg le message
-	 * @param e exception
-	 */
-	void addErreur(String msg, Exception e);
-
-	/**
 	 * @return <code>true</code> si au moins une erreur a été introduite, <code>false</code> sinon
 	 */
 	boolean hasErreurs();

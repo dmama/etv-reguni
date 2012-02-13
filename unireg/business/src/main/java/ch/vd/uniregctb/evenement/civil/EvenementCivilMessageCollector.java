@@ -26,11 +26,6 @@ public class EvenementCivilMessageCollector<T extends EvenementCivilErreur> impl
 	}
 
 	@Override
-	public void addErreur(String msg, Exception e) {
-		add(factory.createErreur(msg, e));
-	}
-
-	@Override
 	public void addWarning(String msg) {
 		add(factory.createErreur(msg, TypeEvenementErreur.WARNING));
 	}
