@@ -1710,6 +1710,16 @@ var Batch = {
 	},
 
 	start: function(name) {
+
+		// On désactive temporairement le bouton de démarrage pour donner un feedback que le clic a bien été enregistré
+		var startButton = $('#start' + name);
+		startButton.attr('disabled', 'disabled');
+		startButton.val('Démarrage...');
+		setTimeout(function() {
+			startButton.removeAttr('disabled');
+			startButton.val('Démarrer le batch');
+		}, 2500); // 2.5s, le temps que l'affichage des batches en cours s'actualise
+
 		var form = $('#' + name);
 		form.attr('action', getContextPath() + '/admin/batch/start.do?name=' + encodeURIComponent(name));
 		// cet appel nécessite la plugin jquery.form.js pour gérer l'upload ajax de fichiers dans les formulaires (voir http://malsup.com/jquery/form/)
@@ -1721,6 +1731,10 @@ var Batch = {
 				if (responseText) {
 					alert(responseText);
 				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert('Une erreur est survenue lors du démarrage du batch. Si l\'erreur se reproduit, merci de de transmettre le code d\'erreur ci-dessous à votre administrateur:\n\n' +
+					textStatus + ': ' + errorThrown);
 			}
 		});
 	},
