@@ -77,14 +77,14 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		}
 		this.noTechnique = target.getNoTechnique();
 		this.nouveauNoAVS = initNouveauNoAVS(target.getNouveauNoAVS());
-		this.numeroRCE = target.getNumeroRCE();
+		this.numeroRCE = initNumeroRCE(target.getNumeroRCE());
 		this.isMasculin = target.isSexeMasculin();
 		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances(), upTo);
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
 		//noinspection unchecked
 		this.dateArriveeVD = initDateArriveVD(target.getHistoriqueIndividu());
-		this.parents = initParents(target.getPere(), target.getMere(), upTo);
+		this.parents = initParents(this.naissance, target.getPere(), target.getMere(), upTo);
 		this.enfants = initEnfants(target.getEnfants(), upTo);
 		this.etatsCivils = initEtatsCivils(target, upTo);
 		this.conjoints = initConjoint(this.etatsCivils, upTo);
@@ -94,7 +94,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.tutelle = TutelleImpl.get(target.getTutelle(), upTo);
 	}
 
-    protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
+	protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
 		super(individuWrapper, parts);
 		this.prenom = individuWrapper.getPrenom();
 		this.autresPrenoms = individuWrapper.getAutresPrenoms();
@@ -228,7 +228,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		return parents;
 	}
 
-	private static List<RelationVersIndividu> initParents(ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere, RegDate upTo) {
+	private static List<RelationVersIndividu> initParents(RegDate dateNaissance, ch.vd.registre.civil.model.Individu pere, ch.vd.registre.civil.model.Individu mere, RegDate upTo) {
 
 		if (pere == null && mere == null) {
 			return null;
@@ -239,10 +239,10 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 		final List<RelationVersIndividu> parents = new ArrayList<RelationVersIndividu>(2);
 		if (p != null) {
-			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), p.getDateNaissance(), p.getDateDeces()));
+			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), dateNaissance, p.getDateDeces()));
 		}
 		if (m != null) {
-			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), m.getDateNaissance(), m.getDateDeces()));
+			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), dateNaissance, m.getDateDeces()));
 		}
 
 		return parents;
@@ -369,6 +369,13 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 	@Override
 	public String getNumeroRCE() {
+		return numeroRCE;
+	}
+
+	private static String initNumeroRCE(String numeroRCE) {
+		if (StringUtils.isBlank(numeroRCE) || "0".equals(numeroRCE)) {
+			return null;
+		}
 		return numeroRCE;
 	}
 
