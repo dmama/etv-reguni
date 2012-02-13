@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
+import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -111,12 +113,24 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		// On vérifie les adresses courrier
 		assertEquals(2, courriers.size());
-		// TODO (msi) en attente de correction du SIREF-1487 : assertAdresseCivile(null, date(2011, 1, 31), "La Tuilière", "1168", "Villars-sous-Yens", null, null, courriers.get(0));
-		// TODO (msi) en attente du déploiement de la nouvelle version du XSD en intégration : assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis 1", "1315", "La Sarraz", null, null, courriers.get(1));
+		// TODO (rcpers) en attente de correction du SIREF-1487 : assertAdresseCivile(null, date(2011, 1, 31), "La Tuilière", "1168", "Villars-sous-Yens", null, null, courriers.get(0));
+		// TODO (rcpers) en attente du déploiement de la nouvelle version du XSD en intégration : assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis 1", "1315", "La Sarraz", null, null, courriers.get(1));
 
-		// TODO (msi) quand les relations seront disponibles en intégration final List<RelationVersIndividu> conjoints = jean.getConjoints();
-		// TODO (msi) quand les relations seront disponibles en intégration final List<RelationVersIndividu> parents = jean.getParents();
-		// TODO (msi) quand les relations seront disponibles en intégration final Collection<RelationVersIndividu> enfants = jean.getEnfants();
+		// TODO (rcpers) quand les relations seront disponibles en intégration final List<RelationVersIndividu> conjoints = jean.getConjoints();
+		// TODO (rcpers) quand les relations seront disponibles en intégration final List<RelationVersIndividu> parents = jean.getParents();
+		
+		final Collection<RelationVersIndividu> enfants = jean.getEnfants();
+		assertNotNull(enfants);
+		assertEquals(2, enfants.size());
+
+		final Iterator<RelationVersIndividu> enfantIter = enfants.iterator();
+		final RelationVersIndividu enfant0 = enfantIter.next();
+		assertNotNull(enfant0);
+		assertEquals(333527, enfant0.getNumeroAutreIndividu());
+
+		final RelationVersIndividu enfant1 = enfantIter.next();
+		assertNotNull(enfant1);
+		assertEquals(946039, enfant1.getNumeroAutreIndividu());
 
 		// On vérifie les origines
 		final Collection<Origine> origines = jean.getOrigines();
