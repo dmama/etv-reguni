@@ -103,7 +103,7 @@ public class Veuvage extends EvenementCivilInterne {
 		final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 		if (forMenage == null) {
 			final ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
-			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(dateEvenement.getOneDayAfter());
 
 			if (dernierForMenage != null && dateEvenement.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
 					&& forCourantVeuf !=null && dateEvenement.getOneDayAfter().equals(forCourantVeuf.getDateDebut()) &&
