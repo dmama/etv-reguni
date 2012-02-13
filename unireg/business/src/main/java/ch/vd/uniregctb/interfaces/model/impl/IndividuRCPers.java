@@ -181,7 +181,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<EtatCivil> list = new ArrayList<EtatCivil>();
 		for (MaritalData data : maritalStatus) {
-			list.addAll(EtatCivilRCPers.get(data));
+			list.add(EtatCivilRCPers.get(data));
 		}
 		return new EtatCivilListRCPers(list);
 	}

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
-import java.util.List;
-
 import ch.ech.ech0011.v5.MaritalData;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -29,10 +27,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date(2000, 1, 1)));
 		data.setMaritalStatus("1");
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.CELIBATAIRE, list.get(0));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.CELIBATAIRE, etat);
 	}
 
 	@Test
@@ -41,10 +38,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date(2000, 1, 1)));
 		data.setMaritalStatus("2");
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.MARIE, list.get(0));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.MARIE, etat);
 	}
 
 	@Test
@@ -54,11 +50,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setMaritalStatus("2");
 		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(date(2005, 5, 29)));
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(2, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.MARIE, list.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.SEPARE, list.get(1));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.SEPARE, etat);
 	}
 
 	@Test
@@ -69,12 +63,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(date(2005, 5, 29)));
 		data.setSeparationTill(XmlUtils.regdate2xmlcal(date(2005, 10, 4)));
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(3, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.MARIE, list.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.SEPARE, list.get(1));
-		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.MARIE, list.get(2));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.MARIE, etat);
 	}
 
 	@Test
@@ -83,10 +74,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date(2000, 1, 1)));
 		data.setMaritalStatus("6");
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, list.get(0));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, etat);
 	}
 
 	@Test
@@ -96,11 +86,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setMaritalStatus("6");
 		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(date(2005, 5, 29)));
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(2, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, list.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, list.get(1));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, etat);
 	}
 
 	@Test
@@ -111,12 +99,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(date(2005, 5, 29)));
 		data.setSeparationTill(XmlUtils.regdate2xmlcal(date(2005, 10, 4)));
 
-		final List<EtatCivil> list = EtatCivilRCPers.get(data);
-		assertNotNull(list);
-		assertEquals(3, list.size());
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, list.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, list.get(1));
-		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.PACS, list.get(2));
+		final EtatCivil etat = EtatCivilRCPers.get(data);
+		assertNotNull(etat);
+		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.PACS, etat);
 	}
 
 	private static void assertEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type, EtatCivil etat) {

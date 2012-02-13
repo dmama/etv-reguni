@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import ch.ech.ech0011.v5.MaritalData;
 import org.jetbrains.annotations.Nullable;
@@ -31,43 +29,43 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 
 	/**
 	 * Construit un état-civil Unireg à partir d'un état-civil RcPers.
-	 * <p/>
-	 * <b>Note:</b> cette méthode peut retourner plusieurs états-civils Unireg pour un seul état-civil RcPers dans le cas d'une personne séparée. La raison est que l'état <i>séparé</i> n'est pas un
-	 * état-civil officiel : officiellement, une personne séparée possède toujours l'état-civil <i>marié</i>. L'information qu'une personne est séparée est malgré tout transmise en supplément sur
-	 * l'état-civil <i>marié</i> : l'état-civil <i>marié</i> possède en plus une date de séparation. Dans ce cas, cette méthode génère deux états-civils Unireg en retour. A noter qu'une éventuelle
-	 * réconciliation après séparation fonctionne sur le même principe; dans ce cas trois états-civils Unireg seront retournés.
 	 *
 	 * @param maritalStatus l'état-civil RcPers
-	 * @return 1, 2 voire 3 états-civils Unireg; ou <b>null</b> si l'état-civil RcPers d'entrée était aussi <b>null</b>.
+	 * @return un état-civil Unireg; ou <b>null</b> si l'état-civil RcPers d'entrée était aussi <b>null</b>.
 	 */
-	public static List<EtatCivil> get(@Nullable MaritalData maritalStatus) {
+	public static EtatCivil get(@Nullable MaritalData maritalStatus) {
 		if (maritalStatus == null) {
 			return null;
 		}
 
-		final List<EtatCivil> list = new ArrayList<EtatCivil>();
+		final EtatCivil etatCivil;
 
 		// L'état civil principal
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		final TypeEtatCivil type = EchHelper.etatCivilFromEch11(maritalStatus.getMaritalStatus(), maritalStatus.getCancelationReason());
-		list.add(new EtatCivilRCPers(dateDebut, type));
 
 		if (type == TypeEtatCivil.MARIE || type == TypeEtatCivil.PACS) {
 			// On construit artificellement les états-civils 'séparé' et 'pacs interrompu' qui apparaissent
 			// comme dates de séparation et de réconciliation sur l'état-civil 'marié' lui-même (ceci parce qu'ils ne
 			// s'agit pas d'états-civils officiels, mais seulement une particularité fiscale).
+			final RegDate dateReconciliation = XmlUtils.xmlcal2regdate(maritalStatus.getSeparationTill());
 			final RegDate dateSeparation = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfSeparation());
-			if (dateSeparation != null) {
-				list.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU));
 
-				final RegDate dateReconciliation = XmlUtils.xmlcal2regdate(maritalStatus.getSeparationTill());
-				if (dateReconciliation != null) {
-					list.add(new EtatCivilRCPers(dateReconciliation, type));
-				}
+			if (dateReconciliation != null) {
+				etatCivil = new EtatCivilRCPers(dateReconciliation, type);
+			}
+			else if (dateSeparation != null) {
+				etatCivil = new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU);
+			}
+			else {
+				etatCivil = new EtatCivilRCPers(dateDebut, type);
 			}
 		}
+		else {
+			etatCivil = new EtatCivilRCPers(dateDebut, type);
+		}
 
-		return list;
+		return etatCivil;
 	}
 
 	@Override
