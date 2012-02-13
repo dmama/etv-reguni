@@ -18,7 +18,11 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Adapter de l'événement de veuvage.
@@ -76,6 +80,10 @@ public class Veuvage extends EvenementCivilInterne {
 		 * Obtention du tiers correspondant au veuf.
 		 */
 		PersonnePhysique veuf = getPrincipalPP();
+		RegDate dateEvenement = getDateVeuvage();
+		if(isVeuvageRedondant(veuf,dateEvenement)){
+			return HandleStatus.REDONDANT;
+		}
 
 		/*
 		 * Traitement de l'événement
@@ -87,5 +95,24 @@ public class Veuvage extends EvenementCivilInterne {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
 		return HandleStatus.TRAITE;
+	}
+
+	private boolean isVeuvageRedondant(PersonnePhysique veuf,RegDate dateEvenement) {
+		EnsembleTiersCouple ensembleTiersCouple = context.getTiersService().getEnsembleTiersCouple(veuf, dateEvenement);
+		MenageCommun menage = ensembleTiersCouple.getMenage();
+		final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+		if (forMenage == null) {
+			final ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
+
+			if (dernierForMenage != null && dateEvenement.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
+					&& forCourantVeuf !=null && dateEvenement.getOneDayAfter().equals(forCourantVeuf.getDateDebut()) &&
+					MotifFor.VEUVAGE_DECES == forCourantVeuf.getMotifOuverture()) {
+				return true;
+			}
+		}
+
+		return false;
+	
 	}
 }

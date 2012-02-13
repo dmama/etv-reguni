@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -146,9 +145,9 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 		final EvenementCivilRegPP evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
-		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
+		assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat(), "L'événement civil a été traité!");
 
-		// rien n'a changé (événement en erreur)
+		// rien n'a changé (événement redondant)
 		assertBlocageRemboursementAutomatique(false, true);
 	}
 
@@ -192,15 +191,12 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 			final EvenementCivilRegPP evt = evts.get(0);
 			assertNotNull(evt, "Evenement null?");
-			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat(), "L'événement civil a été traité!");
 
 			final Set<EvenementCivilRegPPErreur> erreurs = evt.getErreurs();
 			assertNotNull(erreurs, "Evénement en erreur mais collection d'erreurs nulle?");
-			assertEquals(1, erreurs.size(), "J'attends une erreur");
+			assertEquals(0, erreurs.size(), "L'evenement ne devrait pas être en erreur car redondant");
 
-			final EvenementCivilRegPPErreur erreur = erreurs.iterator().next();
-			assertNotNull(erreur, "Erreur nulle?");
-			assertEquals(String.format("L'individu %d n'est pas veuf dans le civil au %s", noIndPierre, RegDateHelper.dateToDisplayString(dateVeuvage)), erreur.getMessage(), "Mauvaise erreur");
 		}
 
 		{

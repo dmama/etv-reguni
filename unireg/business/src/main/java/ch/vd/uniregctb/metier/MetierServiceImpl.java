@@ -2172,8 +2172,8 @@ public class MetierServiceImpl implements MetierService {
 
 				// Pour le veuf
 				final ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
-				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date)) {
-					results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès");
+				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date.getOneDayAfter())) {
+					results.addError("Le veuf possède un for fiscal principal ouvert plusieurs jours après la date de décès: problème d'assujettissement ?");
 				}
 			}
 		}
