@@ -10,7 +10,7 @@ import ch.vd.uniregctb.common.StatusManager;
 public interface EvenementCivilEchRetryProcessor {
 
 	/**
-	 * Relance les événements civils eCH en attente ou en erreur (traitement asynchrone :
+	 * Relance les événements civils eCH en attente ou en erreur
 	 * @param status status utilisable pour les feedbacks d'avancement
 	 */
 	void retraiteEvenements(@Nullable StatusManager status);
