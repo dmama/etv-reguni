@@ -10,19 +10,32 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 
 /**
  * Contient les informations (texte + numéro) pour l'adressage d'une boîte postale.
+ *
+ * le npa est optionnel, il est renseigné lorsque le npa de la case postale diffère de celui de la localité
  */
 public class CasePostale {
 	private TexteCasePostale type;
 	private Integer numero;
+	private Integer npa;
 
 	public CasePostale(TexteCasePostale type, Integer numero) {
-		this.type = type;
-		this.numero = numero;
+		this(type, numero, null);
 	}
 
 	public CasePostale(String text, Number numero) {
+		this(text, numero, null);
+	}
+
+	public CasePostale(TexteCasePostale type, Integer numero, Integer npa) {
+		this.type = type;
+		this.numero = numero;
+		this.npa = npa;
+	}
+
+	public CasePostale(String text, Number numero, Integer npa) {
 		this.type = TexteCasePostale.parse(text);
 		this.numero = (numero == null ? null : numero.intValue());
+		this.npa = npa;
 	}
 
 	public TexteCasePostale getType() {
@@ -32,6 +45,15 @@ public class CasePostale {
 	public Integer getNumero() {
 		return numero;
 	}
+
+	public Integer getNpa() {
+		return npa;
+	}
+
+	public void setNpa(Integer npa) {
+		this.npa = npa;
+	}
+
 
 	public String toString() {
 		if (numero == null) {
@@ -49,13 +71,18 @@ public class CasePostale {
 
 		final CasePostale that = (CasePostale) o;
 
-		return !(numero != null ? !numero.equals(that.numero) : that.numero != null) && type == that.type;
+		if (npa != null ? !npa.equals(that.npa) : that.npa != null) return false;
+		if (numero != null ? !numero.equals(that.numero) : that.numero != null) return false;
+		if (type != that.type) return false;
+
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = type.hashCode();
+		int result = type != null ? type.hashCode() : 0;
 		result = 31 * result + (numero != null ? numero.hashCode() : 0);
+		result = 31 * result + (npa != null ? npa.hashCode() : 0);
 		return result;
 	}
 

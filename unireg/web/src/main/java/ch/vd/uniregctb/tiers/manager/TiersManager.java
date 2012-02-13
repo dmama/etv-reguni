@@ -1124,6 +1124,13 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setComplements(adresse.getComplement());
 		adresseView.setActive(adresse.isValidAt(RegDate.get()));
 		adresseView.setSurVaud(estDansLeCanton(adresse));
+
+		if (adresse.getCasePostale() != null) {
+			adresseView.setTexteCasePostale(adresse.getCasePostale().getType());
+			adresseView.setNumeroCasePostale(adresse.getCasePostale().getNumero());
+			adresseView.setNpaCasePostale(adresse.getCasePostale().getNpa());
+		}
+
 		return adresseView;
 	}
 

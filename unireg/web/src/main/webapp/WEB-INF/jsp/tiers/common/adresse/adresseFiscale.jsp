@@ -26,6 +26,9 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
 			<c:out value="${adresse.rue}"/>
+			<c:if test="${not empty adresse.npaCasePostale}">
+			<br/><c:out value="${adresse.formattedCasePostale}"/>
+			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.localite" >
 			<c:out value="${adresse.localite}"/>
