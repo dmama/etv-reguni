@@ -95,7 +95,7 @@ function ouvrirAide(url) {
 									return;
 								}
 								requestInboxSizeDone = false;
-								$('#inboxSize').load(getContextPath() + "/admin/inbox/unreadSize.do", function() {
+								$('#inboxSize').load(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function() {
 									onReceivedInboxSize();
 								});
 							}

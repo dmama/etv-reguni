@@ -132,7 +132,7 @@
 				var showHisto = $('#isRapportHisto').attr('checked') ? 'true' : 'false';
 	            var type = $('#typeRapportId').val();
 				$('#loadingSpinner').show();
-				$('#dossiersApparentesDiv').load('../rapport/list.do?tiers=${tiersId}&showHisto=' + showHisto + '&type=' + type);
+				$('#dossiersApparentesDiv').load('../rapport/list.do?tiers=${tiersId}&showHisto=' + showHisto + '&type=' + type + '&' + new Date().getTime());
 			}
 
 			$(function() {

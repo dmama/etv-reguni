@@ -8,7 +8,7 @@
 <script>
 	// chargement Ajax des immeubles
 	$(function() {
-		$('#immeublesDiv').load('../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}');
+		$('#immeublesDiv').load('../rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}&' + new Date().getTime());
 	});
 </script>
 

@@ -17,7 +17,7 @@
 <script>
 	// chargement Ajax des rapports-entre-tiers
 	$(function() {
-		$('#dossiersApparentesDiv').load('../rapport/list.do?tiers=${command.tiersGeneral.numero}');
+		$('#dossiersApparentesDiv').load('../rapport/list.do?tiers=${command.tiersGeneral.numero}&' + new Date().getTime());
 	});
 </script>
 
