@@ -44,7 +44,8 @@
 		<property name="beans">
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsRegPP" value-ref="evtCivilEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEch" value-ref="evtCivilEchEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchMasse" value-ref="evtCivilEchMasseEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
@@ -92,7 +93,8 @@
 	</bean>
 
 	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
-		<property name="endpointManager" ref="evtCivilEchEndpointManager"/>
+		<property name="endpointManagerMasse" ref="evtCivilEchMasseEndpointManager"/>
+		<property name="endpointManagerIndividuel" ref="evtCivilEchIndividuelEndpointManager"/>
 		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
 	</bean>
 
