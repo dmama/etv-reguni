@@ -7,7 +7,7 @@ var Tiers = {
 	 * Récupère des informations générales sur un tiers (voir la classe java TiersInfoController pour le détails des données retournées)
 	 */
 	queryInfo : function(numero, callback) {
-		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero, callback);
+		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback);
 	}
 }
 

@@ -170,7 +170,7 @@ function open_consulter_log(nature, id) {
 	var dialog = create_dialog_div('consulter-log-dialog');
 
 	// charge le contenu de la boîte de dialogue
-	dialog.load(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id);
+	dialog.load(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id + '&' + new Date().getTime());
 
 	dialog.dialog({
 		title: 'Consultation des logs',
@@ -248,7 +248,7 @@ function open_details_mouvement(id) {
 	var dialog = create_dialog_div('details-mouvement-dialog');
 
 	// charge le contenu de la boîte de dialogue
-	dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id);
+	dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id + '&' +  new Date().getTime());
 
 	dialog.dialog({
 		title: 'Détails du mouvement de dossier',

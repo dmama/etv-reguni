@@ -186,7 +186,7 @@
 				var mcId = trim_id($('#mcId').val());
 
 				// on fait un appel Ajax pour demander les informations sur le futur ménage, et on adapte les valeurs saisies si nécessaire
-				$.get('info.do?pp1Id=' + pp1Id + '&pp2Id=' + pp2Id + '&mcId=' + mcId, function(data) {
+				$.get('info.do?pp1Id=' + pp1Id + '&pp2Id=' + pp2Id + '&mcId=' + mcId + '&' + new Date().getTime(), function(data) {
 
 					$('h1').text(data.titre);
 					confirmMessage = data.confirmMessage;
