@@ -62,7 +62,7 @@
 						var dialog = Dialog.create_dialog_div('details-di-dialog');
 
 						// charge le contenu de la boîte de dialogue
-						dialog.load('di.do?idDi=' + id);
+						dialog.load('di.do?idDi=' + id + '&' + new Date().getTime());
 
 						dialog.dialog({
 							title: "Détails de la déclaration d'impôt",

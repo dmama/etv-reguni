@@ -48,7 +48,7 @@
 					   var dialog = Dialog.create_dialog_div('details-lr-dialog');
 
 					   // charge le contenu de la boîte de dialogue
-					   dialog.load('lr.do?idLr=' + id);
+					   dialog.load('lr.do?idLr=' + id + '&' + new Date().getTime());
 
 					   dialog.dialog({
 						   title: "Détails de la déclaration d'impôt source",

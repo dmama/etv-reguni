@@ -185,7 +185,7 @@
 
 				var idFor = ${command.id};
 				var queryString = 'idFor=' + idFor + '&startDate=' + dateOuverture + '&startReason=' + motifsOuverture +
-								  '&endDate=' + dateFermeture + '&endReason=' + motifsFermeture + '&noOfs=' + noOfsAut;
+								  '&endDate=' + dateFermeture + '&endReason=' + motifsFermeture + '&noOfs=' + noOfsAut + '&' + new Date().getTime();
 
 				$.get('<c:url value="/simulate/forFiscalUpdate.do"/>?' + queryString, function(results) {
 					if (!results || results.empty) {

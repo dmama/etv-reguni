@@ -76,7 +76,7 @@
 						items: "[name]",
 						content: function(response) {
 							var noCtb = $(this).attr("name");
-							var url = "<c:url value='/identification/tooltip/individu.do?noCtb='/>" + noCtb;
+							var url = "<c:url value='/identification/tooltip/individu.do?noCtb='/>" + noCtb + '&' + new Date().getTime();
 							$.get(url, response);
 							return "Chargement...";
 						}
@@ -86,7 +86,7 @@
 						items: "[name]",
 						content: function(response) {
 							var noCtb = $(this).attr("name");
-							var url = "<c:url value='/identification/tooltip/adresse.do?noCtb='/>" + noCtb;
+							var url = "<c:url value='/identification/tooltip/adresse.do?noCtb='/>" + noCtb + '&' + new Date().getTime();
 							$.get(url, response);
 							return "Chargement...";
 						}

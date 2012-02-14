@@ -59,7 +59,7 @@
 						var dialog = Dialog.create_dialog_div('imprime-di-dialog');
 
 						// charge le contenu de la boîte de dialogue
-						dialog.load('impression.do?id=' + id);
+						dialog.load('impression.do?id=' + id + '&' + new Date().getTime());
 
 						dialog.dialog({
 							title: "Impression d'un duplicata",

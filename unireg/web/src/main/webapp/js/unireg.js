@@ -179,6 +179,7 @@ var Dialog = {
 							queryString += '&filterBean=' + encodeURIComponent(filter_bean);
 							queryString += '&filterParams=' + encodeURIComponent(filter_params);
 						}
+						queryString += '&' + new Date().getTime();
 
 						// on effectue la recherche par ajax
 						$.get(getContextPath() + queryString, function(results) {
@@ -207,6 +208,7 @@ var Dialog = {
 					queryString += '&filterBean=' + encodeURIComponent(filter_bean);
 					queryString += '&filterParams=' + encodeURIComponent(filter_params);
 				}
+ 				queryString += '&' + new Date().getTime()
 
 				// on effectue la recherche par ajax
 				$.get(getContextPath() + queryString, function(results) {
@@ -279,7 +281,7 @@ var Dialog = {
 		var dialog = Dialog.create_dialog_div('consulter-log-dialog');
 
 		// charge le contenu de la boîte de dialogue
-		dialog.load(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id);
+		dialog.load(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id + '&' + new Date().getTime());
 
 		dialog.dialog({
 			title: 'Consultation des logs',
@@ -357,7 +359,7 @@ var Dialog = {
 		var dialog = Dialog.create_dialog_div('details-mouvement-dialog');
 
 		// charge le contenu de la boîte de dialogue
-		dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id);
+		dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id + '&' + new Date().getTime());
 
 		dialog.dialog({
 			title: 'Détails du mouvement de dossier',
@@ -446,7 +448,7 @@ var Fors = {
 		if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
 
 		// appels ajax pour mettre-à-jour les motifs d'ouverture
-		$.get(getContextPath() + '/fors/motifsOuverture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement, function(motifs) {
+		$.get(getContextPath() + '/fors/motifsOuverture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
 			var list = '';
 			if (!motifOuverture || !(motifOuverture in motifs) && motifs.length > 1) {
 				// on ajoute une option vide si le motif courant (= ancienne valeur) n'est pas mappable sur les nouveaux motifs disponibles (et qu'il y en a plusieurs)
@@ -481,7 +483,7 @@ var Fors = {
 		if (motifFermeture == null) motifFermeture = defaultMotifFermeture;
 
 		// appels ajax pour mettre-à-jour les motifs de fermeture
-		$.get(getContextPath() + '/fors/motifsFermeture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement, function(motifs) {
+		$.get(getContextPath() + '/fors/motifsFermeture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
 			var list = '<option></option>'; // dans le cas du motif de fermeture, on ajoute toujours une option vide
 			for(var i = 0; i < motifs.length; ++i) {
 				var motif = motifs[i];
@@ -822,7 +824,7 @@ var Tiers = {
 	 * Récupère des informations générales sur un tiers (voir la classe java TiersInfoController pour le détails des données retournées)
 	 */
 	queryInfo : function(numero, callback) {
-		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero, callback);
+		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback);
 	}
 }
 

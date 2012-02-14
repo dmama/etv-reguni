@@ -145,7 +145,8 @@
 				var modeImposition = $('#modeImposition').val();
 				var motifImposition = $('#motifImposition').val();
 
-				$.get('<c:url value="/simulate/modeImpositionUpdate.do"/>?idFor=' + idFor + '&changeOn=' + dateChangement + '&newMode=' + modeImposition + '&reason=' + motifImposition, function(results) {
+				$.get('<c:url value="/simulate/modeImpositionUpdate.do"/>?idFor=' + idFor + '&changeOn=' + dateChangement + '&newMode=' + modeImposition +
+						'&reason=' + motifImposition + '&' + new Date().getTime(), function(results) {
 					if (!results || results.empty) {
 						$('#actions_column').hide();
 					}
