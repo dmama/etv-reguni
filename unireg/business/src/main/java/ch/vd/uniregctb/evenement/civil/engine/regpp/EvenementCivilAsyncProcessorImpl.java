@@ -119,7 +119,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		public void run() {
 
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Démarrage du thread de traitement des événements civils reçus");
+				LOGGER.info("Démarrage du thread de traitement des événements civils Reg-PP reçus");
 			}
 
 			try {
@@ -128,7 +128,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 					if (data != null && !stopping) {
 
 						if (LOGGER.isTraceEnabled()) {
-							LOGGER.trace(String.format("Nouvel événement à traiter : %d", data.evtId));
+							LOGGER.trace(String.format("Nouvel événement civil Reg-PP à traiter : %d", data.evtId));
 						}
 
 						// deux possibilités :
@@ -152,12 +152,12 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 								final long fin = System.nanoTime();
 
 								if (LOGGER.isInfoEnabled()) {
-									LOGGER.info(String.format("Evenement civil %d traité en %d ms", data.evtId, (fin - debut) / 1000000L));
+									LOGGER.info(String.format("Evenement civil Reg-PP %d traité en %d ms", data.evtId, (fin - debut) / 1000000L));
 								}
 							}
 							catch (Exception e) {
 								// afin de ne pas faire sauter le thread en cas de problème lors du traitement de l'événement
-								LOGGER.error(String.format("Exception reçue lors du traitement de l'événement civil %d", data.evtId), e);
+								LOGGER.error(String.format("Exception reçue lors du traitement de l'événement civil Reg-PP %d", data.evtId), e);
 							}
 							finally {
 								nombreEvenementsTraites.incrementAndGet();
@@ -166,7 +166,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 						else {
 
 							if (LOGGER.isTraceEnabled()) {
-								LOGGER.trace(String.format("Encore trop tôt après la réception de l'événement %d (on attend encore %d ms)", data.evtId, seuilPriseEnCompteEvenement - now));
+								LOGGER.trace(String.format("Encore trop tôt après la réception de l'événement civil Reg-PP %d (on attend encore %d ms)", data.evtId, seuilPriseEnCompteEvenement - now));
 							}
 
 							// on se revoit un peu plus tard!
@@ -184,11 +184,11 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 				}
 			}
 			catch (InterruptedException e) {
-				LOGGER.error("Demande d'interruption du thread de traitement des événements civils reçus", e);
+				LOGGER.error("Demande d'interruption du thread de traitement des événements civils Reg-PP reçus", e);
 			}
 			finally {
 				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Arrêt du thread de traitement des événements civils reçus");
+					LOGGER.info("Arrêt du thread de traitement des événements civils Reg-PP reçus");
 				}
 				notifyProcessingDone();
 			}
@@ -214,7 +214,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		if (delaiPriseEnCompte != this.delaiPriseEnCompte) {
 			this.delaiPriseEnCompte = delaiPriseEnCompte;
 			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info(String.format("Le délai de prise en compte des événements civils à l'arrivée est de %d seconde%s.", delaiPriseEnCompte, delaiPriseEnCompte > 1 ? "s" : ""));
+				LOGGER.info(String.format("Le délai de prise en compte des événements civils Reg-PP à l'arrivée est de %d seconde%s.", delaiPriseEnCompte, delaiPriseEnCompte > 1 ? "s" : ""));
 			}
 		}
 	}
@@ -261,21 +261,21 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 						@Override
 						public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-							LOGGER.info("Recherche des événements civils dans l'état 'A_TRAITER'");
+							LOGGER.info("Recherche des événements civils Reg-PP dans l'état 'A_TRAITER'");
 
 							final EvenementCivilRegPPCriteria criteres = new EvenementCivilRegPPCriteria();
 							criteres.setEtat(EtatEvenementCivil.A_TRAITER);
 							final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criteres, null);
 							if (evts != null && !evts.isEmpty()) {
 
-								LOGGER.info(String.format("Trouvé %d événements civils 'A_TRAITER'", evts.size()));
+								LOGGER.info(String.format("Trouvé %d événements civils Reg-PP 'A_TRAITER'", evts.size()));
 
 								for (EvenementCivilRegPP evt : evts) {
 									postEvenementCivil(evt.getId());
 								}
 							}
 							else {
-								LOGGER.info("Aucun événement civil 'A_TRAITER' trouvé");
+								LOGGER.info("Aucun événement civil Reg-PP 'A_TRAITER' trouvé");
 							}
 							return null;
 						}
@@ -304,7 +304,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 			}
 			catch (InterruptedException e) {
 				// on aura essayé...
-				LOGGER.warn("Attente le l'arrêt de l'écoute sur la queue des événements civils interrompue", e);
+				LOGGER.warn("Attente le l'arrêt de l'écoute sur la queue des événements civils Reg-PP interrompue", e);
 			}
 			queueListener = null;
 		}
@@ -317,7 +317,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 			queue.add(new EvtData(evtId, System.currentTimeMillis()));
 
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(String.format("Evénement civil %d posté", evtId));
+				LOGGER.trace(String.format("Evénement civil Reg-PP %d posté", evtId));
 			}
 
 			nombreEvenementsPostes.incrementAndGet();
@@ -354,7 +354,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	public void sync() throws InterruptedException {
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Attente que tous les événements civils soient traités");
+			LOGGER.trace("Attente que tous les événements civils Reg-PP soient traités");
 		}
 
 		synchronized (processingDone) {
@@ -365,7 +365,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Tous les événements civils ont apparemment été traités");
+			LOGGER.trace("Tous les événements civils Reg-PP ont apparemment été traités");
 		}
 	}
 
