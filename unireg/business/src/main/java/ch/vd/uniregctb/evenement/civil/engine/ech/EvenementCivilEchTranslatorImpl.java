@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.changement.identificateur.DonneesUpiTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNomTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
@@ -267,15 +268,15 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DATE_DECES, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), new DonneesUpiTranslationStrategy());
 
 		// pour les tests uniquement
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());

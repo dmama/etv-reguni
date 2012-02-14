@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.identificateur;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class ChangementIdentificateur extends ChangementBase {
-
+	
 	protected ChangementIdentificateur(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
@@ -46,13 +47,17 @@ public class ChangementIdentificateur extends ChangementBase {
 			// pour les non-habitants, il faut recharger les données, non?
 			// quelles sont les données à recharger ? NAVS13 pour sûr !
 			final Individu individu = context.getTiersService().getIndividu(pp);
-			final String navs13Registre = individu.getNouveauNoAVS();
-			if (navs13Registre != null && navs13Registre.trim().length() > 0) {
-				pp.setNumeroAssureSocial(individu.getNouveauNoAVS().trim());
+			final String navs13 = individu.getNouveauNoAVS();
+			if (shouldOverwriteAvs(navs13)) {
+				pp.setNumeroAssureSocial(StringUtils.trimToNull(navs13));
 			}
 		}
 
 		return super.handle(warnings);
+	}
+	
+	protected boolean shouldOverwriteAvs(String navs13) {
+		return StringUtils.isNotBlank(navs13);
 	}
 
 	@Override

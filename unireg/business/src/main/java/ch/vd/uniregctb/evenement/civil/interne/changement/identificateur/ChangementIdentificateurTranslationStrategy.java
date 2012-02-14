@@ -6,7 +6,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.changement.AbstractChangementTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class ChangementIdentificateurTranslationStrategy extends AbstractChangementTranslationStrategy {
@@ -18,11 +17,6 @@ public class ChangementIdentificateurTranslationStrategy extends AbstractChangem
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		throw new EvenementCivilException(
-				String.format (
-						"Le changement d'identificateur passe par une correction d'identification pour un evenement ech cf. la classe %s"
-						,CorrectionIdentificationTranslationStrategy.class.getSimpleName()
-				)
-		);
+		return new ChangementIdentificateur(event, context, options);
 	}
 }
