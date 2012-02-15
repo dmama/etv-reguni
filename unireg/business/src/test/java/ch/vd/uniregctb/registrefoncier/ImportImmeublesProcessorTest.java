@@ -4,6 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -440,5 +444,107 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		assertEquals(date(1910, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1910 00:00:00.000000000"));
 		assertEquals(date(1970, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1970 00:00:00.000000000"));
 		assertEquals(date(2010, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.2010 00:00:00.000000000"));
+	}
+
+	@Test
+	public void testRunFichierAvecDifferentGenreProprietes() throws Exception {
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addHabitant(12345678L, 12345);
+				return null;
+			}
+		});
+
+		is = new FileInputStream(getFile("trois_immeubles.csv"));
+		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+		assertNotNull(res);
+		assertEquals(3, res.nbLignes);
+		assertEquals(3, res.traites.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(0, res.averifier.size());
+		assertEquals(0, res.erreurs.size());
+
+		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+		assertNotNull(traite0);
+		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+		assertEquals("132/3129", traite0.getNoImmeuble());
+
+		final ImportImmeublesResults.Import traite1 = res.traites.get(1);
+		assertNotNull(traite1);
+		assertEquals(Long.valueOf(12345678), traite1.getNoContribuable());
+		assertEquals("132/3130", traite1.getNoImmeuble());
+
+		final ImportImmeublesResults.Import traite2 = res.traites.get(2);
+		assertNotNull(traite2);
+		assertEquals(Long.valueOf(12345678), traite2.getNoContribuable());
+		assertEquals("132/3131", traite2.getNoImmeuble());
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(12345678L);
+				assertNotNull(pp);
+
+				final Set<Immeuble> immeubles = pp.getImmeubles();
+				assertNotNull(immeubles);
+				assertEquals(3, immeubles.size());
+				
+				final List<Immeuble> list = new ArrayList<Immeuble>(immeubles);
+				Collections.sort(list, new Comparator<Immeuble>() {
+					@Override
+					public int compare(Immeuble o1, Immeuble o2) {
+						return o1.getNumero().compareTo(o2.getNumero());
+					}
+				});
+
+				final Immeuble immeuble0 = list.get(0);
+				assertNotNull(immeuble0);
+				assertEquals("132/3129", immeuble0.getNumero());
+				assertEquals(date(2001, 1, 9), immeuble0.getDateDebut());
+				assertNull(immeuble0.getDateFin());
+				assertEquals("Revêtement dur", immeuble0.getNature());
+				assertEquals(Integer.valueOf(1200000), immeuble0.getEstimationFiscale());
+				assertNull(immeuble0.getReferenceEstimationFiscale());
+				assertEquals(GenrePropriete.INDIVIDUELLE, immeuble0.getGenrePropriete());
+				assertEquals(new PartPropriete(1, 1), immeuble0.getPartPropriete());
+				assertEquals("B4455", immeuble0.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble0.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble0.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble0.getDerniereMutation());
+
+				final Immeuble immeuble1 = list.get(1);
+				assertNotNull(immeuble1);
+				assertEquals("132/3130", immeuble1.getNumero());
+				assertEquals(date(2001, 1, 9), immeuble1.getDateDebut());
+				assertNull(immeuble1.getDateFin());
+				assertEquals("Revêtement dur", immeuble1.getNature());
+				assertEquals(Integer.valueOf(1300000), immeuble1.getEstimationFiscale());
+				assertNull(immeuble1.getReferenceEstimationFiscale());
+				assertEquals(GenrePropriete.COMMUNE, immeuble1.getGenrePropriete());
+				assertEquals(new PartPropriete(1, 1), immeuble1.getPartPropriete());
+				assertEquals("B4455", immeuble1.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble1.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble1.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble1.getDerniereMutation());
+
+				final Immeuble immeuble2 = list.get(2);
+				assertNotNull(immeuble2);
+				assertEquals("132/3131", immeuble2.getNumero());
+				assertEquals(date(2001, 1, 9), immeuble2.getDateDebut());
+				assertNull(immeuble2.getDateFin());
+				assertEquals("Revêtement dur", immeuble2.getNature());
+				assertEquals(Integer.valueOf(1400000), immeuble2.getEstimationFiscale());
+				assertNull(immeuble2.getReferenceEstimationFiscale());
+				assertEquals(GenrePropriete.COPROPRIETE, immeuble2.getGenrePropriete());
+				assertEquals(new PartPropriete(1, 1), immeuble2.getPartPropriete());
+				assertEquals("B4455", immeuble2.getIdRF());
+				assertEquals(new Proprietaire("A3322", 2233L), immeuble2.getProprietaire());
+				assertEquals(date(2001,2,6), immeuble2.getDateDerniereMutation());
+				assertEquals(TypeMutation.ACHAT, immeuble2.getDerniereMutation());
+				return null;
+			}
+		});
 	}
 }
