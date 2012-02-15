@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -43,6 +44,53 @@ public class ImmeubleController {
 	public int count(@RequestParam("ctb") long ctbId) throws AccessDeniedException {
 		return immeubleDAO.count(ctbId);
 	}
+	
+	protected static final Comparator<String> NO_IMMEUBLE_COMPARATOR = new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			final int[] d1 = decompose(o1);
+			final int[] d2 = decompose(o2);
+			final int maxIndex = Math.min(d1.length, d2.length);
+			int comparison = 0;
+			for (int i = 0 ; i < maxIndex ; ++ i) {
+				comparison = d1[i] - d2[i];
+				if (comparison != 0) {
+					break;
+				}
+			}
+			// en cas d'égalité jusque là, le plus court passe devant
+			return comparison == 0 ? d1.length - d2.length : comparison;
+		}
+		
+		private int[] EMPTY = new int[0];
+		
+		private int[] decompose(String noImmeuble) {
+			final String[] strs = StringUtils.isNotBlank(noImmeuble) ? noImmeuble.split("[^0-9]") : null;
+			if (strs != null && strs.length > 0) {
+				int[] ints = new int[strs.length];
+				for (int i = 0 ; i < strs.length ; ++ i) {
+					ints[i] = StringUtils.isNotBlank(strs[i]) ? Integer.parseInt(strs[i]) : 0;
+				}
+				return ints;
+			}
+			return EMPTY;
+		}
+	};
+
+	/**
+	 * [SIFISC-3309] on trie par nom de commune croissant<br/>
+	 * [SIFISC-4216] ... puis par numéro d'immeuble
+	 */
+	private static final Comparator<ImmeubleView> IMMEUBLE_COMPARATOR = new Comparator<ImmeubleView>() {
+		@Override
+		public int compare(ImmeubleView o1, ImmeubleView o2) {
+			int comparison = o1.getNomCommune().compareTo(o2.getNomCommune());
+			if (comparison == 0) {
+				comparison = NO_IMMEUBLE_COMPARATOR.compare(o1.getNumero(), o2.getNumero());
+			}
+			return comparison;
+		}
+	};
 
 	/**
 	 * Affiche les immeubles d'un contribuable.
@@ -69,13 +117,7 @@ public class ImmeubleController {
 			views.add(new ImmeubleView(immeuble));
 		}
 
-		// // [SIFISC-3309] on trie par nom de commune croissant
-		Collections.sort(views, new Comparator<ImmeubleView>() {
-			@Override
-			public int compare(ImmeubleView o1, ImmeubleView o2) {
-				return o1.getNomCommune().compareTo(o2.getNomCommune());
-			}
-		});
+		Collections.sort(views, IMMEUBLE_COMPARATOR);
 
 		mav.addAttribute("immeubles", views);
 
