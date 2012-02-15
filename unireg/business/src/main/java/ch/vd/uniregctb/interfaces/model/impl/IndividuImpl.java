@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.HistoriqueIndividu;
+import ch.vd.uniregctb.common.StringHelper;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -376,6 +377,9 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (StringUtils.isBlank(numeroRCE) || "0".equals(numeroRCE)) {
 			return null;
 		}
+		// supprime tous les caractères non-numérique et pad avec des zéros pour obtenir le même formatting que RcPers
+		numeroRCE = numeroRCE.replaceAll("[^0-9]*", "");
+		numeroRCE = StringHelper.lpad(numeroRCE, 9, '0');
 		return numeroRCE;
 	}
 
