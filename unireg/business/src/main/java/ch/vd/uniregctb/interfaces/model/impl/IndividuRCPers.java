@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -122,6 +124,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	/**
 	 * Méthode helper publique pour cacher au monde extérieur la complexité de la récupération du numéro d'individu
+	 *
 	 * @param person individu renvoyé par RCPers
 	 * @return le numéro d'individu tel que connu par chez nous
 	 */
@@ -194,9 +197,21 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 		if (residence != null) {
+			final List<AdresseRCPers> residences = new ArrayList<AdresseRCPers>();
 			for (Residence r : residence) {
-				adresses.add(AdresseRCPers.get(r, infraService));
+				residences.add(AdresseRCPers.get(r, infraService));
 			}
+			// on boucle une seconde fois pour assigner les dates de fin des adresses qui n'en auraient pas (= cas des déménagements intra-communal, voir SIREF-1617)
+			Collections.sort(residences, new AdresseRCPersComparator());
+			AdresseRCPers nextAdresse = null;
+			for (int i = residences.size() - 1; i >= 0; i--) {
+				AdresseRCPers adresse = residences.get(i);
+				if (nextAdresse != null && nextAdresse.getDateDebut() != null && adresse.getDateFin() == null) {
+					adresse.setDateFin(nextAdresse.getDateDebut().getOneDayBefore());
+				}
+				nextAdresse = adresse;
+			}
+			adresses.addAll(residences);
 		}
 		return adresses;
 	}
@@ -411,5 +426,12 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public Collection<Adresse> getAdresses() {
 		return adresses;
+	}
+
+	private static class AdresseRCPersComparator implements Comparator<AdresseRCPers> {
+		@Override
+		public int compare(AdresseRCPers o1, AdresseRCPers o2) {
+			return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
+		}
 	}
 }

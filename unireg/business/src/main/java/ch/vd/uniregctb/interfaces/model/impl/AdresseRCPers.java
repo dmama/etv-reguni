@@ -31,7 +31,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private static final long serialVersionUID = 4429511432785369598L;
 	
 	private final RegDate dateDebut;
-	private final RegDate dateFin;
+	private RegDate dateFin;
 	private final CasePostale casePostale;
 	private final String localite;
 	private final String numero;
@@ -57,7 +57,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(contact, infraService);
 	}
 
-	public static Adresse get(Residence residence, ServiceInfrastructureService infraService) {
+	public static AdresseRCPers get(Residence residence, ServiceInfrastructureService infraService) {
 		if (residence == null) {
 			return null;
 		}
@@ -93,7 +93,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 
-		this.dateDebut = XmlUtils.xmlcal2regdate(residence.getArrivalDate());
+		this.dateDebut = XmlUtils.xmlcal2regdate(dwellingAddress.getMovingDate() == null ? residence.getArrivalDate() : dwellingAddress.getMovingDate()); // voir SIREF-1617
 		this.dateFin = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
@@ -168,6 +168,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
 	@Override
