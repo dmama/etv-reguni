@@ -16,16 +16,6 @@ public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 	}
 
 	@Override
-	public void testGetConjoint() throws Exception {
-		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
-	}
-
-	@Override
-	public void testGetNumeroIndividuConjoint() {
-		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
-	}
-
-	@Override
 	public void testGetIndividuConjoint() {
 		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
 	}

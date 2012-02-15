@@ -57,19 +57,25 @@ public class RcPersServiceTest {
 
 		final List<Relationship> historique = relations.getRelationshipHistory();
 		assertNotNull(historique);
-		assertEquals(2, historique.size());
+		assertEquals(3, historique.size());
 
-		// le fils
+		// le femme
 		final Relationship histo0 = historique.get(0);
 		assertNotNull(histo0);
-		assertEquals("102", histo0.getTypeOfRelationship());
-		assertEquals("333527", histo0.getLocalPersonId().getPersonId());
+		assertEquals("1", histo0.getTypeOfRelationship());
+		assertEquals("333529", histo0.getLocalPersonId().getPersonId());
 
-		// la fille
+		// le fils
 		final Relationship histo1 = historique.get(1);
 		assertNotNull(histo1);
-		assertEquals("101", histo1.getTypeOfRelationship());
-		assertEquals("946039", histo1.getLocalPersonId().getPersonId());
+		assertEquals("102", histo1.getTypeOfRelationship());
+		assertEquals("333527", histo1.getLocalPersonId().getPersonId());
+
+		// la fille
+		final Relationship histo2 = historique.get(2);
+		assertNotNull(histo2);
+		assertEquals("101", histo2.getTypeOfRelationship());
+		assertEquals("946039", histo2.getLocalPersonId().getPersonId());
 	}
 
 	@Test

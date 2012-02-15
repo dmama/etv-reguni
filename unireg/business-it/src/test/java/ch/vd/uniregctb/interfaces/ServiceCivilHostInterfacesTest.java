@@ -8,7 +8,6 @@ public class ServiceCivilHostInterfacesTest extends AbstractServiceCivilTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		service = getBean(ServiceCivilService.class, "serviceCivilService");
+		service = getBean(ServiceCivilService.class, "serviceCivilServiceHost");
 	}
-
 }
