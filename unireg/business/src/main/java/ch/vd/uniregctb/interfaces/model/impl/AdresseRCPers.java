@@ -106,7 +106,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.noOfsPays = initNoOfsPays(addressInfo.getCountry(), infraService);
 		this.rue = addressInfo.getStreet();
 		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
-		this.typeAdresse = TypeAdresseCivil.PRINCIPALE;
+		this.typeAdresse = initTypeAdresseResidence(residence);
 		this.communeAdresse = initCommune(residence.getResidenceMunicipality().getMunicipalityId(), this.dateDebut, infraService);
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
@@ -158,6 +158,20 @@ public class AdresseRCPers implements Adresse, Serializable {
 			return null;
 		}
 		return new CasePostale(text, number);
+	}
+
+	private static TypeAdresseCivil initTypeAdresseResidence(Residence residence) {
+		// voir SIREF-1622
+		if (residence.getMainResidence() != null) {
+			return TypeAdresseCivil.PRINCIPALE;
+		}
+		else if (residence.getSecondaryResidence() != null) {
+			return TypeAdresseCivil.SECONDAIRE;
+		}
+		else if (residence.getOtherResidence() != null) {
+			return TypeAdresseCivil.TUTEUR;
+		}
+		throw new IllegalArgumentException("L'adresse de résidence ne possède pas de type défini !");
 	}
 
 	@Override
