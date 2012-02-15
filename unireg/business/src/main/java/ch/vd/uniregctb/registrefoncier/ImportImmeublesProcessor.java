@@ -598,14 +598,15 @@ public class ImportImmeublesProcessor {
 	}
 
 	private static GenrePropriete parseGenrePropriete(String s) {
+		// voir SIFISC-4187
 		final int genre = Integer.parseInt(s);
 		switch (genre) {
 		case 1:
 			return GenrePropriete.INDIVIDUELLE;
 		case 2:
-			return GenrePropriete.COPROPRIETE;
-		case 3:
 			return GenrePropriete.COMMUNE;
+		case 3:
+			return GenrePropriete.COPROPRIETE;
 		default:
 			throw new IllegalArgumentException("Genre de propriété inconnu = [" + genre + ']');
 		}
