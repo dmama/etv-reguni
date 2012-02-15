@@ -15,7 +15,7 @@ public class ImmeubleControllerTest extends WithoutSpringTest {
 	
 	@Test
 	public void testNoImmeubleComparator() throws Exception {
-		final List<String> str = new ArrayList<String>(Arrays.asList("123-3", "123-2-1", "123--1", "5312", "", "123-2", "123", "12"));
+		final List<String> str = new ArrayList<String>(Arrays.asList("1220", "123-3", "123-2-1", "123--1", "5312", "", "123-2", "123", "12"));
 		Collections.sort(str, ImmeubleController.NO_IMMEUBLE_COMPARATOR);
 		final Iterator<String> iter = str.iterator();
 		Assert.assertEquals("", iter.next());
@@ -25,6 +25,7 @@ public class ImmeubleControllerTest extends WithoutSpringTest {
 		Assert.assertEquals("123-2", iter.next());
 		Assert.assertEquals("123-2-1", iter.next());
 		Assert.assertEquals("123-3", iter.next());
+		Assert.assertEquals("1220", iter.next());
 		Assert.assertEquals("5312", iter.next());
 		Assert.assertFalse(iter.hasNext());
 	}
