@@ -17,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.common.StringHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService {
@@ -342,8 +343,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		final String moyenneCharge = String.format("%#13.3f", data.getMoyenneCharge());
 
 		final StringBuilder b = new StringBuilder();
-		b.append(' ').append(rpad(key, maxLen)).append(" | ");
-		b.append(lpad(chargeInstantanee, 7)).append(" | ");
+		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
+		b.append(StringHelper.lpad(chargeInstantanee, 7)).append(" | ");
 		b.append(moyenneCharge);
 		b.append('\n');
 
@@ -361,13 +362,13 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		final String timeToLive = (data.getTimeToLive() == null ? "-" : String.valueOf(data.getTimeToLive()));
 		final String maxElements = (data.getMaxElements() == null ? "-" : String.valueOf(data.getMaxElements()));
 
-		b.append(' ').append(rpad(key, maxLen)).append(" | ");
-		b.append(lpad(hitPercent, 12)).append(" | ");
-		b.append(lpad(hitCount, 10)).append(" | ");
-		b.append(lpad(totalCount, 11)).append(" | ");
-		b.append(lpad(timeToIdle, 12)).append(" | ");
-		b.append(lpad(timeToLive, 12)).append(" | ");
-		b.append(lpad(maxElements, 11));
+		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
+		b.append(StringHelper.lpad(hitPercent, 12)).append(" | ");
+		b.append(StringHelper.lpad(hitCount, 10)).append(" | ");
+		b.append(StringHelper.lpad(totalCount, 11)).append(" | ");
+		b.append(StringHelper.lpad(timeToIdle, 12)).append(" | ");
+		b.append(StringHelper.lpad(timeToLive, 12)).append(" | ");
+		b.append(StringHelper.lpad(maxElements, 11));
 		b.append('\n');
 
 		return b.toString();
@@ -382,47 +383,16 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		final String totalPing = (data.getTotalPing() == null ? "-   " : String.format("%d ms", data.getTotalPing()));
 		final String totalCount = (data.getTotalCount() == null ? "-" : String.format("%9d", data.getTotalCount()));
 
-		b.append(' ').append(rpad(key, maxLen)).append(" | ");
-		b.append(lpad(recentPing, 10)).append(" | ");
-		b.append(lpad(recentCount, 10)).append(" | ");
-		b.append(lpad(totalPing, 10)).append(" | ");
-		b.append(lpad(totalCount, 10));
+		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
+		b.append(StringHelper.lpad(recentPing, 10)).append(" | ");
+		b.append(StringHelper.lpad(recentCount, 10)).append(" | ");
+		b.append(StringHelper.lpad(totalPing, 10)).append(" | ");
+		b.append(StringHelper.lpad(totalCount, 10));
 		b.append('\n');
 
 		return b.toString();
 	}
 
-
-	/**
-	 * Complète la chaîne de caractères spécifiée avec des espaces au début de manière à ce qu'elle atteigne le longueur spécifiée.
-	 *
-	 * @param s   la chaîne de caractères à padder
-	 * @param len la longueur désirée
-	 * @return un chaîne de caractères de longueur minimale <i>len</i>.
-	 */
-	private static String lpad(String s, int len) {
-		final int l = s.length();
-		if (l >= len) {
-			return s;
-		}
-		return StringUtils.repeat(" ", len - l) + s;
-	}
-
-	/**
-	 * Complète la chaîne de caractères spécifiée avec des espaces à la fin de manière à ce qu'elle atteigne le longueur spécifiée.
-	 *
-	 * @param s   la chaîne de caractères à padder
-	 * @param len la longueur désirée
-	 * @return un chaîne de caractères de longueur minimale <i>len</i>.
-	 */
-	@SuppressWarnings("unused")
-	private static String rpad(String s, int len) {
-		final int l = s.length();
-		if (l >= len) {
-			return s;
-		}
-		return s + StringUtils.repeat(" ", len - l);
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
