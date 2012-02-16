@@ -24,7 +24,6 @@ import ch.vd.evd0001.v3.UpiPerson;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
@@ -116,6 +115,48 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
+	}
+
+	public IndividuRCPers(IndividuRCPers right, Set<AttributeIndividu> parts) {
+		this.noTechnique = right.noTechnique;
+		this.prenom = right.getPrenom();
+		this.autresPrenoms = right.getAutresPrenoms();
+		this.nom = right.getNom();
+		this.nomNaissance = right.getNomNaissance();
+		this.noAVS11 = right.getNoAVS11();
+		this.nouveauNoAVS = right.nouveauNoAVS;
+		this.numeroRCE = right.numeroRCE;
+		this.isMasculin = right.isMasculin;
+		this.deces = right.deces;
+		this.naissance = right.naissance;
+		this.dateArriveeVD = right.dateArriveeVD;
+		this.etatsCivils = right.etatsCivils;
+		this.permis = right.permis;
+
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
+			this.adresses = right.adresses;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
+			adoptions = right.adoptions;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
+			conjoints = right.conjoints;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
+			enfants = right.enfants;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
+			nationalites = right.nationalites;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
+			origines = right.origines;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
+			parents = right.parents;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
+			tutelle = right.tutelle;
+		}
 	}
 
 	public static long getNoIndividu(NamedPersonId personId) {
@@ -415,12 +456,35 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	@Override
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
-		throw new NotImplementedException();
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
+			adresses = individu.getAdresses();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
+			adoptions = individu.getAdoptionsReconnaissances();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
+			conjoints = individu.getConjoints();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
+			enfants = individu.getEnfants();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
+			nationalites = individu.getNationalites();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
+			origines = individu.getOrigines();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
+			parents = individu.getParents();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
+			tutelle = individu.getTutelle();
+		}
 	}
 
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
-		throw new NotImplementedException();
+		return new IndividuRCPers(this, parts);
 	}
 
 	@Override
