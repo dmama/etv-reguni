@@ -6,8 +6,8 @@
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />
-	<alias alias="serviceCivilService" name="serviceCivilServiceHost"/>
+	<bean id="serviceCivilServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
 	<!-- Bean client ServicePM MOCK -->
 	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM" />

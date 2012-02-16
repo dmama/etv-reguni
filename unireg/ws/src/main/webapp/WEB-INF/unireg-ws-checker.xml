@@ -12,7 +12,7 @@
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
-		<property name="serviceCivilRaw" ref="serviceCivilServiceHost" />
+		<property name="serviceCivilRaw" ref="serviceCivilRcPers" />
 	</bean>
 
 	<bean id="serviceHostInfraChecker" class="ch.vd.uniregctb.checker.ServiceHostInfraChecker">

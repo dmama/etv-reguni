@@ -45,8 +45,12 @@
 		<property name="serviceCivil" ref="_serviceCivil" />
 	</bean>
 
+	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.rcpers.ServiceCivilRCPers" parent="serviceCivilServiceBase">
+		<property name="client" ref="rcPersClient" />
+	</bean>
+
 	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceHost" />
+		<property name="target" ref="serviceCivilRcPers" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
