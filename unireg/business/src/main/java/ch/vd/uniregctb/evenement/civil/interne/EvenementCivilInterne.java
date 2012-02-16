@@ -129,8 +129,10 @@ public abstract class EvenementCivilInterne {
 				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
 
 				// nettoyage du cache pour tous ces individus
-				for (Long noInd : conjoints) {
-					context.getDataEventService().onIndividuChange(noInd);
+				if (conjoints != null && conjoints.size() > 0) {
+					for (Long noInd : conjoints) {
+						context.getDataEventService().onIndividuChange(noInd);
+					}
 				}
 			}
 		}

@@ -117,8 +117,9 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			return template.execute(new TransactionCallback<EvenementCivilEch>() {
 				@Override
 				public EvenementCivilEch doInTransaction(TransactionStatus status) {
-					event.setNumeroIndividu(numeroIndividu);
-					return evtCivilDAO.save(event);
+					final EvenementCivilEch evt = evtCivilDAO.get(event.getId());
+					evt.setNumeroIndividu(numeroIndividu);
+					return evtCivilDAO.save(evt);
 				}
 			});
 		}
