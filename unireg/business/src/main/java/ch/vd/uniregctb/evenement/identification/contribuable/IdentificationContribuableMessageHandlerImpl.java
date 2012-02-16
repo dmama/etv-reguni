@@ -137,7 +137,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageEndp
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void sendReponse(IdentificationContribuable message) throws Exception {
-
+		
 		final EsbHeader header = message.getHeader();
 		Assert.notNull(header, "Le header doit être renseigné.");
 		final String businessUser = header.getBusinessUser();

@@ -187,13 +187,16 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		final Long id = idAsString != null ? Long.valueOf(idAsString) : null;
 
 
-		if(!identificationMessagesEditManager.isMessageVerouille(id)){
-			mav.setView(new RedirectView("edit.do?id="+id));
-			return mav;
+		if (id != null) {
+			if (!identificationMessagesEditManager.isMessageVerouille(id)) {
+				mav.setView(new RedirectView("edit.do?id=" + id));
+				return mav;
+			}
+			else {
+				Flash.warning("le message sélectionné est en cours de traitement par un autre utilisateur");
+			}
 		}
-		else{
-			Flash.warning("le message sélectionné est en cours de traitement par un autre utilisateur");
-		}
+
 
 		if (request.getParameter(BOUTON_SUSPENDRE) != null) {
 			identificationMessagesListManager.suspendreIdentificationMessages(bean);
