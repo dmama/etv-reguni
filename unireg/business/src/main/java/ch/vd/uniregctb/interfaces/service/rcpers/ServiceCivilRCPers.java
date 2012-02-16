@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service.rcpers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
 		final ListOfPersons list = client.getPersons(nosIndividus, date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
