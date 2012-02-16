@@ -290,13 +290,19 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		}
 
 		if (relanceables != null && relanceables.size() > 0) {
-			for (EvenementCivilEch evt : relanceables) {
-				try {
-					receptionHandler.handleEvent(evt);
+			AuthenticationHelper.pushPrincipal("Relance-démarrage");
+			try {
+				for (EvenementCivilEch evt : relanceables) {
+					try {
+						receptionHandler.handleEvent(evt);
+					}
+					catch (Exception e) {
+						LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
+					}
 				}
-				catch (Exception e) {
-					LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
-				}
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
 			}
 
 			if (LOGGER.isInfoEnabled()) {
