@@ -19,10 +19,9 @@
 package org.apache.cxf.management.interceptor;
 
 
+import javax.management.ObjectName;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.management.ObjectName;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
@@ -106,7 +105,7 @@ public abstract class AbstractMessageResponseTimeInterceptor extends AbstractPha
             
             String portName = "\"" + endpoint.getEndpointInfo().getName() + "\"";
             String serviceName = "\"" + service.getName() + "\"";            
-            String operationName = "\"" + opInfo.getName().toString() + "\"";
+            String operationName = opInfo == null ? null : "\"" + opInfo.getName().toString() + "\"";
             
             StringBuffer buffer = new StringBuffer();
             buffer.append(ManagementConstants.DEFAULT_DOMAIN_NAME + ":");
@@ -121,7 +120,9 @@ public abstract class AbstractMessageResponseTimeInterceptor extends AbstractPha
 	        buffer.append(ManagementConstants.PORT_NAME_PROP + "=").append(portName);
             String serviceCounterName = buffer.toString();
 
-	        buffer.append("," + ManagementConstants.OPERATION_NAME_PROP + "=").append(operationName);
+	        if (operationName != null) {
+	            buffer.append("," + ManagementConstants.OPERATION_NAME_PROP + "=").append(operationName);
+	        }
             String operationCounterName = buffer.toString();
             try {               
                 ObjectName serviceCounter = 
