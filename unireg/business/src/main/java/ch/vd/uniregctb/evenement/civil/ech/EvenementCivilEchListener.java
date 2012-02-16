@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -40,7 +41,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 /**
  * Listener des événements civils au format e-CH envoyés par RCPers au travers de l'ESB
  */
-public class EvenementCivilEchListener extends EsbMessageEndpointListener implements ErrorMonitorableMessageListener, InitializingBean {
+public class EvenementCivilEchListener extends EsbMessageEndpointListener implements ErrorMonitorableMessageListener, InitializingBean, SmartLifecycle {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchListener.class);
 
@@ -56,6 +57,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	private EvenementCivilEchReceptionHandler receptionHandler;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
 	private boolean fetchEventsOnStartup;
+	private boolean running;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilDAO(EvenementCivilEchDAO evtCivilDAO) {
@@ -246,6 +248,41 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	}
 
 	@Override
+	public boolean isAutoStartup() {
+		return true;
+	}
+
+	@Override
+	public void stop(Runnable callback) {
+		stop();
+		callback.run();
+	}
+
+	@Override
+	public void start() {
+		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
+		if (fetchEventsOnStartup) {
+			fetchAndRethrowEvents();
+		}
+		running = true;
+	}
+
+	@Override
+	public void stop() {
+		running = false;
+	}
+
+	@Override
+	public boolean isRunning() {
+		return running;
+	}
+
+	@Override
+	public int getPhase() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
 			final StringBuilder b = new StringBuilder("Liste des événements civils ignorés : ");
@@ -263,11 +300,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 				}
 				LOGGER.info(b.toString());
 			}
-		}
-
-		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
-		if (fetchEventsOnStartup) {
-			fetchAndRethrowEvents();
 		}
 	}
 
