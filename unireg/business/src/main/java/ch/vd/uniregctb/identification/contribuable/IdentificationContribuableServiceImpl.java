@@ -412,10 +412,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// - le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
 		verifierEtMettreAJourContribuable(message, personne);
 
+		String user = AuthenticationHelper.getCurrentPrincipal();
+
 		Reponse reponse = new Reponse();
 		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setNoContribuable(personne.getNumero());
 		reponse.setNoMenageCommun(mcId);
+
 
 		IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());
@@ -423,18 +426,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		messageReponse.setNbContribuablesTrouves(1);
 		messageReponse.setReponse(reponse);
 		messageReponse.setEtat(etat);
+		messageReponse.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		message.setNbContribuablesTrouves(1);
 		message.setReponse(reponse);
 		message.setEtat(etat);
 		message.setDateTraitement(DateHelper.getCurrentDate());
-		String user = AuthenticationHelper.getCurrentPrincipal();
-		message.setTraitementUser(user);
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
+		message.setTraitementUser(user);
+		message.getHeader().setBusinessUser(traduireBusinessUser(user));
+
+		LOGGER.info("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
 					+ "]. Numéro du contribuable trouvé = " + personne.getNumero());
-		}
 
 		messageHandler.sendReponse(messageReponse);
 	}
@@ -1301,5 +1304,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage) {
 		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, identCtbDAO, transactionManager);
 		return processor.run(dateTraitement, nbThreads, status, idMessage);
+	}
+
+	private String traduireBusinessUser(String user){
+		String visaUser = user;
+		if (visaUser.contains("JMS-EvtIdentCtb")) {
+			visaUser = "Unireg";
+		}
+
+		return visaUser;
 	}
 }
