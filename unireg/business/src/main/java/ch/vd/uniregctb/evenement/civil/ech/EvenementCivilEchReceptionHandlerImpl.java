@@ -94,7 +94,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		event = assignNumeroIndividu(event, noIndividu);
 
 		// 6. notification du moteur de traitement
-		sendNotificationForNewEvent(noIndividu);
+		demanderTraitementQueue(noIndividu);
 		return event;
 	}
 
@@ -131,9 +131,5 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		else {
 			return event;
 		}
-	}
-
-	private void sendNotificationForNewEvent(long noIndividu) {
-		notificationQueue.post(noIndividu);
 	}
 }
