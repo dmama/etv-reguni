@@ -12,7 +12,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class NationaliteRCPers implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = -3520943978958118894L;
+	private static final long serialVersionUID = -5696191365425536752L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

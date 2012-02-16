@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import java.io.Serializable;
+
 /**
  * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays).
  */
-public class Localisation {
+public class Localisation implements Serializable {
+
+	private static final long serialVersionUID = 620603672518143534L;
 
 	private LocalisationType type;
 	private int noOfs;

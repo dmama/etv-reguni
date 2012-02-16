@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,10 +14,18 @@ import ch.vd.uniregctb.type.TexteCasePostale;
  *
  * le npa est optionnel, il est renseigné lorsque le npa de la case postale diffère de celui de la localité
  */
-public class CasePostale {
+public class CasePostale implements Serializable {
+
+	private static final long serialVersionUID = 2527828768944165781L;
+
 	private TexteCasePostale type;
 	private Integer numero;
 	private Integer npa;
+
+	@SuppressWarnings("UnusedDeclaration")
+	private CasePostale() {
+		// pour la serialization
+	}
 
 	public CasePostale(TexteCasePostale type, Integer numero) {
 		this(type, numero, null);

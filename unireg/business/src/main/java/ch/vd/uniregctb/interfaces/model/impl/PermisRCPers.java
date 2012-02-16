@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class PermisRCPers implements Permis, Serializable {
 
-	private static final long serialVersionUID = -8450922328242757605L;
+	private static final long serialVersionUID = 4605030164821017190L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

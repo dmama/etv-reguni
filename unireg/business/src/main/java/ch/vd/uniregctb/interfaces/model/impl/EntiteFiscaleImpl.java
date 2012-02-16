@@ -26,6 +26,9 @@ public abstract class EntiteFiscaleImpl implements EntiteFiscale {
 		this.designation = designation;
 	}
 
+	protected EntiteFiscaleImpl() {
+	}
+
 	protected EntiteFiscaleImpl(Integer code, String designation) {
 		this.code = code;
 		this.designation = designation;

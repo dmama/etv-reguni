@@ -11,7 +11,7 @@ import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 
 public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
 
-	private static final long serialVersionUID = 2230658029296372613L;
+	private static final long serialVersionUID = -544626150364973488L;
 
 	private long numeroAutreIndividu;
 	private RegDate dateDebut;

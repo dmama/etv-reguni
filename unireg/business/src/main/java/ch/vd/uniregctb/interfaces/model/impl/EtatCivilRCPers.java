@@ -15,7 +15,7 @@ import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 public class EtatCivilRCPers implements EtatCivil, Serializable {
 
-	private static final long serialVersionUID = -3154801553713624662L;
+	private static final long serialVersionUID = -1914075129676407885L;
 
 	private final RegDate dateDebut;
 	private RegDate dateFin;

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +17,9 @@ import ch.vd.uniregctb.interfaces.model.impl.EtatCivilRCPers;
 /**
  * Liste générique d'états civils qui sont triés par ordre croissant des dates de début de validité.
  */
-public class EtatCivilListRCPers implements EtatCivilList {
+public class EtatCivilListRCPers implements EtatCivilList, Serializable {
+
+	private static final long serialVersionUID = 6713284237329600601L;
 
 	final private List<EtatCivil> list;
 
