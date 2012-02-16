@@ -15,4 +15,10 @@ public interface EvenementCivilEchReceptionMonitor {
 	 * @return le nombre d'individus actuellement en attente dans la queue des événements à traiter
 	 */
 	int getNombreIndividusEnAttenteDeTraitement();
+
+	/**
+	 * Méthode utilisée dans les tests "live" pour re-demander le traitement de la queue d'événements de l'individu donné
+	 * @param noIndividu identifiant de l'individu dont on veut relancer le traitement
+	 */
+	void demanderTraitementQueue(long noIndividu);
 }

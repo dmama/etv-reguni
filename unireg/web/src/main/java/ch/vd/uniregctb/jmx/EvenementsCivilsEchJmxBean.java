@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedOperation;
 
 public interface EvenementsCivilsEchJmxBean {
 
@@ -33,5 +34,8 @@ public interface EvenementsCivilsEchJmxBean {
 
 	@ManagedAttribute(description = "Total number of individuals currently waiting to be processed")
 	int getNbIndividualsAwaitingTreatment();
+	
+	@ManagedOperation(description = "Ask for (re-)treatment of the individual's event queue")
+	void treatPersonsEvents(long noIndividu);
 
 }

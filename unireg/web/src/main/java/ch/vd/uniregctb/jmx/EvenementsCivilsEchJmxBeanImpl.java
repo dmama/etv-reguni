@@ -2,6 +2,7 @@ package ch.vd.uniregctb.jmx;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
@@ -91,6 +92,12 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@ManagedAttribute
 	public int getNbBatchConsumers() {
 		return endpointManagerMasse.getMaxConcurrentConsumers();
+	}
+
+	@Override
+	@ManagedOperation
+	public void treatPersonsEvents(long noIndividu) {
+		monitor.demanderTraitementQueue(noIndividu);
 	}
 
 	@Override

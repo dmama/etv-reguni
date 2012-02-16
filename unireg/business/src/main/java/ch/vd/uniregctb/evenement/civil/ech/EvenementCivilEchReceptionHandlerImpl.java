@@ -56,6 +56,11 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
+	public void demanderTraitementQueue(long noIndividu) {
+		notificationQueue.post(noIndividu);
+	}
+
+	@Override
 	public EvenementCivilEch saveIncomingEvent(final EvenementCivilEch event) {
 		final long id = event.getId();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
