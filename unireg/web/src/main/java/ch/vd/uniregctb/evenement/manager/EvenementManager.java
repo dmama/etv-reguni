@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
@@ -55,7 +55,7 @@ public interface EvenementManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException;
+	public List<EvenementCivilView> find(EvenementCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Cherche et compte les evenements correspondant aux criteres

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
@@ -273,7 +273,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException {
+	public List<EvenementCivilView> find(EvenementCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
 		final List<EvenementCivilRegPP> evts = evenementService.find(bean, pagination);
 		for (EvenementCivilRegPP evt : evts) {

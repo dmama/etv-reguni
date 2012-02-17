@@ -30,6 +30,12 @@ public class EvenementCriteriaValidator implements Validator  {
 		if (StringUtils.isNotBlank(bean.getNumeroCTBFormatte()) && !ValidatorUtils.isNumber(bean.getNumeroCTBFormatte())) {
 			errors.rejectValue("numeroCTBFormatte", "error.numero");
 		}
+
+		// Numero Individu
+		if (StringUtils.isNotBlank(bean.getNumeroIndividuFormatte()) && !ValidatorUtils.isNumber(bean.getNumeroIndividuFormatte())) {
+			errors.rejectValue("numeroIndividuFormatte", "error.numero");
+		}
+
 	}
 
 }

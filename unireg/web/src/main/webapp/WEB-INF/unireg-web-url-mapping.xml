@@ -148,9 +148,7 @@
 
 				<!-- Tiers - edit -->
 				<entry key="/tiers/create.do" value-ref="tiersCreateController" />
-				<!-- Evenements -->
-				<entry key="/evenement/list.do" value-ref="evenementListController" />
-				<entry key="/evenement/visu.do" value-ref="evenementVisuController" />
+
 				<!-- LR -->
 				<entry key="/lr/list.do" value-ref="lrListController" />
 				<entry key="/lr/edit.do" value-ref="lrEditController" />

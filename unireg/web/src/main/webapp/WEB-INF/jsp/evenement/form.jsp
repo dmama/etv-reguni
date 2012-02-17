@@ -57,6 +57,7 @@
 		<td><fmt:message key="label.numero.individu" />&nbsp;:</td>
 		<td>
 			<form:input  path="numeroIndividuFormatte" id="numeroIndividuFormatte" cssClass="number"/>
+			<form:errors path="numeroIndividuFormatte" cssClass="error"/>
 		</td>
 		<td><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
 		<td>
@@ -71,10 +72,12 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" /></div>
+			<fmt:message key="label.bouton.rechercher" var="labelBoutonRechercher"/>
+			<div class="navigation-action"><input type="submit" value="${labelBoutonRechercher}" name="rechercher" /></div>
 		</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.effacer" />" name="effacer"  /></div>
+			<fmt:message key="label.bouton.effacer" var="labelBoutonEffacer"/>
+			<div class="navigation-action"><input type="submit" value="${labelBoutonEffacer}" name="effacer"  /></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

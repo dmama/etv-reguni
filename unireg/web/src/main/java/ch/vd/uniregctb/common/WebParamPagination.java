@@ -56,4 +56,5 @@ public class WebParamPagination extends ParamPagination {
 		}
 		return page;
 	}
+	
 }

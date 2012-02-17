@@ -2,29 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	<!--  Evenement -->
-	<bean id="abstractEvenementController" class="ch.vd.uniregctb.evenement.AbstractEvenementController">
+
+	<bean id="evenementController" class="ch.vd.uniregctb.evenement.EvenementController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="evenementManager" ref="evenementManager" />
-	</bean>
-	
-	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.EvenementCriteriaValidator" />
-	<bean id="evenementListController" class="ch.vd.uniregctb.evenement.EvenementListController" parent="abstractEvenementController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.evenement.view.EvenementCriteriaView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="evenement/list" />
-		<property name="successView" value="list.do" />
 		<property name="validator" ref="evenementCriteriaValidator" />
 	</bean>
-	
-	<bean id="evenementVisuController" class="ch.vd.uniregctb.evenement.EvenementVisuController" parent="abstractEvenementController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.evenement.view.EvenementView" />
-		<property name="formView" value="evenement/visu" />
-		<property name="successView" value="redirect:/evenement/list.do" />
 
-	</bean>
-	
+	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.EvenementCriteriaValidator" />
+
 	<bean id="evenementManager" class="ch.vd.uniregctb.evenement.manager.EvenementManagerImpl" >
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />

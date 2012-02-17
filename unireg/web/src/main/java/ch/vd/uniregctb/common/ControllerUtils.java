@@ -63,22 +63,59 @@ public abstract class ControllerUtils {
 	}
 
 	/**
-	 * Renvoie les paramétres à ajouter à une URL pour que la table (générée par DisplayTag) soit ré-affichée
-	 * sur la même page et avec le même ordre de tri que ce qu'elle a actuellement
+	 * A partir d'une requete, cette méthode construit une String
+	 * contenant les paramètres de requetes nécessaire au DisplayTag
+	 * pour répercuter ces informations de navigation (no page, champs de tri, ordre de tri)
+	 *
 	 * @param request request avec laquelle la table a déjà été affichée
 	 * @param tableName le nom de la table
 	 * @return une chaîne de caractères (<code>null</code> si vide) dans laquelle ont été extraits les paramètres de pagination pour la table donnée, depuis la requête donnée
 	 */
-	public static String getPaginatedTableParameters(HttpServletRequest request, String tableName) {
+	public static String getDisplayTagRequestParametersForPagination(HttpServletRequest request, String tableName) {
 		final ParamEncoder encoder = new ParamEncoder(tableName);
 		final String pageParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE);
 		final String sortUsingNameParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORTUSINGNAME);
 		final String sortParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT);
 		final String orderParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER);
-		final String pageParamValue = StringUtils.trimToNull(request.getParameter(pageParamName));
-		final String sortUsingNameParamValue = StringUtils.trimToNull(request.getParameter(sortUsingNameParamName));
-		final String sortParamValue = StringUtils.trimToNull(request.getParameter(sortParamName));
-		final String orderParamValue = StringUtils.trimToNull(request.getParameter(orderParamName));
+		return getDisplayTagRequestParametersForPagination(
+				tableName,
+				StringUtils.trimToNull(request.getParameter(pageParamName)),
+				StringUtils.trimToNull(request.getParameter(sortUsingNameParamName)),
+				StringUtils.trimToNull(request.getParameter(sortParamName)),
+				StringUtils.trimToNull(request.getParameter(orderParamName)),
+				true
+		);
+
+	}
+
+	/**
+	 * A partir d'un objet ParamPagination, cette méthode construit une String
+	 * contenant les paramètres de requetes nécessaire au DisplayTag
+	 * pour répercuter ces informations de navigation (no page, champs de tri, ordre de tri)
+	 *
+	 * @param tableName le nom de la table display-tag
+	 * @param pagination l'objet source
+	 *
+	 * @return une chaine contenant les parametres de requetes utiles au displaytag
+	 */
+	public static String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination) {
+		return getDisplayTagRequestParametersForPagination(
+				tableName,
+				Integer.toString(pagination.getNumeroPage()),
+				"1",
+				pagination.getSorting().getField(),
+				pagination.getSorting().isAscending() ? "1" : "2",
+				false);
+	}
+	
+	public static String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue, boolean htmlEscape) {
+
+		final ParamEncoder encoder = new ParamEncoder(tableName);
+		final String pageParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE);
+		final String sortUsingNameParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORTUSINGNAME);
+		final String sortParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT);
+		final String orderParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER);
+		
 		final StringBuilder b = new StringBuilder();
 		if (pageParamValue != null) {
 			b.append(String.format("%s=%s", pageParamName, pageParamValue));
@@ -101,6 +138,13 @@ public abstract class ControllerUtils {
 			}
 			b.append(String.format("%s=%s", orderParamName, orderParamValue));
 		}
-	    return StringUtils.trimToNull(HtmlUtils.htmlEscape(b.toString()));
-	}
+
+		String ret;
+		if(htmlEscape) {
+			ret = HtmlUtils.htmlEscape(b.toString());	
+		} else {
+			ret = b.toString();
+		}
+		return StringUtils.trimToNull(ret);
+	}	
 }

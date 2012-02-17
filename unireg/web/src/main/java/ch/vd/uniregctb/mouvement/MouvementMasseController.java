@@ -182,7 +182,7 @@ public class MouvementMasseController {
 		model.addAttribute(FOUND, found);
 		model.addAttribute(MONTRER_EXPORT, found != null && found.getResultSize() > 0);
 		model.addAttribute(MONTRER_INITIATEUR, noCollAdmInitiatrice == null);
-		model.addAttribute(PAGINATION, ControllerUtils.getPaginatedTableParameters(request, TABLE_ID));
+		model.addAttribute(PAGINATION, ControllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_ID));
 		return customizer.getViewName();
 	}
 

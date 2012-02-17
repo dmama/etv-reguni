@@ -8,7 +8,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/evenements.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
-	  	<form:form method="post" id="formVisuEvenements">
+
 	  	<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
@@ -207,21 +207,23 @@
 		<!-- Fin List tiers -->			
 	
 		<!-- Debut Boutons -->
-		<c:if test="${listEvenementsPageInfo != null}">
-			<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do?${listEvenementsPageInfo}';" />
-		</c:if>
-		<c:if test="${listEvenementsPageInfo == null}">
-			<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
-		</c:if>
-
+		<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
 
 		<c:if test="${(command.evenement.etat == 'A_TRAITER') || (command.evenement.etat == 'EN_ERREUR')}">
-			<input type="submit" name="recycler" value="<fmt:message key="label.bouton.recycler" />" />	
+			<form:form method="post" action="recycler.do" style="display: inline">
+				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
+				<input type="submit" name="recycler" value="${labelBoutonRecyler}" />
+			</form:form>
 		</c:if>
 		<c:if test="${command.evenement.etat != 'TRAITE' && command.evenement.etat != 'FORCE'}">
-			<input type="submit" name="forcer" value="<fmt:message key="label.bouton.forcer" />" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>	
+			<form:form method="post" action="forcer.do" style="display: inline">
+				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
+				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
+			</form:form>
 		</c:if>
 		<!-- Fin Boutons -->
-		</form:form>
+
 	</tiles:put>
 </tiles:insert>
