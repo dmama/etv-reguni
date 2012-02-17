@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,6 +75,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private List<RelationVersIndividu> conjoints;
 	private Permis permis;
 	private List<Nationalite> nationalites;
+	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
 	public static Individu get(Person target, @Nullable Relations relations, ServiceInfrastructureService infraService) {
 		if (target == null) {
@@ -115,6 +117,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
+
+		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
+		Collections.addAll(this.availableParts, AttributeIndividu.values());
+		if (relations == null) {
+			this.availableParts.remove(AttributeIndividu.CONJOINTS);
+			this.availableParts.remove(AttributeIndividu.ENFANTS);
+			this.availableParts.remove(AttributeIndividu.PARENTS);
+		}
 	}
 
 	public IndividuRCPers(IndividuRCPers right, Set<AttributeIndividu> parts) {
@@ -156,6 +166,10 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = right.tutelle;
+		}
+
+		if (parts != null) {
+			this.availableParts.addAll(parts);
 		}
 	}
 
@@ -480,11 +494,20 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
+
+		if (parts != null) {
+			this.availableParts.addAll(parts);
+		}
 	}
 
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuRCPers(this, parts);
+	}
+
+	@Override
+	public Set<AttributeIndividu> getAvailableParts() {
+		return availableParts;
 	}
 
 	@Override

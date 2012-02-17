@@ -3,7 +3,9 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,15 +53,16 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private Collection<Origine> origines;
 	private Permis permis;
 	private Tutelle tutelle;
+	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
-	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, RegDate upTo) {
+	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, RegDate upTo, AttributeIndividu... parts) {
 		if (target == null) {
 			return null;
 		}
-		return new IndividuImpl(target, upTo);
+		return new IndividuImpl(target, upTo, parts);
 	}
 
-	protected IndividuImpl(ch.vd.registre.civil.model.Individu target, RegDate upTo) {
+	protected IndividuImpl(ch.vd.registre.civil.model.Individu target, RegDate upTo, AttributeIndividu... parts) {
 		super(target, upTo);
 		final ch.vd.registre.civil.model.HistoriqueIndividu dhi = target.getDernierHistoriqueIndividu();
 		if (dhi == null) {
@@ -93,6 +96,11 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.origines = initOrigines(target.getOrigines());
 		this.permis = initPermis(target.getPermis(), upTo);
 		this.tutelle = TutelleImpl.get(target.getTutelle(), upTo);
+
+		if (parts != null) {
+			Collections.addAll(this.availableParts, parts);
+			this.availableParts.add(AttributeIndividu.CONJOINTS); // les conjoints sont systématiquement renseignés par host-interfaces
+		}
 	}
 
 	protected IndividuImpl(IndividuImpl individuWrapper, Set<AttributeIndividu> parts) {
@@ -132,6 +140,10 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individuWrapper.tutelle;
+		}
+
+		if (parts != null) {
+			this.availableParts.addAll(parts);
 		}
 	}
 
@@ -449,10 +461,19 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
+
+		if (parts != null) {
+			this.availableParts.addAll(parts);
+		}
 	}
 
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuImpl(this, parts);
+	}
+
+	@Override
+	public Set<AttributeIndividu> getAvailableParts() {
+		return availableParts;
 	}
 }

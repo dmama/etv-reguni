@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -46,8 +47,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
 	private RegDate dateArriveeVD;
+	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
 	public MockIndividu() {
+		// à priori, toutes les parts *peuvent* être renseignées
+		Collections.addAll(this.availableParts, AttributeIndividu.values());
 	}
 
 	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts, RegDate upTo) {
@@ -72,6 +76,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 		copyPartsFrom(right, parts);
 		limitPartsToBeforeDate(upTo, parts);
+
+		if (parts != null) {
+			this.availableParts.addAll(parts);
+		}
 	}
 
 	@Override
@@ -340,6 +348,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	@Override
 	public MockIndividu clone(Set<AttributeIndividu> parts) {
 		return cloneUntil(parts, RegDate.getLateDate());
+	}
+
+	@Override
+	public Set<AttributeIndividu> getAvailableParts() {
+		return availableParts;
 	}
 
 	public MockIndividu cloneUntil(Set<AttributeIndividu> parts, RegDate date) {

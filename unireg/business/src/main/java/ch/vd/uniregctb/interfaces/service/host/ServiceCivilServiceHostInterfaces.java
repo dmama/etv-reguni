@@ -41,7 +41,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		try {
 			final int annee = date == null ? 2400 : date.year();
-			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)), date);
+			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)), date, parties);
 			if (ind != null) {
 				assertCoherence(noIndividu, ind.getNoTechnique());
 			}
@@ -68,7 +68,7 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 
 			final List<Individu> list = new ArrayList<Individu>(individus.size());
 			for (ch.vd.registre.civil.model.Individu ind : individus) {
-				final Individu individu = IndividuImpl.get(ind, date);
+				final Individu individu = IndividuImpl.get(ind, date, parties);
 				if (individu != null) {
 					list.add(individu);
 				}

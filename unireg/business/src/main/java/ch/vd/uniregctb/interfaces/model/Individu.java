@@ -28,26 +28,20 @@ public interface Individu extends EntiteCivile {
 	 */
 	String getNomNaissance();
 
-    /**
-     * Retourne la liste des adoptions et reconnaissances de l'individu.
-     *
-     * @return la liste des adoptions et reconnaissances de l'individu.
-     */
-    Collection<AdoptionReconnaissance> getAdoptionsReconnaissances();
+	/**
+	 * @return la liste des adoptions et reconnaissances de l'individu.
+	 */
+	Collection<AdoptionReconnaissance> getAdoptionsReconnaissances();
 
-    /**
-     * Retourne la date de décès de l'individu.
-     *
-     * @return la date de décès de l'individu.
-     */
-    RegDate getDateDeces();
+	/**
+	 * @return la date de décès de l'individu.
+	 */
+	RegDate getDateDeces();
 
-    /**
-     * Retourne la date de naissance de l'individu.
-     *
-     * @return la date de naissance de l'individu.
-     */
-    RegDate getDateNaissance();
+	/**
+	 * @return la date de naissance de l'individu.
+	 */
+	RegDate getDateNaissance();
 
 	/**
 	 * @return la date d'arrivée dans le canton.
@@ -55,91 +49,75 @@ public interface Individu extends EntiteCivile {
 	RegDate getDateArriveeVD();
 
 	/**
-	 * Renvoie <code>true</code> si la date de naissance de l'individu est connue
-	 * et si elle est moins de 18 ans avant la date passée en paramètre
+	 * Renvoie <code>true</code> si la date de naissance de l'individu est connue et si elle est moins de 18 ans avant la date passée en paramètre
+	 *
 	 * @param date date pour laquelle la réponse est valable
 	 * @return <code>true</code> si l'individu est encore mineur à la date donnée, <code>false</code> s'il est déjà majeur (ou si sa date de naissance est inconnue)
 	 */
 	boolean isMineur(RegDate date);
 
 	/**
-     * @return la liste des enfants de l'individu.
-     */
-    Collection<RelationVersIndividu> getEnfants();
-
-    /**
-     * Retourne la liste des états civils de l'individu.
-     *
-     * @return la liste des états civils de l'individu.
-     */
-    EtatCivilList getEtatsCivils();
+	 * @return la liste des enfants de l'individu.
+	 */
+	Collection<RelationVersIndividu> getEnfants();
 
 	/**
-	 * Récupère l'état civil courant d'un individu.
-	 *
+	 * @return la liste des états civils de l'individu.
+	 */
+	EtatCivilList getEtatsCivils();
+
+	/**
 	 * @return l'état civil courant de l'individu
 	 */
 	EtatCivil getEtatCivilCourant();
 
 	/**
-	 * Récupère l'état civil à une date donnée d'un individu.
-	 * Si aucune date n'est donnée, l'état civil courant est retourné.
+	 * Récupère l'état civil à une date donnée d'un individu. Si aucune date n'est donnée, l'état civil courant est retourné.
 	 *
+	 * @param date la date de valeur de l'état-civil
 	 * @return l'état civil de l'individu
 	 */
 	EtatCivil getEtatCivil(RegDate date);
 
 	/**
-     * Retourne le numéro technique de l'individu.
-     *
-     * @return le numéro technique de l'individu.
-     */
-    long getNoTechnique();
+	 * @return le numéro technique de l'individu.
+	 */
+	long getNoTechnique();
 
 	/**
-	 * @return l'ancien numéro AVS sur 11 position.
+	 * @return l'ancien numéro AVS sur 11 positions.
 	 */
 	String getNoAVS11();
 
-    /**
-     * Retourne le numéro AVS formule 2008 de l'individu.
-     *
-     * @return le numéro AVS formule 2008 de l'individu.
-     */
-    String getNouveauNoAVS();
+	/**
+	 * @return le numéro AVS sur 13 positions de l'individu.
+	 */
+	String getNouveauNoAVS();
 
-    /**
-     * Retourne le numéro du registre des étrangers de l'individu.
-     *
-     * @return le numéro du registre des étrangers de l'individu.
-     */
-    String getNumeroRCE();
+	/**
+	 * @return le numéro du registre des étrangers de l'individu.
+	 */
+	String getNumeroRCE();
 
-    /**
-     * @return le permis actif à la date demandée lors de l'appel à getIndividu(); ou <b>null</b> si l'individu ne possède pas de permis (= qu'il est suisse).
-     */
-    Permis getPermis();
+	/**
+	 * @return le permis actif à la date demandée lors de l'appel à getIndividu(); ou <b>null</b> si l'individu ne possède pas de permis (= qu'il est suisse).
+	 */
+	Permis getPermis();
 
-    /**
-     * Retourne la liste des nationalités de l'individu.
-     *
-     * @return la liste des nationalites de l'individu.
-     */
-    List<Nationalite> getNationalites();
+	/**
+	 * @return la liste des nationalites de l'individu.
+	 */
+	List<Nationalite> getNationalites();
 
-    /**
-     * Indique si l'individu est de sexe masculin.
-     *
-     * @return <code>true</code> si l'individu est de sexe masculin.
-     */
-    boolean isSexeMasculin();
+	/**
+	 * @return <code>true</code> si l'individu est de sexe masculin.
+	 */
+	boolean isSexeMasculin();
 
-    /**
-     * Retourne les origines de l'individu étendu.
-     *
-     * @return les origines de l'individu étendu.
-     */
-    Collection<Origine> getOrigines();
+	/**
+	 * @return les origines de l'individu étendu.
+	 */
+	Collection<Origine> getOrigines();
 
 	/**
 	 * @return les parents de l'individu courant.
@@ -151,12 +129,10 @@ public interface Individu extends EntiteCivile {
 	 */
 	List<RelationVersIndividu> getConjoints();
 
-    /**
-     * Retourne la tutelle à laquelle l'individu étendu est soumis.
-     *
-     * @return la tutelle à laquelle l'individu étendu est soumis.
-     */
-    Tutelle getTutelle();
+	/**
+	 * @return la tutelle à laquelle l'individu étendu est soumis.
+	 */
+	Tutelle getTutelle();
 
 	/**
 	 * Copie les parties spécifiées à partir de l'individu spécifié.
@@ -173,4 +149,10 @@ public interface Individu extends EntiteCivile {
 	 * @return un nouvel individu.
 	 */
 	Individu clone(Set<AttributeIndividu> parts);
+
+	/**
+	 * @return l'ensemble des parts effectivement renseignées sur l'individu. Ces parts peuvent différer des parts explicitement demandées, car certaines implémentations renseignent systématiquement
+	 *         certaines parts.
+	 */
+	Set<AttributeIndividu> getAvailableParts();
 }
