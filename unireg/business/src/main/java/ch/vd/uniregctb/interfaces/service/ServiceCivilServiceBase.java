@@ -44,7 +44,8 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		AdressesCivilesActives resultat = new AdressesCivilesActives();
 
 		try {
-			final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.ADRESSES);
+			// [SIFISC-4250] on demande systématiquement la date 'null' pour pouvoir reconstruire les dates de fin des adresses qui n'en auraient pas
+			final Individu individu = getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
 			if (individu != null) {
 				final Collection<Adresse> adressesCiviles = individu.getAdresses();
 				if (adressesCiviles != null) {
