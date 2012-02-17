@@ -3,9 +3,7 @@ package ch.vd.uniregctb.interfaces;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -29,17 +27,11 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureServiceTest.class);
 
-	/**
-	 *
-	 */
 	private ServiceInfrastructureService service;
 
 	public ServiceInfrastructureServiceTest() {
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -47,43 +39,26 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		service = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSuisse() throws Exception {
 		assertEquals("CH", service.getSuisse().getSigleOFS());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCantons() throws Exception {
 		assertEquals(27, service.getAllCantons().size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public void testCommunesDeVaud() throws Exception {
 		assertEquals(396, service.getCommunesDeVaud().size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public void testCantonDeZurich() throws Exception {
 		Canton canton = service.getCantonBySigle("ZH");
 		assertNotNull(canton);
 		assertEquals("ZH", canton.getSigleOFS());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public void testCantonInexistant() throws Exception {
 		try {
 			// Should throw an exception
@@ -95,9 +70,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public void testLocalites() throws Exception {
 
 		List<Localite> localites = service.getLocalites();
@@ -125,7 +97,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	 * La solution a été de forcer la définition de la méthode equals() sur toutes les EntityOFS.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneEstDansLeCanton() throws Exception {
 
 		final Canton vaud = service.getVaud();
@@ -140,7 +111,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPaysByCode() throws Exception {
 
 		final Pays ch = service.getPays("CH");
@@ -157,7 +127,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateValiditeCommuneLusseryVillars() throws Exception {
 
 		final int noOfsLussery = 5487;
@@ -180,7 +149,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateValiditeCommuneCloturee() throws Exception {
 
 		final int noOfsHerlisberg = 1029;       // commune clôturée le 31.12.2004
@@ -203,7 +171,6 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetCommuneByEgidCommuneFusionneeAuCivilMaisPasAuFiscal() throws Exception {
 
 		// route de la Corniche 9bis, 1097 Riex (http://www.geoplanet.vd.ch/index.php?reset_session&linkit=1&switch_id=switch_localisation&layer_select=complement_vd2,fond_continu_gris,canton_select,adresses_select,cad_bat_hs_fond_select,npcs_bat_hs_select&recenter_bbox=545951.2,149324.8,546086.53,149426.27&mapsize=3&query_blocks[adresses_select]=129374357&query_hilight=1&query_return_attributes=1)
@@ -234,10 +201,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		}
 	}
 
-	// FIXME (msi) en attente de la résolution de SIFISC-766
-	@Ignore
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetCommuneHistoByNumeroOFS() throws Exception {
 
 		final List<Commune> list = service.getCommuneHistoByNumeroOfs(MockCommune.BourgEnLavaux.getNoOFSEtendu());
