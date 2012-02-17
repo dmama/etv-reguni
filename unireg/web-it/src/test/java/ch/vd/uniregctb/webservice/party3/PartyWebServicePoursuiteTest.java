@@ -65,7 +65,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 		final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
 		final FormattedAddress formattee = domicile.getFormattedAddress();
-		assertFormattedAddress(formattee, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
+		assertFormattedAddress(formattee, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-près-Marnand");
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
@@ -114,7 +114,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 			final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 			final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
 			final FormattedAddress formattee = domicile.getFormattedAddress();
-			assertFormattedAddress(formattee, "Monsieur", "Thierry Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
+			assertFormattedAddress(formattee, "Monsieur", "Thierry Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
 			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 			final List<Address> mailAddresses = tiers.getMailAddresses();
@@ -139,7 +139,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 			// Teste les adresses formattées
 			final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 			final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-			assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
+			assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
 			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 			final List<Address> mailAddresses = tiers.getMailAddresses();
@@ -203,7 +203,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		// Teste les adresses formattées
 		final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 		final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-		assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "Av. de Marcelin 8", "1110 Morges");
+		assertFormattedAddress(domicile.getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "Avenue de Marcelin 8", "1110 Morges");
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
@@ -269,7 +269,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		// Teste les adresses formattées
 		final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 		final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marcello Pesci", "Ch. de Réchoz 17", "1027 Lonay");
+		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marcello Pesci", "Chemin de Réchoz 17", "1027 Lonay");
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
@@ -296,7 +296,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		// Teste les adresses formattées
 		final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 		final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
+		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-près-Marnand");
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
