@@ -12,6 +12,6 @@ public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 
 	@Override
 	public void testGetIndividuConjoint() {
-		// TODO (rcpers) on ne teste rien en attendant le déploiement en intégration de la nouvelle version du XSD qui contient l'historique des relations
+		// TODO (rcpers) on ne teste rien en attendant la résolution du cas SIREF-1631
 	}
 }
