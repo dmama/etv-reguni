@@ -367,20 +367,20 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
-		final List<RelationVersIndividu> conjoints = individu.getConjoints();
-		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
-		if (relation != null) {
-			((RelationVersIndividuImpl)relation).setDateFin(dateSeparation);
-		}
+		// JDE, 20.02.2012 : le pseudo état-civil "séparé" ne met pas fin aux relations civiles, puisque le couple est toujours marié civilement
+//		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+//		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
+//		if (relation != null) {
+//			((RelationVersIndividuImpl)relation).setDateFin(dateSeparation);
+//		}
 	}
 
-	protected void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
+	protected static void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
 		divorceIndividu(individu, dateDivorce);
 		divorceIndividu(conjoint, dateDivorce);
-
 	}
 
-	protected void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
+	protected static void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE);
 		etatsCivilIndividu.add(etatCivilIndividu);
