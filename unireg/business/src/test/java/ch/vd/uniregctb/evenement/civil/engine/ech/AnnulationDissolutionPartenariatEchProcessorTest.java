@@ -22,15 +22,15 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
+public class AnnulationDissolutionPartenariatEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 	
 	@Test(timeout = 10000L)
-	public void testAnnulationDivorce() throws Exception {
+	public void testAnnulationDissolutionPartenariat() throws Exception {
 
 		final long noIndividuLui = 36712456523468L;
-		final long noIndividuElle = 34674853272545L;
-		final RegDate dateMariage = date(2003, 4, 12);
-		final RegDate dateDivorce = date(2012, 2, 10);
+		final long noIndividuLui2 = 34674853272545L;
+		final RegDate datePartenariat = date(2003, 4, 12);
+		final RegDate dateDissolutionPartenariat = date(2012, 2, 10);
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -41,43 +41,43 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceLui, null);
 				addNationalite(lui, MockPays.Suisse, dateNaissanceLui, null);
 
-				final RegDate dateNaissanceElle = date(1980, 6, 12);
-				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissanceElle, "Nette", "Jeu", false);
-				addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissanceElle, null);
-				addNationalite(elle, MockPays.Suisse, dateNaissanceElle, null);
+				final RegDate dateNaissanceLui2 = date(1980, 6, 12);
+				final MockIndividu lui2 = addIndividu(noIndividuLui2, dateNaissanceLui2, "Nau", "Jeu", false);
+				addAdresse(lui2, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissanceLui2, null);
+				addNationalite(lui2, MockPays.Suisse, dateNaissanceLui2, null);
 
-				marieIndividus(lui, elle, dateMariage);
+				marieIndividus(lui, lui2, datePartenariat);
 			}
 		});
 
-		// mise en place fiscale avec mariage et divorce
+		// mise en place fiscale avec enregistrement puis dissolution du partenariat
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(lui, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, datePartenariat.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				addForPrincipal(lui, dateDissolutionPartenariat, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForPrincipal(elle, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
+				final PersonnePhysique lui2 = addHabitant(noIndividuLui2);
+				addForPrincipal(lui2, date(2001, 4, 12), MotifFor.INDETERMINE, datePartenariat.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				addForPrincipal(lui2, dateDissolutionPartenariat, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateDivorce.getOneDayBefore());
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, lui2, datePartenariat, dateDissolutionPartenariat.getOneDayBefore());
 				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(mc, datePartenariat, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDissolutionPartenariat.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 				return mc.getNumero();
 			}
 		});
 
-		// création de l'événement civil d'annulation de divorce
+		// création de l'événement civil d'annulation de dissolution de partenariat
 		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3478256623526867L);
-				evt.setType(TypeEvenementCivilEch.DIVORCE);
+				evt.setId(8256623526867L);
+				evt.setType(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT);
 				evt.setAction(ActionEvenementCivilEch.ANNULATION);
-				evt.setDateEvenement(dateDivorce);
+				evt.setDateEvenement(dateDissolutionPartenariat);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setNumeroIndividu(noIndividuLui);
 				return hibernateTemplate.merge(evt).getId();
