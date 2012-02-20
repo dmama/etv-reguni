@@ -24,7 +24,7 @@ COUNT=$(find ~/logs/PR/unireg-web/ -name "unireg-web*" -daystart -mtime -$DIFF_D
 
 BASE_MSG="Depuis le $DEPUIS (aujourd'hui non-compris), Unireg a reçu, sur l'environnement $ENVIRONMENT, la somme de $COUNT quittancements de déclarations originaires d'ADDI"
 if [ -z "$@" ]; then
-	echo "BASE_MSG"
+	echo "$BASE_MSG"
 else
 	MSG=$(
 		echo "Ceci est un message automatique."
