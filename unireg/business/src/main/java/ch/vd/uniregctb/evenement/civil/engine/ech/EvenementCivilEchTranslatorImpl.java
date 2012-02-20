@@ -29,6 +29,7 @@ import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.Co
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.identificateur.DonneesUpiTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNomTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionAutresNomsTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
@@ -248,9 +249,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_IDENTIFICATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionIdentificationTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_IDENTIFICATION, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_IDENTIFICATION, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAutresNomsTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.ANNULATION), new CorrectionAutresNomsTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_AUTRES_NOMS, ActionEvenementCivilEch.CORRECTION), new CorrectionAutresNomsTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_NATIONALITE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_NATIONALITE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_NATIONALITE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);

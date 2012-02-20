@@ -17,9 +17,9 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-abstract public class AbstractCorrectionEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
+public abstract class AbstractCorrectionEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
-	public void test() throws Exception {
+	protected void doTest(final TypeEvenementCivilEch type, final ActionEvenementCivilEch action) throws Exception {
 
 		final long noIndividu = 126673246L;
 		final RegDate dateEvt = date(2011, 10, 31);
@@ -48,11 +48,11 @@ abstract public class AbstractCorrectionEchProcessorTest extends AbstractEveneme
 			public Long doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = new EvenementCivilEch();
 				evt.setId(11824L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setType(type);
+				evt.setAction(action);
 				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setNumeroIndividu(noIndividu);
-				evt.setType(getTypeEvenementCorrection());
 				return hibernateTemplate.merge(evt).getId();
 			}
 		});
@@ -71,6 +71,4 @@ abstract public class AbstractCorrectionEchProcessorTest extends AbstractEveneme
 			}
 		});
 	}
-
-	abstract protected TypeEvenementCivilEch getTypeEvenementCorrection();
 }

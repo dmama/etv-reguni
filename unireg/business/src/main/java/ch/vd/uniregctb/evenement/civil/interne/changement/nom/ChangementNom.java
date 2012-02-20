@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.nom;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,8 +66,8 @@ public class ChangementNom extends ChangementBase {
 			// nom / prénom
 			final String nom = individu.getNom();
 			final String prenom = individu.getPrenom();
-			pp.setNom(nom != null ? nom.trim() : "");
-			pp.setPrenom(prenom != null ? prenom.trim() : "");
+			pp.setNom(StringUtils.trimToEmpty(nom));
+			pp.setPrenom(StringUtils.trimToEmpty(prenom));
 		}
 
 		return super.handle(warnings);
