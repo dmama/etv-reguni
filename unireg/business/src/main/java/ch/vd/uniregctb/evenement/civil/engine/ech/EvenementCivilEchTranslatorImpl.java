@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.annulation.deces.AnnulationDecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
@@ -155,7 +156,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DecesTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.ANNULATION), new AnnulationDecesTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ABSENCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DecesTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ABSENCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
