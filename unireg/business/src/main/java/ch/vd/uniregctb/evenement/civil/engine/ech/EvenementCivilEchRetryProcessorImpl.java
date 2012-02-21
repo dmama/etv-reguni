@@ -83,10 +83,11 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 				notificationQueue.postAll(individus);
 				
 				// et on attend la fin
+				final String msg = "Relance des événements civils e-CH en erreur";
+				final int initialSize = individus.size();
 				while (remaining.size() > 0 && !status.interrupted() && !processorStopping.booleanValue()) {
-					final int initialSize = individus.size();
-					final int progress = (initialSize - remaining.size()) * 100 / initialSize;
-					status.setMessage("Relance des événements civils e-CH en erreur", progress);
+					final int progress = getProgress(initialSize, remaining.size());
+					status.setMessage(msg, progress);
 					
 					try {
 						Thread.sleep(500L);
@@ -96,10 +97,17 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 						break;
 					}
 				}
+
+				// histoire que ce soit le message de fin qui reste après la fin
+				status.setMessage(msg, getProgress(initialSize, remaining.size()));
 			}
 			finally {
 				processor.unregisterListener(handle);
 			}
 		}
+	}
+	
+	private static int getProgress(int initialSize, int remainingSize) {
+		return (initialSize - remainingSize) * 100 / initialSize;
 	}
 }
