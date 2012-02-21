@@ -313,7 +313,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		public final TypeEvenementCivil type;
 
 		public MsgTypeKey(String msg, TypeEvenementCivil type) {
-			this.msg = msg;
+			this.msg = msg.replaceAll("[0-9]+(\\.[0-9]+)*", "?");       // pour enlever toutes les différences sur des dates ou des numéros d'individu, de tiers...
 			this.type = type;
 		}
 
