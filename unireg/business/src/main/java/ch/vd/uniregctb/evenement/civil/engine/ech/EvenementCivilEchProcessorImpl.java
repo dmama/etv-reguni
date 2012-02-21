@@ -311,6 +311,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				evt.getErreurs().clear();
 				evt.getErreurs().add(erreur);
 				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setDateTraitement(DateHelper.getCurrentDate());
 				Audit.error(info.idEvenement, "Statut de l'événement passé à 'EN_ERREUR'");
 				return null;
 			}
