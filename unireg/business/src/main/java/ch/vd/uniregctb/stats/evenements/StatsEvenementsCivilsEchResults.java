@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
@@ -55,7 +56,7 @@ public class StatsEvenementsCivilsEchResults {
 		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), type.name(), action.name(), RegDateHelper.dateToDashString(dateEvenement),
-								  dateTraitement.toString(), etat.name(), noIndividu != null ? Long.toString(noIndividu) : null, message };
+								  DateHelper.dateTimeToDisplayString(dateTraitement), etat.name(), noIndividu != null ? Long.toString(noIndividu) : null, message };
 		}
 	}
 	
