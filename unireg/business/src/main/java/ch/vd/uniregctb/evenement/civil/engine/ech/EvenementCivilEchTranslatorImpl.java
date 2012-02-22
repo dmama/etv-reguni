@@ -11,10 +11,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee.AnnulationArriveeTranslationStrategy;
@@ -24,6 +24,8 @@ import ch.vd.uniregctb.evenement.civil.interne.annulation.mariage.AnnulationMari
 import ch.vd.uniregctb.evenement.civil.interne.annulation.reconciliation.AnnulationReconciliationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.separation.AnnulationSeparationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.veuvage.AnnulationVeuvageTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.annulationpermis.AnnulationPermisTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.annulationpermis.SuppressionNationaliteTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
@@ -47,6 +49,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -113,12 +116,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	 */
 	private static final EvenementCivilEchTranslationStrategy NOT_IMPLEMENTED = new EvenementCivilEchTranslationStrategy() {
 		@Override
-		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
 			throw new EvenementCivilException("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.");
 		}
 
 		@Override
-		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) {
 			return false;
 		}
 	};
@@ -128,7 +131,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	 */
 	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new EvenementCivilEchTranslationStrategy() {
 		@Override
-		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
 			return new EvenementCivilInterne(event, context, options) {
 				@NotNull
 				@Override
@@ -153,7 +156,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		}
 
 		@Override
-		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) {
 			return true;
 		}
 	};
@@ -187,7 +190,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionNationaliteTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.ANNULATION), new SuppressionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.OBENTION_DROIT_CITE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.OBENTION_DROIT_CITE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
@@ -199,10 +202,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECHEANCE_NATIONALITE_SUISSE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECHEANCE_NATIONALITE_SUISSE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionPermisTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.ANNULATION), new AnnulationPermisTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionNationaliteTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.ANNULATION), new SuppressionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ArriveeTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION), new AnnulationArriveeTranslationStrategy());
@@ -299,8 +302,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
+	private RcPersClientHelper rcPersClientHelper;
 
-	private EvenementCivilContext context;
+	private EvenementCivilEchContext context;
 	
 	@Override
 	public EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException {
@@ -339,7 +343,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		context = new EvenementCivilEchContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService,
+		                                       tiersDAO, adresseService, evenementFiscalService, rcPersClientHelper);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -385,5 +390,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setRcPersClientHelper(RcPersClientHelper rcPersClientHelper) {
+		this.rcPersClientHelper = rcPersClientHelper;
 	}
 }

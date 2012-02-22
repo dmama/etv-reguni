@@ -13,6 +13,16 @@ public class MockPermis implements Permis {
 	private RegDate dateAnnulation;
 	private TypePermis typePermis;
 
+	public MockPermis() {
+	}
+
+	public MockPermis(RegDate dateDebutValidite, RegDate dateFinValidite, RegDate dateAnnulation, TypePermis typePermis) {
+		this.dateDebutValidite = dateDebutValidite;
+		this.dateFinValidite = dateFinValidite;
+		this.dateAnnulation = dateAnnulation;
+		this.typePermis = typePermis;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);

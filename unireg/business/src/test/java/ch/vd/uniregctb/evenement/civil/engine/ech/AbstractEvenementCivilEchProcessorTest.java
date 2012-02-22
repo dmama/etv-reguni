@@ -4,18 +4,22 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.interfaces.service.rcpers.ProxyRcPersClientHelper;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
 	private EvenementCivilNotificationQueueImpl queue;
 	protected EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
+	protected ProxyRcPersClientHelper rcPersClientHelper;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
+		rcPersClientHelper = getBean(ProxyRcPersClientHelper.class, "rcPersClientHelper");
+
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
 		queue = new EvenementCivilNotificationQueueImpl();
@@ -31,6 +35,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	@Override
 	public void onTearDown() throws Exception {
 		processor.stop();
+		rcPersClientHelper.tearDown();
 		super.onTearDown();
 	}
 	

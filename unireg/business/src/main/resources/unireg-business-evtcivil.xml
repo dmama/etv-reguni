@@ -35,6 +35,12 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="rcPersClientHelper" ref="rcPersClientHelper" />
+	</bean>
+
+	<bean id="rcPersClientHelper" class="ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelperImpl">
+		<property name="rcPersClient" ref="rcPersClient"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>

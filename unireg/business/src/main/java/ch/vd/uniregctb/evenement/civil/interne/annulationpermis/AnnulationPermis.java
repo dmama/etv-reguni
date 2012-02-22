@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -48,6 +49,11 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 		}
 	}
 
+	protected AnnulationPermis(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, TypePermis typePermis) throws EvenementCivilException {
+		super(evenement, context, options);
+		this.typePermis = typePermis;
+	}
+
 	/**
 	 * Pour le testing uniquement.
 	 */
@@ -75,13 +81,13 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		if (isAnnulationPermisC(this)) {
+		if (isAnnulationPermisC()) {
 			return super.handle(warnings);
 		}
 		return HandleStatus.TRAITE;
 	}
 
-	private boolean isAnnulationPermisC(AnnulationPermis annulationPermis) {
-		return annulationPermis.getTypePermis() == TypePermis.ETABLISSEMENT;
+	private boolean isAnnulationPermisC() {
+		return getTypePermis() == TypePermis.ETABLISSEMENT;
 	}
 }

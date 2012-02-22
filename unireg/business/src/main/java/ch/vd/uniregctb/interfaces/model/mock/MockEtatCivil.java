@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -11,6 +13,15 @@ public class MockEtatCivil implements EtatCivil {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private TypeEtatCivil typeEtatCivil;
+
+	public MockEtatCivil() {
+	}
+
+	public MockEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil typeEtatCivil) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.typeEtatCivil = typeEtatCivil;
+	}
 
 	@Override
 	public RegDate getDateDebut() {
