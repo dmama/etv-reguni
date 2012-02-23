@@ -9,6 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.worker.BatchWorker;
 import ch.vd.uniregctb.worker.DeadThreadException;
 import ch.vd.uniregctb.worker.WorkingQueue;
@@ -28,9 +29,9 @@ public class MassTiersIndexer {
 	private long totalExecTime;
 
 	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode,
-	                        Dialect dialect) {
+	                        Dialect dialect, boolean prefetchIndividus, ServiceCivilService serviceCivilService) {
 
-		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass"));
+		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass", prefetchIndividus, serviceCivilService));
 	}
 
 	// pour le testing uniquement

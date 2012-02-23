@@ -231,7 +231,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
 			@Override
-			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchIndividus) {
 				return new MassTiersIndexer(nbThreads, queueSizeByThread, new BatchWorker<Long>() {
 					@Override
 					public void process(List<Long> data) throws Exception {

@@ -596,33 +596,43 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 					"and am.objetId in (:ids)";
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
 
 		if (tiersIds.size() > 1000) {
 			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");
 		}
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInHibernate(Session session) throws HibernateException {
+		return getHibernateTemplate().executeWithNativeSession(new GetNumerosIndividusCallback(tiersIds, includesComposantsMenage));
+	}
 
-				final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+	@SuppressWarnings("unchecked")
+	public static class GetNumerosIndividusCallback implements HibernateCallback<Set<Long>> {
+		private final Collection<Long> tiersIds;
+		private final boolean includesComposantsMenage;
 
-				if (includesComposantsMenage) {
-					// on récupère les numéros d'individu des composants des ménages
-					final Query queryComposants = session.createQuery(QUERY_GET_NOS_IND_COMPOSANTS);
-					queryComposants.setParameterList("ids", tiersIds);
-					numeros.addAll(queryComposants.list());
-				}
+		public GetNumerosIndividusCallback(Collection<Long> tiersIds, boolean includesComposantsMenage) {
+			this.tiersIds = tiersIds;
+			this.includesComposantsMenage = includesComposantsMenage;
+		}
 
-				final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
-				queryObject.setParameterList("ids", tiersIds);
-				numeros.addAll(queryObject.list());
+		@Override
+		public Set<Long> doInHibernate(Session session) throws HibernateException {
 
-				return numeros;
+			final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+
+			if (includesComposantsMenage) {
+				// on récupère les numéros d'individu des composants des ménages
+				final Query queryComposants = session.createQuery(QUERY_GET_NOS_IND_COMPOSANTS);
+				queryComposants.setParameterList("ids", tiersIds);
+				numeros.addAll(queryComposants.list());
 			}
-		});
+
+			final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
+			queryObject.setParameterList("ids", tiersIds);
+			numeros.addAll(queryObject.list());
+
+			return numeros;
+		}
 	}
 
 	@Override

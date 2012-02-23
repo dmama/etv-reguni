@@ -67,7 +67,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 
 		loadDatabase(DBUNIT_FILENAME);
 
-		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL, dialect);
+		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL, dialect, false, null);
 	}
 
 	@Override

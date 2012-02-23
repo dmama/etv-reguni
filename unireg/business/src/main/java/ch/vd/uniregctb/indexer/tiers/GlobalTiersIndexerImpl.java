@@ -35,6 +35,7 @@ import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
+import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -59,17 +60,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingBean, DisposableBean {
 
-    /**
-     * Le nombre d'individus préchargés et insérés dans le cache du service civil.
-     * <p/>
-     * Attention: il est nécessaire que le nombre d'éléments cachés par le cache du service civil (voir ehcache.xml) soit au minimum égal à
-     * 4 * CIVIL_BATCH_SIZE (x2 parce que chaque individu génère une entrée pour lui-même et une entrée pour ses adresses; et x2 parce que
-     * si la queue est pleine il faut prévoir assez de place dans le préchargement est très rapide et à déjà chargé toutes les données
-     * suivantes).
-     */
-    private static final int CIVIL_BATCH_SIZE = 500;
-
-    private static final int NANO_TO_MILLI = 1000000;
+	private static final int NANO_TO_MILLI = 1000000;
 
     private static final Logger LOGGER = Logger.getLogger(GlobalTiersIndexerImpl.class);
 
@@ -309,8 +300,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		final TimeLog timeLog = new TimeLog();
 		timeLog.start();
 
-		final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
-		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread);
+		final int queueSizeByThread = TiersIndexerWorker.BATCH_SIZE;
+		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread, prefetchIndividus);
 
 		final int size = list.size();
 
@@ -323,19 +314,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		// sera mis à "true" si on détecte que tous les threads sont morts prématurément
 		boolean deadThreads = false;
 
-		final BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, CIVIL_BATCH_SIZE);
+		final BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, 100);
 		while (iter.hasNext() && !statusManager.interrupted() && !deadThreads) {
 
 			final Set<Long> ids = new HashSet<Long>(iter.next());
 
 			statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
-
-			if (prefetchIndividus && serviceCivilService.isWarmable()) {
-				// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
-				// Sans préchargement, chaque individu est obtenu séparemment à travers host-interface (= au minimum
-				// une requête par individu); et avec le préchargement on peut charger 500 individus d'un coup.
-				warmIndividuCache(ids);
-			}
 
 			// Dispatching des tiers à indexer
 			for (Long id : ids) {
@@ -390,13 +374,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	/**
 	 * Surchargeable dans les tests pour provoquer des situations spéciales
-	 * @param nbThreads le nombre de threads pour l'indexation en parallèle
-	 * @param mode le mode d'indexation
+	 *
+	 * @param nbThreads         le nombre de threads pour l'indexation en parallèle
+	 * @param mode              le mode d'indexation
 	 * @param queueSizeByThread la taille maximale de la queue par thread
+	 * @param prefetchIndividus <b>vrai</b> si le cache des individus doit être préchauffé par lot; <b>faux</b> autrement.
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
-		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect);
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchIndividus) {
+		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, prefetchIndividus, serviceCivilService);
 	}
 
 	/**
@@ -405,32 +391,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 */
 	protected int getOfferTimeoutInSeconds() {
 		return 10;
-	}
-
-	@SuppressWarnings({"unchecked"})
-	private void warmIndividuCache(final Set<Long> ids) {
-		long start = System.nanoTime();
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		final Set<Long> numerosIndividus = template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return tiersDAO.getNumerosIndividu(ids, true);
-			}
-		});
-
-		if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
-			try {
-				serviceCivilService.getIndividus(numerosIndividus, null, AttributeIndividu.ADRESSES); // chauffe le cache
-
-				long nanosecondes = System.nanoTime() - start;
-				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
-			}
-			catch (Exception e) {
-				LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue avec host-interface pour ce lot.", e);
-			}
-		}
 	}
 
 	private static class DeltaIds {
