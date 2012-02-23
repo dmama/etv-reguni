@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -9,14 +7,11 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.interfaces.service.rcpers.MockRcPersClientHelper;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -45,28 +40,6 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
 				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
-			}
-		});
-		
-		rcPersClientHelper.setup(new MockRcPersClientHelper() {
-			@Override
-			public void init() {
-				// annonce initiale
-				{
-					final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-					final List<Nationalite> nationalites = ind.getNationalites();
-					nationalites.add(new MockNationalite(dateDebutNationalite, null, MockPays.Albanie, 1));
-					nationalites.add(new MockNationalite(dateDebutNationaliteSuisse, null, MockPays.Suisse, 2));
-					addIndividuFromEvent(ind, noEventAnnonce);
-				}
-
-				// après annulation
-				{
-					final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-					final List<Nationalite> nationalites = ind.getNationalites();
-					nationalites.add(new MockNationalite(dateDebutNationalite, null, MockPays.Albanie, 1));
-					addIndividuFromEvent(ind, noEventAnnulation);
-				}
 			}
 		});
 		
@@ -136,28 +109,6 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
 				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
-			}
-		});
-
-		rcPersClientHelper.setup(new MockRcPersClientHelper() {
-			@Override
-			public void init() {
-				// annonce initiale
-				{
-					final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-					final List<Nationalite> nationalites = ind.getNationalites();
-					nationalites.add(new MockNationalite(dateDebutNationalite, null, MockPays.Albanie, 1));
-					nationalites.add(new MockNationalite(dateDebutNationaliteNonSuisse, null, MockPays.Turquie, 2));
-					addIndividuFromEvent(ind, noEventAnnonce);
-				}
-
-				// après annulation
-				{
-					final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-					final List<Nationalite> nationalites = ind.getNationalites();
-					nationalites.add(new MockNationalite(dateDebutNationalite, null, MockPays.Albanie, 1));
-					addIndividuFromEvent(ind, noEventAnnulation);
-				}
 			}
 		});
 
