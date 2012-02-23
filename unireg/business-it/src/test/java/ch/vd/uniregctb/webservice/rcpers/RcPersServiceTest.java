@@ -23,7 +23,7 @@ public class RcPersServiceTest {
 	public void testGetPeople() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final ListOfPersons list = client.getPersons(Arrays.asList(333528L), null, false);
+		final ListOfPersons list = client.getPersons(Arrays.asList(476228L), null, false);
 		assertNotNull(list);
 		assertEquals(1, list.getNumberOfResults().intValue());
 
@@ -31,12 +31,12 @@ public class RcPersServiceTest {
 		assertNotNull(person);
 		// vue de la confédération
 		assertNotNull(person.getUpiPerson());
-		assertEquals("Cuendet", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getOfficialName());
-		assertEquals("Jean-Eric", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
+		assertEquals("Maia", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getOfficialName());
+		assertEquals("António", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
 
 		// vue des communes vaudoises
-		assertEquals("Cuendet", person.getIdentity().getPersonIdentification().getOfficialName());
-		assertEquals("Jean-Eric", person.getIdentity().getCallName());
+		assertEquals("MAIA", person.getIdentity().getPersonIdentification().getOfficialName());
+		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class RcPersServiceTest {
 
 		final RcPersClientImpl client = buildClient();
 
-		final ListOfRelations list = client.getRelations(Arrays.asList(333528L), null, true);
+		final ListOfRelations list = client.getRelations(Arrays.asList(476228L), null, true);
 		assertNotNull(list);
 
 		final List<Relations> allRelations = list.getListOfResults().getRelation();
@@ -53,29 +53,23 @@ public class RcPersServiceTest {
 
 		final Relations relations = allRelations.get(0);
 		assertNotNull(relations);
-		assertEquals("333528", relations.getPersonId().getPersonId()); // c'est bien les relations de la personne demandée
+		assertEquals("476228", relations.getPersonId().getPersonId()); // c'est bien les relations de la personne demandée
 
 		final List<Relationship> historique = relations.getRelationshipHistory();
 		assertNotNull(historique);
-		assertEquals(3, historique.size());
+		assertEquals(2, historique.size());
 
 		// le femme
 		final Relationship histo0 = historique.get(0);
 		assertNotNull(histo0);
 		assertEquals("1", histo0.getTypeOfRelationship());
-		assertEquals("333529", histo0.getLocalPersonId().getPersonId());
+		assertEquals("476229", histo0.getLocalPersonId().getPersonId());
 
-		// le fils
+		// la fille
 		final Relationship histo1 = historique.get(1);
 		assertNotNull(histo1);
 		assertEquals("102", histo1.getTypeOfRelationship());
-		assertEquals("333527", histo1.getLocalPersonId().getPersonId());
-
-		// la fille
-		final Relationship histo2 = historique.get(2);
-		assertNotNull(histo2);
-		assertEquals("101", histo2.getTypeOfRelationship());
-		assertEquals("946039", histo2.getLocalPersonId().getPersonId());
+		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
 	}
 
 	@Test

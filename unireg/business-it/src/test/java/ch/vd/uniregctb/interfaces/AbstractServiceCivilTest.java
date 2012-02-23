@@ -3,7 +3,7 @@ package ch.vd.uniregctb.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,6 +25,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public abstract class AbstractServiceCivilTest extends BusinessItTest {
@@ -45,31 +46,31 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Test
 	public void testGetIndividuComplet() throws Exception {
 
-		final Individu jean =
-				service.getIndividu(333528, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITE, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
+		final Individu individu =
+				service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITE, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
 						AttributeIndividu.PARENTS, AttributeIndividu.PERMIS, AttributeIndividu.TUTELLE);
-		assertNotNull(jean);
-		assertEquals("Jean-Eric", jean.getPrenom());
-		assertEquals("Cuendet", jean.getNom());
-		assertEquals("Cuendet", jean.getNomNaissance());
-		assertEquals(date(1974, 3, 22), jean.getDateNaissance());
-		assertNull(jean.getDateDeces());
-		assertEquals("27474184116", jean.getNoAVS11());
-		assertEquals("7565492819118", jean.getNouveauNoAVS());
-		assertEquals(333528, jean.getNoTechnique());
-		assertNull(jean.getNumeroRCE());
-		assertNull(jean.getPermis());
-		assertNull(jean.getTutelle());
+		assertNotNull(individu);
+		assertEquals("Jean-Marc", individu.getPrenom());
+		assertEquals("Delacrétaz", individu.getNom());
+		assertEquals("Delacrétaz", individu.getNomNaissance());
+		assertEquals(date(1982, 2, 18), individu.getDateNaissance());
+		assertNull(individu.getDateDeces());
+		assertEquals("28082149114", individu.getNoAVS11());
+		assertEquals("7563110255669", individu.getNouveauNoAVS());
+		assertEquals(692185, individu.getNoTechnique());
+		assertNull(individu.getNumeroRCE());
+		assertNull(individu.getPermis());
+		assertNull(individu.getTutelle());
 
 		// On vérifie les états-civils
-		final EtatCivilList etatsCivils = jean.getEtatsCivils();
+		final EtatCivilList etatsCivils = individu.getEtatsCivils();
 		assertNotNull(etatsCivils);
 		assertEquals(2, etatsCivils.size());
-		assertEtatCivil(date(1974, 3, 22), date(1997, 10, 9), TypeEtatCivil.CELIBATAIRE, etatsCivils.get(0));
-		assertEtatCivil(date(1997, 10, 10), null, TypeEtatCivil.MARIE, etatsCivils.get(1));
+		assertEtatCivil(date(1982, 2, 18), date(2009, 9, 11), TypeEtatCivil.CELIBATAIRE, etatsCivils.get(0));
+		assertEtatCivil(date(2009, 9, 12), null, TypeEtatCivil.MARIE, etatsCivils.get(1));
 
 		// On vérifie les adresses
-		final Collection<Adresse> adresses = jean.getAdresses();
+		final Collection<Adresse> adresses = individu.getAdresses();
 		assertNotNull(adresses);
 		assertEquals(4, adresses.size());
 
@@ -94,8 +95,11 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Adresse principale0 = principales.get(0);
 		assertNotNull(principale0);
-		assertAdresseCivile(date(2004, 8, 15), date(2011, 1, 31), "Route de Saint-Prex", "1168", "Villars-sous-Yens",
-				principale0); // on ne teste pas l'egid car l'épuration de données de RCPers retourne une autre valeur (pas forcément plus fausse)
+		assertEquals(date(2004, 9, 1), principale0.getDateDebut());
+		assertEquals(date(2010, 1, 14), principale0.getDateFin());
+		assertTrue("Av. d'Ouchy 24C".equals(principale0.getRue()) || "Avenue d'Ouchy".equals(principale0.getRue()));
+		assertEquals("1006", principale0.getNumeroPostal());
+		assertEquals("Lausanne", principale0.getLocalite());
 		if (principale0.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
 			assertLocalisation(LocalisationType.CANTON_VD, 5633, principale0.getLocalisationPrecedente());
 		}
@@ -105,7 +109,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Adresse principale1 = principales.get(1);
 		assertNotNull(principale1);
-		assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis", "1315", "La Sarraz", 280057519, 1, principale1);
+		assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, null, principale1);
 		if (principale1.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
 			assertLocalisation(LocalisationType.CANTON_VD, 5652, principale1.getLocalisationPrecedente());
 		}
@@ -117,43 +121,50 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		// TODO (rcpers) en attente du déploiement de la nouvelle version du XSD en intégration : assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis 1", "1315", "La Sarraz", null, null, courriers.get(1));
 
 		// On vérifie les parents
-		final List<RelationVersIndividu> parents = jean.getParents();
+		final List<RelationVersIndividu> parents = individu.getParents();
 		assertEmpty(parents); // cette information n'existe pas dans le registre à l'heure actuelle (et c'est le cas pour beaucoup d'individus, sauf les jeunes générations)
 
 		// On vérifie les divers et variés conjoints (hem hem...)
-		final List<RelationVersIndividu> conjoints = jean.getConjoints();
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
 		assertNotNull(conjoints);
 		assertEquals(1, conjoints.size());
 
 		final RelationVersIndividu conjoint0 = conjoints.get(0);
 		assertNotNull(conjoint0);
-		assertEquals(333529, conjoint0.getNumeroAutreIndividu());
+		assertEquals(590369, conjoint0.getNumeroAutreIndividu());
 
 		// On vérifie les enfants
-		final Collection<RelationVersIndividu> enfants = jean.getEnfants();
+		final Collection<RelationVersIndividu> enfants = individu.getEnfants();
 		assertNotNull(enfants);
-		assertEquals(2, enfants.size());
+		assertEquals(1, enfants.size());
 
-		final Iterator<RelationVersIndividu> enfantIter = enfants.iterator();
-		final RelationVersIndividu enfant0 = enfantIter.next();
+		final RelationVersIndividu enfant0 = enfants.iterator().next();
 		assertNotNull(enfant0);
-		assertEquals(333527, enfant0.getNumeroAutreIndividu());
-
-		final RelationVersIndividu enfant1 = enfantIter.next();
-		assertNotNull(enfant1);
-		assertEquals(946039, enfant1.getNumeroAutreIndividu());
+		assertEquals(1031455, enfant0.getNumeroAutreIndividu());
 
 		// On vérifie les origines
-		final Collection<Origine> origines = jean.getOrigines();
+		final Collection<Origine> origines = individu.getOrigines();
 		assertNotNull(origines);
-		assertEquals(1, origines.size());
+		assertEquals(2, origines.size());
 
-		final Origine origine = origines.iterator().next();
-		assertNotNull(origine);
-		assertEquals("Sainte-Croix", origine.getNomLieu());
+		final List<Origine> originesList = new ArrayList<Origine>(origines);
+		Collections.sort(originesList, new Comparator<Origine>() {
+			@Override
+			public int compare(Origine o1, Origine o2) {
+				return o1.getNomLieu().compareTo(o2.getNomLieu());
+			}
+		});
+
+		final Origine origine0 = originesList.get(0);
+		assertNotNull(origine0);
+		assertEquals("La Praz", origine0.getNomLieu());
+
+		final Origine origine1 = originesList.get(1);
+		assertNotNull(origine1);
+		assertEquals("Yvorne", origine1.getNomLieu());
 
 		// On vérifie les nationalités
-		final List<Nationalite> nationalites = jean.getNationalites();
+		final List<Nationalite> nationalites = individu.getNationalites();
 		assertNotNull(nationalites);
 		assertEquals(1, nationalites.size());
 
@@ -167,13 +178,13 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Test
 	public void testGetConjoint() throws Exception {
 
-		Individu jean = service.getIndividu(333528, date(2006, 12, 31));
-		assertNotNull(jean);
+		Individu individu = service.getIndividu(692185, null);
+		assertNotNull(individu);
 
-		Individu sara = service.getConjoint(jean.getNoTechnique(), date(2007, 1, 1));
-		assertNotNull(sara);
-
-		assertEquals("Sara", sara.getPrenom());
+		Individu conjoint = service.getConjoint(individu.getNoTechnique(), null);
+		assertNotNull(conjoint);
+		assertEquals(590369, conjoint.getNoTechnique());
+		assertEquals("Théodora", conjoint.getPrenom());
 	}
 
 	@Test
