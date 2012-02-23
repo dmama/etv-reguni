@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.evd0001.v3.ResidencePermit;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -22,6 +23,7 @@ public class PermisRCPers implements Permis, Serializable {
 	public PermisRCPers(ResidencePermit permit) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(permit.getResidencePermitValidFrom());
 		this.dateFin = XmlUtils.xmlcal2regdate(permit.getResidencePermitTill());
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.dateAnnulation = null; // les permis annulés ne sont pas exposés par RCPers
 		this.typePermis = TypePermis.get(permit.getResidencePermit());
 	}

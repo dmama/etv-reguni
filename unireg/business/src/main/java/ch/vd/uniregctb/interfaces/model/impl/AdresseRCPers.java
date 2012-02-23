@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.evd0001.v3.DwellingAddress;
 import ch.vd.evd0001.v3.HistoryContact;
 import ch.vd.evd0001.v3.Residence;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -70,6 +71,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		this.dateDebut = XmlUtils.xmlcal2regdate(contact.getContactValidFrom());
 		this.dateFin = XmlUtils.xmlcal2regdate(contact.getContactValidTill());
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();
@@ -95,6 +97,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		this.dateDebut = XmlUtils.xmlcal2regdate(dwellingAddress.getMovingDate() == null ? residence.getArrivalDate() : dwellingAddress.getMovingDate()); // voir SIREF-1617
 		this.dateFin = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();

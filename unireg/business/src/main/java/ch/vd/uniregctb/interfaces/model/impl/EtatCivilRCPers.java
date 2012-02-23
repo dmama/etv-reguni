@@ -5,6 +5,7 @@ import java.io.Serializable;
 import ch.ech.ech0011.v5.MaritalData;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -24,6 +25,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private EtatCivilRCPers(RegDate dateDebut, TypeEtatCivil typeEtatCivil) {
 		this.dateDebut = dateDebut;
 		this.dateFin = null;
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.typeEtatCivil = typeEtatCivil;
 	}
 
