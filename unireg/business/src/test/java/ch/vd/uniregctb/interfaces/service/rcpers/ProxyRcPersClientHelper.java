@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.service.rcpers;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.model.Individu;
 
 public class ProxyRcPersClientHelper implements RcPersClientHelper {
 	
@@ -20,7 +19,7 @@ public class ProxyRcPersClientHelper implements RcPersClientHelper {
 	}
 
 	@Override
-	public Individu getIndividuFromEvent(long eventId) {
+	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		assertTargetNotNull();
 		return target.getIndividuFromEvent(eventId);
 	}

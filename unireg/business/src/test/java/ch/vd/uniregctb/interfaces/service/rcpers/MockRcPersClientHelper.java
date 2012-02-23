@@ -11,16 +11,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public abstract class MockRcPersClientHelper implements RcPersClientHelper {
 	
-	private final Map<Long, MockIndividu> map = new HashMap<Long, MockIndividu>();
+	private final Map<Long, IndividuApresEvenement> map = new HashMap<Long, IndividuApresEvenement>();
 
 	protected MockRcPersClientHelper() {
 		init();
@@ -29,14 +30,18 @@ public abstract class MockRcPersClientHelper implements RcPersClientHelper {
 	public abstract void init();
 
 	@Override
-	public Individu getIndividuFromEvent(long eventId) {
+	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		return map.get(eventId);
 	}
 	
-	protected void addIndividuFromEvent(MockIndividu individu, long eventId) {
-		map.put(eventId, individu);
+	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type) {
+		addIndividuFromEvent(eventId, individu, dateEvenement, type, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
 	}
 	
+	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementRef) {
+		map.put(eventId, new IndividuApresEvenement(individu, dateEvenement, type, action, idEvenementRef));
+	}
+
 	protected MockIndividu createIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
 		final MockIndividu individu = new MockIndividu();
 		individu.setNoTechnique(numero);

@@ -9,6 +9,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.rcpers.IndividuApresEvenement;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :
@@ -16,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
  * - annulation de la nationalité
  *
  * @author Pavel BLANCO
- *
  */
 public abstract class AnnulationPermisOuNationaliteTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 
@@ -40,11 +40,11 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	 */
 	@NotNull
 	protected static Individu getIndividuFromEvent(long eventId, EvenementCivilEchContext context) throws EvenementCivilException {
-		final Individu individu = context.getRcPersClientHelper().getIndividuFromEvent(eventId);
-		if (individu == null) {
+		final IndividuApresEvenement data = context.getRcPersClientHelper().getIndividuFromEvent(eventId);
+		if (data == null) {
 			throw new EvenementCivilException(String.format("Pas de données fournies pour l'individu de l'événement %d", eventId));
 		}
-		return individu;
+		return data.getIndividu();
 	}
 	
 }

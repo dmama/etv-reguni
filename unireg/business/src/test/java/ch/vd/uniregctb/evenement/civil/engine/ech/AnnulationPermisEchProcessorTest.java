@@ -44,7 +44,7 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			public void init() {
 				final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ETABLISSEMENT));
-				addIndividuFromEvent(ind, noEventAnnonce);
+				addIndividuFromEvent(noEventAnnonce, ind, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
 			}
 		});
 		
@@ -118,7 +118,7 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			public void init() {
 				final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
-				addIndividuFromEvent(ind, noEventAnnonce);
+				addIndividuFromEvent(noEventAnnonce, ind, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
 			}
 		});
 		
