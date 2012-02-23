@@ -189,7 +189,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final List<CorporationEvent> events = array.getEvents();
 		assertNotNull(events);
-		assertEquals(16, events.size());
+		assertEquals(17, events.size());
 
 		final CorporationEvent ev0 = events.get(0);
 		assertNotNull(ev0);
@@ -286,6 +286,12 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertSameDay(newDate(2003, 11, 6), ev15.getDate());
 		assertEquals(Integer.valueOf(222), ev15.getPartyNumber());
 		assertEquals("002", ev15.getCode());
+
+		final CorporationEvent ev16 = events.get(16);
+		assertNotNull(ev16);
+		assertSameDay(newDate(2012, 1, 1), ev16.getDate());
+		assertEquals(Integer.valueOf(222), ev16.getPartyNumber());
+		assertEquals("031", ev16.getCode());
 	}
 
 	@Test
@@ -840,13 +846,19 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		// Dates de début et de fin de l'assujettissement LIC
 		final List<SimplifiedTaxLiability> periodesAssujettissementLIC = pm.getSimplifiedTaxLiabilityVD();
 		assertNotNull(periodesAssujettissementLIC);
-		assertEquals(1, periodesAssujettissementLIC.size());
+		assertEquals(2, periodesAssujettissementLIC.size());
 
-		final SimplifiedTaxLiability assujettissementLIC = periodesAssujettissementLIC.get(0);
-		assertNotNull(assujettissementLIC);
-		assertEquals(newDate(1992, 12, 31), assujettissementLIC.getDateFrom());
-		assertEquals(newDate(2003, 12, 31), assujettissementLIC.getDateTo());
-		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIC.getType());
+		final SimplifiedTaxLiability assujettissementLIC0 = periodesAssujettissementLIC.get(0);
+		assertNotNull(assujettissementLIC0);
+		assertEquals(newDate(1992, 12, 31), assujettissementLIC0.getDateFrom());
+		assertEquals(newDate(2003, 12, 31), assujettissementLIC0.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIC0.getType());
+
+		final SimplifiedTaxLiability assujettissementLIC1 = periodesAssujettissementLIC.get(1);
+		assertNotNull(assujettissementLIC1);
+		assertEquals(newDate(2012, 1, 1), assujettissementLIC1.getDateFrom());
+		assertNull(assujettissementLIC1.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIC1.getType());
 
 		// Dates de début et de fin de l'assujettissement LIFD
 		final List<SimplifiedTaxLiability> periodesAssujettissementLIFD = pm.getSimplifiedTaxLiabilityCH();
@@ -919,13 +931,19 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		final List<SimplifiedTaxLiability> lic = pm.getSimplifiedTaxLiabilityVD();
-		assertEquals(1, lic.size());
+		assertEquals(2, lic.size());
 
 		final SimplifiedTaxLiability lic0 = lic.get(0);
 		assertNotNull(lic0);
 		assertSameDay(newDate(1992, 12, 31), lic0.getDateFrom());
 		assertSameDay(newDate(2003, 12, 31), lic0.getDateTo());
 		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, lic0.getType());
+
+		final SimplifiedTaxLiability lic1 = lic.get(1);
+		assertNotNull(lic1);
+		assertSameDay(newDate(2012, 1, 1), lic1.getDateFrom());
+		assertNull(lic1.getDateTo());
+		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, lic1.getType());
 
 		final List<SimplifiedTaxLiability> lifd = pm.getSimplifiedTaxLiabilityCH();
 		assertEquals(1, lifd.size());
