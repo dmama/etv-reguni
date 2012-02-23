@@ -189,7 +189,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	}
 	
 	private static final class Sequencer {
-		final AtomicLong sequenceNumber = new AtomicLong(0L);
+		private final AtomicLong sequenceNumber = new AtomicLong(0L);
 		public long next() {
 			return sequenceNumber.getAndIncrement();
 		}
