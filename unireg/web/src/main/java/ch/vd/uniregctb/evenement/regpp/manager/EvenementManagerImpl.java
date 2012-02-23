@@ -13,7 +13,6 @@ import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -66,14 +65,17 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	private HostCivilService hostCivilService;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 
+	@SuppressWarnings("unused")
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
+	@SuppressWarnings("unused")
 	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
 		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
+	@SuppressWarnings("unused")
 	public void setHostCivilService(HostCivilService hostCivilService) {
 		this.hostCivilService = hostCivilService;
 	}
@@ -86,17 +88,13 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings("unused")
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
 	/**
-	 * Charge la structure EvenementView en fonction des informations de
-	 * l'événement
-	 *
-	 * @param id ID d'evenement
-	 * @return
-	 * @throws ServiceInfrastructureException
+	 * @inheritDoc
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -183,10 +181,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	}
 
 	/**
-	 * Retourne la localite ou le pays de l'adresse courrier active du tiers
-	 *
-	 * @return
-	 * @throws AdressesResolutionException
+	 * @inheritDoc
 	 */
 	private String getLocaliteOuPays(Tiers tiers) throws AdresseException {
 
@@ -209,11 +204,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 
 	/**
-	 * Alimente un objet TiersAssocieView
-	 * @param numero
-	 * @return
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
+	 * @inheritDoc
 	 */
 	private TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
@@ -239,9 +230,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 
 	/**
-	 * Traite un evenement civil designe par l'id
-	 *
-	 * @param id
+	 * @inheritDoc
 	 */
 	@Override
 	public void traiteEvenementCivil(Long id) {
@@ -250,9 +239,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 
 	/**
-	 * Force l'etat de l'evenement à TRAITE (en fait : FORCE)
-	 *
-	 * @param id
+	 * @inheritDoc
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -260,17 +247,13 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
 
 		// l'état "FORCE" n'est accessible qu'aux événements civils qui ne sont pas encore traités
-		if (!evenementCivilExterne.getEtat().isTraite() || evenementCivilExterne.getEtat().equals(EtatEvenementCivil.A_VERIFIER)) {
+		if (!evenementCivilExterne.getEtat().isTraite() || evenementCivilExterne.getEtat() == EtatEvenementCivil.A_VERIFIER) {
 			evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 		}
 	}
 
 	/**
-	 * Recherche des événements correspondant aux critères
-	 * @param bean
-	 * @param pagination
-	 * @return
-	 * @throws AdressesResolutionException
+	 * @inheritDoc
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -316,9 +299,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	}
 
 	/**
-	 * Cherche et compte les evenements correspondant aux criteres
-	 * @param criterion
-	 * @return
+	 * @inheritDoc
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -335,25 +316,15 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		this.tiersService = tiersService;
 	}
 
-	public AdresseService getAdresseService() {
-		return adresseService;
-	}
-
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
 
-	public ServiceCivilService getServiceCivilService() {
-		return serviceCivilService;
-	}
-
+	@SuppressWarnings("unused")
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	/**
-	 * @return the messageSource
-	 */
 	protected MessageSource getMessageSource() {
 		return messageSource;
 	}
@@ -363,10 +334,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		this.messageSource = messageSource;
 	}
 
-	public EvenementService getEvenementService() {
-		return evenementService;
-	}
-
+	@SuppressWarnings("unused")
 	public void setEvenementService(EvenementService evenementService) {
 		this.evenementService = evenementService;
 	}

@@ -26,8 +26,10 @@ public interface EvenementManager {
 	 * l'événement
 	 *
 	 * @param id ID d'evenement
-	 * @return
-	 * @throws AdressesResolutionException
+	 * @return la structure EvenementView correspondant à l'id
+	 *
+	 * @throws AdressesResolutionException ...
+	 * @throws ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException ...
 	 */
 	@Transactional(readOnly = true)
 	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException;
@@ -35,32 +37,33 @@ public interface EvenementManager {
 	/**
 	 * Traite un evenement civil designe par l'id
 	 *
-	 * @param id
+	 * @param id de l'evt à traiter
 	 */
 	public void traiteEvenementCivil(Long id);
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
-	 * @param id
+	 * @param id id de l'evt à forcer
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id);
 
 	/**
 	 * Recherche des événements correspondant aux critères
-	 * @param bean
-	 * @param pagination
-	 * @return
-	 * @throws AdressesResolutionException
+	 *
+	 * @param bean critères de recherche tel que saisie par l'utilisateur
+	 * @param pagination information sur la pagination pour la requete sous-jacente
+	 * @return une liste d'evenement pret à afficher
+	 * @throws AdressesResolutionException ...
 	 */
 	@Transactional(readOnly = true)
 	public List<EvenementCivilView> find(EvenementCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Cherche et compte les evenements correspondant aux criteres
-	 * @param criterion
-	 * @return
+	 * @param criterion les critères en question
+	 * @return le nombre d'évenements correspondant aux critères
 	 */
 	@Transactional(readOnly = true)
 	public int count(EvenementCivilRegPPCriteria criterion);
