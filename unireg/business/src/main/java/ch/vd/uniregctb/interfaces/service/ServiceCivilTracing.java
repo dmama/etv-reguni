@@ -136,7 +136,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Individu getConjoint(final Long noIndividuPrincipal, final RegDate date) {
+	public Individu getConjoint(final Long noIndividuPrincipal, @Nullable final RegDate date) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

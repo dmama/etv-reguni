@@ -129,7 +129,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	@Override
-	public final Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
+	public final Individu getConjoint(Long noIndividuPrincipal, @Nullable RegDate date) {
 
 		final Long noConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
 		if (noConjoint == null) {
