@@ -260,7 +260,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
 
 		// l'état "FORCE" n'est accessible qu'aux événements civils qui ne sont pas encore traités
-		if (!evenementCivilExterne.getEtat().isTraite()) {
+		if (!evenementCivilExterne.getEtat().isTraite() || evenementCivilExterne.getEtat().equals(EtatEvenementCivil.A_VERIFIER)) {
 			evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 		}
 	}
