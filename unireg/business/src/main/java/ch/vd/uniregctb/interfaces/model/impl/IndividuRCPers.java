@@ -280,7 +280,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			if (EST_FILLE.equals(r.getTypeOfRelationship()) || EST_FILS.equals(r.getTypeOfRelationship())) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
+				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
 				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
@@ -295,10 +295,13 @@ public class IndividuRCPers implements Individu, Serializable {
 		for (Relationship r : relationship) {
 			if (EST_MERE.equals(r.getTypeOfRelationship()) || EST_PERE.equals(r.getTypeOfRelationship())) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
-				// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
-				list.add(new RelationVersIndividuImpl(numeroInd, validFrom == null ? dateNaissance : validFrom, validTill));
+				RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+				if (validFrom == null) {
+					// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
+					validFrom = dateNaissance;
+				}
+				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;
@@ -313,11 +316,36 @@ public class IndividuRCPers implements Individu, Serializable {
 			if (EST_CONJOINT.equals(r.getTypeOfRelationship()) || EST_PARTENAIRE_ENREGISTRE.equals(r.getTypeOfRelationship())) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
+				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
 				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;
+	}
+
+	private static RegDate fixRelationEndDate(RegDate validFrom, RegDate validTill) {
+		if (validTill != null) {
+			// RcPers étend les relations un jour de plus que ce que faisait Host-Interfaces, on corrige le tir ici (voir SIREF-1588).
+			//
+			// Note: l'idée derrière cette extension est que, dans les faits, une fin de relation survient en cours de journée. Cela veut
+			// dire que la relation est factuellement encore valide le matin, mais ne l'est plus le soir. Mais évidemment, l'heure exacte
+			// de cette fin de relation n'est pas connue de RcPers, qui retourne donc simplement le jour où la relation s'est arrêtée.
+			// Ce qui peut poser des problèmes d'interprétation dans certains cas : notamment le cas du divorce. Prenons l'exemple
+			// d'une personne divorce le 13 juin 2010, dans ce cas-là RcPers exposera :
+			//  - un état civil 'divorcé' avec date valeur au 13 juin 2010, ainsi que
+			//  - une relation vers son ex-femme avec date de fin le même jour (le 13 juin, donc)
+			// Bizarre, mais c'est comme ça que RcPers fonctionne...
+
+			if (validFrom == validTill) {
+				// cas ultra-rare de la personne qui se marie et dont le conjoint décède le même jour. D'un point-de-vue civil,
+				// cette personne a bien été mariée un jour et acquiert le même jour les états-civils 'marié' et 'veuf'.
+				// Dans ces cas-là, on ne décale pas la date de fin de la relation, parce que cela ferait une durée négative.
+			}
+			else {
+				validTill = validTill.getOneDayBefore();
+			}
+		}
+		return validTill;
 	}
 
 	private static Collection<Origine> initOrigins(Person person) {
