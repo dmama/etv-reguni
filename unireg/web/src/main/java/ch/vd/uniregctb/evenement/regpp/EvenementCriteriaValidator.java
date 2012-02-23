@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.regpp;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCriteriaView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class EvenementCriteriaValidator implements Validator  {

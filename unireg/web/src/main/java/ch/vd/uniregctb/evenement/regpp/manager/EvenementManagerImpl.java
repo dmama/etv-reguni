@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.manager;
+package ch.vd.uniregctb.evenement.regpp.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,10 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementService;
-import ch.vd.uniregctb.evenement.view.EvenementCivilView;
-import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
-import ch.vd.uniregctb.evenement.view.EvenementView;
-import ch.vd.uniregctb.evenement.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementView;
+import ch.vd.uniregctb.evenement.regpp.view.TiersAssocieView;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuEx
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**

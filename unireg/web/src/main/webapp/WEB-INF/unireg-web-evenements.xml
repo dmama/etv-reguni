@@ -3,15 +3,15 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	<!--  Evenement -->
 
-	<bean id="evenementController" class="ch.vd.uniregctb.evenement.EvenementController">
+	<bean id="evenementController" class="ch.vd.uniregctb.evenement.regpp.EvenementController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="evenementManager" ref="evenementManager" />
 		<property name="validator" ref="evenementCriteriaValidator" />
 	</bean>
 
-	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.EvenementCriteriaValidator" />
+	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.regpp.EvenementCriteriaValidator" />
 
-	<bean id="evenementManager" class="ch.vd.uniregctb.evenement.manager.EvenementManagerImpl" >
+	<bean id="evenementManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementManagerImpl" >
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 		<property name="hostCivilService" ref="hostCivilService" />

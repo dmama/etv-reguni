@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.manager;
+package ch.vd.uniregctb.evenement.regpp.manager;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
-import ch.vd.uniregctb.evenement.view.EvenementCivilView;
-import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
-import ch.vd.uniregctb.evenement.view.EvenementView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**

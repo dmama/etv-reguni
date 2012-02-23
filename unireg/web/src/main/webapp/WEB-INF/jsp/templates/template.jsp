@@ -122,7 +122,12 @@ function ouvrirAide(url) {
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 					<authz:authorize ifAnyGranted="ROLE_EVEN">
-						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements" /></a></li>
+					<li><fmt:message key="title.evenements" />
+						<ul>
+						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements.pp" /></a></li>
+						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements.ech" /></a></li>
+						</ul>
+					</li>
 					</authz:authorize>
 
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">

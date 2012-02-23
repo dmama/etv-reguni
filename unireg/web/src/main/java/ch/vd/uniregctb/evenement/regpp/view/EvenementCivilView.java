@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.view;
+package ch.vd.uniregctb.evenement.regpp.view;
 
 import java.util.Date;
 import java.util.Set;
