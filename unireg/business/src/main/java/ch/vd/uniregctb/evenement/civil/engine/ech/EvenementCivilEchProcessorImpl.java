@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.SmartLifecycle;
@@ -51,7 +51,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private TiersService tiersService;
 
 	private Processor processor;
-	private final Map<UUID, Listener> listeners = new LinkedHashMap<UUID, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
+	private final Map<Long, Listener> listeners = new LinkedHashMap<Long, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
 
@@ -187,14 +187,23 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			}
 		}
 	}
+	
+	private static final class Sequencer {
+		final AtomicLong sequenceNumber = new AtomicLong(0L);
+		public long next() {
+			return sequenceNumber.getAndIncrement();
+		}
+	}
+
+	private static final Sequencer SEQUENCER = new Sequencer();
 
 	/**
 	 * Classe interne des handles utilisés lors de l'enregistrement de listeners
 	 */
 	private static final class ListenerHandleImpl implements ListenerHandle {
-		private final UUID uuid;
-		private ListenerHandleImpl(UUID uuid) {
-			this.uuid = uuid;
+		private final long id;
+		private ListenerHandleImpl(long id) {
+			this.id = id;
 		}
 	}
 
@@ -203,11 +212,11 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		if (listener == null) {
 			throw new NullPointerException("listener");
 		}
-		final UUID uuid = UUID.randomUUID();
+		final long id = SEQUENCER.next();
 		synchronized (listeners) {
-			listeners.put(uuid, listener);
+			listeners.put(id, listener);
 		}
-		return new ListenerHandleImpl(uuid);
+		return new ListenerHandleImpl(id);
 	}
 
 	@Override
@@ -216,7 +225,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			throw new IllegalArgumentException("Invalid handle");
 		}
 		synchronized (listeners) {
-			listeners.remove(((ListenerHandleImpl) handle).uuid);
+			listeners.remove(((ListenerHandleImpl) handle).id);
 		}
 	}
 
