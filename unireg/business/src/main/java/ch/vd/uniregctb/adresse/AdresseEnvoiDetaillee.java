@@ -54,6 +54,24 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.dateFin = dateFin;
 	}
 
+	// pour le testing uniquement !
+	public AdresseEnvoiDetaillee(RegDate dateDebut, RegDate dateFin, String salutations, String formuleAppel, NomPrenom nomPrenom, RueEtNumero rueEtNumero, NpaEtLocalite npaEtLocalite, Pays pays,
+	                             TypeAffranchissement typeAffranchissement, Integer numeroOrdrePostal, Integer numeroTechniqueRue, AdresseGenerique.SourceType source) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.destinataire = null;
+		this.salutations = salutations;
+		this.formuleAppel = formuleAppel;
+		this.rueEtNumero = rueEtNumero;
+		this.npaEtLocalite = npaEtLocalite;
+		this.pays = pays;
+		this.typeAffranchissement = typeAffranchissement;
+		this.numeroOrdrePostal = numeroOrdrePostal;
+		this.numeroTechniqueRue = numeroTechniqueRue;
+		this.nomsPrenoms.add(nomPrenom);
+		this.source = source;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);

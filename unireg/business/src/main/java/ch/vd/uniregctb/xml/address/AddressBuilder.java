@@ -120,7 +120,7 @@ public class AddressBuilder {
 		}
 	}
 
-	private static void fillDestination(Address to, AdresseEnvoiDetaillee from) {
+	protected static void fillDestination(Address to, AdresseEnvoiDetaillee from) {
 		final AddressInformation info = new AddressInformation();
 
 		info.setComplementaryInformation(from.getComplement());
@@ -144,6 +144,7 @@ public class AddressBuilder {
 			if (from.isSuisse()) {
 				if (StringUtils.isNotBlank(npaEtLocalite.getNpa())) {
 					info.setSwissZipCode(Long.valueOf(npaEtLocalite.getNpa()));
+					info.setSwissZipCodeId(from.getNumeroOrdrePostal()); // [SIFISC-4320] ne renseigner le swissZipCodeId que sur les adresses suisses.
 				}
 			}
 			else {
@@ -159,7 +160,6 @@ public class AddressBuilder {
 			info.setCountryId(pays.getNoOFS());
 		}
 
-		info.setSwissZipCodeId(from.getNumeroOrdrePostal());
 		info.setStreetId(from.getNumeroTechniqueRue());
 		info.setTariffZone(DataHelper.coreToXML(from.getTypeAffranchissement()));
 		info.setEgid(from.getEgid() == null ? null : from.getEgid().longValue());
