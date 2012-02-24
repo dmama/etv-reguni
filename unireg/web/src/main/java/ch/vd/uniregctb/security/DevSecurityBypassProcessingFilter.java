@@ -6,7 +6,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +33,9 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
  */
 public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
-	private final static Logger LOGGER = Logger.getLogger(DevSecurityBypassProcessingFilter.class);
+	private static final Logger LOGGER = Logger.getLogger(DevSecurityBypassProcessingFilter.class);
+	
+	private static final Set<String> DEV_ENVS = new HashSet<String>(Arrays.asList("Developpement", "Hudson", "Standalone", "Integration TE"));
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -38,7 +43,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		if (SecurityContextHolder.getContext().getAuthentication() == null && (SecurityDebugConfig.isIamDebug() || SecurityDebugConfig.isIfoSecDebug())) {
 
 			final String environnement = UniregModeHelper.getEnvironnement();
-			if (!environnement.equals("Developpement") && !environnement.equals("Hudson") && !environnement.equals("Standalone")) {
+			if (!DEV_ENVS.contains(environnement)) {
 				LOGGER.warn("Le bypass des fonctionnalités de sécurité n'est disponible qu'en développement. Aucune fonction bypassée.");
 			}
 			else if (!SecurityDebugConfig.isIamDebug()) {
