@@ -1,9 +1,9 @@
 package ch.vd.moscow.database;
 
-import ch.vd.moscow.job.JobStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.moscow.data.Environment;
+import ch.vd.moscow.job.JobStatus;
 
 /**
  * @author msi
@@ -19,5 +19,5 @@ public interface DatabaseService {
      * @param filename    the file log
      * @param status
      */
-    void importLog(Environment environment, String filename, JobStatus status);
+    void importLog(Environment environment, String filename, @Nullable JobStatus status);
 }

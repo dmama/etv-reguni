@@ -10,7 +10,6 @@ import ch.vd.moscow.MoscowTest;
 import ch.vd.moscow.controller.graph.CallDimension;
 import ch.vd.moscow.controller.graph.Filter;
 import ch.vd.moscow.controller.graph.TimeResolution;
-import ch.vd.moscow.data.Call;
 import ch.vd.moscow.data.CompletionStatus;
 import ch.vd.moscow.data.Environment;
 
@@ -35,7 +34,7 @@ public class DAOTest extends MoscowTest {
 		final Environment env = getDevEnv();
 		assertNull(dao.getCompletionStatus(env));
 
-		final Date ts = Call.parseTimestamp("2011-12-06 00:00:13.993");
+		final Date ts = DatabaseServiceImpl.parseTimestamp("2011-12-06 00:00:13.993");
 		dao.setCompletionStatus(env, ts);
 
 		final CompletionStatus status = dao.getCompletionStatus(env);
@@ -54,9 +53,9 @@ public class DAOTest extends MoscowTest {
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{}, null, null, null, null));
 		assertEquals("select sum(1) from calls where env_id = :filterValue0",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1")}, null, null, null, null));
-		assertEquals("select sum(1) from calls where caller = :filterValue0",
+		assertEquals("select sum(1) from calls where caller_id = :filterValue0",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.CALLER, "sipf")}, null, null, null, null));
-		assertEquals("select sum(1) from calls where env_id = :filterValue0 and caller = :filterValue1",
+		assertEquals("select sum(1) from calls where env_id = :filterValue0 and caller_id = :filterValue1",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1"), new Filter(CallDimension.CALLER, "sipf")}, null, null, null, null));
 
 		// date criterion
@@ -76,13 +75,13 @@ public class DAOTest extends MoscowTest {
 		// breakdown
 		assertEquals("select sum(1) from calls",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{}, null, null, null));
-		assertEquals("select sum(1), caller from calls group by caller",
+		assertEquals("select sum(1), caller_id from calls group by caller_id",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{CallDimension.CALLER}, null, null, null));
-		assertEquals("select sum(1), caller, env_id from calls group by caller, env_id",
+		assertEquals("select sum(1), caller_id, env_id from calls group by caller_id, env_id",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{CallDimension.CALLER, CallDimension.ENVIRONMENT}, null, null, null));
 
 		// all criteria
-		assertEquals("select sum(1), caller, date_trunc('hour', date) from calls where env_id = :filterValue0 and date >= :from and date <= :to group by caller, date_trunc('hour', date)",
+		assertEquals("select sum(1), caller_id, date_trunc('hour', date) from calls where env_id = :filterValue0 and date >= :from and date <= :to group by caller_id, date_trunc('hour', date)",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1")}, new CallDimension[]{CallDimension.CALLER}, TimeResolution.HOUR, date(2011, 1, 1),
 						date(2011, 1, 2)));
 	}

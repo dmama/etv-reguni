@@ -172,9 +172,9 @@ public class DataBaseServiceTest extends MoscowTest {
 	private static void assertCall(String environment, String service, String user, String method, long latency, Call call) {
 		assertNotNull(call);
 		assertEquals(environment, call.getEnvironment().getName());
-		assertEquals(service, call.getService());
-		assertEquals(user, call.getCaller());
-		assertEquals(method, call.getMethod());
+		assertEquals(service, call.getService().getName());
+		assertEquals(user, call.getCaller().getName());
+		assertEquals(method, call.getMethod().getName());
 		assertEquals(latency, call.getLatency());
 	}
 

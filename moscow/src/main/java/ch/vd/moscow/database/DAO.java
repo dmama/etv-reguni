@@ -2,18 +2,20 @@ package ch.vd.moscow.database;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.moscow.controller.graph.CallDimension;
 import ch.vd.moscow.controller.graph.Filter;
 import ch.vd.moscow.controller.graph.TimeResolution;
 import ch.vd.moscow.data.Call;
+import ch.vd.moscow.data.Caller;
 import ch.vd.moscow.data.CompletionStatus;
 import ch.vd.moscow.data.Environment;
 import ch.vd.moscow.data.JobDefinition;
 import ch.vd.moscow.data.LogDirectory;
 import ch.vd.moscow.data.LogFile;
+import ch.vd.moscow.data.Method;
+import ch.vd.moscow.data.Service;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -34,6 +36,18 @@ public interface DAO {
 
 	List<Environment> getEnvironments();
 
+	Caller saveCaller(Caller caller);
+
+	List<Caller> getCallers();
+
+	Service saveService(Service service);
+
+	List<Service> getServices();
+
+	Method saveMethod(Method method);
+
+	List<Method> getMethods();
+
 	void delEnvironment(Environment env);
 
 	/**
@@ -44,10 +58,6 @@ public interface DAO {
 	Long addCall(final Call call);
 
 	List<Call> getCalls(Environment environment);
-
-	List<Call> getCalls(Environment environment, Date from, Date to);
-
-	Iterator<Call> iterateCalls(Environment environment, Date from, Date to);
 
 	Collection<CallStats> getLoadStatsFor(Filter[] filters, Date from, Date to, CallDimension[] criteria, TimeResolution resolution);
 

@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +23,14 @@ import ch.vd.moscow.controller.graph.CallDimension;
 import ch.vd.moscow.controller.graph.Filter;
 import ch.vd.moscow.controller.graph.TimeResolution;
 import ch.vd.moscow.data.Call;
+import ch.vd.moscow.data.Caller;
 import ch.vd.moscow.data.CompletionStatus;
 import ch.vd.moscow.data.Environment;
 import ch.vd.moscow.data.JobDefinition;
 import ch.vd.moscow.data.LogDirectory;
 import ch.vd.moscow.data.LogFile;
+import ch.vd.moscow.data.Method;
+import ch.vd.moscow.data.Service;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -145,6 +147,39 @@ public class DAOImpl implements DAO {
 	}
 
 	@Override
+	public Caller saveCaller(Caller caller) {
+		return hibernateTemplate.merge(caller);
+	}
+
+	@Override
+	public List<Caller> getCallers() {
+		//noinspection unchecked
+		return hibernateTemplate.find("from Caller");
+	}
+
+	@Override
+	public Service saveService(Service service) {
+		return hibernateTemplate.merge(service);
+	}
+
+	@Override
+	public List<Service> getServices() {
+		//noinspection unchecked
+		return hibernateTemplate.find("from Service");
+	}
+
+	@Override
+	public Method saveMethod(Method method) {
+		return hibernateTemplate.merge(method);
+	}
+
+	@Override
+	public List<Method> getMethods() {
+		//noinspection unchecked
+		return hibernateTemplate.find("from Method");
+	}
+
+	@Override
 	public void delEnvironment(Environment env) {
 		hibernateTemplate.delete(env);
 	}
@@ -198,57 +233,6 @@ public class DAOImpl implements DAO {
 				return query.list();
 			}
 		});
-	}
-
-	@SuppressWarnings({"unchecked"})
-	@Override
-	public List<Call> getCalls(final Environment environment, final Date from, final Date to) {
-		return hibernateTemplate.executeFind(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query;
-				if (from != null && to != null) {
-					query = session.createQuery("from Call c where c.environment = :env and c.timestamp >= :from and c.timestamp <= :to");
-					query.setParameter("from", from);
-					query.setParameter("to", to);
-				}
-				else if (from != null) {
-					query = session.createQuery("from Call c where c.environment = :env and c.timestamp >= :from");
-					query.setParameter("from", from);
-				}
-				else if (to != null) {
-					query = session.createQuery("from Call c where c.environment = :env and c.timestamp <= :to");
-					query.setParameter("to", to);
-				}
-				else {
-					query = session.createQuery("from Call c where c.environment = :env");
-				}
-				query.setParameter("env", environment);
-				return query.list();
-			}
-		});
-	}
-
-	@SuppressWarnings({"unchecked"})
-	@Override
-	public Iterator<Call> iterateCalls(Environment environment, Date from, Date to) {
-
-		final Iterator<Call> iter;
-
-		if (from != null && to != null) {
-			iter = hibernateTemplate.iterate("from Call c where c.environment = ? and c.timestamp >= ? and c.timestamp <= ?", environment, from, to);
-		}
-		else if (from != null) {
-			iter = hibernateTemplate.iterate("from Call c where c.environment = ? and c.timestamp >= ?", environment, from);
-		}
-		else if (to != null) {
-			iter = hibernateTemplate.iterate("from Call c where c.environment = ? and c.timestamp <= ?", environment, to);
-		}
-		else {
-			iter = hibernateTemplate.iterate("from Call c where c.environment = ?", environment);
-		}
-
-		return iter;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -370,13 +354,13 @@ public class DAOImpl implements DAO {
 	private static String dimToColumn(CallDimension dimension) {
 		switch (dimension) {
 		case CALLER:
-			return "caller";
+			return "caller_id";
 		case ENVIRONMENT:
 			return "env_id";
 		case METHOD:
-			return "method";
+			return "method_id";
 		case SERVICE:
-			return "service";
+			return "service_id";
 		default:
 			throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
 		}
@@ -385,13 +369,13 @@ public class DAOImpl implements DAO {
 	private static Object dimValueToDb(CallDimension dimension, String value) {
 		switch (dimension) {
 		case CALLER:
-			return value;
+			return Integer.valueOf(value);
 		case ENVIRONMENT:
 			return Integer.valueOf(value);
 		case METHOD:
-			return value;
+			return Integer.valueOf(value);
 		case SERVICE:
-			return value;
+			return Integer.valueOf(value);
 		default:
 			throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
 		}
@@ -449,7 +433,23 @@ public class DAOImpl implements DAO {
 			@SuppressWarnings("unchecked")
 			@Override
 			public List<Object> doInHibernate(Session session) throws HibernateException, SQLException {
-				SQLQuery query = session.createSQLQuery("select distinct " + dimToColumn(dimension) + " from calls order by " + dimToColumn(dimension));
+				final SQLQuery query;
+				switch(dimension) {
+				case ENVIRONMENT:
+					query = session.createSQLQuery("select id from environments order by id");
+					break;
+				case CALLER:
+					query = session.createSQLQuery("select id from callers order by id");
+					break;
+				case METHOD:
+					query = session.createSQLQuery("select id from methods order by id");
+					break;
+				case SERVICE:
+					query = session.createSQLQuery("select id from services order by id");
+					break;
+				default:
+					throw new IllegalArgumentException("Unkown dimension = [" + dimension + "]");
+				}
 				return query.list();
 			}
 		});

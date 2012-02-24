@@ -11,6 +11,9 @@
 		<value>ch.vd.moscow.data.LogDirectory</value>
 		<value>ch.vd.moscow.data.LogFile</value>
 		<value>ch.vd.moscow.data.ImportLogsJob</value>
+		<value>ch.vd.moscow.data.Caller</value>
+		<value>ch.vd.moscow.data.Method</value>
+		<value>ch.vd.moscow.data.Service</value>
 	</util:list>
 
 	<util:map id="hibernateProperties">

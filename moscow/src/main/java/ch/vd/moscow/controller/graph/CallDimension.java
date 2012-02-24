@@ -15,19 +15,19 @@ public enum CallDimension {
 	SERVICE("service") {
 		@Override
 		public String getValue(Call call) {
-			return call.getService();
+			return call.getService().getName();
 		}
 	},
 	CALLER("utilisateur") {
 		@Override
 		public String getValue(Call call) {
-			return call.getCaller();
+			return call.getCaller().getName();
 		}
 	},
 	METHOD("méthode") {
 		@Override
 		public String getValue(Call call) {
-			return call.getMethod();
+			return call.getMethod().getName();
 		}
 	};
 	
