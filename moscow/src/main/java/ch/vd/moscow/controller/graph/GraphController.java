@@ -35,7 +35,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.moscow.data.Caller;
 import ch.vd.moscow.data.Environment;
+import ch.vd.moscow.data.Method;
+import ch.vd.moscow.data.Service;
 import ch.vd.moscow.database.CallStats;
 import ch.vd.moscow.database.DAO;
 
@@ -50,7 +53,9 @@ public class GraphController {
 	private static final Logger LOGGER = Logger.getLogger(GraphController.class);
 
 	private DAO dao;
-	private final List<DimensionInfo> dimensionsInfo = new ArrayList<DimensionInfo>();
+	
+	private List<DimensionInfo> dimensionsInfo = null;
+	private Date dimensionsInfoTimestamp;
 
 	public void setDao(DAO dao) {
 		this.dao = dao;
@@ -75,19 +80,70 @@ public class GraphController {
 	@RequestMapping(value = "/dimensions.do", method = RequestMethod.GET)
 	@ResponseBody
 	public List<DimensionInfo> dimensions() {
-		if (dimensionsInfo.isEmpty()) { // TODO (msi) rafraîchir cette map si nécessaire
+		if (dimensionsInfo == null || isOlderThan5minutes(dimensionsInfoTimestamp)) {
 			initDimensionsMap();
 		}
 		return dimensionsInfo;
 	}
 
 	private synchronized void initDimensionsMap() {
-		if (dimensionsInfo.isEmpty()) {
-			for (CallDimension dimension : CallDimension.values()) {
-				final List<Object> values = dao.getDimensionValues(dimension);
-				dimensionsInfo.add(new DimensionInfo(dimension, dimension.getDisplayName(), values));
-			}
+		if (dimensionsInfo == null || isOlderThan5minutes(dimensionsInfoTimestamp)) {
+			final List<DimensionInfo> list = new ArrayList<DimensionInfo>();
+			list.add(new DimensionInfo(CallDimension.ENVIRONMENT, envToValues(dao.getEnvironments())));
+			list.add(new DimensionInfo(CallDimension.SERVICE, servicesToValues(dao.getServices())));
+			list.add(new DimensionInfo(CallDimension.CALLER, callerToValues(dao.getCallers())));
+			list.add(new DimensionInfo(CallDimension.METHOD, methodToValues(dao.getMethods())));
+			dimensionsInfo = list;
+			dimensionsInfoTimestamp = new Date();
 		}
+	}
+
+	private static boolean isOlderThan5minutes(Date date) {
+		return date.getTime() - System.currentTimeMillis() > 5000;
+	}
+
+	private List<DimensionValue> servicesToValues(List<Service> services) {
+		if (services == null) {
+			return null;
+		}
+		final List<DimensionValue> list = new ArrayList<DimensionValue>(services.size());
+		for (Service service : services) {
+			list.add(new DimensionValue(service));
+		}
+		return list;
+	}
+
+	private List<DimensionValue> callerToValues(List<Caller> callers) {
+		if (callers == null) {
+			return null;
+		}
+		final List<DimensionValue> list = new ArrayList<DimensionValue>(callers.size());
+		for (Caller caller : callers) {
+			list.add(new DimensionValue(caller));
+		}
+		return list;
+	}
+
+	private List<DimensionValue> methodToValues(List<Method> methods) {
+		if (methods == null) {
+			return null;
+		}
+		final List<DimensionValue> list = new ArrayList<DimensionValue>(methods.size());
+		for (Method method : methods) {
+			list.add(new DimensionValue(method));
+		}
+		return list;
+	}
+
+	private List<DimensionValue> envToValues(List<Environment> environments) {
+		if (environments == null) {
+			return null;
+		}
+		final List<DimensionValue> list = new ArrayList<DimensionValue>(environments.size());
+		for (Environment env : environments) {
+			list.add(new DimensionValue(env));
+		}
+		return list;
 	}
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)

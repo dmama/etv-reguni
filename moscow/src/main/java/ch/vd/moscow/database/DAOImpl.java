@@ -46,62 +46,6 @@ public class DAOImpl implements DAO {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	//	public void migrateDb(JdbcTemplate template) {
-//		final Integer version = getDbVersion(template);
-//		if (version == null) {
-//			createDb(template);
-//		}
-//		else {
-//			LOGGER.debug("DB schema is at version " + version);
-//			switch (version) {
-//			case 1:
-//				LOGGER.info("DB schema is up-to-date.");
-//				break;
-//			default:
-//				throw new RuntimeException("Unknown DB schema version = " + version);
-//			}
-//		}
-//	}
-//
-//	private void createDb(JdbcTemplate template) {
-//		createDb_v1(template);
-//	}
-//
-//	private void createDb_v1(JdbcTemplate template) {
-//		LOGGER.warn("Creating DB schema version 1...");
-//
-//		// the version table
-//		template.execute("create table db_version(id serial primary key, version integer not null, script varchar(50), ts timestamp not null);");
-//		template.execute("insert into db_version(version, script, ts) values (1, 'creation', now());");
-//
-//		// table to store calls data
-//		template.execute("create table calls(id serial primary key, environment varchar(20) not null, service varchar(20) not null, caller varchar(20) not null, method varchar(30) not null, time timestamp not null, latency integer not null, params text);");
-//		template.execute("create index calls_env_idx on calls (environment);");
-//		template.execute("create index calls_serv_idx on calls (service);");
-//		template.execute("create index calls_caller_idx on calls (caller);");
-//		template.execute("create index calls_meth_idx on calls (method);");
-//
-//		// meta-data about logfiles
-//		template.execute("create table logfiles(id serial primary key, environment varchar(20) not null, filename varchar(2000) not null);");
-//		template.execute("create index logfiles_env_idx on logfiles (environment);");
-//		template.execute("create index logfiles_filename_idx on logfiles (filename);");
-//
-//		// status about imported data
-//		template.execute("create table status(id serial primary key, environment varchar(20) not null, up_to timestamp not null);");
-//		template.execute("create index status_env_idx on logfiles (environment);");
-//
-//	}
-//
-//	public Integer getDbVersion(JdbcTemplate template) {
-//		try {
-//			return template.queryForInt("select max(version) from db_version");
-//		}
-//		catch (DataAccessException e) {
-//			LOGGER.warn("No table DB_VERSION found : will try to create schema from scratch.");
-//			return null;
-//		}
-//	}
-
 	@Override
 	public void clearEnvironments() {
 		hibernateTemplate.execute(new HibernateCallback<Object>() {
@@ -235,6 +179,29 @@ public class DAOImpl implements DAO {
 		});
 	}
 
+	private static class DimensionsValues {
+
+		protected final Map<Long, Environment> environnements = new HashMap<Long, Environment>();
+		protected final Map<Long, Service> services = new HashMap<Long, Service>();
+		protected final Map<Long, Caller> callers = new HashMap<Long, Caller>();
+		protected final Map<Long, Method> methods = new HashMap<Long, Method>();
+
+		private DimensionsValues(List<Environment> environnements, List<Service> services, List<Caller> callers, List<Method> methods) {
+			for (Environment env : environnements) {
+				this.environnements.put(env.getId(), env);
+			}
+			for (Service service : services) {
+				this.services.put(service.getId(), service);
+			}
+			for (Caller caller : callers) {
+				this.callers.put(caller.getId(), caller);
+			}
+			for (Method method : methods) {
+				this.methods.put(method.getId(), method);
+			}
+		}
+	}
+	
 	@SuppressWarnings({"unchecked"})
 	@Override
 	public Collection<CallStats> getLoadStatsFor(final Filter[] filters, final Date from, final Date to, final CallDimension[] criteria, final TimeResolution resolution) {
@@ -261,6 +228,10 @@ public class DAOImpl implements DAO {
 				// run the query
 				final List<?> list = query.list();
 
+				// load some satellite data (dimensions only at the moment)
+				final DimensionsValues dimValues = new DimensionsValues(session.createQuery("from Environment").list(), session.createQuery("from Service").list(),
+						session.createQuery("from Caller").list(), session.createQuery("from Method").list());
+
 				// parse the results
 				final List<CallStats> results = new ArrayList<CallStats>(list.size());
 				for (Object a : list) {
@@ -268,7 +239,7 @@ public class DAOImpl implements DAO {
 					final Number calls = (Number) array[0];
 					final List<Object> coord = new ArrayList<Object>(criteria.length);
 					for (int i = 0, criteriaLength = criteria.length; i < criteriaLength; i++) {
-						coord.add(array[i + 1]);
+						coord.add(getDimensionValueName(criteria[i], (Number) array[i + 1], dimValues));
 					}
 					final Date date = (Date) array[criteria.length + 1];
 					results.add(new CallStats(calls, coord, date));
@@ -292,6 +263,21 @@ public class DAOImpl implements DAO {
 				}
 				else {
 					return results;
+				}
+			}
+
+			private String getDimensionValueName(CallDimension dimension, Number id, DimensionsValues dimValues) {
+				switch (dimension) {
+				case ENVIRONMENT:
+					return dimValues.environnements.get(id.longValue()).getName();
+				case SERVICE:
+					return dimValues.services.get(id.longValue()).getName();
+				case CALLER:
+					return dimValues.callers.get(id.longValue()).getName();
+				case METHOD:
+					return dimValues.methods.get(id.longValue()).getName();
+				default:
+					throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
 				}
 			}
 		});

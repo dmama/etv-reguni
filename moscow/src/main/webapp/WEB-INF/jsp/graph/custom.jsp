@@ -93,7 +93,7 @@
 					var text = $('#filterSelect option:selected').text();
 					var dim = $('#filterSelect').val();
 					var filterId = 'filter' + dim;
-					var selectHtml = '<select><option>' + dimensionsValues[dim].join('</option><option>') + '</option></select>';
+					var selectHtml = '<select>'+ dimValuesToOptions(dimensionsValues[dim]) + '</select>';
 					$('<li id="' + filterId + '">' + text + ' = ' + selectHtml + ' (<a href="#">supprimer</a>)</li>').appendTo('#filters');
 					$('#' + filterId + ' a').click(function() {
 						$('#' + filterId).remove();
@@ -157,6 +157,15 @@
 				}
 				return sprintf('%04d-%02d-%02dT%02d:%02d:%02d', date.getFullYear(), (date.getMonth() + 1), date.getDate(),
 					date.getHours(), date.getMinutes(), date.getSeconds());
+			}
+
+			function dimValuesToOptions(values) {
+				var options = '';
+				for (var i in values) {
+					var v = values[i];
+					options += '<option value="' + v.id + '">' + v.name + '</option>';
+				}
+				return options;
 			}
 		</script>
   	</tiles:put>

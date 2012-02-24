@@ -5,14 +5,14 @@ import java.util.List;
 public class DimensionInfo {
 	private CallDimension type;
 	private String label;
-	private List<Object> values;
+	private List<DimensionValue> values;
 
 	public DimensionInfo() {
 	}
 
-	public DimensionInfo(CallDimension type, String label, List<Object> values) {
+	public DimensionInfo(CallDimension type, List<DimensionValue> values) {
 		this.type = type;
-		this.label = label;
+		this.label = type.getDisplayName();
 		this.values = values;
 	}
 
@@ -32,11 +32,11 @@ public class DimensionInfo {
 		this.label = label;
 	}
 
-	public List<Object> getValues() {
+	public List<DimensionValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Object> values) {
+	public void setValues(List<DimensionValue> values) {
 		this.values = values;
 	}
 }
