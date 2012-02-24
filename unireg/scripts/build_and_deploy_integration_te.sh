@@ -91,6 +91,7 @@ ssh $user "cp $upDir/explode/config/$env/* $webAppDir/config"
 
 # copie du war
 ssh $user "mkdir -p $tomcatDir/webapps"
+ssh $user "rm -rf $tomcatDir/webapps/fiscalite#unireg#web*"
 ssh $user "cp $upDir/explode/deployment/uniregweb.war $tomcatDir/webapps/fiscalite#unireg#web.war"
 
 echo "Fin du deploiement de la web-app à: $(date)"
@@ -109,6 +110,7 @@ ssh $user "cp $upDir/explode/config/$env/* $wsAppDir/config"
 
 # copie du war
 ssh $user "mkdir -p $tomcatDir/webapps"
+ssh $user "rm -rf $tomcatDir/webapps/fiscalite#unireg#ws*"
 ssh $user "cp $upDir/explode/deployment/uniregws.war $tomcatDir/webapps/fiscalite#unireg#ws.war"
 
 echo "Fin du deploiement des web-services à: $(date)"
