@@ -134,15 +134,4 @@
 		<property name="dao" ref="droitAccesDAO" />
 	</bean>
 
-	<!-- WS - Fiscal Service -->
-	<jaxws:endpoint implementor="#fiscalServiceBean"
-					address="/fiscal"
-					wsdlLocation="/WEB-INF/ws/FiscalService.wsdl" />
-
-	<bean id="fiscalServiceBean" class="ch.vd.uniregctb.webservices.interfaces.impl.FiscalWebServiceImpl">		
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />		
-		<property name="assujettissementService" ref="assujettissementService" />
-	</bean>
-
 </beans>
