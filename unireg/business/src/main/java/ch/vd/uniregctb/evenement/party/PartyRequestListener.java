@@ -7,11 +7,17 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -149,6 +155,14 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			final Document doc = db.newDocument();
 
 			marshaller.marshal(objectFactory.createResponse(response), doc);
+
+			if (LOGGER.isDebugEnabled()) {
+				StringWriter buffer = new StringWriter();
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+				transformer.transform(new DOMSource(doc), new StreamResult(buffer));
+				LOGGER.debug("Response body = [" + buffer.toString() + "]");
+			}
 
 			final EsbMessage m = esbMessageFactory.createMessage(query);
 			m.setBusinessId(query.getBusinessId() + "-answer");
