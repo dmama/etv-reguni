@@ -30,6 +30,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportFiliation;
@@ -129,7 +130,12 @@ public class RapportController {
 		mav.addAttribute("rapportType", typeRapport == null ? null : typeRapport.name());
 		mav.addAttribute("rapports", getRapportViews(tiers, showHisto, typeRapport, pagination));
 		mav.addAttribute("rapportsTotalCount", getRapportsTotalCount(tiers, typeRapport, showHisto, Contribuable.class.equals(tiers.getClass())));
-		mav.addAttribute("filiations", getFiliationViews(tiers));
+		try {
+			mav.addAttribute("filiations", getFiliationViews(tiers));
+		}
+		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+			mav.addAttribute("filiationsErreur", e.getMessage());
+		}
 		mav.addAttribute("debiteurs", getDebiteurViews(tiers));
 		mav.addAttribute("typesRapportTiers", tiersMapHelper.getMapTypeRapportEntreTiers());
 		mav.addAttribute("allowedOnglet", autorisationManager.getAutorisations(tiers));

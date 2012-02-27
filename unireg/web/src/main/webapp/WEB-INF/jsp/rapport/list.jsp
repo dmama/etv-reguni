@@ -154,6 +154,13 @@
 		</script>
 
 		<!-- Table des filiations -->
+		<c:if test="${filiationsErreur != null}">
+			<fieldset>
+				<legend><span><fmt:message key="label.filiations"/></span></legend>
+
+				<div class="<c:out value='flash-warning'/>"><fmt:message key="label.affichage.filiations.impossible"/><br/><i><c:out value="${filiationsErreur}"/></i></div>
+			</fieldset>
+		</c:if>
 		<c:if test="${not empty filiations}">
 			<fieldset>
 				<legend><span><fmt:message key="label.filiations"/></span></legend>
