@@ -52,20 +52,8 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IdentificationContribuable> executeSearch(ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande typeDemande) {
-		String queryOrder;
-		if (paramPagination.getChamp() != null) {
-			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
-		}
-		else {
-			queryOrder = " order by identificationContribuable.demande.date";
-		}
-		if (paramPagination.isSensAscending()) {
-			queryOrder = queryOrder + " asc";
-		}
-		else {
-			queryOrder = queryOrder + " desc";
-		}
+	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande typeDemande) {
+		String queryOrder = buildOrderClause(paramPagination);
 		final String avecTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
 		final String sansTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 ";
 		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
@@ -97,6 +85,27 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			}
 		});
 	}
+
+	private String buildOrderClause(ParamPagination paramPagination) {
+		String queryOrder;
+		if (paramPagination.getChamp() != null) {
+			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
+		}
+		else {
+			queryOrder = " order by identificationContribuable.demande.date";
+		}
+		if (paramPagination.isSensAscending()) {
+			queryOrder = queryOrder + " asc";
+		}
+		else {
+			queryOrder = queryOrder + " desc";
+		}
+
+		//[SIFISC-4227]
+		queryOrder = queryOrder +",identificationContribuable.id";
+		return queryOrder;
+	}
+
 
 
 	/**
