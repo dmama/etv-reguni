@@ -33,7 +33,6 @@ import ch.vd.uniregctb.type.Sexe;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Classe de test du handler de messages d'identification de contribuables. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -511,16 +510,16 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		sendTextMessage(INPUT_QUEUE, texte);
 
-		// On attend l'erreur
-		while (esbTemplateWithErrorCollector.collectedErrors.isEmpty()) {
+		// On attend le message
+		while (messages.isEmpty()) {
 			Thread.sleep(100);
 		}
-		assertEquals(0, messages.size());
-		assertEquals(1, esbTemplateWithErrorCollector.collectedErrors.size());
+		assertEquals(1, messages.size());
+		assertEquals(0, esbTemplateWithErrorCollector.collectedErrors.size());
 
-		final EsbTemplateWithErrorCollector.ErrorDescription error = esbTemplateWithErrorCollector.collectedErrors.get(0);
-		assertNotNull(error);
-		assertTrue(error.errorMessage.contains("Year in date {2965.01.24} is not valid"));
+		final IdentificationContribuable m = messages.get(0);
+		assertNotNull(m);
+		assertNull(m.getDemande().getPersonne().getDateNaissance());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
