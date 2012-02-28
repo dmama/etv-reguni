@@ -89,6 +89,16 @@ public class JobStarter implements Job, InterruptableJob {
 
 	@Override
 	public void interrupt() throws UnableToInterruptJobException {
-		job.interrupt();
+		// [SIFISC-4311] Le job peut être null si le job n'a pas pu être démarré pour une raison ou une autre. Exemple :
+		//   1) démarrage du job d'indexation FULL pour un utilisateur -> une instance de JobStarter est créée
+		//   2) à 2 heures du matin, démarrage du job d'indexation incrémental pendant que le job démarré en 1) tourne toujours -> une autre instance
+		//      de JobStarter est créée, mais le job DatabaseIndexJob lève une exception car il est encore à l'état RUNNING. La deuxième instance
+		//      du Jobstarter reste cependant enregistrée dans Quartz.
+		//   3) l'utilisateur décide d'interrompre le job d'indexation FULL -> les deux instances de JobStarter vont recevoir un appel à 'interrupt',
+		//      mais seule la première instance possède un job défini.
+		// => dans le cas où le job est null, il n'y a rien à interrompre et il suffit d'ignorer l'appel.
+		if (job != null) {
+			job.interrupt();
+		}
 	}
 }
