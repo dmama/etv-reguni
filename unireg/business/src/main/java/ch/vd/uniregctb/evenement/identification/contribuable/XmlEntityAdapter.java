@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
@@ -32,9 +33,10 @@ import ch.vd.uniregctb.type.Sexe;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class XmlEntityAdapter {
-	public static String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
 
-	//private static Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
+	public static final String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
+
+	private static final Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
 
 	public static IdentificationCTBDocument entity2xml(IdentificationContribuable message) {
 
@@ -339,7 +341,8 @@ public abstract class XmlEntityAdapter {
 				return RegDate.get(year, month, day);
 			}
 			catch (IllegalArgumentException e) {
-				throw new XmlException(e.getMessage());
+				LOGGER.warn("Date invalide (sera ignorée) : " + date, e);
+				return null;
 			}
 		}
 
@@ -351,7 +354,8 @@ public abstract class XmlEntityAdapter {
 				return RegDate.get(year, month);
 			}
 			catch (IllegalArgumentException e) {
-				throw new XmlException(e.getMessage());
+				LOGGER.warn("Date invalide (sera ignorée) : " + date, e);
+				return null;
 			}
 		}
 
@@ -361,7 +365,8 @@ public abstract class XmlEntityAdapter {
 			return RegDate.get(annee.get(Calendar.YEAR));
 		}
 		catch (IllegalArgumentException e) {
-			throw new XmlException(e.getMessage());
+			LOGGER.warn("Date invalide (sera ignorée) : " + date, e);
+			return null;
 		}
 	}
 
