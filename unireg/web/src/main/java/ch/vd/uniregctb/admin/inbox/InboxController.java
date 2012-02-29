@@ -12,15 +12,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
@@ -30,16 +27,14 @@ import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
 import ch.vd.uniregctb.print.PrintPCLManager;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Contrôleur de la visualisation de l'inbox
  */
 @Controller
 @RequestMapping(value = "/admin/inbox")
-public class InboxController implements MessageSourceAware, InitializingBean {
+public class InboxController implements InitializingBean {
 
-	private static final String NBSP = "&nbsp;";
 	private static final String ID = "id";
 
 	private InboxService inboxService;
@@ -47,8 +42,6 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 	private ExtractionService extractionService;
 
 	private PrintPCLManager pclManager;
-
-	private MessageSource messageSource;
 
 	private Map<String, ContentDeliveryStrategy> contentDeliveryStrategies;
 	private final ContentDeliveryStrategy defaultDeliveryStrategy = new PassThroughContentDeliveryStrategy();
@@ -66,11 +59,6 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setExtractionService(ExtractionService extractionService) {
 		this.extractionService = extractionService;
-	}
-
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 
 	@Override
@@ -97,10 +85,6 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 				map.put(job.getUuid(), job);
 			}
 		}
-	}
-
-	private String getMessageResource(String key) {
-		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
 	}
 
 	private ContentDeliveryStrategy getStrategy(String mimeType) {
@@ -201,8 +185,8 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "unreadSize.do", method = RequestMethod.GET)
-	public String retrieveTitleWithUnreadSize() {
+	@RequestMapping(value = "/unreadSize.do", method = RequestMethod.GET)
+	public int unreadSize() {
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 
 		final List<InboxElement> inboxContent = inboxService.getInboxContent(visa);
@@ -213,12 +197,6 @@ public class InboxController implements MessageSourceAware, InitializingBean {
 			}
 		}
 
-		final String baseMsg = HtmlUtils.htmlEscape(getMessageResource("title.inbox"));
-		if (unread == 0) {
-			return baseMsg;
-		}
-		else {
-			return String.format("<span style='font-weight: bold;'>%s%s(%d)</span>", baseMsg, NBSP, unread);
-		}
+		return unread;
 	}
 }

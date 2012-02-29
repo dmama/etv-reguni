@@ -57,7 +57,7 @@ function ouvrirAide(url) {
 							</a>
 						</li>
 
-						<script type="text/javascript">
+						<script>
 							// appels ajax pour mettre-à-jour le nombre d''éléments non-lus de l''inbox
 							var requestInboxSizeDone = true;
 
@@ -66,7 +66,15 @@ function ouvrirAide(url) {
 									return;
 								}
 								requestInboxSizeDone = false;
-								$('#inboxSize').load(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function() {
+								$.get(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function(unreadSize) {
+									if (unreadSize > 0) {
+										$('#inboxSize').text('<fmt:message key="title.inbox"/> (' + unread + ')');
+										$('#inboxSize').attr('style', 'font-weight: bold');
+									}
+									else {
+										$('#inboxSize').text('<fmt:message key="title.inbox"/>');
+										$('#inboxSize').attr('style', '');
+									}
 									onReceivedInboxSize();
 								});
 							}
