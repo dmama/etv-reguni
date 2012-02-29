@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.rf;
 
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
+import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class ImmeubleView {
@@ -15,17 +19,25 @@ public class ImmeubleView {
 	private final Integer noCommune;
 	private final String nomCommune;
 	private final String nature;
-	private final Integer estimationFiscale;
+	private final String estimationFiscale;
 	private final String referenceEstimationFiscale;
-	private final TypeImmeuble typeImmeuble;
-	private final GenrePropriete genrePropriete;
+	private final String typeImmeuble;
+	private final String genrePropriete;
 	private final String partPropriete;
-	private final Contribuable contribuable;
 	private final String dateDernierMutation;
-	private final TypeMutation derniereMutation;
+	private final String derniereMutation;
 	private final URL lienRF;
+	
+	private ThreadLocal<DecimalFormat> decimalFormat = new ThreadLocal<DecimalFormat>() {
+		@Override
+		protected DecimalFormat initialValue() {
+			final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+			symbols.setGroupingSeparator('\'');
+			return new DecimalFormat("#,###", symbols);
+		}
+	};
 
-	public ImmeubleView(Immeuble immeuble) {
+	public ImmeubleView(Immeuble immeuble, MessageSource messageSource) {
 		this.id = immeuble.getId();
 		this.dateDebut = RegDateHelper.dateToDisplayString(immeuble.getDateDebut());
 		this.dateFin = RegDateHelper.dateToDisplayString(immeuble.getDateFin());
@@ -33,15 +45,25 @@ public class ImmeubleView {
 		this.noCommune = extractNumeroCommune(immeuble.getNumero()); // [SIFISC-3309]
 		this.nomCommune = immeuble.getNomCommune(); // [SIFISC-3157]
 		this.nature = immeuble.getNature();
-		this.estimationFiscale = immeuble.getEstimationFiscale();
+		this.estimationFiscale = formatNumber(immeuble.getEstimationFiscale());
 		this.referenceEstimationFiscale = immeuble.getReferenceEstimationFiscale();
-		this.typeImmeuble = immeuble.getTypeImmeuble();
-		this.genrePropriete = immeuble.getGenrePropriete();
+		this.typeImmeuble = getMessage(messageSource, "option.rf.type.immeuble.", immeuble.getTypeImmeuble());
+		this.genrePropriete = getMessage(messageSource, "option.rf.genre.propriete.", immeuble.getGenrePropriete());
 		this.partPropriete = immeuble.getPartPropriete().toString();
-		this.contribuable = immeuble.getContribuable();
 		this.dateDernierMutation = RegDateHelper.dateToDisplayString(immeuble.getDateDerniereMutation());
-		this.derniereMutation = immeuble.getDerniereMutation();
+		this.derniereMutation = getMessage(messageSource, "option.rf.type.mutation.", immeuble.getDerniereMutation());
 		this.lienRF = immeuble.getLienRegistreFoncier();
+	}
+
+	private String formatNumber(Integer number) {
+		return decimalFormat.get().format(number);
+	}
+
+	private static String getMessage(MessageSource messageSource, String keyPrefix, Enum<?> key) {
+		if (key == null) {
+			return null;
+		}
+		return messageSource.getMessage(keyPrefix + key.name(), null, WebContextUtils.getDefaultLocale());
 	}
 
 	/**
@@ -107,7 +129,7 @@ public class ImmeubleView {
 		return nature;
 	}
 
-	public Integer getEstimationFiscale() {
+	public String getEstimationFiscale() {
 		return estimationFiscale;
 	}
 
@@ -115,11 +137,11 @@ public class ImmeubleView {
 		return referenceEstimationFiscale;
 	}
 
-	public TypeImmeuble getTypeImmeuble() {
+	public String getTypeImmeuble() {
 		return typeImmeuble;
 	}
 
-	public GenrePropriete getGenrePropriete() {
+	public String getGenrePropriete() {
 		return genrePropriete;
 	}
 
@@ -127,15 +149,11 @@ public class ImmeubleView {
 		return partPropriete;
 	}
 
-	public Contribuable getContribuable() {
-		return contribuable;
-	}
-
 	public String getDateDernierMutation() {
 		return dateDernierMutation;
 	}
 
-	public TypeMutation getDerniereMutation() {
+	public String getDerniereMutation() {
 		return derniereMutation;
 	}
 

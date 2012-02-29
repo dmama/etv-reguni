@@ -1,20 +1,18 @@
 package ch.vd.uniregctb.rf;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -24,10 +22,15 @@ import ch.vd.uniregctb.security.SecurityProvider;
 public class ImmeubleController {
 
 	private ImmeubleDAO immeubleDAO;
+	private MessageSource messageSource;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
 		this.immeubleDAO = immeubleDAO;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 	/**
@@ -44,66 +47,23 @@ public class ImmeubleController {
 	public int count(@RequestParam("ctb") long ctbId) throws AccessDeniedException {
 		return immeubleDAO.count(ctbId);
 	}
-	
-	protected static final Comparator<String> NO_IMMEUBLE_COMPARATOR = new Comparator<String>() {
-		@Override
-		public int compare(String o1, String o2) {
-			final int[] d1 = decompose(o1);
-			final int[] d2 = decompose(o2);
-			final int maxIndex = Math.min(d1.length, d2.length);
-			int comparison = 0;
-			for (int i = 0 ; i < maxIndex ; ++ i) {
-				comparison = d1[i] - d2[i];
-				if (comparison != 0) {
-					break;
-				}
-			}
-			// en cas d'égalité jusque là, le plus court passe devant
-			return comparison == 0 ? d1.length - d2.length : comparison;
-		}
-		
-		private int[] EMPTY = new int[0];
-		
-		private int[] decompose(String noImmeuble) {
-			final String[] strs = StringUtils.isNotBlank(noImmeuble) ? noImmeuble.split("[^0-9]") : null;
-			if (strs != null && strs.length > 0) {
-				int[] ints = new int[strs.length];
-				for (int i = 0 ; i < strs.length ; ++ i) {
-					ints[i] = StringUtils.isNotBlank(strs[i]) ? Integer.parseInt(strs[i]) : 0;
-				}
-				return ints;
-			}
-			return EMPTY;
-		}
-	};
 
 	/**
-	 * [SIFISC-3309] on trie par nom de commune croissant<br/>
-	 * [SIFISC-4216] ... puis par numéro d'immeuble
-	 */
-	private static final Comparator<ImmeubleView> IMMEUBLE_COMPARATOR = new Comparator<ImmeubleView>() {
-		@Override
-		public int compare(ImmeubleView o1, ImmeubleView o2) {
-			int comparison = o1.getNomCommune().compareTo(o2.getNomCommune());
-			if (comparison == 0) {
-				comparison = NO_IMMEUBLE_COMPARATOR.compare(o1.getNumero(), o2.getNumero());
-			}
-			return comparison;
-		}
-	};
-
-	/**
-	 * Affiche les immeubles d'un contribuable.
+	 * Retourne les informations des immeubles d'un contribuable, page par page.
 	 *
-	 * @param ctbId le numéro de contribuable
-	 * @param mav   le modèle sous-jacent
-	 * @return le nom de la jsp qui affiche la liste retournée
+	 * @param ctbId    le numéro de contribuable
+	 * @param page     le numéro de page courant (1-based)
+	 * @param pageSize le nombre d'immeubles affichés par page
+	 * @return les immeubles de la page demandée au format JSON
 	 * @throws ch.vd.uniregctb.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
+	@ResponseBody
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String list(@RequestParam("ctb") long ctbId, Model mav) throws AccessDeniedException {
+	public ImmeublesPage list(@RequestParam("ctb") long ctbId,
+	                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+	                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
 		if (!SecurityProvider.isGranted(Role.VISU_ALL) && !SecurityProvider.isGranted(Role.VISU_IMMEUBLES)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
@@ -111,17 +71,15 @@ public class ImmeubleController {
 
 		ControllerUtils.checkAccesDossierEnLecture(ctbId);
 
+		final int totalCount = immeubleDAO.count(ctbId);
+
 		final List<ImmeubleView> views = new ArrayList<ImmeubleView>();
-		final List<Immeuble> list = immeubleDAO.find(ctbId);
+		final ParamPagination pagination = new ParamPagination(page, pageSize, null, true);
+		final List<Immeuble> list = immeubleDAO.find(ctbId, pagination);
 		for (Immeuble immeuble : list) {
-			views.add(new ImmeubleView(immeuble));
+			views.add(new ImmeubleView(immeuble, messageSource));
 		}
 
-		Collections.sort(views, IMMEUBLE_COMPARATOR);
-
-		mav.addAttribute("immeubles", views);
-
-		return "rf/immeuble/list";
+		return new ImmeublesPage(views, page, totalCount);
 	}
-
 }
