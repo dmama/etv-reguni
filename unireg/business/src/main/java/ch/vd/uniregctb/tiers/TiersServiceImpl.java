@@ -1927,7 +1927,20 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
+		if (LOGGER.isDebugEnabled()) {
+			final String message = "Personne physique n°" + personnePhysique.getNumero() + " / individu n°" + personnePhysique.getNumeroIndividu() + " :\n" +
+					"  - " + size(ind.getEnfants()) + " enfant(s)\n" +
+					"  - " + size(ind.getAdoptionsReconnaissances()) + " adoptés(s)\n" +
+					"  - " + size(ind.getParents()) + " parent(s)\n" +
+					" => total " + size(filiations) + " liens de filiation générés.";
+			LOGGER.debug(message);
+		}
+
 		return filiations;
+	}
+
+	private static int size(Collection<?> coll) {
+		return coll == null ? 0 : coll.size();
 	}
 
 
@@ -1938,6 +1951,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(noIndEnfant);
 		if (ppEnfant == null) {
+			LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + noIndEnfant);
 			return null;
 		}
 
@@ -1956,6 +1970,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
 		if (ppEnfant == null) {
+			LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + enfant.getNoTechnique());
 			return null;
 		}
 
@@ -1979,6 +1994,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(noIndParent);
 		if (ppParent == null) {
+			LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu parent n°" + noIndParent);
 			return null;
 		}
 
