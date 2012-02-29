@@ -25,7 +25,9 @@ import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
+@SuppressWarnings("UnusedDeclaration")
 public abstract class IndividuDumper {
 
 	private static final TIntObjectHashMap tabs = new TIntObjectHashMap();
@@ -34,14 +36,15 @@ public abstract class IndividuDumper {
 	 * Dump l'individu spécifié sous forme de string.
 	 *
 	 * @param individu       un individu
-	 * @param ignoreSpecific <b>vrai</b> si les différences connues entre Reg-PP et RcPers doivent être ignorées; <b>faux</b> si absolument toutes les valeurs doivent être dumpées.
+	 * @param ignoreSpecific <b>vrai</b> si les différences connues et normales entre Reg-PP et RcPers doivent être ignorées; <b>faux</b> autrement.
+	 * @param ignoreBugs     <b>vrai</b> si les différences entre Reg-PP et RcPers dues à des bugs RcPers doivent être ignorées; <b>faux</b> autrement.
 	 * @return une string qui représente les données de l'individu.
 	 */
-	public static String dump(Individu individu, boolean ignoreSpecific) {
-		return dump(individu, ignoreSpecific, 0);
+	public static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs) {
+		return dump(individu, ignoreSpecific, ignoreBugs, 0);
 	}
 
-	private static String dump(Individu individu, boolean ignoreSpecific, int depth) {
+	private static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
 		if (individu == null) {
 			return "null";
 		}
@@ -51,15 +54,19 @@ public abstract class IndividuDumper {
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("adoptionsReconnaissances=").append(dumpAdoptions(individu.getAdoptionsReconnaissances(), depth + 1)).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("autresPrenoms=").append(dumpString(individu.getAutresPrenoms())).append(", \n");
-		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsversIndividus(individu.getConjoints(), depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsversIndividus(individu.getConjoints(), depth + 1, false)).append(", \n");
 		s.append(tab(depth + 1)).append("dateDeces=").append(individu.getDateDeces()).append(", \n");
 		s.append(tab(depth + 1)).append("dateNaissance=").append(individu.getDateNaissance()).append(", \n");
-		s.append(tab(depth + 1)).append("dateArriveeVD=").append(individu.getDateArriveeVD()).append(", \n");
-		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsversIndividus(individu.getEnfants(), depth + 1)).append(", \n");
+		if (!ignoreSpecific) {
+			s.append(tab(depth + 1)).append("dateArriveeVD=").append(individu.getDateArriveeVD()).append(", \n");
+		}
+		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsversIndividus(individu.getEnfants(), depth + 1, ignoreBugs)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
+		if (!ignoreSpecific) {
+			s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("noAvs11=").append(dumpString(individu.getNoAVS11())).append(", \n");
 		s.append(tab(depth + 1)).append("noTechnique=").append(individu.getNoTechnique()).append(", \n");
 		s.append(tab(depth + 1)).append("nom=").append(dumpString(individu.getNom())).append(", \n");
@@ -67,16 +74,20 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("nouveauNoAvs=").append(dumpString(individu.getNouveauNoAVS())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroRCE=").append(dumpString(individu.getNumeroRCE())).append(", \n");
 		s.append(tab(depth + 1)).append("origines=").append(dumpOrigines(individu.getOrigines(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsversIndividus(individu.getParents(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsversIndividus(individu.getParents(), depth + 1, ignoreBugs)).append(", \n");
+		if (!ignoreSpecific) {
+			s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), depth + 1)).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
-		s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1)).append(", \n");
+		if (!ignoreSpecific) {
+			s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1, ignoreSpecific, ignoreBugs)).append(", \n");
+		}
 		s.append(tab(depth)).append("}");
 
 		return s.toString();
 	}
 
-	private static String dumpTutelle(Tutelle tutelle, int depth) {
+	private static String dumpTutelle(Tutelle tutelle, int depth, boolean ignoreSpecific, boolean ignoreBugs) {
 		if (tutelle == null) {
 			return "null";
 		}
@@ -89,7 +100,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("noSequence=").append(tutelle.getNoSequence()).append(", \n");
 		s.append(tab(depth + 1)).append("nomAutoriteTutelaire=").append(dumpString(tutelle.getNomAutoriteTutelaire())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroCollectiviteAutoriteTutelaire=").append(tutelle.getNumeroCollectiviteAutoriteTutelaire()).append(", \n");
-		s.append(tab(depth + 1)).append("tuteur=").append(dump(tutelle.getTuteur(), true)).append(", \n");
+		s.append(tab(depth + 1)).append("tuteur=").append(dump(tutelle.getTuteur(), ignoreSpecific, ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("tuteurGeneral=").append(dumpTuteurGeneral(tutelle.getTuteurGeneral(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(tutelle.getTypeTutelle()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -260,7 +271,7 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpRelationsversIndividus(Collection<RelationVersIndividu> conjoints, int depth) {
+	private static String dumpRelationsversIndividus(Collection<RelationVersIndividu> conjoints, int depth, boolean ignoreBugs) {
 		if (conjoints == null) {
 			return "null";
 		}
@@ -275,21 +286,23 @@ public abstract class IndividuDumper {
 			else {
 				s.append(", ");
 			}
-			s.append(dumpRelationVersIndividu(conjoint, depth + 1));
+			s.append(dumpRelationVersIndividu(conjoint, depth + 1, ignoreBugs));
 		}
 		s.append("]");
 
 		return s.toString();
 	}
 
-	private static String dumpRelationVersIndividu(RelationVersIndividu rel, int depth) {
+	private static String dumpRelationVersIndividu(RelationVersIndividu rel, int depth, boolean ignoreBugs) {
 		if (rel == null) {
 			return "null";
 		}
 
 		StringBuilder s = new StringBuilder();
 		s.append("RelationVersIndividu{\n");
-		s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
+		if (!ignoreBugs) {
+			s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("dateFin=").append(rel.getDateFin()).append(", \n");
 		s.append(tab(depth + 1)).append("numeroAutreIndividu=").append(rel.getNumeroAutreIndividu()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -297,7 +310,7 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpAdresses(Collection<Adresse> list, boolean ignoreSpecific, int depth) {
+	private static String dumpAdresses(Collection<Adresse> list, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
 
 		if (list == null) {
 			return "null";
@@ -327,24 +340,28 @@ public abstract class IndividuDumper {
 			else {
 				s.append(", ");
 			}
-			s.append(dumpAdresse(adresse, ignoreSpecific, depth + 1));
+			s.append(dumpAdresse(adresse, ignoreSpecific, ignoreBugs, depth + 1));
 		}
 		s.append("]");
 
 		return s.toString();
 	}
 
-	private static String dumpAdresse(Adresse a, boolean ignoreSpecific, int depth) {
+	private static String dumpAdresse(Adresse a, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
 		if (a == null) {
 			return "null";
 		}
 
 		StringBuilder s = new StringBuilder();
 		s.append("Adresse{\n");
-		s.append(tab(depth + 1)).append("casePostale=").append(dumpCasePostale(a.getCasePostale(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("communeAdresse=").append(dumpCommune(a.getCommuneAdresse(), ignoreSpecific, depth + 1)).append(", \n");
+		if (!ignoreSpecific) {
+			s.append(tab(depth + 1)).append("casePostale=").append(dumpCasePostale(a.getCasePostale(), depth + 1)).append(", \n");
+			s.append(tab(depth + 1)).append("communeAdresse=").append(dumpCommune(a.getCommuneAdresse(), ignoreSpecific, depth + 1)).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
-		s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
+		if (!ignoreBugs || a.getTypeAdresse() != TypeAdresseCivil.COURRIER) { // SIREF-1487
+			s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("egid=").append(a.getEgid()).append(", \n");
 		s.append(tab(depth + 1)).append("ewid=").append(a.getEwid()).append(", \n");
 		if (!ignoreSpecific) {
