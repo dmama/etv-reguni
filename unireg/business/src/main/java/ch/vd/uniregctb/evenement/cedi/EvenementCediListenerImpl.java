@@ -154,7 +154,9 @@ public class EvenementCediListenerImpl extends EsbMessageEndpointListener implem
 				scan.setTitulaireCompte(coordonnes.getTitulaireCompte());
 			}
 
-			LOGGER.info("Contenu du message : " + scan);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Contenu du message : " + scan);
+			}
 
 			return scan;
 		}
