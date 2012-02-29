@@ -32,6 +32,27 @@ public abstract class IndividuDumper {
 
 	private static final TIntObjectHashMap tabs = new TIntObjectHashMap();
 
+	public static String dump(Collection<Individu> individus, boolean ignoreSpecific, boolean ignoreBugs) {
+		final StringBuilder s = new StringBuilder();
+		if (individus == null) {
+			s.append("null");
+		}
+		else {
+			s.append("[");
+			boolean first = true;
+			for (Individu individu : individus) {
+				if (first) {
+					first = false;
+				}
+				else {
+					s.append(", ");
+				}
+				s.append(dump(individu, false, false));
+			}
+		}
+		return s.toString();
+	}
+
 	/**
 	 * Dump l'individu spécifié sous forme de string.
 	 *
@@ -415,6 +436,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("nomMajuscule=").append(dumpString(commune.getNomMajuscule())).append(", \n");
 		s.append(tab(depth + 1)).append("nomMinuscule=").append(dumpString(commune.getNomMinuscule())).append(", \n");
 		s.append(tab(depth + 1)).append("numTechMere=").append(commune.getNumTechMere()).append(", \n");
+		//noinspection deprecation
 		s.append(tab(depth + 1)).append("numeroTechnique=").append(commune.getNumeroTechnique()).append(", \n");
 		s.append(tab(depth + 1)).append("sigleCanton=").append(dumpString(commune.getSigleCanton())).append(", \n");
 		s.append(tab(depth + 1)).append("sigleOfs=").append(dumpString(commune.getSigleOFS())).append(", \n");

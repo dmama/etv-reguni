@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.interfaces.IndividuDumper;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -30,6 +32,8 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class ServiceCivilTracing implements ServiceCivilService, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
+	private static final Logger LOGGER = Logger.getLogger(ServiceCivilTracing.class);
+	
 	private ServiceCivilService target;
 	private StatsService statsService;
 
@@ -119,7 +123,12 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getIndividu(noIndividu, date, parties);
+			final Individu individu = target.getIndividu(noIndividu, date, parties);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace(String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
+						IndividuDumper.dump(individu, false, false)));
+			}
+			return individu;
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -140,7 +149,11 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getConjoint(noIndividuPrincipal, date);
+			final Individu individu = target.getConjoint(noIndividuPrincipal, date);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace(String.format("getConjoint(noIndividuPrincipal=%d, date=%s) => %s", noIndividuPrincipal, ServiceTracing.toString(date), IndividuDumper.dump(individu, false, false)));
+			}
+			return individu;
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -203,7 +216,12 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getIndividus(nosIndividus, date, parties);
+			final List<Individu> individus = target.getIndividus(nosIndividus, date, parties);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace(String.format("getIndividus(nosIndividus=%s, date=%s, parties=%s) => %s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date),
+						ServiceTracing.toString(parties), IndividuDumper.dump(individus, false, false)));
+			}
+			return individus;
 		}
 		catch (RuntimeException e) {
 			t = e;
