@@ -12,6 +12,12 @@ OUVERTURE=$3
 CTB_PRINC=$(echo "$4" | sed -e 's/\.//g')
 CTB_CONJ=$(echo "$5" | sed -e 's/\.//g')
 
+TABLE_PREFIX_FILE=$(dirname "$0")/table-prefix
+TABLE_PREFIX=""
+if [ -e "$TABLE_PREFIX_FILE" -a -r "$TABLE_PREFIX_FILE" ]; then
+	TABLE_PREFIX=$(< "$TABLE_PREFIX_FILE")
+fi
+
 if [[ ! "$JIRA" =~ ^[0-9]+$ ]]; then
 	echo "Le numéro de cas Jira devrait être un nombre (trouvé : '$JIRA')" >&2
 	exit 1
@@ -35,10 +41,10 @@ elif [ -n "$CTB_CONJ" ]; then
 fi
 
 echo "-- Création des rapports entre tiers de type 'appartenance ménage'"
-echo "INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, TIERS_SUJET_ID, TIERS_OBJET_ID)"
+echo "INSERT INTO ${TABLE_PREFIX}RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, TIERS_SUJET_ID, TIERS_OBJET_ID)"
 echo "SELECT 'AppartenanceMenage', HIBERNATE_SEQUENCE.NEXTVAL, CURRENT_DATE, 'SQL-SIFISC-$JIRA', CURRENT_DATE, 'SQL-SIFISC-$JIRA', $OUVERTURE, NUMERO, $MC"
 if [ -n "$CTB_CONJ" ]; then
-	echo "FROM TIERS WHERE NUMERO IN ($CTB_PRINC, $CTB_CONJ);"
+	echo "FROM ${TABLE_PREFIX}TIERS WHERE NUMERO IN ($CTB_PRINC, $CTB_CONJ);"
 else 
-	echo "FROM TIERS WHERE NUMERO=$CTB_PRINC;"
+	echo "FROM ${TABLE_PREFIX}TIERS WHERE NUMERO=$CTB_PRINC;"
 fi

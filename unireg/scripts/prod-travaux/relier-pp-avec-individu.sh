@@ -10,6 +10,12 @@ JIRA=$1
 CTB_PP=$(echo "$2" | sed -e 's/\.//g')
 IND=$3
 
+TABLE_PREFIX_FILE=$(dirname "$0")/table-prefix
+TABLE_PREFIX=""
+if [ -e "$TABLE_PREFIX_FILE" -a -r "$TABLE_PREFIX_FILE" ]; then
+        TABLE_PREFIX=$(< "$TABLE_PREFIX_FILE")
+fi
+
 if [[ ! "$JIRA" =~ ^[0-9]+$ ]]; then
 	echo "Le numéro de cas Jira devrait être un nombre (trouvé : '$JIRA')" >&2
 	exit 1
@@ -22,7 +28,7 @@ elif [[ ! "$IND" =~ ^[0-9]+$ ]]; then
 fi
 
 echo "-- Association de la personne physique $CTB_PP avec l'individu = $IND"
-echo "UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-SIFISC-$JIRA', PP_HABITANT=1, NUMERO_INDIVIDU=$IND, INDEX_DIRTY=1 WHERE NUMERO=$CTB_PP;"
-echo "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=$CTB_PP;"
+echo "UPDATE ${TABLE_PREFIX}TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER='SQL-SIFISC-$JIRA', PP_HABITANT=1, NUMERO_INDIVIDU=$IND, INDEX_DIRTY=1 WHERE NUMERO=$CTB_PP;"
+echo "DELETE FROM ${TABLE_PREFIX}IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=$CTB_PP;"
 echo
 $(dirname "$0")/aligner-pp-avec-evenements-civils.sh $JIRA $CTB_PP $IND
