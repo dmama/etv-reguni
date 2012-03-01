@@ -54,7 +54,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	public static final Logger LOGGER = Logger.getLogger(AbstractMouvementManagerImpl.class);
 
-	private static final int NB_MAX_MOUVEMENTS_GARDES = 10;
+	protected static final int NB_MAX_MOUVEMENTS_GARDES = 10;
 
 	private TiersGeneralManager tiersGeneralManager;
 
