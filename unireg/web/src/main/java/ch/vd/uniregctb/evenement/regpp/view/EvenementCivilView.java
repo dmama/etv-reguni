@@ -13,8 +13,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilView {
 
-	private static final long serialVersionUID = 1822889718034929426L;
-
 	private Long id;
 	private TypeEvenementCivil type;
 	private EtatEvenementCivil etat = EtatEvenementCivil.A_TRAITER;

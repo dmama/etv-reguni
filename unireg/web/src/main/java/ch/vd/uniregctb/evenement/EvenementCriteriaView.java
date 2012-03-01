@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.regpp.view;
+package ch.vd.uniregctb.evenement;
 
 import java.util.Date;
 
@@ -6,11 +6,12 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCriteriaView extends EvenementCivilRegPPCriteria {
+abstract public class EvenementCriteriaView<TYPE_EVT extends Enum<TYPE_EVT> > extends EvenementCivilCriteria<TYPE_EVT> {
 
 	public static final String TOUS = "TOUS";
 
@@ -28,17 +29,31 @@ public class EvenementCriteriaView extends EvenementCivilRegPPCriteria {
 		return typeEvenement;
 	}
 
+
 	public void setTypeEvenement(String typeEvenement) {
 		if (TOUS.equals(typeEvenement)) {
 			setType(null);
 		}
 		else {
-			final TypeEvenementCivil type = TypeEvenementCivil.valueOf(typeEvenement);
+			TYPE_EVT type = Enum.valueOf(getTypeClass(), typeEvenement);
 			if (type != null) {
 				setType(type);
 			}
 		}
 		this.typeEvenement = typeEvenement;
+	}
+
+	protected abstract Class<TYPE_EVT> getTypeClass();
+
+	@Override
+	public void setType(TYPE_EVT type) {
+		super.setType(type);
+		if (type != null) {
+			this.typeEvenement = type.name();
+		}
+		else {
+			this.typeEvenement = TOUS;
+		}
 	}
 
 	public String getEtatEvenement() {
@@ -66,17 +81,6 @@ public class EvenementCriteriaView extends EvenementCivilRegPPCriteria {
 		}
 		else {
 			this.etatEvenement = TOUS;
-		}
-	}
-
-	@Override
-	public void setType(TypeEvenementCivil type) {
-		super.setType(type);
-		if (type != null) {
-			this.typeEvenement = type.name();
-		}
-		else {
-			this.typeEvenement = TOUS;
 		}
 	}
 

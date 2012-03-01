@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.regpp;
+package ch.vd.uniregctb.evenement;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementRegPPCriteriaView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class EvenementCriteriaValidator implements Validator  {
@@ -15,7 +15,7 @@ public class EvenementCriteriaValidator implements Validator  {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return EvenementCriteriaView.class.equals(clazz);
+		return EvenementCriteriaView.class.isAssignableFrom(clazz);
 	}
 
 	/**

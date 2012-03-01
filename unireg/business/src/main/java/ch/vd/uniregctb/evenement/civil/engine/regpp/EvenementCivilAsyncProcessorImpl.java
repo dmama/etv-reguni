@@ -21,8 +21,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
@@ -263,7 +263,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 							LOGGER.info("Recherche des événements civils Reg-PP dans l'état 'A_TRAITER'");
 
-							final EvenementCivilRegPPCriteria criteres = new EvenementCivilRegPPCriteria();
+							final EvenementCivilCriteria criteres = new EvenementCivilCriteria();
 							criteres.setEtat(EtatEvenementCivil.A_TRAITER);
 							final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criteres, null);
 							if (evts != null && !evts.isEmpty()) {

@@ -6,6 +6,7 @@ import java.util.List;
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -33,13 +34,13 @@ public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, 
 	 * @param paramPagination
 	 * @return
 	 */
-	List<EvenementCivilRegPP> find(EvenementCivilRegPPCriteria criterion, ParamPagination paramPagination);
+	List<EvenementCivilRegPP> find(EvenementCivilCriteria criterion, ParamPagination paramPagination);
 
 	/**
 	 * @param criterion
 	 * @return
 	 */
-	int count(EvenementCivilRegPPCriteria criterion);
+	int count(EvenementCivilCriteria criterion);
 
 	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE ou EN_ERREUR.

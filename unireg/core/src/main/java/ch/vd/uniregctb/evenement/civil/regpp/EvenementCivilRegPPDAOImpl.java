@@ -18,6 +18,7 @@ import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -89,7 +90,7 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegPP> find(final EvenementCivilRegPPCriteria criterion, final ParamPagination paramPagination) {
+	public List<EvenementCivilRegPP> find(final EvenementCivilCriteria criterion, final ParamPagination paramPagination) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of EvenementCivilRegPPDAO:find");
 		}
@@ -139,10 +140,10 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 	}
 
 	/**
-	 * @see EvenementCivilRegPPDAO#count(EvenementCivilRegPPCriteria)
+	 * @see EvenementCivilRegPPDAO#count(ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria)
 	 */
 	@Override
-	public int count(EvenementCivilRegPPCriteria criterion){
+	public int count(EvenementCivilCriteria criterion){
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of EvenementCivilRegPPDAO:count");
 		}
@@ -164,7 +165,7 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 	 * @param criterion ...
 	 * @return la clause where correspondante à l'objet criterion, null si la requête est vouée à être vide
 	 */
-	private String buildCriterion(List<Object> criteria, EvenementCivilRegPPCriteria criterion) {
+	private String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
 		String queryWhere = "";
 
 		// Si la valeur n'existe pas (TOUS par exemple), type = null
@@ -234,8 +235,8 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("EvenementCivilRegPPCriteria Query: " + queryWhere);
-			LOGGER.trace("EvenementCivilRegPPCriteria Table size: " + criteria.toArray().length);
+			LOGGER.trace("EvenementCivilCriteria Query: " + queryWhere);
+			LOGGER.trace("EvenementCivilCriteria Table size: " + criteria.toArray().length);
 		}
 		return queryWhere;
 	}

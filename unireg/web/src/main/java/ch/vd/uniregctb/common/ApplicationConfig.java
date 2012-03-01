@@ -34,6 +34,8 @@ public class ApplicationConfig {
 	public static final String masterKeyTypeEvenement = "option.type.evenement.";
 	public static final String masterKeyTypeRapportEntreTiers = "option.rapport.entre.tiers.";
 	public static final String masterKeyEtatEvenementCivil = "option.etat.evenement.";
+	public static final String masterKeyTypeEvenementEch = "option.type.evenement.ech.";
+	public static final String masterKeyActionEvenementEch = "option.action.evenement.ech.";
 	public static final String masterKeyEtatCivil = "option.etat.civil.";
 	public static final String masterKeyTypeAdresseTiers = "option.usage.";
 	public static final String masterKeyTypeEtatDocument = "option.etat.avancement.";

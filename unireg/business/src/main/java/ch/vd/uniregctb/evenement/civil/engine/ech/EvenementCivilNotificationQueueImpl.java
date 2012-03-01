@@ -205,6 +205,7 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		return null;
 	}
 
+	// TODO FRED bookmark pour ordonner les evts
 	private List<EvtCivilInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);

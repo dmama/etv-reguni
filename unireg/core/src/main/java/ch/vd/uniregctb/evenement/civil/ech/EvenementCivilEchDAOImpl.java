@@ -13,6 +13,8 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, Long> implements EvenementCivilEchDAO {
@@ -74,5 +76,17 @@ public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, 
 				return new HashSet<Long>(query.list());
 			}
 		});
+	}
+
+	@Override
+	public List<EvenementCivilEch> find(EvenementCivilCriteria criterion, ParamPagination paramPagination) {
+		//TODO FRED Implementer find pour la recherche des evts dans l'IHM
+		return getAll();
+
+	}
+
+	@Override
+	public int count(EvenementCivilCriteria criterion) {
+		return getAll().size();  //TODO FRED Implementer
 	}
 }

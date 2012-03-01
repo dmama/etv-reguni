@@ -20,9 +20,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -796,7 +796,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final EvenementCivilRegPPCriteria criterion = new EvenementCivilRegPPCriteria();
+				final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
 				criterion.setNumeroIndividu(noIndividuMonsieur);
 				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
 				assertNotNull(evts);
@@ -873,7 +873,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final EvenementCivilRegPPCriteria criterion = new EvenementCivilRegPPCriteria();
+				final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
 				criterion.setNumeroIndividu(noIndividuMonsieur);
 				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
 				assertNotNull(evts);

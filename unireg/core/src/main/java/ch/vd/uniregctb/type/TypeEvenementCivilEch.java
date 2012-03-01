@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Les types d'événements civils issus de la norme eVD-0006
+ *
+ * NB: Pensez à rajouter/supprimer/corriger le libellé du type de l'évenement
+ *     dans UniregOptionResources.properties après la modification de cette enum
  */
 public enum TypeEvenementCivilEch {
 

@@ -18,6 +18,8 @@ import ch.vd.uniregctb.declaration.EtatDeclarationDAO;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
@@ -54,6 +56,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
+	private EvenementCivilEchDAO evenementCivilEchDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
@@ -76,6 +79,7 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	public final static String NATURE_TACHE_PARAMETER_VALUE = "Tache";
 	public final static String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
 	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
+	public final static String NATURE_EVENEMENT_ECH_PARAMETER_VALUE = "EvenementEch";
 	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
 	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
 	public final static String NATURE_IMMEUBLE = "Immeuble";
@@ -141,6 +145,10 @@ public class ConsultLogController extends AbstractSimpleFormController {
 				}
 				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
 					EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
+					return fillConsultLogView(evenementCivilExterne);
+				}
+				else if (nature.equals(NATURE_EVENEMENT_ECH_PARAMETER_VALUE)) {
+					EvenementCivilEch evenementCivilExterne = evenementCivilEchDAO.get(id);
 					return fillConsultLogView(evenementCivilExterne);
 				}
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
@@ -235,6 +243,11 @@ public class ConsultLogController extends AbstractSimpleFormController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
 		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementCivilEchDAO(EvenementCivilEchDAO evenementCivilEchDAO) {
+		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

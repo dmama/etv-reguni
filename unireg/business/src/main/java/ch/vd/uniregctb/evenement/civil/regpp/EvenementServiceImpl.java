@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.regpp;
 import java.util.List;
 
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 
 /**
  *  Implementation du service expose pour gerer les evenements civils
@@ -19,18 +20,18 @@ public class EvenementServiceImpl implements EvenementService{
 
 
 	/**
-	 * @see EvenementService#find(EvenementCivilRegPPCriteria, ch.vd.uniregctb.common.ParamPagination)
+	 * @see EvenementService#find(ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria, ch.vd.uniregctb.common.ParamPagination)
 	 */
 	@Override
-	public List<EvenementCivilRegPP> find(EvenementCivilRegPPCriteria criterion, ParamPagination paramPagination) {
+	public List<EvenementCivilRegPP> find(EvenementCivilCriteria criterion, ParamPagination paramPagination) {
 		return evenementCivilRegPPDAO.find(criterion, paramPagination);
 	}
 
 	/**
-	 * @see EvenementService#count(EvenementCivilRegPPCriteria)
+	 * @see EvenementService#count(ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria)
 	 */
 	@Override
-	public int count(EvenementCivilRegPPCriteria criterion){
+	public int count(EvenementCivilCriteria criterion){
 		return evenementCivilRegPPDAO.count(criterion);
 	}
 	/**

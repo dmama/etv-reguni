@@ -1,18 +1,23 @@
-package ch.vd.uniregctb.evenement.civil.regpp;
+package ch.vd.uniregctb.evenement.civil;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCivilRegPPCriteria implements Serializable {
+/*
+ * Classe générique qui convient pour les critères de recherche sur les
+ * évenements ech ou regpp. Cette classe a été générisée lors de la creation de l'ecran de recherche
+ * pour les evt ech. Si la recherche des evts ech devenait trop spécifique on aurait meilleur
+ * temps de respécialiser cette classe pour les evts regpp (comme à l'origine) et recreer une nouvelle
+ * classe critère pour la recherche ech.
+ */
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -733844545319723617L;
+public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements Serializable {
+
+	private static final long serialVersionUID = -733844545319723616L;
 
 	public enum TypeRechercheDuNom {
 		CONTIENT,
@@ -20,20 +25,20 @@ public class EvenementCivilRegPPCriteria implements Serializable {
 		EST_EXACTEMENT
 	}
 
-	private EtatEvenementCivil etat;
-
-	public EtatEvenementCivil getEtat() {
-		return etat;
-	}
-
-	public void setEtat(EtatEvenementCivil etat) {
-		this.etat = etat;
-	}
-
 	/**
 	 * Le type de l'evenement
 	 */
-	private TypeEvenementCivil type;
+	private TYPE_EVT type;
+
+	/**
+	 * L'état de l'évenement
+	 */
+	private EtatEvenementCivil etat;
+
+	/**
+	 * L'action de l'evenement (seulement pour les evt ech)
+	 */
+	private ActionEvenementCivilEch action;
 
 	/**
 	 * La date de traitement debut
@@ -45,8 +50,14 @@ public class EvenementCivilRegPPCriteria implements Serializable {
 	 */
 	private Date dateTraitementFin;
 
+	/**
+	 * La date du début de l'évenement
+	 */
 	protected RegDate dateEvenementDebut;
 
+	/**
+	 * La date de fin de l'évenement
+	 */
 	protected RegDate dateEvenementFin;
 
 	/**
@@ -74,12 +85,28 @@ public class EvenementCivilRegPPCriteria implements Serializable {
 	 */
 	private boolean autresNoms;
 
-	public TypeEvenementCivil getType() {
+	public TYPE_EVT getType() {
 		return type;
 	}
 
-	public void setType(TypeEvenementCivil type) {
+	public void setType(TYPE_EVT type) {
 		this.type = type;
+	}
+
+	public EtatEvenementCivil getEtat() {
+		return etat;
+	}
+
+	public void setEtat(EtatEvenementCivil etat) {
+		this.etat = etat;
+	}
+
+	public ActionEvenementCivilEch getAction() {
+		return action;
+	}
+
+	public void setAction(ActionEvenementCivilEch action) {
+		this.action = action;
 	}
 
 	public Date getDateTraitementDebut() {
@@ -163,5 +190,4 @@ public class EvenementCivilRegPPCriteria implements Serializable {
 				&& (numeroCTB == null)
 				&& (nomCourrier == null || "".equals(nomCourrier));
 	}
-
 }

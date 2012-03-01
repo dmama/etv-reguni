@@ -17,6 +17,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -67,6 +69,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<ModeCommunication, String> mapModeCommunication;
 	private Map<TexteCasePostale, String> mapTexteCasePostale;
 	private Map<TypeEvenementCivil, String> mapTypeEvenementCivil;
+	private Map<TypeEvenementCivilEch, String> mapTypeEvenementCivilEch;
+	private Map<ActionEvenementCivilEch, String> mapActionEvenementCivilEch;
 	private Map<EtatEvenementCivil, String> mapStatusEvenementCivil;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
@@ -297,6 +301,30 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypeEvenementCivil = initMapEnum(ApplicationConfig.masterKeyTypeEvenement, TypeEvenementCivil.class);
 		}
 		return mapTypeEvenementCivil;
+	}
+
+	/**
+	 * Initialise la map des types d'evenements civils ech
+	 *
+	 * @return une map
+	 */
+	public Map<TypeEvenementCivilEch, String> getMapTypeEvenementCivilEch() {
+		if (mapTypeEvenementCivilEch == null) {
+			mapTypeEvenementCivilEch = initMapEnum(ApplicationConfig.masterKeyTypeEvenementEch, TypeEvenementCivilEch.class);
+		}
+		return mapTypeEvenementCivilEch;
+	}
+
+	/**
+	 * Initialise la map des actions d'evenements civils ech
+	 *
+	 * @return une map
+	 */
+	public Map<ActionEvenementCivilEch, String> getMapActionEvenementCivilEch() {
+		if (mapActionEvenementCivilEch == null) {
+			mapActionEvenementCivilEch = initMapEnum(ApplicationConfig.masterKeyActionEvenementEch, ActionEvenementCivilEch.class);
+		}
+		return mapActionEvenementCivilEch;
 	}
 
 	/**

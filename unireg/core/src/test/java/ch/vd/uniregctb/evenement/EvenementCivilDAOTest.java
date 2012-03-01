@@ -9,8 +9,8 @@ import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -87,7 +87,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 
-		EvenementCivilRegPPCriteria evenementCriteria = new EvenementCivilRegPPCriteria();
+		EvenementCivilCriteria evenementCriteria = new EvenementCivilCriteria();
 		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
 		List<EvenementCivilRegPP> list = dao.find(evenementCriteria, pagination);

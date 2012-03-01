@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 
 /**
  * DAO des événements civils à la sauce e-CH
@@ -29,4 +31,19 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 	 * ou {@link ch.vd.uniregctb.type.EtatEvenementCivil#EN_ERREUR EN_ERREUR}
 	 */
 	Set<Long> getIndividusConcernesParEvenementsPourRetry();
+
+	/**
+	 * Cherche les evenements correspondant aux criteres
+	 *
+	 * @param criterion critères de recherche
+	 * @param paramPagination info de pagination pour la requête
+	 * @return la liste d'evenements correspondant aux critères
+	 */
+	public List<EvenementCivilEch> find(EvenementCivilCriteria criterion, ParamPagination paramPagination);
+
+	/**
+	 * @param criterion les critères de recherche
+	 * @return le nombre d'evenement correspondant aux critères de recherche
+	 */
+	int count(EvenementCivilCriteria criterion);
 }

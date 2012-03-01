@@ -3,9 +3,9 @@ package ch.vd.uniregctb.norentes.common;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPCriteria;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -89,7 +89,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected List<EvenementCivilRegPP> getEvenementsCivils(long habitant, TypeEvenementCivil type) {
-		final EvenementCivilRegPPCriteria criterion = new EvenementCivilRegPPCriteria();
+		final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
 		criterion.setNumeroIndividu(habitant);
 		criterion.setType(type);
 		return evtExterneDAO.find(criterion, null);

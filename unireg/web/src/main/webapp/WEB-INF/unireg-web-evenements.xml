@@ -9,7 +9,7 @@
 		<property name="validator" ref="evenementCriteriaValidator" />
 	</bean>
 
-	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.regpp.EvenementCriteriaValidator" />
+	<bean id="evenementCriteriaValidator" class="ch.vd.uniregctb.evenement.EvenementCriteriaValidator" />
 
 	<bean id="evenementManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementManagerImpl" >
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
@@ -22,5 +22,21 @@
 		<property name="evenementService" ref="evenementService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
-	
+
+	<bean id="evenementEchController" class="ch.vd.uniregctb.evenement.ech.EvenementEchController">
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="evenementEchManager" ref="evenementEchManager" />
+		<property name="validator" ref="evenementCriteriaValidator" />
+	</bean>
+
+	<bean id="evenementEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementEchManagerImpl" >
+		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
+		<property name="evenementCivilProcessor" ref="evtCivilEchProcessor" />
+		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
 </beans>
