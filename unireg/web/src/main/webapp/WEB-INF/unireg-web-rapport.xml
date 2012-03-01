@@ -55,8 +55,8 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="cacheWarmer" ref="serviceCivilCacheWarmer" />
-		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="messageSource" ref="messageSource" />
 	</bean>
 
 	<bean id="rapportListController" class="ch.vd.uniregctb.rapport.RapportListController" parent="abstractTiersListController">

@@ -825,6 +825,37 @@ var Tiers = {
 	 */
 	queryInfo : function(numero, callback) {
 		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback);
+	},
+
+	/**
+	 * Formatte un numéro de tiers pour l'affichage.
+	 *
+	 * Exemple : 54, 1.05, 123.34, 21.764.00, 120.223.344.
+	 */
+	formatNumero: function(numero) {
+		var s = '';
+		if (numero) {
+			var numero = '' + numero;
+			var length = numero.length;
+			if (length < 3) {
+				s = numero;
+			}
+			else if (length < 6) {
+				s = numero.substring(0, length - 2) + '.' + numero.substring(length - 2);
+			}
+			else {
+				s = numero.substring(0, length - 5) + '.' + numero.substring(length - 5, length - 2) + '.' + numero.substring(length - 2);
+			}
+		}
+		return s;
+	},
+
+	linkTo: function(numero) {
+		var s = '';
+		if (numero) {
+			s = '<a href="' + getContextPath() + 'tiers/visu.do?id=' + numero + '">' + this.formatNumero(numero) + '</a>';
+		}
+		return s;
 	}
 }
 
@@ -1850,5 +1881,56 @@ var Batch = {
 		else {
 			return '';
 		}
+	}
+}
+
+//===================================================
+
+var DisplayTable =  {
+
+	buildPagination: function(page, pageSize, totalCount, buildGotoPageStatement) {
+
+		var html = '';
+
+		if (totalCount > pageSize) {
+			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<td class="pagebanner">Trouvé ' + totalCount + ' éléments. Affichage de ' + ((page - 1) * pageSize + 1) + ' à ' + (page * pageSize) + '.</td>';
+			html += '<td class="pagelinks">&nbsp;\n';
+
+			var pageCount = Math.ceil(totalCount / pageSize);
+			var firstShownPage = Math.max(1, page - 5);
+			var lastShownPage = Math.min(pageCount, page + 5);
+
+			// previous link
+			if (page > 1) {
+				html += '<a href="#" onclick="' + buildGotoPageStatement(1) + '; return false;">«&nbsp;premier</a>\n';
+				html += '<a href="#" onclick="' + buildGotoPageStatement(page - 1) + '; return false;">‹&nbsp;précédent</a>\n';
+			}
+
+			// direct page links
+			for (var i = firstShownPage; i <= lastShownPage; ++i) {
+				if (i == page) {
+					html += '<font size="+1"><strong>' + i + '</strong></font>&nbsp;\n';
+				}
+				else {
+					html += '<a href="#" onclick="' + buildGotoPageStatement(i) + '; return false;">' + i + '</a>&nbsp;\n';
+				}
+			}
+
+			// next link
+			if (page < pageCount) {
+				html += '<a href="#" onclick="' + buildGotoPageStatement(page + 1) + '; return false;">suivant&nbsp;›</a>\n';
+				html += '<a href="#" onclick="' + buildGotoPageStatement(pageCount) + '; return false;">dernier&nbsp;»</a>\n';
+			}
+
+			html += '</td></tr></table>';
+		}
+		else if (totalCount == 0) {
+			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<td class="pagebanner">Aucun élément trouvé.</td>';
+			html += '</td></tr></table>';
+		}
+
+		return html;
 	}
 }
