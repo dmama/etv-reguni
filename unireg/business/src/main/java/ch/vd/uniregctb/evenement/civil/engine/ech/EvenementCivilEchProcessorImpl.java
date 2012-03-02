@@ -105,7 +105,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					if (evts != null) {
 						try {
 							if (evts.contenu.size() > 0) {
-								processEvents(evts.contenu);
+								processEvents(evts.noIndividu, evts.contenu);
 							}
 						}
 						finally {
@@ -125,12 +125,13 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 		/**
 		 * Prend les événements dans l'ordre et essaie de les traiter. S'arrête à la première erreur.
+		 * @param noIndividu identifiant de l'individu pour lequel des événements doivent être traités
 		 * @param evts descriptifs des événements à traiter
 		 */
-		private void processEvents(List<EvenementCivilNotificationQueue.EvtCivilInfo> evts) {
+		private void processEvents(long noIndividu, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts) {
 			int pointer = 0;
 			try {
-				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), evts.get(0).noIndividu));
+				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
 				for (EvenementCivilNotificationQueue.EvtCivilInfo evt : evts) {
 					if (!stopping) {
 						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {

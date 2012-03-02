@@ -136,7 +136,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 				@NotNull
 				@Override
 				public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-					final PersonnePhysique pp = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getNoIndividu());
+					final PersonnePhysique pp = getPrincipalPP();
 					if (pp != null) {
 						context.getIndexer().schedule(pp.getNumero());
 					}
