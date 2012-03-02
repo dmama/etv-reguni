@@ -31,7 +31,6 @@
 
 	<bean id="evenementEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementEchManagerImpl" >
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
-		<property name="evenementCivilProcessor" ref="evtCivilEchProcessor" />
 		<property name="hostCivilService" ref="hostCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="adresseService" ref="adresseService" />

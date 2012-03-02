@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementEchView;
@@ -40,11 +39,10 @@ import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuEx
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
- * @InheritDoc
+ * @inheritDoc
  *
  */
 public class EvenementEchManagerImpl implements EvenementEchManager, MessageSourceAware {
@@ -54,7 +52,6 @@ public class EvenementEchManagerImpl implements EvenementEchManager, MessageSour
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
-	private EvenementCivilEchProcessor evenementCivilProcessor;
 	private ServiceCivilService serviceCivilService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private MessageSource messageSource;
@@ -82,11 +79,6 @@ public class EvenementEchManagerImpl implements EvenementEchManager, MessageSour
 	@SuppressWarnings("unused")
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
-
-	@SuppressWarnings("unused")
-	public void setEvenementCivilProcessor(EvenementCivilEchProcessor evenementCivilProcessor) {
-		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
 	/**
@@ -208,8 +200,10 @@ public class EvenementEchManagerImpl implements EvenementEchManager, MessageSour
 	 */
 	@Override
 	public void traiteEvenementCivil(Long id) {
-		// TODO FRED Implementer: Seulement le premier evenement d'un individu peut etre recyclé
-		// evenementCivilProcessor.recycleEvenementCivil(id);
+		// TODO FRED Implementer
+		// - Seulement le premier evenement d'un individu peut etre recyclé
+		// - Il faut reposter l'evenement dans la notification queue EvenementCivilNotificationQueueImpl
+
 	}
 
 
@@ -220,13 +214,15 @@ public class EvenementEchManagerImpl implements EvenementEchManager, MessageSour
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		// TODO FRED Implementer: Seulement le premier evenement d'un individu peut etre forcé
-//		final EvenementCivilEch evenementCivilExterne = evenementCivilEchDAO.get(id);
-//
+		// TODO FRED Implementer
+		//  - Seulement le premier evenement d'un individu peut etre forcé
+		// - Il faut reposter l'evenement dans la notification queue EvenementCivilNotificationQueueImpl
+
 //		// l'état "FORCE" n'est accessible qu'aux événements civils qui ne sont pas encore traités
 //		if (!evenementCivilExterne.getEtat().isTraite() || evenementCivilExterne.getEtat() == EtatEvenementCivil.A_VERIFIER) {
 //			evenementCivilProcessor.forceEvenementCivil(evenementCivilExterne);
 //		}
+
 	}
 
 	/**
