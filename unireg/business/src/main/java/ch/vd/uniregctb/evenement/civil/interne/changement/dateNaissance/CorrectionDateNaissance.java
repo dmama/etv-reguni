@@ -49,21 +49,6 @@ public class CorrectionDateNaissance extends ChangementBase {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 	}
 
-	private static final EvenementCivilErreurCollector DUMMY_ERROR_COLLECTOR = new EvenementCivilErreurCollector() {
-		@Override
-		public void addErreur(Exception e) {
-		}
-
-		@Override
-		public void addErreur(String msg) {
-		}
-
-		@Override
-		public boolean hasErreurs() {
-			return false;
-		}
-	};
-
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
