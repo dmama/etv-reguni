@@ -71,7 +71,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 		Audit.info(getNumeroEvenement(), String.format("Correction de la date de naissance de l'individu : %d", getNoIndividu()));
 
 		try {
-			final PersonnePhysique pp = getPersonnePhysiqueOrFillErrors(getNoIndividu(), DUMMY_ERROR_COLLECTOR);
+			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
 				final RegDate dateNaissance = getDate();
 

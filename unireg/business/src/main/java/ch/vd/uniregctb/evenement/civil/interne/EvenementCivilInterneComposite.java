@@ -20,14 +20,13 @@ public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 
 	private EvenementCivilInterne[] listEvtEch;
 
-	public EvenementCivilInterneComposite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, EvenementCivilInterne... listEvtEch) throws
-			EvenementCivilException {
+	public EvenementCivilInterneComposite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, EvenementCivilInterne... listEvtEch) throws EvenementCivilException {
 		super(evenement, context, options);
 		if (listEvtEch == null) {
-			throw new NullPointerException("Impossible de construire un evenement composite sans une liste d'evenement le composant");
+			throw new NullPointerException("Impossible de construire un événement composite sans une liste d'événements le composant");
 		}
 		if (listEvtEch.length < 2) {
-			throw new IllegalArgumentException("Un evenement composite doit être constituer d'au moins 2 evenements");
+			throw new IllegalArgumentException("Un événement composite doit être constitué d'au moins 2 événements");
 		}
 		this.listEvtEch = listEvtEch;
 	}
@@ -36,10 +35,9 @@ public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		HandleStatus ret = HandleStatus.REDONDANT;
-		HandleStatus hs;
 		for (EvenementCivilInterne evt : listEvtEch) {
-			hs = evt.handle(warnings);
-			if (HandleStatus.TRAITE.equals(hs)) {
+			final HandleStatus hs = evt.handle(warnings);
+			if (HandleStatus.TRAITE == hs) {
 				ret = HandleStatus.TRAITE;
 			}
 		}
@@ -76,6 +74,4 @@ public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 		}
 		return false;
 	}
-
-
 }
