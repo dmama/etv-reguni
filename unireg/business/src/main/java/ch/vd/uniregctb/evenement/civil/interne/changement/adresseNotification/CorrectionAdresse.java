@@ -76,14 +76,14 @@ public class CorrectionAdresse extends ModificationAdresseBase {
 		else {
 			// la commune d'annonce de l'événement n'est pas forcément la commune de domicile
 			// de l'individu, donc il faut aller chercher la commune de domicile...
-			final Commune commune = getCommuneAtDate(pp, dateTraitement);
+			final Commune commune = getCommuneDomicileAtDate(pp, dateTraitement);
 			if (commune == null || commune.getNoOFSEtendu() != ofsCommune) {
 				throw new EvenementCivilException("Evénement de correction d'adresse avec changement de commune");
 			}
 		}
 	}
 
-	private Commune getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilException {
+	private Commune getCommuneDomicileAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilException {
 		try {
 			final AdressesCiviles adresses = context.getAdresseService().getAdressesCiviles(pp, date, false);
 			return context.getServiceInfra().getCommuneByAdresse(adresses.principale, date);
