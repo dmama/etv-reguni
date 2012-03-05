@@ -24,58 +24,6 @@
 	</modules>
 
 	<developers>
-		<developer>
-			<id>COMPTES\xcijct</id>
-			<name>Jean-Eric Cuendet</name>
-			<email>jean-eric.cuendet@vd.ch</email>
-			<organization>+41 76 222 3343</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<developer>
-			<id>COMPTES\\xcifde</id>
-			<name>Francois Dardare</name>
-			<email>francois.dardare@vd.ch</email>
-			<organization>---</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<developer>
-			<id>COMPTES\\zsicpi</id>
-			<name>Claudio Parnenzini</name>
-			<email>claudio.parnenzini@vd.ch</email>
-			<organization>- - -</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<developer>
-			<id>COMPTES\\xsikce</id>
-			<name>Kamel Chabane</name>
-			<email>kamel.chabane@vd.ch</email>
-			<organization>---</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<developer>
-			<id>COMPTES\\zcigdy</id>
-			<name>Gilles Dubey</name>
-			<email>gilles.dubey@vd.ch</email>
-			<organization>---</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<developer>
-			<id>COMPTES\\xcilbn</id>
-			<name>Ludovic Bertin</name>
-			<email>ludovic.bertin@vd.ch</email>
-			<organization>---</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-
-		<!-- Plus la - DEBUT -->
-		<developer>
-			<id>COMPTES\\xciabi</id>
-			<name>Akram Ben-Aissi</name>
-			<email>akram.ben-aissi@vd.ch</email>
-			<organization>---</organization>
-			<timezone>Europe/Zurich</timezone>
-		</developer>
-		<!-- Plus la - FIN -->
 	</developers>
 
 	<prerequisites>
@@ -89,14 +37,14 @@
 	</licenses>
 	<ciManagement/>
 	<scm>
-		<connection>scm:svn:http://subversion.etat-de-vaud.ch/SVN_ACI/registre/trunk/UniregCTB/04-Implementation/unireg</connection>
-		<developerConnection>scm:svn:http://subversion.etat-de-vaud.ch/SVN_ACI/registre/trunk/UniregCTB/04-Implementation/unireg</developerConnection>
+		<connection>scm:svn:http://subversion.etat-de-vaud.ch/SVN_ACI/registre/unireg/trunk/04-Implementation/unireg/</connection>
+		<developerConnection>scm:svn:http://subversion.etat-de-vaud.ch/SVN_ACI/registre/unireg/trunk/04-Implementation/unireg/</developerConnection>
 		<url/>
 	</scm>
 
 	<issueManagement>
 		<system>jira</system>
-		<url>http://issuetracker.etat-de-vaud.ch/jira/browse/UNIREG</url>
+		<url>http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC</url>
 	</issueManagement>
 
 	<build>
@@ -516,30 +464,6 @@
 				<module>../web-it</module>
 				<module>../tools</module>
 			</modules>
-		</profile>
-
-		<!-- ================= Eclipse Developer Profile ================= -->
-		<profile>
-			<id>eclipse-developer</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-eclipse-plugin</artifactId>
-						<version>2.5.1</version>
-						<configuration>
-							<additionalProjectnatures>
-								<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-							</additionalProjectnatures>
-							<additionalBuildcommands>
-								<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-							</additionalBuildcommands>
-							<downloadSources>true</downloadSources>
-							<downloadJavadocs>false</downloadJavadocs>
-							<wtpversion>2.0</wtpversion>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<!-- ================= Profile pour les developpeurs pour skipper les tests  ================= -->
