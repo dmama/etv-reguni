@@ -1484,7 +1484,7 @@ var Tooltips = {
 	},
 
 	/**
-	  * Active les tooltips statiques sur tous les liens de la page ayant la classe 'staticTip'.
+	 * Active les tooltips statiques sur tous les liens de la page ayant la classe 'staticTip'.
 	 *
 	 * Exemple de tooltip statique :
 	 *
@@ -1492,9 +1492,11 @@ var Tooltips = {
 	 *     <div id="link123-tooltip" style="display:none;">
 	 *         tooltip content goes here
 	 *     </div>
+	 * @param obj l'élément parent à partir duquel les tooltips doivent être activés (optionnel).
+	 *            Si par renseigné, applique les tooltips sur toute la page.
 	 */
-	activate_static_tooltips: function() {
-		$(".staticTip").tooltip({
+	activate_static_tooltips: function(obj) {
+		$(".staticTip", obj).tooltip({
 			items: "[id]",
 			content: function(response) {
 				// on détermine l'id de la div qui contient le tooltip à afficher

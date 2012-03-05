@@ -117,7 +117,12 @@ $.widget("ui.tooltip", {
 		if (!this.current)
 			return;
 
-		var current = this.current.attr("title", this.currentTitle);
+		// [SIFISC-4391] avec jQuery 1.7, la méthode $.attr() ne retourne plus l'élément pointé, mais la valeur renseignée (ici le titre).
+		// Pour obtenir le même résultat, il faut donc décomposer les deux opérations.
+		// var current = this.current.attr("title", this.currentTitle);
+		this.current.attr("title", this.currentTitle);
+		var current = this.current;
+
 		this.current = null;
 
 		if (this.options.disabled)

@@ -48,6 +48,7 @@
 				}
 				html += '</fieldset>\n'
 				$('#rapportsDiv').html(html);
+				Tooltips.activate_static_tooltips($('#rapportsDiv'));
 			});
 		return false;
 	}
@@ -197,6 +198,7 @@
 				}
 			}
 			$('#filiationsDiv').html(html);
+			Tooltips.activate_static_tooltips($('#filiationsDiv'));
 		});
 		return false;
 	}
@@ -251,7 +253,7 @@
 				html += '</fieldset>\n'
 			}
 			$('#debiteursDiv').html(html);
-			Tooltips.activate_static_tooltips();
+			Tooltips.activate_static_tooltips($('#debiteursDiv'));
 		});
 		return false;
 	}
