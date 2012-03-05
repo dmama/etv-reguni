@@ -28,14 +28,17 @@
 		$('#rapportsSpinner').show();
 		var showHisto = $('#isRapportHisto').attr('checked') ? 'true' : 'false';
 		var type = $('#typeRapportId').val();
+		var sortField = $('#rapportSortField').val() || 'dateDebut';
+		var sortOrder = $('#rapportSortOrder').val() || 'DESC';
 
 		// get the data
-		$.get('<c:url value="/rapport/rapports.do?tiers=${command.tiersGeneral.numero}"/>' + '&page=' + page + '&showHisto=' + showHisto + '&type=' + type + '&' + new Date().getTime(),
+		var params = '&page=' + page + '&showHisto=' + showHisto + (type ? '&type=' + type : '') + '&sortField=' + sortField + '&sortOrder=' + sortOrder;
+		$.get('<c:url value="/rapport/rapports.do?tiers=${command.tiersGeneral.numero}"/>' + params + '&' + new Date().getTime(),
 			function(rapportsPage) {
 				var html = '<fieldset>\n';
 				html += '<legend><span><fmt:message key="label.dossiers.apparentes" /></span></legend>\n';
 				html += '<div id="rapportsSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>';
-				html += buildRapportsOptions(rapportsPage.page, rapportsPage.showHisto, rapportsPage.typeRapport, rapportsPage.typesRapportEntreTiers);
+				html += buildRapportsOptions(rapportsPage.page, rapportsPage.showHisto, rapportsPage.typeRapport, rapportsPage.typesRapportEntreTiers, rapportsPage.sortField, rapportsPage.sortOrder);
 				if (rapportsPage.totalCount > 0) {
 					html += buildRapportsPagination(rapportsPage.page, 10, rapportsPage.totalCount);
 					html += buildRapportsTable(rapportsPage.rapports) + '\n';
@@ -49,7 +52,7 @@
 		return false;
 	}
 
-	function buildRapportsOptions(page, showHisto, typeSelectionne, typesRapportEntreTiers) {
+	function buildRapportsOptions(page, showHisto, typeSelectionne, typesRapportEntreTiers, sortField, sortOrder) {
 		var html = '<table><tr>\n';
 		html += '<td width="25%"><input class="noprint" type="checkbox" id="isRapportHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return loadRapports(' + page + ');"> ';
 		html += '<label class="noprint" for="isRapportHisto">Historique</label></td>\n';
@@ -66,6 +69,9 @@
 
 		html += '</select></form></td>\n';
 		html += '</tr></tbody></table>\n';
+		html += '<input type="hidden" id="rapportSortField" value="' + sortField +'"/>';
+		html += '<input type="hidden" id="rapportSortOrder" value="' + sortOrder +'"/>';
+		html += '<input type="hidden" id="rapportCurrentPage" value="' + page +'"/>\n';
 		return html;
 	}
 
@@ -73,6 +79,28 @@
 		return DisplayTable.buildPagination(page, pageSize, totalCount, function(i) {
 			return 'loadRapports(' + i + ')';
 		});
+	}
+
+	function sortRapportBy(field) {
+		var current = $('#rapportSortField').val();
+		if (field == current) {
+			toogleSortOrder($('#rapportSortOrder'));
+		}
+		else {
+			$('#rapportSortField').val(field);
+			$('#rapportSortOrder').val('ASC');
+		}
+		var page = $('#rapportCurrentPage').val();
+		loadRapports(page);
+	}
+
+	function toogleSortOrder(input) {
+		if ($(input).val() == 'ASC') {
+			$(input).val('DESC');
+		}
+		else {
+			$(input).val('ASC');
+		}
 	}
 
 	function buildRapportsTable(rapports) {
@@ -86,16 +114,16 @@
 		}
 
 		var html = '<table id="rapport" class="display"><thead><tr>\n';
-		html += '<th>Rapport avec le tiers</th>';
-		html += '<th>Date début</th>';
-		html += '<th>Date fin</th>';
-		html += '<th>N° de tiers</th>';
+		html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'type\');">Rapport avec le tiers</a></th>';
+		html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'dateDebut\');">Date début</a></th>';
+		html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'dateFin\');">Date fin</a></th>';
+		html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
 		html += '<th>Nom / Raison sociale</th>';
 		if (hasAutoriteTutelaire) {
-			html += '<th>Autorité tutelaire</th>';
+			html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'autoriteTutelaireId\');">Autorité tutelaire</a></th>';
 		}
 		if (hasExtensionExecutionForcee) {
-			html += '<th>Extension à l\'exécution forcée</th>';
+			html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'extensionExecutionForcee\');">Extension à l\'exécution forcée</a></th>';
 		}
 		html += '<th></th>';
 		html += '</tr></thead>\n';
