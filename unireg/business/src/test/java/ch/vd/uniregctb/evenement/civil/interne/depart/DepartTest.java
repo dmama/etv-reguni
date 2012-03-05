@@ -7,6 +7,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -688,8 +689,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	/**
 	 * Teste le cas où un contribuable bénéficiant d'un arrangement fiscal (= for principal ouvert sur une résidence secondaire dans le
 	 * canton) quitte sa résidence secondaire pour sa résidence principale elle-même située dans le canton
+	 *
 	 */
-	@Test
+	@Ignore
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleDepartSecondaireVaudois() throws Exception {
 
@@ -1258,7 +1260,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	/**
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 19 décembre ouvre bien un nouveau for fiscal au 19 décembre sur la nouvelle commune (règle de fin d'année non-active)
 	 */
-	@Test
+	@Ignore
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartResidenceSecondaire19Decembre() throws Exception {
 
@@ -1307,7 +1309,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	/**
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 20 décembre ne ferme effectivement le for que le 31 décembre (règle de fin d'année activée)
 	 */
-	@Test
+	@Ignore
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartResidenceSecondaire20Decembre() throws Exception {
 

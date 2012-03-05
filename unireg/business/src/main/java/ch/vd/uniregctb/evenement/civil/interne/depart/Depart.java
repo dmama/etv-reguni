@@ -76,6 +76,10 @@ public abstract class Depart extends Mouvement {
 		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
 		nouvelleCommunePrincipale = getCommuneByAdresse(context, nouvelleAdressePrincipale, lendemainDepart);
 		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
+		//SIFISC-4230 Pour les evenements regPP, les départs vaudois doivent partir en erreur
+		if (isDepartVaudois()) {
+			throw new EvenementCivilException("La nouvelle commune est toujours dans le canton de Vaud");
+		}
 	}
 
 	/**
@@ -87,6 +91,8 @@ public abstract class Depart extends Mouvement {
 		this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
 		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
+
+
 	}
 
 	/**
@@ -120,6 +126,12 @@ public abstract class Depart extends Mouvement {
 		}
 
 
+		//SIFISC-4230 Pour les evenements ech,les départs vaudois sont ignorés
+		if (isDepartVaudois()) {
+			final String message = String.format("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence %s est toujours dans le canton.",
+					nouvelleCommunePrincipale.getNomMinuscule());
+			event.setCommentaireTraitement(message);
+		}
 	}
 
 
@@ -139,17 +151,20 @@ public abstract class Depart extends Mouvement {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		final PersonnePhysique pp = getPrincipalPP();
-		if (pp == null) {
-			// si on ne connaissait pas le gaillard, c'est un problème
-			throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
+		if(!isDepartVaudois()){
+			final PersonnePhysique pp = getPrincipalPP();
+			if (pp == null) {
+				// si on ne connaissait pas le gaillard, c'est un problème
+				throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
+			}
+
+			final MotifFor motifFermeture = findMotifFermetureFor();
+			final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
+			final Contribuable contribuable = findContribuable(dateFermeture, pp);
+
+			doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
 		}
 
-		final MotifFor motifFermeture = findMotifFermetureFor();
-		final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
-		final Contribuable contribuable = findContribuable(dateFermeture, pp);
-
-		doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
 		return HandleStatus.TRAITE;
 	}
 
@@ -436,6 +451,10 @@ public abstract class Depart extends Mouvement {
 	protected Localisation getNouvelleLocalisation() {
 		return nouvelleLocalisation;
 	}
-	
+
+	protected boolean isDepartVaudois() {
+		return getNouvelleCommunePrincipale() != null && getNouvelleCommunePrincipale().isVaudoise();
+	}
+
 	protected abstract Integer getNumeroOfsEntiteForAnnonce();
 }
