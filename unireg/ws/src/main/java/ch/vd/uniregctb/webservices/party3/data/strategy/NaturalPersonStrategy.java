@@ -16,6 +16,7 @@ import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.webservices.party3.impl.Context;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
@@ -24,6 +25,8 @@ import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private static final Logger LOGGER = Logger.getLogger(NaturalPersonStrategy.class);
+	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
+	private static final String CH_ZAR = "CH.ZAR";
 
 	@Override
 	public NaturalPerson newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
@@ -92,10 +95,25 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		identification.setSex(EchHelper.sexeToEch44(personne.getSexe()));
 		identification.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
 		for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
-			identification.getOtherPersonId().add(new NamedPersonId(ident.getCategorieIdentifiant().name(), ident.getIdentifiant()));
+			identification.getOtherPersonId().add(newNamedPersonId(ident));
 		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(personne.getDateNaissance()));
 		return identification;
+	}
+
+	private static NamedPersonId newNamedPersonId(IdentificationPersonne ident) {
+		final NamedPersonId id;
+		switch (ident.getCategorieIdentifiant()) {
+		case CH_AHV_AVS:
+			id = new NamedPersonId(CH_AHV, ident.getIdentifiant()); // [SIFISC-4352]
+			break;
+		case CH_ZAR_RCE:
+			id = new NamedPersonId(CH_ZAR, ident.getIdentifiant());
+			break;
+		default:
+			throw new IllegalArgumentException("Catégorie d'identification inconnue [" + ident.getCategorieIdentifiant() + "]");
+		}
+		return id;
 	}
 
 	private static PersonIdentification newPersonIdentification(Individu individu) {
@@ -105,7 +123,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
 		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 		if (StringUtils.isNotBlank(individu.getNoAVS11())) {
-			identification.getOtherPersonId().add(new NamedPersonId("CH.AHV", individu.getNoAVS11())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
+			identification.getOtherPersonId().add(new NamedPersonId(CH_AHV, individu.getNoAVS11())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
 		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(individu.getDateNaissance()));
 		return identification;

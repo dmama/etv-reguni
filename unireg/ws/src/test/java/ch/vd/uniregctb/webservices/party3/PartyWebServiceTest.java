@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import ch.ech.ech0044.v2.NamedPersonId;
+import ch.ech.ech0044.v2.PersonIdentification;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -49,6 +51,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.WebserviceTest;
@@ -71,6 +74,7 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -1003,12 +1007,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(),
+						MotifRattachement.IMMEUBLE_PRIVE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 12, 31), TypeContribuable.HORS_CANTON, md);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1),
+						date(DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 12, 31), TypeContribuable.HORS_CANTON, md);
 				di.setCodeSegment(null);
 
 				final Ids ids = new Ids();
@@ -1160,5 +1166,51 @@ public class PartyWebServiceTest extends WebserviceTest {
 		PartyInfo info = list.getItems().get(0);
 		assertEquals(id.intValue(), info.getNumber());
 		assertEquals(PartyType.DEBTOR, info.getType());
+	}
+
+	/**
+	 * [SIFISC-4352] Vérifie que le numéro AVS11 d'un non-habitant est bien retourné sur la catégorie "CH.AHV" (et non pas "CH_AHV_AVS")
+	 */
+	@Test
+	public void testGetPartyNoAVS11() throws Exception {
+
+		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
+				addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "12345678113");
+				addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "0453.2123/4");
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.<PartyPart>emptyList());
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+
+		final NaturalPerson np = (NaturalPerson) party;
+		final PersonIdentification ident = np.getIdentification();
+		assertNotNull(ident);
+
+		final List<NamedPersonId> otherIds = ident.getOtherPersonId();
+		assertNotNull(otherIds);
+		assertEquals(2, otherIds.size());
+
+		Collections.sort(otherIds, new Comparator<NamedPersonId>() {
+			@Override
+			public int compare(NamedPersonId o1, NamedPersonId o2) {
+				return o1.getPersonIdCategory().compareTo(o2.getPersonIdCategory());
+			}
+		});
+
+		final NamedPersonId otherId0 = otherIds.get(0);
+		assertNotNull(otherId0);
+		assertEquals("CH.AHV", otherId0.getPersonIdCategory());
+		assertEquals("12345678113", otherId0.getPersonId());
+
+		final NamedPersonId otherId1 = otherIds.get(1);
+		assertNotNull(otherId1);
+		assertEquals("CH.ZAR", otherId1.getPersonIdCategory());
+		assertEquals("0453.2123/4", otherId1.getPersonId());
 	}
 }
