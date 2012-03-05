@@ -47,6 +47,7 @@ import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
@@ -1212,5 +1213,54 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(otherId1);
 		assertEquals("CH.ZAR", otherId1.getPersonIdCategory());
 		assertEquals("0453.2123/4", otherId1.getPersonId());
+	}
+
+	/**
+	 * [SIFISC-4351] Vérifie que le motif de rattachement (taxLiabilityReason) est bien renseigné sur les fors secondaires (otherTaxResidences).
+	 */
+	@Test
+	public void testGetPartyTaxResidences() throws Exception {
+
+		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
+				addForSecondaire(pp, date(2011, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Arrays.asList(PartyPart.TAX_RESIDENCES));
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+
+		final List<TaxResidence> mainTaxResidences = party.getMainTaxResidences();
+		assertNotNull(mainTaxResidences);
+		assertEquals(1, mainTaxResidences.size());
+
+		final TaxResidence main0 = mainTaxResidences.get(0);
+		assertNotNull(main0);
+		assertEquals(newDate(2000, 1, 1), main0.getDateFrom());
+		assertEquals(LiabilityChangeReason.MAJORITY, main0.getStartReason());
+		assertNull(main0.getDateTo());
+		assertNull(main0.getEndReason());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, main0.getTaxationAuthorityType());
+		assertEquals(MockCommune.Morges.getNumeroTechnique(), main0.getTaxationAuthorityFSOId());
+		assertEquals(TaxLiabilityReason.RESIDENCE, main0.getTaxLiabilityReason());
+
+		final List<TaxResidence> otherTaxResidences = party.getOtherTaxResidences();
+		assertNotNull(otherTaxResidences);
+		assertEquals(1, otherTaxResidences.size());
+
+		final TaxResidence other0 = otherTaxResidences.get(0);
+		assertNotNull(other0);
+		assertEquals(newDate(2011, 4, 1), other0.getDateFrom());
+		assertEquals(LiabilityChangeReason.PURCHASE_REAL_ESTATE, other0.getStartReason());
+		assertNull(other0.getDateTo());
+		assertNull(other0.getEndReason());
+		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, other0.getTaxationAuthorityType());
+		assertEquals(MockCommune.Renens.getNumeroTechnique(), other0.getTaxationAuthorityFSOId());
+		assertEquals(TaxLiabilityReason.PRIVATE_IMMOVABLE_PROPERTY, other0.getTaxLiabilityReason());
 	}
 }
