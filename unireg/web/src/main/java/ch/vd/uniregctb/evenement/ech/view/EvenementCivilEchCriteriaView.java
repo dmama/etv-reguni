@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.ech.view;
 
-import ch.vd.uniregctb.evenement.EvenementCriteriaView;
+import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementEchCriteriaView extends EvenementCriteriaView<TypeEvenementCivilEch> {
+public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivilEch> {
 
 	private static final long serialVersionUID = 1L;
 

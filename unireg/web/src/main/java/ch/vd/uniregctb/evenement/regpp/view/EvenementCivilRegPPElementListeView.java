@@ -11,7 +11,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCivilView {
+public class EvenementCivilRegPPElementListeView {
 
 	private Long id;
 	private TypeEvenementCivil type;
@@ -29,7 +29,7 @@ public class EvenementCivilView {
 	private String nom2;
 	private String commentaireTraitement;
 
-	public EvenementCivilView(EvenementCivilRegPP evt, TiersDAO tiersDAO) {
+	public EvenementCivilRegPPElementListeView(EvenementCivilRegPP evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
 		this.numeroIndividuPrincipal = evt.getNumeroIndividuPrincipal();

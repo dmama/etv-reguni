@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.common;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.evenement.regpp.view.EvenementRegPPCriteriaView;
+import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
-public class EvenementCriteriaValidator implements Validator  {
+public class EvenementCivilCriteriaValidator implements Validator  {
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -15,7 +15,7 @@ public class EvenementCriteriaValidator implements Validator  {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return EvenementCriteriaView.class.isAssignableFrom(clazz);
+		return EvenementCivilCriteriaView.class.isAssignableFrom(clazz);
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class EvenementCriteriaValidator implements Validator  {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		EvenementCriteriaView bean = (EvenementCriteriaView) target;
+		EvenementCivilCriteriaView bean = (EvenementCivilCriteriaView) target;
 
 		// Numero CTB
 		if (StringUtils.isNotBlank(bean.getNumeroCTBFormatte()) && !ValidatorUtils.isNumber(bean.getNumeroCTBFormatte())) {

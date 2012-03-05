@@ -4,30 +4,24 @@ import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.regpp.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
 import ch.vd.uniregctb.individu.IndividuView;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement
  *
- * @author xcifde
  */
-public class EvenementEchView {
+public class EvenementCivilEchDetailView {
 
 	private EvenementCivilEch evenement;
 
-	private IndividuView individuPrincipal;
-
-	private IndividuView individuConjoint;
+	private IndividuView individu;
 
 	private List<TiersAssocieView> tiersAssocies;
 
 	private List<String> erreursTiersAssocies;
 
-	private AdresseEnvoi adressePrincipal;
-
-	private AdresseEnvoi adresseConjoint;
+	private AdresseEnvoi adresse;
 
 	public EvenementCivilEch getEvenement() {
 		return evenement;
@@ -37,12 +31,12 @@ public class EvenementEchView {
 		this.evenement = evenement;
 	}
 
-	public IndividuView getIndividuPrincipal() {
-		return individuPrincipal;
+	public IndividuView getIndividu() {
+		return individu;
 	}
 
-	public void setIndividuPrincipal(IndividuView individuPrincipal) {
-		this.individuPrincipal = individuPrincipal;
+	public void setIndividu(IndividuView individu) {
+		this.individu = individu;
 	}
 
 	public List<TiersAssocieView> getTiersAssocies() {
@@ -61,20 +55,13 @@ public class EvenementEchView {
 		this.erreursTiersAssocies = erreursTiersAssocies;
 	}
 
-	public AdresseEnvoi getAdressePrincipal() {
-		return adressePrincipal;
+	public AdresseEnvoi getAdresse() {
+		return adresse;
 	}
 
-	public void setAdressePrincipal(AdresseEnvoi adressePrincipal) {
-		this.adressePrincipal = adressePrincipal;
+	public void setAdresse(AdresseEnvoi adresse) {
+		this.adresse = adresse;
 	}
 
-	public AdresseEnvoi getAdresseConjoint() {
-		return adresseConjoint;
-	}
-
-	public void setAdresseConjoint(AdresseEnvoi adresseConjoint) {
-		this.adresseConjoint = adresseConjoint;
-	}
 
 }

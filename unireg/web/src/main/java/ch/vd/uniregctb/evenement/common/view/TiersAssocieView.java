@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.regpp.view;
+package ch.vd.uniregctb.evenement.common.view;
 
 import java.util.List;
 

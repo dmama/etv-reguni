@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.common.view;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-abstract public class EvenementCriteriaView<TYPE_EVT extends Enum<TYPE_EVT> > extends EvenementCivilCriteria<TYPE_EVT> {
+abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT> > extends EvenementCivilCriteria<TYPE_EVT> {
 
 	public static final String TOUS = "TOUS";
 

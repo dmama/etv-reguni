@@ -21,10 +21,11 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementService;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementRegPPCriteriaView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementView;
-import ch.vd.uniregctb.evenement.regpp.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManageImpl;
+import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -47,9 +48,9 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 /**
  * @InheritDoc
  */
-public class EvenementManagerImpl implements EvenementManager, MessageSourceAware {
+public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl implements EvenementCivilRegPPManager, MessageSourceAware {
 
-	private final Logger LOGGER = Logger.getLogger(EvenementManagerImpl.class);
+	private final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPManagerImpl.class);
 
 	private AdresseService adresseService;
 	private TiersService tiersService;
@@ -95,34 +96,34 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public EvenementView get(Long id) throws AdresseException, ServiceInfrastructureException {
+	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
-		final EvenementView evtView = new EvenementView();
+		final EvenementCivilRegPPDetailView evtCivilRegPPDetailView = new EvenementCivilRegPPDetailView();
 		final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(id);
 		if (evt == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
-		evtView.setEvenement(evt);
+		evtCivilRegPPDetailView.setEvenement(evt);
 
-		evtView.setIndividuPrincipal(hostCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal()));
+		evtCivilRegPPDetailView.setIndividuPrincipal(hostCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal()));
 
-		final Individu individu = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), null);
+		final Individu individu = serviceCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal(), null);
 		final AdresseEnvoi adressePrincipal = adresseService.getAdresseEnvoi(individu, RegDate.get(), false);
-		evtView.setAdressePrincipal(adressePrincipal);
+		evtCivilRegPPDetailView.setAdressePrincipal(adressePrincipal);
 
-		final Long conjoint = evtView.getEvenement().getNumeroIndividuConjoint();
+		final Long conjoint = evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint();
 		if (conjoint != null) {
-			evtView.setIndividuConjoint(hostCivilService.getIndividu(conjoint));
-			final Individu conjointInd = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), null);
+			evtCivilRegPPDetailView.setIndividuConjoint(hostCivilService.getIndividu(conjoint));
+			final Individu conjointInd = serviceCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal(), null);
 			AdresseEnvoi adresseConjoint = adresseService.getAdresseEnvoi(conjointInd, RegDate.get(), false);
-			evtView.setAdresseConjoint(adresseConjoint);
+			evtCivilRegPPDetailView.setAdresseConjoint(adresseConjoint);
 		}
 
 		final List<String> erreursTiersAssocies = new ArrayList<String>();
 		final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
 
 		try {
-			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
+			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal());
 			if (habitantPrincipal != null) {
 				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
 				tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
@@ -153,9 +154,9 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 			erreursTiersAssocies.add(e.getMessage());
 		}
 
-		if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
+		if (evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint() != null) {
 			try {
-				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
+				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint());
 				if (habitantConjoint != null) {
 					final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantConjoint);
 					tiersAssocies.add(tiersAssocie);
@@ -168,13 +169,13 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		}
 
 		if (!tiersAssocies.isEmpty()) {
-			evtView.setTiersAssocies(tiersAssocies);
+			evtCivilRegPPDetailView.setTiersAssocies(tiersAssocies);
 		}
 		if (!erreursTiersAssocies.isEmpty()) {
-			evtView.setErreursTiersAssocies(erreursTiersAssocies);
+			evtCivilRegPPDetailView.setErreursTiersAssocies(erreursTiersAssocies);
 		}
 
-		return evtView;
+		return evtCivilRegPPDetailView;
 	}
 
 	/**
@@ -254,45 +255,45 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<EvenementCivilView> find(EvenementRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException {
-		final List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
+	public List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException {
+		final List<EvenementCivilRegPPElementListeView> evtsRegPPElementListeView = new ArrayList<EvenementCivilRegPPElementListeView>();
 		final List<EvenementCivilRegPP> evts = evenementService.find(bean, pagination);
 		for (EvenementCivilRegPP evt : evts) {
-			final EvenementCivilView evtView = buildView(evt);
-			evtsView.add(evtView);
+			final EvenementCivilRegPPElementListeView evtRegPPElementListeView = buildView(evt);
+			evtsRegPPElementListeView.add(evtRegPPElementListeView);
 		}
 
-		return evtsView;
+		return evtsRegPPElementListeView;
 	}
 
-	private EvenementCivilView buildView(EvenementCivilRegPP evt) throws AdresseException {
-		final EvenementCivilView evtView = new EvenementCivilView(evt, tiersDAO);
-		final PersonnePhysique habitantPrincipal = evtView.getHabitantPrincipal();
+	private EvenementCivilRegPPElementListeView buildView(EvenementCivilRegPP evt) throws AdresseException {
+		final EvenementCivilRegPPElementListeView evtRegPPElementListeView = new EvenementCivilRegPPElementListeView(evt, tiersDAO);
+		final PersonnePhysique habitantPrincipal = evtRegPPElementListeView.getHabitantPrincipal();
 		try {
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
 				if (couple != null && couple.getMenage() != null) {
-					evtView.setNumeroCTB(couple.getMenage().getNumero());
+					evtRegPPElementListeView.setNumeroCTB(couple.getMenage().getNumero());
 				}
 				else {
-					evtView.setNumeroCTB(habitantPrincipal.getNumero());
+					evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
 				}
 			}
 			if (evt.getNumeroIndividuPrincipal() != null) {
 				String nom1 = adresseService.getNomCourrier(evt.getNumeroIndividuPrincipal());
-				evtView.setNom1(nom1);
+				evtRegPPElementListeView.setNom1(nom1);
 			}
 			if (evt.getNumeroIndividuConjoint() != null) {
 				String nom2 = adresseService.getNomCourrier(evt.getNumeroIndividuConjoint());
-				evtView.setNom2(nom2);
+				evtRegPPElementListeView.setNom2(nom2);
 			}
 		}
 		catch (IndividuNotFoundException e) {
 			// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
-			evtView.setNom1("<erreur: individu introuvable>");
+			evtRegPPElementListeView.setNom1("<erreur: individu introuvable>");
 		}
-		return evtView;
+		return evtRegPPElementListeView;
 	}
 
 	/**

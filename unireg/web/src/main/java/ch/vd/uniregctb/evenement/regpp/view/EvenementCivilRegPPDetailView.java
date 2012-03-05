@@ -4,14 +4,14 @@ import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
 import ch.vd.uniregctb.individu.IndividuView;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement
  *
- * @author xcifde
  */
-public class EvenementView {
+public class EvenementCivilRegPPDetailView {
 
 	private EvenementCivilRegPP evenement;
 

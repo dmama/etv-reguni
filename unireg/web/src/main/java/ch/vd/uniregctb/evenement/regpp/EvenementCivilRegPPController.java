@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ech;
+package ch.vd.uniregctb.evenement.regpp;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -34,22 +34,21 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.ech.manager.EvenementEchManager;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementEchCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManager;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 
 @Controller
-@RequestMapping("/evenement/ech")
-@SessionAttributes({"evenementEchCriteria", "evenementPagination"})
-public class EvenementEchController {
+@RequestMapping("/evenement")
+@SessionAttributes({"evenementCriteria", "evenementPagination"})
+public class EvenementCivilRegPPController {
 
-	private static final String TABLE_NAME = "tableEvtsEch";
+	private static final String TABLE_NAME = "tableEvts";
 	private static final int PAGE_SIZE = 25;
 	private static final String DEFAULT_FIELD = "id";
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements civils";
@@ -64,14 +63,14 @@ public class EvenementEchController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	private EvenementEchManager evenementEchManager;
-	public EvenementEchManager getEvenementEchManager() {
-		return evenementEchManager;
+	private EvenementCivilRegPPManager evenementCivilRegPPManager;
+	public EvenementCivilRegPPManager getEvenementCivilRegPPManager() {
+		return evenementCivilRegPPManager;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setEvenementEchManager(EvenementEchManager evenementEchManager) {
-		this.evenementEchManager = evenementEchManager;
+	public void setEvenementCivilRegPPManager(EvenementCivilRegPPManager evenementCivilRegPPManager) {
+		this.evenementCivilRegPPManager = evenementCivilRegPPManager;
 	}
 
 	private  Validator validator;
@@ -85,7 +84,7 @@ public class EvenementEchController {
 	}
 
 
-	@InitBinder("evenementEchCriteria")
+	@InitBinder("evenementCriteria")
 	protected final void initBinder(HttpServletRequest request, WebDataBinder binder) {
 		binder.setValidator(getValidator());
 		Locale locale = request.getLocale();
@@ -105,25 +104,23 @@ public class EvenementEchController {
 	@ModelAttribute
 	protected ModelMap referenceData(ModelMap model) throws Exception {
 		model.put("typesRechercheNom", getTiersMapHelper().getMapTypeRechercheNom());
-		model.put("typesEvenementEch", getTiersMapHelper().getMapTypeEvenementCivilEch());
+		model.put("typesEvenement", getTiersMapHelper().getMapTypeEvenementCivil());
 		model.put("etatsEvenement", getTiersMapHelper().getMapEtatsEvenementCivil());
-		model.put("actionsEvenementEch", getTiersMapHelper().getMapActionEvenementCivilEch());
 		return model;
 	}
 
 	/**
-	 *  Crée un objet EvenementEchCriteriaView avec les valeurs par défaut de recherche dans la session.
+	 *  Crée un objet EvenementCivilRegPPCriteriaView avec les valeurs par défaut de recherche dans la session.
 	 *
-	 *  Appelé par Spring (grâce à l'annotation) si 'evenementEchCriteria' n'existe pas dans la session
+	 *  Appelé par Spring (grâce à l'annotation) si 'evenementCriteria' n'existe pas dans la session
 	 *
 	 * @return un nouvel objet initialisé avec les valeur par défaut
 	 */
-	@ModelAttribute("evenementEchCriteria")
-	public EvenementEchCriteriaView initEvenementEchCriteria() {
-		EvenementEchCriteriaView criteria =  new EvenementEchCriteriaView();
+	@ModelAttribute("evenementCriteria")
+	public EvenementCivilRegPPCriteriaView initEvenementCriteria() {
+		EvenementCivilRegPPCriteriaView criteria =  new EvenementCivilRegPPCriteriaView();
 		criteria.setTypeRechercheDuNom(EvenementCivilCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
 		criteria.setEtat(EtatEvenementCivil.A_VERIFIER);
-		criteria.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
 		return criteria;
 	}
 
@@ -142,13 +139,13 @@ public class EvenementEchController {
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET, params = "effacer")
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
-		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0);
-		return new ModelAndView("evenement/ech/list", model);
+		populateModel(model, initEvenementCriteria(), INITIAL_PAGINATION, null, 0);
+		return new ModelAndView("evenement/list", model);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET, params = "rechercher")
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected ModelAndView rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementEchCriteriaView criteriaInSession,
+	protected ModelAndView rechercher(@ModelAttribute("evenementCriteria") @Valid EvenementCivilRegPPCriteriaView criteriaInSession,
 	                                  BindingResult bindingResult,
 	                                  ModelMap model ) throws AdresseException {
 		if (bindingResult.hasErrors() ) {
@@ -159,17 +156,17 @@ public class EvenementEchController {
 			populateModel(model,
 					criteriaInSession,
 					INITIAL_PAGINATION,
-					getEvenementEchManager().find(criteriaInSession, INITIAL_PAGINATION),
-					getEvenementEchManager().count(criteriaInSession));
+					getEvenementCivilRegPPManager().find(criteriaInSession, INITIAL_PAGINATION),
+					getEvenementCivilRegPPManager().count(criteriaInSession));
 
 		}
-		return new ModelAndView("evenement/ech/list", model);
+		return new ModelAndView("evenement/list", model);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView navigationDansLaListe(HttpServletRequest request,
-	                                         @ModelAttribute("evenementEchCriteria") @Valid EvenementEchCriteriaView criteriaInSession,
+	                                         @ModelAttribute("evenementCriteria") @Valid EvenementCivilRegPPCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
 	                                         ModelMap model ) throws AdresseException 	{
 		if (bindingResult.hasErrors() ) {
@@ -181,11 +178,11 @@ public class EvenementEchController {
 			populateModel(model,
 					criteriaInSession,
 					pagination ,
-					getEvenementEchManager().find(criteriaInSession, pagination ),
-					getEvenementEchManager().count(criteriaInSession));
+					getEvenementCivilRegPPManager().find(criteriaInSession, pagination ),
+					getEvenementCivilRegPPManager().count(criteriaInSession));
 
 		}
-		return new ModelAndView("evenement/ech/list", model);
+		return new ModelAndView("evenement/list", model);
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
@@ -195,38 +192,38 @@ public class EvenementEchController {
 		if (displayTagParameter != null) {
 			displayTagParameter = "?" + displayTagParameter;
 		}
-		return "redirect:/evenement/ech/nav-list.do" + displayTagParameter;
+		return "redirect:/evenement/nav-list.do" + displayTagParameter;
 	}
 
 	private void populateModel(ModelMap model,
-	                           final EvenementEchCriteriaView evenementEchCriteria,
+	                           final EvenementCivilRegPPCriteriaView evenementCriteria,
 	                           ParamPagination evenementPagination,
-	                           @Nullable List<EvenementCivilEchView> listEvenements,
+	                           @Nullable List<EvenementCivilRegPPElementListeView> listEvenements,
 	                           int listEvenementsSize ) {
-		model.put("evenementEchCriteria", evenementEchCriteria);
+		model.put("evenementCriteria", evenementCriteria);
 		model.put("evenementPagination", evenementPagination);
-		model.put("listEvenementsEch", listEvenements);
-		model.put("listEvenementsEchSize", listEvenementsSize);
+		model.put("listEvenements", listEvenements);
+		model.put("listEvenementsSize", listEvenementsSize);
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		return new ModelAndView ("evenement/ech/visu", "command", getEvenementEchManager().get(id));
+		return new ModelAndView ("evenement/visu", "command", getEvenementCivilRegPPManager().get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		getEvenementEchManager().forceEtatTraite(id);
-		return "redirect:/evenement/ech/visu.do?id=" + id;
+		getEvenementCivilRegPPManager().forceEtatTraite(id);
+		return "redirect:/evenement/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
-		getEvenementEchManager().traiteEvenementCivil(id);
-		return "redirect:/evenement/ech/visu.do?id=" + id;
+		getEvenementCivilRegPPManager().traiteEvenementCivil(id);
+		return "redirect:/evenement/visu.do?id=" + id;
 	}
 }
 

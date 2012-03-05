@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  *
  * TODO voir à supprimer les references a PersonnePhysique et rendre la classe serialisable
  */
-public class EvenementCivilEchView {
+public class EvenementCivilEchElementListeRechercheView {
 
 	private Long id;
 	private TypeEvenementCivilEch type;
@@ -30,7 +30,7 @@ public class EvenementCivilEchView {
 	private String nom;
 	private String commentaireTraitement;
 
-	public EvenementCivilEchView(EvenementCivilEch evt, TiersDAO tiersDAO) {
+	public EvenementCivilEchElementListeRechercheView(EvenementCivilEch evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
 		this.numeroIndividu = evt.getNumeroIndividu();
