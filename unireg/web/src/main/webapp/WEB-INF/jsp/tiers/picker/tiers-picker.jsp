@@ -43,7 +43,7 @@
 					function toogle_search() {
 						$('#tiers-picker-quicktab').toggle();
 						$('#tiers-picker-fulltab').toggle();
-						$('#tiers-picker-results').attr('innerHTML', '');
+						$('#tiers-picker-results').html('');
 						return false;
 					}
 					$(function() {

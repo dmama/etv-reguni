@@ -39,7 +39,7 @@
 					table += '</tr>';
 				}
 				table += '</tbody></table>';
-				$('#remarquesContentDiv').attr('innerHTML', table);
+				$('#remarquesContentDiv').html(table);
 			}
 
 			$('#addRemarque').show();

@@ -192,7 +192,7 @@
 						$('#actions_column').hide();
 					}
 					else {
-						$('#actions_list').attr('innerHTML', Fors.buildActionTableHtml(results));
+						$('#actions_list').html(Fors.buildActionTableHtml(results));
 						$('#actions_column').show();
 					}
 				});

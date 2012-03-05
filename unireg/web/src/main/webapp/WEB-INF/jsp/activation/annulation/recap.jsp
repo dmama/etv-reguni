@@ -85,7 +85,7 @@
 					$('#flecheRemplacement').show();
 				}
 				else {
-					$('#vignetteTiersRemplacant').attr('innerHTML', '');
+					$('#vignetteTiersRemplacant').html('');
 					$('#flecheRemplacement').hide();
 				}
 			}

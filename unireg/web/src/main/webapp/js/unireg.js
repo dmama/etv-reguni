@@ -225,7 +225,7 @@ var Dialog = {
 				$('#tiers-picker-localite').val(null);
 				$('#tiers-picker-datenaissance').val(null);
 				$('#tiers-picker-noavs').val(null);
-				$('#tiers-picker-results').attr('innerHTML', '');
+				$('#tiers-picker-results').html('');
 			});
 		});
 
@@ -329,7 +329,7 @@ var Dialog = {
 			dialog.appendTo('body');
 		}
 		else {
-			dialog.attr('innerHTML', content); // on remplace le contenu de la boîte de dialogue
+			dialog.html(content); // on remplace le contenu de la boîte de dialogue
 		}
 
 		dialog.dialog({
@@ -387,7 +387,7 @@ var Dialog = {
 			dialog.appendTo('body');
 		}
 		else {
-			dialog.attr('innerHTML', '<img src="'+ getContextPath() + '/images/loading.gif"/>'); // on vide la boîte de dialogue de son contenu précédant
+			dialog.html('<img src="'+ getContextPath() + '/images/loading.gif"/>'); // on vide la boîte de dialogue de son contenu précédant
 		}
 		return dialog;
 	}
@@ -1503,7 +1503,7 @@ var Tooltips = {
 
 				// on récupère la div et on affiche son contenu
 				var div = $("#" + id);
-				return div.attr("innerHTML");
+				return div.html();
 			}
 		});
 	}
