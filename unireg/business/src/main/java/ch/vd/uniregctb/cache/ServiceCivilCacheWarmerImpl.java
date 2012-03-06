@@ -58,8 +58,8 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 					serviceCivilService.getIndividus(nosIndividus, date, parties);
 
 					final long end = System.nanoTime();
-					if (LOGGER.isInfoEnabled()) {
-						LOGGER.info(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
 					}
 				}
 			}

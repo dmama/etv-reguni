@@ -40,4 +40,8 @@ public class ParamPagination {
 	public ParamSorting getSorting() {
 		return this.sorting;
 	}
+
+	public static int adjustPage(int numeroPage, int taillePage, int totalCount) {
+		return Math.min(numeroPage, (totalCount / taillePage) + 1);
+	}
 }

@@ -129,9 +129,11 @@ public class RapportController {
 		final boolean excludeContactImpotSource = (tiers instanceof Contribuable);
 		final boolean excludeRapportPrestationImposable = (tiers instanceof DebiteurPrestationImposable);
 		final TypeRapportEntreTiers typeRapport = parseType(type);
+		final int totalCount = getRapportsTotalCount(tiers, typeRapport, showHisto, excludeContactImpotSource);
+
+		page = ParamPagination.adjustPage(page, pageSize, totalCount);
 		final ParamPagination pagination = new ParamPagination(page, pageSize, sortField, "ASC".equalsIgnoreCase(sortOrder));
 
-		final int totalCount = getRapportsTotalCount(tiers, typeRapport, showHisto, excludeContactImpotSource);
 		final Map<TypeRapportEntreTiers, String> typeRapportEntreTiers = tiersMapHelper.getMapTypeRapportEntreTiers();
 		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, excludeContactImpotSource, excludeRapportPrestationImposable, typeRapport, pagination);
 
