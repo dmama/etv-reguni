@@ -176,8 +176,11 @@ public class RapportsPage {
 	private Map<TypeRapportEntreTiers,String> typesRapportEntreTiers;
 	private int page;
 	private int totalCount;
+	private String sortField;
+	private String sortOrder;
 
-	public RapportsPage(Long tiersId, List<RapportView> rapports, boolean showHisto, TypeRapportEntreTiers typeRapport, Map<TypeRapportEntreTiers,String> typesRapportEntreTiers, int page, int totalCount) {
+	public RapportsPage(Long tiersId, List<RapportView> rapports, boolean showHisto, TypeRapportEntreTiers typeRapport, Map<TypeRapportEntreTiers, String> typesRapportEntreTiers, int page,
+	                    int totalCount, String sortField, String sortOrder) {
 		this.tiersId = tiersId;
 		this.rapports = rapports;
 		this.showHisto = showHisto;
@@ -185,6 +188,8 @@ public class RapportsPage {
 		this.typesRapportEntreTiers = typesRapportEntreTiers;
 		this.page = page;
 		this.totalCount = totalCount;
+		this.sortField = sortField;
+		this.sortOrder = sortOrder;
 	}
 
 	public Long getTiersId() {
@@ -241,5 +246,21 @@ public class RapportsPage {
 
 	public void setTotalCount(int totalCount) {
 		this.totalCount = totalCount;
+	}
+
+	public String getSortField() {
+		return sortField;
+	}
+
+	public void setSortField(String sortField) {
+		this.sortField = sortField;
+	}
+
+	public String getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 }

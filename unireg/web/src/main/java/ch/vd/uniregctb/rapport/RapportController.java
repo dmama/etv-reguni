@@ -96,6 +96,8 @@ public class RapportController {
 	 * @param tiersId   le numéro de tiers
 	 * @param showHisto <b>vrai</b> s'il faut afficher les valeurs historiques; <b>faux</b> autrement.
 	 * @param type      le type de rapport à afficher, ou <b>null</b> s'il faut afficher tous les types de rapports
+	 * @param sortField le champ sur lequel le tri doit être fait
+	 * @param sortOrder le sens du tri ('ASC' ou 'DESC')
 	 * @param page      le numéro de page à retourner
 	 * @param pageSize  la taille des pages
 	 * @return les informations nécessaire à l'affichage d'une page de rapports du contribuable.
@@ -108,6 +110,8 @@ public class RapportController {
 	public RapportsPage rapports(@RequestParam("tiers") long tiersId,
 	                             @RequestParam(value = "showHisto", required = false, defaultValue = "false") boolean showHisto,
 	                             @RequestParam(value = "type", required = false) String type,
+	                             @RequestParam(value = "sortField", required = false) String sortField,
+	                             @RequestParam(value = "sortOrder", required = false) String sortOrder,
 	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
 	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
@@ -125,13 +129,13 @@ public class RapportController {
 		final boolean excludeContactImpotSource = (tiers instanceof Contribuable);
 		final boolean excludeRapportPrestationImposable = (tiers instanceof DebiteurPrestationImposable);
 		final TypeRapportEntreTiers typeRapport = parseType(type);
-		final ParamPagination pagination = new ParamPagination(page, pageSize, "dateDebut", false);
+		final ParamPagination pagination = new ParamPagination(page, pageSize, sortField, "ASC".equalsIgnoreCase(sortOrder));
 
 		final int totalCount = getRapportsTotalCount(tiers, typeRapport, showHisto, excludeContactImpotSource);
 		final Map<TypeRapportEntreTiers, String> typeRapportEntreTiers = tiersMapHelper.getMapTypeRapportEntreTiers();
 		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, excludeContactImpotSource, excludeRapportPrestationImposable, typeRapport, pagination);
 
-		return new RapportsPage(tiersId, views, showHisto, typeRapport, typeRapportEntreTiers, page, totalCount);
+		return new RapportsPage(tiersId, views, showHisto, typeRapport, typeRapportEntreTiers, page, totalCount, sortField, sortOrder);
 	}
 
 	/**
