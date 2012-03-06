@@ -258,7 +258,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append("<div id=\"validationMessage\" width=\"100%\"></div>");
 			s.append("<script>");
 			s.append("$(function() {");
-			s.append("    $('#validationMessage').load('").append(url("/validation/message.do?tiers=")).append(tiers.getNumero()).append("&' + new Date().getTime());");
+			s.append("    Tiers.loadValidationMessages(").append(tiers.getNumero()).append(", $('#validationMessage'));");
 			s.append("});");
 			s.append("</script>");
 		}
