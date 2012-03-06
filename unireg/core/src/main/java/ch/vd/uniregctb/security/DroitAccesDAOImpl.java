@@ -11,7 +11,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -64,8 +63,8 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 				public List<DroitAcces> doInHibernate(Session session) throws HibernateException, SQLException {
 					Query q = session.createQuery(query);
 					q.setLong(0, noIndividuOperateur);
-					q.setMaxResults(paramPagination.getTaillePage());
-					q.setFirstResult((paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage());
+					q.setFirstResult(paramPagination.getSqlFirstResult());
+					q.setMaxResults(paramPagination.getSqlMaxResults());
 					return q.list();
 				}
 			});

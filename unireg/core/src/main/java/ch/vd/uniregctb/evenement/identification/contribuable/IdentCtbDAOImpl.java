@@ -58,8 +58,8 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final String sansTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 ";
 		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
 
-		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-		final int maxResult = paramPagination.getTaillePage();
+		final int firstResult = paramPagination.getSqlFirstResult();
+		final int maxResult = paramPagination.getSqlMaxResults();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
 			@Override

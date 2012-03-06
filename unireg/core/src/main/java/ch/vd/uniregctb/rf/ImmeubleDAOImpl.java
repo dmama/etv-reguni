@@ -54,8 +54,8 @@ public class ImmeubleDAOImpl extends GenericDAOImpl<Immeuble, Long> implements I
 				final Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId order by i.nomCommune, i.numero");
 				query.setParameter("propId", proprietaireId);
 
-				final int firstResult = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
-				final int maxResult = pagination.getTaillePage();
+				final int firstResult = pagination.getSqlFirstResult();
+				final int maxResult = pagination.getSqlMaxResults();
 				query.setFirstResult(firstResult);
 				query.setMaxResults(maxResult);
 

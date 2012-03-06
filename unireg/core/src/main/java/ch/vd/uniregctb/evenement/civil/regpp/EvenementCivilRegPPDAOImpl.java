@@ -127,8 +127,8 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 					}
 				}
 				if (paramPagination != null) {
-					final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-					final int maxResult = paramPagination.getTaillePage();
+					final int firstResult = paramPagination.getSqlFirstResult();
+					final int maxResult = paramPagination.getSqlMaxResults();
 
                     queryObject.setFirstResult(firstResult);
                     queryObject.setMaxResults(maxResult);

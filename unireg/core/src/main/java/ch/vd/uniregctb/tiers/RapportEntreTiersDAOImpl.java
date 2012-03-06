@@ -59,8 +59,8 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		}
 		final String query = b.toString();
 
-		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-		final int maxResult = paramPagination.getTaillePage();
+		final int firstResult = paramPagination.getSqlFirstResult();
+		final int maxResult = paramPagination.getSqlMaxResults();
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportPrestationImposable>>() {
 			@Override
@@ -120,8 +120,8 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 				query += buildOrderClause(pagination);
 				final Query queryObject = session.createQuery(query);
 
-				final int firstResult = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
-				final int maxResult = pagination.getTaillePage();
+				final int firstResult = pagination.getSqlFirstResult();
+				final int maxResult = pagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
 

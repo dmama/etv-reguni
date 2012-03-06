@@ -329,8 +329,8 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 					query.setParameter(i, params.get(i));
 				}
 				if (paramPagination != null) {
-					final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-					final int maxResult = paramPagination.getTaillePage();
+					final int firstResult = paramPagination.getSqlFirstResult();
+					final int maxResult = paramPagination.getSqlMaxResults();
 					query.setFirstResult(firstResult);
 					query.setMaxResults(maxResult);
 				}

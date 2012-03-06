@@ -48,8 +48,8 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 				query = query + buildOrderClause(paramPagination);
 				final Query queryObject = session.createQuery(query);
 
-				final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-				final int maxResult = paramPagination.getTaillePage();
+				final int firstResult = paramPagination.getSqlFirstResult();
+				final int maxResult = paramPagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
 

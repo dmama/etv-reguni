@@ -92,8 +92,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 						queryObject.setParameter(i, values[i]);
 					}
 				}
-				int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-				int maxResult = paramPagination.getTaillePage();
+				int firstResult = paramPagination.getSqlFirstResult();
+				int maxResult = paramPagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
 

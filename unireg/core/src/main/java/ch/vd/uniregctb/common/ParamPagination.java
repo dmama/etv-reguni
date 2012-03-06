@@ -25,6 +25,7 @@ public class ParamPagination {
 		return this.numeroPage;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public int getTaillePage() {
 		return this.taillePage;
 	}
@@ -39,6 +40,14 @@ public class ParamPagination {
 
 	public ParamSorting getSorting() {
 		return this.sorting;
+	}
+
+	public int getSqlFirstResult() {
+		return (numeroPage - 1) * taillePage;
+	}
+
+	public int getSqlMaxResults() {
+		return taillePage;
 	}
 
 	public static int adjustPage(int numeroPage, int taillePage, int totalCount) {
