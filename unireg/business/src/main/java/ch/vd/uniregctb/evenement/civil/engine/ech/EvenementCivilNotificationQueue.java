@@ -5,11 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
@@ -18,36 +14,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  * notification est le numéro d'individu)
  */
 public interface EvenementCivilNotificationQueue {
-
-	/**
-	 * Informations de base sur un événement civil.
-	 */
-	public static final class EvtCivilInfo {
-		public final long idEvenement;
-		public final long noIndividu;
-		public final EtatEvenementCivil etat;
-		public final TypeEvenementCivilEch type;
-		public final ActionEvenementCivilEch action;
-		public final Long idEvenementReference;
-		public final RegDate date;
-
-		public EvtCivilInfo(long idEvenement, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementReference, RegDate date) {
-			this.idEvenement = idEvenement;
-			this.noIndividu = noIndividu;
-			this.etat = etat;
-			this.type = type;
-			this.action = action;
-			this.idEvenementReference = idEvenementReference;
-			this.date = date;
-
-			if (this.date == null) {
-				throw new IllegalArgumentException("La date de l'événement ne doit pas être nulle");
-			}
-			if (this.type == null) {
-				throw new NullPointerException("Le type de l'événement ne doit pas être nul");
-			}
-		}
-	}
 
 	/**
 	 * Lot d'événements civils à traiter pour un individu donné
@@ -63,17 +29,17 @@ public interface EvenementCivilNotificationQueue {
 		 * Informations sur les événements civils à traiter.
 		 * L'ordre de tri des éléments de cette liste est calculé ainsi :
 		 * <ol>
-		 *     <li>la date de l'événement (élément {@link EvtCivilInfo#date}), du plus ancien au plus récent</li>
-		 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link EvtCivilInfo#type}) de l'événement, de la plus petite à la plus grande</li>
+		 *     <li>la date de l'événement (élément {@link EvenementCivilEchBasicInfo#date}), du plus ancien au plus récent</li>
+		 *     <li>à dates égales, selon la {@link TypeEvenementCivilEch#priorite priorité} associée au type (élément {@link EvenementCivilEchBasicInfo#type}) de l'événement, de la plus petite à la plus grande</li>
 		 * </ol>
 		 * <p/>
 		 * <b>Nota bene :</b> cette liste peut être vide, mais jamais nulle
 		 */
-		public final List<EvtCivilInfo> contenu;
+		public final List<EvenementCivilEchBasicInfo> contenu;
 
-		protected Batch(long noIndividu, List<EvtCivilInfo> contenu) {
+		protected Batch(long noIndividu, List<EvenementCivilEchBasicInfo> contenu) {
 			this.noIndividu = noIndividu;
-			this.contenu = contenu != null ? contenu : Collections.<EvtCivilInfo>emptyList();
+			this.contenu = contenu != null ? contenu : Collections.<EvenementCivilEchBasicInfo>emptyList();
 		}
 	}
 

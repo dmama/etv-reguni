@@ -11,7 +11,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -24,10 +25,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		queue = new EvenementCivilNotificationQueueImpl();
-		queue.setEvtCivilDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
-		queue.setHibernateTemplate(hibernateTemplate);
-		queue.setTransactionManager(transactionManager);
-		queue.afterPropertiesSet();
+		queue.setEvtCivilService(getBean(EvenementCivilEchService.class, "evtCivilEchService"));
 	}
 
 	private EvenementCivilEch addEvenementCivil(Long id, long noIndividu, RegDate date, TypeEvenementCivilEch type, ActionEvenementCivilEch action, EtatEvenementCivil etat) {
@@ -95,7 +93,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		Assert.assertEquals(5, infoAvec.contenu.size());
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(0);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
 			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
@@ -103,7 +101,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(1);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
 			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
@@ -111,7 +109,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(2);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
 			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
@@ -119,7 +117,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(3);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
 			Assert.assertEquals(7L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
@@ -127,7 +125,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(4);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
 			Assert.assertEquals(8L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
@@ -182,7 +180,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		Assert.assertEquals(5, infoAvec.contenu.size());
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(0);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
 			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
@@ -190,7 +188,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(1);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
 			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
@@ -198,7 +196,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(2);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
 			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
@@ -206,7 +204,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(3);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
 			Assert.assertEquals(7L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
@@ -214,7 +212,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
 		}
 		{
-			final EvenementCivilNotificationQueue.EvtCivilInfo evtCivilInfo = infoAvec.contenu.get(4);
+			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
 			Assert.assertEquals(8L, evtCivilInfo.idEvenement);
 			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
 			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);

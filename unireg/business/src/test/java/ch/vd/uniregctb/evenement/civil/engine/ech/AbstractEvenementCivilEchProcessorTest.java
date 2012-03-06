@@ -4,6 +4,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.interfaces.service.rcpers.ProxyRcPersClientHelper;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
@@ -11,6 +12,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	private EvenementCivilNotificationQueueImpl queue;
 	protected EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
+	protected EvenementCivilEchService evtCivilService;
 	protected ProxyRcPersClientHelper rcPersClientHelper;
 
 	@Override
@@ -18,16 +20,13 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		super.runOnSetUp();
 
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
+		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");
 		rcPersClientHelper = getBean(ProxyRcPersClientHelper.class, "rcPersClientHelper");
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
 		queue = new EvenementCivilNotificationQueueImpl();
-		queue.setEvtCivilDAO(evtCivilDAO);
-		queue.setHibernateTemplate(hibernateTemplate);
-		queue.setTransactionManager(transactionManager);
-		queue.afterPropertiesSet();
-
+		queue.setEvtCivilService(evtCivilService);
 		buildProcessor(translator, false);
 		processor.start();
 	}

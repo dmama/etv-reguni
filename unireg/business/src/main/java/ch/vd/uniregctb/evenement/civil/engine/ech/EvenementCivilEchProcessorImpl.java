@@ -26,6 +26,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
@@ -128,11 +129,11 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		 * @param noIndividu identifiant de l'individu pour lequel des événements doivent être traités
 		 * @param evts descriptifs des événements à traiter
 		 */
-		private void processEvents(long noIndividu, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts) {
+		private void processEvents(long noIndividu, List<EvenementCivilEchBasicInfo> evts) {
 			int pointer = 0;
 			try {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
-				for (EvenementCivilNotificationQueue.EvtCivilInfo evt : evts) {
+				for (EvenementCivilEchBasicInfo evt : evts) {
 					if (!stopping) {
 						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
 							break;
@@ -238,7 +239,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param pointer indicateur de la position de l'événement civil cible dans la liste des événements
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
-	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilNotificationQueue.EvtCivilInfo evt, List<EvenementCivilNotificationQueue.EvtCivilInfo> evts, int pointer) {
+	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.idEvenement));
 		try {
 			final boolean success = processEvent(evt);
@@ -271,7 +272,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param info description de l'événement civil à traiter maintenant
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
 	 */
-	private boolean processEvent(final EvenementCivilNotificationQueue.EvtCivilInfo info) {
+	private boolean processEvent(final EvenementCivilEchBasicInfo info) {
 		try {
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
@@ -312,7 +313,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param info description de l'événement en cours de traitement
 	 * @param e exception qui a sauté
 	 */
-	private void onException(final EvenementCivilNotificationQueue.EvtCivilInfo info, final Exception e) {
+	private void onException(final EvenementCivilEchBasicInfo info, final Exception e) {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -333,13 +334,13 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * restant de la liste de l'état "A_TRAITER" en "EN_ATTENTE"
 	 * @param remainingEvents descriptif des événements dans la queue
 	 */
-	private void errorPostProcessing(final List<EvenementCivilNotificationQueue.EvtCivilInfo> remainingEvents) {
+	private void errorPostProcessing(final List<EvenementCivilEchBasicInfo> remainingEvents) {
 		if (remainingEvents != null && remainingEvents.size() > 0) {
-			final List<EvenementCivilNotificationQueue.EvtCivilInfo> pourIndexation = doInNewTransaction(new TransactionCallback<List<EvenementCivilNotificationQueue.EvtCivilInfo>>() {
+			final List<EvenementCivilEchBasicInfo> pourIndexation = doInNewTransaction(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 				@Override
-				public List<EvenementCivilNotificationQueue.EvtCivilInfo> doInTransaction(TransactionStatus status) {
-					final List<EvenementCivilNotificationQueue.EvtCivilInfo> pourIndexation = new ArrayList<EvenementCivilNotificationQueue.EvtCivilInfo>(remainingEvents.size()); 
-					for (EvenementCivilNotificationQueue.EvtCivilInfo info : remainingEvents) {
+				public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+					final List<EvenementCivilEchBasicInfo> pourIndexation = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
+					for (EvenementCivilEchBasicInfo info : remainingEvents) {
 						if (info.etat == EtatEvenementCivil.A_TRAITER) {
 							final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
 							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
@@ -362,7 +363,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				int pointer = 0;
 				try {
 					LOGGER.info("Lancement du traitement des événements d'indexation pure restants");
-					for (EvenementCivilNotificationQueue.EvtCivilInfo info : pourIndexation) {
+					for (EvenementCivilEchBasicInfo info : pourIndexation) {
 						if (!processEventAndDoPostProcessingOnError(info, pourIndexation, pointer)) {
 							// si on reviens avec <code>false</code>, c'est qu'on a essayé de re-traiter les suivants aussi
 							break;
