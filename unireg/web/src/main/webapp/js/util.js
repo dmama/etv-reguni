@@ -156,3 +156,54 @@ function executeAction(url) {
 		this.location.href=getContextPath() + u;
 	}
 }
+
+//===================================================
+
+var DisplayTable =  {
+
+	buildPagination: function(page, pageSize, totalCount, buildGotoPageStatement) {
+
+		var html = '';
+
+		if (totalCount > pageSize) {
+			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<td class="pagebanner">Trouvé ' + totalCount + ' éléments. Affichage de ' + ((page - 1) * pageSize + 1) + ' à ' + (page * pageSize) + '.</td>';
+			html += '<td class="pagelinks">&nbsp;\n';
+
+			var pageCount = Math.ceil(totalCount / pageSize);
+			var firstShownPage = Math.max(1, page - 5);
+			var lastShownPage = Math.min(pageCount, page + 5);
+
+			// previous link
+			if (page > 1) {
+				html += '<a href="#" onclick="' + buildGotoPageStatement(1) + '; return false;">«&nbsp;premier</a>\n';
+				html += '<a href="#" onclick="' + buildGotoPageStatement(page - 1) + '; return false;">‹&nbsp;précédent</a>\n';
+			}
+
+			// direct page links
+			for (var i = firstShownPage; i <= lastShownPage; ++i) {
+				if (i == page) {
+					html += '<font size="+1"><strong>' + i + '</strong></font>&nbsp;\n';
+				}
+				else {
+					html += '<a href="#" onclick="' + buildGotoPageStatement(i) + '; return false;">' + i + '</a>&nbsp;\n';
+				}
+			}
+
+			// next link
+			if (page < pageCount) {
+				html += '<a href="#" onclick="' + buildGotoPageStatement(page + 1) + '; return false;">suivant&nbsp;›</a>\n';
+				html += '<a href="#" onclick="' + buildGotoPageStatement(pageCount) + '; return false;">dernier&nbsp;»</a>\n';
+			}
+
+			html += '</td></tr></table>';
+		}
+		else if (totalCount == 0) {
+			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<td class="pagebanner">Aucun élément trouvé.</td>';
+			html += '</td></tr></table>';
+		}
+
+		return html;
+	}
+}

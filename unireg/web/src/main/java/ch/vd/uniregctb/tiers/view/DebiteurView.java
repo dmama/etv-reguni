@@ -3,6 +3,8 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.MessageSource;
+
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
@@ -10,6 +12,7 @@ import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class DebiteurView implements Annulable {
 
@@ -20,6 +23,7 @@ public class DebiteurView implements Annulable {
 	private String complementNom;
 
 	private CategorieImpotSource categorieImpotSource;
+	private String nomCategorie;
 
 	private String personneContact;
 
@@ -30,11 +34,12 @@ public class DebiteurView implements Annulable {
 	public DebiteurView() {
 	}
 
-	public DebiteurView(DebiteurPrestationImposable dpi, ContactImpotSource r, AdresseService adresseService) {
+	public DebiteurView(DebiteurPrestationImposable dpi, ContactImpotSource r, AdresseService adresseService, MessageSource messageSource) {
 		this.annule = r.isAnnule();
 		this.id = r.getId();
 		this.numero = dpi.getNumero();
 		this.categorieImpotSource = dpi.getCategorieImpotSource();
+		this.nomCategorie = messageSource.getMessage("option.categorie.impot.source." + dpi.getCategorieImpotSource().name(), null, WebContextUtils.getDefaultLocale());
 		this.personneContact = dpi.getPersonneContact();
 		this.nomCourrier.setNomCourrier(buildNomCourrier(dpi, adresseService));
 	}
@@ -93,6 +98,14 @@ public class DebiteurView implements Annulable {
 
 	public void setCategorieImpotSource(CategorieImpotSource categorieImpotSource) {
 		this.categorieImpotSource = categorieImpotSource;
+	}
+
+	public String getNomCategorie() {
+		return nomCategorie;
+	}
+
+	public void setNomCategorie(String nomCategorie) {
+		this.nomCategorie = nomCategorie;
 	}
 
 	public String getComplementNom() {

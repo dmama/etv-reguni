@@ -15,7 +15,6 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
@@ -25,7 +24,6 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -42,7 +40,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class RapportView implements Comparable<RapportView>, Annulable {
 
-	protected final Logger LOGGER = Logger.getLogger(RapportView.class);
+	protected final static Logger LOGGER = Logger.getLogger(RapportView.class);
 
 	private static BaseComparator<RapportView> comparator = new BaseComparator<RapportView>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
 
@@ -143,43 +141,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 		this.messageNumeroAbsent = null; // TDDO (msi) rapports de filiation
 		this.toolTipMessage = getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
-	}
-
-	public RapportView(RapportFiliation filiation, String nomInd, TiersService tiersService) {
-		this.dateDebut = filiation.getDateDebut();
-		this.dateFin = filiation.getDateFin();
-		this.sensRapportEntreTiers = filiation.getType() == RapportFiliation.Type.ENFANT ? SensRapportEntreTiers.OBJET : SensRapportEntreTiers.SUJET;
-		this.typeRapportEntreTiers = TypeRapportEntreTiersWeb.FILIATION;
-		this.numero = filiation.getAutrePersonnePhysique().getNumero();
-
-		final Individu autre = filiation.getAutreIndividu();
-		final String nomBrut = tiersService.getNomPrenom(autre);
-		final String nom;
-		if (autre.getDateDeces() != null) {
-			if (autre.isSexeMasculin()) {
-				nom = String.format("%s, défunt", nomBrut);
-			}
-			else {
-				nom = String.format("%s, défunte", nomBrut);
-			}
-		}
-		else {
-			nom = nomBrut;
-		}
-		this.nomCourrier = new NomCourrierViewPart(nom);
-
-		if (filiation.getType() == RapportFiliation.Type.ENFANT) {
-			final boolean ferme = dateFin != null;
-			final String nomEnfant = tiersService.getNomPrenom(autre);
-			this.toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, ferme ? "était" : "est", nomInd);
-		}
-		else {
-			final boolean ferme = dateFin != null;
-			final String nomParent = tiersService.getNomPrenom(autre);
-			final String verbe = ferme ? "était" : "est";
-			final String type = autre.isSexeMasculin() ? "le père" : "la mère";
-			this.toolTipMessage = String.format("%s %s %s de %s", nomParent, verbe, type, nomInd);
-		}
 	}
 
 	// ---------------------------------------------------
@@ -435,7 +396,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		return numeroTiers != null ? tiersService.getTiers(numeroTiers) : null;
 	}
 
-	private static NomCourrierViewPart buildNomCourrier(Tiers tiers, AdresseService adresseService) {
+	public static NomCourrierViewPart buildNomCourrier(Tiers tiers, AdresseService adresseService) {
 
 		if (tiers == null) {
 			return null;
@@ -459,7 +420,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	 * @param rapport le rapport dont on veut obtenir un résumé
 	 * @return un résumé du rapport; ou <b>null</b> s'il n'est pas possible de le créer pour une raison ou une autre.
 	 */
-	private String getRapportEntreTiersTooltips(RapportEntreTiers rapport, AdresseService adresseService, TiersService tiersService) {
+	public static String getRapportEntreTiersTooltips(RapportEntreTiers rapport, AdresseService adresseService, TiersService tiersService) {
 
 		final Long sujetId = rapport.getSujetId();
 		final Long objetId = rapport.getObjetId();

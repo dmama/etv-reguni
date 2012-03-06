@@ -8,6 +8,37 @@ var Tiers = {
 	 */
 	queryInfo : function(numero, callback) {
 		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback);
+	},
+
+	/**
+	 * Formatte un numéro de tiers pour l'affichage.
+	 *
+	 * Exemple : 54, 1.05, 123.34, 21.764.00, 120.223.344.
+	 */
+	formatNumero: function(numero) {
+		var s = '';
+		if (numero) {
+			var numero = '' + numero;
+			var length = numero.length;
+			if (length < 3) {
+				s = numero;
+			}
+			else if (length < 6) {
+				s = numero.substring(0, length - 2) + '.' + numero.substring(length - 2);
+			}
+			else {
+				s = numero.substring(0, length - 5) + '.' + numero.substring(length - 5, length - 2) + '.' + numero.substring(length - 2);
+			}
+		}
+		return s;
+	},
+
+	linkTo: function(numero) {
+		var s = '';
+		if (numero) {
+			s = '<a href="' + getContextPath() + 'tiers/visu.do?id=' + numero + '">' + this.formatNumero(numero) + '</a>';
+		}
+		return s;
 	}
 }
 

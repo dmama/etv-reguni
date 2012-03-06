@@ -1,28 +1,27 @@
 package ch.vd.uniregctb.rapport;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -30,6 +29,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportFiliation;
@@ -37,7 +37,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -52,8 +51,8 @@ public class RapportController {
 	private AdresseService adresseService;
 	private ServiceCivilService serviceCivil;
 	private ServiceCivilCacheWarmer cacheWarmer;
-	private AutorisationManager autorisationManager;
 	private TiersMapHelper tiersMapHelper;
+	private MessageSource messageSource;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -83,31 +82,34 @@ public class RapportController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setAutorisationManager(AutorisationManager autorisationManager) {
-		this.autorisationManager = autorisationManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	/**
-	 * Affiche les rapports d'un contribuable.
+	 * Retourne les rapports d'un contribuable page par page et sous format JSON.
 	 *
 	 * @param tiersId   le numéro de tiers
 	 * @param showHisto <b>vrai</b> s'il faut afficher les valeurs historiques; <b>faux</b> autrement.
 	 * @param type      le type de rapport à afficher, ou <b>null</b> s'il faut afficher tous les types de rapports
-	 * @param request   la requête http
-	 * @param mav       le modèle sous-jacent
-	 * @return le nom de la jsp qui affiche la liste retournée
+	 * @param page      le numéro de page à retourner
+	 * @param pageSize  la taille des pages
+	 * @return les informations nécessaire à l'affichage d'une page de rapports du contribuable.
 	 * @throws ch.vd.uniregctb.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
-	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@ResponseBody
+	@RequestMapping(value = "/rapports.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String list(@RequestParam("tiers") long tiersId, @RequestParam(value = "showHisto", required = false) Boolean showHisto,
-	                   @RequestParam(value = "type", required = false) String type, HttpServletRequest request, Model mav) throws AccessDeniedException {
+	public RapportsPage rapports(@RequestParam("tiers") long tiersId,
+	                             @RequestParam(value = "showHisto", required = false, defaultValue = "false") boolean showHisto,
+	                             @RequestParam(value = "type", required = false) String type,
+	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
 		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
@@ -120,21 +122,112 @@ public class RapportController {
 			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
 		}
 
-		showHisto = (showHisto == null ? false : showHisto);
+		final boolean excludeContactImpotSource = (tiers instanceof Contribuable);
+		final boolean excludeRapportPrestationImposable = (tiers instanceof DebiteurPrestationImposable);
 		final TypeRapportEntreTiers typeRapport = parseType(type);
-		final WebParamPagination pagination = new WebParamPagination(request, "rapport", 10, "dateDebut", false);
+		final ParamPagination pagination = new ParamPagination(page, pageSize, "dateDebut", false);
 
-		mav.addAttribute("tiersId", tiers.getNumero());
-		mav.addAttribute("showHisto", showHisto);
-		mav.addAttribute("rapportType", typeRapport == null ? null : typeRapport.name());
-		mav.addAttribute("rapports", getRapportViews(tiers, showHisto, typeRapport, pagination));
-		mav.addAttribute("rapportsTotalCount", getRapportsTotalCount(tiers, typeRapport, showHisto, Contribuable.class.equals(tiers.getClass())));
-		mav.addAttribute("filiations", getFiliationViews(tiers));
-		mav.addAttribute("debiteurs", getDebiteurViews(tiers));
-		mav.addAttribute("typesRapportTiers", tiersMapHelper.getMapTypeRapportEntreTiers());
-		mav.addAttribute("allowedOnglet", autorisationManager.getAutorisations(tiers));
+		final int totalCount = getRapportsTotalCount(tiers, typeRapport, showHisto, excludeContactImpotSource);
+		final Map<TypeRapportEntreTiers, String> typeRapportEntreTiers = tiersMapHelper.getMapTypeRapportEntreTiers();
+		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, excludeContactImpotSource, excludeRapportPrestationImposable, typeRapport, pagination);
 
-		return "rapport/list";
+		return new RapportsPage(tiersId, views, showHisto, typeRapport, typeRapportEntreTiers, page, totalCount);
+	}
+
+	/**
+	 * Retourne toutes les filiations (= liens vers les parents et les enfants) d'un contribuable sous format JSON.
+	 *
+	 * @param tiersId le numéro de tiers
+	 * @return une liste de filiations sous format JSON; ou un message d'erreur en cas de doublon sur les individus.
+	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/filiations.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public Object filiations(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
+		}
+
+		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		final Tiers tiers = tiersService.getTiers(tiersId);
+		if (tiers == null) {
+			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+		}
+
+		final List<FiliationView> views = new ArrayList<FiliationView>();
+
+		if (tiers instanceof PersonnePhysique) {
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
+			if (pp.isConnuAuCivil()) {
+				try {
+					final String nomInd = tiersService.getNomPrenom(pp);
+
+					final List<RapportFiliation> filiations = tiersService.getRapportsFiliation(pp);
+					for (RapportFiliation filiation : filiations) {
+						views.add(new FiliationView(filiation, nomInd, tiersService));
+					}
+				}
+				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+					return e.getMessage();
+				}
+			}
+		}
+
+		return views;
+	}
+
+	/**
+	 * Retourne toutes les débiteurs associés à un contribuable sous format JSON.
+	 *
+	 * @param tiersId le numéro de tiers
+	 * @return une liste de liens vers les débiteurs associés sous format JSON
+	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/debiteurs.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public List<DebiteurView> debiteurs(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
+		}
+
+		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		final Tiers tiers = tiersService.getTiers(tiersId);
+		if (tiers == null) {
+			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+		}
+
+		return getDebiteurViews(tiers);
+	}
+
+	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, boolean excludeContactImpotSource, boolean excludeRapportPrestationImposable,
+	                                                       TypeRapportEntreTiers typeRapport, ParamPagination pagination) {
+		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
+
+		final List<RapportsPage.RapportView> views = new ArrayList<RapportsPage.RapportView>();
+
+		final List<RapportEntreTiers> rapports =
+				rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, typeRapport, pagination, excludeRapportPrestationImposable, excludeContactImpotSource);
+		if (rapports.size() > 5) {
+			prechargeIndividus(rapports);
+		}
+
+		for (RapportEntreTiers r : rapports) {
+			if (r.getObjetId().equals(tiersId)) {
+				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageSource));
+			}
+			else if (r.getSujetId().equals(tiersId)) {
+				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageSource));
+			}
+		}
+		return views;
 	}
 
 	private static TypeRapportEntreTiers parseType(String type) {
@@ -163,24 +256,9 @@ public class RapportController {
 			for (RapportEntreTiers r : rapports) {
 				if (r instanceof ContactImpotSource) {
 					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(r.getObjetId());
-					final DebiteurView view = new DebiteurView(dpi, (ContactImpotSource) r, adresseService);
+					final DebiteurView view = new DebiteurView(dpi, (ContactImpotSource) r, adresseService, messageSource);
 					views.add(view);
 				}
-			}
-		}
-
-		return views;
-	}
-
-	private List<RapportView> getFiliationViews(Tiers tiers) {
-
-		final List<RapportView> views = new ArrayList<RapportView>();
-
-		if (tiers instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
-				final List<RapportView> rapportsFiliationView = getRapportsFiliation(pp);
-				views.addAll(rapportsFiliationView);
 			}
 		}
 
@@ -194,31 +272,6 @@ public class RapportController {
 				excludeContactImpotSource);
 	}
 
-	private List<RapportView> getRapportViews(Tiers tiers, boolean showHisto, TypeRapportEntreTiers type, WebParamPagination pagination) {
-
-		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
-		final Long tiersId = tiers.getNumero();
-
-		final List<RapportView> views = new ArrayList<RapportView>();
-
-		final boolean excludeContactImpotSource = Contribuable.class.equals(tiers.getClass());
-		final boolean excludeRapportPrestationImposable = DebiteurPrestationImposable.class.equals(tiers.getClass());
-		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, type, pagination,
-				excludeRapportPrestationImposable, excludeContactImpotSource);
-		prechargeIndividus(rapports);
-
-		for (RapportEntreTiers r : rapports) {
-			if (r.getObjetId().equals(tiersId)) {
-				views.add(new RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService));
-			}
-			else if (r.getSujetId().equals(tiersId)) {
-				views.add(new RapportView(r, SensRapportEntreTiers.SUJET, tiersService, adresseService));
-			}
-		}
-
-		return views;
-	}
-
 	private void prechargeIndividus(List<RapportEntreTiers> rapports) {
 		if (serviceCivil.isWarmable()) {
 			final Set<Long> tiersIds = new HashSet<Long>();
@@ -228,25 +281,5 @@ public class RapportController {
 			}
 			cacheWarmer.warmIndividusPourTiers(tiersIds, null, AttributeIndividu.ADRESSES);
 		}
-	}
-
-	/**
-	 * Recupère les rapports de filiation de type PARENT ou ENFANT
-	 *
-	 * @param habitant un habitant
-	 * @return la liste des rapports de filiation trouvés
-	 */
-	private List<RapportView> getRapportsFiliation(PersonnePhysique habitant) {
-		Assert.notNull(habitant.getNumeroIndividu(), "La personne physique n'a pas de numéro d'individu connu");
-
-		final String nomInd = tiersService.getNomPrenom(habitant);
-
-		final List<RapportView> list = new ArrayList<RapportView>();
-		final List<RapportFiliation> filiations = tiersService.getRapportsFiliation(habitant);
-		for (RapportFiliation filiation : filiations) {
-			list.add(new RapportView(filiation, nomInd, tiersService));
-		}
-
-		return list;
 	}
 }
