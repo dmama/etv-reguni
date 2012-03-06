@@ -54,7 +54,7 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 
 			if (!idsTiers.isEmpty()) {
 				final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(idsTiers, true);
-				if (nosIndividus != null && !nosIndividus.isEmpty()) {
+				if (nosIndividus != null && nosIndividus.size() > 1) { // il est inutile de préchauffer un seul individu à la fois
 					serviceCivilService.getIndividus(nosIndividus, date, parties);
 
 					final long end = System.nanoTime();
