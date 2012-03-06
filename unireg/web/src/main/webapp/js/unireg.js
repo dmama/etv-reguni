@@ -856,6 +856,41 @@ var Tiers = {
 			s = '<a href="' + getContextPath() + 'tiers/visu.do?id=' + numero + '">' + this.formatNumero(numero) + '</a>';
 		}
 		return s;
+	},
+
+	/**
+	 * Effectue la validation (appel asynchrone) sur le tiers dont le numéro est spécifié, et retourne la liste des erreurs et des warnings à travers le callback spécifié.
+	 */
+	validate: function(numero, callback) {
+		$.getJSON(getContextPath() + 'validation/tiers.do?id=' + numero + '&' + new Date().getTime(), callback);
+	},
+
+	/**
+	 * Effectue la validation (appel asynchrone) sur le tiers spécifié et affiche les éventuelles erreurs/warnings dans le div spécifié.
+	 */
+	loadValidationMessages: function(numero, div) {
+		this.validate(numero, function(results) {
+			var html = '';
+			if (results.errors || results.warnings) {
+				html += '<table class="validation_error" cellspacing="0" cellpadding="0" border="0">';
+				html += '<tr><td class="heading">Un ou plusieurs problèmes ont été détectés sur ce contribuable ';
+				html += '<span id="val_script">(<a href="#" onclick="$(\'#val_errors\').show(); $(\'#val_script\').hide(); return false;">voir le détail</a>)</span></td></tr>';
+				html += '<tr id="val_errors" style="display:none"><td class="details"><ul>';
+
+				if (results.errors) {
+					for (var i in results.errors) {
+						html += '<li class="err">Erreur: ' + StringUtils.escapeHTML(results.errors[i]) +'</li>'
+					}
+				}
+				if (results.warnings) {
+					for (var i in results.warnings) {
+						html += '<li class="warn">Warning: ' + StringUtils.escapeHTML(results.warnings[i]) +'</li>'
+					}
+				}
+				html += '</ul></td></tr></table>';
+			}
+			$(div).html(html);
+		});
 	}
 }
 

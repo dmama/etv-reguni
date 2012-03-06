@@ -2,14 +2,15 @@ package ch.vd.uniregctb.validation;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -44,19 +45,27 @@ public class ValidationController {
 		this.validationService = validationService;
 	}
 
-	@RequestMapping(value = "/message.do", method = RequestMethod.GET)
+	/**
+	 * Valide le tiers spécifié et retourne les éventuels messages d'erreur et de warning.
+	 *
+	 * @param tiersId le numéro de tiers à vérifier
+	 * @return les éventuels messages d'erreur et de warning sous format JSON.
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/tiers.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String message(@RequestParam("tiers") long tiersId, Model mav) {
+	public ValidationResultsView tiers(@RequestParam("id") long tiersId) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers != null) {
-			final ValidationResults results = validationService.validate(tiers);
-			checkEtatsCivils(tiers, results);
-			checkAdresses(tiers, results);
-			mav.addAttribute("results", results);
+		if (tiers == null) {
+			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
 		}
 
-		return "validation/message";
+		final ValidationResults results = validationService.validate(tiers);
+		checkEtatsCivils(tiers, results);
+		checkAdresses(tiers, results);
+
+		return new ValidationResultsView(results);
 	}
 
 	/**
