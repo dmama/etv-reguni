@@ -4,6 +4,7 @@
 
 	<bean id="immeubleController" class="ch.vd.uniregctb.rf.ImmeubleController">
 		<property name="immeubleDAO" ref="immeubleDAO" />
+		<property name="messageSource" ref="messageSource" />
 	</bean>
 
 </beans>

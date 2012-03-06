@@ -23,6 +23,10 @@ function isBlankString(str) {
     return (!str || /^\s*$/.test(str));
 }
 
+function escapeHTML(text) {
+	return text ? $('<div/>').text(text).html() : null;
+}
+
 /*
 * Converti une chaine (dd.MM.yyyy) en date 
 */
