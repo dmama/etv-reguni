@@ -58,10 +58,11 @@ function ouvrirAide(url) {
 						</li>
 
 						<script>
-							$(function() {
-								// dès l'affichage de la page, on rafraîchit le nombre d'éléments non lus de l'inbox
+							function refreshInboxSize() { // attention, cette méthode est appelée depuis la page inbox.jsp !
 								Inbox.refreshSize($('#inboxSize'), '<fmt:message key="title.inbox"/>');
-							});
+							};
+							// dès l'affichage de la page, on rafraîchit le nombre d'éléments non lus de l'inbox
+							$(refreshInboxSize);
 						</script>
 
 					</authz:authorize>
@@ -220,9 +221,7 @@ function ouvrirAide(url) {
 						</div>
 
 						<script>
-							$(function() {
-								Postit.refresh();
-							});
+							$(Postit.refresh);
 						</script>
 					</authz:authorize>
 				</authz:authorize>
