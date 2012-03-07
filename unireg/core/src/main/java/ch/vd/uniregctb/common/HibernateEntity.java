@@ -4,205 +4,82 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 /**
- * @hidden
- *
- * @author jec
- *
+ * Classe de base pour les entités Unireg
  */
 @MappedSuperclass
-public abstract class HibernateEntity implements Serializable, Loggable, Annulable {
-
-	private static final long serialVersionUID = 2184891500198493924L;
+public abstract class HibernateEntity implements Loggable, Annulable {
 
 	public static final Logger DDUMP = Logger.getLogger("debug");
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4odM8EdyUI9FDt56-Qw"
-	 */
 	private String logCreationUser;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cSMSAOxDEdyck8Nd0o6HOA"
-	 */
 	private Date logCreationDate;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4o9M8EdyUI9FDt56-Qw"
-	 */
 	private String logModifUser;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4otM8EdyUI9FDt56-Qw"
-	 */
 	private Timestamp logModifDate;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the logCreationUser
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4odM8EdyUI9FDt56-Qw?GETTER"
-	 */
 	@Override
 	@Column(name = "LOG_CUSER", length = LengthConstants.HIBERNATE_LOGUSER)
 	public String getLogCreationUser() {
-		// begin-user-code
 		return logCreationUser;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theLogCreationUser the logCreationUser to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4odM8EdyUI9FDt56-Qw?SETTER"
-	 */
 	public void setLogCreationUser(String theLogCreationUser) {
-		// begin-user-code
 		logCreationUser = theLogCreationUser;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the logCreationDate
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cSMSAOxDEdyck8Nd0o6HOA?GETTER"
-	 */
 	@Override
 	@Column(name = "LOG_CDATE")
 	public Date getLogCreationDate() {
-		// begin-user-code
 		return logCreationDate;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theLogCreationDate the logCreationDate to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cSMSAOxDEdyck8Nd0o6HOA?SETTER"
-	 */
 	public void setLogCreationDate(Date theLogCreationDate) {
-		// begin-user-code
 		logCreationDate = theLogCreationDate;
-		// end-user-code
 	}
 
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the logModifUser
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4o9M8EdyUI9FDt56-Qw?GETTER"
-	 */
 	@Override
 	@Column(name = "LOG_MUSER", length = LengthConstants.HIBERNATE_LOGUSER)
 	public String getLogModifUser() {
-		// begin-user-code
 		return logModifUser;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theLogModifUser the logModifUser to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4o9M8EdyUI9FDt56-Qw?SETTER"
-	 */
 	public void setLogModifUser(String theLogModifUser) {
-		// begin-user-code
 		logModifUser = theLogModifUser;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the logModifDate
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4otM8EdyUI9FDt56-Qw?GETTER"
-	 */
 	@Override
 	@Version
 	@Column(name = "LOG_MDATE")
 	public Timestamp getLogModifDate() {
-		// begin-user-code
 		return logModifDate;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theLogModifDate the logModifDate to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tig4otM8EdyUI9FDt56-Qw?SETTER"
-	 */
 	public void setLogModifDate(Timestamp theLogModifDate) {
-		// begin-user-code
 		logModifDate = theLogModifDate;
-		// end-user-code
 	}
 	public void setLogModifMillis(long millis) {
-		// begin-user-code
 		logModifDate = new Timestamp(millis);
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_860LQCsTEd2YRbfoCS2w9g"
-	 */
 	private Date annulationDate;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the annulationDate
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_860LQCsTEd2YRbfoCS2w9g?GETTER"
-	 */
 	@Override
 	@Column(name = "ANNULATION_DATE")
 	public Date getAnnulationDate() {
-		// begin-user-code
 		return annulationDate;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param annulationDate the annulationDate to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_860LQCsTEd2YRbfoCS2w9g?SETTER"
-	 */
-	public void setAnnulationDate(Date theAnnulationDate) {
-		// begin-user-code
+	public void setAnnulationDate(@Nullable Date theAnnulationDate) {
 		annulationDate = theAnnulationDate;
-		// end-user-code
 	}
 
 	private String annulationUser;
@@ -213,11 +90,9 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 		return annulationUser;
 	}
 
-	public void setAnnulationUser(String annulationUser) {
+	public void setAnnulationUser(@Nullable String annulationUser) {
 		this.annulationUser = annulationUser;
 	}
-
-	// Methods
 
 	/**
 	 * @return une valeur servant de clé d'identification <i>unique</i> de l'objet (i.e. l'id de la ligne associée dans la base de données
@@ -253,10 +128,11 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	 * dans la plupart des cas). Dans le cas particulier où l'objet n'est pas encore persisté (= l'id est null), on se rabat sur le test de
 	 * l'identité (c'est-à-dire qu'une entité n'est égale qu'à elle-même).
 	 *
-	 * @see documentation https://www.hibernate.org/109.html
+	 * @see <a href="https://community.jboss.org/wiki/EqualsAndHashCode">Hibernate Documentation</a>
 	 * @see #hashCode()
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@SuppressWarnings({"SimplifiableIfStatement"})
 	@Override
 	public final boolean equals(Object obj) {
 		if (this == obj) {
@@ -281,7 +157,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	/**
 	 * Annule une entite
 	 *
-	 * @param annule
+	 * @param annule ...
      *  true annule l'entity, false la "désannule"
 	 */
 	@Transient
@@ -316,7 +192,9 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 
     /**
 	 * Renvoie à l'appelant l'objet lui-même (= this). Cette méthode permet de récupérer l'objet réel lorsqu'il est caché par un proxy.
-	 */
+     * 
+     * @param param parametre pour stocker le resultat
+     */
 	@Transient
 	public void tellMeAboutYou(RefParam<HibernateEntity> param) {
 		param.ref = this;
@@ -334,7 +212,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 				Class<? extends HibernateEntity> c = getClass();
 
 				// Get the method
-				Method m = null;
+				Method m;
 				Class<?> param1 = value.getClass();
 				try {
 					m = c.getMethod(methodName, param1);
@@ -355,10 +233,8 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 					m = c.getMethod(methodName, param1);
 				}
 				// End get method
-
 				m.setAccessible(true);
 				m.invoke(this, value);
-				m = null;
 			} catch (Exception e) {
 				throw new SQLException("Exception: " + e);
 			}
@@ -370,7 +246,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	}
 
 	protected String getTabs(int nbTabs) {
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		while (nbTabs > 0) {
 			str.append('\t');
 			nbTabs--;
