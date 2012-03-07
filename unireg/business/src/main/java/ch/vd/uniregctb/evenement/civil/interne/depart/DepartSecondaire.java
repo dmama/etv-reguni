@@ -16,10 +16,10 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DepartSecondaire extends Depart {
@@ -59,6 +59,7 @@ public class DepartSecondaire extends Depart {
 		super.validateSpecific(erreurs, warnings);
 
 		Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
+		validateAbsenceForPrincipalPourDepartVaudois(erreurs);
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
 	}
 
@@ -112,11 +113,7 @@ public class DepartSecondaire extends Depart {
 				// l'individu a sa residence principale en suisse
 				if (estEnSuisse()) {
 					if (commune.isVaudoise()) {
-						/*
-						 * passage d'une commune vaudoise ouverte sur une résidence secondaire à une commune vaudoise ouverte sur la résidence
-						 * principale : il s'agit donc d'un déménagement vaudois
-						 */
-						openForFiscalPrincipal(contribuable, dateFermeture.getOneDayAfter(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, commune.getNoOFS(), MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, ffp.getModeImposition(), false);
+						//Ces cas sont detectées en amont et mis en erreur
 					}
 					else {
 						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
@@ -126,6 +123,28 @@ public class DepartSecondaire extends Depart {
 				else if (ffp != null) {
 					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), getNouvelleLocalisation().getNoOfs(), modeImposition, MotifFor.DEPART_HS);
+				}
+			}
+		}
+	}
+
+	private void validateAbsenceForPrincipalPourDepartVaudois(EvenementCivilErreurCollector erreurs) {
+		if (isDepartVaudois()) {
+			final PersonnePhysique pp = getPrincipalPP();
+			if (pp != null) {
+				ForFiscalPrincipal forFP = null;
+				final MenageCommun menageCommun = context.getTiersService().findMenageCommun(pp, getDate());
+
+				if (menageCommun != null) {
+					forFP = menageCommun.getForFiscalPrincipalAt(getDate());
+				}
+				else {
+					forFP = pp.getForFiscalPrincipalAt(getDate());
+				}
+
+				if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire",
+							pp.getNumero()));
 				}
 			}
 		}

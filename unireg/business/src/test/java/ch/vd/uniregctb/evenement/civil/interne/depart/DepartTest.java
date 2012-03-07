@@ -502,6 +502,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
+
 		// Adresse actuelle
 		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
@@ -691,27 +692,23 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * canton) quitte sa résidence secondaire pour sa résidence principale elle-même située dans le canton
 	 *
 	 */
-	@Ignore
+	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleDepartSecondaireVaudois() throws Exception {
 
 		Depart depart = createValidDepart(NO_IND_RAMONA, DATE_EVENEMENT, false, null);
 
-		final ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
 
 		final PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
-		Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalFerme.getMotifFermeture());
+		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire",
+				tiers.getNumero());
+		assertTrue("L'évènement devrait partir en erreur car c'est un départ vaudois sur une résidence secondaire", collector.hasErreurs());
+		assertEquals(message, collector.getErreurs().get(0).getMessage());
 
-		Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipal.getMotifOuverture());
-		Assert.assertEquals(depart.getDate().getOneDayAfter(), forFiscalPrincipal.getDateDebut());
-		Assert.assertEquals(Integer.valueOf(MockCommune.Vevey.getNoOFS()), forFiscalPrincipal.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
 		LOGGER.debug("Test de traitement d'un événement de départ residence secondaire vaudois OK");
 
-		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
-		Assert.assertFalse("Absence d'evenement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
 	}
 
 	/**
@@ -852,12 +849,20 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// résumons-nous :
 		// 1. l'événement de déménagement de Bussigny à Echallens est déjà arrivé
 		// 2. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens
-		// 3. il ne faudrait pas créer un deuxième for principal sur Echallens (cas de UNIREG-1921)
+		// 3. On devrait avoir une erreur car on est dans le cas d'un départ vaudois avec for Principal
 		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
-		handleDepartSimple(depart);
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		Assert.assertNotNull(pp);
+
+		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire",
+				pp.getNumero());
+		assertTrue("L'évènement devrait partir en erreur car c'est un départ vaudois sur une résidence secondaire", collector.hasErreurs());
+		assertEquals(message,collector.getErreurs().get(0).getMessage());
+
+
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
 		Assert.assertNotNull(ff);
@@ -1260,7 +1265,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	/**
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 19 décembre ouvre bien un nouveau for fiscal au 19 décembre sur la nouvelle commune (règle de fin d'année non-active)
 	 */
-	@Ignore
+	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDepartResidenceSecondaire19Decembre() throws Exception {
 
@@ -1271,7 +1276,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(1956, 4, 30), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, date(1956, 4, 30), null);
 				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
 			}
 		});
@@ -1283,13 +1288,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens,MotifRattachement.DOMICILE);
 				return null;
 			}
 		});
 
 		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null);
+
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1297,17 +1302,17 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
-		assertEquals(3, ff.size());
-		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+		assertEquals(2, ff.size());
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
 		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
-		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
-		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
-		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
-		                   ModeImposition.ORDINAIRE, ff.get(2));
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+		                   ModeImposition.ORDINAIRE, ff.get(1));
 	}
 
 	/**
 	 * [UNIREG-2212] Vérifie qu'un départ d'une résidence secondaire vaudoise au 20 décembre ne ferme effectivement le for que le 31 décembre (règle de fin d'année activée)
+	 * [SIFISC-4230] Suite à la décision de mettre en erreur les départ VD depuis une commune secondaire, ce test n'est plus applicable, car il ne concernait que
+	 * le cas du déménagement vaudois.
 	 */
 	@Ignore
 	@Transactional(rollbackFor = Throwable.class)
@@ -1349,7 +1354,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertEquals(3, ff.size());
 		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
-		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 12, 31), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
 		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, ff.get(2));
