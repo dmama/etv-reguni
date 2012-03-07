@@ -58,33 +58,10 @@ function ouvrirAide(url) {
 						</li>
 
 						<script>
-							// appels ajax pour mettre-à-jour le nombre d''éléments non-lus de l''inbox
-							var requestInboxSizeDone = true;
-
-							function refreshInboxSize() {
-								if (!requestInboxSizeDone) {
-									return;
-								}
-								requestInboxSizeDone = false;
-								$.get(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function(unreadSize) {
-									if (unreadSize > 0) {
-										$('#inboxSize').text('<fmt:message key="title.inbox"/> (' + unread + ')');
-										$('#inboxSize').attr('style', 'font-weight: bold');
-									}
-									else {
-										$('#inboxSize').text('<fmt:message key="title.inbox"/>');
-										$('#inboxSize').attr('style', '');
-									}
-									onReceivedInboxSize();
-								});
-							}
-
-							// dès l''affichage de la page
-							refreshInboxSize();
-
-							function onReceivedInboxSize() {
-								requestInboxSizeDone = true;
-							}
+							$(function() {
+								// dès l'affichage de la page, on rafraîchit le nombre d'éléments non lus de l'inbox
+								Inbox.refreshSize($('#inboxSize'), '<fmt:message key="title.inbox"/>');
+							});
 						</script>
 
 					</authz:authorize>

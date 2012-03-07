@@ -1971,3 +1971,36 @@ var DisplayTable =  {
 		return html;
 	}
 }
+
+//===================================================
+
+var Inbox = {
+
+	requestInboxSizeDone: true,
+
+	/**
+	 * Cette méthode met-à-jour le nombre d'éléments non-lus de l'inbox de manière asynchrone (ajax).
+	 *
+	 * @param span le span qui contient le text à mettre-à-jour
+	 * @param text le texte de base de l'inbox (p.a. "Boîte de réception") auquel sera ajouté le nombre d'éléments non-lus (pour devenir "Boîte de réception (2)", par exemple)
+	 */
+	refreshSize: function(span, text) {
+
+		if (!this.requestInboxSizeDone) {
+			return;
+		}
+		this.requestInboxSizeDone = false;
+
+		$.get(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function(unreadSize) {
+			if (unreadSize > 0) {
+				$(span).text(text + ' (' + unreadSize + ')');
+				$(span).attr('style', 'font-weight: bold');
+			}
+			else {
+				$(span).text(text);
+				$(span).attr('style', '');
+			}
+			this.requestInboxSizeDone = true;
+		});
+	}
+}
