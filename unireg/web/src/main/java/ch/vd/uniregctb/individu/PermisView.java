@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.individu;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Permis;
 
-public class PermisView implements DateRange {
+public class PermisView implements DateRange, Serializable {
+
+	private static final long serialVersionUID = -7158428280315582937L;
 
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
@@ -20,24 +24,36 @@ public class PermisView implements DateRange {
 		this.annule = permis.getDateAnnulation() != null;
 	}
 
+	@SuppressWarnings("unused")
 	public RegDate getDateDebutValidite() {
 		return dateDebutValidite;
 	}
+
+	@SuppressWarnings("unused")
 	public void setDateDebutValidite(RegDate dateDebutValidite) {
 		this.dateDebutValidite = dateDebutValidite;
 	}
+
+	@SuppressWarnings("unused")
 	public RegDate getDateFinValidite() {
 		return dateFinValidite;
 	}
+
+	@SuppressWarnings("unused")
 	public void setDateFinValidite(RegDate dateFinValidite) {
 		this.dateFinValidite = dateFinValidite;
 	}
+
+	@SuppressWarnings("unused")
 	public String getTypePermis() {
 		return typePermis;
 	}
+
+	@SuppressWarnings("unused")
 	public void setTypePermis(String typePermis) {
 		this.typePermis = typePermis;
 	}
+
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebutValidite;

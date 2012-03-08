@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.evenement.common.view;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 
-public class TiersAssocieView {
+public class TiersAssocieView implements Serializable {
+
+	private static final long serialVersionUID = 860446912422173139L;
 
 	private Long numero;
 
@@ -47,6 +50,7 @@ public class TiersAssocieView {
 		this.nomCourrier.setNomCourrier2(nomCourrier2);
 	}
 
+	@SuppressWarnings("unused")
 	public String getLocaliteOuPays() {
 		return localiteOuPays;
 	}
@@ -55,6 +59,7 @@ public class TiersAssocieView {
 		this.localiteOuPays = localiteOuPays;
 	}
 
+	@SuppressWarnings("unused")
 	public String getForPrincipal() {
 		return forPrincipal;
 	}
@@ -63,6 +68,7 @@ public class TiersAssocieView {
 		this.forPrincipal = forPrincipal;
 	}
 
+	@SuppressWarnings("unused")
 	public RegDate getDateOuvertureFor() {
 		return dateOuvertureFor;
 	}
@@ -71,6 +77,7 @@ public class TiersAssocieView {
 		this.dateOuvertureFor = dateOuvertureFor;
 	}
 
+	@SuppressWarnings("unused")
 	public RegDate getDateFermetureFor() {
 		return dateFermetureFor;
 	}

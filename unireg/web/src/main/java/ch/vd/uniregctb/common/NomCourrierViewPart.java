@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +8,9 @@ import java.util.List;
  * les nom courrier 1 et nom courrier 2 (en particulier la gestion de l'assignation
  * depuis une liste de chaînes de caractères, voir {@link #setNomCourrier})
  */
-public class NomCourrierViewPart {
+public class NomCourrierViewPart implements Serializable {
+
+	private static final long serialVersionUID = -701042321355455042L;
 
 	private String nomCourrier1;
 

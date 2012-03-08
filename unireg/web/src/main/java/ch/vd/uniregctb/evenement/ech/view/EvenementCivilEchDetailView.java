@@ -1,67 +1,66 @@
 package ch.vd.uniregctb.evenement.ech.view;
 
-import java.util.List;
+import java.io.Serializable;
 
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
-import ch.vd.uniregctb.individu.IndividuView;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement
- *
  */
-public class EvenementCivilEchDetailView {
+public class EvenementCivilEchDetailView extends EvenementCivilDetailView implements Serializable {
 
-	private EvenementCivilEch evenement;
+	private static final long serialVersionUID = 7000273271978471047L;
 
-	private IndividuView individu;
+	private TypeEvenementCivilEch evtType;
+	private boolean recyclable;
+	private EvenementCivilEchBasicInfo evtPrioritaire;
+	private int totalAutresEvenementsAssocies;
 
-	private List<TiersAssocieView> tiersAssocies;
-
-	private List<String> erreursTiersAssocies;
-
-	private AdresseEnvoi adresse;
-
-	public EvenementCivilEch getEvenement() {
-		return evenement;
+	@SuppressWarnings("unused")
+	public TypeEvenementCivilEch getEvtType() {
+		return evtType;
 	}
 
-	public void setEvenement(EvenementCivilEch evenement) {
-		this.evenement = evenement;
+	public void setEvtType(TypeEvenementCivilEch evtType) {
+		this.evtType = evtType;
 	}
 
-	public IndividuView getIndividu() {
-		return individu;
+	@SuppressWarnings("unused")
+	public boolean isRecyclable() {
+		return recyclable;
 	}
 
-	public void setIndividu(IndividuView individu) {
-		this.individu = individu;
+	public void setRecyclable(boolean recyclable) {
+		this.recyclable = recyclable;
 	}
 
-	public List<TiersAssocieView> getTiersAssocies() {
-		return tiersAssocies;
+	@SuppressWarnings("unused")
+	public EvenementCivilEchBasicInfo getEvtPrioritaire() {
+		return evtPrioritaire;
 	}
 
-	public void setTiersAssocies(List<TiersAssocieView> tiersAssocies) {
-		this.tiersAssocies = tiersAssocies;
+	public void setEvtPrioritaire(EvenementCivilEchBasicInfo evt) {
+		if (getIndividu() == null || getIndividu().getNumeroIndividu() == null) {
+			throw new NullPointerException("le champs individu de l'objet doit être renseigné avant de pouvoir utiliser cette méthode");
+		}
+		if (evt.getNoIndividu() != getIndividu().getNumeroIndividu()) {
+			throw new IllegalStateException(
+					String.format(
+							"impossible de defenir un evenement prioritaire qui porte sur un autre numero d'individu(attendu: %d reçu: %d)",
+							getIndividu().getNumeroIndividu(), evt.getId()));
+		}
+		this.evtPrioritaire = evt;
 	}
 
-	public List<String> getErreursTiersAssocies() {
-		return erreursTiersAssocies;
+	public void setTotalAutresEvenementsAssocies(int totalAutresEvenementsAssocies) {
+		this.totalAutresEvenementsAssocies = totalAutresEvenementsAssocies;
 	}
 
-	public void setErreursTiersAssocies(List<String> erreursTiersAssocies) {
-		this.erreursTiersAssocies = erreursTiersAssocies;
+	@SuppressWarnings("unused")
+	public int getTotalAutresEvenementsAssocies() {
+		return totalAutresEvenementsAssocies;
 	}
-
-	public AdresseEnvoi getAdresse() {
-		return adresse;
-	}
-
-	public void setAdresse(AdresseEnvoi adresse) {
-		this.adresse = adresse;
-	}
-
 
 }

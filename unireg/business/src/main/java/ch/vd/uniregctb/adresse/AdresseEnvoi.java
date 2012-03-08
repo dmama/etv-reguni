@@ -17,7 +17,9 @@ public class AdresseEnvoi implements Serializable {
 	private static final int MAX_LIGNES = 6;
 	private static final int MANDATORY = 0;
 
-	private static class Data {
+	private static class Data implements Serializable {
+
+		private static final long serialVersionUID = 4491962901544271213L;
 
 		/** le contenu string d'une ligne d'adresse. */
 		public final String ligne;
@@ -86,6 +88,7 @@ public class AdresseEnvoi implements Serializable {
 
 	/**
 	 * Ajoute une ligne.
+	 * @param line  la ligne à ajouter
 	 */
 	public void addLine(String line) {
 		addLine(line, MANDATORY);

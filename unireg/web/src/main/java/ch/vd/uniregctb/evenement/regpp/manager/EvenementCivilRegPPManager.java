@@ -2,8 +2,6 @@ package ch.vd.uniregctb.evenement.regpp.manager;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -29,7 +27,6 @@ public interface EvenementCivilRegPPManager {
 	 * @throws AdressesResolutionException ...
 	 * @throws ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException ...
 	 */
-	@Transactional(readOnly = true)
 	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
@@ -44,7 +41,6 @@ public interface EvenementCivilRegPPManager {
 	 *
 	 * @param id id de l'evt à forcer
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id);
 
 	/**
@@ -55,7 +51,6 @@ public interface EvenementCivilRegPPManager {
 	 * @return une liste d'evenement pret à afficher
 	 * @throws AdressesResolutionException ...
 	 */
-	@Transactional(readOnly = true)
 	public List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
@@ -64,7 +59,6 @@ public interface EvenementCivilRegPPManager {
 	 * @param criterion les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	@Transactional(readOnly = true)
 	public int count(EvenementCivilCriteria criterion);
 
 }

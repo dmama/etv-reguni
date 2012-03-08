@@ -1,48 +1,54 @@
 package ch.vd.uniregctb.evenement.regpp.view;
 
-import java.util.List;
+import java.io.Serializable;
 
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
 import ch.vd.uniregctb.individu.IndividuView;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement
  *
  */
-public class EvenementCivilRegPPDetailView {
+public class EvenementCivilRegPPDetailView extends EvenementCivilDetailView implements Serializable {
 
-	private EvenementCivilRegPP evenement;
-
-	private IndividuView individuPrincipal;
-
+	private static final long serialVersionUID = 2886171493023303888L;
+	
+	private TypeEvenementCivil evtType;
+	private Integer evtNumeroOfsCommuneAnnonce;
 	private IndividuView individuConjoint;
-
-	private List<TiersAssocieView> tiersAssocies;
-
-	private List<String> erreursTiersAssocies;
-
-	private AdresseEnvoi adressePrincipal;
-
 	private AdresseEnvoi adresseConjoint;
 
-	public EvenementCivilRegPP getEvenement() {
-		return evenement;
+
+	@SuppressWarnings("unused")
+	public TypeEvenementCivil getEvtType() {
+		return evtType;
 	}
 
-	public void setEvenement(EvenementCivilRegPP evenement) {
-		this.evenement = evenement;
+	public void setEvtType(TypeEvenementCivil evtType) {
+		this.evtType = evtType;
 	}
 
+	@SuppressWarnings("unused")
+	public Integer getEvtNumeroOfsCommuneAnnonce() {
+		return evtNumeroOfsCommuneAnnonce;
+	}
+
+	public void setEvtNumeroOfsCommuneAnnonce(Integer evtNumeroOfsCommuneAnnonce) {
+		this.evtNumeroOfsCommuneAnnonce = evtNumeroOfsCommuneAnnonce;
+	}
+
+	@SuppressWarnings("unused")
 	public IndividuView getIndividuPrincipal() {
-		return individuPrincipal;
+		return getIndividu();
 	}
 
 	public void setIndividuPrincipal(IndividuView individuPrincipal) {
-		this.individuPrincipal = individuPrincipal;
+		setIndividu(individuPrincipal);
 	}
 
+	@SuppressWarnings("unused")
 	public IndividuView getIndividuConjoint() {
 		return individuConjoint;
 	}
@@ -51,30 +57,16 @@ public class EvenementCivilRegPPDetailView {
 		this.individuConjoint = individuConjoint;
 	}
 
-	public List<TiersAssocieView> getTiersAssocies() {
-		return tiersAssocies;
-	}
-
-	public void setTiersAssocies(List<TiersAssocieView> tiersAssocies) {
-		this.tiersAssocies = tiersAssocies;
-	}
-
-	public List<String> getErreursTiersAssocies() {
-		return erreursTiersAssocies;
-	}
-
-	public void setErreursTiersAssocies(List<String> erreursTiersAssocies) {
-		this.erreursTiersAssocies = erreursTiersAssocies;
-	}
-
+	@SuppressWarnings("unused")
 	public AdresseEnvoi getAdressePrincipal() {
-		return adressePrincipal;
+		return getAdresse();
 	}
 
 	public void setAdressePrincipal(AdresseEnvoi adressePrincipal) {
-		this.adressePrincipal = adressePrincipal;
+		setAdresse(adressePrincipal);
 	}
 
+	@SuppressWarnings("unused")
 	public AdresseEnvoi getAdresseConjoint() {
 		return adresseConjoint;
 	}

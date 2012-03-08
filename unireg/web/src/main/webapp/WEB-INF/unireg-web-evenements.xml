@@ -1,36 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-	<!--  Evenement -->
-
-	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController">
-		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="evenementCivilRegPPManager" ref="evtCivRegPPManager" />
-		<property name="validator" ref="evtCivCriteriaValidator" />
-	</bean>
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="evtCivCriteriaValidator" class="ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator" />
 
-	<bean id="evtCivRegPPManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" >
-		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
-		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
-		<property name="hostCivilService" ref="hostCivilService" />
-		<property name="serviceCivilService" ref="serviceCivilService" />
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="evenementService" ref="evenementService" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-	</bean>
-
-	<bean id="evtCivEchController" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchController">
+	<bean id="evtCivController" abstract="true">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="evenementCivilEchManager" ref="evtCivEchManager" />
 		<property name="validator" ref="evtCivCriteriaValidator" />
 	</bean>
 
-	<bean id="evtCivEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManagerImpl" >
-		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
+	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">
+		<property name="manager" ref="evtCivRegPPManager" />
+	</bean>
+
+	<bean id="evtCivEchController" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchController" parent="evtCivController">
+		<property name="manager" ref="evtCivEchManager" />
+	</bean>
+
+    <bean id ="evtCivManager" abstract="true">
 		<property name="hostCivilService" ref="hostCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="adresseService" ref="adresseService" />
@@ -38,4 +25,16 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
+
+	<bean id="evtCivRegPPManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">
+		<property name="evenementDAO" ref="evenementCivilRegPPDAO" />
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
+	</bean>
+
+	<bean id="evtCivEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManagerImpl" parent="evtCivManager">
+		<property name="evenementDAO" ref="evenementCivilEchDAO" />
+		<property name="evenementService" ref="evtCivilEchService" />
+		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
+	</bean>
+
 </beans>

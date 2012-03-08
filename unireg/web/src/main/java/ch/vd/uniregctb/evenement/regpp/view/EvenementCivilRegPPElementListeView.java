@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.evenement.regpp.view;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class EvenementCivilRegPPElementListeView {
+public class EvenementCivilRegPPElementListeView implements Serializable {
+
+	private static final long serialVersionUID = -3314742942975357599L;
 
 	private Long id;
 	private TypeEvenementCivil type;
@@ -20,26 +19,17 @@ public class EvenementCivilRegPPElementListeView {
 	private RegDate dateEvenement;
 	private Long numeroIndividuPrincipal;
 	private Long numeroIndividuConjoint;
-	private PersonnePhysique habitantPrincipal;
-	private PersonnePhysique habitantConjoint;
 	private Integer numeroOfsCommuneAnnonce;
-	private Set<EvenementCivilRegPPErreur> erreurs;
 	private Long numeroCTB;
 	private String nom1;
 	private String nom2;
 	private String commentaireTraitement;
 
-	public EvenementCivilRegPPElementListeView(EvenementCivilRegPP evt, TiersDAO tiersDAO) {
+	public EvenementCivilRegPPElementListeView(EvenementCivilRegPP evt) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
 		this.numeroIndividuPrincipal = evt.getNumeroIndividuPrincipal();
 		this.numeroIndividuConjoint = evt.getNumeroIndividuConjoint();
-		if (this.numeroIndividuPrincipal != null) {
-			this.habitantPrincipal = tiersDAO.getPPByNumeroIndividu(this.numeroIndividuPrincipal, true);
-		}
-		if (this.numeroIndividuConjoint != null) {
-			this.habitantConjoint = tiersDAO.getPPByNumeroIndividu(this.numeroIndividuConjoint, true);
-		}
 		this.type = evt.getType();
 		this.numeroOfsCommuneAnnonce = evt.getNumeroOfsCommuneAnnonce();
 		this.dateEvenement = evt.getDateEvenement();
@@ -51,90 +41,40 @@ public class EvenementCivilRegPPElementListeView {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public TypeEvenementCivil getType() {
 		return type;
-	}
-
-	public void setType(TypeEvenementCivil type) {
-		this.type = type;
 	}
 
 	public EtatEvenementCivil getEtat() {
 		return etat;
 	}
 
-	public void setEtat(EtatEvenementCivil etat) {
-		this.etat = etat;
-	}
-
+	@SuppressWarnings("unused")
 	public Date getDateTraitement() {
 		return dateTraitement;
 	}
 
-	public void setDateTraitement(Date dateTraitement) {
-		this.dateTraitement = dateTraitement;
-	}
-
+	@SuppressWarnings("unused")
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}
 
-	public void setDateEvenement(RegDate dateEvenement) {
-		this.dateEvenement = dateEvenement;
-	}
-
+	@SuppressWarnings("unused")
 	public Long getNumeroIndividuPrincipal() {
 		return numeroIndividuPrincipal;
 	}
 
-	public void setNumeroIndividuPrincipal(Long numeroIndividuPrincipal) {
-		this.numeroIndividuPrincipal = numeroIndividuPrincipal;
-	}
-
+	@SuppressWarnings("unused")
 	public Long getNumeroIndividuConjoint() {
 		return numeroIndividuConjoint;
 	}
 
-	public void setNumeroIndividuConjoint(Long numeroIndividuConjoint) {
-		this.numeroIndividuConjoint = numeroIndividuConjoint;
-	}
-
-	public PersonnePhysique getHabitantPrincipal() {
-		return habitantPrincipal;
-	}
-
-	public void setHabitantPrincipal(PersonnePhysique habitantPrincipal) {
-		this.habitantPrincipal = habitantPrincipal;
-	}
-
-	public PersonnePhysique getHabitantConjoint() {
-		return habitantConjoint;
-	}
-
-	public void setHabitantConjoint(PersonnePhysique habitantConjoint) {
-		this.habitantConjoint = habitantConjoint;
-	}
-
+	@SuppressWarnings("unused")
 	public Integer getNumeroOfsCommuneAnnonce() {
 		return numeroOfsCommuneAnnonce;
 	}
 
-	public void setNumeroOfsCommuneAnnonce(Integer numeroOfsCommuneAnnonce) {
-		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
-	}
-
-	public Set<EvenementCivilRegPPErreur> getErreurs() {
-		return erreurs;
-	}
-
-	public void setErreurs(Set<EvenementCivilRegPPErreur> erreurs) {
-		this.erreurs = erreurs;
-	}
-
+	@SuppressWarnings("unused")
 	public Long getNumeroCTB() {
 		return numeroCTB;
 	}
@@ -143,6 +83,7 @@ public class EvenementCivilRegPPElementListeView {
 		this.numeroCTB = numeroCTB;
 	}
 
+	@SuppressWarnings("unused")
 	public String getNom1() {
 		return nom1;
 	}
@@ -151,6 +92,7 @@ public class EvenementCivilRegPPElementListeView {
 		this.nom1 = nom1;
 	}
 
+	@SuppressWarnings("unused")
 	public String getNom2() {
 		return nom2;
 	}
@@ -159,11 +101,8 @@ public class EvenementCivilRegPPElementListeView {
 		this.nom2 = nom2;
 	}
 
+	@SuppressWarnings("unused")
 	public String getCommentaireTraitement() {
 		return commentaireTraitement;
-	}
-
-	public void setCommentaireTraitement(String commentaireTraitement) {
-		this.commentaireTraitement = commentaireTraitement;
 	}
 }

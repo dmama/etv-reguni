@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
+// TODO FRED Javadoc expliquer la logique du tri
 public class TypeEvenementCivilEchComparator implements Comparator<TypeEvenementCivilEch> {
 	@Override
 	public int compare(TypeEvenementCivilEch o1, TypeEvenementCivilEch o2) {

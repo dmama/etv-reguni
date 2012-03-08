@@ -143,7 +143,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", evts.get(pointer).idEvenement), e);
+				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", evts.get(pointer).getId()), e);
 			}
 		}
 
@@ -240,7 +240,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
 	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
-		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.idEvenement));
+		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.getId()));
 		try {
 			final boolean success = processEvent(evt);
 			if (!success) {
@@ -277,13 +277,13 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
+					final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 					if (evt == null) {
-						LOGGER.warn(String.format("Pas d'événement trouvé correspondant à l'identifiant %d", info.idEvenement));
+						LOGGER.warn(String.format("Pas d'événement trouvé correspondant à l'identifiant %d", info.getId()));
 						return Boolean.TRUE;
 					}
 					else if (evt.getEtat().isTraite()) {
-						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.idEvenement, evt.getEtat()));
+						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
 						return Boolean.TRUE;
 					}
 					
@@ -297,12 +297,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			});
 		}
 		catch (EvenementCivilWrappingException e) {
-			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.idEvenement), e.getCause());
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.getId()), e.getCause());
 			onException(info, e.getCause());
 			return false;
 		}
 		catch (Exception e) {
-			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.idEvenement), e);
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.getId()), e);
 			onException(info, e);
 			return false;
 		}
@@ -318,12 +318,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
-				final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
+				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 				evt.getErreurs().clear();
 				evt.getErreurs().add(erreur);
 				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 				evt.setDateTraitement(DateHelper.getCurrentDate());
-				Audit.error(info.idEvenement, "Statut de l'événement passé à 'EN_ERREUR'");
+				Audit.error(info.getId(), "Statut de l'événement passé à 'EN_ERREUR'");
 				return null;
 			}
 		});
@@ -341,8 +341,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
 					final List<EvenementCivilEchBasicInfo> pourIndexation = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
 					for (EvenementCivilEchBasicInfo info : remainingEvents) {
-						if (info.etat == EtatEvenementCivil.A_TRAITER) {
-							final EvenementCivilEch evt = evtCivilDAO.get(info.idEvenement);
+						if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
+							final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
 								if (translator.isIndexationOnly(evt)) {
 									pourIndexation.add(info);
@@ -372,7 +372,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					}
 				}
 				catch (Exception e) {
-					LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", pourIndexation.get(pointer).idEvenement), e);
+					LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", pourIndexation.get(pointer).getId()), e);
 				}
 			}
 		}

@@ -56,29 +56,17 @@ public class EvenementCivilEchController {
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private TiersMapHelper tiersMapHelper;
-	public TiersMapHelper getTiersMapHelper() {
-		return tiersMapHelper;
-	}
-
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	private EvenementCivilEchManager evenementCivilEchManager;
-	public EvenementCivilEchManager getEvenementCivilEchManager() {
-		return evenementCivilEchManager;
-	}
-
+	private EvenementCivilEchManager manager;
 	@SuppressWarnings("UnusedDeclaration")
-	public void setEvenementCivilEchManager(EvenementCivilEchManager evenementCivilEchManager) {
-		this.evenementCivilEchManager = evenementCivilEchManager;
+	public void setManager(EvenementCivilEchManager manager) {
+		this.manager = manager;
 	}
 
 	private  Validator validator;
-	public Validator getValidator() {
-		return validator;
-	}
-
 	@SuppressWarnings("UnusedDeclaration")
 	public void setValidator(Validator validator) {
 		this.validator = validator;
@@ -87,7 +75,7 @@ public class EvenementCivilEchController {
 
 	@InitBinder("evenementEchCriteria")
 	protected final void initBinder(HttpServletRequest request, WebDataBinder binder) {
-		binder.setValidator(getValidator());
+		binder.setValidator(validator);
 		Locale locale = request.getLocale();
 		SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FORMAT_DISPLAY, locale);
 		sdf.setLenient(false);
@@ -104,10 +92,10 @@ public class EvenementCivilEchController {
 
 	@ModelAttribute
 	protected ModelMap referenceData(ModelMap model) throws Exception {
-		model.put("typesRechercheNom", getTiersMapHelper().getMapTypeRechercheNom());
-		model.put("typesEvenementEch", getTiersMapHelper().getMapTypeEvenementCivilEch());
-		model.put("etatsEvenement", getTiersMapHelper().getMapEtatsEvenementCivil());
-		model.put("actionsEvenementEch", getTiersMapHelper().getMapActionEvenementCivilEch());
+		model.put("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
+		model.put("typesEvenementEch", tiersMapHelper.getMapTypeEvenementCivilEch());
+		model.put("etatsEvenement", tiersMapHelper.getMapEtatsEvenementCivil());
+		model.put("actionsEvenementEch", tiersMapHelper.getMapActionEvenementCivilEch());
 		return model;
 	}
 
@@ -159,8 +147,8 @@ public class EvenementCivilEchController {
 			populateModel(model,
 					criteriaInSession,
 					INITIAL_PAGINATION,
-					getEvenementCivilEchManager().find(criteriaInSession, INITIAL_PAGINATION),
-					getEvenementCivilEchManager().count(criteriaInSession));
+					manager.find(criteriaInSession, INITIAL_PAGINATION),
+					manager.count(criteriaInSession));
 
 		}
 		return new ModelAndView("evenement/ech/list", model);
@@ -180,9 +168,9 @@ public class EvenementCivilEchController {
 			final ParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
 			populateModel(model,
 					criteriaInSession,
-					pagination ,
-					getEvenementCivilEchManager().find(criteriaInSession, pagination ),
-					getEvenementCivilEchManager().count(criteriaInSession));
+					pagination,
+					manager.find(criteriaInSession, pagination),
+					manager.count(criteriaInSession));
 
 		}
 		return new ModelAndView("evenement/ech/list", model);
@@ -212,20 +200,20 @@ public class EvenementCivilEchController {
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		return new ModelAndView ("evenement/ech/visu", "command", getEvenementCivilEchManager().get(id));
+		return new ModelAndView ("evenement/ech/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		getEvenementCivilEchManager().forceEtatTraite(id);
+		manager.forceEtatTraite(id);
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
-		getEvenementCivilEchManager().traiteEvenementCivil(id);
+		manager.recycleEvenementCivil(id);
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 }

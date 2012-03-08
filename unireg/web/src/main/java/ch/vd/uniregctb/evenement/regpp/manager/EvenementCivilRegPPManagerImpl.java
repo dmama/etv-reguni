@@ -4,64 +4,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementService;
-import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManageImpl;
-import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
+import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManagerImpl;
+import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
+import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
-import ch.vd.uniregctb.individu.HostCivilService;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
- * @InheritDoc
+ * @inheritDoc
  */
-public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl implements EvenementCivilRegPPManager, MessageSourceAware {
+public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilRegPPManager, MessageSourceAware {
 
 	private final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPManagerImpl.class);
 
-	private AdresseService adresseService;
-	private TiersService tiersService;
-	private TiersDAO tiersDAO;
 	private EvenementCivilProcessor evenementCivilProcessor;
-	private ServiceCivilService serviceCivilService;
-	private EvenementService evenementService;
-	private ServiceInfrastructureService serviceInfrastructureService;
-	private MessageSource messageSource;
-	private HostCivilService hostCivilService;
-	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
+	private EvenementCivilRegPPDAO evenementDAO;
 
 	@SuppressWarnings("unused")
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
@@ -69,26 +41,8 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	}
 
 	@SuppressWarnings("unused")
-	public void setEvenementCivilRegPPDAO(EvenementCivilRegPPDAO evenementCivilRegPPDAO) {
-		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
-	}
-
-	@SuppressWarnings("unused")
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
-	}
-
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
-	@SuppressWarnings("unused")
-	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
-		this.serviceInfrastructureService = serviceInfrastructureService;
+	public void setEvenementDAO(EvenementCivilRegPPDAO evenementDAO) {
+		this.evenementDAO = evenementDAO;
 	}
 
 	/**
@@ -98,134 +52,42 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	@Transactional(readOnly = true)
 	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
 
-		final EvenementCivilRegPPDetailView evtCivilRegPPDetailView = new EvenementCivilRegPPDetailView();
-		final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(id);
+		final EvenementCivilRegPPDetailView evtView = new EvenementCivilRegPPDetailView();
+
+		final EvenementCivilRegPP evt = evenementDAO.get(id);
 		if (evt == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw newObjectNotFoundException(id);
 		}
-		evtCivilRegPPDetailView.setEvenement(evt);
 
-		evtCivilRegPPDetailView.setIndividuPrincipal(hostCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal()));
+		final Long individuPrincipal = evt.getNumeroIndividuPrincipal();
+		fill(evt, evtView);
+		evtView.setIndividuPrincipal(retrieveIndividu(individuPrincipal));
+		evtView.setAdressePrincipal(retrieveAdresse(individuPrincipal));
+		retrieveTiersAssociePrincipal(evt.getId(), individuPrincipal, evtView);
+		retrieveTiersAssocieMenage(evt.getId(), individuPrincipal, evtView);
 
-		final Individu individu = serviceCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal(), null);
-		final AdresseEnvoi adressePrincipal = adresseService.getAdresseEnvoi(individu, RegDate.get(), false);
-		evtCivilRegPPDetailView.setAdressePrincipal(adressePrincipal);
-
-		final Long conjoint = evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint();
+		final Long conjoint = evt.getNumeroIndividuConjoint();
 		if (conjoint != null) {
-			evtCivilRegPPDetailView.setIndividuConjoint(hostCivilService.getIndividu(conjoint));
-			final Individu conjointInd = serviceCivilService.getIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal(), null);
-			AdresseEnvoi adresseConjoint = adresseService.getAdresseEnvoi(conjointInd, RegDate.get(), false);
-			evtCivilRegPPDetailView.setAdresseConjoint(adresseConjoint);
+			evtView.setIndividuConjoint(retrieveIndividu(conjoint));
+			evtView.setAdresseConjoint(retrieveAdresse(conjoint));
+			retrieveTiersAssocieConjoint(evt.getId(), conjoint , evtView);
 		}
 
-		final List<String> erreursTiersAssocies = new ArrayList<String>();
-		final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
-
-		try {
-			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuPrincipal());
-			if (habitantPrincipal != null) {
-				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
-				tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
-				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
-				if (forFiscalPrincipal != null) {
-					final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-					final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
-					if (commune != null) {
-						tiersAssocie.setForPrincipal(commune.getNomMinuscule());
-					}
-					tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
-					tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
-				}
-				tiersAssocies.add(tiersAssocie);
-			}
-
-			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
-			if (ensembleTiersCouple != null) {
-				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
-				if (menageCommun != null) {
-					final TiersAssocieView tiersAssocie = createTiersAssocieView(menageCommun);
-					tiersAssocies.add(tiersAssocie);
-				}
-			}
-		}
-		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", id, e.getMessage()));
-			erreursTiersAssocies.add(e.getMessage());
-		}
-
-		if (evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint() != null) {
-			try {
-				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtCivilRegPPDetailView.getEvenement().getNumeroIndividuConjoint());
-				if (habitantConjoint != null) {
-					final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantConjoint);
-					tiersAssocies.add(tiersAssocie);
-				}
-			}
-			catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-				LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", id, e.getMessage()));
-				erreursTiersAssocies.add(e.getMessage());
-			}
-		}
-
-		if (!tiersAssocies.isEmpty()) {
-			evtCivilRegPPDetailView.setTiersAssocies(tiersAssocies);
-		}
-		if (!erreursTiersAssocies.isEmpty()) {
-			evtCivilRegPPDetailView.setErreursTiersAssocies(erreursTiersAssocies);
-		}
-
-		return evtCivilRegPPDetailView;
+		return evtView;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	private String getLocaliteOuPays(Tiers tiers) throws AdresseException {
-
-		String localiteOuPays = "";
-
-		AdresseGenerique adresseCourrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
-		if (adresseCourrier != null) {
-			Integer noOfsPays = adresseCourrier.getNoOfsPays();
-			Pays pays;
-			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
-			if (pays != null && !pays.isSuisse()) {
-				localiteOuPays = pays.getNomMinuscule();
-			}
-			else {
-				localiteOuPays = adresseCourrier.getLocalite();
-			}
+	private void fill(EvenementCivilRegPP source, EvenementCivilRegPPDetailView target) {
+		target.setEvtCommentaireTraitement(source.getCommentaireTraitement());
+		target.setEvtDate(source.getDateEvenement());
+		target.setEvtDateTraitement(source.getDateTraitement());
+		target.setEvtEtat(source.getEtat());
+		target.setEvtId(source.getId());
+		target.setEvtNumeroOfsCommuneAnnonce(source.getNumeroOfsCommuneAnnonce());
+		target.setEvtType(source.getType());
+		for (EvenementCivilRegPPErreur err : source.getErreurs() ) {
+			target.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
 		}
-		return localiteOuPays;
 	}
-
-
-	/**
-	 * @inheritDoc
-	 */
-	private TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
-		final TiersAssocieView tiersAssocie = new TiersAssocieView();
-		tiersAssocie.setNumero(tiers.getNumero());
-
-		final List<String> nomCourrier = adresseService.getNomCourrier(tiers, null, false);
-		tiersAssocie.setNomCourrier(nomCourrier);
-
-		tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(tiers));
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
-		if (forFiscalPrincipal != null) {
-			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
-			if (commune != null) {
-				tiersAssocie.setForPrincipal(commune.getNomMinuscule());
-			}
-			tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
-			tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
-		}
-
-		return tiersAssocie;
-	}
-
 
 	/**
 	 * @inheritDoc
@@ -242,7 +104,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(id);
+		final EvenementCivilRegPP evenementCivilExterne = evenementDAO.get(id);
 
 		// l'état "FORCE" n'est accessible qu'aux événements civils qui ne sont pas encore traités
 		if (!evenementCivilExterne.getEtat().isTraite() || evenementCivilExterne.getEtat() == EtatEvenementCivil.A_VERIFIER) {
@@ -257,7 +119,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	@Transactional(readOnly = true)
 	public List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilRegPPElementListeView> evtsRegPPElementListeView = new ArrayList<EvenementCivilRegPPElementListeView>();
-		final List<EvenementCivilRegPP> evts = evenementService.find(bean, pagination);
+		final List<EvenementCivilRegPP> evts = evenementDAO.find(bean, pagination);
 		for (EvenementCivilRegPP evt : evts) {
 			final EvenementCivilRegPPElementListeView evtRegPPElementListeView = buildView(evt);
 			evtsRegPPElementListeView.add(evtRegPPElementListeView);
@@ -267,8 +129,8 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	}
 
 	private EvenementCivilRegPPElementListeView buildView(EvenementCivilRegPP evt) throws AdresseException {
-		final EvenementCivilRegPPElementListeView evtRegPPElementListeView = new EvenementCivilRegPPElementListeView(evt, tiersDAO);
-		final PersonnePhysique habitantPrincipal = evtRegPPElementListeView.getHabitantPrincipal();
+		final EvenementCivilRegPPElementListeView evtRegPPElementListeView = new EvenementCivilRegPPElementListeView(evt);
+		final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evt.getNumeroIndividuPrincipal());
 		try {
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
@@ -302,39 +164,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManageImpl imp
 	@Override
 	@Transactional(readOnly = true)
 	public int count(EvenementCivilCriteria criterion) {
-		return evenementService.count(criterion);
-	}
-
-
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
-	@SuppressWarnings("unused")
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		this.serviceCivilService = serviceCivilService;
-	}
-
-	protected MessageSource getMessageSource() {
-		return messageSource;
-	}
-
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-	}
-
-	@SuppressWarnings("unused")
-	public void setEvenementService(EvenementService evenementService) {
-		this.evenementService = evenementService;
+		return evenementDAO.count(criterion);
 	}
 
 }

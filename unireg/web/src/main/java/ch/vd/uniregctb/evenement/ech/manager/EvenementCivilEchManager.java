@@ -2,14 +2,12 @@ package ch.vd.uniregctb.evenement.ech.manager;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
+import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
@@ -28,26 +26,22 @@ public interface EvenementCivilEchManager {
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 * @throws ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException ...
 	 */
-	@Transactional(readOnly = true)
 	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
-	 * Traite un evenement civil designe par l'id
+	 * Recycle l'evenement civil designe par l'id
 	 *
 	 * Seulement le premier evenement d'un individu doit pouvoir être recycler
 	 *
 	 * @param id de l'evt à traiter
 	 */
-	public void traiteEvenementCivil(Long id);
+	public void recycleEvenementCivil(Long id);
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
-	 * Seulement le premier evenement d'un individu doit pouvoir être forcer
-	 *
 	 * @param id id de l'evt à forcer
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id);
 
 	/**
@@ -58,7 +52,6 @@ public interface EvenementCivilEchManager {
 	 * @return une liste d'evenement pret à afficher
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 */
-	@Transactional(readOnly = true)
 	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
@@ -67,7 +60,6 @@ public interface EvenementCivilEchManager {
 	 * @param criterion les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	@Transactional(readOnly = true)
 	public int count(EvenementCivilCriteria criterion);
 
 }

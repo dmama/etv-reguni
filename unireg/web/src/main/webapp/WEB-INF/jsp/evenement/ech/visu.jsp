@@ -12,38 +12,38 @@
 	  	<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
-			<legend><span><fmt:message key="label.caracteristiques.evenement" /></span></legend>
+			<legend><span><fmt:message key="label.caracteristiques.evenement.ech" /></span></legend>
 			<table>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.numero.evenement" /> :</td>
 					<td width="25%">
-						${command.evenement.id}
-						<unireg:consulterLog entityNature="EvenementEch" entityId="${command.evenement.id}"/>
+						${command.evtId}
+						<unireg:consulterLog entityNature="EvenementEch" entityId="${command.evtId}"/>
 					</td>
 					<td width="25%"><fmt:message key="label.date.evenement" /> :</td>
-					<td width="25%"><unireg:regdate regdate="${command.evenement.dateEvenement}"/></td>
+					<td width="25%"><unireg:regdate regdate="${command.evtDate}"/></td>
 				
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.evenement" /> :</td>
-					<td width="25%"><fmt:message key="option.type.evenement.${command.evenement.type}" /></td>
+					<td width="25%"><fmt:message key="option.type.evenement.ech.${command.evtType}" /></td>
 					<td width="25%"><fmt:message key="label.date.traitement" /> :</td>
-					<td width="25%"><fmt:formatDate value="${command.evenement.dateTraitement}" pattern="dd.MM.yyyy HH:mm:ss" /></td>
+					<td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss" /></td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.etat.evenement" /> :</td>
-					<td width="25%"><fmt:message key="option.etat.evenement.${command.evenement.etat}" /></td>
+					<td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}" /></td>
 					<td width="25%"><fmt:message key="label.commune.evenement" /> :</td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
-					<td colspan="3"><i><c:out value="${command.evenement.commentaireTraitement}"/></i></td>
+					<td colspan="3"><i><c:out value="${command.evtCommentaireTraitement}"/></i></td>
 				</tr>
 			</table>
 			
-			<c:if test="${not empty command.evenement.erreurs}">
-				<display:table name="command.evenement.erreurs" id="row" class="error" >
+			<c:if test="${not empty command.evtErreurs}">
+				<display:table name="command.evtErreurs" id="row" class="error" >
         			<c:if test="${empty row.callstack}">
     					<display:column property="message" titleKey="label.erreur"/>
         			</c:if>
@@ -64,51 +64,51 @@
 			<table>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.numero.registre.habitant" /> :</td>
-					<td width="50%">${command.individuPrincipal.numeroIndividu}</td>
+					<td width="50%">${command.individu.numeroIndividu}</td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.nom.prenom" /> :</td>
-					<td width="50%">${command.individuPrincipal.nom}&nbsp;${command.individuPrincipal.prenom}</td>
+					<td width="50%">${command.individu.nom}&nbsp;${command.individu.prenom}</td>
 				</tr>
-				<c:if test="${command.adressePrincipal.ligne1 != null}">
+				<c:if test="${command.adresse.ligne1 != null}">
 				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.adresse.courrier.active" />&nbsp;:</td>
-					<td>${command.adressePrincipal.ligne1}</td>
+					<td>${command.adresse.ligne1}</td>
 				</tr>
 				</c:if>
-				<c:if test="${command.adressePrincipal.ligne2 != null }">
+				<c:if test="${command.adresse.ligne2 != null }">
 					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
-						<td>${command.adressePrincipal.ligne2}</td>
+						<td>${command.adresse.ligne2}</td>
 					</tr>
 				</c:if>
-				<c:if test="${command.adressePrincipal.ligne3 != null }">
+				<c:if test="${command.adresse.ligne3 != null }">
 					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
-						<td>${command.adressePrincipal.ligne3}</td>
+						<td>${command.adresse.ligne3}</td>
 					</tr>
 				</c:if>
-				<c:if test="${command.adressePrincipal.ligne4 != null }">
+				<c:if test="${command.adresse.ligne4 != null }">
 					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
-						<td>${command.adressePrincipal.ligne4}</td>
+						<td>${command.adresse.ligne4}</td>
 					</tr>
 				</c:if>
-				<c:if test="${command.adressePrincipal.ligne5 != null}" >
+				<c:if test="${command.adresse.ligne5 != null}" >
 					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
-						<td>${command.adressePrincipal.ligne5}</td>
+						<td>${command.adresse.ligne5}</td>
 					</tr>
 				</c:if>
-				<c:if test="${command.adressePrincipal.ligne6 != null}" >
+				<c:if test="${command.adresse.ligne6 != null}" >
 					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
-						<td>${command.adressePrincipal.ligne6}</td>
+						<td>${command.adresse.ligne6}</td>
 					</tr>
 				</c:if>
 				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
-					<td><fmt:formatDate value="${command.individuPrincipal.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+					<td><fmt:formatDate value="${command.individu.dateNaissance}" pattern="dd.MM.yyyy"/></td>
 				</tr>
 			</table>
 		</fieldset>
@@ -148,21 +148,57 @@
 			</display:table>
 		</fieldset>
 		</c:if>
-		<!-- Fin List tiers -->			
+		<!-- Fin List tiers -->
+
+		<!-- Debut List evenement associes -->
+		<c:if test="${command.totalAutresEvenementsAssocies > 0}">
+			<fieldset>
+				<legend><span>Événements Associés</span></legend>
+
+				<c:if test="${!command.recyclable}">
+					<h4>
+						Événement Prioritaire
+					</h4>
+					<table>
+						<tr>
+							<th>Id</th><th>Type</th><th>Etat</th><th>Date</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="visu.do?id=${command.evtPrioritaire.id}">${command.evtPrioritaire.id}</a>
+							</td>
+							<td>
+								<fmt:message key="option.type.evenement.ech.${command.evtPrioritaire.type}" />
+							</td>
+							<td>
+								<fmt:message key="option.etat.evenement.${command.evtPrioritaire.etat}" />
+							</td>
+							<td>
+								<unireg:regdate regdate="${command.evtPrioritaire.date}"/>
+							</td>
+						<tr>
+					</table>
+					<%-- TODO FRED Implementer le lien vers ecran de recherche--%>
+				</c:if>
+				<div>
+                   <a href='#'>${command.totalAutresEvenementsAssocies} autres événements</a> à traiter sont également associés à cet individu.
+                </div>
+			</fieldset>
+		</c:if>
 	
 		<!-- Debut Boutons -->
 		<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
 
-		<c:if test="${(command.evenement.etat == 'A_TRAITER') || (command.evenement.etat == 'EN_ERREUR')}">
+		<c:if test="${command.recyclable}">
 			<form:form method="post" action="recycler.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<input type="hidden" name="id" value="${command.evtId}" />
 				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
 				<input type="submit" name="recycler" value="${labelBoutonRecyler}" />
 			</form:form>
 		</c:if>
-		<c:if test="${command.evenement.etat != 'TRAITE' && command.evenement.etat != 'FORCE'}">
+		<c:if test="${command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE'}">
 			<form:form method="post" action="forcer.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<input type="hidden" name="id" value="${command.evtId}" />
 				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
 				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
 			</form:form>

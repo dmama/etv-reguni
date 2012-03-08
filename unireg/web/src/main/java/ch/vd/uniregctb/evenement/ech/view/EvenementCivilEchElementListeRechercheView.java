@@ -1,22 +1,20 @@
 package ch.vd.uniregctb.evenement.ech.view;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * @inheritDoc
  *
- * TODO voir à supprimer les references a PersonnePhysique et rendre la classe serialisable
  */
-public class EvenementCivilEchElementListeRechercheView {
+public class EvenementCivilEchElementListeRechercheView implements Serializable {
+
+	private static final long serialVersionUID = -6488153266031727123L;
 
 	private Long id;
 	private TypeEvenementCivilEch type;
@@ -24,19 +22,14 @@ public class EvenementCivilEchElementListeRechercheView {
 	private Date dateTraitement;
 	private RegDate dateEvenement;
 	private Long numeroIndividu;
-	private PersonnePhysique personnePhysique;
-	private Set<EvenementCivilEchErreur> erreurs;
 	private Long numeroCTB;
 	private String nom;
 	private String commentaireTraitement;
 
-	public EvenementCivilEchElementListeRechercheView(EvenementCivilEch evt, TiersDAO tiersDAO) {
+	public EvenementCivilEchElementListeRechercheView(EvenementCivilEch evt) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
 		this.numeroIndividu = evt.getNumeroIndividu();
-		if (this.numeroIndividu != null) {
-			this.personnePhysique = tiersDAO.getPPByNumeroIndividu(this.numeroIndividu, true);
-		}
 		this.type = evt.getType();
 		this.dateEvenement = evt.getDateEvenement();
 		this.dateTraitement = evt.getDateTraitement();
@@ -47,66 +40,30 @@ public class EvenementCivilEchElementListeRechercheView {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public TypeEvenementCivilEch getType() {
 		return type;
-	}
-
-	public void setType(TypeEvenementCivilEch type) {
-		this.type = type;
 	}
 
 	public EtatEvenementCivil getEtat() {
 		return etat;
 	}
 
-	public void setEtat(EtatEvenementCivil etat) {
-		this.etat = etat;
-	}
-
+	@SuppressWarnings("unused")
 	public Date getDateTraitement() {
 		return dateTraitement;
 	}
 
-	public void setDateTraitement(Date dateTraitement) {
-		this.dateTraitement = dateTraitement;
-	}
-
+	@SuppressWarnings("unused")
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}
 
-	public void setDateEvenement(RegDate dateEvenement) {
-		this.dateEvenement = dateEvenement;
-	}
-
+	@SuppressWarnings("unused")
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}
 
-	public void setNumeroIndividu(Long numeroIndividu) {
-		this.numeroIndividu = numeroIndividu;
-	}
-
-	public PersonnePhysique getPersonnePhysique() {
-		return personnePhysique;
-	}
-
-	public void setPersonnePhysique(PersonnePhysique personnePhysique) {
-		this.personnePhysique = personnePhysique;
-	}
-
-	public Set<EvenementCivilEchErreur> getErreurs() {
-		return erreurs;
-	}
-
-	public void setErreurs(Set<EvenementCivilEchErreur> erreurs) {
-		this.erreurs = erreurs;
-	}
-
+	@SuppressWarnings("unused")
 	public Long getNumeroCTB() {
 		return numeroCTB;
 	}
@@ -115,20 +72,17 @@ public class EvenementCivilEchElementListeRechercheView {
 		this.numeroCTB = numeroCTB;
 	}
 
+	@SuppressWarnings("unused")
 	public String getNom() {
 		return nom;
 	}
 
-	public void setNom(String nom1) {
+	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
-
+	@SuppressWarnings("unused")
 	public String getCommentaireTraitement() {
 		return commentaireTraitement;
-	}
-
-	public void setCommentaireTraitement(String commentaireTraitement) {
-		this.commentaireTraitement = commentaireTraitement;
 	}
 }

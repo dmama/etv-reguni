@@ -17,33 +17,33 @@
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.numero.evenement" /> :</td>
 					<td width="25%">
-						${command.evenement.id}
-						<unireg:consulterLog entityNature="Evenement" entityId="${command.evenement.id}"/>
+						${command.evtId}
+						<unireg:consulterLog entityNature="Evenement" entityId="${command.evtId}"/>
 					</td>
 					<td width="25%"><fmt:message key="label.date.evenement" /> :</td>
-					<td width="25%"><unireg:regdate regdate="${command.evenement.dateEvenement}"/></td>
+					<td width="25%"><unireg:regdate regdate="${command.evtDate}"/></td>
 				
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.evenement" /> :</td>
-					<td width="25%"><fmt:message key="option.type.evenement.${command.evenement.type}" /></td>
+					<td width="25%"><fmt:message key="option.type.evenement.${command.evtType}" /></td>
 					<td width="25%"><fmt:message key="label.date.traitement" /> :</td>
-					<td width="25%"><fmt:formatDate value="${command.evenement.dateTraitement}" pattern="dd.MM.yyyy HH:mm:ss" /></td>
+					<td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss" /></td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.etat.evenement" /> :</td>
-					<td width="25%"><fmt:message key="option.etat.evenement.${command.evenement.etat}" /></td>
+					<td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}" /></td>
 					<td width="25%"><fmt:message key="label.commune.evenement" /> :</td>
-					<td width="25%"><unireg:commune ofs="${command.evenement.numeroOfsCommuneAnnonce}" displayProperty="nomMinuscule" date="${command.evenement.dateEvenement}"/></td>
+					<td width="25%"><unireg:commune ofs="${command.evtNumeroOfsCommuneAnnonce}" displayProperty="nomMinuscule" date="${command.evtDate}"/></td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
-					<td colspan="3"><i><c:out value="${command.evenement.commentaireTraitement}"/></i></td>
+					<td colspan="3"><i><c:out value="${command.evtCommentaireTraitement}"/></i></td>
 				</tr>
 			</table>
 			
-			<c:if test="${not empty command.evenement.erreurs}">
-				<display:table name="command.evenement.erreurs" id="row" class="error" >
+			<c:if test="${not empty command.evtErreurs}">
+				<display:table name="command.evtErreurs" id="row" class="error" >
         			<c:if test="${empty row.callstack}">
     					<display:column property="message" titleKey="label.erreur"/>
         			</c:if>
@@ -209,16 +209,16 @@
 		<!-- Debut Boutons -->
 		<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
 
-		<c:if test="${(command.evenement.etat == 'A_TRAITER') || (command.evenement.etat == 'EN_ERREUR')}">
+		<c:if test="${(command.evtEtat == 'A_TRAITER') || (command.evtEtat == 'EN_ERREUR')}">
 			<form:form method="post" action="recycler.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<input type="hidden" name="id" value="${command.evtId}" />
 				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
 				<input type="submit" name="recycler" value="${labelBoutonRecyler}" />
 			</form:form>
 		</c:if>
-		<c:if test="${command.evenement.etat != 'TRAITE' && command.evenement.etat != 'FORCE'}">
+		<c:if test="${command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE'}">
 			<form:form method="post" action="forcer.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evenement.id}" />
+				<input type="hidden" name="id" value="${command.evtId}" />
 				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
 				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
 			</form:form>

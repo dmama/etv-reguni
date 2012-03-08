@@ -94,49 +94,49 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
-			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(1L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
-			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(5L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
-			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(3L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
-			Assert.assertEquals(7L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(7L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
-			Assert.assertEquals(8L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(8L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 
 		// troisième tentative de récupération : rien
 		Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
 	}
-	
+
 	@Test
 	public void testRecupSimpleAvecPostAll() throws Exception {
 
@@ -181,43 +181,43 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		Assert.assertEquals(0, queue.getInflightCount());
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
-			Assert.assertEquals(1L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(1L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 1, 1), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(1);
-			Assert.assertEquals(5L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(5L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 2, 5), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(2);
-			Assert.assertEquals(3L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(3L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.NAISSANCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(3);
-			Assert.assertEquals(7L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(7L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.ARRIVEE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 		{
 			final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(4);
-			Assert.assertEquals(8L, evtCivilInfo.idEvenement);
-			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.date);
-			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.etat);
-			Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.type);
-			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.action);
+			Assert.assertEquals(8L, evtCivilInfo.getId());
+			Assert.assertEquals(date(1999, 3, 3), evtCivilInfo.getDate());
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evtCivilInfo.getEtat());
+			Assert.assertEquals(TypeEvenementCivilEch.DIVORCE, evtCivilInfo.getType());
+			Assert.assertEquals(ActionEvenementCivilEch.PREMIERE_LIVRAISON, evtCivilInfo.getAction());
 		}
 
 		// troisième tentative de récupération : rien
