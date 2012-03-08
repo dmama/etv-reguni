@@ -1856,7 +1856,6 @@ public class TiersServiceImpl implements TiersService {
         final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(noIndEnfant);
         if (ppEnfant == null) {
 	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + noIndEnfant);
-            return null;
         }
 
         final Individu enfant = serviceCivilService.getIndividu(noIndEnfant, null);
@@ -1875,7 +1874,6 @@ public class TiersServiceImpl implements TiersService {
         final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
         if (ppEnfant == null) {
 	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + enfant.getNoTechnique());
-            return null;
         }
 
         final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
