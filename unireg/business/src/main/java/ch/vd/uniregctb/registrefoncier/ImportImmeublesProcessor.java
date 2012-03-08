@@ -623,7 +623,11 @@ public class ImportImmeublesProcessor {
 			if (date == null) {
 				throw new ParseException("Date '" + str + "' cannot be parsed.", 0);
 			}
-			return RegDate.get(date);
+			final RegDate regDate = RegDate.get(date);
+			if (regDate == null) {
+				throw new ParseException("Date '" + str + "' cannot be parsed.", 0);
+			}
+			return regDate;
 		}
 	}
 }

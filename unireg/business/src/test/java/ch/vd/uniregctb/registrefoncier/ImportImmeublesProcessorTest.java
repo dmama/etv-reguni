@@ -431,15 +431,17 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	public void testParseTimestamp() throws Exception {
 		try {
 			ImportImmeublesProcessor.parseTimestamp("01.01.10 00:00:00.000000000");
+			fail();
 		}
 		catch (ParseException e) {
-			assertEquals("Date '01.01.10 00:00:00.000000000' cannot be parsed", e.getMessage());
+			assertEquals("Date '01.01.10 00:00:00.000000000' cannot be parsed.", e.getMessage());
 		}
 		try {
 			ImportImmeublesProcessor.parseTimestamp("01.01.70 00:00:00.000000000");
+			fail();
 		}
 		catch (ParseException e) {
-			assertEquals("Date '01.01.70 00:00:00.000000000' cannot be parsed", e.getMessage());
+			assertEquals("Date '01.01.70 00:00:00.000000000' cannot be parsed.", e.getMessage());
 		}
 		assertEquals(date(1910, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1910 00:00:00.000000000"));
 		assertEquals(date(1970, 1, 1), ImportImmeublesProcessor.parseTimestamp("01.01.1970 00:00:00.000000000"));
