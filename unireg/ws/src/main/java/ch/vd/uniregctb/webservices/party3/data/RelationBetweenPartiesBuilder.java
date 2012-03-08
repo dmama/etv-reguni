@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.webservices.party3.data;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
@@ -31,12 +34,24 @@ public class RelationBetweenPartiesBuilder {
 		return r;
 	}
 
+	/**
+	 * @param filiation un rapport de filiation
+	 * @return un objet {@link RelationBetweenParties}, ou <code>null</code> si l'une des personnes physiques du rapport de filiation est inconnue
+	 */
+	@Nullable
 	public static RelationBetweenParties newFiliation(RapportFiliation filiation) {
-		final RelationBetweenParties r = new RelationBetweenParties();
-		r.setType(filiation.getType() == RapportFiliation.Type.ENFANT ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
-		r.setDateFrom(DataHelper.coreToWeb(filiation.getDateDebut()));
-		r.setDateTo(DataHelper.coreToWeb(filiation.getDateFin()));
-		r.setOtherPartyNumber(filiation.getAutrePersonnePhysique().getNumero().intValue());
+		final RelationBetweenParties r;
+		final PersonnePhysique autrePersonnePhysique = filiation.getAutrePersonnePhysique();
+		if (autrePersonnePhysique != null) {
+			r = new RelationBetweenParties();
+			r.setType(filiation.getType() == RapportFiliation.Type.ENFANT ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
+			r.setDateFrom(DataHelper.coreToWeb(filiation.getDateDebut()));
+			r.setDateTo(DataHelper.coreToWeb(filiation.getDateFin()));
+			r.setOtherPartyNumber(autrePersonnePhysique.getNumero().intValue());
+		}
+		else {
+			r = null;
+		}
 		return r;
 	}
 }

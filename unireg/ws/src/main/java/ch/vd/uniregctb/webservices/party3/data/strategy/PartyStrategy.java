@@ -356,7 +356,10 @@ public abstract class PartyStrategy<T extends Party> {
 			for (RapportFiliation filiation : filiations) {
 				if (filiation.getType() == RapportFiliation.Type.ENFANT && parts.contains(PartyPart.CHILDREN) ||
 						filiation.getType() == RapportFiliation.Type.PARENT && parts.contains(PartyPart.PARENTS)) {
-					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newFiliation(filiation));
+					final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliation(filiation);
+					if (rbp != null) {
+						tiers.getRelationsBetweenParties().add(rbp);
+					}
 				}
 			}
 		}

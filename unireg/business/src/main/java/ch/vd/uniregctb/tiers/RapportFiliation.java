@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -39,7 +41,7 @@ public class RapportFiliation {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 
-	public RapportFiliation(Individu individu, PersonnePhysique personnePhysique, Individu autreIndividu, PersonnePhysique autrePersonnePhysique, Type type) {
+	public RapportFiliation(Individu individu, PersonnePhysique personnePhysique, Individu autreIndividu, @Nullable PersonnePhysique autrePersonnePhysique, Type type) {
 		this.individu = individu;
 		this.personnePhysique = personnePhysique;
 		this.autreIndividu = autreIndividu;
@@ -68,6 +70,7 @@ public class RapportFiliation {
 		return autreIndividu;
 	}
 
+	@Nullable("Dans le cas où aucun contribuable n'existe par rapport au numéro d'individu")
 	public PersonnePhysique getAutrePersonnePhysique() {
 		return autrePersonnePhysique;
 	}
