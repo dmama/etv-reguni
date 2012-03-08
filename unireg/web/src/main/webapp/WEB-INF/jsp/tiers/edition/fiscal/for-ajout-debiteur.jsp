@@ -100,7 +100,6 @@
 			</tr>
 		</table>
 	</fieldset>
-	<form:errors cssClass="error" />
 	<table border="0">
 		<tr>
 			<td width="25%">&nbsp;</td>
