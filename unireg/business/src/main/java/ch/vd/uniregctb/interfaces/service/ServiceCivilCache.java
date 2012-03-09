@@ -19,6 +19,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -158,7 +159,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final int annee, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -174,13 +175,18 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		else {
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 			IndividuCacheValueWithParts value = (IndividuCacheValueWithParts) element.getObjectValue();
-			Set<AttributeIndividu> delta = value.getMissingParts(partiesSet);
-			if (delta != null) {
-				// on complète la liste des parts à la volée
-				Individu deltaTiers = target.getIndividu(noIndividu, annee, setToArray(delta));
-				value.addParts(delta, deltaTiers);
-			}
-			individu = value.getValueForParts(partiesSet);
+			individu = value.getValueForPartsAndCompleteIfNeeded(partiesSet, new CompletePartsCallback<Individu, AttributeIndividu>() {
+				@Override
+				public Individu getDeltaValue(Set<AttributeIndividu> delta) {
+					// on complète la liste des parts à la volée
+					return target.getIndividu(noIndividu, annee, setToArray(delta));
+				}
+
+				@Override
+				public void postCompletion() {
+					// rien à faire
+				}
+			});
 		}
 
 		return individu;

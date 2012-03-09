@@ -14,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -123,7 +124,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public Tiers getTiers(final GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final Tiers tiers;
 
@@ -137,22 +138,26 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 				cache.put(new Element(key, value));
 			}
 			else {
-				GetTiersValue value = (GetTiersValue) element.getObjectValue();
-				if (value.isNull()) {
-					tiers = null;
-				}
-				else {
-					Set<TiersPart> delta = value.getMissingParts(params.parts);
-					if (delta != null) {
+				final GetTiersValue value = (GetTiersValue) element.getObjectValue();
+				tiers = value.getValueForPartsAndCompleteIfNeeded(params.parts, new CompletePartsCallbackWithException<Tiers, TiersPart>() {
+					@Override
+					public Tiers getDeltaValue(Set<TiersPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
-						Tiers deltaTiers = target.getTiers(params.clone(delta));
-						value.addParts(delta, deltaTiers);
+						return target.getTiers(params.clone(delta));
 					}
-					tiers = value.getValueForParts(params.parts);
-				}
+				});
 			}
 		}
-		catch (RuntimeException e) {
+		catch (BusinessException e) {
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			throw e;
+		}
+		catch (TechnicalException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw new TechnicalException(e);
 		}
@@ -164,7 +169,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersHisto(final GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final TiersHisto tiers;
 
@@ -179,21 +184,25 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 			}
 			else {
 				GetTiersHistoValue value = (GetTiersHistoValue) element.getObjectValue();
-				if (value.isNull()) {
-					tiers = null;
-				}
-				else {
-					Set<TiersPart> delta = value.getMissingParts(params.parts);
-					if (delta != null) {
+				tiers = value.getValueForPartsAndCompleteIfNeeded(params.parts, new CompletePartsCallbackWithException<TiersHisto, TiersPart>() {
+					@Override
+					public TiersHisto getDeltaValue(Set<TiersPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
-						TiersHisto deltaTiers = target.getTiersHisto(params.clone(delta));
-						value.addParts(delta, deltaTiers);
+						return target.getTiersHisto(params.clone(delta));
 					}
-					tiers = value.getValueForParts(params.parts);
-				}
+				});
 			}
 		}
-		catch (RuntimeException e) {
+		catch (BusinessException e) {
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			throw e;
+		}
+		catch (TechnicalException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw new TechnicalException(e);
 		}
@@ -483,7 +492,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersPeriode(final GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final TiersHisto tiers;
 
@@ -498,21 +507,25 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 			}
 			else {
 				GetTiersHistoValue value = (GetTiersHistoValue) element.getObjectValue();
-				if (value.isNull()) {
-					tiers = null;
-				}
-				else {
-					Set<TiersPart> delta = value.getMissingParts(params.parts);
-					if (delta != null) {
+				tiers = value.getValueForPartsAndCompleteIfNeeded(params.parts, new CompletePartsCallbackWithException<TiersHisto, TiersPart>() {
+					@Override
+					public TiersHisto getDeltaValue(Set<TiersPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
-						TiersHisto deltaTiers = target.getTiersPeriode(params.clone(delta));
-						value.addParts(delta, deltaTiers);
+						return target.getTiersPeriode(params.clone(delta));
 					}
-					tiers = value.getValueForParts(params.parts);
-				}
+				});
 			}
 		}
-		catch (RuntimeException e) {
+		catch (BusinessException e) {
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			throw e;
+		}
+		catch (TechnicalException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw new TechnicalException(e);
 		}

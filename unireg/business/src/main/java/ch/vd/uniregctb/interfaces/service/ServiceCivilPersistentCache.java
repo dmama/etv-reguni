@@ -14,6 +14,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
@@ -135,30 +136,33 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final int annee, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
 		final GetIndividuKey key = new GetIndividuKey(noIndividu, annee);
-		IndividuCacheValueWithParts value = cache.get(key);
+		final IndividuCacheValueWithParts value = cache.get(key);
 		if (value == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
 			individu = target.getIndividu(noIndividu, annee, parties);
-			value = new IndividuCacheValueWithParts(partiesSet, individu);
-			cache.put(key, value);
+			cache.put(key, new IndividuCacheValueWithParts(partiesSet, individu));
 		}
 		else {
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
-			Set<AttributeIndividu> delta = value.getMissingParts(partiesSet);
-			if (delta != null) {
-				// on complète la liste des parts à la volée
-				Individu deltaTiers = target.getIndividu(noIndividu, annee, setToArray(delta));
-				value.addParts(delta, deltaTiers);
-				// on met-à-jour le cache
-				cache.put(key, value);
-			}
-			individu = value.getValueForParts(partiesSet);
+			individu = value.getValueForPartsAndCompleteIfNeeded(partiesSet, new CompletePartsCallback<Individu, AttributeIndividu>() {
+				@Override
+				public Individu getDeltaValue(Set<AttributeIndividu> delta) {
+					// on complète la liste des parts à la volée
+					return target.getIndividu(noIndividu, annee, setToArray(delta));
+				}
+
+				@Override
+				public void postCompletion() {
+					// on met-à-jour le cache
+					cache.put(key, value);
+				}
+			});
 		}
 
 		return individu;

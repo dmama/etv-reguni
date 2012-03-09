@@ -144,7 +144,31 @@ public abstract class EvenementCivilInterne {
 		this.date = dateEvenement;
 		this.numeroEvenement = 0L;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
-	}
+
+		if (this.noIndividu != null) {
+
+			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
+			context.getDataEventService().onIndividuChange(this.noIndividu);
+
+			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
+			if (forceRefreshCacheConjoint()) {
+
+				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
+				final Set<Long> conjoints = new HashSet<Long>();
+				for (EtatCivil etatCivil : individu.getEtatsCivils()) {
+					final Long numeroConjoint = etatCivil.getNumeroConjoint();
+					if (numeroConjoint != null) {
+						conjoints.add(numeroConjoint);
+					}
+				}
+
+				// nettoyage du cache pour tous ces individus
+				for (Long noInd : conjoints) {
+					context.getDataEventService().onIndividuChange(noInd);
+				}
+			}
+		}
+}
 
 	/**
 	 * Pour le testing uniquement.
