@@ -87,11 +87,11 @@ public class RcPersServiceTest {
 	private static RcPersClientImpl buildClient() throws Exception {
 		final RcPersClientImpl client = new RcPersClientImpl();
 		client.setBaseUrl("http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3");
-		client.setPeoplePath("persons/ct.vd.rcpers");
+		client.setPeoplePath("persons/ct.vd.rcpers.unireg");
 		client.setEventPath("event");
-		client.setRelationsPath("relations/ct.vd.rcpers");
-		client.setUsername("sirec05");
-		client.setPassword("welc0me");
+		client.setRelationsPath("relations/ct.vd.rcpers.unireg");
+		client.setUsername("gvd0unireg");
+		client.setPassword("welc0me_");
 		client.afterPropertiesSet();
 		return client;
 	}
