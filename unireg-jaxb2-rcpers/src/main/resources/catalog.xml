@@ -2,5 +2,6 @@
 
 <system systemId="http://evd.vd.ch/xmlns/eVD-0009/1/eVD-0009-1-0.xsd" uri="eVD-0009-1-0.xsd"/>
 <system systemId="http://evd.vd.ch/xmlns/eVD-0001/3/eVD-0001-3-0.xsd" uri="eVD-0001-3-0.xsd"/>
+<system systemId="http://evd.vd.ch/xmlns/eVD-0004/2/eVD-0004-2-0.xsd" uri="eVD-0004-2-0.xsd"/>
 
 </catalog>

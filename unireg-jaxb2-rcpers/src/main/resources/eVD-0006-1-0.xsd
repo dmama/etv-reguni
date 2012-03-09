@@ -76,7 +76,6 @@
 			<xs:element name="referenceMessageId" type="xs:long" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-
 	<xs:element name="event">
 		<xs:annotation>
 			<xs:documentation>Événement complet incluant l'identification de l'événement ainsi que état complet de la personne après que l'événement soit survenu</xs:documentation>
@@ -84,15 +83,20 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="identification" type="eVD-0006:eventIdentificationType"/>
-				<xs:element name="personAfterEvent" type="eVD-0001:personType">
+				<xs:element name="personAfterEvent">
 					<xs:annotation>
 						<xs:documentation>État de la personne juste après que l'événement soit survenu</xs:documentation>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="person" type="eVD-0001:personType"/>
+							<xs:element name="relations" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="eventNotification">
 		<xs:annotation>
 			<xs:documentation>Identification de l'événement. Dans RCPers, envoyé par JMS</xs:documentation>
@@ -103,5 +107,4 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>
