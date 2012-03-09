@@ -172,7 +172,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 			return TypeAdresseCivil.SECONDAIRE;
 		}
 		else if (residence.getOtherResidence() != null) {
-			return TypeAdresseCivil.TUTEUR;
+			// les 'other' residences sont des adresses secondaires dont l'adresse principale n'est pas connu ou hors-Suisse, c'est tout.
+			return TypeAdresseCivil.SECONDAIRE;
 		}
 		throw new IllegalArgumentException("L'adresse de résidence ne possède pas de type défini !");
 	}
