@@ -9,13 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.ech.ech0011.v5.MaritalData;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.HistoryContact;
 import ch.vd.evd0001.v3.Identity;
+import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.PersonIdentification;
 import ch.vd.evd0001.v3.Relations;
@@ -82,10 +82,18 @@ public class IndividuRCPers implements Individu, Serializable {
 			return null;
 		}
 
-		return new IndividuRCPers(target, relations, infraService);
+		return new IndividuRCPers(target, relations != null ? relations.getRelationshipHistory() : null, infraService);
 	}
+	
+	public static Individu get(Person target, @Nullable List<Relationship> relationships, ServiceInfrastructureService infraService) {
+		if (target == null) {
+			return null;
+		}
 
-	public IndividuRCPers(Person person, @Nullable Relations relations, ServiceInfrastructureService infraService) {
+		return new IndividuRCPers(target, relationships, infraService);
+	}
+	
+	public IndividuRCPers(Person person, @Nullable List<Relationship> relationships, ServiceInfrastructureService infraService) {
 		this.noTechnique = getNoIndividu(person);
 
 		final Identity identity = person.getIdentity();
@@ -96,8 +104,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.autresPrenoms = identification.getFirstNames();
 		this.nom = identification.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
+		this.noAVS11 = initNumeroAVS11(identification.getOtherPersonId());
 		if (upiPerson != null) {
-			this.noAVS11 = initNumeroAVS11(identification.getOtherPersonId());
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 		}
 		this.numeroRCE = initNumeroRCE(identification.getOtherPersonId());
@@ -110,17 +118,17 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
 		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
-		if (relations != null) {
-			this.enfants = initEnfants(relations.getRelationshipHistory());
-			this.parents = initParents(this.naissance, relations.getRelationshipHistory());
-			this.conjoints = initConjoints(relations.getRelationshipHistory());
+		if (relationships != null) {
+			this.enfants = initEnfants(relationships);
+			this.parents = initParents(this.naissance, relationships);
+			this.conjoints = initConjoints(relationships);
 		}
 		this.permis = initPermis(person);
 		this.nationalites = initNationalites(person, infraService);
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
-		if (relations == null) {
+		if (relationships == null) {
 			this.availableParts.remove(AttributeIndividu.CONJOINTS);
 			this.availableParts.remove(AttributeIndividu.ENFANTS);
 			this.availableParts.remove(AttributeIndividu.PARENTS);
@@ -239,7 +247,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<EtatCivil> list = new ArrayList<EtatCivil>();
 		for (MaritalData data : maritalStatus) {
-			list.add(EtatCivilRCPers.get(data));
+			list.addAll(EtatCivilRCPers.get(data));
 		}
 		return new EtatCivilListRCPers(list);
 	}

@@ -30,7 +30,8 @@ public class RcPersClientHelperImpl implements RcPersClientHelper {
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		final Event ref = rcPersClient.getEvent(eventId);
 		if (ref != null) {
-			final Individu individu = IndividuRCPers.get(ref.getPersonAfterEvent(), null, infraService);
+			final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
+			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), infraService);
 			if (individu != null) {
 				final EventIdentification idtf = ref.getIdentification();
 				final Long refMessageId = idtf.getReferenceMessageId();

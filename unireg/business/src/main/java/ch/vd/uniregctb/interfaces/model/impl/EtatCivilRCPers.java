@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import ch.ech.ech0011.v5.MaritalData;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -30,44 +32,42 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	}
 
 	/**
-	 * Construit un état-civil Unireg à partir d'un état-civil RcPers.
+	 * Construit une liste d'états-civils Unireg à partir d'un état-civil RcPers.
 	 *
 	 * @param maritalStatus l'état-civil RcPers
 	 * @return un état-civil Unireg; ou <b>null</b> si l'état-civil RcPers d'entrée était aussi <b>null</b>.
 	 */
-	public static EtatCivil get(@Nullable MaritalData maritalStatus) {
+	public static List<EtatCivil> get(@Nullable MaritalData maritalStatus) {
 		if (maritalStatus == null) {
 			return null;
 		}
 
-		final EtatCivil etatCivil;
+		final List<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
 
 		// L'état civil principal
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		final TypeEtatCivil type = EchHelper.etatCivilFromEch11(maritalStatus.getMaritalStatus(), maritalStatus.getCancelationReason());
+		etatsCivils.add(new EtatCivilRCPers(dateDebut, type));
 
 		if (type == TypeEtatCivil.MARIE || type == TypeEtatCivil.PACS) {
+			
 			// On construit artificellement les états-civils 'séparé' et 'pacs interrompu' qui apparaissent
 			// comme dates de séparation et de réconciliation sur l'état-civil 'marié' lui-même (ceci parce qu'ils ne
 			// s'agit pas d'états-civils officiels, mais seulement une particularité fiscale).
-			final RegDate dateReconciliation = XmlUtils.xmlcal2regdate(maritalStatus.getSeparationTill());
-			final RegDate dateSeparation = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfSeparation());
+			if (maritalStatus.getSeparation() != null && !maritalStatus.getSeparation().isEmpty()) {
+				for (MaritalData.Separation separation : maritalStatus.getSeparation()) {
+					final RegDate dateSeparation = XmlUtils.xmlcal2regdate(separation.getDateOfSeparation());
+					final RegDate dateReconciliation = XmlUtils.xmlcal2regdate(separation.getSeparationTill());
 
-			if (dateReconciliation != null) {
-				etatCivil = new EtatCivilRCPers(dateReconciliation, type);
-			}
-			else if (dateSeparation != null) {
-				etatCivil = new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU);
-			}
-			else {
-				etatCivil = new EtatCivilRCPers(dateDebut, type);
+					etatsCivils.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU));
+					if (dateReconciliation != null) {
+						etatsCivils.add(new EtatCivilRCPers(dateReconciliation, type));
+					}
+				}
 			}
 		}
-		else {
-			etatCivil = new EtatCivilRCPers(dateDebut, type);
-		}
 
-		return etatCivil;
+		return etatsCivils;
 	}
 
 	@Override

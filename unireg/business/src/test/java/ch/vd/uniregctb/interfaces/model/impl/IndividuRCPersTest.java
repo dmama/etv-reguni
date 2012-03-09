@@ -3,10 +3,10 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ech.ech0011.v5.MaritalData;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
+import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -45,9 +45,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetMariePuisSepare() throws Exception {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2");
-		final MaritalData separe = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29));
-		final List<MaritalData> statuses = Arrays.asList(celibataire, marie, separe);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
 		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
 		assertNotNull(list);
@@ -60,10 +59,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetMariePuisSeparePuisReconcilie() throws Exception {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2");
-		final MaritalData separe = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29));
-		final MaritalData reconcilie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29), date(2005, 10, 4));
-		final List<MaritalData> statuses = Arrays.asList(celibataire, marie, separe, reconcilie);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29), date(2005, 10, 4));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
 		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
 		assertNotNull(list);
@@ -90,9 +87,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPacsePuisSepare() throws Exception {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6");
-		final MaritalData separe = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29));
-		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse, separe);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
 		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
 		assertNotNull(list);
@@ -105,10 +101,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPacsePuisSeparePuisReconcilie() throws Exception {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6");
-		final MaritalData separe = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29));
-		final MaritalData reconcilie = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29), date(2005, 10, 4));
-		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse, separe, reconcilie);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29), date(2005, 10, 4));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
 		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
 		assertNotNull(list);
@@ -137,7 +131,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
-		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));
+		
+		final MaritalData.Separation sep = new MaritalData.Separation();
+		sep.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));
+		data.getSeparation().add(sep);
+
 		return data;
 	}
 
@@ -145,8 +143,12 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
-		data.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));
-		data.setSeparationTill(XmlUtils.regdate2xmlcal(reconciliation));
+
+		final MaritalData.Separation sep = new MaritalData.Separation();
+		sep.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));
+		sep.setSeparationTill(XmlUtils.regdate2xmlcal(reconciliation));
+		data.getSeparation().add(sep);
+
 		return data;
 	}
 }

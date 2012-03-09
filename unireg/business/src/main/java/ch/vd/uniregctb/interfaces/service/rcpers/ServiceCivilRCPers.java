@@ -46,12 +46,12 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		// il faut demander les relations entre individus dans un appel séparé
 		final Relations relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			ListOfRelations rel = client.getRelations(Arrays.asList(noIndividu), date, true);
-			if (rel != null && rel.getListOfResults().getRelation() != null && !rel.getListOfResults().getRelation().isEmpty()) {
-				if (rel.getListOfResults().getRelation().size() > 1) {
+			final ListOfRelations rel = client.getRelations(Arrays.asList(noIndividu), date, true);
+			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
+				if (rel.getListOfResults().getResult().size() > 1) {
 					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
 				}
-				relations = rel.getListOfResults().getRelation().get(0);
+				relations = rel.getListOfResults().getResult().get(0).getRelation();
 			}
 			else {
 				relations = null;
@@ -61,7 +61,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 			relations = null;
 		}
 
-		final Person person = list.getListOfResults().getPerson().get(0);
+		final Person person = list.getListOfResults().getResult().get(0).getPerson();
 		final Individu individu = IndividuRCPers.get(person, relations, infraService);
 		if (individu != null) {
 			assertCoherence(noIndividu, individu.getNoTechnique());
@@ -93,10 +93,13 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		final Map<Long, Relations> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
 			final ListOfRelations rel = client.getRelations(nosIndividus, date, true);
-			if (rel != null && rel.getListOfResults().getRelation() != null) {
+			if (rel != null && rel.getListOfResults().getResult() != null) {
 				allRelations = new HashMap<Long, Relations>();
-				for (Relations relations : rel.getListOfResults().getRelation()) {
-					allRelations.put(IndividuRCPers.getNoIndividu(relations.getPersonId()), relations);
+				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
+					final Relations relations = relRes.getRelation();
+					if (relations != null) {
+						allRelations.put(IndividuRCPers.getNoIndividu(relations.getLocalPersonId()), relations);
+					}
 				}
 			}
 			else {
@@ -109,11 +112,13 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 
-		final List<Person> people = list.getListOfResults().getPerson();
-		for (Person person : people) {
-			final Relations relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
-			final Individu individu = IndividuRCPers.get(person, relations, infraService);
-			individus.add(individu);
+		for (ListOfPersons.ListOfResults.Result personRes : list.getListOfResults().getResult()) {
+			final Person person = personRes.getPerson();
+			if (person != null) {
+				final Relations relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
+				final Individu individu = IndividuRCPers.get(person, relations, infraService);
+				individus.add(individu);
+			}
 		}
 
 		return individus;

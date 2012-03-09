@@ -8,17 +8,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0006.v1.Event;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
-import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
+import ch.vd.uniregctb.interfaces.service.rcpers.IndividuApresEvenement;
+import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor {
 
-	private RcPersClient rcPersClient;
+	private RcPersClientHelper rcPersClientHelper;
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
@@ -26,8 +24,8 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	private final AtomicInteger nombreEvenementsNonIgnores = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setRcPersClient(RcPersClient rcPersClient) {
-		this.rcPersClient = rcPersClient;
+	public void setRcPersClientHelper(RcPersClientHelper rcPersClientHelper) {
+		this.rcPersClientHelper = rcPersClientHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -103,15 +101,11 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			return event.getNumeroIndividu();
 		}
 		else {
-			final Event e = rcPersClient.getEvent(event.getId());
-			if (e == null) {
+			final IndividuApresEvenement apresEvenement = rcPersClientHelper.getIndividuFromEvent(event.getId());
+			if (apresEvenement == null) {
 				throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
 			}
-			final Person person = e.getPersonAfterEvent();
-			if (person == null) {
-				throw new EvenementCivilException(String.format("Pas d'individu lié à l'événement civil %d", event.getId()));
-			}
-			return IndividuRCPers.getNoIndividu(person);
+			return apresEvenement.getIndividu().getNoTechnique();
 		}
 	}
 

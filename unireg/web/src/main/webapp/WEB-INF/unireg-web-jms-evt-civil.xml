@@ -94,7 +94,7 @@
 
 	<bean id="evtCivilEchReceptionHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandlerImpl">
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
-		<property name="rcPersClient" ref="rcPersClient"/>
+		<property name="rcPersClientHelper" ref="rcPersClientHelper"/>
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>

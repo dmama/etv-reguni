@@ -27,7 +27,8 @@ public class RcPersServiceTest {
 		assertNotNull(list);
 		assertEquals(1, list.getNumberOfResults().intValue());
 
-		final Person person = list.getListOfResults().getPerson().get(0);
+		final List<ListOfPersons.ListOfResults.Result> result = list.getListOfResults().getResult();
+		final Person person = result.get(0).getPerson();
 		assertNotNull(person);
 		// vue de la confédération
 		assertNotNull(person.getUpiPerson());
@@ -47,13 +48,13 @@ public class RcPersServiceTest {
 		final ListOfRelations list = client.getRelations(Arrays.asList(476228L), null, true);
 		assertNotNull(list);
 
-		final List<Relations> allRelations = list.getListOfResults().getRelation();
+		final List<ListOfRelations.ListOfResults.Result> allRelations = list.getListOfResults().getResult();
 		assertNotNull(allRelations);
 		assertEquals(1, allRelations.size()); // on n'a demandé qu'une seule personne
 
-		final Relations relations = allRelations.get(0);
+		final Relations relations = allRelations.get(0).getRelation();
 		assertNotNull(relations);
-		assertEquals("476228", relations.getPersonId().getPersonId()); // c'est bien les relations de la personne demandée
+		assertEquals("476228", relations.getLocalPersonId().getPersonId()); // c'est bien les relations de la personne demandée
 
 		final List<Relationship> historique = relations.getRelationshipHistory();
 		assertNotNull(historique);
@@ -79,7 +80,7 @@ public class RcPersServiceTest {
 		final Event event = client.getEvent(1328541610257001L);
 		assertNotNull(event);
 
-		final Person p = event.getPersonAfterEvent();
+		final Person p = event.getPersonAfterEvent().getPerson();
 		assertEquals(1047898L, IndividuRCPers.getNoIndividu(p));
 	}
 
