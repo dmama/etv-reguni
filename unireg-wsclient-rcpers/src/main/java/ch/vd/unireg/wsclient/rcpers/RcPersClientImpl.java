@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v3.ListOfPersons;
@@ -54,7 +55,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	@Override
 	public ListOfPersons getPersons(Collection<Long> ids, RegDate date, boolean withHistory) {
 
-		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		final WebClient wc = createWebClient(600000); // 10 minutes
 		wc.path(peoplePath);
 
 		// les ids
@@ -83,7 +84,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	@Override
 	public ListOfRelations getRelations(Collection<Long> ids, RegDate date, boolean withHistory) {
-		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		final WebClient wc = createWebClient(600000); // 10 minutes
 		wc.path(relationsPath);
 
 		// les ids
@@ -112,7 +113,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	@Override
 	public Event getEvent(long eventId) {
-		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		final WebClient wc = createWebClient(60000); // 1 minute
 		wc.path(eventPath);
 		wc.path(String.valueOf(eventId));
 
@@ -126,5 +127,12 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			}
 			throw e;
 		}
+	}
+
+	private WebClient createWebClient(int receiveTimeout) {
+		final WebClient wc = WebClient.create(baseUrl, username, password, null);
+		final HTTPConduit conduit = (HTTPConduit) WebClient.getConfig(wc).getConduit();
+		conduit.getClient().setReceiveTimeout(receiveTimeout);
+		return wc;
 	}
 }
