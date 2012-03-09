@@ -51,7 +51,7 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 	public void afterPropertiesSet() throws Exception {
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0001-3-0.xsd"), new ClassPathResource("eVD-0006-1-0.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0004-2-0.xsd"), new ClassPathResource("eVD-0001-3-0.xsd"), new ClassPathResource("eVD-0006-1-0.xsd")});
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 	}
