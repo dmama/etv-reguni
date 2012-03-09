@@ -15,6 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -175,7 +176,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
+	public PersonneMorale getPersonneMorale(final Long id, PartPM... parts) {
 
 		final PersonneMorale pm;
 		final Set<PartPM> set = arrayToSet(parts);
@@ -191,13 +192,18 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		else {
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 			PersonneMoraleCacheValueWithParts value = (PersonneMoraleCacheValueWithParts) element.getObjectValue();
-			Set<PartPM> delta = value.getMissingParts(set);
-			if (delta != null) {
-				// on complète la liste des parts à la volée
-				PersonneMorale deltaTiers = target.getPersonneMorale(id, setToArray(set));
-				value.addParts(delta, deltaTiers);
-			}
-			pm = value.getValueForParts(set);
+			pm = value.getValueForPartsAndCompleteIfNeeded(set, new CompletePartsCallback<PersonneMorale, PartPM>() {
+				@Override
+				public PersonneMorale getDeltaValue(Set<PartPM> delta) {
+					// on complète la liste des parts à la volée
+					return target.getPersonneMorale(id, setToArray(set));
+				}
+
+				@Override
+				public void postCompletion() {
+					// rien à faire
+				}
+			});
 		}
 
 		return pm;
