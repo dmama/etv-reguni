@@ -191,7 +191,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 			final GetTiersValue value = getCacheValue(paramsNoPart.tiersNumber, paramsNoPart.date);
 			assertNotNull(value);
-			assertNull(value.getParts());
+			assertEmpty(value.getParts());
 		}
 
 		// ajout des adresses
@@ -272,7 +272,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 			final GetTiersHistoValue value = getCacheHistoValue(paramsNoPart.tiersNumber);
 			assertNotNull(value);
-			assertNull(value.getParts());
+			assertEmpty(value.getParts());
 		}
 
 		// ajout des adresses

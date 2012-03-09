@@ -37,6 +37,7 @@ import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
@@ -114,7 +115,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	}
 
 	@Override
-	public Party getParty(GetPartyRequest params) throws WebServiceException {
+	public Party getParty(final GetPartyRequest params) throws WebServiceException {
 
 		final Party party;
 
@@ -130,22 +131,20 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 			}
 			else {
 				GetPartyValue value = (GetPartyValue) element.getObjectValue();
-				if (value.isNull()) {
-					party = null;
-				}
-				else {
-					Set<PartyPart> delta = value.getMissingParts(parts);
-					if (delta != null) {
+				party = value.getValueForPartsAndCompleteIfNeeded(parts, new CompletePartsCallbackWithException<Party, PartyPart>() {
+					@Override
+					public Party getDeltaValue(Set<PartyPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
 						final GetPartyRequest deltaRequest = new GetPartyRequest(params.getLogin(), params.getPartyNumber(), new ArrayList<PartyPart>(delta));
-						Party deltaTiers = target.getParty(deltaRequest);
-						value.addParts(delta, deltaTiers);
+						return target.getParty(deltaRequest);
 					}
-					party = value.getValueForParts(parts);
-				}
+				});
 			}
 		}
-		catch (RuntimeException e) {
+		catch (WebServiceException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
