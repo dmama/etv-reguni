@@ -218,7 +218,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0001-3-0.xsd", "eVD-0006-1-0.xsd");
+			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0004-2-0.xsd", "eVD-0001-3-0.xsd", "eVD-0006-1-0.xsd");
 			schemaCache = sf.newSchema(source);
 		}
 	}
