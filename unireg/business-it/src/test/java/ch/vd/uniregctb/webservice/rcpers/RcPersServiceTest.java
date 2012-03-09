@@ -77,11 +77,11 @@ public class RcPersServiceTest {
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Event event = client.getEvent(1328541610257001L);
+		final Event event = client.getEvent(1331281905209000L);
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
-		assertEquals(1047898L, IndividuRCPers.getNoIndividu(p));
+		assertEquals(811625L, IndividuRCPers.getNoIndividu(p));
 	}
 
 	private static RcPersClientImpl buildClient() throws Exception {
