@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean 	id="dossierListController"
+			class="ch.vd.uniregctb.acces.parDossier.DossierListController"
+			parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="acces/par-dossier/list-pp" />
+		<property name="successView" value="list-pp.do" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="dossierEditRestrictionController" class="ch.vd.uniregctb.acces.parDossier.DossierEditRestrictionController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView" />
+		<property name="formView" value="acces/par-dossier/restrictions-pp" />
+		<property name="dossierEditRestrictionManager" ref="dossierEditRestrictionManager" />
+	</bean>
+
+	<bean id="droitAccesEditController" class="ch.vd.uniregctb.acces.parDossier.DroitAccesEditController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.parDossier.view.DroitAccesView" />
+		<property name="formView" value="acces/par-dossier/edit-restriction" />
+		<property name="dossierEditRestrictionManager" ref="dossierEditRestrictionManager" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="validator" ref="droitAccesEditValidator" />
+	</bean>
+
+	<bean id="droitAccesEditValidator" class="ch.vd.uniregctb.acces.parDossier.validator.DroitAccesEditValidator" >
+	</bean>
+
+	<bean id="dossierEditRestrictionManager" class="ch.vd.uniregctb.acces.parDossier.manager.DossierEditRestrictionManagerImpl" >
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+		<property name="droitAccesService" ref="droitAccesService" />
+	</bean>
+	
+	<bean id="selectUtilisateurController" class="ch.vd.uniregctb.acces.parUtilisateur.SelectUtilisateurController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView" />
+		<property name="formView" value="acces/par-utilisateur/select-utilisateur" />
+		<property name="successView" value="acces/par-utilisateur/restrictions-utilisateur" />
+		<property name="validator" ref="selectUtilisateurValidator" />
+	</bean>
+
+	<bean id="utilisateurEditRestrictionController" class="ch.vd.uniregctb.acces.parUtilisateur.UtilisateurEditRestrictionController" >
+		<property name="utilisateurEditRestrictionManager" ref="utilisateurEditRestrictionManager" />
+	</bean>
+
+
+	<bean id="utilisateurEditRestrictionManager" class="ch.vd.uniregctb.acces.parUtilisateur.manager.UtilisateurEditRestrictionManagerImpl" >
+		<property name="utilisateurManager" ref="utilisateurManager" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="droitAccesService" ref="droitAccesService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService"  ref="tiersService" />
+		<property name="extractionService"  ref="extractionService" />
+	</bean>
+
+	<bean id="selectUtilisateurValidator" class="ch.vd.uniregctb.acces.parUtilisateur.validator.SelectUtilisateurValidator" >
+	</bean>
+
+	<bean 	id="utilisateurListPersonneController"
+			class="ch.vd.uniregctb.acces.parUtilisateur.UtilisateurListPersonneController"
+			parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView" />
+		<property name="commandName" value="command" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="acces/par-utilisateur/list-pp" />
+		<property name="successView" value="list-pp-utilisateur.do" />
+		<property name="utilisateurManager" ref="utilisateurManager" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="recapPersonneUtilisateurController" class="ch.vd.uniregctb.acces.parUtilisateur.RecapPersonneUtilisateurController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView" />
+		<property name="formView" value="acces/par-utilisateur/recap" />
+		<property name="utilisateurEditRestrictionManager" ref="utilisateurEditRestrictionManager" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+	</bean>
+
+	<bean id="selectUtilisateursController" class="ch.vd.uniregctb.acces.copie.SelectUtilisateursController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.copie.view.SelectUtilisateursView" />
+		<property name="formView" value="acces/copie-transfert/select-utilisateurs" />
+		<property name="successView" value="confirm-copie.do" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="validator" ref="selectUtilisateursValidator" />
+	</bean>
+
+	<bean id="selectUtilisateursValidator" class="ch.vd.uniregctb.acces.copie.validator.SelectUtilisateursValidator" >
+	</bean>
+
+	<bean id="confirmCopieController" class="ch.vd.uniregctb.acces.copie.ConfirmCopieController" >
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.acces.copie.view.ConfirmCopieView" />
+		<property name="formView" value="acces/copie-transfert/recap" />
+		<property name="copieDroitAccesManager" ref="copieDroitAccesManager" />
+	</bean>
+
+	<bean id="copieDroitAccesManager" class="ch.vd.uniregctb.acces.copie.manager.CopieDroitAccesManagerImpl" >
+		<property name="utilisateurManager" ref="utilisateurManager" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="droitAccesService" ref="droitAccesService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+</beans>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--05.12.07 : JVo modification du tag nocompe en nocompte-->
+<!--11.06.08 : JVO - V2.2.2 Modification pour XXXXXXXX du dernier BVRDouble-->
+<!--V4.0.0 -  22.07.08 : JVO - Spécifications - IS-->
+<!--V4.0.1 -  15.09.08 : JVO - BVR+ pour avoir les ligne non obligatoire minOccurs="0"-->
+<!--V4.0.2 -  18.12.08 : JVO - <verseParLigne5> et <verseParLigne6> & ligneReference - ligneCodage MinOccur = 1-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../DonneesTechniques_0.0.7.xsd"/>
+	<xs:element name="BVRSTD">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="prefixe" type="typPrefixe"/>
+				<xs:element name="libImp" type="xs:string" minOccurs="0"/>
+				<xs:element name="versPourLigne1" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Versement pour ligne 1 </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="versPourLigne2" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versement pour ligne 2</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="versPourLigne3" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versement pour ligne 3</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="versPourNpaLoc" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versement pour NPA localité</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ligneReference" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Ligne de référence</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="noCompte" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>No compte</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="IBAN" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Vide</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="mtFr" type="typMonetaireEntier_XXX" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Montant : partie entière</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="mtCent" type="typMonetaireEntier_XXX" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Montant : centimes 00</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne1" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne1</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne2" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne 2</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne3" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne 3</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne4" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne 4</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne5" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne 5</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="verseParLigne6" type="xs:string" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Versé par : ligne 6</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ligneCodage" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Ligne de codage  </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

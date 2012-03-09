@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Multipart Resolver, necessaire pour l'upload de fichier -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="20485760" />
+	</bean>
+
+	<!-- Message source: Le .properties utilisé pour les messages dans les JSP et servlet -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:UniregLabelResources</value>
+				<value>classpath:UniregOptionResources</value>
+				<value>classpath:UniregButtonResources</value>
+				<value>classpath:UniregErrorResources</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
+
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="singleSession" value="false" />
+		<!-- [UNIREG-1521] -->
+	</bean>
+
+	<bean id="notFoundController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/404" />
+	</bean>
+
+
+	<bean id="page403Controller" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/403" />
+	</bean>
+
+	<bean id="errorController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/error" />
+	</bean>
+
+	<bean id="indexController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="redirect:/tiers/list.do" />
+	</bean>
+
+	<bean id="oidController" class="ch.vd.uniregctb.security.ChooseOIDController">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+	<bean id="authenticationController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="security/authenticationFailed" />
+	</bean>
+	<bean id="logoutController" class="ch.vd.uniregctb.common.LogoutController">
+		<property name="uniregProperties" ref="uniregExternalProperties" />
+	</bean>
+
+	<!-- View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- Exception Resolver -->
+	<bean id="exceptionResolver" class="ch.vd.uniregctb.common.NotifyingExceptionResolver">
+		<property name="exceptionMappings">
+			<map>
+				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
+				<entry key="weblogic.common.resourcepool.ResourceLimitException" value="errors/jdbcConnection" />
+				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
+				<!-- Erreurs spécifique au service civil -->
+				<entry key="ch.vd.uniregctb.interfaces.service" value="errors/errorServiceCivil" />
+				<entry key="ch.vd.uniregctb.interfaces.InterfaceDataException" value="errors/errorDataInterface" />
+				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
+				<entry key="java.lang.Exception" value="errors/error" />
+				<entry key="ch.vd.uniregctb.security.AccessDeniedException" value="errors/accessDeniedIHM" />
+				<entry key="ch.vd.uniregctb.common.NotImplementedException" value="errors/notImplemented" />
+				<entry key="ch.vd.uniregctb.common.EditiqueCommunicationException" value="errors/editique" />
+				<entry key="ch.vd.uniregctb.common.ObjectNotFoundException" value="errors/objectNotFound" />
+				<entry key="ch.vd.uniregctb.adresse.AdressesResolutionException" value="errors/adressesResolution" />
+				<entry key="ch.vd.uniregctb.common.DonneesCivilesException" value="errors/donneesCiviles" />
+				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
+				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
+				<entry key="org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
+			</map>
+		</property>
+		<property name="notificationService" ref="emailNotificationService" />
+		<property name="applicationName" value="Unireg ${pom.version}" />
+
+	</bean>
+
+	<bean id="hostCivilService" class="ch.vd.uniregctb.individu.HostCivilServiceImpl">
+		<property name="serviceCivilService" ref="serviceCivilService" />
+	</bean>
+
+	<bean id="hostPersonneMoraleService" class="ch.vd.uniregctb.entreprise.HostPersonneMoraleServiceImpl">
+		<property name="servicePersonneMoraleService" ref="servicePersonneMoraleService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">
+	</bean>
+
+	<bean id="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController" parent="abstractSimpleFormController">
+		<property name="editiqueDownloadService" ref="editiqueDownloadService" />
+	</bean>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.vd.ch" />
+	</bean>
+
+	<!-- this is a template message that we can pre-load with default state -->
+	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="to" value="${extprop.exception.notification.email}" />
+		<property name="from" value="unireg-application@vd.ch" />
+		<property name="subject" value="Une exception est survenue sur Unireg ${pom.version}" />
+	</bean>
+
+	<bean id="emailNotificationService" class="ch.vd.uniregctb.common.EmailNotificationService">
+		<constructor-arg>
+			<ref bean="mailSender" />
+		</constructor-arg>
+		<constructor-arg>
+			<ref bean="templateMessage" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra">
+		<property name="service" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="jspTagInfraEditor" class="ch.vd.uniregctb.taglibs.formInput.InfrastructureEditor">
+		<constructor-arg>
+			<null />
+		</constructor-arg>
+		<property name="service" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="jspTagCommune" class="ch.vd.uniregctb.taglibs.JspTagCommune">
+		<property name="service" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="jspTagRaccourci" class="ch.vd.uniregctb.taglibs.JspTagRaccourci">
+	</bean>
+
+	<bean id="jspTagToggleAffichage" class="ch.vd.uniregctb.taglibs.JspTagToggleAffichage" />
+
+	<bean id="jspTagBandeauContribuable" class="ch.vd.uniregctb.taglibs.JspTagBandeauTiers">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfrastructure" ref="serviceInfrastructureService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">
+		<property name="localApp" value="${extprop.editique.localapp}" />
+	</bean>
+
+	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
+		<property name="tiersService" ref="tiersService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelper">
+		<property name="downloadService" ref="editiqueDownloadService"/>
+	</bean>
+
+</beans>

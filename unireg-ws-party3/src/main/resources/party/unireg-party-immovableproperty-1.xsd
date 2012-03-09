@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 12 janvier 2012 - ajouté la date de validation RF + rendu optionnelle la nature de l'immeuble -->
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.1 - 19 décembre 2011 - rendu les champs 'lastMutationDate' et 'lastMutationType' nullables -->
+<!-- v1.1 - 25 novembre 2011 - remaniement des immeubles (incompatible avec la version 1.0, mais c'était prévu), suite à la validation de la spécification (SIFISC-2854) -->
+<!-- v1.0beta4 - 13 octobre 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+
+	<xs:complexType name="immovablePropertyType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations d'un immeuble appartenant à un contribuable. ATTENTION ! Ces éléments sont basés sur une spécification non-validée : il est probable que la
+						définition ci-dessous varie encore dans le futur et ceci sans garantie de comptabilité ascendante. L'utilisation de cette structure en l'état est à vos risques et périls.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de l'immeuble. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateTo" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de l'immeuble. Si l'immeuble est toujours actif, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="entryDate" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de validation (= de saisie) des données dans le registre foncier.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="number" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de l'immeuble, tel que défini par le registre foncier.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="municipalityName" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nom en toutes lettres de la commune de l'immeuble, tel que défini par le registre foncier. Exemples: "Lausanne", "Romainmôtier-Envy", ...
+								Note: le registre foncier n'utilise pas les numéros Ofs pour identifier les communes, il n'est donc pas possible d'exposer ces numéros pour l'instant.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nature" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La nature de l'immeuble (Revêtement dur, Place-jardin, ...). Elle n'est pas forcément renseignée sur les immeubles type PPE.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="estimatedTaxValue" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'estimation fiscale de l'immeuble. Elle n'est pas renseignée sur les immeubles qui ont été vendus.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="estimatedTaxValueReference" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Référence de l'estimation fiscale (l'année ou le code de révision général). Dans certains cas cette information n'est pas disponible et la référence n'est pas
+								renseignée.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ownershipType" type="immo:ownershipTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le genre de propriété (individuel, co-propriété, collective, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="share" type="immo:propertyShareType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La part de propriété.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastMutationDate" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de la dernière mutation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastMutationType" type="immo:mutationTypeType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Type de la dernière mutation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="immo:immovablePropertyTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le genre de propriété (individuel, co-propriété, collective, ...).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="immovablePropertyTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le type d'immeuble.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IMMOVABLE_PROPERTY">
+				<xs:annotation>
+					<xs:documentation>Bien-fond.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Propriété par étages.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DISTINCT_AND_PERMANENT_RIGHT">
+				<xs:annotation>
+					<xs:documentation>Droit distinct et permanent.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CO_OWNERSHIP_SHARE">
+				<xs:annotation>
+					<xs:documentation>Part de copropriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ownershipTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le genre de propriété.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SOLE_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Priopriété individuelle. Utilisé dans le cas où une personne possède l'intégralité d'un bien.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SIMPLE_CO_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Co-propriété. Utilisé dans le cas où des personnes distinctes possèdent un bien commun. Par exemple : Monsieur Michaud et Madame Martin, voisins de leurs états,
+						s'entendent pour acheter en co-propriété une parcelle avoisinante. Le bien est découpé en parts, et chaque personne dispose d'une part déterminée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COLLECTIVE_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Propriété commune. Utilisé dans le cas où une communauté de personnes (une hoirie, un couple, ...) possède un bien. Par exemple : Mesdames Dupond, Dupneu
+						et Duboulon, filles de feu Madame et Monsieur Dumoulin, reçoivent en héritage la villa de leurs parents. Le bien n'est pas découpé en parts.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="propertyShareType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente la part de propriété sous forme fractionnaire (comprise entre 0 exclu et 1 inclus).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="numerator" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numérateur de la fraction.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="denominator" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le dénominateur de la fraction.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="mutationTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les types de mutations connus.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PURCHASE">
+				<xs:annotation>
+					<xs:documentation>Achat de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INCREASE">
+				<xs:annotation>
+					<xs:documentation>Augmentation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CESSION">
+				<xs:annotation>
+					<xs:documentation>Cession.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP_COMPOSITION">
+				<xs:annotation>
+					<xs:documentation>Constitution de PPE.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CO_OWNERSHIP_SHARES_COMPOSITION">
+				<xs:annotation>
+					<xs:documentation>Constitution de parts de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_DIVISION">
+				<xs:annotation>
+					<xs:documentation>Division de bien-fonds.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GIFT">
+				<xs:annotation>
+					<xs:documentation>Donation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGACY_DELIVERY">
+				<xs:annotation>
+					<xs:documentation>Délivrance de legs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXCHANGE">
+				<xs:annotation>
+					<xs:documentation>Echange.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTY_GROUPING">
+				<xs:annotation>
+					<xs:documentation>Groupement de bien-fonds.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JUDGEMENT">
+				<xs:annotation>
+					<xs:documentation>Jugement.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SHARING">
+				<xs:annotation>
+					<xs:documentation>Partage.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PLOT_REFORM">
+				<xs:annotation>
+					<xs:documentation>Remaniement parcellaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPULSARY_SALE">
+				<xs:annotation>
+					<xs:documentation>Réalisation forcée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INHERITANCE">
+				<xs:annotation>
+					<xs:documentation>Succession.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSFER">
+				<xs:annotation>
+					<xs:documentation>Transfert.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="END_OF_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Fin de propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNDETERMINED">
+				<xs:annotation>
+					<xs:documentation>Type de mutation indéterminé ou inconnu.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

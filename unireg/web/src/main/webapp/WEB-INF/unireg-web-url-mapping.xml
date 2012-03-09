@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- ======== Config MVC Spring 3.x ======== -->
+
+	<!-- Scans within the base package of the application for @Components to configure as beans @Controller, @Service, @Configuration, etc. -->
+	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les beans des contrôleurs à la main, de manière à gérer finement l'injection des dépendances -->
+	<!--<context:component-scan base-package="ch.vd.uniregctb" />-->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les handlers à la main, de manière à pouvoir spécifier les intercepteurs qui vont bien (ajax, ...) -->
+	<!--<mvc:annotation-driven />-->
+
+	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<!-- [SIFISC-2337] ajouté le JSON message converter (+ explicité les autres) -->
+		<property name="messageConverters">
+			<array>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="writeAcceptCharset" value="false"/>
+				</bean>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+			</array>
+		</property>
+	</bean>
+
+	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	</bean>
+
+	<!-- ======== Config MVC Spring 2.x ======== -->
+
+	<!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="singleSession" value="false" />
+		<!-- [UNIREG-1521] -->
+	</bean>
+
+	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
+	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="urlMap">
+			<map>
+				<!-- SuperGra -->
+				<entry key="/supergra/entity.do" value-ref="superGraEntityController" />
+				<entry key="/supergra/coll.do" value-ref="superGraCollectionController" />
+
+				<!-- Mapping des beans de remoting -->
+				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+
+				<!-- Tiers -->
+				<entry key="/tiers/vignette.do" value-ref="tiersVignetteController" />
+
+				<!-- Identification de contribuable -->
+				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController" />
+				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController" />
+
+				<!-- Edition des débiteurs -->
+				<entry key="/debiteur/edit.do" value-ref="debiteurEditController" />
+
+				<!-- Annulation Couple -->
+				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />
+				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
+				<!-- Separation -->
+				<entry key="/separation/list.do" value-ref="separationListController" />
+				<entry key="/separation/recap.do" value-ref="separationRecapController" />
+				<!-- Annulation Separation -->
+				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
+				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
+				<!-- Deces -->
+				<entry key="/deces/list.do" value-ref="decesListController" />
+				<entry key="/deces/recap.do" value-ref="decesRecapController" />
+				<!-- Annulation deces -->
+				<entry key="/annulation/deces/list.do" value-ref="annulationDecesListController" />
+				<entry key="/annulation/deces/recap.do" value-ref="annulationDecesRecapController" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Url mapper historique de l'application Unireg. C'est-à-dire avec l'intercepteur 'openSessionInView' qui permet d'utiliser des collections
+	     hibernate non-initialisées dans les pages jsp, mais qui pose plein de problème car il s'agit en fait d'un gros hack. Pour tous les nouveaux
+	     contrôleurs il convient de les enregistrer dans le 'mainUrlMapping' url mapper. -->
+	<bean id="legacyUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="openSessionInViewInterceptor" />
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<!-- Base -->
+				<entry key="/index.do" value-ref="indexController" />
+				<entry key="/logoutIAM.do" value-ref="logoutController" />
+				<entry key="/authenticationFailed.do" value-ref="authenticationController" />
+				<entry key="/404.do" value-ref="notFoundController" />
+				<entry key="/403.do" value-ref="page403Controller" />
+				<entry key="/error.do" value-ref="errorController" />
+				<!-- Admin -->
+				<entry key="/admin/status.do" value-ref="infoController" />
+				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
+				<entry key="/admin/audit.do" value-ref="auditLogController" />
+				<entry key="/admin/performance.do" value-ref="servicePerformanceController" />
+				<!--
+				<entry key="/admin/tracing.do" value-ref="gestionTracingController" />
+				-->
+				<!-- Testing -->
+				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
+				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
+
+				<!-- Paramétrage -->
+				<entry key="/param/application.do" value-ref="paramApplicationController" />
+				<entry key="/param/periode.do" value-ref="paramPeriodeController" />
+				<entry key="/param/init-periode.do" value-ref="initPeriodeController" />
+				<entry key="/param/parametres-pf-edit.do" value-ref="paramParametrePeriodeFiscaleEditController" />
+				<entry key="/param/modele-add.do" value-ref="paramModeleDocumentAddController" />
+				<entry key="/param/modele-suppr.do" value-ref="paramModeleDocumentSupprController" />
+
+				<!-- Tiers - display -->
+				<entry key="/tiers/list.do" value-ref="tiersListController" />
+				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
+				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
+				<entry key="/tiers/lr.do" value-ref="lrVisuController" />
+				<entry key="/tiers/di.do" value-ref="diVisuController" />
+				<entry key="/fiscal/for.do" value-ref="tiersForController" />
+				<entry key="/adresses/adresse.do" value-ref="tiersAdresseController" />
+				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
+				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
+				<entry key="/tiers/mouvement.do" value-ref="mouvementVisuController" />
+
+				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
+				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
+				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
+				<entry key="/adresses/adresse-close.do" value-ref="closeAdressesController" />
+				<entry key="/complement/edit.do" value-ref="complementEditController" />
+				<entry key="/civil/edit.do" value-ref="civilEditController" />
+				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
+				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
+				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
+				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
+				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
+
+				<!-- Tiers - edit -->
+				<entry key="/tiers/create.do" value-ref="tiersCreateController" />
+
+				<!-- LR -->
+				<entry key="/lr/list.do" value-ref="lrListController" />
+				<entry key="/lr/edit.do" value-ref="lrEditController" />
+				<entry key="/lr/edit-debiteur.do" value-ref="lrEditDebiteurController" />
+				<entry key="/lr/delai.do" value-ref="lrEditDelaiController" />
+				<!-- Rapport Prestation -->
+				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
+				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
+				<entry key="/rt/edit.do" value-ref="rapportPrestationEditController" />
+				<!-- Rapport entre tiers -->
+				<entry key="/rapport/search.do" value-ref="rapportListController" />
+				<entry key="/rapport/edit.do" value-ref="rapportEditController" />
+				<!-- Fusion -->
+				<!-- La fusion est désactivée -->
+				<!--
+				<entry key="/fusion/list-non-habitant.do" value-ref="nonHabitantListController" />
+				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
+				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
+				-->
+				<!-- DI -->
+				<entry key="/di/edit.do" value-ref="diEditController" />
+				<entry key="/di/delai.do" value-ref="diEditDelaiController" />
+				<entry key="/di/impression.do" value-ref="diImpressionController" />
+				<!-- Mouvements de dossier -->
+				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
+				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />
+				<!-- Tâches en instance / Nouveaux dossiers -->
+				<entry key="/tache/list.do" value-ref="tacheListController" />
+				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />
+				<!-- Accès -->
+				<entry key="/acces/list-pp.do" value-ref="dossierListController" />
+				<entry key="/acces/restrictions-pp.do" value-ref="dossierEditRestrictionController" />
+				<entry key="/acces/edit-acces-pp.do" value-ref="droitAccesEditController" />
+				<entry key="/acces/select-utilisateur.do" value-ref="selectUtilisateurController" />
+				<entry key="/acces/list-pp-utilisateur.do" value-ref="utilisateurListPersonneController" />
+				<entry key="/acces/recap-pp-utilisateur.do" value-ref="recapPersonneUtilisateurController" />
+				<entry key="/acces/select-utilisateurs.do" value-ref="selectUtilisateursController" />
+				<entry key="/acces/confirm-copie.do" value-ref="confirmCopieController" />
+				<!-- Consult log -->
+				<entry key="/common/consult-log.do" value-ref="consultLogController" />
+				<!-- Documents -->
+				<entry key="/common/docs.do" value-ref="documentController" />
+				<!-- Annulation / Réactivation -->
+				<entry key="/activation/list.do" value-ref="tiersActivationListController" />
+				<entry key="/activation/annulation/recap.do" value-ref="tiersAnnulationRecapController" />
+				<entry key="/activation/reactivation/recap.do" value-ref="tiersReactivationRecapController" />
+				<!-- Identification CTB -->
+				<entry key="/identification/gestion-messages/listEnCours.do" value-ref="identificationMessagesListEnCoursController" />
+				<entry key="/identification/gestion-messages/list.do" value-ref="identificationMessagesListController" />
+				<entry key="/identification/gestion-messages/edit.do" value-ref="identificationMessagesEditController" />
+				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
+				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
+				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
+
+				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
+			</map>
+		</property>
+	</bean>
+
+</beans>
