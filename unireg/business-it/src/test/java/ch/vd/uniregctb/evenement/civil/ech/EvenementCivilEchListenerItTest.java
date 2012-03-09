@@ -7,9 +7,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -49,13 +47,6 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 		}
 
 		clearQueue(INPUT_QUEUE);
-
-		// flush est vraiment la seule méthode appelée...
-		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
-			@Override
-			public void flush() throws DataAccessException {
-			}
-		};
 
 		evenementsRecus = new ArrayList<EvenementCivilEch>();
 		final EvenementCivilEchReceptionHandler receptionHandler = new EvenementCivilEchReceptionHandler() {
