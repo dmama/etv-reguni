@@ -12,8 +12,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 /**
  * DAO des événements civils externes.
  *
- * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
- *
  */
 public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, Long> {
 
@@ -29,18 +27,9 @@ public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, 
 	 */
 	List<EvenementCivilRegPP> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu );
 
-	/**
-	 * @param criterion
-	 * @param paramPagination
-	 * @return
-	 */
-	List<EvenementCivilRegPP> find(EvenementCivilCriteria criterion, ParamPagination paramPagination);
+	List<EvenementCivilRegPP> find(EvenementCivilCriteria <TypeEvenementCivil> criterion, ParamPagination paramPagination);
 
-	/**
-	 * @param criterion
-	 * @return
-	 */
-	int count(EvenementCivilCriteria criterion);
+	int count(EvenementCivilCriteria<TypeEvenementCivil> criterion);
 
 	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE ou EN_ERREUR.
@@ -52,6 +41,8 @@ public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, 
 	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE ou EN_ERREUR pour les individus
 	 * dont le numéro est donné en paramètre.
+	 *
+	 * @param nosIndividus ...
 	 *
 	 * @return une liste d'ids des événements civils
 	 */

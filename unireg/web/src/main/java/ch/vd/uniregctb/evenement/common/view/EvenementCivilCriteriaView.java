@@ -3,13 +3,12 @@ package ch.vd.uniregctb.evenement.common.view;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT> > extends EvenementCivilCriteria<TYPE_EVT> {
 
@@ -18,18 +17,18 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 	private static final long serialVersionUID = -440782547474527432L;
 
 	private String numeroIndividuFormatte;
-
 	private String numeroCTBFormatte;
-
 	private String typeEvenement;
-
 	private String etatEvenement;
 
+	@SuppressWarnings("UnusedDeclaration")
 	public String getTypeEvenement() {
 		return typeEvenement;
 	}
 
+	protected abstract Class<TYPE_EVT> getTypeClass();
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setTypeEvenement(String typeEvenement) {
 		if (TOUS.equals(typeEvenement)) {
 			setType(null);
@@ -43,10 +42,8 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 		this.typeEvenement = typeEvenement;
 	}
 
-	protected abstract Class<TYPE_EVT> getTypeClass();
-
 	@Override
-	public void setType(TYPE_EVT type) {
+	public void setType(@Nullable TYPE_EVT type) {
 		super.setType(type);
 		if (type != null) {
 			this.typeEvenement = type.name();
@@ -56,10 +53,12 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 		}
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public String getEtatEvenement() {
 		return etatEvenement;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setEtatEvenement(String etatEvenement) {
 		if (TOUS.equals(etatEvenement)) {
 			setEtat(null);
@@ -74,7 +73,7 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 	}
 
 	@Override
-	public void setEtat(EtatEvenementCivil etat) {
+	public void setEtat(@Nullable EtatEvenementCivil etat) {
 		super.setEtat(etat);
 		if (etat != null) {
 			this.etatEvenement = etat.name();
@@ -88,6 +87,7 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 		return numeroIndividuFormatte;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setNumeroIndividuFormatte(String numeroIndividuFormatte) {
 
 		if (StringUtils.isNotEmpty(numeroIndividuFormatte)) {
@@ -107,6 +107,7 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 		return numeroCTBFormatte;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setNumeroCTBFormatte(String numeroCTBFormatte) {
 		if (StringUtils.isNotEmpty(numeroCTBFormatte)) {
 			try {
@@ -121,31 +122,23 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 		this.numeroCTBFormatte = numeroCTBFormatte;
 	}
 
-	/**
-	 * @return the dateEvenementDebut
-	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public Date getDateEvenementDebut() {
-		return RegDate.asJavaDate(dateEvenementDebut);
+		return RegDate.asJavaDate(getRegDateEvenementDebut());
 	}
 
-	/**
-	 * @param dateEvenementDebut the dateEvenementDebut to set
-	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public void setDateEvenementDebut(Date dateEvenementDebut) {
-		this.dateEvenementDebut = RegDate.get(dateEvenementDebut);
+		setRegDateEvenementDebut(RegDate.get(dateEvenementDebut));
 	}
 
-	/**
-	 * @return the dateEvenementDebut
-	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public Date getDateEvenementFin() {
-		return RegDate.asJavaDate(dateEvenementFin);
+		return RegDate.asJavaDate(getRegDateEvenementFin());
 	}
 
-	/**
-	 * @param dateEvenementFin the dateEvenementFin to set
-	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public void setDateEvenementFin(Date dateEvenementFin) {
-		this.dateEvenementFin = RegDate.get(dateEvenementFin);
+		setRegDateEvenementFin(RegDate.get(dateEvenementFin));
 	}
 }

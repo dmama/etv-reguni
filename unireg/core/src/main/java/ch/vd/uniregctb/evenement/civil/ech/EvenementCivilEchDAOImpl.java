@@ -81,6 +81,8 @@ public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, 
 	@Override
 	public List<EvenementCivilEch> find(EvenementCivilCriteria criterion, ParamPagination paramPagination) {
 		//TODO FRED Implementer find pour la recherche des evts dans l'IHM
+//		String buildClauseWhereFromCriteria()
+//		final String hql = "from EvenementCivilEch ec where ec.annulationDate is null ";
 		return getAll();
 
 	}

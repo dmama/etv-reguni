@@ -4,12 +4,13 @@ import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivilEch> {
+public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
 
 	private static final long serialVersionUID = 1L;
 
 	private String actionEvenement;
 
+	@SuppressWarnings("unused")
 	public String getActionEvenement() {
 		return actionEvenement;
 	}

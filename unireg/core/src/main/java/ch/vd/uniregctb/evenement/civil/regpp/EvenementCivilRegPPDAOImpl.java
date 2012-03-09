@@ -19,25 +19,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * DAO des événements civils.
- *
- * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
- *
+ * DAO pour les événements civils RegPP
  */
 public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilRegPP, Long> implements EvenementCivilRegPPDAO {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPDAOImpl.class);
 
 	private static final List<String> ETATS_NON_TRAITES;
-
-	private TiersDAO tiersDao;
 
 	static {
 		final List<String> etats = new ArrayList<String>(EtatEvenementCivil.values().length);
@@ -56,19 +48,13 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 		super(EvenementCivilRegPP.class);
 	}
 
-	@SuppressWarnings("unused")
-	public void setTiersDao(TiersDAO tiersDao) {
-		this.tiersDao = tiersDao;
-	}
-
 	/**
 	 * Retourne les evenements d'un individu
-	 * @see EvenementCivilRegPPDAO#rechercheEvenementExistant(java.util.Date, java.lang.Long)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilRegPP> rechercheEvenementExistantEtTraitable(final RegDate dateEvenement, final TypeEvenementCivil typeEvenement, final Long noIndividu) {
-		final StringBuffer b = new StringBuffer();
+		final StringBuilder b = new StringBuilder();
 		b.append("from EvenementCivilRegPP as ec where ec.dateEvenement = :date");
 		b.append(" and ec.type = :type");
 		b.append(" and ec.numeroIndividuPrincipal = :noIndividu");
@@ -99,9 +85,9 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 		final List<Object> criteria = new ArrayList<Object>();
 		final String queryWhere = buildCriterion(criteria, criterion);
 		if (queryWhere == null) {
-			return Collections.<EvenementCivilRegPP>emptyList();
+			return Collections.emptyList();
 		}
-		String queryOrder = "";
+		String queryOrder;
 		if (paramPagination != null && paramPagination.getChamp() != null) {
 			queryOrder = String.format(" order by evenement.%s", paramPagination.getChamp());
 		} else {
@@ -113,7 +99,10 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 			queryOrder = String.format("%s desc", queryOrder);
 		}
 		
-		final String query = String.format("select evenement from EvenementCivilRegPP evenement where 1=1 %s%s", queryWhere, queryOrder);
+		final String query = String.format(
+				"select evenement from EvenementCivilRegPP evenement %s where 1=1 %s%s",
+				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
+				queryWhere, queryOrder);
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilRegPP>>() {
 			@Override
@@ -139,11 +128,8 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 		});
 	}
 
-	/**
-	 * @see EvenementCivilRegPPDAO#count(ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria)
-	 */
 	@Override
-	public int count(EvenementCivilCriteria criterion){
+	public int count(EvenementCivilCriteria<TypeEvenementCivil> criterion){
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of EvenementCivilRegPPDAO:count");
 		}
@@ -151,19 +137,19 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 
 
 		List<Object> criteria = new ArrayList<Object>();
-		String queryWhere = buildCriterion(criteria, criterion);
-		if (queryWhere == null) {
-			return 0;
-		}
-		String query = " select count(*) from EvenementCivilRegPP evenement where 1=1 " + queryWhere;
+		String queryWhere =buildCriterion(criteria, criterion);
+		String query = String.format(
+				" select count(*) from EvenementCivilRegPP evenement %s where 1=1 %s",
+				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
+				queryWhere);
 		return DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 	}
 
 
 	/**
-	 * @param criteria ...
-	 * @param criterion ...
-	 * @return la clause where correspondante à l'objet criterion, null si la requête est vouée à être vide
+	 * @param criteria target
+	 * @param criterion source
+	 * @return la clause where correspondante à l'objet criterion
 	 */
 	private String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
 		String queryWhere = "";
@@ -222,16 +208,8 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 
 		Long numeroCTB = criterion.getNumeroCTB();
 		if (numeroCTB != null) {
-			Tiers tiers = tiersDao.get(criterion.getNumeroCTB());
-			if (tiers != null && tiers instanceof PersonnePhysique ) {
-				PersonnePhysique pp = (PersonnePhysique) tiers;
-				queryWhere += "and (evenement.numeroIndividuPrincipal = ? or evenement.numeroIndividuConjoint = ?)";
-				criteria.add(pp.getNumeroIndividu());
-				criteria.add(pp.getNumeroIndividu());
-			} else {
-				// Si le numero de ctb n'existe pas ou si le tiers n'est pas une personne physique alors la recherche doit être vide
-				return null;
-			}
+			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = ?";
+			criteria.add(numeroCTB);
 		}
 
 		if (LOGGER.isTraceEnabled()) {
