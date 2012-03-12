@@ -2,7 +2,11 @@ package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.Comparator;
 
-// TODO FRED Javadoc expliquer la logique du tri
+/**
+ * Comparateur pour ordonner les evenements dans leur ordre de traitement:
+ *  1. les plus anciens en premier
+ *  2. Suivant la priorité de l'événement pour les evenements ayant la meme date
+ */
 public class EvenementCivilEchBasicInfoComparator implements Comparator<EvenementCivilEchBasicInfo> {
 	private static final TypeEvenementCivilEchComparator PRIORITY_COMPARATOR = new TypeEvenementCivilEchComparator();
 	@Override
