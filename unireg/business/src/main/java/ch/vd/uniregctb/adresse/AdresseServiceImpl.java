@@ -171,7 +171,8 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// on crée les historique des adresses d'envoi pour tous les types d'adresses
 		for (TypeAdresseFiscale type : TypeAdresseFiscale.values()) {
-			final List<AdresseGenerique> adressesDestination = adressesFiscales.ofType(type);
+			// [SIFISC-4475] on ignore les adresses annulées car une adresse d'envoi ne peut pas être nulle.
+			final List<AdresseGenerique> adressesDestination = AdresseMixer.extractAdressesNonAnnulees(adressesFiscales.ofType(type));
 			if (adressesDestination != null && !adressesDestination.isEmpty()) {
 				// on splitte les adresses lors des dates de décès, car les salutations et les formules de politesse changent à ce moment-là
 				final List<AdresseGenerique> splittedAdresses = AdresseMixer.splitAt(adressesDestination, splitDates);

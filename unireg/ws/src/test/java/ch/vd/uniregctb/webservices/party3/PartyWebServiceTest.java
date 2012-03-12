@@ -38,7 +38,9 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
@@ -55,6 +57,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -1262,5 +1265,41 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, other0.getTaxationAuthorityType());
 		assertEquals(MockCommune.Renens.getNumeroTechnique(), other0.getTaxationAuthorityFSOId());
 		assertEquals(TaxLiabilityReason.PRIVATE_IMMOVABLE_PROPERTY, other0.getTaxLiabilityReason());
+	}
+
+	/**
+	 * [SIFISC-4475] Vérifie que les adresses annulées ne sont pas exposées dans le web-service Party v3.
+	 */
+	@Test
+	public void testGetCanceledAddresses() throws Exception {
+
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Félix", "Annulé", date(1977, 3, 21), Sexe.MASCULIN);
+				final AdresseSuisse canceled = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), date(2007, 4, 3), MockRue.Epesses.RueDeLaMottaz);
+				canceled.setAnnule(true);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Moudon.LeBourg);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Arrays.asList(PartyPart.ADDRESSES));
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+
+		final List<Address> addresses = party.getMailAddresses();
+		assertNotNull(addresses);
+		assertEquals(1, addresses.size()); // l'adresse annulé sur Epesse ne doit pas être exposée
+
+		final Address address = addresses.get(0);
+		assertNotNull(address);
+		assertEquals(newDate(2000, 1, 1), address.getDateFrom());
+		assertNull(address.getDateTo());
+		assertEquals(AddressType.MAIL, address.getType());
+
+		final AddressInformation info = address.getAddressInformation();
+		assertEquals("Rue du Bourg", info.getStreet());
+		assertEquals("Moudon", info.getTown());
 	}
 }
