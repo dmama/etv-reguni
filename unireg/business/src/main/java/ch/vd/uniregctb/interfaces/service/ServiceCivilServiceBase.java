@@ -27,6 +27,7 @@ import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 
 public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
@@ -67,20 +68,21 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
-		AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
-
 		final Individu individu = getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
-		if (individu != null) {
-			final Collection<Adresse> adressesCiviles = individu.getAdresses();
-			if (adressesCiviles != null) {
-				for (Adresse adresse : adressesCiviles) {
-					if (adresse != null) {
-						resultat.add(adresse);
-					}
+		if (individu == null) {
+			return null;
+		}
+
+		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
+		final Collection<Adresse> adressesCiviles = individu.getAdresses();
+		if (adressesCiviles != null) {
+			for (Adresse adresse : adressesCiviles) {
+				if (adresse != null) {
+					resultat.add(adresse);
 				}
 			}
-			resultat.finish(strict);
 		}
+		resultat.finish(strict);
 
 		return resultat;
 	}
@@ -227,6 +229,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		final AdressesCivilesHistoriques histo = getAdressesHisto(noIndividu, strict);
+		if (histo == null) {
+			throw new IndividuNotFoundException(noIndividu);
+		}
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
 		for (Adresse adresse : histo.principales) {
 			if (RegDateHelper.isAfterOrEqual(adresse.getDateFin(), date, NullDateBehavior.LATEST)) {
