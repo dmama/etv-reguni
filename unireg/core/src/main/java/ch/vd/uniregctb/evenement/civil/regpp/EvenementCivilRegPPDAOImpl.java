@@ -4,20 +4,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.AbstractEvenementCivilDAOImpl;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -25,9 +21,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 /**
  * DAO pour les événements civils RegPP
  */
-public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilRegPP, Long> implements EvenementCivilRegPPDAO {
-
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPDAOImpl.class);
+public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<EvenementCivilRegPP, TypeEvenementCivil> implements EvenementCivilRegPPDAO {
 
 	private static final List<String> ETATS_NON_TRAITES;
 
@@ -76,148 +70,20 @@ public class EvenementCivilRegPPDAOImpl extends GenericDAOImpl<EvenementCivilReg
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegPP> find(final EvenementCivilCriteria criterion, final ParamPagination paramPagination) {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Start of EvenementCivilRegPPDAO:find");
-		}
-		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
+	public List<EvenementCivilRegPP> find(EvenementCivilCriteria<TypeEvenementCivil> criterion, ParamPagination paramPagination) {
+		return genericFind(criterion, paramPagination);
+	}
 
-		final List<Object> criteria = new ArrayList<Object>();
-		final String queryWhere = buildCriterion(criteria, criterion);
-		if (queryWhere == null) {
-			return Collections.emptyList();
-		}
-		String queryOrder;
-		if (paramPagination != null && paramPagination.getChamp() != null) {
-			queryOrder = String.format(" order by evenement.%s", paramPagination.getChamp());
-		} else {
-			queryOrder = " order by evenement.dateEvenement";
-		}
-		if (paramPagination != null && paramPagination.isSensAscending()) {
-			queryOrder = String.format("%s asc", queryOrder);
-		} else {
-			queryOrder = String.format("%s desc", queryOrder);
-		}
-		
-		final String query = String.format(
-				"select evenement from EvenementCivilRegPP evenement %s where 1=1 %s%s",
-				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
-				queryWhere, queryOrder);
-
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilRegPP>>() {
-			@Override
-			public List<EvenementCivilRegPP> doInHibernate(Session session) throws HibernateException, SQLException {
-
-				final Query queryObject = session.createQuery(query);
-				final Object[] values = criteria.toArray();
-				if (values != null) {
-					for (int i = 0; i < values.length; i++) {
-						queryObject.setParameter(i, values[i]);
-					}
-				}
-				if (paramPagination != null) {
-					final int firstResult = paramPagination.getSqlFirstResult();
-					final int maxResult = paramPagination.getSqlMaxResults();
-
-                    queryObject.setFirstResult(firstResult);
-                    queryObject.setMaxResults(maxResult);
-				}
-
-				return queryObject.list();
-			}
-		});
+	@Override
+	protected Class getEvenementCivilClass() {
+		return EvenementCivilRegPP.class;
 	}
 
 	@Override
 	public int count(EvenementCivilCriteria<TypeEvenementCivil> criterion){
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Start of EvenementCivilRegPPDAO:count");
-		}
-		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
-
-
-		List<Object> criteria = new ArrayList<Object>();
-		String queryWhere =buildCriterion(criteria, criterion);
-		String query = String.format(
-				" select count(*) from EvenementCivilRegPP evenement %s where 1=1 %s",
-				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
-				queryWhere);
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
+		return genericCount(criterion);
 	}
 
-
-	/**
-	 * @param criteria target
-	 * @param criterion source
-	 * @return la clause where correspondante à l'objet criterion
-	 */
-	private String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
-		String queryWhere = "";
-
-		// Si la valeur n'existe pas (TOUS par exemple), type = null
-		final TypeEvenementCivil type = criterion.getType();
-		if (type != null) {
-			queryWhere += " and evenement.type = ? ";
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Type evt: "+type);
-			}
-			criteria.add(type.name());
-		}
-
-		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		final EtatEvenementCivil etat = criterion.getEtat();
-		if (etat != null) {
-			queryWhere += " and evenement.etat = ? ";
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Etat evt: "+etat);
-			}
-			criteria.add(etat.name());
-		}
-
-
-		Date dateTraitementDebut = criterion.getDateTraitementDebut();
-		if (dateTraitementDebut != null) {
-			queryWhere += " and evenement.dateTraitement >= ? ";
-			// On prends la date a Zero Hour
-			criteria.add(dateTraitementDebut);
-		}
-		Date dateTraitementFin = criterion.getDateTraitementFin();
-		if (dateTraitementFin != null) {
-			queryWhere += " and evenement.dateTraitement <= ? ";
-			// On prends la date a 24 Hour
-			criteria.add(dateTraitementFin);
-		}
-
-		RegDate dateEvenementDebut = criterion.getRegDateEvenementDebut();
-		if (dateEvenementDebut != null) {
-			queryWhere += " and evenement.dateEvenement >= ? ";
-			criteria.add(dateEvenementDebut.index());
-		}
-		RegDate dateEvenementFin = criterion.getRegDateEvenementFin();
-		if (dateEvenementFin != null) {
-			queryWhere += " and evenement.dateEvenement <= ? ";
-			criteria.add(dateEvenementFin.index());
-		}
-
-		Long numero = criterion.getNumeroIndividu();
-		if (numero != null) {
-			queryWhere += " and (evenement.numeroIndividuPrincipal = ? or evenement.numeroIndividuConjoint = ?) ";
-			criteria.add(numero);
-			criteria.add(numero);
-		}
-
-		Long numeroCTB = criterion.getNumeroCTB();
-		if (numeroCTB != null) {
-			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = ?";
-			criteria.add(numeroCTB);
-		}
-
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("EvenementCivilCriteria Query: " + queryWhere);
-			LOGGER.trace("EvenementCivilCriteria Table size: " + criteria.toArray().length);
-		}
-		return queryWhere;
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")

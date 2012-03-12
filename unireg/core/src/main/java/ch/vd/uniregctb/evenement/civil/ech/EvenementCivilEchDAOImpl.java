@@ -12,14 +12,16 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.AbstractEvenementCivilDAOImpl;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, Long> implements EvenementCivilEchDAO {
+public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<EvenementCivilEch, TypeEvenementCivilEch> implements EvenementCivilEchDAO {
 
 	private static final List<String> ETATS_NON_TRAITES;
+	
 
 	static {
 		final List<String> etats = new ArrayList<String>(EtatEvenementCivil.values().length);
@@ -79,16 +81,18 @@ public class EvenementCivilEchDAOImpl extends GenericDAOImpl<EvenementCivilEch, 
 	}
 
 	@Override
-	public List<EvenementCivilEch> find(EvenementCivilCriteria criterion, ParamPagination paramPagination) {
-		//TODO FRED Implementer find pour la recherche des evts dans l'IHM
-//		String buildClauseWhereFromCriteria()
-//		final String hql = "from EvenementCivilEch ec where ec.annulationDate is null ";
-		return getAll();
-
+	@SuppressWarnings("unchecked")
+	public List<EvenementCivilEch> find(final EvenementCivilCriteria criterion, final ParamPagination paramPagination) {
+		return genericFind(criterion, paramPagination);
 	}
 
 	@Override
-	public int count(EvenementCivilCriteria criterion) {
-		return getAll().size();  //TODO FRED Implementer
+	public int count(EvenementCivilCriteria<TypeEvenementCivilEch> criterion){
+		return genericCount(criterion);
+	}
+
+	@Override
+	protected Class getEvenementCivilClass() {
+		return EvenementCivilEch.class;
 	}
 }
