@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -19,6 +17,8 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 public abstract class TiersIndexable {
 
@@ -85,8 +85,8 @@ public abstract class TiersIndexable {
 			// Défaut => adresse courrier
 			AdresseGenerique courrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
 			if (courrier != null) {
-				rue = courrier.getRue();
-				npa = courrier.getNumeroPostal();
+                rue = new RueEtNumero(courrier.getRue(), courrier.getNumero()).getRueEtNumero();
+                npa = courrier.getNumeroPostal();
 				localite = courrier.getLocalite(); // [UNIREG-2142] on prend la localité abrégée
 
 				final Integer noOfsPays = courrier.getNoOfsPays();
