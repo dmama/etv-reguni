@@ -2120,7 +2120,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		final AdresseEnvoiDetaillee courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
 		assertEquals(dateCuratelle, courrier1.getDateDebut());
-		assertEquals(dateDecesConjoint, courrier1.getDateFin());
+		assertEquals(dateDecesConjoint.getOneDayBefore(), courrier1.getDateFin());
 		assertEquals("Monsieur et Madame", courrier1.getLigne1());
 		assertEquals("Maurice Rochat", courrier1.getLigne2());
 		assertEquals("Odette Rochat", courrier1.getLigne3());
@@ -2134,7 +2134,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// décès de madame
 		final AdresseEnvoiDetaillee courrier2 = adressesEnvoi.courrier.get(2);
 		assertNotNull(courrier2);
-		assertEquals(dateDecesConjoint.getOneDayAfter(), courrier2.getDateDebut());
+		assertEquals(dateDecesConjoint, courrier2.getDateDebut());
 		assertEquals(date(2010, 6, 30), courrier2.getDateFin());
 		assertEquals("Aux héritiers de", adresse.getLigne1());
 		assertEquals("Maurice Rochat", adresse.getLigne2());
@@ -2264,7 +2264,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		AdresseEnvoiDetaillee courrier0 = adressesEnvoi.courrier.get(0);
 		assertNotNull(courrier0);
 		assertEquals(date(1988, 1, 1), courrier0.getDateDebut());
-		assertEquals(dateDeces, courrier0.getDateFin());
+		assertEquals(dateDeces.getOneDayBefore(), courrier0.getDateFin());
 		assertEquals("Monsieur et Madame", courrier0.getLigne1());
 		assertEquals("Paul Duchêne", courrier0.getLigne2());
 		assertEquals("Joëlle Duchêne", courrier0.getLigne3());
@@ -2281,7 +2281,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		AdresseEnvoiDetaillee courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
-		assertEquals(dateDeces.getOneDayAfter(), courrier1.getDateDebut());
+		assertEquals(dateDeces, courrier1.getDateDebut());
 		assertNull(courrier1.getDateFin());
 		assertEquals("Aux héritiers de", courrier1.getLigne1());
 		assertEquals("Paul Duchêne, défunt", courrier1.getLigne2());
@@ -2329,7 +2329,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		courrier0 = adressesEnvoi.courrier.get(0);
 		assertNotNull(courrier0);
 		assertEquals(date(1988, 1, 1), courrier0.getDateDebut());
-		assertEquals(dateDeces, courrier0.getDateFin());
+		assertEquals(dateDeces.getOneDayBefore(), courrier0.getDateFin());
 		assertEquals("Monsieur et Madame", courrier0.getLigne1());
 		assertEquals("Paul Duchêne", courrier0.getLigne2());
 		assertEquals("Joëlle Duchêne", courrier0.getLigne3());
@@ -2346,7 +2346,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
-		assertEquals(dateDeces.getOneDayAfter(), courrier1.getDateDebut());
+		assertEquals(dateDeces, courrier1.getDateDebut());
 		assertNull(courrier1.getDateFin());
 		assertEquals("Aux héritiers de", courrier1.getLigne1());
 		assertEquals("Paul Duchêne", courrier1.getLigne2());
@@ -2394,7 +2394,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		courrier0 = adressesEnvoi.courrier.get(0);
 		assertNotNull(courrier0);
 		assertEquals(date(1988, 1, 1), courrier0.getDateDebut());
-		assertEquals(dateDeces, courrier0.getDateFin());
+		assertEquals(dateDeces.getOneDayBefore(), courrier0.getDateFin());
 		assertEquals("Monsieur et Madame", courrier0.getLigne1());
 		assertEquals("Paul Duchêne", courrier0.getLigne2());
 		assertEquals("Joëlle Duchêne", courrier0.getLigne3());
@@ -2411,7 +2411,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
-		assertEquals(dateDeces.getOneDayAfter(), courrier1.getDateDebut());
+		assertEquals(dateDeces, courrier1.getDateDebut());
 		assertNull(courrier1.getDateFin());
 		assertEquals("Aux héritiers de", courrier1.getLigne1());
 		assertEquals("Paul Duchêne, défunt", courrier1.getLigne2());

@@ -223,7 +223,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final RegDate dateDeces = tiersService.getDateDeces((PersonnePhysique) tiers);
 			if (dateDeces != null) {
 				set = new HashSet<RegDate>();
-				set.add(dateDeces.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+				set.add(dateDeces); // [SIFISC-4475] En cas de décès, l'adresse du défunt change déjà le matin même (alors que son for fiscal reste valable jusqu'au soir)
 			}
 			else {
 				set = Collections.emptySet();
@@ -241,10 +241,10 @@ public class AdresseServiceImpl implements AdresseService {
 			if (dateDecesPrincipal != null || dateDecesConjoint != null) {
 				set = new HashSet<RegDate>();
 				if (dateDecesPrincipal != null) {
-					set.add(dateDecesPrincipal.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+					set.add(dateDecesPrincipal); // [SIFISC-4475] En cas de décès, l'adresse du défunt change déjà le matin même (alors que son for fiscal reste valable jusqu'au soir)
 				}
 				if (dateDecesConjoint != null) {
-					set.add(dateDecesConjoint.getOneDayAfter()); // la situation fiscale du tiers reste inchangée jusqu'au lendemain matin
+					set.add(dateDecesConjoint); // [SIFISC-4475] En cas de décès, l'adresse du défunt change déjà le matin même (alors que son for fiscal reste valable jusqu'au soir)
 				}
 			}
 			else {
@@ -1260,7 +1260,9 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		final RegDate dateDeces = tiersService.getDateDeces(pp);
-		return new DateRangeHelper.Range(dateNaissance, dateDeces);
+		// [SIFISC-4475] le jour du décès n'est pas compris dans la période de vie (= la personne est considérée morte dès le matin)
+		final RegDate dernierJour = dateDeces == null ? null : dateDeces.getOneDayBefore();
+		return new DateRangeHelper.Range(dateNaissance, dernierJour);
 	}
 
 	/**
