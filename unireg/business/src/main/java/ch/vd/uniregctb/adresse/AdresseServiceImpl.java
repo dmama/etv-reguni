@@ -31,6 +31,7 @@ import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -1525,7 +1526,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique personne = (PersonnePhysique) tiers;
 			if (personne.getNumeroIndividu() != null && personne.getNumeroIndividu() != 0) {
-				adressesCiviles = getAdressesCivilesHisto(personne, strict);
+				adressesCiviles = getAdressesCivilesHisto(personne.getNumeroIndividu(), strict);
 			}
 			else {
 				adressesCiviles = new AdressesCivilesHisto();
@@ -1536,7 +1537,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 
 			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un couple annulé
-				adressesCiviles = getAdressesCivilesHisto(principal, strict);
+				adressesCiviles = getAdressesCivilesHisto(principal.getNumeroIndividu(), strict);
 			}
 			else {
 				adressesCiviles = new AdressesCivilesHisto();
@@ -1559,9 +1560,13 @@ public class AdresseServiceImpl implements AdresseService {
 		return adressesCiviles;
 	}
 
-	private AdressesCivilesHisto getAdressesCivilesHisto(PersonnePhysique habitant, boolean strict) throws AdresseException {
+	private AdressesCivilesHisto getAdressesCivilesHisto(long numeroIndividu, boolean strict) throws AdresseException {
 		try {
-			return new AdressesCivilesHisto(serviceCivilService.getAdressesHisto(habitant.getNumeroIndividu(), strict), strict);
+			final AdressesCivilesHistoriques adressesHisto = serviceCivilService.getAdressesHisto(numeroIndividu, strict);
+			if (adressesHisto == null) {
+				throw new IndividuNotFoundException(numeroIndividu);
+			}
+			return new AdressesCivilesHisto(adressesHisto, strict);
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);

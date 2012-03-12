@@ -43,7 +43,7 @@ public interface ServiceCivilService {
 	 * @param noIndividu l'individu dont on recherche les adresses.
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @return l'historique des adresses civiles de l'individu spécifié.
+	 * @return l'historique des adresses civiles de l'individu spécifié; ou <b>null</b> si l'individu n'existe pas.
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 */
