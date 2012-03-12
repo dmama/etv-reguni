@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.pages;
 
+import ch.vd.uniregctb.common.WebitTest;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import ch.vd.uniregctb.common.WebitTest;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -492,7 +491,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testEvtVisuInexistant() throws Exception {
-		assertPage("/evenement/visu.do?id=12345678", "Page d'erreur", "L'événement spécifié n'existe pas");
+		assertPage("/evenement/visu.do?id=12345678", "Page d'erreur", "L'événement spécifié (no 12345678) n'existe pas");
 	}
 
 	/*----------------------
