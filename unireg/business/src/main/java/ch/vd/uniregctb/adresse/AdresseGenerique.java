@@ -118,7 +118,8 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     String getLocaliteComplete();
 
     /**
-     * @return le numéro de l'adresse.
+     * @return le numéro de l'adresse. Par exemple : "3bis".
+     * @see ch.vd.uniregctb.adresse.AdresseGenerique#getRue()
      */
     String getNumero();
 
@@ -143,7 +144,8 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     Integer getNoOfsPays();
 
     /**
-     * @return la rue de l'adresse.
+     * @return la rue de l'adresse. Par exemple : "Avenue de Beaulieu".
+     * @see ch.vd.uniregctb.adresse.AdresseGenerique#getNumero()
      */
     String getRue();
 
