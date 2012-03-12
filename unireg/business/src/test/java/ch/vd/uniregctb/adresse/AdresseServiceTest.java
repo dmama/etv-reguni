@@ -5641,8 +5641,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(date(2000, 1, 1), dateDeces, "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
-		assertAdresse(dateDeces.getOneDayAfter(), null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
+		assertAdresse(date(2000, 1, 1), dateDeces.getOneDayBefore(), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
@@ -5696,7 +5696,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
 		assertEquals(date(2000, 1, 1), adresseEnvoi1.getDateDebut());
-		assertEquals(dateDeces, adresseEnvoi1.getDateFin());
+		assertEquals(dateDeces.getOneDayBefore(), adresseEnvoi1.getDateFin());
 		assertEquals("Monsieur et Madame", adresseEnvoi1.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
@@ -5706,7 +5706,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdresseEnvoiDetaillee adresseEnvoi2 = adressesEnvoi.courrier.get(2);
 		assertNotNull(adresseEnvoi2);
-		assertEquals(dateDeces.getOneDayAfter(), adresseEnvoi2.getDateDebut());
+		assertEquals(dateDeces, adresseEnvoi2.getDateDebut());
 		assertNull(adresseEnvoi2.getDateFin());
 		assertEquals("Aux héritiers de", adresseEnvoi2.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
@@ -5781,8 +5781,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), dateTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(dateTutelle, dateDeces, "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
-		assertAdresse(dateDeces.getOneDayAfter(), null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
+		assertAdresse(dateTutelle, dateDeces.getOneDayBefore(), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
@@ -5846,7 +5846,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
 		assertEquals(dateTutelle, adresseEnvoi1.getDateDebut());
-		assertEquals(dateDeces, adresseEnvoi1.getDateFin());
+		assertEquals(dateDeces.getOneDayBefore(), adresseEnvoi1.getDateFin());
 		assertEquals("Monsieur et Madame", adresseEnvoi1.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
@@ -5856,7 +5856,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdresseEnvoiDetaillee adresseEnvoi2 = adressesEnvoi.courrier.get(2);
 		assertNotNull(adresseEnvoi2);
-		assertEquals(dateDeces.getOneDayAfter(), adresseEnvoi2.getDateDebut());
+		assertEquals(dateDeces, adresseEnvoi2.getDateDebut());
 		assertNull(adresseEnvoi2.getDateFin());
 		assertEquals("Aux héritiers de", adresseEnvoi2.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
@@ -7870,5 +7870,41 @@ public class AdresseServiceTest extends BusinessTest {
 			assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, a.get(1));
 			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, a.get(2));
 		}
+	}
+
+	/**
+	 * [SIFISC-4475] Vérifie que l'adresse d'envoi avec la formule de politesse "aux héritiers de" est valable dès le jour du décès de la personne physique.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAdressesPersonnePhysiqueDecedee() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		final PersonnePhysique pp = addNonHabitant("Frédo", "Labruyère", date(1943, 2, 12), Sexe.MASCULIN);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1943, 2, 12), dateDeces, MockRue.CossonayVille.AvenueDuFuniculaire);
+		pp.setDateDeces(dateDeces);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.courrier.size());
+
+		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+		assertNotNull(adresse0);
+		assertEquals(date(1943, 2, 12), adresse0.getDateDebut());
+		assertEquals(dateDeces.getOneDayBefore(), adresse0.getDateFin());
+		assertEquals("Monsieur", adresse0.getLigne1());
+		assertEquals("Frédo Labruyère", adresse0.getLigne2());
+		assertEquals("Avenue du Funiculaire", adresse0.getLigne3());
+		assertEquals("1304 Cossonay-Ville", adresse0.getLigne4());
+
+		final AdresseEnvoiDetaillee adresse1 = adresses.courrier.get(1);
+		assertNotNull(adresse1);
+		assertEquals(dateDeces, adresse1.getDateDebut());
+		assertEquals(dateDeces, adresse1.getDateFin());
+		assertEquals("Aux héritiers de", adresse1.getLigne1());
+		assertEquals("Frédo Labruyère, défunt", adresse1.getLigne2());
+		assertEquals("Avenue du Funiculaire", adresse1.getLigne3());
+		assertEquals("1304 Cossonay-Ville", adresse1.getLigne4());
 	}
 }
