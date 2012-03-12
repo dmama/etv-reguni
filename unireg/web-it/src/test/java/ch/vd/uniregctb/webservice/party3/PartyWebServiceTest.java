@@ -1,84 +1,33 @@
 package ch.vd.uniregctb.webservice.party3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SearchMode;
-import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.SearchPartyResponse;
-import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.party3.*;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressInformation;
-import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
-import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
-import ch.vd.unireg.xml.party.address.v1.TariffZone;
+import ch.vd.unireg.xml.party.address.v1.*;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
-import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
-import ch.vd.unireg.xml.party.debtor.v1.Debtor;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
-import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovableProperty;
-import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
+import ch.vd.unireg.xml.party.debtor.v1.*;
+import ch.vd.unireg.xml.party.immovableproperty.v1.*;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.*;
 import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
-import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par1;
-import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
-import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
-import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
-import ch.vd.unireg.xml.party.v1.BankAccount;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
-import ch.vd.unireg.xml.party.v1.PartyType;
+import ch.vd.unireg.xml.party.taxresidence.v1.*;
+import ch.vd.unireg.xml.party.v1.*;
+import org.jetbrains.annotations.Nullable;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Test unitaire pour le web service de la recherche.
@@ -415,7 +364,8 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
 		assertNull(info.getComplementaryInformation());
 		assertNull(info.getCareOf());
-		assertEquals("Chemin du Riau 2A", info.getStreet());
+		assertEquals("Chemin du Riau", info.getStreet());
+        assertEquals("2A", info.getHouseNumber());
 		assertNull(info.getPostOfficeBoxNumber());
 		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
 		assertEquals("St-Prex", info.getTown());
@@ -1461,7 +1411,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNull(address.getDateTo());
 		AddressInformation info = address.getAddressInformation();
 		assertEquals("Chemin du Riau", info.getStreet());
-		assertEquals("2a", info.getHouseNumber());
+		assertEquals("2A", info.getHouseNumber());
 		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
 		assertEquals("St-Prex", info.getTown());
 		assertEquals(Integer.valueOf(294), info.getSwissZipCodeId());

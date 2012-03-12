@@ -1,24 +1,16 @@
 package ch.vd.uniregctb.webservice.party3;
 
-import java.util.List;
-
-import org.junit.Test;
-
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
-import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
-import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
-import ch.vd.unireg.xml.party.address.v1.TariffZone;
+import ch.vd.unireg.xml.party.address.v1.*;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.v1.Party;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Voir la spécification "BesoinsContentieux.doc"
@@ -144,7 +136,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 
 			final List<Address> mailAddresses = tiers.getMailAddresses();
 			final Address courrier = mailAddresses.get(mailAddresses.size() - 1);
-			assertFormattedAddress(courrier.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
+			assertFormattedAddress(courrier.getFormattedAddress(), "Madame", "Fabienne Girardet Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
 
 			final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 			assertAdresseEquals(domicile.getFormattedAddress(), debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress());
