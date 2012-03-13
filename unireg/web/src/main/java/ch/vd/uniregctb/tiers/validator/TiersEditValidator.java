@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -16,8 +17,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.utils.AVSValidator;
-import ch.vd.uniregctb.utils.EAN13CheckDigitOperation;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -73,11 +73,7 @@ public class TiersEditValidator implements Validator {
 						}
 
 						if (StringUtils.isNotBlank(nonHabitant.getNumeroAssureSocial())) {
-							AVSValidator newAvsValidator = new AVSValidator();
-							newAvsValidator.setCheckDigit(EAN13CheckDigitOperation.INSTANCE);
-							newAvsValidator.setLength(13);
-
-							if (!newAvsValidator.isValidNouveauNumAVS(nonHabitant.getNumeroAssureSocial())) {
+							if (!AvsHelper.isValidNouveauNumAVS(nonHabitant.getNumeroAssureSocial())) {
 								errors.rejectValue("tiers.numeroAssureSocial", "error.numeroAssureSocial");
 								errors.reject("onglet.error.civil");
 							}
@@ -99,15 +95,12 @@ public class TiersEditValidator implements Validator {
 						else if (StringUtils.isNotBlank(ancienNumAVS)) {
 							ancienNumAVS = FormatNumeroHelper.completeAncienNumAvs(ancienNumAVS);
 
-							AVSValidator oldAvsValidator = new AVSValidator();
-							oldAvsValidator.setCheckDigit(EAN13CheckDigitOperation.INSTANCE);
-
-							ancienNumAVS = oldAvsValidator.validateAncienNumAVS(ancienNumAVS, dateNais, nonHabitant.getSexe());
-							if (ancienNumAVS == null) {
+							if (!AvsHelper.isValidAncienNumAVS(ancienNumAVS, dateNais, nonHabitant.getSexe()== Sexe.MASCULIN)) {
 								errors.rejectValue("identificationPersonne.ancienNumAVS", "error.ancienNumeroAssureSocial");
 								errors.reject("onglet.error.civil");
 							}
 							else {
+								ancienNumAVS = FormatNumeroHelper.removeSpaceAndDash(ancienNumAVS);
 								tiersView.getIdentificationPersonne().setAncienNumAVS(ancienNumAVS);
 							}
 						}
