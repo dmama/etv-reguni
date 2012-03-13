@@ -9,7 +9,7 @@ import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
@@ -47,7 +47,9 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.LoadMonitorable;
+import ch.vd.uniregctb.webservices.common.DetailedLoadMeter;
+import ch.vd.uniregctb.webservices.common.DetailedLoadMonitorable;
+import ch.vd.uniregctb.webservices.common.LoadDetail;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
@@ -56,16 +58,16 @@ import ch.vd.uniregctb.webservices.common.LoadMonitorable;
  */
 @WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3", serviceName = "PartyWebServiceFactory", portName = "Service",
 		endpointInterface = "ch.vd.unireg.webservices.party3.PartyWebService")
-public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable {
+public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceEndPoint.class);
 	private static final Logger READ_ACCESS = Logger.getLogger("party3.read");
 	private static final Logger WRITE_ACCESS = Logger.getLogger("party3.write");
 
 	/**
-	 * Nombre d'appels actuellements en cours
+	 * Moniteur des appels actuellements en cours
 	 */
-	private final AtomicInteger load = new AtomicInteger(0);
+	private final DetailedLoadMeter loadMeter = new DetailedLoadMeter();
 
 	@Resource
 	private WebServiceContext context;
@@ -79,12 +81,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 
 	@Override
 	public int getLoad() {
-		return load.intValue();
+		return loadMeter.getLoad();
+	}
+
+	@Override
+	public List<LoadDetail> getLoadDetails() {
+		return loadMeter.getLoadDetails();
 	}
 
 	@Override
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkLimitedReadAccess(params.getLogin());
@@ -100,7 +107,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -110,7 +117,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	@Override
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -130,7 +137,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -140,7 +147,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	@Override
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -161,14 +168,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
 
 	@Override
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -225,7 +232,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -233,7 +240,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	@Override
 	public GetTaxOfficesResponse getTaxOffices(@WebParam(partName = "getTaxOfficesRequest", name = "getTaxOfficesRequest",
 			targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3") GetTaxOfficesRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -249,14 +256,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
 
 	@Override
 	public void setAutomaticReimbursementBlocking(SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -273,7 +280,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
 	}
@@ -283,7 +290,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -300,15 +307,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws
-			WebServiceException {
-		final long start = System.nanoTime();
+	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -329,14 +335,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -360,7 +366,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
 	}
@@ -372,7 +378,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 
 	@Override
 	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			checkGeneralReadAccess(params.getLogin());
@@ -388,7 +394,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -402,9 +408,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	private void login(UserLogin login) throws WebServiceException {
 
-		// un nouvel appel est en train de débuter
-		load.incrementAndGet();
-
 		if (login == null || login.getUserId() == null || login.getOid() == 0 || login.getUserId().trim().isEmpty()) {
 			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.", BusinessExceptionCode.INVALID_REQUEST);
 		}
@@ -417,9 +420,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 	 */
 	private void logout() {
 		AuthenticationHelper.resetAuthentication();
-
-		// tout est fini
-		load.decrementAndGet();
 	}
 
 	/**
@@ -627,7 +627,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			final String user = getBasicAuthenticationUser();
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), load.get() + 1));
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
 		}
 	}
 
@@ -642,7 +642,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, LoadMonitorable
 			final String user = getBasicAuthenticationUser();
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), load.get() + 1));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
 		}
 	}
 

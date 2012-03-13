@@ -26,7 +26,6 @@
 			<map>
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=WebserviceLoad" value-ref="webserviceLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
@@ -58,8 +57,10 @@
 		<property name="checker" ref="applicationChecker" />
 	</bean>
 
-	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.WebServiceLoadJmxBeanImpl">
+	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.WebServiceLoadJmxBeanContainer">
 		<property name="statsService" ref="statsService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=WebserviceLoad,name="/>
 		<property name="services">
 			<map>
 				<entry key="TiersWebService2" value-ref="tiersService2EndPoint"/>

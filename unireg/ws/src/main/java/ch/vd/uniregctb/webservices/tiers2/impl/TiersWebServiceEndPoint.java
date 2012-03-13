@@ -12,7 +12,7 @@ import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
@@ -22,7 +22,9 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.LoadMonitorable;
+import ch.vd.uniregctb.webservices.common.DetailedLoadMeter;
+import ch.vd.uniregctb.webservices.common.DetailedLoadMonitorable;
+import ch.vd.uniregctb.webservices.common.LoadDetail;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -65,16 +67,16 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
  */
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", name = "TiersPort", serviceName = "TiersService")
-public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable {
+public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceEndPoint.class);
 	private static final Logger READ_ACCESS = Logger.getLogger("tiers2.read");
 	private static final Logger WRITE_ACCESS = Logger.getLogger("tiers2.write");
 
 	/**
-	 * Nombre d'appels actuellements en cours
+	 * Moniteur des appels en cours
 	 */
-	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
+	private final DetailedLoadMeter loadMeter = new DetailedLoadMeter();
 
 	@Resource
 	private WebServiceContext context;
@@ -87,7 +89,12 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 
 	@Override
 	public int getLoad() {
-		return appelsEnCours.intValue();
+		return loadMeter.getLoad();
+	}
+
+	@Override
+	public List<LoadDetail> getLoadDetails() {
+		return loadMeter.getLoadDetails();
 	}
 
 	/**
@@ -100,7 +107,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public List<TiersInfo> searchTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchTiers") SearchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkLimitedReadAccess(params.login);
@@ -124,7 +131,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -139,7 +146,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public Tiers.Type getTiersType(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersType") GetTiersType params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -167,7 +174,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -182,7 +189,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public Tiers getTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiers") GetTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -211,7 +218,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -226,7 +233,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public TiersHisto getTiersPeriode(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersPeriode") GetTiersPeriode params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -255,7 +262,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -270,7 +277,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public TiersHisto getTiersHisto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersHisto") GetTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -299,7 +306,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -311,7 +318,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public BatchTiers getBatchTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiers") GetBatchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -365,7 +372,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -377,7 +384,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public BatchTiersHisto getBatchTiersHisto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiersHisto") GetBatchTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -431,7 +438,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -446,7 +453,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public void setTiersBlocRembAuto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -471,7 +478,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
 	}
@@ -486,7 +493,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public List<EvenementPM> searchEvenementsPM(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchEvenementsPM") SearchEvenementsPM params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -511,7 +518,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -523,7 +530,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public DebiteurInfo getDebiteurInfo(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params) throws
 			BusinessException, AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -552,7 +559,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -564,7 +571,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "QuittancerDeclarations") QuittancerDeclarations params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
-		final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
@@ -596,7 +603,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
 	}
@@ -605,12 +612,11 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	public List<TiersId> getListeCtbModifies(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
-	final long start = System.nanoTime();
+		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
-			final List<TiersId> listIds = service.getListeCtbModifies(params);
-			return listIds;
+			return service.getListeCtbModifies(params);
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -630,7 +636,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		}
 		finally {
 			logout();
-			final long end = System.nanoTime();
+			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
 	}
@@ -654,9 +660,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 */
 	private void login(UserLogin login) throws BusinessException {
 
-		// un nouvel appel est en train de débuter
-		appelsEnCours.incrementAndGet();
-
 		if (login == null || login.userId == null || login.oid == null || login.userId.trim().isEmpty()) {
 			throw new BusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
@@ -669,9 +672,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	 */
 	private void logout() {
 		AuthenticationHelper.resetAuthentication();
-
-		// tout est fini
-		appelsEnCours.decrementAndGet();
 	}
 
 	/**
@@ -957,8 +957,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		if (READ_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
 
-			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
+			// getLoad()+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
 		}
 	}
 
@@ -973,7 +973,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 			final String user = getBasicAuthenticationUser();
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
 		}
 	}
 
