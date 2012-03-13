@@ -35,8 +35,6 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Element de code factorisés entre les managers des evt ech et regPP
- *
- * TODO FRED Factoriser les élements communs entre EvenementCivilEchManagerImpl et EvenementCivilRegPPManagerImpl
  */
 abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 

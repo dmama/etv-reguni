@@ -26,10 +26,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
-/**
- * @inheritDoc
- *
- */
+
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
 	private final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
@@ -53,9 +50,6 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		this.evenementNotificationQueue = evtCivilNotificationQueue;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
@@ -74,35 +68,8 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		return evtView;
 	}
 
-	private void retrieveEvenementAssocie(Long numeroIndividu, EvenementCivilEchDetailView evtView) {
-		List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(numeroIndividu);
-		if (list!=null && list.size() > 0) {
-			EvenementCivilEchBasicInfo evtPrioritaire = list.get(0);
-			evtView.setEvtPrioritaire(evtPrioritaire);
-			evtView.setTotalAutresEvenementsAssocies(list.size() - 1);
-			if (evtView.getEvtId() == evtPrioritaire.getId()) {
-				evtView.setRecyclable(true);
-			}
-		}
-	}
-
-	private void fill(EvenementCivilEch source, EvenementCivilEchDetailView target) {
-		target.setEvtCommentaireTraitement(source.getCommentaireTraitement());
-		target.setEvtDate(source.getDateEvenement());
-		target.setEvtDateTraitement(source.getDateTraitement());
-		target.setEvtEtat(source.getEtat());
-		target.setEvtId(source.getId());
-		target.setEvtType(source.getType());
-		for (EvenementCivilEchErreur err : source.getErreurs() ) {
-			target.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
-		}
-	}
-	/**
-	 * @inheritDoc
-	 *
-	 */
 	@Override
-	@Transactional
+	@Transactional (rollbackFor = Throwable.class)
 	public void recycleEvenementCivil(Long id) {
 		EvenementCivilEch evt = evenementDAO.get(id);
 		if (evt==null) {
@@ -120,12 +87,8 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 	}
 
-	/**
-	 * @inheritDoc
-	 *
-	 */
 	@Override
-	@Transactional
+	@Transactional (rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
 		EvenementCivilEch evt = evenementDAO.get(id);
 		if (evt==null) {
@@ -136,9 +99,6 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException {
@@ -149,6 +109,12 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 			evtsElementListeRechercheView.add(evtElementListeRechercheView);
 		}
 		return evtsElementListeRechercheView;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public int count(EvenementCivilCriteria criterion) {
+		return evenementDAO.count(criterion);
 	}
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {
@@ -176,12 +142,28 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		return eltListe;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public int count(EvenementCivilCriteria criterion) {
-		return evenementDAO.count(criterion);
+	private void retrieveEvenementAssocie(Long numeroIndividu, EvenementCivilEchDetailView evtView) {
+		List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(numeroIndividu);
+		if (list!=null && list.size() > 0) {
+			EvenementCivilEchBasicInfo evtPrioritaire = list.get(0);
+			evtView.setEvtPrioritaire(evtPrioritaire);
+			evtView.setTotalAutresEvenementsAssocies(list.size() - 1);
+			if (evtView.getEvtId() == evtPrioritaire.getId()) {
+				evtView.setRecyclable(true);
+			}
+		}
 	}
+
+	private void fill(EvenementCivilEch source, EvenementCivilEchDetailView target) {
+		target.setEvtCommentaireTraitement(source.getCommentaireTraitement());
+		target.setEvtDate(source.getDateEvenement());
+		target.setEvtDateTraitement(source.getDateTraitement());
+		target.setEvtEtat(source.getEtat());
+		target.setEvtId(source.getId());
+		target.setEvtType(source.getType());
+		for (EvenementCivilEchErreur err : source.getErreurs() ) {
+			target.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
+		}
+	}
+
 }

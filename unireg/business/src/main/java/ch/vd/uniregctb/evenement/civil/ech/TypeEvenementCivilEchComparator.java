@@ -4,7 +4,11 @@ import java.util.Comparator;
 
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-// TODO FRED Javadoc expliquer la logique du tri
+/**
+ * Comparateur sur la priorité entre les types d'evenement.<br/>
+ * Utiliser pour determiner l'ordre de traitement des evenements d'un même individu.
+ */
+
 public class TypeEvenementCivilEchComparator implements Comparator<TypeEvenementCivilEch> {
 	@Override
 	public int compare(TypeEvenementCivilEch o1, TypeEvenementCivilEch o2) {

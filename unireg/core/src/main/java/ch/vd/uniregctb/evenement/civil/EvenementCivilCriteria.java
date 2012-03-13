@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.civil;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -25,64 +27,17 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		EST_EXACTEMENT
 	}
 
-	/**
-	 * Le type de l'evenement
-	 */
 	private TYPE_EVT type;
-
-	/**
-	 * L'état de l'évenement
-	 */
 	private EtatEvenementCivil etat;
-
-	/**
-	 * L'action de l'evenement (seulement pour les evt ech)
-	 */
-	private ActionEvenementCivilEch action;
-
-	/**
-	 * La date de traitement debut
-	 */
+	private ActionEvenementCivilEch action; // seulement utile pour les evts ech
 	private Date dateTraitementDebut;
-
-	/**
-	 * La date de traitement fin
-	 */
 	private Date dateTraitementFin;
-
-	/**
-	 * La date du début de l'évenement
-	 */
-	protected RegDate dateEvenementDebut;
-
-	/**
-	 * La date de fin de l'évenement
-	 */
-	protected RegDate dateEvenementFin;
-
-	/**
-	 * Le type de recherche par nom
-	 */
+	private RegDate dateEvenementDebut;
+	private RegDate dateEvenementFin;
 	private Long numeroIndividu;
-
-	/**
-	 * Le numero de CTB
-	 */
 	private Long numeroCTB;
-
-	/**
-	 * Le type de recherhce par nom
-	 */
 	private TypeRechercheDuNom typeRechercheDuNom;
-
-	/**
-	 * Le nom courrier
-	 */
 	private String nomCourrier;
-
-	/**
-	 * Les autres noms
-	 */
 	private boolean autresNoms;
 
 	public TYPE_EVT getType() {
@@ -113,6 +68,7 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return dateTraitementDebut;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setDateTraitementDebut(Date dateTraitementDebut) {
 		this.dateTraitementDebut = dateTraitementDebut;
 	}
@@ -121,6 +77,7 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return dateTraitementFin;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setDateTraitementFin(Date dateTraitementFin) {
 		this.dateTraitementFin = dateTraitementFin;
 	}
@@ -129,10 +86,11 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return numeroIndividu;
 	}
 
-	public void setNumeroIndividu(Long numeroIndividu) {
+	public void setNumeroIndividu(@Nullable Long numeroIndividu) {
 		this.numeroIndividu = numeroIndividu;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public TypeRechercheDuNom getTypeRechercheDuNom() {
 		return typeRechercheDuNom;
 	}
@@ -149,10 +107,12 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		this.nomCourrier = nomCourrier;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public boolean isAutresNoms() {
 		return autresNoms;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setAutresNoms(boolean autresNoms) {
 		this.autresNoms = autresNoms;
 	}
@@ -161,7 +121,7 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return numeroCTB;
 	}
 
-	public void setNumeroCTB(Long numeroCTB) {
+	public void setNumeroCTB(@Nullable Long numeroCTB) {
 		this.numeroCTB = numeroCTB;
 	}
 
@@ -169,7 +129,7 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return dateEvenementDebut;
 	}
 
-	public void setDateEvenementDebut(RegDate dateEvenementDebut) {
+	public void setRegDateEvenementDebut(RegDate dateEvenementDebut) {
 		this.dateEvenementDebut = dateEvenementDebut;
 	}
 
@@ -177,17 +137,12 @@ public class EvenementCivilCriteria<TYPE_EVT extends Enum<TYPE_EVT> > implements
 		return dateEvenementFin;
 	}
 
-	public void setDateEvenementFin(RegDate dateEvenementFin) {
+	public void setRegDateEvenementFin(RegDate dateEvenementFin) {
 		this.dateEvenementFin = dateEvenementFin;
 	}
 
-	/**
-	 * @return true si aucun paramétre de recherche n'est renseigné. false
-	 *         autrement.
-	 */
-	public boolean isEmpty() {
-		return type == null
-				&& (numeroCTB == null)
-				&& (nomCourrier == null || "".equals(nomCourrier));
+	public boolean isJoinOnPersonnePhysique() {
+		// si on fait une recherche par numero de ctb alors la requete devra avoir une jointure sur Tiers
+		return numeroCTB != null;
 	}
 }
