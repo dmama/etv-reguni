@@ -260,20 +260,31 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 		if (residence != null) {
-			final List<AdresseRCPers> residences = new ArrayList<AdresseRCPers>();
-			for (Residence r : residence) {
-				residences.add(AdresseRCPers.get(r, infraService));
-			}
-			// on boucle une seconde fois pour assigner les dates de fin des adresses qui n'en auraient pas (= cas des déménagements intra-communal, voir SIREF-1617)
-			Collections.sort(residences, new AdresseRCPersComparator());
-			AdresseRCPers nextAdresse = null;
-			for (int i = residences.size() - 1; i >= 0; i--) {
-				AdresseRCPers adresse = residences.get(i);
-				if (nextAdresse != null && nextAdresse.getDateDebut() != null && adresse.getDateFin() == null) {
-					adresse.setDateFin(nextAdresse.getDateDebut().getOneDayBefore());
+
+			// [SIREF-1794] les résidences doivent être triées par date d'arrivée croissant, puis par date de déménagement croissant
+			Collections.sort(residence, new Comparator<Residence>() {
+				@Override
+				public int compare(Residence o1, Residence o2) {
+					// FIXME (rcpers) il faut distinguer les résidences principales des résidences secondaires ET les groupes (par commune) de résidences secondaires entre-elles
+					final RegDate arrivalDate1 = XmlUtils.xmlcal2regdate(o1.getArrivalDate());
+					final RegDate arrivalDate2 = XmlUtils.xmlcal2regdate(o2.getArrivalDate());
+					int c = NullDateBehavior.EARLIEST.compare(arrivalDate1, arrivalDate2);
+					if (c == 0) {
+						final RegDate movingDate1 = XmlUtils.xmlcal2regdate(o1.getDwellingAddress().getMovingDate());
+						final RegDate movingDate2 = XmlUtils.xmlcal2regdate(o2.getDwellingAddress().getMovingDate());
+						c = NullDateBehavior.EARLIEST.compare(movingDate1, movingDate2);
+					}
+					return c;
 				}
-				nextAdresse = adresse;
+			});
+
+			final List<AdresseRCPers> residences = new ArrayList<AdresseRCPers>();
+			for (int i = 0, residenceSize = residence.size(); i < residenceSize; i++) {
+				final Residence r = residence.get(i);
+				final Residence next = i + 1 < residenceSize ? residence.get(i + 1) : null;
+				residences.add(AdresseRCPers.get(r, next, infraService));
 			}
+
 			adresses.addAll(residences);
 		}
 		return adresses;
