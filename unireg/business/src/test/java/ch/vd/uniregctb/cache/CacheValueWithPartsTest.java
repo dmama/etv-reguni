@@ -16,7 +16,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 
 	private final Logger LOGGER = Logger.getLogger(CacheValueWithPartsTest.class);
 
-	private static final int ITERATIONS = 10000;
+	private static final int ITERATIONS = 1000;
 
 	/**
 	 * [SIFISC-4452] Test non-déterministe pour s'assurer qu'il n'y a pas de problème de thread-safety sur l'ajout et la demande de parts sur la classe CacheValueWithParts.
@@ -28,7 +28,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 		for (int i = 0; i < 100; ++i) {
 			try {
 				++i;
-				System.out.println("*** RUN " + i + " ***");
+//				System.out.println("*** RUN " + i + " ***");
 				run();
 			}
 			catch (Exception e) {
@@ -58,7 +58,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
 				setName("writer1");
-				LOGGER.warn("-- writer1 starts ---");
+//				LOGGER.warn("-- writer1 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
 						final Set<Integer> parts = new HashSet<Integer>();
@@ -67,7 +67,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 					}
 				}
 				finally {
-					LOGGER.warn("-- writer1 ends ---");
+//					LOGGER.warn("-- writer1 ends ---");
 				}
 			}
 		};
@@ -77,7 +77,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
 				setName("writer2");
-				LOGGER.warn("-- writer2 starts ---");
+//				LOGGER.warn("-- writer2 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
 						final Set<Integer> parts = new HashSet<Integer>();
@@ -86,7 +86,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 					}
 				}
 				finally {
-					LOGGER.warn("-- writer2 ends ---");
+//					LOGGER.warn("-- writer2 ends ---");
 				}
 			}
 		};
@@ -96,7 +96,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
 				setName("reader");
-				LOGGER.warn("-- reader starts ---");
+//				LOGGER.warn("-- reader starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS * 10; ++i) {
 						final Set<Integer> parts = new HashSet<Integer>();
@@ -110,7 +110,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 					}
 				}
 				finally {
-					LOGGER.warn("-- reader ends ---");
+//					LOGGER.warn("-- reader ends ---");
 				}
 			}
 		};
