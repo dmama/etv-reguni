@@ -58,7 +58,7 @@ public class WebServiceLoadJmxBeanContainer implements InitializingBean {
 					bean = new WebServiceDetailedLoadJmxBeanImpl(serviceName, (DetailedLoadMonitorable) service, statsService);
 				}
 				else {
-					bean = new WebServiceLoadJmxBeanImpl(serviceName, service, statsService);
+					bean = new WebServiceLoadJmxBeanImpl<LoadMonitorable>(serviceName, service, statsService);
 				}
 				exporter.registerManagedResource(bean, ObjectName.getInstance(name));
 			}
