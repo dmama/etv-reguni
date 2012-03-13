@@ -9,6 +9,7 @@ import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import ch.ech.ech0011.v5.Destination;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.DwellingAddress;
 import ch.vd.evd0001.v3.HistoryContact;
@@ -58,11 +59,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(contact, infraService);
 	}
 
-	public static AdresseRCPers get(Residence residence, ServiceInfrastructureService infraService) {
+	public static AdresseRCPers get(Residence residence, @Nullable Residence next, ServiceInfrastructureService infraService) {
 		if (residence == null) {
 			return null;
 		}
-		return new AdresseRCPers(residence, infraService);
+		return new AdresseRCPers(residence, next, infraService);
 	}
 
 	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureService infraService) {
@@ -78,7 +79,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroAppartement = addressInfo.getDwellingNumber();
 		this.numeroTechniqueRue = null; // TODO (msi) check this
 		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
-		this.numeroPostal = addressInfo.getSwissZipCode() == null ? null : String.valueOf(addressInfo.getSwissZipCode());
+		this.numeroPostal = initNPA(addressInfo);
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = initNoOfsPays(addressInfo.getCountry(), infraService);
 		this.rue = addressInfo.getStreet();
@@ -91,12 +92,12 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localisationSuivante = null;
 	}
 
-	public AdresseRCPers(Residence residence, ServiceInfrastructureService infraService) {
+	public AdresseRCPers(Residence residence, @Nullable Residence next, ServiceInfrastructureService infraService) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 
-		this.dateDebut = XmlUtils.xmlcal2regdate(dwellingAddress.getMovingDate() == null ? residence.getArrivalDate() : dwellingAddress.getMovingDate()); // voir SIREF-1617
-		this.dateFin = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
+		this.dateDebut = initDateDebut(residence); // voir SIREF-1617
+		this.dateFin = initDateFin(residence, next); // voir SIREF-1794
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
@@ -115,6 +116,51 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
 		this.localisationPrecedente = initLocalisation(residence.getComesFrom());
 		this.localisationSuivante = initLocalisation(residence.getGoesTo());
+	}
+
+	/**
+	 * [SIREF-1617] Détermine la date de début effective d'une adresse de résidence.
+	 *
+	 * @param residence une adresse de résidence
+	 * @return la date de début effective de l'adresse de résidence
+	 */
+	private static RegDate initDateDebut(Residence residence) {
+		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
+		return XmlUtils.xmlcal2regdate(dwellingAddress.getMovingDate() == null ? residence.getArrivalDate() : dwellingAddress.getMovingDate());
+	}
+
+	/**
+	 * [SIREF-1794] Détermine la date de fin effective d'une adresse de résidence.
+	 *
+	 * @param residence une adresse de résidence
+	 * @param next      l'adresse de résidence qui suit dans l'ordre chronologique
+	 * @return la date de fin effective de l'adresse de résidence
+	 */
+	private static RegDate initDateFin(Residence residence, @Nullable Residence next) {
+		final RegDate df;
+		if (next != null && movingInSameMunicipality(residence, next)) {
+			final RegDate nextMovingDate = XmlUtils.xmlcal2regdate(next.getDwellingAddress().getMovingDate());
+			df = nextMovingDate.getOneDayBefore();
+		}
+		else {
+			df = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
+		}
+		return df;
+	}
+
+	/**
+	 * Détermine si les deux adresses de résidence correspondent au même <i>séjour</i> dans une commune.
+	 * <p/>
+	 * Les dates <i>arrivalDate</i> et <i>DepartureDate</i> exposées par RcPers correspondent aux dates d'arrivée et de départ <b>dans une commune</b> : en cas de déménagement à l'intérieur d'une
+	 * commune, un individu possède deux adresses de résidences avec dates d'arrivée et de départ identiques (puisqu'il n'a pas changé de commune) et la seconde adresse possède une <i>movingInDate</i>.
+	 *
+	 * @param current une adresse de résidence
+	 * @param next    une autre adresse de résidence
+	 * @return <b>vrai</b> si les adresses correspondent au même <i>séjour</i> dans une commune; <b>faux</b> autrement.
+	 */
+	private static boolean movingInSameMunicipality(Residence current, Residence next) {
+		return current.getResidenceMunicipality().getMunicipalityId().equals(next.getResidenceMunicipality().getMunicipalityId()) &&
+				XmlUtils.xmlcal2regdate(current.getArrivalDate()) == XmlUtils.xmlcal2regdate(next.getArrivalDate());
 	}
 
 	private static Localisation initLocalisation(Destination location) {
@@ -146,6 +192,14 @@ public class AdresseRCPers implements Adresse, Serializable {
 			return null;
 		}
 		return infraService.getCommuneByNumeroOfsEtendu(municipalityId, date);
+	}
+
+	private static String initNPA(AddressInformation addressInfo) {
+		final Long swissZipCode = addressInfo.getSwissZipCode();
+		if (swissZipCode != null) {
+			return String.valueOf(swissZipCode);
+		}
+		return addressInfo.getForeignZipCode();
 	}
 
 	private static int initNoOfsPays(String countryCode, ServiceInfrastructureService infraService) {
