@@ -328,7 +328,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		if (etatsCivils != null) {
 			for (EtatCivil etatCivil : etatsCivils) {
 				Long numeroConjoint = ((EtatCivilImpl) etatCivil).getNumeroConjoint();
-				if (numeroConjoint != null && isValidUpTo(etatCivil.getDateDebut(), upTo)) {
+				if (numeroConjoint != null && numeroConjoint > 0 && isValidUpTo(etatCivil.getDateDebut(), upTo)) {
 					list.add(new RelationVersIndividuImpl(numeroConjoint, etatCivil.getDateDebut(), etatCivil.getDateFin()));
 				}
 			}
