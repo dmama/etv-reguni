@@ -2,10 +2,23 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+    <tiles:put name="head">
+        <script type="text/javascript">
+             $(document).ready(function () {
+                 $('#rechercheEvenementEnAttente').change( function () {
+                    if (this.checked) {
+                        $('#tableForm tr.toggle').hide()
+                    } else {
+                        $('#tableForm tr.toggle').show()
+                    }
+                 }).change();
+             });
+        </script>
+    </tiles:put>
 
   	<tiles:put name="title"><fmt:message key="title.recherche.evenements.ech" /></tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/recherche.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<a href="#" onClick="ouvrirAide('<c:url value='/docs/recherche.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
@@ -26,7 +39,7 @@
 			<!-- ID -->
 			<display:column property="id" sortable ="true" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
 			<!-- NO Individu + Conjoint -->
-			<display:column sortable ="true" titleKey="label.individu" sortProperty="numeroIndividuPrincipal" sortName="numeroIndividuPrincipal">
+			<display:column sortable ="true" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
 				${tableEvtsEch.numeroIndividu}
 			</display:column>
 			<!-- NO CTB -->
@@ -63,6 +76,5 @@
 		</display:column>
 			
 		</display:table>
-
 	</tiles:put>
 </tiles:insert>

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 
+@SuppressWarnings("unchecked")
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
 	private final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
@@ -103,18 +103,37 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilEchElementListeRechercheView> evtsElementListeRechercheView = new ArrayList<EvenementCivilEchElementListeRechercheView>();
-		final List<EvenementCivilEch> evts = evenementDAO.find(bean, pagination);
-		for (EvenementCivilEch evt : evts) {
-			final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
-			evtsElementListeRechercheView.add(evtElementListeRechercheView);
+		if (bean.isRechercheEvenementEnAttente()) {
+			// cas spécial, on veut la liste des evenements en attente pour un individu
+			List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu());
+			for (int i = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
+			     i < list.size() && i < (pagination.getNumeroPage()) * pagination.getTaillePage(); ++i) {
+				EvenementCivilEchBasicInfo evt = list.get(i);
+				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
+				evtsElementListeRechercheView.add(evtElementListeRechercheView);
+			}
+		} else {
+			final List<EvenementCivilEch> evts = evenementDAO.find(bean, pagination);
+			for (EvenementCivilEch evt : evts) {
+				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
+				evtsElementListeRechercheView.add(evtElementListeRechercheView);
+			}
 		}
 		return evtsElementListeRechercheView;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public int count(EvenementCivilCriteria criterion) {
-		return evenementDAO.count(criterion);
+	public int count(EvenementCivilEchCriteriaView bean) {
+		if (bean.isRechercheEvenementEnAttente()) {
+			return evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu()).size();
+		} else {
+			return evenementDAO.count(bean);
+		}
+	}
+
+	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEchBasicInfo evt) throws AdresseException {
+		return buildView(evenementDAO.get(evt.getId()));
 	}
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {

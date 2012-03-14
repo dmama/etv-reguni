@@ -57,9 +57,9 @@ public interface EvenementCivilEchManager {
 	/**
 	 * Compte le nombre d'evenements correspondant aux criteres
 	 *
-	 * @param criterion les critères en question
+	 * @param bean les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	public int count(EvenementCivilCriteria criterion);
+	public int count(EvenementCivilEchCriteriaView bean);
 
 }

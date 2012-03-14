@@ -149,7 +149,6 @@ public class EvenementCivilEchController {
 					INITIAL_PAGINATION,
 					manager.find(criteriaInSession, INITIAL_PAGINATION),
 					manager.count(criteriaInSession));
-
 		}
 		return new ModelAndView("evenement/ech/list", model);
 	}

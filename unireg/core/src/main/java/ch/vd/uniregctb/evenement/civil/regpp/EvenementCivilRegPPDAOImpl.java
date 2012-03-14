@@ -134,4 +134,24 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 			}
 		});
 	}
+
+	@Override
+	protected String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
+		String queryWhere = super.buildCriterion(criteria, criterion);
+
+		Long numero = criterion.getNumeroIndividu();
+		if (numero != null) {
+			queryWhere += " and (evenement.numeroIndividuPrincipal = ? or evenement.numeroIndividuConjoint = ?) ";
+			criteria.add(numero);
+			criteria.add(numero);
+		}
+
+		Long numeroCTB = criterion.getNumeroCTB();
+		if (numeroCTB != null) {
+			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = ?";
+			criteria.add(numeroCTB);
+		}
+
+		return queryWhere;
+	}
 }
