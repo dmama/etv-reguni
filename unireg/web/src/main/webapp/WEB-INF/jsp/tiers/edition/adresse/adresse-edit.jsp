@@ -191,13 +191,13 @@
 					<tr class="even" id="div_pays" style="display:none;">
 						<td><fmt:message key="label.paysEtranger" />:</td>
 						<td colspan="3" >
-								<form:hidden path="paysOFS" id="tiers_numeroOfsNationalite"/>
+								<form:hidden path="paysOFS" id="paysOFS"/>
 								<form:input path="paysNpa" id="pays" cssErrorClass="input-with-errors" size ="20" />
 								<form:errors path="paysNpa" cssClass="error"/>
 								<script>
 									$(function() {
 										autocomplete_infra('etatOuTerritoire', '#pays', true, function(item) {
-											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
+											$('#paysOFS').val(item ? item.id1 : null);
 										});
 									});
 								</script>
