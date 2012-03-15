@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.uniregctb.indexer.lucene;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,12 +19,17 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
+import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
+
 /**
  * Wrapper autour d'un index searcher lucene qui permet d'effectuer des recherches selon les besoins d'Unireg.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class LuceneSearcher extends LuceneEngine {
+class LuceneSearcher implements Searcher {
 
 	private static final Logger LOGGER = Logger.getLogger(LuceneSearcher.class);
 
@@ -50,12 +55,10 @@ public class LuceneSearcher extends LuceneEngine {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		close();
+	public DocGetter getDocGetter() {
+		return docGetter;
 	}
 
-	@Override
 	public void close() throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -81,10 +84,12 @@ public class LuceneSearcher extends LuceneEngine {
 		}
 	}
 
+	@Override
 	public Document doc(int i) throws IOException {
 		return is.doc(i);
 	}
 
+	@Override
 	public void searchAll(Query query, Collector collector) throws IndexerException {
 
 		if (query == null) {
@@ -110,6 +115,7 @@ public class LuceneSearcher extends LuceneEngine {
 		}
 	}
 
+	@Override
 	public TopDocs search(Query query, int maxHits) throws IndexerException {
 
 		if (query == null) {
@@ -142,6 +148,7 @@ public class LuceneSearcher extends LuceneEngine {
 		return topDocs;
 	}
 
+	@Override
 	public TopDocs search(String queryString, int maxHits) {
 
 		if (queryString == null || queryString.isEmpty()) {
@@ -150,7 +157,7 @@ public class LuceneSearcher extends LuceneEngine {
 
 		TopDocs hits;
 		try {
-			Analyzer an = getFrenchAnalyzer();
+			Analyzer an = new OurOwnFrenchAnalyzer();
 			QueryParser queryParser = new QueryParser(Version.LUCENE_29, null, an);
 
 			Query query = queryParser.parse(queryString);
@@ -165,23 +172,25 @@ public class LuceneSearcher extends LuceneEngine {
 		return hits;
 	}
 
+	@Override
 	public TopDocs search(Long id, String type, int maxHits) throws IndexerException {
 		// String query = "+" + F_ENTITYID+ ":" + id + " +" + F_DOCTYPE + ":" +
 		// type;
 		BooleanQuery query = new BooleanQuery();
-		TermQuery sub = new TermQuery(new Term(F_ENTITYID, id.toString()));
+		TermQuery sub = new TermQuery(new Term(LuceneHelper.F_ENTITYID, id.toString()));
 		query.add(sub, BooleanClause.Occur.MUST);
-		sub = new TermQuery(new Term(F_DOCTYPE, type));
+		sub = new TermQuery(new Term(LuceneHelper.F_DOCTYPE, type));
 		query.add(sub, BooleanClause.Occur.MUST);
 		return search(query, maxHits);
 	}
 
+	@Override
 	public TopDocs search(String typeName, List<String> fieldNames, List<String> fieldValues, int maxHits) throws IndexerException {
 
 		StringBuilder queryString = new StringBuilder();
 
 		if (typeName != null) {
-			queryString.append(F_DOCTYPE).append(":").append(typeName);
+			queryString.append(LuceneHelper.F_DOCTYPE).append(":").append(typeName);
 		}
 		for (int i = 0; i < fieldNames.size(); i++) {
 			if (queryString.length() > 0) {
@@ -193,6 +202,7 @@ public class LuceneSearcher extends LuceneEngine {
 		return search(queryString.toString(), maxHits);
 	}
 
+	@Override
 	public int numDocs() {
 		return directoryReader.numDocs();
 	}

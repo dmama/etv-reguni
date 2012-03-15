@@ -36,7 +36,7 @@
 	</bean>
 
 	<!-- File based -->
-	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.fs.FSDirectoryProvider" lazy-init="true">
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.lucene.FSIndexProvider" lazy-init="true">
 		<constructor-arg value="${testprop.indexer.globalIndexPath}" />
 	</bean>
 

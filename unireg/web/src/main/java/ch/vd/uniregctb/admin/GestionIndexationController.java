@@ -21,8 +21,8 @@ import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.LuceneEngine;
 import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -179,7 +179,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 						continue; // rien de mieux à faire
 					}
 					IndexDocument indexDocument = new IndexDocument();
-					indexDocument.setEntityId(doc.get(LuceneEngine.F_ENTITYID));
+					indexDocument.setEntityId(doc.get(LuceneHelper.F_ENTITYID));
 					indexDocument.setNomCourrier1(doc.get(TiersIndexableData.NOM1));
 					indexDocument.setNomCourrier2(doc.get(TiersIndexableData.NOM2));
 					indexDocument.setDateNaissance(doc.get(TiersIndexableData.DATE_NAISSANCE));

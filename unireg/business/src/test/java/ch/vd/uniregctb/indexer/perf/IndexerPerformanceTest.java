@@ -145,9 +145,9 @@ public class IndexerPerformanceTest extends BusinessTest {
 //				try {
 //					for (DocHit hit : hits) {
 //						Document doc = docGetter.get(hit.doc);
-//						String id = doc.get(LuceneEngine.F_DOCID);
-//						String type = doc.get(LuceneEngine.F_DOCTYPE);
-//						String entityId = doc.get(LuceneEngine.F_ENTITYID);
+//						String id = doc.get(LuceneHelper.F_DOCID);
+//						String type = doc.get(LuceneHelper.F_DOCTYPE);
+//						String entityId = doc.get(LuceneHelper.F_ENTITYID);
 //						String nom = doc.get("hostindividuNOM");
 //						// String descr = h.get("DESCR");
 //						hit = null;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.uniregctb.indexer.lucene;
 
 import java.io.StringReader;
 
@@ -14,66 +14,32 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
+import ch.vd.uniregctb.indexer.OurOwnStandardAnalyzer;
+
 /**
  * Classe aidant a transformer les criteres de recherche en Lucene Query
  *
  * @author <a href="mailto:jean-eric.cuendet@vd.ch">Jean-Eric Cuendet</a>
  */
-public abstract class LuceneEngine {
+public abstract class LuceneHelper {
 
-	//private static final Logger LOGGER = Logger.getLogger(LuceneEngine.class);
-
-	/**
-	 * Champ Lucene index nomme DOCTYPE
-	 */
 	public static final String F_DOCTYPE = "DOCTYPE";
-
-	/**
-	 * Champ Lucene index nomme DOCSUBTYPE
-	 */
 	public static final String F_DOCSUBTYPE = "DOCSUBTYPE";
-
-	/**
-	 * Champ Lucene index nomme DOCID
-	 */
 	public static final String F_DOCID = "DOCID";
-
-	/**
-	 * Champ Lucene index nomme ENTITYID
-	 */
 	public static final String F_ENTITYID = "ENTITYID";
 
-	/**
-	 * Constructeur
-	 */
-	public LuceneEngine() {
+	private LuceneHelper() {
 	}
 
-	/**
-	 * @throws IndexerException
-	 */
-	public void close() throws IndexerException {
-
-	}
-
-	/**
-	 * @param value
-	 * @return
-	 * @throws IndexerException
-	 */
-	protected static TokenStream getFrenchTokenStream(String value) throws IndexerException {
+	private static TokenStream getFrenchTokenStream(String value) throws IndexerException {
 
 		Analyzer an = getFrenchAnalyzer();
 		return getTokenStream(value, an);
 	}
 
-	/**
-	 * @param value
-	 * @param an
-	 * @return
-	 * @throws IndexerException
-	 */
-	protected static TokenStream getTokenStream(String value, Analyzer an) throws IndexerException {
+	private static TokenStream getTokenStream(String value, Analyzer an) throws IndexerException {
 
 		TokenStream stream = null;
 		try {
@@ -358,7 +324,7 @@ public abstract class LuceneEngine {
 	/**
 	 * @return
 	 */
-	protected static Analyzer getFrenchAnalyzer() {
+	private static Analyzer getFrenchAnalyzer() {
 		// return new StandardAnalyzer();
 		// return new SnowballAnalyzer("French",
 		// FrenchAnalyzer.FRENCH_STOP_WORDS),
@@ -369,7 +335,7 @@ public abstract class LuceneEngine {
 	/**
 	 * @return
 	 */
-	protected static Analyzer getStandardAnalyzer() {
+	private static Analyzer getStandardAnalyzer() {
 		return new OurOwnStandardAnalyzer();
 	}
 }

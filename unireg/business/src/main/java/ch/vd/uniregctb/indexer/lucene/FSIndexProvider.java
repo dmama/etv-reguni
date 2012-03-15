@@ -1,21 +1,18 @@
-package ch.vd.uniregctb.indexer.fs;
+package ch.vd.uniregctb.indexer.lucene;
 
 import java.io.File;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.store.FSDirectory;
 
-import ch.vd.uniregctb.indexer.Directory;
-import ch.vd.uniregctb.indexer.DirectoryProvider;
 import ch.vd.uniregctb.indexer.IndexerException;
 
-public class FSDirectoryProvider extends DirectoryProvider {
+public class FSIndexProvider implements IndexProvider {
 
-	private static final Logger LOGGER = Logger.getLogger(FSDirectoryProvider.class);
+	private static final Logger LOGGER = Logger.getLogger(FSIndexProvider.class);
 
 	private final String indexPath;
 
-	public FSDirectoryProvider(String path) throws IndexerException {
+	public FSIndexProvider(String path) throws IndexerException {
 		indexPath = path;
 
 		LOGGER.info("L'index Lucene est sauvé dans le système de fichiers: " + indexPath);
@@ -27,9 +24,8 @@ public class FSDirectoryProvider extends DirectoryProvider {
 	}
 
 	@Override
-	public Directory getNewDirectory() throws Exception {
-		final FSDirectory dir = FSDirectory.open(new File(indexPath));
-		return new Directory(dir);
+	public LuceneIndex getNewIndex() throws Exception {
+		return new LuceneIndex(new File(indexPath));
 	}
 
 	@Override
