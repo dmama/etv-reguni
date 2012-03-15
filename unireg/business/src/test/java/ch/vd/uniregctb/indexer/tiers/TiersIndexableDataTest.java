@@ -14,7 +14,7 @@ import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.SearchCallback;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -35,7 +35,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		globalIndex = new GlobalIndex(new FSDirectoryProvider("target/index-TiersIndexableDataTest"));
+		globalIndex = new GlobalIndex(new FSIndexProvider("target/index-TiersIndexableDataTest"));
 		globalIndex.afterPropertiesSet();
 		globalIndex.overwriteIndex();
 

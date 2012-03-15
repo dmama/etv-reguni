@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
@@ -18,9 +20,12 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
+import ch.vd.uniregctb.indexer.lucene.IndexProvider;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -183,16 +188,16 @@ public class GlobalIndexTest extends BusinessTest {
 
 		int before = globalIndex.getApproxDocCount();
 
-		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
 
 		globalIndex.indexEntity(new SimpleData(123456L, "TheType", null, "value1"));
-		assertHits(1, LuceneEngine.F_DOCID + ":TheType-123456");
+		assertHits(1, LuceneHelper.F_DOCID + ":TheType-123456");
 
 		int after1 = globalIndex.getApproxDocCount();
 		assertEquals(after1, before + 1);
 
 		globalIndex.indexEntity(new SimpleData(654321L, "TheType2", null, "value1"));
-		assertHits(1, LuceneEngine.F_DOCID + ":TheType2-654321");
+		assertHits(1, LuceneHelper.F_DOCID + ":TheType2-654321");
 
 		int after2 = globalIndex.getApproxDocCount();
 		assertEquals(after2, before + 2);
@@ -204,9 +209,9 @@ public class GlobalIndexTest extends BusinessTest {
 	@Test
 	public void testSearchStringQuery() throws Exception {
 
-		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
-		assertHits(2, LuceneEngine.F_ENTITYID + ":1234");
-		assertHits(5, LuceneEngine.F_DOCTYPE + ':' + TYPE);
+		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(2, LuceneHelper.F_ENTITYID + ":1234");
+		assertHits(5, LuceneHelper.F_DOCTYPE + ':' + TYPE);
 		assertHits(1, "DESCR:SoCiété");
 		assertHits(2, "NOM:jean");
 		assertHits(1, "NOM:GARS");
@@ -261,7 +266,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Wildcard Query
 		{
-			Term term = LuceneEngine.getTerm("DESCR", "POR");
+			Term term = LuceneHelper.getTerm("DESCR", "POR");
 			term = new Term(term.field(), '*' + term.text() + '*');
 			WildcardQuery baseQuery = new WildcardQuery(term);
 			assertHits(2, baseQuery);
@@ -269,7 +274,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Wildcard Query
 		{
-			Term term = LuceneEngine.getTerm("NOM", "DeT");
+			Term term = LuceneHelper.getTerm("NOM", "DeT");
 			term = new Term(term.field(), '*' + term.text());
 			WildcardQuery baseQuery = new WildcardQuery(term);
 			assertHits(2, baseQuery);
@@ -285,22 +290,22 @@ public class GlobalIndexTest extends BusinessTest {
 
 		{
 			BooleanQuery baseQuery = new BooleanQuery();
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("NOM", "CuendeT")), BooleanClause.Occur.MUST);
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("RAISON", "Sage")), BooleanClause.Occur.MUST);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("NOM", "CuendeT")), BooleanClause.Occur.MUST);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("RAISON", "Sage")), BooleanClause.Occur.MUST);
 			assertHits(1, baseQuery);
 		}
 
 		{
 			BooleanQuery baseQuery = new BooleanQuery();
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("NOM", " ")), BooleanClause.Occur.SHOULD);
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("DESCR", "beuRRe")), BooleanClause.Occur.SHOULD);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("NOM", " ")), BooleanClause.Occur.SHOULD);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("DESCR", "beuRRe")), BooleanClause.Occur.SHOULD);
 			assertHits(1, baseQuery);
 		}
 
 		{
 			BooleanQuery baseQuery = new BooleanQuery();
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("NOM", "Cuendet")), BooleanClause.Occur.MUST);
-			baseQuery.add(new TermQuery(LuceneEngine.getTerm("RAISON", "saGE")), BooleanClause.Occur.SHOULD);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("NOM", "Cuendet")), BooleanClause.Occur.MUST);
+			baseQuery.add(new TermQuery(LuceneHelper.getTerm("RAISON", "saGE")), BooleanClause.Occur.SHOULD);
 			assertHits(2, baseQuery);
 		}
 
@@ -312,10 +317,10 @@ public class GlobalIndexTest extends BusinessTest {
 			BooleanQuery subQuery2 = new BooleanQuery();
 			baseQuery.add(subQuery2, BooleanClause.Occur.SHOULD);
 
-			subQuery1.add(new TermQuery(LuceneEngine.getTerm("NOM", "Cuendet")), BooleanClause.Occur.MUST);
-			subQuery1.add(new TermQuery(LuceneEngine.getTerm("RAISON", "saGE")), BooleanClause.Occur.MUST);
-			subQuery2.add(new TermQuery(LuceneEngine.getTerm("NOM", "jean")), BooleanClause.Occur.MUST);
-			subQuery2.add(new TermQuery(LuceneEngine.getTerm("RAISON", "sope")), BooleanClause.Occur.MUST);
+			subQuery1.add(new TermQuery(LuceneHelper.getTerm("NOM", "Cuendet")), BooleanClause.Occur.MUST);
+			subQuery1.add(new TermQuery(LuceneHelper.getTerm("RAISON", "saGE")), BooleanClause.Occur.MUST);
+			subQuery2.add(new TermQuery(LuceneHelper.getTerm("NOM", "jean")), BooleanClause.Occur.MUST);
+			subQuery2.add(new TermQuery(LuceneHelper.getTerm("RAISON", "sope")), BooleanClause.Occur.MUST);
 
 			assertHits(2, baseQuery);
 		}
@@ -326,10 +331,10 @@ public class GlobalIndexTest extends BusinessTest {
 			BooleanQuery subQuery1 = new BooleanQuery();
 			BooleanQuery subQuery2 = new BooleanQuery();
 
-			subQuery1.add(new TermQuery(LuceneEngine.getTerm("NOM", "Cuendet")), BooleanClause.Occur.SHOULD);
-			subQuery1.add(new TermQuery(LuceneEngine.getTerm("NOM", "lehmann")), BooleanClause.Occur.SHOULD);
+			subQuery1.add(new TermQuery(LuceneHelper.getTerm("NOM", "Cuendet")), BooleanClause.Occur.SHOULD);
+			subQuery1.add(new TermQuery(LuceneHelper.getTerm("NOM", "lehmann")), BooleanClause.Occur.SHOULD);
 			baseQuery.add(subQuery1, BooleanClause.Occur.MUST);
-			subQuery2.add(new TermQuery(LuceneEngine.getTerm("DESCR", "solutions")), BooleanClause.Occur.MUST);
+			subQuery2.add(new TermQuery(LuceneHelper.getTerm("DESCR", "solutions")), BooleanClause.Occur.MUST);
 			baseQuery.add(subQuery2, BooleanClause.Occur.MUST_NOT);
 
 			assertHits(1, baseQuery);
@@ -343,7 +348,7 @@ public class GlobalIndexTest extends BusinessTest {
 		globalIndex.overwriteIndex();
 
 		// pas de données
-		assertHits(0, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(0, LuceneHelper.F_ENTITYID + ":123456");
 		assertEquals(0, globalIndex.deleteDuplicate());
 	}
 
@@ -355,12 +360,12 @@ public class GlobalIndexTest extends BusinessTest {
 		// des données non-dupliquées
 		globalIndex.indexEntity(new SimpleData(123L, "test1", null, "value1"));
 		globalIndex.indexEntity(new SimpleData(456L, "test2", null, "value2"));
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":456");
 
 		assertEquals(0, globalIndex.deleteDuplicate());
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":456");
 	}
 
 	@Test
@@ -371,10 +376,10 @@ public class GlobalIndexTest extends BusinessTest {
 		// une donnée à double
 		globalIndex.indexEntity(new SimpleData(123456L, "test1", null, "value1"));
 		globalIndex.indexEntity(new SimpleData(123456L, "test2", null, "value2"));
-		assertHits(2, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(2, LuceneHelper.F_ENTITYID + ":123456");
 
 		assertEquals(1, globalIndex.deleteDuplicate());
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123456");
 	}
 
 	@Test
@@ -386,10 +391,10 @@ public class GlobalIndexTest extends BusinessTest {
 		globalIndex.indexEntity(new SimpleData(123456L, "test1", null, "value1"));
 		globalIndex.removeEntity(123456L, "test1");
 		globalIndex.indexEntity(new SimpleData(123456L, "test2", null, "value2"));
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123456");
 
 		assertEquals(0, globalIndex.deleteDuplicate()); // le document effacé ne doit pas être considéré comme un doublon
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123456");
 	}
 
 	@Test
@@ -404,18 +409,18 @@ public class GlobalIndexTest extends BusinessTest {
 		globalIndex.indexEntity(new SimpleData(123456L, "test4", null, "value4"));
 		globalIndex.indexEntity(new SimpleData(123555L, "test5", null, "value5"));
 		globalIndex.indexEntity(new SimpleData(123666L, "test6", null, "value6"));
-		assertHits(1, LuceneEngine.F_ENTITYID + ":333");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":444");
-		assertHits(2, LuceneEngine.F_ENTITYID + ":123456");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123555");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123666");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":333");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":444");
+		assertHits(2, LuceneHelper.F_ENTITYID + ":123456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123555");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123666");
 
 		assertEquals(1, globalIndex.deleteDuplicate());
-		assertHits(1, LuceneEngine.F_ENTITYID + ":333");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":444");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123456");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123555");
-		assertHits(1, LuceneEngine.F_ENTITYID + ":123666");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":333");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":444");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123456");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123555");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":123666");
 	}
 
 	/**
@@ -429,10 +434,10 @@ public class GlobalIndexTest extends BusinessTest {
 	public void testRemoveDocumentNeCherchePlus() throws IndexerException, ParseException {
 
 		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
 
 		// 2 hits avec ID=2345
-		assertHits(2, LuceneEngine.F_ENTITYID + ":2345");
+		assertHits(2, LuceneHelper.F_ENTITYID + ":2345");
 
 		// Remove one HIT (ID=1234 AND type=DocType)
 		{
@@ -444,10 +449,10 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(0, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
 
 		// We should have 2 documents with ID=2345
-		assertHits(2, LuceneEngine.F_ENTITYID + ":2345");
+		assertHits(2, LuceneHelper.F_ENTITYID + ":2345");
 
 		// Optimize => docCount est juste maintenant
 		{
@@ -466,7 +471,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertEquals(data.length, dc);
 
 		// Un hit avec TYPE=TYPE and ID=2345
-		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-2345");
+		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-2345");
 
 		// 2 hits avec ID=1234
 		assertHits(2, "NUMERO:1234");
@@ -475,7 +480,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(2, "NUMERO:2345");
 
 		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
 
 		// Remove one HIT (ID=1234 AND type=DocType)
 		{
@@ -488,10 +493,10 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneEngine.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(0, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
 
 		// We should have one document with ID=2345
-		assertHits(1, LuceneEngine.F_ENTITYID + ":1234");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":1234");
 
 		// Remove 2 hits (ID=2345)
 		{
@@ -638,7 +643,7 @@ public class GlobalIndexTest extends BusinessTest {
 	public void testMultiprocessAccess() throws Exception {
 
 		// crée un index local de manière à pouvoir utiliser les méthodes protégées
-		final DirectoryProvider provider = new FSDirectoryProvider(indexPath);
+		final IndexProvider provider = new FSIndexProvider(indexPath);
 		final GlobalIndex localIndex = new GlobalIndex(provider);
 		localIndex.afterPropertiesSet();
 
@@ -646,22 +651,36 @@ public class GlobalIndexTest extends BusinessTest {
 			@Override
 			public void run() {
 
-				LuceneWriter writer = null;
+				IndexWriter writer = null;
 				try {
-					writer = new LuceneWriter(localIndex.directory.directory, false);
+					writer = localIndex.index.createDetachedWriterForTestingOnly();
 					for (int i = 1; i < 10; ++i) {
 						for (Data d : data) {
 							/*
-							 * on contourne la synchronisation de globalIndex.indexEntity(indexable), de manière simuler plusieurs processus
+							 * on contourne la synchronisation de la classe LuceneIndex, de manière simuler plusieurs processus
 							 * utilisant des writers
 							 */
-							writer.index(d);
+							Document doc = d.asDoc();
+							Assert.notNull(doc);
+							writer.addDocument(doc);
 						}
 					}
 				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
 				finally {
-					if (writer != null) {
+					safeClose(writer);
+				}
+			}
+
+			private void safeClose(IndexWriter writer) {
+				if (writer != null) {
+					try {
 						writer.close();
+					}
+					catch (IOException e) {
+						throw new RuntimeException(e);
 					}
 				}
 			}

@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.indexer.LuceneEngine;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
@@ -55,47 +55,47 @@ public class QueryConstructor {
 			for (TypeTiers typeTiers : set) {
 				switch (typeTiers) {
 				case DEBITEUR_PRESTATION_IMPOSABLE:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
 					break;
 				case HABITANT:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
 					break;
 				case NON_HABITANT:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
 					break;
 				case MENAGE_COMMUN:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					break;
 				case ENTREPRISE:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
 					break;
 				case AUTRE_COMMUNAUTE:
 					break;
 				case ETABLISSEMENT:
 					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
-					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case COLLECTIVITE_ADMINISTRATIVE:
-					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
 					break;
 				case CONTRIBUABLE:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
 					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
-					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
-					// query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
 					break;
 				case PERSONNE_PHYSIQUE:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
 					break;
 				case CONTRIBUABLE_PP:
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					break;
 				default:
 					throw new IndexerException("Type de tiers inconnu = [" + typeTiers + ']');
@@ -112,7 +112,7 @@ public class QueryConstructor {
 		// Numero CTB ou individu ou AncienNumeroSourcier
 		if (criteria.getNumero() != null) {
 			BooleanQuery query = new BooleanQuery();
-			query.add(new TermQuery(new Term(LuceneEngine.F_ENTITYID, criteria.getNumero().toString())), should);
+			query.add(new TermQuery(new Term(LuceneHelper.F_ENTITYID, criteria.getNumero().toString())), should);
 			query.add(new TermQuery(new Term(TiersIndexableData.NUMEROS, criteria.getNumero().toString())), should);
 			fullQuery.add(query, must);
 		}
@@ -130,11 +130,11 @@ public class QueryConstructor {
 			case PHONETIQUE:
 				// Fuzzy
 				{
-					final Query subQuery = LuceneEngine.getTermsFuzzy(TiersIndexableData.NOM_RAISON, nomCourrier);
+					final Query subQuery = LuceneHelper.getTermsFuzzy(TiersIndexableData.NOM_RAISON, nomCourrier);
 					if (subQuery != null) {
 						query.add(subQuery, should);
 					}
-					final BooleanQuery subQuery2 = LuceneEngine.getTermsFuzzy(TiersIndexableData.AUTRES_NOM, nomCourrier);
+					final BooleanQuery subQuery2 = LuceneHelper.getTermsFuzzy(TiersIndexableData.AUTRES_NOM, nomCourrier);
 					if (subQuery2 != null) {
 						query.add(subQuery2, should);
 					}
@@ -143,11 +143,11 @@ public class QueryConstructor {
 
 			case EST_EXACTEMENT:
 				{
-					final Query subQuery = LuceneEngine.getTermsExact(TiersIndexableData.NOM_RAISON, nomCourrier);
+					final Query subQuery = LuceneHelper.getTermsExact(TiersIndexableData.NOM_RAISON, nomCourrier);
 					if (subQuery != null) {
 						query.add(subQuery, should);
 					}
-					final Query subQuery2 = LuceneEngine.getTermsExact(TiersIndexableData.AUTRES_NOM, nomCourrier);
+					final Query subQuery2 = LuceneHelper.getTermsExact(TiersIndexableData.AUTRES_NOM, nomCourrier);
 					if (subQuery2 != null) {
 						query.add(subQuery2, should);
 					}
@@ -157,11 +157,11 @@ public class QueryConstructor {
 			case CONTIENT:
 			default:
 				{
-					final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, tokenMinLength);
+					final Query subQuery = LuceneHelper.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, tokenMinLength);
 					if (subQuery != null) {
 						query.add(subQuery, should);
 					}
-					final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, tokenMinLength);
+					final Query subQuery2 = LuceneHelper.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, tokenMinLength);
 					if (subQuery2 != null) {
 						query.add(subQuery2, should);
 					}
@@ -186,7 +186,7 @@ public class QueryConstructor {
 			 */
 
 			final BooleanQuery query = new BooleanQuery();
-			final Query queryForPrincipal = LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor);
+			final Query queryForPrincipal = LuceneHelper.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor);
 			if (queryForPrincipal != null) {
 				query.add(queryForPrincipal, should);
 			}
@@ -195,7 +195,7 @@ public class QueryConstructor {
 			}
 			else {
 				// Recherche sur tous les fors (principaux, secondaires, inactifs, ...)
-				final Query queryAutresFors = LuceneEngine.getTermsContient(TiersIndexableData.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0);
+				final Query queryAutresFors = LuceneHelper.getTermsContient(TiersIndexableData.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0);
 				if (queryAutresFors != null) {
 					query.add(queryAutresFors, should);
 				}
@@ -211,7 +211,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (StringUtils.isNotBlank(criteria.getLocaliteOuPays())) { // [UNIREG-2592]
 			final String nomLocaliteOuPays = criteria.getLocaliteOuPays().toLowerCase();
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays, tokenMinLength);
+			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays, tokenMinLength);
 			if (q != null) {
 				fullQuery.add(q, must);
 			}
@@ -223,7 +223,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (StringUtils.isNotBlank(criteria.getNpa())) { // [UNIREG-2592]
 			final String npa = criteria.getNpa();
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa, 0);
+			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.NPA, npa, 0);
 			if (q != null) {
 				fullQuery.add(q, must);
 			}
@@ -235,7 +235,7 @@ public class QueryConstructor {
 		// Numero AVS
 		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) { // [UNIREG-2592]
 			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
+			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
 			if (q != null) {
 				fullQuery.add(q, must);
 			}
@@ -246,7 +246,7 @@ public class QueryConstructor {
 
 		// Date de naissance
 		if (criteria.getDateNaissance() != null) {
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()), 0);
+			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()), 0);
 			fullQuery.add(q, must);
 		}
 	}
@@ -263,12 +263,12 @@ public class QueryConstructor {
 		if (filter.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
 			// restriction des DPI
-			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
+			query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
 			fullQuery.add(query, mustNot);
 			// restriction des gris
 			query = new BooleanQuery();
-			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), must);
-			query.add(LuceneEngine.getTermsExact(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name()), must);
+			query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), must);
+			query.add(LuceneHelper.getTermsExact(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name()), must);
 			fullQuery.add(query, mustNot);
 			// restriction des I107
 			query = new BooleanQuery();

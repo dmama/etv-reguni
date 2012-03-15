@@ -23,11 +23,11 @@ import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.LuceneEngine;
 import ch.vd.uniregctb.indexer.SearchAllCallback;
 import ch.vd.uniregctb.indexer.SearchCallback;
 import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersFilter;
@@ -132,24 +132,24 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			QueryConstructor.addTiersActif(query, filter);
 		}
 
-		final Query queryNumeros = LuceneEngine.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords);
+		final Query queryNumeros = LuceneHelper.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords);
 		if (queryNumeros != null) {
 			query.add(queryNumeros, BooleanClause.Occur.SHOULD);
 		}
 
 		// critère sur le différents noms
-		final Query subQuery = LuceneEngine.getAnyTermsContient(TiersIndexableData.NOM_RAISON, keywords, tokenMinLength);
+		final Query subQuery = LuceneHelper.getAnyTermsContient(TiersIndexableData.NOM_RAISON, keywords, tokenMinLength);
 		if (subQuery != null) {
 			subQuery.setBoost(5.0f); // on booste la recherche sur le nom de famille / raison sociale
 			query.add(subQuery, BooleanClause.Occur.SHOULD);
 		}
-		final Query subQuery2 = LuceneEngine.getAnyTermsContient(TiersIndexableData.AUTRES_NOM, keywords, tokenMinLength);
+		final Query subQuery2 = LuceneHelper.getAnyTermsContient(TiersIndexableData.AUTRES_NOM, keywords, tokenMinLength);
 		if (subQuery2 != null) {
 			query.add(subQuery2, BooleanClause.Occur.SHOULD);
 		}
 
 		// critère sur la localité ou le pays
-		final Query q = LuceneEngine.getAnyTermsCommence(TiersIndexableData.LOCALITE_PAYS, keywords, tokenMinLength);
+		final Query q = LuceneHelper.getAnyTermsCommence(TiersIndexableData.LOCALITE_PAYS, keywords, tokenMinLength);
 		if (q != null) {
 			query.add(q, BooleanClause.Occur.SHOULD);
 		}
@@ -417,7 +417,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	}
 
 	private static long extractTiersId(final Document doc) {
-		final String idAsString = doc.get(LuceneEngine.F_ENTITYID);
+		final String idAsString = doc.get(LuceneHelper.F_ENTITYID);
 		return Long.parseLong(idAsString);
 	}
 

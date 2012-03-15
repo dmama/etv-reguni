@@ -7,7 +7,8 @@ import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -24,7 +25,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() throws Exception {
 
-		FSDirectoryProvider directory = new FSDirectoryProvider(path);
+		FSIndexProvider directory = new FSIndexProvider(path);
 		globalIndex = new GlobalIndex(directory);
 		globalIndex.afterPropertiesSet();
 		globalIndex.overwriteIndex();
@@ -51,8 +52,8 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 	public void testPrenom() throws Exception {
 
 		BooleanQuery booleanQuery = new BooleanQuery();
-		//booleanQuery.add(LuceneEngine.getTermsExact("NomCourier", "Dardare"), BooleanClause.Occur.MUST);
-		booleanQuery.add(LuceneEngine.getTermsExact("Prenom", "a"), BooleanClause.Occur.MUST);
+		//booleanQuery.add(LuceneHelper.getTermsExact("NomCourier", "Dardare"), BooleanClause.Occur.MUST);
+		booleanQuery.add(LuceneHelper.getTermsExact("Prenom", "a"), BooleanClause.Occur.MUST);
 		assertHits(1, booleanQuery);
 	}
 
@@ -61,19 +62,19 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsExact("NomCourier", "Dardare"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsExact("NomCourier", "Dardare"), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsExact("NomCourier", "Dardar"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsExact("NomCourier", "Dardar"), BooleanClause.Occur.MUST);
 			assertHits(0, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("NomCourier", "D", 0), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsCommence("NomCourier", "D", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}
@@ -83,25 +84,25 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsExact("Nom", "U"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsExact("Nom", "U"), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsExact("Nom", "U2"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsExact("Nom", "U2"), BooleanClause.Occur.MUST);
 			assertHits(0, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Nom", "U", 0), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsCommence("Nom", "U", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsContient("Nom", "u", 0), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsContient("Nom", "u", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
@@ -112,13 +113,13 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsExact("Champ1", "essui"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsExact("Champ1", "essui"), BooleanClause.Occur.MUST);
 			assertHits(0, booleanQuery);
 		}
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Champ1", "essui", 0), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneHelper.getTermsCommence("Champ1", "essui", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}

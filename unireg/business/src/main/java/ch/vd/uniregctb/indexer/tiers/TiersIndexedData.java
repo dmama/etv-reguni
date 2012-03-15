@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
-import ch.vd.uniregctb.indexer.LuceneEngine;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 public class TiersIndexedData implements Serializable {
 
@@ -42,8 +42,8 @@ public class TiersIndexedData implements Serializable {
 	private final Integer noOfsCommuneDomicile;
 
 	public TiersIndexedData(Document doc) {
-		tiersType = getDocValue(LuceneEngine.F_DOCSUBTYPE, doc);
-		numero = getDocValue(LuceneEngine.F_ENTITYID, doc);
+		tiersType = getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
+		numero = getDocValue(LuceneHelper.F_ENTITYID, doc);
 		dateNaissance = getDocValue(TiersIndexableData.DATE_NAISSANCE, doc);
 		regDateNaissance = indexStringToDateNaissance(dateNaissance, tiersType);
 		dateDeces = getDocValue(TiersIndexableData.DATE_DECES, doc);
