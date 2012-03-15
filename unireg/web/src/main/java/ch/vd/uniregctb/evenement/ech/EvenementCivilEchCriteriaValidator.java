@@ -20,7 +20,7 @@ public class EvenementCivilEchCriteriaValidator extends EvenementCivilCriteriaVa
 		super.validate(target, errors);
 		EvenementCivilEchCriteriaView bean = (EvenementCivilEchCriteriaView) target;
 
-		if (bean.isRechercheEvenementEnAttente() && StringUtils.isBlank(bean.getNumeroIndividuFormatte())) {
+		if (bean.isModeLotEvenement() && StringUtils.isBlank(bean.getNumeroIndividuFormatte())) {
 			errors.rejectValue("numeroIndividuFormatte", "error.champ.obligatoire");
 		}
 

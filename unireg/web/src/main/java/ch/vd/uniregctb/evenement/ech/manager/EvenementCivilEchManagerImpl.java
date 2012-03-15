@@ -103,7 +103,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilEchElementListeRechercheView> evtsElementListeRechercheView = new ArrayList<EvenementCivilEchElementListeRechercheView>();
-		if (bean.isRechercheEvenementEnAttente()) {
+		if (bean.isModeLotEvenement()) {
 			// cas spécial, on veut la liste des evenements en attente pour un individu
 			List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu());
 			for (int i = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
@@ -125,7 +125,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@Override
 	@Transactional(readOnly = true)
 	public int count(EvenementCivilEchCriteriaView bean) {
-		if (bean.isRechercheEvenementEnAttente()) {
+		if (bean.isModeLotEvenement()) {
 			return evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu()).size();
 		} else {
 			return evenementDAO.count(bean);

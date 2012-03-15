@@ -5,7 +5,7 @@
     <tiles:put name="head">
         <script type="text/javascript">
              $(document).ready(function () {
-                 $('#rechercheEvenementEnAttente').change( function () {
+                 $('#modeLotEvenement').change( function () {
                     if (this.checked) {
                         $('#tableForm tr.toggle').hide()
                     } else {
@@ -37,9 +37,9 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.evenements.trouves" /></span></display:setProperty>
 
 			<!-- ID -->
-			<display:column property="id" sortable ="true" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
+			<display:column property="id" sortable ="${not command.modeLotEvenement}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
 			<!-- NO Individu + Conjoint -->
-			<display:column sortable ="true" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
+			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
 				${tableEvtsEch.numeroIndividu}
 			</display:column>
 			<!-- NO CTB -->
@@ -53,17 +53,17 @@
 				<c:out value="${tableEvtsEch.nom}" />
 			</display:column>
 			<!-- Type evt -->
-			<display:column sortable ="true" titleKey="label.type.evenement" sortName="type">
+			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.type.evenement" sortName="type">
 				<fmt:message key="option.type.evenement.${tableEvtsEch.type}" />
 			</display:column>
 			<!-- Date evenement -->
-			<display:column sortable ="true" titleKey="label.date.evenement" sortName="dateEvenement">
+			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.date.evenement" sortName="dateEvenement">
 				<unireg:regdate regdate="${tableEvtsEch.dateEvenement}" />
 			</display:column>
 			<!-- Date traitement -->
-			<display:column property="dateTraitement" sortable ="true" titleKey="label.date.traitement" format="{0,date,dd.MM.yyyy}" sortName="dateTraitement" />
+			<display:column property="dateTraitement" sortable ="${not command.modeLotEvenement}" titleKey="label.date.traitement" format="{0,date,dd.MM.yyyy}" sortName="dateTraitement" />
 			<!-- Status evt -->
-			<display:column sortable ="true" titleKey="label.etat.evenement" sortName="etat" >
+			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.etat.evenement" sortName="etat" >
 				<fmt:message key="option.etat.evenement.${tableEvtsEch.etat}" />
 			</display:column>
 			<display:column titleKey="label.commentaire.traitement">

@@ -10,7 +10,7 @@ public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
 
 	private String actionEvenement;
 
-	private boolean rechercheEvenementEnAttente;
+	private boolean modeLotEvenement;
 
 	@SuppressWarnings("unused")
 	public String getActionEvenement() {
@@ -32,12 +32,12 @@ public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
 		}
 	}
 
-	public boolean isRechercheEvenementEnAttente() {
-		return rechercheEvenementEnAttente;
+	public boolean isModeLotEvenement() {
+		return modeLotEvenement;
 	}
 
-	public void setRechercheEvenementEnAttente(boolean rechercheEvenementEnAttente) {
-		this.rechercheEvenementEnAttente = rechercheEvenementEnAttente;
+	public void setModeLotEvenement(boolean modeLotEvenement) {
+		this.modeLotEvenement = modeLotEvenement;
 	}
 
 	@Override

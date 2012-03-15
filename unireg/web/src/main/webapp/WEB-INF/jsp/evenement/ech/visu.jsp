@@ -179,10 +179,15 @@
                     </td>
                 <tr>
             </table>
-            <%-- TODO FRED Implementer le lien vers ecran de recherche --%>
         </c:if>
         <div>
-            <a href='#'>${command.totalAutresEvenementsAssocies} autres événements</a> à traiter sont également associés à cet individu.
+        <c:if test="${command.totalAutresEvenementsAssocies > 1}">
+            <a href='rechercher.do?numeroIndividuFormatte=${command.individu.numeroIndividu}&modeLotEvenement=true'>${command.totalAutresEvenementsAssocies} autres événements</a>
+        </c:if>
+        <c:if test="${command.totalAutresEvenementsAssocies == 1}">
+            <a href='rechercher.do?numeroIndividuFormatte=${command.individu.numeroIndividu}&modeLotEvenement=true'>1 autre événement</a>
+        </c:if>
+         dans le lot associé à cet individu.
         </div>
     </fieldset>
 </c:if>
