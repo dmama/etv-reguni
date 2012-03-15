@@ -64,9 +64,9 @@
 			<form:input  path="numeroIndividuFormatte" id="numeroIndividuFormatte" cssClass="number"/>
 			<form:errors path="numeroIndividuFormatte" cssClass="error"/>
 		</td>
-		<td width="25%">Événements en attente pour l'individu <span id="num_indiv"></span></td>
+		<td width="25%">Recherche lot d'événements pour l'individu <span id="num_indiv"></span></td>
 		<td width="25%">
-			<form:checkbox path="rechercheEvenementEnAttente" id="rechercheEvenementEnAttente" cssClass="boolean"/>
+			<form:checkbox path="modeLotEvenement" id="modeLotEvenement" cssClass="boolean"/>
 		</td>
 	</tr>
     <tr class="<unireg:nextRowClass/> toggle" >
