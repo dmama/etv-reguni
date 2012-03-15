@@ -17,10 +17,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
-/**
- * @author
- *
- */
+@SuppressWarnings({"JavaDoc", "unchecked"})
 public class EvenementCivilDAOTest extends CoreDAOTest {
 
 	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOTest.class);
@@ -91,6 +88,26 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
 		List<EvenementCivilRegPP> list = dao.find(evenementCriteria, pagination);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+
+		// Evt
+		EvenementCivilRegPP evt = list.get(0);
+		assertEquals(new Long(12345L), evt.getNumeroIndividuPrincipal());
+		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
+	}
+
+	/**
+	 *
+	 * Teste la méthode find avec un objet pagination null
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testFindPaginationNull() throws Exception {
+
+		EvenementCivilCriteria evenementCriteria = new EvenementCivilCriteria();
+		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
+		List<EvenementCivilRegPP> list = dao.find(evenementCriteria, null);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 

@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -76,7 +77,7 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 	}
 
 	@SuppressWarnings("unchecked")
-	protected List<EVT> genericFind(final EvenementCivilCriteria<TYP_EVT> criterion, final ParamPagination paramPagination) {
+	protected List<EVT> genericFind(final EvenementCivilCriteria<TYP_EVT> criterion, @Nullable final ParamPagination paramPagination) {
 
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 
@@ -87,10 +88,10 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 		}
 
 		// tri par défaut
-		String queryOrder = " order by evenement.dateEvenement";
+		String queryOrder = " order by evenement.dateEvenement ";
 		if (paramPagination != null) {
 			if (paramPagination.getChamp() != null) {
-				queryOrder = String.format(" order by evenement.%s", paramPagination.getChamp());
+				queryOrder = String.format(" order by evenement.%s ", paramPagination.getChamp());
 			}
 
 			queryOrder += paramPagination.isSensAscending() ? "asc" : "desc";
