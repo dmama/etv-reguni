@@ -18,6 +18,7 @@
 			</bean>
 		</property>
 		<property name="messageListener" ref="evenementEditiqueListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 </beans>
