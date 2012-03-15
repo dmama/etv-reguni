@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.uniregctb.load;
 
 import java.util.Timer;
 import java.util.TimerTask;

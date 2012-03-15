@@ -29,6 +29,7 @@ import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyNumberList;
 import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.Request;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
@@ -44,12 +45,12 @@ import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.load.DetailedLoadMeter;
+import ch.vd.uniregctb.load.DetailedLoadMonitorable;
+import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.DetailedLoadMeter;
-import ch.vd.uniregctb.webservices.common.DetailedLoadMonitorable;
-import ch.vd.uniregctb.webservices.common.LoadDetail;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
@@ -67,7 +68,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	/**
 	 * Moniteur des appels actuellements en cours
 	 */
-	private final DetailedLoadMeter loadMeter = new DetailedLoadMeter();
+	private final DetailedLoadMeter<Request> loadMeter = new DetailedLoadMeter<Request>();
 
 	@Resource
 	private WebServiceContext context;

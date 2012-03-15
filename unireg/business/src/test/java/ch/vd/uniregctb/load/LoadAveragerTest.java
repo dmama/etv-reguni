@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.uniregctb.load;
 
 import org.junit.Assert;
 import org.junit.Test;

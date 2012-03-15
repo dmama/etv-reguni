@@ -1,24 +1,23 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.uniregctb.load;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.webservices.common.DetailedLoadMonitorable;
-import ch.vd.uniregctb.webservices.common.LoadDetail;
 
 @ManagedResource
-public class WebServiceDetailedLoadJmxBeanImpl extends WebServiceLoadJmxBeanImpl<DetailedLoadMonitorable> implements WebServiceDetailedLoadJmxBean {
+public class DetailedLoadJmxBeanImpl extends LoadJmxBeanImpl<DetailedLoadMonitorable> implements DetailedLoadJmxBean {
 
-	public WebServiceDetailedLoadJmxBeanImpl(String serviceName, DetailedLoadMonitorable service, StatsService statsService) {
+	public DetailedLoadJmxBeanImpl(String serviceName, DetailedLoadMonitorable service, @Nullable StatsService statsService) {
 		super(serviceName, service, statsService);
 	}
-	
+
 	@Override
 	@ManagedAttribute
 	public List<String> getLoadDetails() {

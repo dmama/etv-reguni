@@ -19,12 +19,12 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.load.DetailedLoadMeter;
+import ch.vd.uniregctb.load.DetailedLoadMonitorable;
+import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.DetailedLoadMeter;
-import ch.vd.uniregctb.webservices.common.DetailedLoadMonitorable;
-import ch.vd.uniregctb.webservices.common.LoadDetail;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -76,7 +76,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	/**
 	 * Moniteur des appels en cours
 	 */
-	private final DetailedLoadMeter loadMeter = new DetailedLoadMeter();
+	private final DetailedLoadMeter<Object> loadMeter = new DetailedLoadMeter<Object>();
 
 	@Resource
 	private WebServiceContext context;

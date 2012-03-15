@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.uniregctb.load;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class DetailedLoadMeter implements DetailedLoadMonitorable {
+public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 
 	/**
 	 * Nombre d'appels actuellement en cours
@@ -38,6 +38,11 @@ public class DetailedLoadMeter implements DetailedLoadMonitorable {
 	private final List<DetailHolder> detailHolders = new LinkedList<DetailHolder>();
 
 	/**
+	 * Convertisseur en chaîne de caractères
+	 */
+	private final LoadDetailRenderer<T> renderer;
+	
+	/**
 	 * Container du descripteur de la charge en cours : chacune des instances par thread ne nécessite aucune synchronisation
 	 * particulière (c'est juste un pointeur = assignation atomique), la synchronisation est uniquement gérée au niveau de 
 	 * la collection {@link #detailHolders}
@@ -57,16 +62,32 @@ public class DetailedLoadMeter implements DetailedLoadMonitorable {
 			return holder;
 		}
 	};
+
+	private static final LoadDetailRenderer DEFAULT_RENDERER = new LoadDetailRenderer<Object>() {
+		@Override
+		public String toString(Object object) {
+			return object != null ? object.toString() : null;
+		}
+	};
+
+	public DetailedLoadMeter() {
+		//noinspection unchecked
+		this(DEFAULT_RENDERER);
+	}
 	
+	public DetailedLoadMeter(LoadDetailRenderer<T> renderer) {
+		this.renderer = renderer;
+	}
+
 	/**
 	 * Doit être appelé au moment du démarrage d'un nouvel appel
 	 * @param desc descripteur de l'appel (la méthode {@link #toString} sera appelée pour obtenir une description de l'appel)
 	 * @return {@link System#nanoTime() timestamp} du démarrage de l'appel 
 	 */
-	public long start(Object desc) {
+	public long start(T desc) {
 		currentLoad.incrementAndGet();
 		final long ts = timestamp();
-		details.get().detail = new LoadDetailImpl(desc, ts);
+		details.get().detail = new LoadDetailImpl<T>(desc, ts, renderer);
 		return ts;
 }
 

@@ -30,6 +30,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsEch" value-ref="evenementsCivilsEchJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
@@ -120,6 +121,12 @@
 				<entry key="os_version" value="${os.version}" />
 			</map>
 		</constructor-arg>
+	</bean>
+
+	<bean name="webAccessLoadJmxBean" class="ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl">
+		<constructor-arg name="serviceName" value="web-access"/>
+		<constructor-arg name="service" ref="accessLoggerFilter"/>
+		<constructor-arg name="statsService" ref="statsService"/>
 	</bean>
 
 </beans>

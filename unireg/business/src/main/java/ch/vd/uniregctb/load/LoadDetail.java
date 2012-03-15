@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.uniregctb.load;
 
 /**
  * Interface d'interrogation des détails sur une activité en cours

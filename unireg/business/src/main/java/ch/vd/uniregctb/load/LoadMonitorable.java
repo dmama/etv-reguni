@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.uniregctb.load;
 
 /**
  * Interface implémentée par les services dont on peut monitorer la charge
