@@ -46,4 +46,28 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final RelationVersIndividuImpl that = (RelationVersIndividuImpl) o;
+
+		if (numeroAutreIndividu != that.numeroAutreIndividu) return false;
+		if (!dateDebut.equals(that.dateDebut)) return false;
+		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = (int) (numeroAutreIndividu ^ (numeroAutreIndividu >>> 32));
+		result = 31 * result + dateDebut.hashCode();
+		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
+		return result;
+	}
+
+
 }
