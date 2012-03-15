@@ -10,6 +10,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.uniregctb.common.ParamPagination;
@@ -82,7 +83,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilEch> find(final EvenementCivilCriteria criterion, final ParamPagination paramPagination) {
+	public List<EvenementCivilEch> find(final EvenementCivilCriteria criterion, @Nullable final ParamPagination paramPagination) {
 		return genericFind(criterion, paramPagination);
 	}
 
