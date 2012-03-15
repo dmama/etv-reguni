@@ -34,6 +34,7 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
+import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
 import ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManager;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
@@ -46,8 +47,8 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 @Controller
 @RequestMapping("/evenement/ech")
-@SessionAttributes({"evenementEchCriteria", "evenementPagination"})
-public class EvenementCivilEchController {
+@SessionAttributes({"evenementEchCriteria", "evenementEchPagination"})
+public class EvenementCivilEchController extends AbstractEvenementCivilController {
 
 	private static final String TABLE_NAME = "tableEvtsEch";
 	private static final int PAGE_SIZE = 25;
@@ -127,30 +128,29 @@ public class EvenementCivilEchController {
 		return INITIAL_PAGINATION;
 	}
 
-	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET, params = "effacer")
+	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
 		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
-	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET, params = "rechercher")
+	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected ModelAndView rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
-	                                  BindingResult bindingResult,
+	protected String rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                                  ModelMap model ) throws AdresseException {
-		if (bindingResult.hasErrors() ) {
-			// L'utilisateur a soumis un formulaire incorrect
-			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
-		} else {
-			// on recherche les evenements suivant les critères du formulaire de recherche, et on réinitialise la pagination
-			populateModel(model,
-					criteriaInSession,
-					INITIAL_PAGINATION,
-					manager.find(criteriaInSession, INITIAL_PAGINATION),
-					manager.count(criteriaInSession));
-		}
-		return new ModelAndView("evenement/ech/list", model);
+		// Stockage des nouveau critère de recherche dans la session
+		// La recherche en elle meme est faite dans nav-list.do
+		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0);
+		// Redirect vers nav-list.do  avec en parametre une pagination reinitialisée
+		return buildNavListRedirect(INITIAL_PAGINATION);
+	}
+
+	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	protected String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession ) throws AdresseException 	{
+		// Redirect vers nav-list.do  avec en parametre la pagination en session
+		return buildNavListRedirect(paginationInSession);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
@@ -163,7 +163,8 @@ public class EvenementCivilEchController {
 			// L'utilisateur a soumis un formulaire incorrect
 			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
 		} else {
-			// L'utilisateur navigue dans la liste, il faut mettre à jour l'objet de pagination
+			// On recupère les paramètres de paginiation en request pour les sauver en session
+			// On recupère les données correspondant au formulaire de recherche
 			final ParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
 			populateModel(model,
 					criteriaInSession,
@@ -175,14 +176,8 @@ public class EvenementCivilEchController {
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
-	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession ) throws AdresseException 	{
-		String displayTagParameter = ControllerUtils.getDisplayTagRequestParametersForPagination(TABLE_NAME, paginationInSession);
-		if (displayTagParameter != null) {
-			displayTagParameter = "?" + displayTagParameter;
-		}
-		return "redirect:/evenement/ech/nav-list.do" + displayTagParameter;
+	private String buildNavListRedirect(ParamPagination pagination) {
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/ech/nav-list.do");
 	}
 
 	private void populateModel(ModelMap model,

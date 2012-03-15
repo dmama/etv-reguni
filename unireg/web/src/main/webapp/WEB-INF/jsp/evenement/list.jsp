@@ -4,6 +4,24 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="title.recherche.evenements" /></tiles:put>
+
+  	    <tiles:put name="head">
+            <script type="text/javascript">
+                 $(document).ready(function () {
+
+                     $('#rechercher').click( function () {
+                     	$('#formRechercheEvenements').attr('action','rechercher.do');
+                     })
+
+                     $('#effacer').click( function () {
+                     	window.location.href = 'effacer.do';
+                     	return false;
+                     })
+
+                 });
+            </script>
+        </tiles:put>
+
   	<tiles:put name="fichierAide">
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/recherche.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>

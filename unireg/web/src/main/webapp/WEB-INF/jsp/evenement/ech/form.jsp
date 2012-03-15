@@ -66,8 +66,7 @@
 		</td>
 		<td width="25%">Événements en attente pour l'individu <span id="num_indiv"></span></td>
 		<td width="25%">
-			<form:checkbox  path="rechercheEvenementEnAttente" id="rechercheEvenementEnAttente" cssClass="boolean"/>
-			<form:errors path="rechercheEvenementEnAttente" cssClass="error"/>
+			<form:checkbox path="rechercheEvenementEnAttente" id="rechercheEvenementEnAttente" cssClass="boolean"/>
 		</td>
 	</tr>
     <tr class="<unireg:nextRowClass/> toggle" >
@@ -88,11 +87,11 @@
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<fmt:message key="label.bouton.rechercher" var="labelBoutonRechercher"/>
-			<div class="navigation-action"><input type="submit" value="${labelBoutonRechercher}" name="rechercher" /></div>
+			<div class="navigation-action"><input type="submit" value="${labelBoutonRechercher}" name="rechercher" id="rechercher"/></div>
 		</td>
 		<td width="25%">
 			<fmt:message key="label.bouton.effacer" var="labelBoutonEffacer"/>
-			<div class="navigation-action"><input type="submit" value="${labelBoutonEffacer}" name="effacer"  /></div>
+			<div class="navigation-action"><input type="submit" value="${labelBoutonEffacer}" name="effacer" id="effacer" /></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>
