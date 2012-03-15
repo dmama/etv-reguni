@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.civil.regpp;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -27,7 +29,7 @@ public interface EvenementCivilRegPPDAO extends GenericDAO<EvenementCivilRegPP, 
 	 */
 	List<EvenementCivilRegPP> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu );
 
-	List<EvenementCivilRegPP> find(EvenementCivilCriteria <TypeEvenementCivil> criterion, ParamPagination paramPagination);
+	List<EvenementCivilRegPP> find(EvenementCivilCriteria <TypeEvenementCivil> criterion, @Nullable ParamPagination paramPagination);
 
 	int count(EvenementCivilCriteria<TypeEvenementCivil> criterion);
 

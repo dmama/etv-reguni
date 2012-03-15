@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -70,7 +71,7 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegPP> find(EvenementCivilCriteria<TypeEvenementCivil> criterion, ParamPagination paramPagination) {
+	public List<EvenementCivilRegPP> find(EvenementCivilCriteria<TypeEvenementCivil> criterion, @Nullable ParamPagination paramPagination) {
 		return genericFind(criterion, paramPagination);
 	}
 
