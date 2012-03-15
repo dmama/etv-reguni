@@ -290,7 +290,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@SuppressWarnings({"unchecked"})
 	private List<Tiers> getBatch(Set<Long> ids, Set<Parts> parts, Session session) {
-		Assert.isTrue(ids.size() <= MAX_IN_SIZE, "Le nombre maximal d'ids est dépassé");
 
 		// on charge les tiers en vrac
 		final List<Tiers> tiers = queryObjectsByIds("from Tiers as t where t.id in (:ids)", ids, session);
@@ -300,203 +299,216 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		{
 			// on charge les identifications des personnes en vrac
-			Query q = session.createQuery("from IdentificationPersonne as a where a.personnePhysique.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<IdentificationPersonne> identifications = q.list();
-
-			// on associe les identifications de personnes avec les tiers à la main
-			associate(session, identifications, tiers, new TiersIdGetter<IdentificationPersonne>() {
-						@Override
-						public Long getTiersId(IdentificationPersonne entity) {
-							return entity.getPersonnePhysique().getId();
-						}
-					}, new EntitySetSetter<IdentificationPersonne>() {
+			final List<IdentificationPersonne> identifications = queryObjectsByIds("from IdentificationPersonne as a where a.personnePhysique.id in (:ids)", ids, session);
+			
+			final TiersIdGetter<IdentificationPersonne> getter = new TiersIdGetter<IdentificationPersonne>() {
+				@Override
+				public Long getTiersId(IdentificationPersonne entity) {
+					return entity.getPersonnePhysique().getId();
+				}
+			};
+			
+			final EntitySetSetter<IdentificationPersonne> setter = new EntitySetSetter<IdentificationPersonne>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<IdentificationPersonne> set) {
 					if (tiers instanceof PersonnePhysique) {
 						((PersonnePhysique) tiers).setIdentificationsPersonnesForGetBatch(set);
 					}
 				}
-			}
-			);
+			}; 
+
+			// on associe les identifications de personnes avec les tiers à la main
+			associate(session, identifications, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.ADRESSES)) {
-			// on charge toutes les adresses en vrac
-			List<AdresseTiers> adresses = queryObjectsByIds("from AdresseTiers as a where a.tiers.id in (:ids)", ids, session);
 
-			// on associe les adresses avec les tiers à la main
-			associate(session, adresses, tiers, new TiersIdGetter<AdresseTiers>() {
-						@Override
-						public Long getTiersId(AdresseTiers entity) {
-							return entity.getTiers().getId();
-						}
-					}, new EntitySetSetter<AdresseTiers>() {
+			// on charge toutes les adresses en vrac
+			final List<AdresseTiers> adresses = queryObjectsByIds("from AdresseTiers as a where a.tiers.id in (:ids)", ids, session);
+
+			final TiersIdGetter<AdresseTiers> getter = new TiersIdGetter<AdresseTiers>() {
+				@Override
+				public Long getTiersId(AdresseTiers entity) {
+					return entity.getTiers().getId();
+				}
+			};
+
+			final EntitySetSetter<AdresseTiers> setter = new EntitySetSetter<AdresseTiers>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<AdresseTiers> set) {
 					tiers.setAdressesTiers(set);
 				}
-			}
-			);
+			};
+
+			// on associe les adresses avec les tiers à la main
+			associate(session, adresses, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.DECLARATIONS)) {
 
 			// on précharge toutes les périodes fiscales pour éviter de les charger une à une depuis les déclarations d'impôt
-			Query periodes = session.createQuery("from PeriodeFiscale");
+			final Query periodes = session.createQuery("from PeriodeFiscale");
 			periodes.list();
 
 			// on charge toutes les declarations en vrac
-			Query q = session.createQuery("from Declaration as d where d.tiers.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<Declaration> declarations = q.list();
+			final List<Declaration> declarations = queryObjectsByIds("from Declaration as d where d.tiers.id in (:ids)", ids, session);
 
-			// on associe les déclarations avec les tiers à la main
-			associate(session, declarations, tiers, new TiersIdGetter<Declaration>() {
-						@Override
-						public Long getTiersId(Declaration entity) {
-							return entity.getTiers().getId();
-						}
-					}, new EntitySetSetter<Declaration>() {
+			final TiersIdGetter<Declaration> getter = new TiersIdGetter<Declaration>() {
+				@Override
+				public Long getTiersId(Declaration entity) {
+					return entity.getTiers().getId();
+				}
+			};
+
+			final EntitySetSetter<Declaration> setter = new EntitySetSetter<Declaration>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Declaration> set) {
 					tiers.setDeclarations(set);
 				}
-			}
-			);
+			};
+
+			// on associe les déclarations avec les tiers à la main
+			associate(session, declarations, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.FORS_FISCAUX)) {
 			// on charge tous les fors fiscaux en vrac
-			Query q = session.createQuery("from ForFiscal as f where f.tiers.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<ForFiscal> fors = q.list();
+			final List<ForFiscal> fors = queryObjectsByIds("from ForFiscal as f where f.tiers.id in (:ids)", ids, session);
 
-			// on associe les fors fiscaux avec les tiers à la main
-			associate(session, fors, tiers, new TiersIdGetter<ForFiscal>() {
-						@Override
-						public Long getTiersId(ForFiscal entity) {
-							return entity.getTiers().getId();
-						}
-					}, new EntitySetSetter<ForFiscal>() {
+			final TiersIdGetter<ForFiscal> getter = new TiersIdGetter<ForFiscal>() {
+				@Override
+				public Long getTiersId(ForFiscal entity) {
+					return entity.getTiers().getId();
+				}
+			};
+
+			final EntitySetSetter<ForFiscal> setter = new EntitySetSetter<ForFiscal>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<ForFiscal> set) {
 					tiers.setForsFiscaux(set);
 				}
-			}
-			);
+			};
+
+			// on associe les fors fiscaux avec les tiers à la main
+			associate(session, fors, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.RAPPORTS_ENTRE_TIERS)) {
 			// on charge tous les rapports entre tiers en vrac
 			{
-				Query q = session.createQuery("from RapportEntreTiers as r where r.sujetId in (:ids)");
-				q.setParameterList("ids", ids);
-				List<RapportEntreTiers> rapports = q.list();
+				final List<RapportEntreTiers> rapports = queryObjectsByIds("from RapportEntreTiers as r where r.sujetId in (:ids)", ids, session);
 
-				// on associe les rapports avec les tiers à la main
-				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
-							@Override
-							public Long getTiersId(RapportEntreTiers entity) {
-								return entity.getSujetId();
-							}
-						}, new EntitySetSetter<RapportEntreTiers>() {
+				final TiersIdGetter<RapportEntreTiers> getter = new TiersIdGetter<RapportEntreTiers>() {
+					@Override
+					public Long getTiersId(RapportEntreTiers entity) {
+						return entity.getSujetId();
+					}
+				};
+
+				final EntitySetSetter<RapportEntreTiers> setter = new EntitySetSetter<RapportEntreTiers>() {
 					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsSujet(set);
 					}
-				}
-				);
-			}
-			{
-
-				Query q = session.createQuery("from RapportEntreTiers as r where r.objetId in (:ids)");
-				q.setParameterList("ids", ids);
-				List<RapportEntreTiers> rapports = q.list();
+				};
 
 				// on associe les rapports avec les tiers à la main
-				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
-							@Override
-							public Long getTiersId(RapportEntreTiers entity) {
-								return entity.getObjetId();
-							}
-						}, new EntitySetSetter<RapportEntreTiers>() {
+				associate(session, rapports, tiers, getter, setter);
+			}
+			{
+				final List<RapportEntreTiers> rapports = queryObjectsByIds("from RapportEntreTiers as r where r.objetId in (:ids)", ids, session);
+
+				final TiersIdGetter<RapportEntreTiers> getter = new TiersIdGetter<RapportEntreTiers>() {
+					@Override
+					public Long getTiersId(RapportEntreTiers entity) {
+						return entity.getObjetId();
+					}
+				};
+
+				final EntitySetSetter<RapportEntreTiers> setter = new EntitySetSetter<RapportEntreTiers>() {
 					@Override
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
 						tiers.setRapportsObjet(set);
 					}
-				}
-				);
+				};
+
+				// on associe les rapports avec les tiers à la main
+				associate(session, rapports, tiers, getter, setter);
 			}
 		}
 
 		if (parts != null && parts.contains(Parts.SITUATIONS_FAMILLE)) {
-			// on charge toutes les situations de famille en vrac
-			Query q = session.createQuery("from SituationFamille as r where r.contribuable.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<SituationFamille> situations = q.list();
 
-			// on associe les situations de famille avec les tiers à la main
-			associate(session, situations, tiers, new TiersIdGetter<SituationFamille>() {
-						@Override
-						public Long getTiersId(SituationFamille entity) {
-							return entity.getContribuable().getId();
-						}
-					}, new EntitySetSetter<SituationFamille>() {
+			// on charge toutes les situations de famille en vrac
+			final List<SituationFamille> situations = queryObjectsByIds("from SituationFamille as r where r.contribuable.id in (:ids)", ids, session);
+
+			final TiersIdGetter<SituationFamille> getter = new TiersIdGetter<SituationFamille>() {
+				@Override
+				public Long getTiersId(SituationFamille entity) {
+					return entity.getContribuable().getId();
+				}
+			};
+
+			final EntitySetSetter<SituationFamille> setter = new EntitySetSetter<SituationFamille>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
 					if (tiers instanceof Contribuable) {
 						((Contribuable) tiers).setSituationsFamille(set);
 					}
 				}
-			}
-			);
+			};
+
+			// on associe les situations de famille avec les tiers à la main
+			associate(session, situations, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.PERIODICITES)) {
-			// on charge toutes les périodicités en vrac
-			Query q = session.createQuery("from Periodicite as p where p.debiteur.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<Periodicite> periodicites = q.list();
 
-			// on associe les périodicités avec les tiers à la main
-			associate(session, periodicites, tiers, new TiersIdGetter<Periodicite>() {
-						@Override
-						public Long getTiersId(Periodicite entity) {
-							return entity.getDebiteur().getId();
-						}
-					}, new EntitySetSetter<Periodicite>() {
+			// on charge toutes les périodicités en vrac
+			final List<Periodicite> periodicites = queryObjectsByIds("from Periodicite as p where p.debiteur.id in (:ids)", ids, session);
+
+			final TiersIdGetter<Periodicite> getter = new TiersIdGetter<Periodicite>() {
+				@Override
+				public Long getTiersId(Periodicite entity) {
+					return entity.getDebiteur().getId();
+				}
+			};
+
+			final EntitySetSetter<Periodicite> setter = new EntitySetSetter<Periodicite>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
 					if (tiers instanceof DebiteurPrestationImposable) {
 						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
 					}
 				}
-			}
-			);
+			};
+
+			// on associe les périodicités avec les tiers à la main
+			associate(session, periodicites, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
 			// on charge tous les immeubles en vrac
-			Query q = session.createQuery("from Immeuble as i where i.contribuable.id in (:ids)");
-			q.setParameterList("ids", ids);
-			List<Immeuble> immeubles = q.list();
+			final List<Immeuble> immeubles = queryObjectsByIds("from Immeuble as i where i.contribuable.id in (:ids)", ids, session);
 
-			// on associe les immeubles avec les tiers à la main
-			associate(session, immeubles, tiers, new TiersIdGetter<Immeuble>() {
-						@Override
-						public Long getTiersId(Immeuble entity) {
-							return entity.getContribuable().getId();
-						}
-					}, new EntitySetSetter<Immeuble>() {
+			final TiersIdGetter<Immeuble> getter = new TiersIdGetter<Immeuble>() {
+				@Override
+				public Long getTiersId(Immeuble entity) {
+					return entity.getContribuable().getId();
+				}
+			};
+
+			final EntitySetSetter<Immeuble> setter = new EntitySetSetter<Immeuble>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<Immeuble> set) {
 					if (tiers instanceof Contribuable) {
 						((Contribuable) tiers).setImmeubles(set);
 					}
 				}
-			}
-			);
+			};
+
+			// on associe les immeubles avec les tiers à la main
+			associate(session, immeubles, tiers, getter, setter);
 		}
 		return tiers;
 	}

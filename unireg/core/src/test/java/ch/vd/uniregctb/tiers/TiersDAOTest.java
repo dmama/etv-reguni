@@ -1259,17 +1259,14 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchMaximumDepasse() throws Exception {
-		final List<Long> ids = new ArrayList<Long>(600);
-		for (int i = 0; i < 600; ++i) {
+		final int size = 1100;          // la limite d'Oracle se situe à 1000
+		final List<Long> ids = new ArrayList<Long>(size);
+		for (int i = 0; i < size; ++i) {
 			ids.add((long) i);
 		}
-		try {
-			dao.getBatch(ids, null);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Le nombre maximal d'ids est dépassé", e.getMessage());
-		}
+		final List<Tiers> tiers = dao.getBatch(ids, new HashSet<Parts>(Arrays.asList(Parts.values())));
+		assertNotNull(tiers);
+		assertEquals(0, tiers.size());      // la base est vide, donc c'est normal, mais l'important c'est qu'il n'y ait pas eu d'explosion
 	}
 
 	/**
