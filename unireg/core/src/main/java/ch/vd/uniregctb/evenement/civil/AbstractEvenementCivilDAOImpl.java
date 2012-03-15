@@ -71,19 +71,6 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 			criteria.add(dateEvenementFin.index());
 		}
 
-		Long numero = criterion.getNumeroIndividu();
-		if (numero != null) {
-			queryWhere += " and (evenement.numeroIndividuPrincipal = ? or evenement.numeroIndividuConjoint = ?) ";
-			criteria.add(numero);
-			criteria.add(numero);
-		}
-
-		Long numeroCTB = criterion.getNumeroCTB();
-		if (numeroCTB != null) {
-			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = ?";
-			criteria.add(numeroCTB);
-		}
-
 		return queryWhere;
 	}
 
@@ -107,6 +94,9 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 			queryOrder = String.format("%s asc", queryOrder);
 		} else {
 			queryOrder = String.format("%s desc", queryOrder);
+		}
+		if (!"id".equals(paramPagination.getChamp())) {
+			queryOrder += ", evenement.id asc"; // si on ne tri pas sur un index unique, on a des problemes potentiels avec la pagination
 		}
 
 		final String query = String.format(

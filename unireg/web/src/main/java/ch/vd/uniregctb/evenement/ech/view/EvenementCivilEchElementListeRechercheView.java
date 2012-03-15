@@ -5,6 +5,7 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 

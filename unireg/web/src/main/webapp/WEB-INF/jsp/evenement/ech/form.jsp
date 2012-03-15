@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<table>
-	<tr class="<unireg:nextRowClass/>" >
+<table id="tableForm">
+	<tr class="<unireg:nextRowClass/> toggle" >
 		<td width="25%"><fmt:message key="label.type.evenement" />&nbsp;:</td>
 		<td width="75%" colspan ="3">
 			<form:select path="typeEvenement">
@@ -10,7 +10,7 @@
 			</form:select>	
 		</td>
 	</tr>
-	<tr class="<unireg:nextRowClass/>" >
+	<tr class="<unireg:nextRowClass/> toggle" >
 		<td width="25%"><fmt:message key="label.etat.evenement" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="etatEvenement" >
@@ -26,7 +26,7 @@
 			</form:select>
 		</td>
 	</tr>
-	<tr class="<unireg:nextRowClass/>" >
+	<tr class="<unireg:nextRowClass/> toggle" >
 		<td width="25%"><fmt:message key="label.date.evenement.debut" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -42,7 +42,7 @@
 			</jsp:include>
 		</td>
 	</tr>
-	<tr class="<unireg:nextRowClass/>" >
+	<tr class="<unireg:nextRowClass/> toggle" >
 		<td width="25%"><fmt:message key="label.date.traitement.debut" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -59,17 +59,27 @@
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.numero.individu" />&nbsp;:</td>
-		<td>
+		<td width="25%"><fmt:message key="label.numero.individu" />&nbsp;:</td>
+		<td width="25%">
 			<form:input  path="numeroIndividuFormatte" id="numeroIndividuFormatte" cssClass="number"/>
 			<form:errors path="numeroIndividuFormatte" cssClass="error"/>
 		</td>
-		<td><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
-		<td>
-			<form:input  path="numeroCTBFormatte" id="numeroCTBFormatte" cssClass="number"/>
-			<form:errors path="numeroCTBFormatte" cssClass="error"/>
+		<td width="25%">Événements en attente pour l'individu <span id="num_indiv"></span></td>
+		<td width="25%">
+			<form:checkbox  path="rechercheEvenementEnAttente" id="rechercheEvenementEnAttente" cssClass="boolean"/>
+			<form:errors path="rechercheEvenementEnAttente" cssClass="error"/>
 		</td>
 	</tr>
+    <tr class="<unireg:nextRowClass/> toggle" >
+        <td width="25%"><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
+        <td width="25%">
+            <form:input  path="numeroCTBFormatte" id="numeroCTBFormatte" cssClass="number"/>
+            <form:errors path="numeroCTBFormatte" cssClass="error"/>
+        </td>
+        <td width="25%">&nbsp;</td>
+        <td width="25%">&nbsp;</td>
+    </tr>
+
 
 </table>
 <!-- Debut Boutons -->

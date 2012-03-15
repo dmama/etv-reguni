@@ -4,16 +4,19 @@
 
 	<bean id="evtCivCriteriaValidator" class="ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator" />
 
+	<bean id="evtCivEchCriteriaValidator" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchCriteriaValidator" />
+
 	<bean id="evtCivController" abstract="true">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="validator" ref="evtCivCriteriaValidator" />
 	</bean>
 
 	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">
+		<property name="validator" ref="evtCivCriteriaValidator" />
 		<property name="manager" ref="evtCivRegPPManager" />
 	</bean>
 
 	<bean id="evtCivEchController" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchController" parent="evtCivController">
+		<property name="validator" ref="evtCivEchCriteriaValidator" />
 		<property name="manager" ref="evtCivEchManager" />
 	</bean>
 

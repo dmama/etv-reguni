@@ -91,8 +91,30 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		return genericCount(criterion);
 	}
 
+
 	@Override
 	protected Class getEvenementCivilClass() {
 		return EvenementCivilEch.class;
+	}
+
+
+	@Override
+	protected String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
+		String queryWhere = super.buildCriterion(criteria, criterion);
+
+		Long numero = criterion.getNumeroIndividu();
+		if (numero != null) {
+			queryWhere += " and evenement.numeroIndividu = ? ";
+			criteria.add(numero);
+		}
+
+		Long numeroCTB = criterion.getNumeroCTB();
+		if (numeroCTB != null) {
+			queryWhere += " and (evenement.numeroIndividu = pp.numeroIndividu) and pp.numero = ? ";
+			criteria.add(numeroCTB);
+		}
+
+		return queryWhere;
+
 	}
 }

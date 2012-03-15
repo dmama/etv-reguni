@@ -10,6 +10,8 @@ public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
 
 	private String actionEvenement;
 
+	private boolean rechercheEvenementEnAttente;
+
 	@SuppressWarnings("unused")
 	public String getActionEvenement() {
 		return actionEvenement;
@@ -28,6 +30,14 @@ public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
 		else {
 			setActionEvenement(TOUS);
 		}
+	}
+
+	public boolean isRechercheEvenementEnAttente() {
+		return rechercheEvenementEnAttente;
+	}
+
+	public void setRechercheEvenementEnAttente(boolean rechercheEvenementEnAttente) {
+		this.rechercheEvenementEnAttente = rechercheEvenementEnAttente;
 	}
 
 	@Override
