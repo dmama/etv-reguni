@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.civil.ech;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
@@ -40,7 +42,7 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 	 * @param paramPagination info de pagination pour la requête
 	 * @return la liste d'evenements correspondant aux critères
 	 */
-	public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, ParamPagination paramPagination);
+	public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, @Nullable ParamPagination paramPagination);
 
 	/**
 	 * @param criterion les critères de recherche

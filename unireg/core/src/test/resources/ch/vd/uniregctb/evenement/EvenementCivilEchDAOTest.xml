@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>6789</value>
+      <value>PersonnePhysique</value>
+      <value>12345</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5678</value>
+      <value>PersonnePhysique</value>
+      <value>23456</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>
+  <table name="EVENEMENT_CIVIL_ECH">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>DATE_EVENEMENT</column>
+    <column>ETAT</column>
+	<column>ACTION_EVT</column>
+    <column>NO_INDIVIDU</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>9001</value>
+      <value>MARIAGE</value>
+      <value>19851025</value>
+      <value>TRAITE</value>
+	  <value>PREMIERE_LIVRAISON</value>
+      <value>12345</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9002</value>
+      <value>SEPARATION</value>
+      <value>19891025</value>
+      <value>A_TRAITER</value>
+	  <value>PREMIERE_LIVRAISON</value>
+      <value>12345</value>
+    </row>
+  </table>
+</dataset>
