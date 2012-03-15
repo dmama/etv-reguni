@@ -138,10 +138,14 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
-	                                  ModelMap model ) throws AdresseException {
+	                            BindingResult bindingResult,
+	                            ModelMap model ) throws AdresseException {
 		// Stockage des nouveau critère de recherche dans la session
 		// La recherche en elle meme est faite dans nav-list.do
 		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0);
+		if (bindingResult.hasErrors()) {
+			return "evenement/ech/list";
+		}
 		// Redirect vers nav-list.do  avec en parametre une pagination reinitialisée
 		return buildNavListRedirect(INITIAL_PAGINATION);
 	}
