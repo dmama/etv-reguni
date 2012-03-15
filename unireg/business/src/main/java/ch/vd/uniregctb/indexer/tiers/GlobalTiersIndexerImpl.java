@@ -159,7 +159,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             int percentWaitCivil = (int) (100 * timeWaitCivil / timeWait);
             int percentWaitPM = (int) (100 * timeWaitPM / timeWait);
             int percentWaitIndex = (int) (100 * timeWaitIndex / timeWait);
-            int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitIndex;
+            int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitPM - percentWaitIndex;
 
 	        String log = "Temps total d'exécution         : " + timeTotal + " ms\n";
 	        log += "Temps 'exec' threads indexation : " + indexerExecTime + " ms\n";
