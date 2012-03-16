@@ -3,13 +3,12 @@
  */
 package ch.vd.uniregctb.audit;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -27,7 +26,7 @@ public class AuditLine {
 
 	private Long id;
 	private Long threadId;
-	private Integer evenementId;
+	private Long evenementId;
 	private Date date;
 	private String user;
 	private String message;
@@ -37,7 +36,7 @@ public class AuditLine {
 	public AuditLine() {
 	}
 
-	public AuditLine(long threadId, Integer evtId, String user, AuditLevel level, String message, Long documentId) {
+	public AuditLine(long threadId, Long evtId, String user, AuditLevel level, String message, Long documentId) {
 		this.threadId = threadId;
 		this.evenementId = evtId;
 		this.user = user;
@@ -75,11 +74,11 @@ public class AuditLine {
 	}
 
 	@Column(name = "EVT_ID")
-	public Integer getEvenementId() {
+	public Long getEvenementId() {
 		return evenementId;
 	}
 
-	public void setEvenementId(Integer theEvenementId) {
+	public void setEvenementId(Long theEvenementId) {
 		evenementId = theEvenementId;
 	}
 
