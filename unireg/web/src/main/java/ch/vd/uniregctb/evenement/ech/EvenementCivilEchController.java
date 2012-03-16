@@ -30,7 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
@@ -211,7 +211,12 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
-		manager.recycleEvenementCivil(id);
+		boolean recycle = manager.recycleEvenementCivil(id);
+		if (recycle) {
+			Flash.message("Événement recyclé");
+		} else {
+			Flash.warning("Demande prise en compte, l'événement est en attente de recyclage");
+		}
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 }

@@ -38,6 +38,7 @@
 		<property name="evenementDAO" ref="evenementCivilEchDAO" />
 		<property name="evenementService" ref="evtCivilEchService" />
 		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
+		<property name="evenementProcessor" ref="evtCivilEchProcessor" />
 	</bean>
 
 </beans>

@@ -34,12 +34,14 @@
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="get" id="formRechercheEvenements" commandName="evenementEchCriteria">
 			<fieldset>
+				${command.modeLotEvenement ?  "true" : "false"}
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="form.jsp"/>
 			</fieldset>
 		</form:form>
 
+        <c:set var="sortable" value='${command.modeLotEvenement}' scope="page" />
 		<display:table 	name="listEvenementsEch" id="tableEvtsEch" pagesize="25" requestURI="/evenement/ech/nav-list.do" defaultsort="1" defaultorder="descending" sort="external" class="display_table" partialList="true" size="listEvenementsEchSize">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.evenement.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner"><fmt:message key="banner.un.evenement.trouve" /></span></display:setProperty>
@@ -47,9 +49,9 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.evenements.trouves" /></span></display:setProperty>
 
 			<!-- ID -->
-			<display:column property="id" sortable ="${not command.modeLotEvenement}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
+			<display:column property="id" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
 			<!-- NO Individu + Conjoint -->
-			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
+			<display:column sortable ="${sortable}" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
 				${tableEvtsEch.numeroIndividu}
 			</display:column>
 			<!-- NO CTB -->
@@ -63,17 +65,17 @@
 				<c:out value="${tableEvtsEch.nom}" />
 			</display:column>
 			<!-- Type evt -->
-			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.type.evenement" sortName="type">
+			<display:column sortable ="${sortable}" titleKey="label.type.evenement" sortName="type">
 				<fmt:message key="option.type.evenement.${tableEvtsEch.type}" />
 			</display:column>
 			<!-- Date evenement -->
-			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.date.evenement" sortName="dateEvenement">
+			<display:column sortable ="${sortable}" titleKey="label.date.evenement" sortName="dateEvenement">
 				<unireg:regdate regdate="${tableEvtsEch.dateEvenement}" />
 			</display:column>
 			<!-- Date traitement -->
-			<display:column property="dateTraitement" sortable ="${not command.modeLotEvenement}" titleKey="label.date.traitement" format="{0,date,dd.MM.yyyy}" sortName="dateTraitement" />
+			<display:column property="dateTraitement" sortable ="${sortable}" titleKey="label.date.traitement" format="{0,date,dd.MM.yyyy}" sortName="dateTraitement" />
 			<!-- Status evt -->
-			<display:column sortable ="${not command.modeLotEvenement}" titleKey="label.etat.evenement" sortName="etat" >
+			<display:column sortable ="${sortable}" titleKey="label.etat.evenement" sortName="etat" >
 				<fmt:message key="option.etat.evenement.${tableEvtsEch.etat}" />
 			</display:column>
 			<display:column titleKey="label.commentaire.traitement">
