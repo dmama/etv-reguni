@@ -18,7 +18,7 @@ public class AuditLogBean {
 	public static class AuditView {
 		private final Long id;
 		private final Long threadId;
-		private final Integer evenementId;
+		private final Long evenementId;
 		private final Date date;
 		private final String user;
 		private final String message;
@@ -51,7 +51,7 @@ public class AuditLogBean {
 			return threadId;
 		}
 
-		public Integer getEvenementId() {
+		public Long getEvenementId() {
 			return evenementId;
 		}
 

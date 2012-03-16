@@ -15,3 +15,6 @@ alter table EVENEMENT_CIVIL_ECH_ERREUR add constraint FK_EV_ERR_EV_ECH_ID foreig
 -- Suppression des numéros de tiers dans les tables d'événements civils
 alter table EVENEMENT_CIVIL drop column HAB_PRINCIPAL;
 alter table EVENEMENT_CIVIL drop column HAB_CONJOINT;
+
+-- [SIFISC-4560] passage de number(10,0) à number(19,0) de la colonne AUDIT_LOG.EVT_ID
+alter table AUDIT_LOG modify (EVT_ID number(19,0));

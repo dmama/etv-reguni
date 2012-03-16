@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.audit;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -32,101 +33,88 @@ public class Audit {
 	/**
 	 * Methode qui log une ligtne d'audit en SUCCESS
 	 *
-	 * @param evtId
-	 * @param message
+	 * @param evtId   le numéro de l'événement
+	 * @param message le message à logger
 	 */
 	public static void success(long evtId, String message) {
-		logAuditLine(AuditLevel.SUCCESS, message, (int) evtId, null);
-	}
-
-	public static void success(int evtId, String message) {
 		logAuditLine(AuditLevel.SUCCESS, message, evtId, null);
 	}
 
-	public static void success(Long evtId, String message) {
-		logAuditLine(AuditLevel.SUCCESS, message, (evtId == null ? null : evtId.intValue()), null);
+	public static void success(int evtId, String message) {
+		logAuditLine(AuditLevel.SUCCESS, message, (long) evtId, null);
 	}
 
-	public static void success(Integer evtId, String message) {
+	public static void success(Long evtId, String message) {
 		logAuditLine(AuditLevel.SUCCESS, message, evtId, null);
 	}
 
 	/**
 	 * Methode qui log une ligtne d'audit en INFO
 	 *
-	 * @param evtId
-	 * @param message
+	 * @param evtId   le numéro de l'événement
+	 * @param message le message à logger
 	 */
 	public static void info(long evtId, String message) {
-		logAuditLine(AuditLevel.INFO, message, (int) evtId, null);
-	}
-
-	public static void info(int evtId, String message) {
 		logAuditLine(AuditLevel.INFO, message, evtId, null);
 	}
 
-	public static void info(Long evtId, String message) {
-		logAuditLine(AuditLevel.INFO, message, (evtId == null ? null : evtId.intValue()), null);
+	public static void info(int evtId, String message) {
+		logAuditLine(AuditLevel.INFO, message, (long) evtId, null);
 	}
 
-	public static void info(Integer evtId, String message) {
+	public static void info(Long evtId, String message) {
 		logAuditLine(AuditLevel.INFO, message, evtId, null);
 	}
 
 	/**
 	 * Methode qui log une ligtne d'audit en WARNING
 	 *
-	 * @param evtId
-	 * @param message
+	 * @param evtId   le numéro de l'événement
+	 * @param message le message à logger
 	 */
 	public static void warn(long evtId, String message) {
-		logAuditLine(AuditLevel.WARN, message, (int) evtId, null);
-	}
-
-	public static void warn(int evtId, String message) {
 		logAuditLine(AuditLevel.WARN, message, evtId, null);
 	}
 
-	public static void warn(Long evtId, String message) {
-		logAuditLine(AuditLevel.WARN, message, (evtId == null ? null : evtId.intValue()), null);
+	public static void warn(int evtId, String message) {
+		logAuditLine(AuditLevel.WARN, message, (long) evtId, null);
 	}
 
-	public static void warn(Integer evtId, String message) {
+	public static void warn(Long evtId, String message) {
 		logAuditLine(AuditLevel.WARN, message, evtId, null);
 	}
 
 	/**
 	 * Methode qui log une ligtne d'audit en ERROR
 	 *
-	 * @param evtId
-	 * @param message
+	 * @param evtId le numéro de l'événement
+	 * @param e     l'exception à levée
 	 */
 	public static void error(Long evtId, Exception e) {
 		String m = e.getMessage();
 		if (m == null) {
 			m = e.getClass().getSimpleName();
 		}
-		logAuditLine(AuditLevel.ERROR, m, (evtId == null ? null : evtId.intValue()), null);
+		logAuditLine(AuditLevel.ERROR, m, evtId, null);
 	}
 
 	public static void error(long evtId, String message) {
-		logAuditLine(AuditLevel.ERROR, message, (int) evtId, null);
-	}
-
-	public static void error(int evtId, String message) {
 		logAuditLine(AuditLevel.ERROR, message, evtId, null);
 	}
 
-	public static void error(Long evtId, String message) {
-		logAuditLine(AuditLevel.ERROR, message, (evtId == null ? null : evtId.intValue()), null);
+	public static void error(int evtId, String message) {
+		logAuditLine(AuditLevel.ERROR, message, (long) evtId, null);
 	}
 
-	public static void error(Integer evtId, String message) {
+	public static void error(Long evtId, String message) {
 		logAuditLine(AuditLevel.ERROR, message, evtId, null);
 	}
 
 	/**
 	 * Stocke un message de succès dans l'audit avec une référence sur un document
+	 *
+	 * @param message le message à logger
+	 * @param doc     le document associé au message
 	 */
 	public static void success(String message, Document doc) {
 		Long id = doc.getId();
@@ -136,6 +124,9 @@ public class Audit {
 
 	/**
 	 * Ajoute un message d'erreur dans l'audit avec une référence sur un document
+	 *
+	 * @param message le message à logger
+	 * @param doc     le document associé au message
 	 */
 	public static void error(String message, Document doc) {
 		Long id = doc.getId();
@@ -145,6 +136,9 @@ public class Audit {
 
 	/**
 	 * Ajoute un message d'info dans l'audit avec une référence sur un document
+	 *
+	 * @param message le message à logger
+	 * @param doc     le document associé au message
 	 */
 	public static void info(String message, Document doc) {
 		Long id = doc.getId();
@@ -156,7 +150,7 @@ public class Audit {
 		return Thread.currentThread().getId();
 	}
 
-	private static void logAuditLine(AuditLevel level, String message, Integer evtId, Long docId) {
+	private static void logAuditLine(AuditLevel level, String message, @Nullable Long evtId, @Nullable Long docId) {
 		LOGGER.log(level.asLog4j(), PREFIX + message);
 
 		try {
