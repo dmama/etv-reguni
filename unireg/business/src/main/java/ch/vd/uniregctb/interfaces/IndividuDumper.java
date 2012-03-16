@@ -8,7 +8,9 @@ import java.util.List;
 
 import gnu.trove.TIntObjectHashMap;
 
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -47,7 +49,7 @@ public abstract class IndividuDumper {
 				else {
 					s.append(", ");
 				}
-				s.append(dump(individu, false, false));
+				s.append(dump(individu, false, false, false));
 			}
 		}
 		return s.toString();
@@ -59,13 +61,14 @@ public abstract class IndividuDumper {
 	 * @param individu       un individu
 	 * @param ignoreSpecific <b>vrai</b> si les différences connues et normales entre Reg-PP et RcPers doivent être ignorées; <b>faux</b> autrement.
 	 * @param ignoreBugs     <b>vrai</b> si les différences entre Reg-PP et RcPers dues à des bugs RcPers doivent être ignorées; <b>faux</b> autrement.
+	 * @param validateAVS    <b>vrai</b> s'il faut valider les numéros AVS et considérer comme nuls ceux qui ne valident pas.
 	 * @return une string qui représente les données de l'individu.
 	 */
-	public static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs) {
-		return dump(individu, ignoreSpecific, ignoreBugs, 0);
+	public static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs, boolean validateAVS) {
+		return dump(individu, ignoreSpecific, ignoreBugs, validateAVS, 0);
 	}
 
-	private static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
+	private static String dump(Individu individu, boolean ignoreSpecific, boolean ignoreBugs, boolean validateAVS, int depth) {
 		if (individu == null) {
 			return "null";
 		}
@@ -88,11 +91,11 @@ public abstract class IndividuDumper {
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("noAvs11=").append(dumpString(individu.getNoAVS11())).append(", \n");
+		s.append(tab(depth + 1)).append("noAvs11=").append(dumpAVS11(individu.getNoAVS11(), validateAVS, individu.getDateNaissance(), individu.isSexeMasculin())).append(", \n");
 		s.append(tab(depth + 1)).append("noTechnique=").append(individu.getNoTechnique()).append(", \n");
 		s.append(tab(depth + 1)).append("nom=").append(dumpString(individu.getNom())).append(", \n");
 		s.append(tab(depth + 1)).append("nomNaissance=").append(dumpString(individu.getNomNaissance())).append(", \n");
-		s.append(tab(depth + 1)).append("nouveauNoAvs=").append(dumpString(individu.getNouveauNoAVS())).append(", \n");
+		s.append(tab(depth + 1)).append("noAvs13=").append(dumpAVS13(individu.getNouveauNoAVS(), validateAVS)).append(", \n");
 		s.append(tab(depth + 1)).append("numeroRCE=").append(dumpString(individu.getNumeroRCE())).append(", \n");
 		s.append(tab(depth + 1)).append("origines=").append(dumpOrigines(individu.getOrigines(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsversIndividus(individu.getParents(), depth + 1, ignoreBugs)).append(", \n");
@@ -100,15 +103,16 @@ public abstract class IndividuDumper {
 			s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), depth + 1)).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
+		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.isSexeMasculin())).append(", \n");
 		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1, ignoreSpecific, ignoreBugs)).append(", \n");
+			s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1, ignoreSpecific, ignoreBugs, validateAVS)).append(", \n");
 		}
 		s.append(tab(depth)).append("}");
 
 		return s.toString();
 	}
 
-	private static String dumpTutelle(Tutelle tutelle, int depth, boolean ignoreSpecific, boolean ignoreBugs) {
+	private static String dumpTutelle(Tutelle tutelle, int depth, boolean ignoreSpecific, boolean ignoreBugs, boolean validateAVS) {
 		if (tutelle == null) {
 			return "null";
 		}
@@ -121,7 +125,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("noSequence=").append(tutelle.getNoSequence()).append(", \n");
 		s.append(tab(depth + 1)).append("nomAutoriteTutelaire=").append(dumpString(tutelle.getNomAutoriteTutelaire())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroCollectiviteAutoriteTutelaire=").append(tutelle.getNumeroCollectiviteAutoriteTutelaire()).append(", \n");
-		s.append(tab(depth + 1)).append("tuteur=").append(dump(tutelle.getTuteur(), ignoreSpecific, ignoreBugs, depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("tuteur=").append(dump(tutelle.getTuteur(), ignoreSpecific, ignoreBugs, validateAVS, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("tuteurGeneral=").append(dumpTuteurGeneral(tutelle.getTuteurGeneral(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(tutelle.getTypeTutelle()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -321,9 +325,7 @@ public abstract class IndividuDumper {
 
 		StringBuilder s = new StringBuilder();
 		s.append("RelationVersIndividu{\n");
-		if (!ignoreBugs) {
-			s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
-		}
+		s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
 		s.append(tab(depth + 1)).append("dateFin=").append(rel.getDateFin()).append(", \n");
 		s.append(tab(depth + 1)).append("numeroAutreIndividu=").append(rel.getNumeroAutreIndividu()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -379,25 +381,34 @@ public abstract class IndividuDumper {
 			s.append(tab(depth + 1)).append("casePostale=").append(dumpCasePostale(a.getCasePostale(), depth + 1)).append(", \n");
 			s.append(tab(depth + 1)).append("communeAdresse=").append(dumpCommune(a.getCommuneAdresse(), ignoreSpecific, depth + 1)).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
-		if (!ignoreBugs || a.getTypeAdresse() != TypeAdresseCivil.COURRIER) { // SIREF-1487
-			s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
+		if (!ignoreBugs || a.getTypeAdresse() != TypeAdresseCivil.COURRIER) { // SIREF-1816
+			s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("egid=").append(a.getEgid()).append(", \n");
-		s.append(tab(depth + 1)).append("ewid=").append(a.getEwid()).append(", \n");
+		s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
 		if (!ignoreSpecific) {
+			// Host-interfaces contient très peu d'egid/ewid, inutile de comparer avec RcPers
+			s.append(tab(depth + 1)).append("egid=").append(a.getEgid()).append(", \n");
+			s.append(tab(depth + 1)).append("ewid=").append(a.getEwid()).append(", \n");
+			// Les localisation précédentes/suivantes n'existent pas dans Host-interfaces
+			// Les localisation précédentes/suivantes n'existent pas dans Host-interfaces
 			s.append(tab(depth + 1)).append("localisationPrecedente=").append(dumpLocalisation(a.getLocalisationPrecedente(), depth + 1)).append(", \n");
 			s.append(tab(depth + 1)).append("localisationSuivante=").append(dumpLocalisation(a.getLocalisationSuivante(), depth + 1)).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("localite=").append(dumpString(a.getLocalite())).append(", \n");
 		s.append(tab(depth + 1)).append("noOfsPays=").append(a.getNoOfsPays()).append(", \n");
-		s.append(tab(depth + 1)).append("numero=").append(dumpString(a.getNumero())).append(", \n");
+		if (!ignoreSpecific) {
+			// RcPers a épuré la plupart des rues/numéros, à tel point que comparer avec Host-interfaces n'est plus possible
+			s.append(tab(depth + 1)).append("numero=").append(dumpString(a.getNumero())).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("numeroAppartement=").append(dumpString(a.getNumeroAppartement())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroOrdrePostal=").append(a.getNumeroOrdrePostal()).append(", \n");
 		s.append(tab(depth + 1)).append("numeroPostal=").append(dumpString(a.getNumeroPostal())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroPostalComplementaire=").append(dumpString(a.getNumeroPostalComplementaire())).append(", \n");
 		s.append(tab(depth + 1)).append("numeroRue=").append(a.getNumeroRue()).append(", \n");
-		s.append(tab(depth + 1)).append("rue=").append(dumpString(a.getRue())).append(", \n");
+		if (!ignoreSpecific) {
+			// RcPers a épuré la plupart des rues/numéros, à tel point que comparer avec Host-interfaces n'est plus possible
+			s.append(tab(depth + 1)).append("rue=").append(dumpString(a.getRue())).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("titre=").append(dumpString(a.getTitre())).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(a.getTypeAdresse()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -541,6 +552,33 @@ public abstract class IndividuDumper {
 			tabs.put(n, t);
 		}
 		return t;
+	}
+
+	private static String dumpAVS11(String s, boolean validateAVS, RegDate dateNaissance, boolean isMasculin) {
+		if (s == null) {
+			return "null";
+		}
+		if (validateAVS && !AvsHelper.isValidAncienNumAVS(s, dateNaissance, isMasculin)) {
+			return "null";
+		}
+		if (s.endsWith("000") || s.endsWith("999")) { // RcPers considère comme invalides les numéros qui finissent avec ces modulos
+			return "null";
+		}
+		return "\"" + s + "\"";
+	}
+
+	private static String dumpAVS13(String s, boolean validateAVS) {
+		if (s == null) {
+			return "null";
+		}
+		if (validateAVS && !AvsHelper.isValidNouveauNumAVS(s)) {
+			return "null";
+		}
+		return "\"" + s + "\"";
+	}
+
+	private static String dumpSexe(boolean sexeMasculin) {
+		return sexeMasculin ? "MASCULIN" : "FEMININ";
 	}
 
 	private static String dumpString(String s) {

@@ -126,7 +126,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			final Individu individu = target.getIndividu(noIndividu, date, parties);
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace(String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
-						IndividuDumper.dump(individu, false, false)));
+						IndividuDumper.dump(individu, false, false, false)));
 			}
 			return individu;
 		}
@@ -151,7 +151,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		try {
 			final Individu individu = target.getConjoint(noIndividuPrincipal, date);
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(String.format("getConjoint(noIndividuPrincipal=%d, date=%s) => %s", noIndividuPrincipal, ServiceTracing.toString(date), IndividuDumper.dump(individu, false, false)));
+				LOGGER.trace(String.format("getConjoint(noIndividuPrincipal=%d, date=%s) => %s", noIndividuPrincipal, ServiceTracing.toString(date), IndividuDumper.dump(individu, false, false, false)));
 			}
 			return individu;
 		}
