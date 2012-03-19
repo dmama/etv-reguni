@@ -125,6 +125,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (StringUtils.isNotBlank(individu.getNoAVS11())) {
 			identification.getOtherPersonId().add(new NamedPersonId(CH_AHV, individu.getNoAVS11())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf
 		}
+		if (StringUtils.isNotBlank(individu.getNumeroRCE())) {
+			identification.getOtherPersonId().add(new NamedPersonId(CH_ZAR, individu.getNumeroRCE()));  // [SIFISC-4352]
+		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(individu.getDateNaissance()));
 		return identification;
 	}
