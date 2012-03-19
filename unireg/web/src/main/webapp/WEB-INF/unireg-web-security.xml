@@ -17,11 +17,11 @@
 	<bean id="iamAuthFilter" class="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
 		<property name="detailsClass" value="ch.vd.uniregctb.security.UniregSecurityDetails" />
 		<property name="allowedRoles">
-			<list>
+			<set>
 				<value>user</value>
 				<value>user_externe</value>
 				<value>tester</value>
-			</list>
+			</set>
 		</property>
 	</bean>
 
@@ -69,11 +69,11 @@
 	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
 		<constructor-arg value="/logoutIAM.do" />
 		<constructor-arg>
-			<list>
+			<array>
 				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
 					<property name="invalidateHttpSession" value="true" />
 				</bean>
-			</list>
+			</array>
 		</constructor-arg>
 		<property name="filterProcessesUrl" value="/logout"/>
 	</bean>

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManagerImpl;
 import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
@@ -29,11 +30,14 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 @SuppressWarnings("unchecked")
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
-	private final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
+
+	private static final long TIMEOUT_RECYCLAGE = 5000; // ms
 
 	private EvenementCivilEchDAO evenementDAO;
 	private EvenementCivilEchService evenementService;
 	private EvenementCivilNotificationQueue evenementNotificationQueue;
+	private EvenementCivilEchProcessor evenementProcessor;
 
 	@SuppressWarnings("unused")
 	public void setEvenementDAO(EvenementCivilEchDAO evenementDAO) {
@@ -48,6 +52,11 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@SuppressWarnings("unused")
 	public void setEvenementNotificationQueue(EvenementCivilNotificationQueue evtCivilNotificationQueue) {
 		this.evenementNotificationQueue = evtCivilNotificationQueue;
+	}
+
+	@SuppressWarnings("unused")
+	public void setEvenementProcessor(EvenementCivilEchProcessor evenementProcessor) {
+		this.evenementProcessor = evenementProcessor;
 	}
 
 	@Override
@@ -70,8 +79,9 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 	@Override
 	@Transactional (rollbackFor = Throwable.class)
-	public void recycleEvenementCivil(Long id) {
+	public boolean recycleEvenementCivil(Long id) {
 		EvenementCivilEch evt = evenementDAO.get(id);
+		boolean individuRecycle = false;
 		if (evt==null) {
 			throw newObjectNotFoundException(id);
 		}
@@ -81,10 +91,18 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 		if (list.get(0).getId() == id) {
 			// L'evenement est recyclable
-			evenementNotificationQueue.post(evt.getNumeroIndividu());
+			EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
+			EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
+			try {
+				evenementNotificationQueue.post(evt.getNumeroIndividu());
+				individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
+			} finally {
+				evenementProcessor.unregisterListener(listnerHandle);
+			}
 		} else {
 			LOGGER.warn(String.format("Tentative incoherente de recyclage de l'evenement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", id));
 		}
+		return individuRecycle;
 	}
 
 	@Override
@@ -185,4 +203,48 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 	}
 
+	private static class EvenementCivilEchProcessorListener implements EvenementCivilEchProcessor.Listener {
+
+		private final long dureeTimeout;
+		private final Long individuAttendu;
+		private volatile boolean traitementOk = false;
+
+		private EvenementCivilEchProcessorListener(Long individuAttendu, long dureeTimeout) {
+			if (individuAttendu == null) {
+				throw new NullPointerException("l'individu attendu ne peut être null");
+			}
+			if (dureeTimeout < 10) {
+				throw new IllegalArgumentException("la durée du timeout doit être supérieur à 10");
+			}
+			this.dureeTimeout = dureeTimeout;
+			this.individuAttendu = individuAttendu;
+		}
+		
+		@Override
+		public void onIndividuTraite(long noIndividu) {
+			if (noIndividu == individuAttendu) {
+				synchronized (this) {
+					traitementOk = true;
+					notifyAll();
+				}
+			}
+		}
+
+		public synchronized boolean donneUneChanceAuTraitementDeSeTerminer() {
+			long timeout = System.currentTimeMillis() + dureeTimeout;
+			while (!traitementOk && System.currentTimeMillis() < timeout){
+				try {
+					wait(dureeTimeout / 10);
+				}
+				catch (InterruptedException e) {
+					LOGGER.warn(e.getMessage(),e );
+					break;
+				}
+			}
+			return traitementOk;
+		}
+
+		@Override
+		public void onStop() {}
+	}
 }

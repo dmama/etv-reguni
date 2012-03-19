@@ -10,6 +10,8 @@
 
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
 
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>
+
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
 
 	<bean id="extractionService" class="ch.vd.uniregctb.extraction.MockExtractionService"/>
