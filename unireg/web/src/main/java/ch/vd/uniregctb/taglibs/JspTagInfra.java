@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
@@ -22,7 +23,7 @@ public class JspTagInfra extends BodyTagSupport {
 
 	private static final long serialVersionUID = -8958197495549589352L;
 
-	// private final Logger LOGGER = Logger.getLogger(JspTagInfra.class);
+	private final Logger LOGGER = Logger.getLogger(JspTagInfra.class);
 
 	private String entityType;
 	private Integer entityId;
@@ -70,7 +71,7 @@ public class JspTagInfra extends BodyTagSupport {
 
 		final Invocator invocator = invocators.get(entityType);
 		if (invocator == null) {
-			throw new RuntimeException("Le type d'entité '" + entityType + "' n'est pas connu du service infrastructure.");
+			throw new JspException("Le type d'entité '" + entityType + "' n'est pas connu du service infrastructure.");
 		}
 
 		Object property = null;
@@ -88,7 +89,8 @@ public class JspTagInfra extends BodyTagSupport {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeException(e);
+			LOGGER.error(e.getMessage(), e);
+			throw new JspException(e);
 		}
 
 		if (property != null) {
@@ -104,6 +106,7 @@ public class JspTagInfra extends BodyTagSupport {
 				pageContext.getOut().print(b.toString());
 			}
 			catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
 				throw new JspException(e);
 			}
 		}
