@@ -1313,6 +1313,64 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	@Test
+	public void testHandleDemande_E_FACTURE_SANS_MANUEL() throws Exception {
+
+		// création d'un contribuable
+		final Long numeroZora = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				zora.setNumeroAssureSocial("7569613127861");
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemandeE_Facture("7569613127861");
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora est trouvée
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertEquals(numeroZora,reponse.getNoContribuable());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
+
+
+
+	@Test
 	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
 
 		// création d'un contribuable
@@ -2144,6 +2202,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return createDemandeNCS(personne, mode);
 	}
 
+	private static IdentificationContribuable createDemandeE_Facture(final String navs13) {
+
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNAVS13(navs13);
+
+		return createDemandeE_Facture(personne);
+	}
+
 	private static IdentificationContribuable createDemandeMeldewesen(final String prenoms, final String nom, final String noAVS13) {
 
 		final CriteresPersonne personne = new CriteresPersonne();
@@ -2230,6 +2296,31 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		return message;
 	}
+
+	private static IdentificationContribuable createDemandeE_Facture(CriteresPersonne personne) {
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessId("123456");
+		header.setBusinessUser("Test");
+		header.setReplyTo("Test");
+
+		final Demande demande = new Demande();
+		demande.setEmetteurId("Test");
+		demande.setMessageId("1111");
+		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+		demande.setTypeMessage("CYBER_EFACTURE");
+		demande.setDate(DateHelper.getCurrentDate());
+		demande.setPeriodeFiscale(2012);
+		demande.setPersonne(personne);
+		demande.setTypeDemande(TypeDemande.E_FACTURE);
+
+		final IdentificationContribuable message = new IdentificationContribuable();
+		message.setHeader(header);
+		message.setDemande(demande);
+
+		return message;
+	}
+
 
 	private void assertCountDemandes(final int count) throws Exception {
 		doInTransaction(new TransactionCallback<Object>() {

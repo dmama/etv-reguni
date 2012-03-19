@@ -682,6 +682,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		case NCS:
 			soumettreMessageNCS(message);
 			break;
+		case E_FACTURE:
+			soumettreMessageEfacture(message);
+			break;
 		default:
 			traiterException(message, new IllegalArgumentException("Type de demande inconnue"));
 		}
@@ -690,17 +693,20 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void soumettreMessageNCS(IdentificationContribuable message) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Le message n°" + message.getId() + " passe en traitement NCS.");
-		}
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement NCS.");
 		soumettreMessage(message);
 	}
 
 	private void soumettreMessageMeldewesen(IdentificationContribuable message) {
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Le message n°" + message.getId() + " passe en traitement Meldewesen.");
-		}
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement Meldewesen.");
+		soumettreMessage(message);
+
+	}
+
+	private void soumettreMessageEfacture(IdentificationContribuable message) {
+
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement E_FACTURE.");
 		soumettreMessage(message);
 
 	}

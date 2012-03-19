@@ -35,6 +35,7 @@ import ch.vd.uniregctb.type.Sexe;
 public abstract class XmlEntityAdapter {
 
 	public static final String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
+	public static final String TYPE_MESSAGE_EFACTURE = "CYBER_EFACTURE";
 
 	private static final Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
 
@@ -230,6 +231,9 @@ public abstract class XmlEntityAdapter {
 		//TODO(BNM) à adapter en fonction du type de demande reçu. En attente d'une nouvelle XSD
 		if (TYPE_MESSAGE_NCS.equals(xml.getDemande().getTypeMessage())) {
 			entity.setTypeDemande(TypeDemande.NCS);
+		}
+		else if (TYPE_MESSAGE_EFACTURE.equals(xml.getDemande().getTypeMessage())) {
+			entity.setTypeDemande(TypeDemande.E_FACTURE);
 		}
 		else {
 			entity.setTypeDemande(TypeDemande.MELDEWESEN);

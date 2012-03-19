@@ -5,7 +5,9 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
  */
 public enum TypeDemande {
 	MELDEWESEN("MELDEWESEN"),
-	NCS("NCS");
+	NCS("NCS"),
+	E_FACTURE("E_FACTURE");
+
 
 	private final String name;
 
