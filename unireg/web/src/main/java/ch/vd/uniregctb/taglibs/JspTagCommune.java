@@ -5,6 +5,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -16,6 +17,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  * Tag jsp qui permet de récupérer les éléments d'une commune (à une date donnée) depuis l'infrastructure
  */
 public class JspTagCommune extends BodyTagSupport {
+
+	private final Logger LOGGER = Logger.getLogger(JspTagCommune.class);
 
 	private Integer ofs;
 	private String displayProperty;
@@ -41,7 +44,8 @@ public class JspTagCommune extends BodyTagSupport {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeException(e);
+			LOGGER.error(e.getMessage(), e);
+			throw new JspException(e);
 		}
 
 		if (property != null) {
@@ -57,6 +61,7 @@ public class JspTagCommune extends BodyTagSupport {
 				pageContext.getOut().print(b.toString());
 			}
 			catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
 				throw new JspException(e);
 			}
 		}
