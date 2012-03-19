@@ -190,7 +190,6 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
-		<property name="hostCivilService" ref="hostCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />

@@ -21,9 +21,9 @@ import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -43,7 +43,6 @@ import ch.vd.uniregctb.mouvement.view.ContribuableView;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -65,8 +64,6 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	private AdresseService adresseService;
 
 	private ServiceInfrastructureService serviceInfra;
-
-	private HostCivilService hostCivilService;
 
 	private ServiceSecuriteService serviceSecuriteService;
 
@@ -121,10 +118,6 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	protected ServiceInfrastructureService getServiceInfra() {
 		return serviceInfra;
-	}
-
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
 	}
 
 	public void setServiceSecuriteService(ServiceSecuriteService serviceSecuriteService) {
@@ -323,18 +316,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	private InfoCollaborateur getInfosCollaborateur(long noIndividu) {
 
-		String nomUtilisateur;
-		try {
-			nomUtilisateur = hostCivilService.getNomUtilisateur(noIndividu);
-		}
-		catch (IndividuNotFoundException e) {
-			nomUtilisateur = e.getMessage();
-		}
-
 		final Operateur operateur = serviceSecuriteService.getOperateur(noIndividu);
+		final String nomUtilisateur;
 		final String visaOperateur;
 		final String noTelephone;
 		if (operateur != null) {
+			final NomPrenom nomPrenomOperateur = new NomPrenom(operateur.getNom(), operateur.getPrenom());
+			nomUtilisateur = nomPrenomOperateur.getNomPrenom();
 			visaOperateur = operateur.getCode();
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
 			if (collectivites != null) {
@@ -354,6 +342,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		else {
 			visaOperateur = null;
 			noTelephone = null;
+			nomUtilisateur = null;
 		}
 		return new InfoCollaborateur(noIndividu, nomUtilisateur, noTelephone, visaOperateur);
 	}
