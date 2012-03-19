@@ -1219,6 +1219,61 @@ public class PartyWebServiceTest extends WebserviceTest {
 	}
 
 	/**
+	 * [SIFISC-4352] Vérifie que le numéro RCE d'un habitant est bien retourné sur la catégorie "CH.ZAR"
+	 */
+	@Test
+	public void testGetPartyNoRCE() throws Exception {
+
+		final long noInd = 123456L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1977, 3, 21), "Félix", "Talog", true);
+				ind.setNoAVS11("12345678113");
+				ind.setNumeroRCE("0453.2123/4");
+			}
+		});
+
+		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.<PartyPart>emptyList());
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+
+		final NaturalPerson np = (NaturalPerson) party;
+		final PersonIdentification ident = np.getIdentification();
+		assertNotNull(ident);
+
+		final List<NamedPersonId> otherIds = ident.getOtherPersonId();
+		assertNotNull(otherIds);
+		assertEquals(2, otherIds.size());
+
+		Collections.sort(otherIds, new Comparator<NamedPersonId>() {
+			@Override
+			public int compare(NamedPersonId o1, NamedPersonId o2) {
+				return o1.getPersonIdCategory().compareTo(o2.getPersonIdCategory());
+			}
+		});
+
+		final NamedPersonId otherId0 = otherIds.get(0);
+		assertNotNull(otherId0);
+		assertEquals("CH.AHV", otherId0.getPersonIdCategory());
+		assertEquals("12345678113", otherId0.getPersonId());
+
+		final NamedPersonId otherId1 = otherIds.get(1);
+		assertNotNull(otherId1);
+		assertEquals("CH.ZAR", otherId1.getPersonIdCategory());
+		assertEquals("0453.2123/4", otherId1.getPersonId());
+	}
+
+	/**
 	 * [SIFISC-4351] Vérifie que le motif de rattachement (taxLiabilityReason) est bien renseigné sur les fors secondaires (otherTaxResidences).
 	 */
 	@Test
