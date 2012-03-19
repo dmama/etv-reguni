@@ -17,7 +17,7 @@ function find_last_report() {
 function mail_body() {
 	echo "Bonjour,"
 	echo
-	echo "Vous voudrez bien trouver ci-joint les dernières statistiques des événements reçus pas l'application UNIREG en production."
+	echo "Vous voudrez bien trouver ci-joint les dernières statistiques des événements reçus par l'application UNIREG en production."
 	echo "Bonne lecture !"
 	echo
 	echo "(ceci est un message automatique)"
