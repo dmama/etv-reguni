@@ -34,14 +34,13 @@
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="get" id="formRechercheEvenements" commandName="evenementEchCriteria">
 			<fieldset>
-				${command.modeLotEvenement ?  "true" : "false"}
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="form.jsp"/>
 			</fieldset>
 		</form:form>
 
-        <c:set var="sortable" value='${command.modeLotEvenement}' scope="page" />
+        <c:set var="sortable" value='${not evenementEchCriteria.modeLotEvenement}' scope="page" />
 		<display:table 	name="listEvenementsEch" id="tableEvtsEch" pagesize="25" requestURI="/evenement/ech/nav-list.do" defaultsort="1" defaultorder="descending" sort="external" class="display_table" partialList="true" size="listEvenementsEchSize">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.evenement.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner"><fmt:message key="banner.un.evenement.trouve" /></span></display:setProperty>
@@ -66,7 +65,7 @@
 			</display:column>
 			<!-- Type evt -->
 			<display:column sortable ="${sortable}" titleKey="label.type.evenement" sortName="type">
-				<fmt:message key="option.type.evenement.${tableEvtsEch.type}" />
+				<fmt:message key="option.type.evenement.ech.${tableEvtsEch.type}" />
 			</display:column>
 			<!-- Date evenement -->
 			<display:column sortable ="${sortable}" titleKey="label.date.evenement" sortName="dateEvenement">
