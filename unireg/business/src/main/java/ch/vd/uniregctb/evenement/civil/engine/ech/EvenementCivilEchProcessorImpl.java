@@ -319,6 +319,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
+				evt.setCommentaireTraitement(null);
 				evt.getErreurs().clear();
 				evt.getErreurs().add(erreur);
 				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
@@ -406,6 +407,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
 
 		// élimination des erreurs en cas de retraitement
+		event.setCommentaireTraitement(null);
 		event.getErreurs().clear();
 
 		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<EvenementCivilEchErreur>(ERREUR_FACTORY);
