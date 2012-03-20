@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import ch.vd.fidor.ws.v2.Acces;
@@ -18,6 +19,10 @@ import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.SimpleCacheStats;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -39,19 +44,55 @@ import ch.vd.uniregctb.webservice.fidor.FidorClient;
 /**
  * Implémentation Fidor du service d'infrastructure [UNIREG-2187].
  */
-public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
+public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, UniregCacheInterface,InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureFidor.class);
 
+	/**
+	 * Cache des URLs de Fidor
+	 */
 	private Map<ApplicationFiscale, String> urlsApplication = null;
+	private SimpleCacheStats urlsStats = new SimpleCacheStats();
+
 	private long lastTentative = 0;
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
 
 	private FidorClient fidorClient;
+	private UniregCacheManager uniregCacheManager;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
+		this.uniregCacheManager = uniregCacheManager;
+	}
+
+	@Override
+	public String getName() {
+		return "URLS-FIDOR";
+	}
+
+	@Override
+	public String getDescription() {
+		return "urls de fidor";
+	}
+
+	@Override
+	public CacheStats buildStats() {
+		return urlsStats;
+	}
+
+	@Override
+	public void reset() {
+		urlsApplication = null;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		uniregCacheManager.register(this);
 	}
 
 	@Override
@@ -299,7 +340,11 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw {
 	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
 		if (urlsApplication == null) {
+			urlsStats.addMiss();
 			initUrls();
+		}
+		else {
+			urlsStats.addHit();
 		}
 		if (urlsApplication == null) {
 			return null;

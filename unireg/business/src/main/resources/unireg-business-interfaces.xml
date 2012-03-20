@@ -11,6 +11,7 @@
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureFidor">
 		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 
 	<bean id="serviceInfrastructureMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureMarshaller">
