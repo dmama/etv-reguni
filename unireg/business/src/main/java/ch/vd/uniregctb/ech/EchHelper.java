@@ -145,6 +145,9 @@ public abstract class EchHelper {
 			return TypeEtatCivil.PACS;
 		}
 		else if ("7".equals(maritalStatus)) { // Partenariat dissous...
+			if (cancelationReason == null) { // FIXME (rcpers) la valeur devrait toujours être renseignée, supprimer ce check lorsque SIREF-1834 sera résolu
+				return TypeEtatCivil.PACS_TERMINE;
+			}
 			if ("1".equals(cancelationReason)) {
 				// Partenariat dissous judiciairement
 				return TypeEtatCivil.PACS_TERMINE;
