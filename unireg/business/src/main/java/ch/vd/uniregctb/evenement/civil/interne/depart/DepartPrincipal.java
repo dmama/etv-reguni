@@ -104,10 +104,7 @@ public class DepartPrincipal extends Depart {
 		Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
 
-		// la nouvelle commune est toujours dans le canton de vaud
-		if (isDepartVaudois()) {
-			erreurs.addErreur("La nouvelle commune est toujours dans le canton de Vaud");
-		}
+
 	}
 
 

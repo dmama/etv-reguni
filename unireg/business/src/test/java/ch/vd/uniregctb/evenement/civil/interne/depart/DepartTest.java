@@ -566,8 +566,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	/**
 	 * Teste de validation que la nouvelle commune principale n'est pas dans le canton de vaud
+	 * Selon SIFISC-4230 et SIFISC-4584 les départs vaudois sont ignorés
 	 */
-	@Test
+	@Ignore
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateNouvelleCommunePrinHorsCanton() throws Exception {
 
