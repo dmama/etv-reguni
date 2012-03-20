@@ -117,7 +117,12 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
-		this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
+		try {
+			this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
+		}
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
+		}
 		if (relationships != null) {
 			this.enfants = initEnfants(relationships);
 			this.parents = initParents(this.naissance, relationships);

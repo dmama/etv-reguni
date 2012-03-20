@@ -82,6 +82,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 	}
 
 	@Override
