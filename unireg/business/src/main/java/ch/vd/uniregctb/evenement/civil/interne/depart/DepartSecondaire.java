@@ -38,8 +38,9 @@ public class DepartSecondaire extends Depart {
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
 	}
 
-	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Commune communePrincipale, Adresse ancienneAdresseSecondaire, Commune ancienneCommuneSecondaire, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adressePrincipale, communePrincipale, context);
+	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Commune communePrincipale,
+	                           Adresse ancienneAdresseSecondaire, Commune ancienneCommuneSecondaire, EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adressePrincipale, communePrincipale, context, isRegPP);
 		this.ancienneAdresse = ancienneAdresseSecondaire;
 		this.ancienneCommune = ancienneCommuneSecondaire;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;

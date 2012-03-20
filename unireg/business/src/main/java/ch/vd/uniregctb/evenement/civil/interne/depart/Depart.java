@@ -86,11 +86,16 @@ public abstract class Depart extends Mouvement {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Depart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale, EvenementCivilContext context) {
+	protected Depart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale,
+	                 EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, null, null, context);
 		this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
 		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
+		//SIFISC-4230 Pour les evenements regPP, les départs vaudois doivent partir en erreur
+		if (isDepartVaudois() && isRegPP) {
+			throw new EvenementCivilException("La nouvelle commune est toujours dans le canton de Vaud");
+		}
 
 
 	}

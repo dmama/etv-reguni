@@ -48,8 +48,8 @@ public class DepartPrincipal extends Depart {
 	 */
 	@SuppressWarnings({"JavaDoc"})
 	protected DepartPrincipal(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse ancienneAdressePrincipale, Commune ancienneCommunePrincipale,
-	                          Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, nouvelleCommunePrincipale, context);
+	                          Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale, EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, nouvelleCommunePrincipale, context, isRegPP);
 		this.ancienneAdresse = ancienneAdressePrincipale;
 		this.ancienneCommune = ancienneCommunePrincipale;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
