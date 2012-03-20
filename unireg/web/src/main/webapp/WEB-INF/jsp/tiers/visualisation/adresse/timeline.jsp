@@ -54,6 +54,8 @@
 				</c:forEach>
 			</ul>
 
+			<c:set var="cellCounter" value="${0}" />
+
 			<c:forEach var="table" varStatus="i" items="${command.tables}">
 				<div id="tabs-${i.index}">
 
@@ -64,8 +66,6 @@
 								<th><c:out value="${colonne.description}"/></th>
 							</c:forEach>
 						</tr>
-
-						<c:set var="cellCounter" value="${0}" />
 
 						<c:forEach var="ligne" varStatus="status" items="${table.rows}" >
 							<tr>
