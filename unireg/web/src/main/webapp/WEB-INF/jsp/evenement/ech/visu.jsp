@@ -33,8 +33,8 @@
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
             <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
-            <td width="25%"><fmt:message key="label.commune.evenement"/> :</td>
-            <td width="25%">&nbsp;</td>
+            <td width="25%"><fmt:message key="label.action.evenement"/> :</td>
+            <td width="25%"><fmt:message key="option.action.evenement.ech.${command.evtAction}"/></td>
         </tr>
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>

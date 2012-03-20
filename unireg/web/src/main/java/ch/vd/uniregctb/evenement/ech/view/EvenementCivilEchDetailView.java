@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
@@ -14,6 +15,7 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 	private static final long serialVersionUID = 7000273271978471047L;
 
 	private TypeEvenementCivilEch evtType;
+	private ActionEvenementCivilEch evtAction;
 	private boolean recyclable;
 	private EvenementCivilEchBasicInfo evtPrioritaire;
 	private int totalAutresEvenementsAssocies;
@@ -63,4 +65,12 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 		return totalAutresEvenementsAssocies;
 	}
 
+	@SuppressWarnings("unused")
+	public ActionEvenementCivilEch getEvtAction() {
+		return evtAction;
+	}
+
+	public void setEvtAction(ActionEvenementCivilEch evtAction) {
+		this.evtAction = evtAction;
+	}
 }

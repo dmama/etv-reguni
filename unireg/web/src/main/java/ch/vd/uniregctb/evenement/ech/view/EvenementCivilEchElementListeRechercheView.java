@@ -5,21 +5,18 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-/**
- * @inheritDoc
- *
- */
 public class EvenementCivilEchElementListeRechercheView implements Serializable {
 
-	private static final long serialVersionUID = -6488153266031727123L;
+	private static final long serialVersionUID = 3596946976206609859L;
 
 	private Long id;
 	private TypeEvenementCivilEch type;
-	private EtatEvenementCivil etat = EtatEvenementCivil.A_TRAITER;
+	private EtatEvenementCivil etat;
+	private ActionEvenementCivilEch action;
 	private Date dateTraitement;
 	private RegDate dateEvenement;
 	private Long numeroIndividu;
@@ -30,6 +27,7 @@ public class EvenementCivilEchElementListeRechercheView implements Serializable 
 	public EvenementCivilEchElementListeRechercheView(EvenementCivilEch evt) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
+		this.action = evt.getAction();
 		this.numeroIndividu = evt.getNumeroIndividu();
 		this.type = evt.getType();
 		this.dateEvenement = evt.getDateEvenement();
@@ -86,4 +84,10 @@ public class EvenementCivilEchElementListeRechercheView implements Serializable 
 	public String getCommentaireTraitement() {
 		return commentaireTraitement;
 	}
+
+	@SuppressWarnings("unused")
+	public ActionEvenementCivilEch getAction() {
+		return action;
+	}
+
 }

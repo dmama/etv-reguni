@@ -67,6 +67,10 @@
 			<display:column sortable ="${sortable}" titleKey="label.type.evenement" sortName="type">
 				<fmt:message key="option.type.evenement.ech.${tableEvtsEch.type}" />
 			</display:column>
+			<!-- Type evt -->
+			<display:column sortable ="${sortable}" titleKey="label.action.evenement" sortName="action">
+				<fmt:message key="option.action.evenement.ech.${tableEvtsEch.action}" />
+			</display:column>
 			<!-- Date evenement -->
 			<display:column sortable ="${sortable}" titleKey="label.date.evenement" sortName="dateEvenement">
 				<unireg:regdate regdate="${tableEvtsEch.dateEvenement}" />
@@ -85,7 +89,6 @@
 					<unireg:consulterLog entityNature="Evenement" entityId="${tableEvtsEch.id}"/>
 				</c:if>
 		</display:column>
-			
 		</display:table>
 	</tiles:put>
 </tiles:insert>

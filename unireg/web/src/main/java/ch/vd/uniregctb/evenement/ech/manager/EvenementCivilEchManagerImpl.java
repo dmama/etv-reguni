@@ -192,6 +192,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	private void fill(EvenementCivilEch source, EvenementCivilEchDetailView target) {
+		target.setEvtAction(source.getAction());
 		target.setEvtCommentaireTraitement(source.getCommentaireTraitement());
 		target.setEvtDate(source.getDateEvenement());
 		target.setEvtDateTraitement(source.getDateTraitement());
