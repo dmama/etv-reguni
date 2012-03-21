@@ -168,7 +168,8 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	}
 
 	// Toutes les lettres, sauf le 'O' qui peut être confondu avec le '0'.
-	private static final char CODE_LETTERS[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+	// [SIFISC-4453] ... et le 'I' qui peut être confondu avec le '1'
+	private static final char CODE_LETTERS[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 	/**
 	 * Génère un code de contrôle pour le retour des déclarations d'impôt sous forme électronique. Ce code de contrôle est une string de 6 caractères composée d'une lettre suivie de 5 chiffres pris au
