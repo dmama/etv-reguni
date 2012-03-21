@@ -139,12 +139,10 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			@Override
 			public List doInHibernate(Session session) throws HibernateException, SQLException {
 				final FlushMode mode = session.getFlushMode();
+				session.setFlushMode(FlushMode.MANUAL);
 				try {
-					session.setFlushMode(FlushMode.MANUAL);
-					final Query query =
-							session.createQuery("select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))");
-					query.setParameterList("ids", input);
-					return query.list();
+					final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
+					return queryObjectsByIds(hql, input, session);
 				}
 				finally {
 					session.setFlushMode(mode);
@@ -211,10 +209,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			return Collections.emptySet();
 		}
 
-		if (ids.size() > MAX_IN_SIZE) {
-			throw new IllegalArgumentException("Le nombre maximal d'ids est dépassé");
-		}
-
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
 			@SuppressWarnings({"unchecked"})
 			@Override
@@ -225,15 +219,13 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				final Set<Long> idsLies = new HashSet<Long>();
 
 				// les tiers liés en tant que sujets
-				final Query qsujets = session.createQuery(buildHqlForSujets(excludeContactsImpotSource));
-				qsujets.setParameterList("ids", ids);
-				final List<Long> idsSujets = qsujets.list();
+				final String hqlSujets = buildHqlForSujets(excludeContactsImpotSource);
+				final List<Long> idsSujets = queryObjectsByIds(hqlSujets, idsDemandes, session);
 				idsLies.addAll(idsSujets);
 
 				// les tiers liés en tant qu'objets
-				final Query qobjets = session.createQuery(buildHqlForObjets(excludeContactsImpotSource));
-				qobjets.setParameterList("ids", ids);
-				final List<Long> idsObjets = qobjets.list();
+				final String hqlObjets = buildHqlForObjets(excludeContactsImpotSource);
+				final List<Long> idsObjets = queryObjectsByIds(hqlObjets, idsDemandes, session);
 				idsLies.addAll(idsObjets);
 
 				final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
@@ -632,17 +624,15 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
 
+			final Set<Long> tiersIdSet = new HashSet<Long>(tiersIds);
 			if (includesComposantsMenage) {
 				// on récupère les numéros d'individu des composants des ménages
-				final Query queryComposants = session.createQuery(QUERY_GET_NOS_IND_COMPOSANTS);
-				queryComposants.setParameterList("ids", tiersIds);
-				numeros.addAll(queryComposants.list());
+				final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND_COMPOSANTS, tiersIdSet, session);
+				numeros.addAll(nos);
 			}
 
-			final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
-			queryObject.setParameterList("ids", tiersIds);
-			numeros.addAll(queryObject.list());
-
+			final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND, tiersIdSet, session);
+			numeros.addAll(nos);
 			return numeros;
 		}
 	}
@@ -1030,9 +1020,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
 			@Override
 			public List<Long> doInHibernate(Session session) throws HibernateException {
-				Query query = session.createQuery("select mc.numero from MenageCommun mc where mc.numero in (:ids)");
-				query.setParameterList("ids", ids);
-				return query.list();
+				final String hql = "select mc.numero from MenageCommun mc where mc.numero in (:ids)";
+				final Set<Long> set = new HashSet<Long>(ids);
+				return queryObjectsByIds(hql, set, session);
 			}
 		});
 
