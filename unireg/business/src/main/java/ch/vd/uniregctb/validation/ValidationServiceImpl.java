@@ -20,7 +20,12 @@ public class ValidationServiceImpl implements ValidationService {
 	private final Map<Class, EntityValidator> validatorMap = new HashMap<Class, EntityValidator>();
 
 	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-	private final ThreadLocal<MutableInt> callDepth = new ThreadLocal<MutableInt>();
+	private final ThreadLocal<MutableInt> callDepth = new ThreadLocal<MutableInt>() {
+		@Override
+		protected MutableInt initialValue() {
+			return new MutableInt(0);
+		}
+	};
 
 	/**
 	 * Façade de validateur qui permet de chaîner plusieurs validateurs sur une même classe
@@ -153,17 +158,11 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 	private MutableInt getCallDepth() {
-		MutableInt depth = callDepth.get();
-		if (depth == null) {
-			depth = new MutableInt(0);
-			callDepth.set(depth);
-		}
-		return depth;
+		return callDepth.get();
 	}
 
 	@Override
 	public boolean isInValidation() {
-		final MutableInt in = callDepth.get();
-		return in != null && in.intValue() > 0;
+		return getCallDepth().intValue() > 0;
 	}
 }

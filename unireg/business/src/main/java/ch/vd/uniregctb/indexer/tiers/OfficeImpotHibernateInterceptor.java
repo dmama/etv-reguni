@@ -33,19 +33,39 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		public boolean enabled = true;
 	}
 
-	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>();
+	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
+		@Override
+		protected Behavior initialValue() {
+			return new Behavior();
+		}
+	};
 
-	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>();
+	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>() {
+		@Override
+		protected HashMap<Long, Tiers> initialValue() {
+			return new HashMap<Long, Tiers>();
+		}
+	};
 
 	/**
 	 * Les tiers (avec leurs nouveaux OIDs) qui doivent être mis-à-jour
 	 */
-	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = new ThreadLocal<HashMap<Long, Integer>>();
+	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = new ThreadLocal<HashMap<Long, Integer>>() {
+		@Override
+		protected HashMap<Long, Integer> initialValue() {
+			return new HashMap<Long, Integer>();
+		}
+	};
 
 	/**
 	 * Une map numéro de tiers -> nouveau numéro d'oid des tiers qui ont été changés.
 	 */
-	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = new ThreadLocal<HashMap<Long, Integer>>();
+	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = new ThreadLocal<HashMap<Long, Integer>>() {
+		@Override
+		protected HashMap<Long, Integer> initialValue() {
+			return new HashMap<Long, Integer>();
+		}
+	};
 
 	@Override
 	public void preFlush(Iterator<?> entities) throws CallbackException {
@@ -186,30 +206,15 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private HashMap<Long, Tiers> getDirtyEntities() {
-		HashMap<Long, Tiers> ent = dirtyEntities.get();
-		if (ent == null) {
-			ent = new HashMap<Long, Tiers>();
-			dirtyEntities.set(ent);
-		}
-		return ent;
+		return dirtyEntities.get();
 	}
 
 	private HashMap<Long, Integer> getToUpdateOids() {
-		HashMap<Long, Integer> ent = toUpdateOids.get();
-		if (ent == null) {
-			ent = new HashMap<Long, Integer>();
-			toUpdateOids.set(ent);
-		}
-		return ent;
+		return toUpdateOids.get();
 	}
 
 	private HashMap<Long, Integer> getUpdatedOids() {
-		HashMap<Long, Integer> ent = updatedOids.get();
-		if (ent == null) {
-			ent = new HashMap<Long, Integer>();
-			updatedOids.set(ent);
-		}
-		return ent;
+		return updatedOids.get();
 	}
 
 	/**
@@ -255,12 +260,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private Behavior getByThreadBehavior() {
-		Behavior behavior = this.byThreadBehavior.get();
-		if (behavior == null) {
-			behavior = new Behavior();
-			this.byThreadBehavior.set(behavior);
-		}
-		return behavior;
+		return byThreadBehavior.get();
 	}
 
 	public void setEnabled(boolean value) {

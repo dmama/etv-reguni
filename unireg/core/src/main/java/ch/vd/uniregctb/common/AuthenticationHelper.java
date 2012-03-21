@@ -19,15 +19,15 @@ public class AuthenticationHelper {
 	public static final String SYSTEM_USER = "[system]";
 	private static final Authentication NULL_AUTH = createAuthentication("__null__");
 
-	private static final ThreadLocal<Stack<Authentication>> stackByThread = new ThreadLocal<Stack<Authentication>>();
+	private static final ThreadLocal<Stack<Authentication>> stackByThread = new ThreadLocal<Stack<Authentication>>() {
+		@Override
+		protected Stack<Authentication> initialValue() {
+			return new Stack<Authentication>();
+		}
+	};
 
 	private static Stack<Authentication> stack() {
-		Stack<Authentication> stack = stackByThread.get();
-		if (stack == null) {
-			stack = new Stack<Authentication>();
-			stackByThread.set(stack);
-		}
-		return stack;
+		return stackByThread.get();
 	}
 
 	public static void setPrincipal(String visa) {

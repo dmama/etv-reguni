@@ -30,7 +30,12 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
-	private final ThreadLocal<Data> data = new ThreadLocal<Data>();
+	private final ThreadLocal<Data> data = new ThreadLocal<Data>() {
+		@Override
+		protected Data initialValue() {
+			return new Data();
+		}
+	};
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {
@@ -139,12 +144,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	 * @return les données locales au thread courant. Ces données sont créées à la demande si nécessaire.
 	 */
 	private Data getThreadData() {
-		Data d = data.get();
-		if (d == null) {
-			d = new Data();
-			data.set(d);
-		}
-		return d;
+		return data.get();
 	}
 
 	private void clearThreadData() {

@@ -24,8 +24,14 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 		public boolean enabled = true;
 	}
 
+	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
+		@Override
+		protected Behavior initialValue() {
+			return new Behavior();
+		}
+	};
+
 	private ModificationInterceptor parent;
-	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>();
 	private HibernateTemplate hibernateTemplate;
 	private ValidationService validationService;
 
@@ -108,12 +114,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 	}
 
 	private Behavior getByThreadBehavior() {
-		Behavior behavior = this.byThreadBehavior.get();
-		if (behavior == null) {
-			behavior = new Behavior();
-			this.byThreadBehavior.set(behavior);
-		}
-		return behavior;
+		return byThreadBehavior.get();
 	}
 
 	public void setEnabled(boolean value) {

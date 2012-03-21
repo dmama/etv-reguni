@@ -41,7 +41,12 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private TransactionManager transactionManager;
 	private Dialect dialect;
 
-	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>();
+	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>() {
+		@Override
+		protected HashSet<Long> initialValue() {
+			return new HashSet<Long>();
+		}
+	};
 
 	/**
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.
@@ -123,12 +128,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	}
 
 	private HashSet<Long> getModifiedTiersIds() {
-		HashSet<Long> ent = modifiedEntities.get();
-		if (ent == null) {
-			ent = new HashSet<Long>();
-			modifiedEntities.set(ent);
-		}
-		return ent;
+		return modifiedEntities.get();
 	}
 
 	/**

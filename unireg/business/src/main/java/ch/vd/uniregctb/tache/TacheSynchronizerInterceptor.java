@@ -29,7 +29,12 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private TacheService tacheService;
 	private TiersService tiersService;
 
-	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>();
+	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>() {
+		@Override
+		protected HashSet<Long> initialValue() {
+			return new HashSet<Long>();
+		}
+	};
 	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 
 	@Override
@@ -85,21 +90,24 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			final String visa = AuthenticationHelper.getCurrentPrincipal();
 			AuthenticationHelper.pushPrincipal(String.format("%s-recalculTaches", visa));
 		}
-
-		parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
-		setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
 		try {
-			tacheService.synchronizeTachesDIs(set);
-		}
-		catch (RuntimeException e) {
-			LOGGER.error(e, e);
-			throw e;
+
+			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+			setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
+			try {
+				tacheService.synchronizeTachesDIs(set);
+			}
+			catch (RuntimeException e) {
+				LOGGER.error(e, e);
+				throw e;
+			}
+			finally {
+				parent.setEnabledForThread(true);
+				setOnTheFlySynchronization(true);
+				set.clear();
+			}
 		}
 		finally {
-
-			parent.setEnabledForThread(true);
-			setOnTheFlySynchronization(true);
-
 			if (!authenticated) {
 				// [UNIREG-2894] si on était pas autentifié et qu'on l'a fait à la volée, on resette cette autentification ici.
 				AuthenticationHelper.resetAuthentication();
@@ -107,7 +115,6 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			else {
 				AuthenticationHelper.popPrincipal();
 			}
-			set.clear();
 		}
 	}
 
@@ -137,12 +144,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	}
 
 	private HashSet<Long> getModifiedCtbIds() {
-		HashSet<Long> ent = modifiedCtbIds.get();
-		if (ent == null) {
-			ent = new HashSet<Long>();
-			modifiedCtbIds.set(ent);
-		}
-		return ent;
+		return modifiedCtbIds.get();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

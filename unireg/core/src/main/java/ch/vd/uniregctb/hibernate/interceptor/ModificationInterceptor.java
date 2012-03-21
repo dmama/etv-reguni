@@ -30,7 +30,12 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private static final Logger LOGGER = Logger.getLogger(ModificationInterceptor.class);
 
 	private TransactionManager transactionManager;
-	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>();
+	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>() {
+		@Override
+		protected HashSet<Transaction> initialValue() {
+			return new HashSet<Transaction>();
+		}
+	};
 	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<ModificationSubInterceptor>();
 
@@ -190,12 +195,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private HashSet<Transaction> getRegisteredTransactionsSet() {
-		HashSet<Transaction> set = registeredTransactions.get();
-		if (set == null) {
-			set = new HashSet<Transaction>();
-			registeredTransactions.set(set);
-		}
-		return set;
+		return registeredTransactions.get();
 	}
 
 	/**

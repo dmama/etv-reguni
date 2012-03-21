@@ -41,7 +41,12 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 		}
 	};
 
-	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>();
+	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>() {
+		@Override
+		protected ReferenceDateAccessor initialValue() {
+			return CURRENT_DATE_ACCESSOR;
+		}
+	};
 
 	/**
 	 * Méthode utilisable dans les tests et qui fait en sorte que la date de "début du futur" soit la date donnée
@@ -49,7 +54,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 	 */
 	public static void setFutureBeginDate(@Nullable final RegDate date) {
 		if (date == null) {
-			futureBeginDateAccessors.set(null);
+			futureBeginDateAccessors.remove();
 		}
 		else {
 			futureBeginDateAccessors.set(new ReferenceDateAccessor() {
@@ -62,13 +67,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 	}
 
 	private static ReferenceDateAccessor getFutureBeginDateAccessor() {
-		final ReferenceDateAccessor registered = futureBeginDateAccessors.get();
-		if (registered == null) {
-			return CURRENT_DATE_ACCESSOR;
-		}
-		else {
-			return registered;
-		}
+		return futureBeginDateAccessors.get();
 	}
 
 	private static RegDate getFutureBeginDate() {

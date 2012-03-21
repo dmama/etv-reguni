@@ -81,7 +81,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         public boolean onTheFlyIndexation = true;
     }
 
-    private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>();
+    private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
+	    @Override
+	    protected Behavior initialValue() {
+		    return new Behavior();
+	    }
+    };
 
     /**
      * Le service qui fournit les adresses et autres
@@ -658,12 +663,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	}
 
     private Behavior getByThreadBehavior() {
-        Behavior behavior = this.byThreadBehavior.get();
-        if (behavior == null) {
-            behavior = new Behavior();
-            this.byThreadBehavior.set(behavior);
-        }
-        return behavior;
+        return byThreadBehavior.get();
     }
 
     @Override
