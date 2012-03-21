@@ -8,13 +8,16 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -23,8 +26,10 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -82,7 +87,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -152,7 +157,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -212,7 +217,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -278,8 +283,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
-	private ObtentionPermis createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale) {
-		return new ObtentionPermis(individu, null, dateObtentionPermis, 5586, noOfsCommunePrincipale, TypePermis.ETABLISSEMENT, context);
+	private ObtentionPermis createValidObtentionPermis(Individu individu, RegDate dateObtentionPermis, int noOfsCommuneAnnonce, int noOfsCommunePrincipaleVaudoise) {
+		return new ObtentionPermis(individu, null, dateObtentionPermis, noOfsCommuneAnnonce, noOfsCommunePrincipaleVaudoise, TypePermis.ETABLISSEMENT, context);
 	}
 
 	private ObtentionPermis createValidObtentionPermisNonC(Individu individu, RegDate dateObtentionPermis, int noOfsCommunePrincipale, TypePermis typePermis) {
@@ -318,7 +323,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Neuchatel.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -443,7 +448,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Lausanne.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -513,7 +518,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Lausanne.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -541,6 +546,240 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				else {
 					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
 				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-4535 : cas d'un sourcier en secondaire sans for principal vaudois (= cas normal) qui reçoit le permis C
+	 * --> unireg doit traiter le changement de mode d'imposition sur le fors non-vaudois
+	 */
+	@Test
+	public void testResidentSecondaireSourcierObtientPermisC() throws Exception {
+		
+		final long noIndividu = 12674543L;
+		final RegDate dateNaissance = date(1965, 8, 23);
+		final RegDate dateDebut = date(2006, 1, 1);
+		final RegDate datePermisC = date(2011, 4, 12);
+
+		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+			}
+		});
+		
+		// mise en place fiscale (juste la création du tiers, qui n'a pas de for vaudois)
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+		
+		// obtention du permis C
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
+			}
+		});
+		
+		// traitement de l'événement d'obtention de permis d'établissement
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
+				assertEquals(HandleStatus.TRAITE, evStatus);
+				return null;
+			}
+		});
+		
+		// vérification que le for a bougé (= passé à l'ordinaire)
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(datePermisC, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (long) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-4535 : cas d'un sourcier en secondaire sans for principal du tout (= cas normal) qui reçoit le permis C
+	 * --> unireg ne devrait rien faire et laisser passer l'événement d'obtention de permis
+	 */
+	@Test
+	public void testResidentSecondaireSansForObtientPermisC() throws Exception {
+
+		final long noIndividu = 12674543L;
+		final RegDate dateNaissance = date(1965, 8, 23);
+		final RegDate dateDebut = date(2006, 1, 1);
+		final RegDate datePermisC = date(2011, 4, 12);
+
+		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+			}
+		});
+
+		// mise en place fiscale (juste la création du tiers)
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		// obtention du permis C
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
+			}
+		});
+
+		// traitement de l'événement d'obtention de permis d'établissement
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
+				assertEquals(HandleStatus.TRAITE, evStatus);
+				return null;
+			}
+		});
+
+		// vérification qu'aucun for n'a été créé
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-4535 : cas d'un sourcier en secondaire avec un for principal vaudois (= cas bizarre) qui reçoit le permis C
+	 * --> aujourd'hui, unireg passer le sourcier à l'ordinaire (rattachement domicile), ce qui est faux puisque le contribuable
+	 * n'est présent qu'en secondaire
+	 * TODO ce test tient compte du comportement actuel, il faudra le modifier dès qu'une décision aura été prise pour SIFISC-4535
+	 */
+	@Test
+	public void testResidentSecondaireSourcierForVaudoisObtientPermisC() throws Exception {
+
+		final long noIndividu = 12674543L;
+		final RegDate dateNaissance = date(1965, 8, 23);
+		final RegDate dateDebut = date(2006, 1, 1);
+		final RegDate datePermisC = date(2011, 4, 12);
+
+		// mise en place civile d'un individu en secondaire dans le canton avec un permis B
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+			}
+		});
+
+		// mise en place fiscale (création du tiers avec for vaudois)
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		// obtention du permis C
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
+			}
+		});
+
+		// traitement de l'événement d'obtention de permis d'établissement
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
+				assertFalse(collector.hasWarnings());
+				assertEquals(HandleStatus.TRAITE, evStatus);
+				return null;
+			}
+		});
+
+		// vérification que le for a bougé (= passé à l'ordinaire)
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(datePermisC, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (long) ffp.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

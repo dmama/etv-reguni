@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
@@ -41,7 +42,8 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		eventSender.count = 0;
 
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, null, evenementFiscalService);
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
 		options = buildOptions();
 	}
 
