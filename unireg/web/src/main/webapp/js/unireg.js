@@ -1737,7 +1737,7 @@ var Modifier = {
 
 var Postit = {
 	refresh : function() {
-		$.get(getContextPath() + '/postit/todo.do?' + new Date().getTime() + '"/>', function(todo) {
+		$.get(getContextPath() + '/postit/todo.do?' + new Date().getTime(), function(todo) {
 			if (todo.taches > 0 || todo.dossiers > 0) {
 				var text = 'Bonjour !<br>Il y a ';
 				if (todo.taches > 0) {
