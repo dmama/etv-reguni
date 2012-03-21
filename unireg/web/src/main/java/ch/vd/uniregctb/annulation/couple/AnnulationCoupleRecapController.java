@@ -12,6 +12,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.annulation.couple.manager.AnnulationCoupleRecapManager;
 import ch.vd.uniregctb.annulation.couple.view.AnnulationCoupleRecapView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.metier.MetierServiceException;
 
 public class AnnulationCoupleRecapController extends AbstractSimpleFormController {
 
@@ -78,7 +80,12 @@ public class AnnulationCoupleRecapController extends AbstractSimpleFormControlle
 		AnnulationCoupleRecapView annulationCoupleRecapView = (AnnulationCoupleRecapView) command;
 		checkAccesDossierEnLecture(annulationCoupleRecapView.getCouple().getNumero());
 
-		annulationCoupleRecapManager.save(annulationCoupleRecapView);
+		try {
+			annulationCoupleRecapManager.save(annulationCoupleRecapView);
+		}
+		catch (MetierServiceException e) {
+			throw new ActionException(e.getMessage(), e);
+		}
 		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + annulationCoupleRecapView.getCouple().getNumero(), true));
 	}
 
