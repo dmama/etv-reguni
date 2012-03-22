@@ -56,7 +56,7 @@ public class ImmeubleView {
 	}
 
 	private String formatNumber(Integer number) {
-		return decimalFormat.get().format(number);
+		return number != null ? decimalFormat.get().format(number) : null;
 	}
 
 	private static String getMessage(MessageSource messageSource, String keyPrefix, Enum<?> key) {
