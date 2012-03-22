@@ -87,7 +87,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		// on décode la requête
 		final Request request = parse(message.getBodyAsSource());
 
-		LOGGER.info(String.format("Arrivée d'un événement %s", request));
+		LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 		// on traite la requête
 		Response response;
