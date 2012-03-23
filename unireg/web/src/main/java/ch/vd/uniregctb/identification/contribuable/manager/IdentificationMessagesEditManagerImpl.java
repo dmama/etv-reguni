@@ -60,23 +60,25 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
 
 		String nomRaison = "";
-		if (identificationContribuable.getDemande().getPersonne().getNom() != null) {
-			nomRaison = nomRaison + identificationContribuable.getDemande().getPersonne().getNom();
-		}
-		if (identificationContribuable.getDemande().getPersonne().getPrenoms() != null) {
-			if (!"".equals(nomRaison)) {
-				nomRaison = nomRaison + ' ' + identificationContribuable.getDemande().getPersonne().getPrenoms();
+		final CriteresPersonne personne = identificationContribuable.getDemande().getPersonne();
+		if (personne != null) {
+			if (personne.getNom() != null) {
+				nomRaison = nomRaison + personne.getNom();
 			}
-			else {
-				nomRaison = identificationContribuable.getDemande().getPersonne().getPrenoms();
+			if (personne.getPrenoms() != null) {
+				if (!"".equals(nomRaison)) {
+					nomRaison = nomRaison + ' ' + personne.getPrenoms();
+				}
+				else {
+					nomRaison = personne.getPrenoms();
+				}
+			}
+			identificationMessagesEditView.setNomRaison(nomRaison);
+			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(personne.getNAVS13()));
+			if ("".equals(identificationMessagesEditView.getNumeroAVS())) {
+				identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(personne.getNAVS11()));
 			}
 		}
-		identificationMessagesEditView.setNomRaison(nomRaison);
-		identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
-		if ("".equals(identificationMessagesEditView.getNumeroAVS())) {
-			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));
-		}
-
 		return identificationMessagesEditView;
 	}
 
