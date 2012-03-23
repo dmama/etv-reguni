@@ -4,7 +4,9 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -43,14 +45,14 @@ public class Mariage extends EvenementCivilInterne {
 
 	public Mariage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
-		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
+		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), evenement.getId());
 		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
 		this.menageAReconstituer = null;        // n'était pas géré à l'époque Reg-PP
 	}
 
 	public Mariage(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
-		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
+		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), event.getId());
 		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
 		this.menageAReconstituer = computeReconstitution(nouveauConjointPP, getDate(), context.getTiersService());
 	}
@@ -88,28 +90,36 @@ public class Mariage extends EvenementCivilInterne {
 	 * @param noPrincipal  le numéro d'individu principal considéré
 	 * @param date         la date de valeur
 	 * @param serviceCivil le service civil
+	 * @param idEvent      identifiant de l'événement civil en cours de traitement   
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
 	 */
-	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil) {
+	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil, long idEvent) {
 
 		final Individu conjoint = serviceCivil.getConjoint(noPrincipal, date.getOneDayAfter());
 		if (conjoint == null) {
+			Audit.info(idEvent, String.format("Aucun conjoint trouvé pour l'individu %d dans le civil au %s", noPrincipal, RegDateHelper.dateToDisplayString(date.getOneDayAfter())));
 			return null;
 		}
 
 		final Individu principal = serviceCivil.getIndividu(noPrincipal, date);
 		if (!isBonConjoint(principal, conjoint, date, serviceCivil)) {
+			Audit.info(idEvent, String.format("Le lien de conjoint n'existe pas depuis l'individu %d vers l'individu %d dans le registre civil au %s",
+			                                  conjoint.getNoTechnique(), noPrincipal, RegDateHelper.dateToDisplayString(date)));
 			return null;
 		}
 
 		// si le conjoint n'a pas d'état civil, on renvoie null
 		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), date);
 		if (etatCivil == null) {
+			Audit.info(idEvent, String.format("L'individu conjoint %d n'a pas d'état civil actif dans le registre civil au %s",
+			                                  conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(date)));
 			return null;
 		}
 
 		// si le conjoint n'est pas marié/pacsé, on renvoie null
 		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
+			Audit.info(idEvent, String.format("L'état civil de l'individu conjoint %d est '%s' dans le registre civil au %s",
+			                                  conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(date)));
 			return null;
 		}
 
