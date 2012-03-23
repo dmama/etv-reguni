@@ -97,14 +97,14 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		for (Tiers tiers : store.values()) {
-			if (tiers instanceof PersonnePhysique && numeroIndividu.equals(((PersonnePhysique) tiers).getNumeroIndividu())) {
+			if (tiers instanceof PersonnePhysique && numeroIndividu == ((PersonnePhysique) tiers).getNumeroIndividu()) {
 				return (PersonnePhysique) tiers;
 			}
 		}
@@ -112,17 +112,17 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		throw new NotImplementedException();
 	}
 

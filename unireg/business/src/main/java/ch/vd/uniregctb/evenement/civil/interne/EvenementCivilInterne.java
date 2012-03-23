@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -108,7 +109,7 @@ public abstract class EvenementCivilInterne {
 		this.numeroEvenement = evenement.getId();
 		this.numeroOfsCommuneAnnonce = null;
 		this.noIndividu = evenement.getNumeroIndividu();
-		this.principalPP = this.noIndividu == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividu, true);
+		this.principalPP = this.noIndividu == null ? null : getPersonnePhysiqueOrNull(this.noIndividu, true);
 		this.noIndividuConjoint = null;
 		this.conjointPP = null;
 
@@ -326,15 +327,20 @@ public abstract class EvenementCivilInterne {
 		return numeroOfsCommuneAnnonce;
 	}
 
+	@Nullable
+	protected final PersonnePhysique getPersonnePhysiqueOrNull(long noIndividu, boolean doNotAutoFlush) {
+		return context.getTiersDAO().getPPByNumeroIndividu(noIndividu, doNotAutoFlush);
+	}
+
 	/**
 	 * @param noIndividu le numéro d'individu
 	 * @param errors     la collection des erreurs qui sera remplie automatiquement si l'habitant n'existe pas
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu, ou <b>null<b> si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrFillErrors(Long noIndividu, EvenementCivilErreurCollector errors) {
-		final PersonnePhysique habitant = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
+	protected final PersonnePhysique getPersonnePhysiqueOrFillErrors(long noIndividu, EvenementCivilErreurCollector errors) {
+		final PersonnePhysique habitant = getPersonnePhysiqueOrNull(noIndividu, false);
 		if (habitant == null) {
-			errors.addErreur("L'habitant avec le numéro d'individu = " + noIndividu + " n'existe pas dans le registre.");
+			errors.addErreur(String.format("L'habitant avec le numéro d'individu = %d n'existe pas dans le registre.", noIndividu));
 		}
 		return habitant;
 	}
@@ -345,7 +351,7 @@ public abstract class EvenementCivilInterne {
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
 	 *          si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu) throws EvenementCivilException {
+	protected final PersonnePhysique getPersonnePhysiqueOrThrowException(long noIndividu) throws EvenementCivilException {
 		return getPersonnePhysiqueOrThrowException(noIndividu, false);
 	}
 
@@ -356,11 +362,10 @@ public abstract class EvenementCivilInterne {
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
 	 * @throws EvenementCivilException si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilException {
-		final PersonnePhysique habitant = context.getTiersDAO().getPPByNumeroIndividu(noIndividu, doNotAutoFlush);
+	protected final PersonnePhysique getPersonnePhysiqueOrThrowException(long noIndividu, boolean doNotAutoFlush) throws EvenementCivilException {
+		final PersonnePhysique habitant = getPersonnePhysiqueOrNull(noIndividu, doNotAutoFlush);
 		if (habitant == null) {
-			throw new EvenementCivilException("L'habitant avec le numéro d'individu = " + noIndividu
-					+ " n'existe pas dans le registre.");
+			throw new EvenementCivilException(String.format("L'habitant avec le numéro d'individu = %d n'existe pas dans le registre.", noIndividu));
 		}
 		return habitant;
 	}

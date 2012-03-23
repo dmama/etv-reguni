@@ -700,12 +700,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu) {
 		return getHabitantByNumeroIndividu(numeroIndividu, false);
 	}
 
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
 	}
 
@@ -713,17 +713,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
 	 */
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
 	}
 
 	@Override
-	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return getNumeroPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private Long getNumeroPPByNumeroIndividu(final Long numeroIndividu, boolean habitantSeulement, final boolean doNotAutoFlush) {
+	private Long getNumeroPPByNumeroIndividu(final long numeroIndividu, boolean habitantSeulement, final boolean doNotAutoFlush) {
 
 		/**
 		 * la requête que l'on veut écrire est la suivante :
@@ -953,7 +953,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long)
 	 */
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu) {
 		return getPPByNumeroIndividu(numeroIndividu, false);
 	}
 

@@ -163,17 +163,38 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private void checkAppartenanceMenage(PersonnePhysique pp, RegDate date, ValidationResults resultat) {
+	/**
+	 * Vérifie la non-appartenance du tiers à un autre ménage
+	 * @param pp tiers à surveiller
+	 * @param date date de référence
+	 * @param validationResults container des éventuels problèmes trouvés
+	 * @param conjointAutorise seul conjoint autorisé dans un éventuel ménage trouvé à la date donnée (si c'est un autre, erreur) ; si <code>null</code>, aucun ménage n'est autorisé
+	 */
+	private void checkAppartenanceMenage(PersonnePhysique pp, RegDate date, ValidationResults validationResults, @Nullable PersonnePhysique conjointAutorise) {
 		/*
 		 * Vérifie la non-appartenance du tiers à un autre ménage
 		 */
 		final EnsembleTiersCouple ensemblePrincipal = tiersService.getEnsembleTiersCouple(pp, date);
 		if (ensemblePrincipal != null && ensemblePrincipal.getMenage() != null) {
-			resultat.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
-					FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()), RegDateHelper.dateToDisplayString(date)));
+			boolean erreur = conjointAutorise == null;
+			if (!erreur) {
+				final PersonnePhysique conjoint = ensemblePrincipal.getConjoint(pp);
+				erreur = conjoint != null && !conjoint.getNumero().equals(conjointAutorise.getNumero());
+				if (!erreur && conjoint != null) {
+					// il faut également que les dates concordent
+					final RapportEntreTiers am = conjoint.getRapportSujetValidAt(date, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+					erreur = am == null || am.getDateDebut() != date;
+				}
+			}
+			
+			if (erreur) {
+				validationResults.addError(String.format("Le contribuable n° %s appartient déjà au ménage commun n° %s en date du %s",
+				                                         FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ensemblePrincipal.getMenage().getNumero()),
+				                                         RegDateHelper.dateToDisplayString(date)));
+			}
 		}
 		else {
-			checkRapportsMenage(pp, date, resultat);
+			checkRapportsMenage(pp, date, validationResults);
 		}
 	}
 
@@ -239,9 +260,9 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Vérifie que les tiers n'appartiennent déjà à un ménage commun ouvert
 		 */
-		checkAppartenanceMenage(principal, date, results);
+		checkAppartenanceMenage(principal, date, results, conjoint);
 		if (conjoint != null) {
-			checkAppartenanceMenage(conjoint, date, results);
+			checkAppartenanceMenage(conjoint, date, results, principal);
 		}
 	}
 

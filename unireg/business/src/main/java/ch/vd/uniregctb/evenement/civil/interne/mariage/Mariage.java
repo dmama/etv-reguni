@@ -23,6 +23,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -35,17 +36,23 @@ public class Mariage extends EvenementCivilInterne {
 	/**
 	 * Le nouveau conjoint de l'individu concerné par le mariage.
 	 */
-	private Individu nouveauConjoint;
+	private final Individu nouveauConjoint;
+	private final PersonnePhysique nouveauConjointPP;
+	private final MenageCommun menageAReconstituer;
 	private boolean isRedondant;
 
 	public Mariage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
+		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
+		this.menageAReconstituer = null;        // n'était pas géré à l'époque Reg-PP
 	}
 
 	public Mariage(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
 		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil());
+		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
+		this.menageAReconstituer = computeReconstitution(nouveauConjointPP, getDate(), context.getTiersService());
 	}
 
 	/**
@@ -55,6 +62,8 @@ public class Mariage extends EvenementCivilInterne {
 	protected Mariage(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.nouveauConjoint = conjoint;
+		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
+		this.menageAReconstituer = null;
 	}
 
 	@Override
@@ -62,12 +71,15 @@ public class Mariage extends EvenementCivilInterne {
 		return true;
 	}
 
-	/*l
-	 * (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.mariage.Mariage#getNouveauConjoint()
+	/**
+	 * @param conjointConnu le contribuable correspondant au conjoint que le marié nous dit avoir au civil
+	 * @param dateMariage date du mariage
+	 * @param tiersService service d'accès aux informations des tiers
+	 * @return si le conjoint connu du marié est déjà, à la date du mariage pris en compte aujourd'hui, le seul composant d'un ménage commun (= marié seul), on renvoie ce ménage commun
 	 */
-	public Individu getNouveauConjoint() {
-		return nouveauConjoint;
+	private static MenageCommun computeReconstitution(PersonnePhysique conjointConnu, RegDate dateMariage, TiersService tiersService) {
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(conjointConnu, dateMariage);
+		return couple != null && couple.getConjoint(conjointConnu) == null ? couple.getMenage() : null;
 	}
 
 	/**
@@ -118,7 +130,7 @@ public class Mariage extends EvenementCivilInterne {
 		/*
 		 * Le tiers correspondant doit exister
 		 */
-		PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), erreurs);
+		PersonnePhysique habitant = getPrincipalPP();
 		if (habitant == null) {
 			return;
 		}
@@ -142,20 +154,19 @@ public class Mariage extends EvenementCivilInterne {
 		/*
 		 * Dans le cas où le conjoint réside dans le canton, il faut que le tiers contribuable existe.
 		 */
-		PersonnePhysique habitantConjoint = null;
-		final Individu conjoint = getNouveauConjoint();
+		final Individu conjoint = nouveauConjoint;
 		if (conjoint != null) {
 
 			/*
 			 * Le tiers correspondant doit exister
 			 */
-			habitantConjoint = getPersonnePhysiqueOrFillErrors(conjoint.getNoTechnique(), erreurs);
-			if (habitantConjoint == null) {
+			if (nouveauConjointPP == null) {
+				erreurs.addErreur(String.format("Le contribuable conjoint correspondant à l'individu %d n'existe pas dans le registre fiscal", nouveauConjoint.getNoTechnique()));
 				return;
 			}
 
 			// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
-			if (habitantConjoint.isHabitantVD()) {
+			if (nouveauConjointPP.isHabitantVD()) {
 
 				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), dateMariage);
 				if (etatCivilConjoint == null) {
@@ -169,11 +180,17 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		// détection d'un événement redondant
-		isRedondant = context.getMetierService().isEnMenageDepuis(habitant, habitantConjoint, dateMariage);
+		isRedondant = context.getMetierService().isEnMenageDepuis(habitant, nouveauConjointPP, dateMariage);
 
 		if (!isRedondant) {
-			final ValidationResults resultat = context.getMetierService().validateMariage(dateMariage, habitant, habitantConjoint);
-			addValidationResults(erreurs, warnings, resultat);
+			final ValidationResults validationResults;
+			if (menageAReconstituer != null) {
+				validationResults = context.getMetierService().validateReconstitution(menageAReconstituer, habitant, getDate());
+			}
+			else {
+				validationResults = context.getMetierService().validateMariage(dateMariage, habitant, nouveauConjointPP);
+			}
+			addValidationResults(erreurs, warnings, validationResults);
 		}
 	}
 
@@ -185,35 +202,42 @@ public class Mariage extends EvenementCivilInterne {
 			return HandleStatus.REDONDANT;
 		}
 
-		final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
-		final PersonnePhysique conjointContribuable = (getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(getNouveauConjoint().getNoTechnique());
+		final PersonnePhysique contribuable = getPrincipalPP();
+		final PersonnePhysique conjointContribuable = nouveauConjointPP;
+		if (nouveauConjointPP == null && nouveauConjoint != null) {
+			throw new EvenementCivilException(String.format("Le contribuable du conjoint (individu %d) n'existe pas dans le registre fiscal", nouveauConjoint.getNoTechnique()));
+		}
 
 		// état civil pour traitement
 		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = etatCivil.getTypeEtatCivil().asCore();
 		
-		// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables
-		boolean remariage = false;
-		MenageCommun ancienMenage = null;
-		for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
-			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
-				final MenageCommun menage = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
-				final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
-				if (couple != null && couple.estComposeDe(contribuable, conjointContribuable)) {
-					// les contribuables se sont remariés
-					remariage = true;
-					ancienMenage = menage;
-				}
-			}
-		}
-		
-		// [UNIREG-780]
 		try {
-			if (remariage) {
-				context.getMetierService().rattachToMenage(ancienMenage, contribuable, conjointContribuable, getDate(), null, etatCivilUnireg, false, getNumeroEvenement());
+			// [SIFISC-4672] Reconstitution du ménage commun complet à la réception de l'événement civil de mariage du deuxième individu
+			if (menageAReconstituer != null) {
+				context.getMetierService().reconstitueMenage(menageAReconstituer, contribuable, getDate(), null, etatCivilUnireg);
 			}
-			else {
-				context.getMetierService().marie(getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, false, getNumeroEvenement());
+			else  {
+				// [UNIREG-780] : détection et reprise d'un ancien ménage auquel ont appartenu les deux contribuables
+				MenageCommun ancienMenage = null;
+				for (RapportEntreTiers rapport : contribuable.getRapportsSujet()) {
+					if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
+						final MenageCommun menage = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
+						final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
+						if (couple != null && couple.estComposeDe(contribuable, conjointContribuable)) {
+							// les contribuables se sont remariés
+							ancienMenage = menage;
+							break;
+						}
+					}
+				}
+
+				if (ancienMenage != null) {
+					context.getMetierService().rattachToMenage(ancienMenage, contribuable, conjointContribuable, getDate(), null, etatCivilUnireg, false, getNumeroEvenement());
+				}
+				else {
+					context.getMetierService().marie(getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, false, getNumeroEvenement());
+				}
 			}
 		}
 		catch (MetierServiceException e) {

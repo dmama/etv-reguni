@@ -190,27 +190,27 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu) {
 		return target.getPPByNumeroIndividu(numeroIndividu);
 	}
 
 	@Override
-	public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return target.getPPByNumeroIndividu(numeroIndividu, doNotAutoFlush);
 	}
 
 	@Override
-	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return target.getNumeroPPByNumeroIndividu(numeroIndividu, doNotAutoFlush);
 	}
 
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu) {
 		return target.getHabitantByNumeroIndividu(numeroIndividu);
 	}
 
 	@Override
-	public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return target.getHabitantByNumeroIndividu(numeroIndividu, doNotAutoFlush);
 	}
 
