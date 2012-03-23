@@ -332,14 +332,18 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilIndividu.add(etatCivilIndividu);
-		individu.getConjoints().add(new RelationVersIndividuImpl(conjoint.getNoTechnique(), dateMariage, null));
+		addRelationConjoint(individu, conjoint, dateMariage);
 
 		final List<EtatCivil> etatsCivilConjoint = conjoint.getEtatsCivils();
 		final EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilConjoint.add(etatCivilConjoint);
-		conjoint.getConjoints().add(new RelationVersIndividuImpl(individu.getNoTechnique(), dateMariage, null));
+		addRelationConjoint(conjoint, individu, dateMariage);
 
 		/* les maries peuvent s'embrasser */
+	}
+	
+	public static void addRelationConjoint(MockIndividu individu, MockIndividu nouveauConjoint, RegDate dateMariage) {
+		individu.getConjoints().add(new RelationVersIndividuImpl(nouveauConjoint.getNoTechnique(), dateMariage, null));
 	}
 	
 	public static void reconcilieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateReconciliation) {
