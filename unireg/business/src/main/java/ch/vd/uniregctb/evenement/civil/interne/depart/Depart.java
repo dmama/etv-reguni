@@ -264,7 +264,7 @@ public abstract class Depart extends Mouvement {
 	 * @return true si on a numéro ofs, false sinon
 	 */
 	protected boolean isPaysEstConnu() {
-		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getNoOfs()!=0);
+		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getNoOfs()!=null);
 	}
 
 	@Override
@@ -399,7 +399,7 @@ public abstract class Depart extends Mouvement {
 		Commune nouvelleCommune = null;
 		final RegDate lendemain = dateDepart.getOneDayAfter();
 
-			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE) {
+			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs()!=null) {
 				try {
 					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
 				}

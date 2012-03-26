@@ -1,24 +1,8 @@
 package ch.vd.uniregctb.common;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseAutreTiers;
-import ch.vd.uniregctb.adresse.AdresseEtrangere;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.*;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.interfaces.model.*;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Localisation;
-import ch.vd.uniregctb.interfaces.model.mock.*;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
+import java.sql.SQLException;
+import java.util.Stack;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +12,71 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import java.sql.SQLException;
-import java.util.Stack;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseAutreTiers;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.LocalisationType;
+import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 // Surcharge des fichiers de config Spring. Il faut mettre les fichiers
@@ -265,7 +310,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         assertEquals(ewid, adresse.getEwid());
     }
 
-    protected static void assertLocalisation(LocalisationType type, int noOfs, Localisation localisation) {
+    protected static void assertLocalisation(LocalisationType type, Integer noOfs, Localisation localisation) {
         assertNotNull(localisation);
         assertEquals(type, localisation.getType());
         assertEquals(noOfs, localisation.getNoOfs());

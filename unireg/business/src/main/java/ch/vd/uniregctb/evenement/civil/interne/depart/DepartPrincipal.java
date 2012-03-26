@@ -177,6 +177,7 @@ public class DepartPrincipal extends Depart {
 				numeroOfsAutoriteFiscale = getPaysInconnu().getNoOFS();
 			}
 			else {
+				//Dans ce cas, le pays est connu est on a un numéro ofs non null
 				numeroOfsAutoriteFiscale =getNouvelleLocalisation().getNoOfs();
 			}
 		}

@@ -81,6 +81,15 @@ public class ArriveePrincipale extends Arrivee {
 		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
 
 		previousLocation = computePreviousLocation(nouvelleAdresse);
+		if(nouvelleAdresse.getLocalisationPrecedente()== null){
+			throw new EvenementCivilException("L'indication de provenance est inconnue");
+
+		}
+
+		if(nouvelleAdresse.getLocalisationPrecedente().getNoOfs()== null){
+			throw new EvenementCivilException("Le numéro ofs de la provenance est inconnu");
+
+		}
 	}
 
 	/**

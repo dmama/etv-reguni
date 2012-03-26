@@ -10,12 +10,12 @@ public class Localisation implements Serializable {
 	private static final long serialVersionUID = 620603672518143534L;
 
 	private LocalisationType type;
-	private int noOfs;
+	private Integer noOfs;
 
 	public Localisation() {
 	}
 
-	public Localisation(LocalisationType type, int noOfs) {
+	public Localisation(LocalisationType type, Integer noOfs) {
 		this.type = type;
 		this.noOfs = noOfs;
 	}
@@ -34,7 +34,7 @@ public class Localisation implements Serializable {
 	/**
 	 * @return le numéro Ofs du lieu civil concerné (numéro Ofs de commune ou de pays en fonction du type).
 	 */
-	public int getNoOfs() {
+	public Integer getNoOfs() {
 		return noOfs;
 	}
 
