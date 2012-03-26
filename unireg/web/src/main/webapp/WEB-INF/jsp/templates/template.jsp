@@ -110,7 +110,7 @@ function ouvrirAide(url) {
 					<authz:authorize ifAnyGranted="ROLE_EVEN">
 					<li><fmt:message key="title.evenements" />
 						<ul>
-						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements" /></a></li>
+						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements.regpp" /></a></li>
 						<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech" /></a></li>
 						</ul>
 					</li>

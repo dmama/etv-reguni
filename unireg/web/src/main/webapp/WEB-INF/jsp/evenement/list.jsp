@@ -3,7 +3,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-  	<tiles:put name="title"><fmt:message key="title.recherche.evenements" /></tiles:put>
+  	<tiles:put name="title"><fmt:message key="title.recherche.evenements.regpp" /></tiles:put>
 
   	    <tiles:put name="head">
             <script type="text/javascript">

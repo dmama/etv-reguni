@@ -3,7 +3,7 @@
 
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="title"><fmt:message key="label.caracteristiques.evenement" /></tiles:put>
+	<tiles:put name="title"><fmt:message key="label.caracteristiques.evenement.regpp" /></tiles:put>
 	<tiles:put name="fichierAide">
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/evenements.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
@@ -12,7 +12,7 @@
 	  	<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
-			<legend><span><fmt:message key="label.caracteristiques.evenement" /></span></legend>
+			<legend><span><fmt:message key="label.caracteristiques.evenement.regpp" /></span></legend>
 			<table>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.numero.evenement" /> :</td>
