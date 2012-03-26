@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class Localisation implements Serializable {
 
-	private static final long serialVersionUID = 620603672518143534L;
+	private static final long serialVersionUID = 3692017738468930175L;
 
 	private LocalisationType type;
 	private Integer noOfs;
