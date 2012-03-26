@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
@@ -17,11 +18,14 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
@@ -47,6 +51,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -1181,6 +1186,60 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+		}
+	}
+
+	@Test
+	@Ignore("SIFISC-4682")
+	public void testArriveeHcAvecImmeublePresent() throws Exception {
+		
+		final long noIndividu = 3256783435623456L;
+		final RegDate achat = date(2001, 3, 12);
+		final RegDate arrivee = date(2007, 7, 1);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, arrivee, null);
+			}
+		});
+		
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2011, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(2, results.infosCommunes.size());
+
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Echallens.getNoOFSEtendu());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Echallens.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Moudon.getNoOFSEtendu());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), achat, null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 }
