@@ -34,7 +34,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@Override
 	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPersons(Arrays.asList(noIndividu), date, true);
+		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}
@@ -46,7 +46,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		// il faut demander les relations entre individus dans un appel séparé
 		final Relations relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			final ListOfRelations rel = client.getRelations(Arrays.asList(noIndividu), date, true);
+			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), date, true);
 			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
 				if (rel.getListOfResults().getResult().size() > 1) {
 					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
@@ -84,7 +84,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 
-		final ListOfPersons list = client.getPersons(nosIndividus, date, true);
+		final ListOfPersons list = getPersonsSafely(nosIndividus, date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return Collections.emptyList();
 		}
@@ -92,7 +92,7 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		// il faut demander les relations entre individus dans un appel séparé
 		final Map<Long, Relations> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			final ListOfRelations rel = client.getRelations(nosIndividus, date, true);
+			final ListOfRelations rel = getRelationsSafely(nosIndividus, date, true);
 			if (rel != null && rel.getListOfResults().getResult() != null) {
 				allRelations = new HashMap<Long, Relations>();
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
@@ -122,6 +122,24 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		}
 
 		return individus;
+	}
+
+	private ListOfPersons getPersonsSafely(Collection<Long> ids, RegDate date, boolean withHistory) {
+		try {
+			return client.getPersons(ids, date, withHistory);
+		}
+		catch (Exception e) {
+			throw new ServiceCivilException(e);
+		}
+	}
+
+	private ListOfRelations getRelationsSafely(Collection<Long> nosIndividus, RegDate date, boolean withHistory) {
+		try {
+			return client.getRelations(nosIndividus, date, withHistory);
+		}
+		catch (Exception e) {
+			throw new ServiceCivilException(e);
+		}
 	}
 
 	@Override
