@@ -15,7 +15,7 @@ public class RcPersWatchDogIntegrationTest extends RcPersWatchDogTest {
 		client.setEventPath("event");
 		client.setRelationsPath("relations/ct.vd.rcpers");
 		client.setUsername("gvd0unireg");
-		client.setPassword("welc0me_");
+		client.setPassword("Welc0me_");
 		client.afterPropertiesSet();
 		return client;
 	}
